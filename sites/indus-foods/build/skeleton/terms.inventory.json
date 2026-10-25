@@ -1,0 +1,4712 @@
+{
+  "generated": "2026-10-25T10:09:24.620Z",
+  "source": "http://127.0.0.1:53375/#/terms",
+  "root": "main",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/201#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Terms & Conditions"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade · Terms & Conditions"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade terms and conditions."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "The terms that apply to trade accounts and orders placed wit"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Layout draft: these summaries are placeholders. Replace them"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "01"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade accounts"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "02"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Orders"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "03"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Pricing"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "04"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Delivery"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "05"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Shortages, damage & returns"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "06"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Payment"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "07"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Contact"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "01"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade accounts"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade accounts are available to registered businesses. We ma"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "02"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Orders"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Orders are accepted subject to stock availability. Where pos"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "03"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Pricing"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Prices are quoted exclusive of VAT and may change in line wi"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "04"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Delivery"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Delivery days and minimum order values are agreed when your "
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "05"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Shortages, damage & returns"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Please check deliveries on arrival and report any shortages "
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "06"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Payment"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Payment terms are set out in your account agreement."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "07"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Contact"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Questions about these terms can be sent to amir@indusfoodslt"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 65,
+      "768": 65,
+      "1440": 65
+    },
+    "tagAgree": 65,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/201#0",
+      "parentKey": "Root/8#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 201,
+      "attrs": {
+        "style": "position: relative; z-index: 1;"
+      },
+      "words": "",
+      "allText": "Home/Trade/Terms & Conditions Trade · Terms & Conditions Trade terms and conditions. The terms that apply to trade accou",
+      "srcLine": 269,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 2032.9
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 1808.9
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 1572.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_201_0@375.png",
+        "1440": "shots/Root_201_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/316#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 316,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; background: linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%); color: rgb(44, 62, 80); padding: 44px 40px 88px; min-height: auto; box-sizing: border-box;"
+      },
+      "words": "",
+      "allText": "Home/Trade/Terms & Conditions Trade · Terms & Conditions Trade terms and conditions. The terms that apply to trade accou",
+      "srcLine": 435,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 339.6
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 323.6
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 399
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_316_0@375.png",
+        "1440": "shots/Root_316_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/318#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 318,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(90% 90% at 100% 0%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 55%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 437,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 339.6
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 323.6
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 399
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_318_0@375.png",
+        "1440": "shots/Root_318_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/319#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 319,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -120px; bottom: -160px; width: 460px; height: 460px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.22); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 438,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+      "box": {
+        "375": {
+          "x": 0.8,
+          "y": 146.3,
+          "w": 496.9,
+          "h": 496.9
+        },
+        "768": {
+          "x": 391.9,
+          "y": 109,
+          "w": 499.5,
+          "h": 499.5
+        },
+        "1440": {
+          "x": 1093.7,
+          "y": 215.5,
+          "w": 487.4,
+          "h": 487.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_319_0@375.png",
+        "1440": "shots/Root_319_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/322#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 322,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Home/Trade/Terms & Conditions Trade · Terms & Conditions Trade terms and conditions. The terms that apply to trade accou",
+      "srcLine": 444,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 255.6
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 207.6
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 267
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_322_0@375.png",
+        "1440": "shots/Root_322_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/323#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 323,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: rgb(44, 62, 80);"
+      },
+      "words": "",
+      "allText": "Home/Trade/Terms & Conditions",
+      "srcLine": 445,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_323_0@375.png",
+        "1440": "shots/Root_323_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/324#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 324,
+      "attrs": {
+        "href": "#/",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Home",
+      "allText": "Home",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Home",
+      "snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 38.4,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_324_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/325#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 325,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"325\">/</span>",
+      "box": {
+        "375": {
+          "x": 66.4,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78.4,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 146.4,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_325_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/326#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 326,
+      "attrs": {
+        "href": "#/apply",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Trade",
+      "allText": "Trade",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ hero.section }}",
+      "snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+      "box": {
+        "375": {
+          "x": 79.6,
+          "y": 153,
+          "w": 36.5,
+          "h": 23.3
+        },
+        "768": {
+          "x": 91.6,
+          "y": 165,
+          "w": 36.5,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 159.6,
+          "y": 177,
+          "w": 36.5,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_326_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/327#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 327,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"327\">/</span>",
+      "box": {
+        "375": {
+          "x": 124.2,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 136.2,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 204.2,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_327_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/328#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 328,
+      "attrs": {
+        "style": "color: rgb(44, 62, 80); font-weight: 500;"
+      },
+      "words": "Terms & Conditions",
+      "allText": "Terms & Conditions",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.crumb }}",
+      "snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+      "box": {
+        "375": {
+          "x": 137.3,
+          "y": 153,
+          "w": 123.5,
+          "h": 23.3
+        },
+        "768": {
+          "x": 149.3,
+          "y": 165,
+          "w": 123.5,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 217.3,
+          "y": 177,
+          "w": 123.5,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_328_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/329#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 329,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1fr); gap: 72px; align-items: center; margin-top: 40px;"
+      },
+      "words": "",
+      "allText": "Trade · Terms & Conditions Trade terms and conditions. The terms that apply to trade accounts and orders placed with Ind",
+      "srcLine": 448,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 204.4
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 144.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 1240,
+          "h": 203.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_329_0@375.png",
+        "1440": "shots/Root_329_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/330#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 330,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Trade · Terms & Conditions Trade terms and conditions. The terms that apply to trade accounts and orders placed with Ind",
+      "srcLine": 449,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 204.4
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 144.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 1240,
+          "h": 203.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_330_0@375.png",
+        "1440": "shots/Root_330_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/331#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 331,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 10px; font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(10, 110, 147); background: rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 999px;"
+      },
+      "words": "Trade · Terms & Conditions",
+      "allText": "Trade · Terms & Conditions",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.eyebrowText }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 300.3,
+          "h": 36.1
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 300.3,
+          "h": 36.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 300.3,
+          "h": 36.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_331_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/332#0",
+      "parentKey": "Root/331#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 332,
+      "attrs": {
+        "style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(10, 126, 168);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+      "box": {
+        "375": {
+          "x": 36,
+          "y": 218.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 48,
+          "y": 242.3,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 116,
+          "y": 254.3,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_332_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/333#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 333,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(34px, 4.8vw, 60px); line-height: 1.08; letter-spacing: -0.02em; margin: 20px 0px 0px; text-wrap: balance; max-width: 880px;"
+      },
+      "words": "Trade terms and conditions.",
+      "allText": "Trade terms and conditions.",
+      "srcLine": 451,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "h1",
+      "srcOwnText": "{{ hero.title }}",
+      "snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 260.4,
+          "w": 335,
+          "h": 73.4
+        },
+        "768": {
+          "x": 32,
+          "y": 284.4,
+          "w": 704,
+          "h": 39.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 296.4,
+          "w": 880,
+          "h": 64.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_333_0@375.png",
+        "1440": "shots/Root_333_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/334#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 334,
+      "attrs": {
+        "style": "font-size: clamp(16.5px, 1.4vw, 19px); color: rgb(44, 62, 80); line-height: 1.6; max-width: 620px; margin: 22px 0px 0px; text-wrap: pretty; text-shadow: rgba(255, 255, 255, 0.796) 0px 4px 12px;"
+      },
+      "words": "The terms that apply to trade accounts and orders placed with Indus Foods Ltd.",
+      "allText": "The terms that apply to trade accounts and orders placed with Indus Foods Ltd.",
+      "srcLine": 452,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ hero.intro }}",
+      "snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 355.8,
+          "w": 335,
+          "h": 52.8
+        },
+        "768": {
+          "x": 32,
+          "y": 346.2,
+          "w": 620,
+          "h": 26.4
+        },
+        "1440": {
+          "x": 100,
+          "y": 383.2,
+          "w": 620,
+          "h": 60.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_334_0@375.png",
+        "1440": "shots/Root_334_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 64px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Layout draft: these summaries are placeholders. Replace them with Indus Foods’ approved trade terms before launch. 01Tra",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 460.6,
+          "w": 375,
+          "h": 1693.3
+        },
+        "768": {
+          "x": 0,
+          "y": 444.6,
+          "w": 768,
+          "h": 1485.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 532,
+          "w": 1440,
+          "h": 1173.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_0@375.png",
+        "1440": "shots/Root_344_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#0",
+      "parentKey": "Root/344#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Layout draft: these summaries are placeholders. Replace them with Indus Foods’ approved trade terms before launch. 01Tra",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 500.6,
+          "w": 335,
+          "h": 1613.3
+        },
+        "768": {
+          "x": 32,
+          "y": 496.6,
+          "w": 704,
+          "h": 1381.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 596,
+          "w": 1240,
+          "h": 1045.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_0@375.png",
+        "1440": "shots/Root_345_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/641#0",
+      "parentKey": "Root/345#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 641,
+      "attrs": {
+        "style": "background: rgba(216, 202, 80, 0.16); border: 1px solid rgba(190, 170, 40, 0.5); border-radius: 10px; padding: 14px 18px; font-size: 14.5px; color: rgb(58, 66, 80); margin-bottom: 36px;"
+      },
+      "words": "Layout draft: these summaries are placeholders. Replace them with Indus Foods’ approved trade terms before launch.",
+      "allText": "Layout draft: these summaries are placeholders. Replace them with Indus Foods’ approved trade terms before launch.",
+      "srcLine": 916,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.note }}",
+      "snippet": "<div style=\"background:rgba(216,202,80,.16);border:1px solid rgba(190,170,40,.5);border-radius:10px;padding:14px 18px;font-size:14.5px;color:#3A4250;margin-bottom:36px;\" data-dc-tpl=\"641\">{{ b.note }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 500.6,
+          "w": 335,
+          "h": 97.4
+        },
+        "768": {
+          "x": 32,
+          "y": 496.6,
+          "w": 704,
+          "h": 74.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 596,
+          "w": 1240,
+          "h": 52.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_641_0@375.png",
+        "1440": "shots/Root_641_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/642#0",
+      "parentKey": "Root/345#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 642,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 0.85fr) minmax(0px, 1.15fr); gap: 72px; align-items: start;"
+      },
+      "words": "",
+      "allText": "01Trade accounts 02Orders 03Pricing 04Delivery 05Shortages, damage & returns 06Payment 07Contact 01Trade accounts Trade ",
+      "srcLine": 917,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ R.rowsCols }};gap:{{ R.splitGap }};align-items:start;\" data-dc-tpl=\"642\"> <div style=\"position:{{ R.sticky }};top:120px;display:flex;flex-direction:column;border-left:2px solid rgba(30,42,60,.12);\" data-dc-tpl=\"643\"> <sc-for list=\"{{ b.sections }}\" as=\"s\" hint-placeholder-count=\"6\" data-dc-tpl=\"644\"> <div style=\"padding:8px 0 8px 16px;font-size:14.",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 634,
+          "w": 335,
+          "h": 1479.8
+        },
+        "768": {
+          "x": 32,
+          "y": 607.5,
+          "w": 704,
+          "h": 1270.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 684.4,
+          "w": 1240,
+          "h": 957.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_642_0@375.png",
+        "1440": "shots/Root_642_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/643#0",
+      "parentKey": "Root/642#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 643,
+      "attrs": {
+        "style": "position: sticky; top: 120px; display: flex; flex-direction: column; border-left: 2px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "01Trade accounts 02Orders 03Pricing 04Delivery 05Shortages, damage & returns 06Payment 07Contact",
+      "srcLine": 918,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:{{ R.sticky }};top:120px;display:flex;flex-direction:column;border-left:2px solid rgba(30,42,60,.12);\" data-dc-tpl=\"643\"> <sc-for list=\"{{ b.sections }}\" as=\"s\" hint-placeholder-count=\"6\" data-dc-tpl=\"644\"> <div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 634,
+          "w": 335,
+          "h": 269.3
+        },
+        "768": {
+          "x": 32,
+          "y": 607.5,
+          "w": 704,
+          "h": 269.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 684.4,
+          "w": 496.4,
+          "h": 269.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "sticky"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_643_0@375.png",
+        "1440": "shots/Root_643_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/645#0",
+      "parentKey": "Root/643#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 645,
+      "attrs": {
+        "style": "padding: 8px 0px 8px 16px; font-size: 14.5px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "Trade accounts",
+      "allText": "01Trade accounts",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>{{ s.h }}</div>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 634,
+          "w": 333,
+          "h": 38.5
+        },
+        "768": {
+          "x": 34,
+          "y": 607.5,
+          "w": 702,
+          "h": 38.5
+        },
+        "1440": {
+          "x": 102,
+          "y": 684.4,
+          "w": 494.4,
+          "h": 38.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_645_0@375.png",
+        "1440": "shots/Root_645_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/646#0",
+      "parentKey": "Root/645#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 646,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); margin-right: 10px;"
+      },
+      "words": "01",
+      "allText": "01",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 642,
+          "w": 14.9,
+          "h": 21
+        },
+        "768": {
+          "x": 50,
+          "y": 615.5,
+          "w": 14.9,
+          "h": 21
+        },
+        "1440": {
+          "x": 118,
+          "y": 692.4,
+          "w": 14.9,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_646_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/645#1",
+      "parentKey": "Root/643#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 645,
+      "attrs": {
+        "style": "padding: 8px 0px 8px 16px; font-size: 14.5px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "Orders",
+      "allText": "02Orders",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>{{ s.h }}</div>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 672.5,
+          "w": 333,
+          "h": 38.5
+        },
+        "768": {
+          "x": 34,
+          "y": 646,
+          "w": 702,
+          "h": 38.5
+        },
+        "1440": {
+          "x": 102,
+          "y": 722.9,
+          "w": 494.4,
+          "h": 38.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_645_1@375.png",
+        "1440": "shots/Root_645_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/646#1",
+      "parentKey": "Root/645#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 646,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); margin-right: 10px;"
+      },
+      "words": "02",
+      "allText": "02",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 680.5,
+          "w": 14.9,
+          "h": 21
+        },
+        "768": {
+          "x": 50,
+          "y": 654,
+          "w": 14.9,
+          "h": 21
+        },
+        "1440": {
+          "x": 118,
+          "y": 730.9,
+          "w": 14.9,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_646_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/645#2",
+      "parentKey": "Root/643#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 645,
+      "attrs": {
+        "style": "padding: 8px 0px 8px 16px; font-size: 14.5px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "Pricing",
+      "allText": "03Pricing",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>{{ s.h }}</div>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 711,
+          "w": 333,
+          "h": 38.5
+        },
+        "768": {
+          "x": 34,
+          "y": 684.5,
+          "w": 702,
+          "h": 38.5
+        },
+        "1440": {
+          "x": 102,
+          "y": 761.4,
+          "w": 494.4,
+          "h": 38.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_645_2@375.png",
+        "1440": "shots/Root_645_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/646#2",
+      "parentKey": "Root/645#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 646,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); margin-right: 10px;"
+      },
+      "words": "03",
+      "allText": "03",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 719,
+          "w": 14.9,
+          "h": 21
+        },
+        "768": {
+          "x": 50,
+          "y": 692.5,
+          "w": 14.9,
+          "h": 21
+        },
+        "1440": {
+          "x": 118,
+          "y": 769.4,
+          "w": 14.9,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_646_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/645#3",
+      "parentKey": "Root/643#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 645,
+      "attrs": {
+        "style": "padding: 8px 0px 8px 16px; font-size: 14.5px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "Delivery",
+      "allText": "04Delivery",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>{{ s.h }}</div>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 749.4,
+          "w": 333,
+          "h": 38.5
+        },
+        "768": {
+          "x": 34,
+          "y": 722.9,
+          "w": 702,
+          "h": 38.5
+        },
+        "1440": {
+          "x": 102,
+          "y": 799.8,
+          "w": 494.4,
+          "h": 38.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_645_3@375.png",
+        "1440": "shots/Root_645_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/646#3",
+      "parentKey": "Root/645#3",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 646,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); margin-right: 10px;"
+      },
+      "words": "04",
+      "allText": "04",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 757.4,
+          "w": 14.9,
+          "h": 21
+        },
+        "768": {
+          "x": 50,
+          "y": 730.9,
+          "w": 14.9,
+          "h": 21
+        },
+        "1440": {
+          "x": 118,
+          "y": 807.8,
+          "w": 14.9,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_646_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/645#4",
+      "parentKey": "Root/643#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 645,
+      "attrs": {
+        "style": "padding: 8px 0px 8px 16px; font-size: 14.5px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "Shortages, damage & returns",
+      "allText": "05Shortages, damage & returns",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>{{ s.h }}</div>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 787.9,
+          "w": 333,
+          "h": 38.5
+        },
+        "768": {
+          "x": 34,
+          "y": 761.4,
+          "w": 702,
+          "h": 38.5
+        },
+        "1440": {
+          "x": 102,
+          "y": 838.3,
+          "w": 494.4,
+          "h": 38.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_645_4@375.png",
+        "1440": "shots/Root_645_4@1440.png"
+      }
+    },
+    {
+      "key": "Root/646#4",
+      "parentKey": "Root/645#4",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 646,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); margin-right: 10px;"
+      },
+      "words": "05",
+      "allText": "05",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 795.9,
+          "w": 14.9,
+          "h": 21
+        },
+        "768": {
+          "x": 50,
+          "y": 769.4,
+          "w": 14.9,
+          "h": 21
+        },
+        "1440": {
+          "x": 118,
+          "y": 846.3,
+          "w": 14.9,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_646_4@1440.png"
+      }
+    },
+    {
+      "key": "Root/645#5",
+      "parentKey": "Root/643#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 645,
+      "attrs": {
+        "style": "padding: 8px 0px 8px 16px; font-size: 14.5px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "Payment",
+      "allText": "06Payment",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>{{ s.h }}</div>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 826.4,
+          "w": 333,
+          "h": 38.5
+        },
+        "768": {
+          "x": 34,
+          "y": 799.9,
+          "w": 702,
+          "h": 38.5
+        },
+        "1440": {
+          "x": 102,
+          "y": 876.8,
+          "w": 494.4,
+          "h": 38.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_645_5@375.png",
+        "1440": "shots/Root_645_5@1440.png"
+      }
+    },
+    {
+      "key": "Root/646#5",
+      "parentKey": "Root/645#5",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 646,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); margin-right: 10px;"
+      },
+      "words": "06",
+      "allText": "06",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 834.4,
+          "w": 14.9,
+          "h": 21
+        },
+        "768": {
+          "x": 50,
+          "y": 807.9,
+          "w": 14.9,
+          "h": 21
+        },
+        "1440": {
+          "x": 118,
+          "y": 884.8,
+          "w": 14.9,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_646_5@1440.png"
+      }
+    },
+    {
+      "key": "Root/645#6",
+      "parentKey": "Root/643#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 645,
+      "attrs": {
+        "style": "padding: 8px 0px 8px 16px; font-size: 14.5px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "Contact",
+      "allText": "07Contact",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<div style=\"padding:8px 0 8px 16px;font-size:14.5px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"645\"><span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>{{ s.h }}</div>",
+      "box": {
+        "375": {
+          "x": 22,
+          "y": 864.8,
+          "w": 333,
+          "h": 38.5
+        },
+        "768": {
+          "x": 34,
+          "y": 838.3,
+          "w": 702,
+          "h": 38.5
+        },
+        "1440": {
+          "x": 102,
+          "y": 915.3,
+          "w": 494.4,
+          "h": 38.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_645_6@375.png",
+        "1440": "shots/Root_645_6@1440.png"
+      }
+    },
+    {
+      "key": "Root/646#6",
+      "parentKey": "Root/645#6",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 646,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); margin-right: 10px;"
+      },
+      "words": "07",
+      "allText": "07",
+      "srcLine": 920,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "644"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;margin-right:10px;\" data-dc-tpl=\"646\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 872.8,
+          "w": 14.9,
+          "h": 21
+        },
+        "768": {
+          "x": 50,
+          "y": 846.3,
+          "w": 14.9,
+          "h": 21
+        },
+        "1440": {
+          "x": 118,
+          "y": 923.3,
+          "w": 14.9,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_646_6@1440.png"
+      }
+    },
+    {
+      "key": "Root/647#0",
+      "parentKey": "Root/642#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 647,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "01Trade accounts Trade accounts are available to registered businesses. We may request company details or references bef",
+      "srcLine": 923,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"647\"> <sc-for list=\"{{ b.sections }}\" as=\"s\" hint-placeholder-count=\"6\" data-dc-tpl=\"648\"> <div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-rig",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 939.3,
+          "w": 335,
+          "h": 1174.6
+        },
+        "768": {
+          "x": 32,
+          "y": 920.8,
+          "w": 704,
+          "h": 957.1
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 684.4,
+          "w": 671.6,
+          "h": 957.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_647_0@375.png",
+        "1440": "shots/Root_647_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/649#0",
+      "parentKey": "Root/647#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 649,
+      "attrs": {
+        "style": "padding: 26px 0px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "01Trade accounts Trade accounts are available to registered businesses. We may request company details or references bef",
+      "srcLine": 925,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 939.3,
+          "w": 335,
+          "h": 175.6
+        },
+        "768": {
+          "x": 32,
+          "y": 920.8,
+          "w": 704,
+          "h": 148.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 684.4,
+          "w": 671.6,
+          "h": 148.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_649_0@375.png",
+        "1440": "shots/Root_649_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/650#0",
+      "parentKey": "Root/649#0",
+      "depth": 6,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 650,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.015em; margin: 0px;"
+      },
+      "words": "Trade accounts",
+      "allText": "01Trade accounts",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 966.3,
+          "w": 335,
+          "h": 31
+        },
+        "768": {
+          "x": 32,
+          "y": 947.8,
+          "w": 704,
+          "h": 31
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 711.4,
+          "w": 671.6,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_650_0@375.png",
+        "1440": "shots/Root_650_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/651#0",
+      "parentKey": "Root/650#0",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 651,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); font-size: 14px; margin-right: 12px;"
+      },
+      "words": "01",
+      "allText": "01",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 974.3,
+          "w": 14.3,
+          "h": 18
+        },
+        "768": {
+          "x": 32,
+          "y": 955.8,
+          "w": 14.3,
+          "h": 18
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 719.4,
+          "w": 14.3,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_651_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/652#0",
+      "parentKey": "Root/649#0",
+      "depth": 6,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 652,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.7; margin: 10px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Trade accounts are available to registered businesses. We may request company details or references before an account is opened.",
+      "allText": "Trade accounts are available to registered businesses. We may request company details or references before an account is",
+      "srcLine": 927,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ s.p }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;\" data-dc-tpl=\"652\">{{ s.p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1007.3,
+          "w": 335,
+          "h": 81.6
+        },
+        "768": {
+          "x": 32,
+          "y": 988.8,
+          "w": 704,
+          "h": 54.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 752.4,
+          "w": 671.6,
+          "h": 54.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_652_0@375.png",
+        "1440": "shots/Root_652_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/649#1",
+      "parentKey": "Root/647#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 649,
+      "attrs": {
+        "style": "padding: 26px 0px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "02Orders Orders are accepted subject to stock availability. Where possible we confirm substitutions or shortages before ",
+      "srcLine": 925,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1114.9,
+          "w": 335,
+          "h": 175.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1069.2,
+          "w": 704,
+          "h": 148.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 832.8,
+          "w": 671.6,
+          "h": 148.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_649_1@375.png",
+        "1440": "shots/Root_649_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/650#1",
+      "parentKey": "Root/649#1",
+      "depth": 6,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 650,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.015em; margin: 0px;"
+      },
+      "words": "Orders",
+      "allText": "02Orders",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1141.9,
+          "w": 335,
+          "h": 31
+        },
+        "768": {
+          "x": 32,
+          "y": 1096.2,
+          "w": 704,
+          "h": 31
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 859.8,
+          "w": 671.6,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_650_1@375.png",
+        "1440": "shots/Root_650_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/651#1",
+      "parentKey": "Root/650#1",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 651,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); font-size: 14px; margin-right: 12px;"
+      },
+      "words": "02",
+      "allText": "02",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1149.9,
+          "w": 17.1,
+          "h": 18
+        },
+        "768": {
+          "x": 32,
+          "y": 1104.2,
+          "w": 17.1,
+          "h": 18
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 867.8,
+          "w": 17.1,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_651_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/652#1",
+      "parentKey": "Root/649#1",
+      "depth": 6,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 652,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.7; margin: 10px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Orders are accepted subject to stock availability. Where possible we confirm substitutions or shortages before delivery.",
+      "allText": "Orders are accepted subject to stock availability. Where possible we confirm substitutions or shortages before delivery.",
+      "srcLine": 927,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ s.p }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;\" data-dc-tpl=\"652\">{{ s.p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1182.9,
+          "w": 335,
+          "h": 81.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1137.2,
+          "w": 704,
+          "h": 54.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 900.8,
+          "w": 671.6,
+          "h": 54.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_652_1@375.png",
+        "1440": "shots/Root_652_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/649#2",
+      "parentKey": "Root/647#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 649,
+      "attrs": {
+        "style": "padding: 26px 0px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "03Pricing Prices are quoted exclusive of VAT and may change in line with market conditions. Your account manager will te",
+      "srcLine": 925,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1290.4,
+          "w": 335,
+          "h": 202.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1217.5,
+          "w": 704,
+          "h": 148.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 981.2,
+          "w": 671.6,
+          "h": 148.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_649_2@375.png",
+        "1440": "shots/Root_649_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/650#2",
+      "parentKey": "Root/649#2",
+      "depth": 6,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 650,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.015em; margin: 0px;"
+      },
+      "words": "Pricing",
+      "allText": "03Pricing",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1317.4,
+          "w": 335,
+          "h": 31
+        },
+        "768": {
+          "x": 32,
+          "y": 1244.5,
+          "w": 704,
+          "h": 31
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1008.2,
+          "w": 671.6,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_650_2@375.png",
+        "1440": "shots/Root_650_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/651#2",
+      "parentKey": "Root/650#2",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 651,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); font-size: 14px; margin-right: 12px;"
+      },
+      "words": "03",
+      "allText": "03",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1325.4,
+          "w": 17.1,
+          "h": 18
+        },
+        "768": {
+          "x": 32,
+          "y": 1252.5,
+          "w": 17.1,
+          "h": 18
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1016.2,
+          "w": 17.1,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_651_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/652#2",
+      "parentKey": "Root/649#2",
+      "depth": 6,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 652,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.7; margin: 10px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Prices are quoted exclusive of VAT and may change in line with market conditions. Your account manager will tell you about price changes.",
+      "allText": "Prices are quoted exclusive of VAT and may change in line with market conditions. Your account manager will tell you abo",
+      "srcLine": 927,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ s.p }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;\" data-dc-tpl=\"652\">{{ s.p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1358.4,
+          "w": 335,
+          "h": 108.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1285.5,
+          "w": 704,
+          "h": 54.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1049.2,
+          "w": 671.6,
+          "h": 54.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_652_2@375.png",
+        "1440": "shots/Root_652_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/649#3",
+      "parentKey": "Root/647#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 649,
+      "attrs": {
+        "style": "padding: 26px 0px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "04Delivery Delivery days and minimum order values are agreed when your account is opened.",
+      "srcLine": 925,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1493.2,
+          "w": 335,
+          "h": 148.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1365.9,
+          "w": 704,
+          "h": 121.2
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1129.6,
+          "w": 671.6,
+          "h": 121.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_649_3@375.png",
+        "1440": "shots/Root_649_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/650#3",
+      "parentKey": "Root/649#3",
+      "depth": 6,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 650,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.015em; margin: 0px;"
+      },
+      "words": "Delivery",
+      "allText": "04Delivery",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1520.2,
+          "w": 335,
+          "h": 31
+        },
+        "768": {
+          "x": 32,
+          "y": 1392.9,
+          "w": 704,
+          "h": 31
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1156.6,
+          "w": 671.6,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_650_3@375.png",
+        "1440": "shots/Root_650_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/651#3",
+      "parentKey": "Root/650#3",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 651,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); font-size: 14px; margin-right: 12px;"
+      },
+      "words": "04",
+      "allText": "04",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1528.2,
+          "w": 18.6,
+          "h": 18
+        },
+        "768": {
+          "x": 32,
+          "y": 1400.9,
+          "w": 18.6,
+          "h": 18
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1164.6,
+          "w": 18.6,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_651_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/652#3",
+      "parentKey": "Root/649#3",
+      "depth": 6,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 652,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.7; margin: 10px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Delivery days and minimum order values are agreed when your account is opened.",
+      "allText": "Delivery days and minimum order values are agreed when your account is opened.",
+      "srcLine": 927,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ s.p }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;\" data-dc-tpl=\"652\">{{ s.p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1561.2,
+          "w": 335,
+          "h": 54.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1433.9,
+          "w": 704,
+          "h": 27.2
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1197.6,
+          "w": 671.6,
+          "h": 27.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_652_3@375.png",
+        "1440": "shots/Root_652_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/649#4",
+      "parentKey": "Root/647#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 649,
+      "attrs": {
+        "style": "padding: 26px 0px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "05Shortages, damage & returns Please check deliveries on arrival and report any shortages or damage promptly. Returns ar",
+      "srcLine": 925,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1641.5,
+          "w": 335,
+          "h": 175.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1487.1,
+          "w": 704,
+          "h": 148.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1250.8,
+          "w": 671.6,
+          "h": 148.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_649_4@375.png",
+        "1440": "shots/Root_649_4@1440.png"
+      }
+    },
+    {
+      "key": "Root/650#4",
+      "parentKey": "Root/649#4",
+      "depth": 6,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 650,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.015em; margin: 0px;"
+      },
+      "words": "Shortages, damage & returns",
+      "allText": "05Shortages, damage & returns",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1668.5,
+          "w": 335,
+          "h": 31
+        },
+        "768": {
+          "x": 32,
+          "y": 1514.1,
+          "w": 704,
+          "h": 31
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1277.8,
+          "w": 671.6,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_650_4@375.png",
+        "1440": "shots/Root_650_4@1440.png"
+      }
+    },
+    {
+      "key": "Root/651#4",
+      "parentKey": "Root/650#4",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 651,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); font-size: 14px; margin-right: 12px;"
+      },
+      "words": "05",
+      "allText": "05",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1676.5,
+          "w": 17.3,
+          "h": 18
+        },
+        "768": {
+          "x": 32,
+          "y": 1522.1,
+          "w": 17.3,
+          "h": 18
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1285.8,
+          "w": 17.3,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_651_4@1440.png"
+      }
+    },
+    {
+      "key": "Root/652#4",
+      "parentKey": "Root/649#4",
+      "depth": 6,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 652,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.7; margin: 10px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Please check deliveries on arrival and report any shortages or damage promptly. Returns are accepted by agreement.",
+      "allText": "Please check deliveries on arrival and report any shortages or damage promptly. Returns are accepted by agreement.",
+      "srcLine": 927,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ s.p }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;\" data-dc-tpl=\"652\">{{ s.p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1709.5,
+          "w": 335,
+          "h": 81.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1555.1,
+          "w": 704,
+          "h": 54.4
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1318.8,
+          "w": 671.6,
+          "h": 54.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_652_4@375.png",
+        "1440": "shots/Root_652_4@1440.png"
+      }
+    },
+    {
+      "key": "Root/649#5",
+      "parentKey": "Root/647#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 649,
+      "attrs": {
+        "style": "padding: 26px 0px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "06Payment Payment terms are set out in your account agreement.",
+      "srcLine": 925,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1817.1,
+          "w": 335,
+          "h": 148.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1635.5,
+          "w": 704,
+          "h": 121.2
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1399.1,
+          "w": 671.6,
+          "h": 121.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_649_5@375.png",
+        "1440": "shots/Root_649_5@1440.png"
+      }
+    },
+    {
+      "key": "Root/650#5",
+      "parentKey": "Root/649#5",
+      "depth": 6,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 650,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.015em; margin: 0px;"
+      },
+      "words": "Payment",
+      "allText": "06Payment",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1844.1,
+          "w": 335,
+          "h": 31
+        },
+        "768": {
+          "x": 32,
+          "y": 1662.5,
+          "w": 704,
+          "h": 31
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1426.1,
+          "w": 671.6,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_650_5@375.png",
+        "1440": "shots/Root_650_5@1440.png"
+      }
+    },
+    {
+      "key": "Root/651#5",
+      "parentKey": "Root/650#5",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 651,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); font-size: 14px; margin-right: 12px;"
+      },
+      "words": "06",
+      "allText": "06",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1852.1,
+          "w": 17.8,
+          "h": 18
+        },
+        "768": {
+          "x": 32,
+          "y": 1670.5,
+          "w": 17.8,
+          "h": 18
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1434.1,
+          "w": 17.8,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_651_5@1440.png"
+      }
+    },
+    {
+      "key": "Root/652#5",
+      "parentKey": "Root/649#5",
+      "depth": 6,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 652,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.7; margin: 10px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Payment terms are set out in your account agreement.",
+      "allText": "Payment terms are set out in your account agreement.",
+      "srcLine": 927,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ s.p }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;\" data-dc-tpl=\"652\">{{ s.p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1885.1,
+          "w": 335,
+          "h": 54.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1703.5,
+          "w": 704,
+          "h": 27.2
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1467.1,
+          "w": 671.6,
+          "h": 27.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_652_5@375.png",
+        "1440": "shots/Root_652_5@1440.png"
+      }
+    },
+    {
+      "key": "Root/649#6",
+      "parentKey": "Root/647#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 649,
+      "attrs": {
+        "style": "padding: 26px 0px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "07Contact Questions about these terms can be sent to amir@indusfoodsltd.com.",
+      "srcLine": 925,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:26px 0;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"649\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1965.5,
+          "w": 335,
+          "h": 148.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1756.7,
+          "w": 704,
+          "h": 121.2
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1520.3,
+          "w": 671.6,
+          "h": 121.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_649_6@375.png",
+        "1440": "shots/Root_649_6@1440.png"
+      }
+    },
+    {
+      "key": "Root/650#6",
+      "parentKey": "Root/649#6",
+      "depth": 6,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 650,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.015em; margin: 0px;"
+      },
+      "words": "Contact",
+      "allText": "07Contact",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ s.h }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.015em;margin:0;\" data-dc-tpl=\"650\"><span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>{{ s.h }}</h3>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1992.5,
+          "w": 335,
+          "h": 31
+        },
+        "768": {
+          "x": 32,
+          "y": 1783.7,
+          "w": 704,
+          "h": 31
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1547.3,
+          "w": 671.6,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_650_6@375.png",
+        "1440": "shots/Root_650_6@1440.png"
+      }
+    },
+    {
+      "key": "Root/651#6",
+      "parentKey": "Root/650#6",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 651,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168); font-size: 14px; margin-right: 12px;"
+      },
+      "words": "07",
+      "allText": "07",
+      "srcLine": 926,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ s.num }}",
+      "snippet": "<span style=\"color:#0A7EA8;font-size:14px;margin-right:12px;\" data-dc-tpl=\"651\">{{ s.num }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2000.5,
+          "w": 17.5,
+          "h": 18
+        },
+        "768": {
+          "x": 32,
+          "y": 1791.7,
+          "w": 17.5,
+          "h": 18
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1555.3,
+          "w": 17.5,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_651_6@1440.png"
+      }
+    },
+    {
+      "key": "Root/652#6",
+      "parentKey": "Root/649#6",
+      "depth": 6,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 652,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.7; margin: 10px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Questions about these terms can be sent to amir@indusfoodsltd.com.",
+      "allText": "Questions about these terms can be sent to amir@indusfoodsltd.com.",
+      "srcLine": 927,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isProse }}",
+          "tpl": "640"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.sections }}",
+          "as": "s",
+          "tpl": "648"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ s.p }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.7;margin:10px 0 0;text-wrap:pretty;\" data-dc-tpl=\"652\">{{ s.p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2033.5,
+          "w": 335,
+          "h": 54.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1824.7,
+          "w": 704,
+          "h": 27.2
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1588.3,
+          "w": 671.6,
+          "h": 27.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_652_6@375.png",
+        "1440": "shots/Root_652_6@1440.png"
+      }
+    }
+  ]
+}

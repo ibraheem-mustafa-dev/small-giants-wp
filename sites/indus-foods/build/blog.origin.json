@@ -1,0 +1,378 @@
+{
+  "cr-ref-blog-0": {
+    "tpl": "Root/201#0",
+    "fingerprint": {
+      "tag": "main",
+      "cls": "",
+      "styleHash": "58a56450",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 269
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-1": {
+    "tpl": "Root/316#0",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "d912361f",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 435
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-2": {
+    "tpl": "Root/319#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "2150bedf",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 438
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-3": {
+    "tpl": "Root/323#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "3eca1cc0",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 445
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-4": {
+    "tpl": "Root/328#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "9fc9fc69",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "7c80d483",
+      "line": 446
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-5": {
+    "tpl": "Root/331#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "51bda87f",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7c80d483",
+      "line": 450
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-6": {
+    "tpl": "Root/333#0",
+    "fingerprint": {
+      "tag": "h1",
+      "cls": "",
+      "styleHash": "c183b96f",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "9176a4a0",
+      "line": 451
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-7": {
+    "tpl": "Root/334#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "c1082518",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "f565ee22",
+      "line": 452
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-8": {
+    "tpl": "Root/344#0",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "a28a05cb",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 474
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-9": {
+    "tpl": "Root/345#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "cbf31f29",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 476
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-10": {
+    "tpl": "Root/604#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "4a0c2b47",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 872
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-11": {
+    "tpl": "Root/344#1",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "a28a05cb",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 474
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-12": {
+    "tpl": "Root/345#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "cbf31f29",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 476
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-13": {
+    "tpl": "Root/515#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "822e26d4",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 741
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-14": {
+    "tpl": "Root/516#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "45f33a79",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 742
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-15": {
+    "tpl": "Root/517#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "b0e74038",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 743
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-16": {
+    "tpl": "Root/519#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "aa146b11",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 745
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-17": {
+    "tpl": "Root/520#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fd343297",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "f4ee86d1",
+      "line": 746
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-18": {
+    "tpl": "Root/522#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "e108848a",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5403b1e",
+      "line": 747
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-19": {
+    "tpl": "Root/523#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "8c9a7edc",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "45a89f81",
+      "line": 748
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-20": {
+    "tpl": "Root/524#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d0d5913e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 750
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-21": {
+    "tpl": "Root/525#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp14",
+      "styleHash": "d1712539",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "fc5594e5",
+      "line": 751
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-blog-22": {
+    "tpl": "Root/526#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp5",
+      "styleHash": "d4775ff",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "d9580830",
+      "line": 752
+    },
+    "draft": "0fe5aee1c396a997"
+  }
+}

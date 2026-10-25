@@ -1,0 +1,1540 @@
+{
+	"generated": "2026-10-25T09:30:46.650Z",
+	"inventory": "2026-10-23T19:43:20.373Z",
+	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"surface": "about-mega-menu",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"builtPost": {
+		"site": "sandybrown",
+		"postType": "sgs_mega_menu",
+		"postId": 4426,
+		"title": "[QA] Indus mega: About"
+	},
+	"counts": {
+		"inventoryElements": 40,
+		"parts": 0,
+		"rows": 40,
+		"skeletonNodes": 40,
+		"expandedNodes": 40,
+		"low": 0,
+		"removed": 0,
+		"unresolved": 0,
+		"byRule": {
+			"clientBuiltSurface": 40
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Indus Foods Website v2/67#0",
+			"tag": "div",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/mega-panel",
+			"action": null,
+			"reason": "a menu surface (the panel a navigation item opens) is sgs/mega-panel",
+			"source": "rule surfaceRoot",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/mega-panel",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule surfaceRoot: a menu surface (the panel a navigation item opens) is sgs/mega-panel"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;\" data-dc-tpl=\"67\"> <div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Indus Foods Website v2/68#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/mega-group",
+			"action": null,
+			"reason": "a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21)",
+			"source": "rule megaGroup",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/mega-group",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule megaGroup: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Indus Foods Website v2/70#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/our-story"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Indus Foods Website v2/71#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "01",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "01"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Indus Foods Website v2/72#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Indus Foods Website v2/73#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Our Story",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Our Story"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Indus Foods Website v2/74#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Six decades of family heritage",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Six decades of family heritage"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Indus Foods Website v2/70#1",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/certifications"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Indus Foods Website v2/71#1",
+			"tag": "span",
+			"depth": 3,
+			"words": "02",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "02"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Indus Foods Website v2/72#1",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Indus Foods Website v2/73#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "Certifications",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Certifications"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Indus Foods Website v2/74#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "BRC & Halal certified",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "BRC & Halal certified"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Indus Foods Website v2/70#2",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/community"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Indus Foods Website v2/71#2",
+			"tag": "span",
+			"depth": 3,
+			"words": "03",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "03"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Indus Foods Website v2/72#2",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Indus Foods Website v2/73#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "Community & Charity",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Community & Charity"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Indus Foods Website v2/74#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "Giving back in Birmingham",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Giving back in Birmingham"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Indus Foods Website v2/70#3",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/sustainability"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Indus Foods Website v2/71#3",
+			"tag": "span",
+			"depth": 3,
+			"words": "04",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "04"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Indus Foods Website v2/72#3",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Indus Foods Website v2/73#3",
+			"tag": "span",
+			"depth": 4,
+			"words": "Sustainability",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Sustainability"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Indus Foods Website v2/74#3",
+			"tag": "span",
+			"depth": 4,
+			"words": "Responsible sourcing",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Responsible sourcing"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Indus Foods Website v2/70#4",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/careers"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Indus Foods Website v2/71#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "05",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "05"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Indus Foods Website v2/72#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Indus Foods Website v2/73#4",
+			"tag": "span",
+			"depth": 4,
+			"words": "Careers",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Careers"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Indus Foods Website v2/74#4",
+			"tag": "span",
+			"depth": 4,
+			"words": "Join our growing team",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Join our growing team"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Indus Foods Website v2/70#5",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/blog"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Indus Foods Website v2/71#5",
+			"tag": "span",
+			"depth": 3,
+			"words": "06",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "06"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Indus Foods Website v2/72#5",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Indus Foods Website v2/73#5",
+			"tag": "span",
+			"depth": 4,
+			"words": "News & Blog",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "News & Blog"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Indus Foods Website v2/74#5",
+			"tag": "span",
+			"depth": 4,
+			"words": "Updates, recipes and trade news",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Updates, recipes and trade news"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Indus Foods Website v2/76#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/mega-aside",
+			"action": null,
+			"reason": "a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21)",
+			"source": "rule megaAside",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/mega-aside",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule megaAside: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"width:300px;flex-shrink:0;padding:24px;background:{{ activePanel.feature.bg }};\" data-dc-tpl=\"76\"> <div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div> <div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Indus Foods Website v2/77#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Indus Foods Website v2/78#0",
+			"tag": "image-slot",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 35,
+			"key": "Indus Foods Website v2/79#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span> <div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" d",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Indus Foods Website v2/80#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Since 1962",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span>",
+			"attributes": {
+				"text": "Since 1962"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 37,
+			"key": "Indus Foods Website v2/81#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Six decades of heritage",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" data-dc-tpl=\"81\">{{ activePanel.feature.title }}</div>",
+			"attributes": {
+				"text": "Six decades of heritage"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Indus Foods Website v2/82#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:15px;color:#E3EFF4;line-height:1.45;margin-top:8px;\" data-dc-tpl=\"82\">{{ activePanel.feature.desc }}</div>",
+			"attributes": {
+				"text": "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers."
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Indus Foods Website v2/83#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Read our story",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"{{ activePanel.feature.href }}\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"83\">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>",
+			"attributes": {
+				"label": "Read our story",
+				"url": "#/our-story"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4426,
+				"title": "[QA] Indus mega: About"
+			}
+		}
+	]
+}

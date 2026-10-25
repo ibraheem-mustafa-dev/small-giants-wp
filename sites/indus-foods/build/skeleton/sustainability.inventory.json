@@ -1,0 +1,5921 @@
+{
+  "generated": "2026-10-25T09:13:52.023Z",
+  "source": "http://127.0.0.1:53375/#/sustainability",
+  "root": "main",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/201#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "About"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Sustainability"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "About · Sustainability"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Sourcing responsibly from over 150 countries."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Buying close to origin, packing on our own site and planning"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Our approach"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Four areas we focus on."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "01"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Direct sourcing"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "We buy close to origin, such as sultanas from Iran and almon"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "02"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Packing in Birmingham"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Processing and packing on our own site reduces handling and "
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "03"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Efficient delivery"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Planned routes and consolidated drops from our Birmingham hu"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "04"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Less food waste"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Stock rotation and close demand planning keep short-dated wa"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Packaging"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Better packaging, step by step."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "As we refresh our own-brand ranges we review materials and p"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Bulk formats for foodservice"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Recyclable outer cases"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Own-brand pack reviews"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade accounts"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Open a trade account today."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Wholesale pricing, a named account manager and delivery acro"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Become a Trade Customer"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Call 0121 771 4330"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 84,
+      "768": 84,
+      "1440": 84
+    },
+    "tagAgree": 84,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/201#0",
+      "parentKey": "Root/8#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 201,
+      "attrs": {
+        "style": "position: relative; z-index: 1;"
+      },
+      "words": "",
+      "allText": "Home/About/Sustainability About · Sustainability Sourcing responsibly from over 150 countries. Buying close to origin, p",
+      "srcLine": 269,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 2945.5
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 2778.3
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 2495.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_201_0@375.png",
+        "1440": "shots/Root_201_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/316#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 316,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; background: linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%); color: rgb(44, 62, 80); padding: 44px 40px 88px; min-height: auto; box-sizing: border-box;"
+      },
+      "words": "",
+      "allText": "Home/About/Sustainability About · Sustainability Sourcing responsibly from over 150 countries. Buying close to origin, p",
+      "srcLine": 435,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 690
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 961.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 611.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_316_0@375.png",
+        "1440": "shots/Root_316_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/318#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 318,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(90% 90% at 100% 0%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 55%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 437,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 690
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 961.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 611.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_318_0@375.png",
+        "1440": "shots/Root_318_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/319#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 319,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -120px; bottom: -160px; width: 460px; height: 460px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.22); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 438,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+      "box": {
+        "375": {
+          "x": 31.3,
+          "y": 497.5,
+          "w": 480.7,
+          "h": 480.7
+        },
+        "768": {
+          "x": 423.6,
+          "y": 778.7,
+          "w": 491.7,
+          "h": 491.7
+        },
+        "1440": {
+          "x": 1066.9,
+          "y": 428.4,
+          "w": 505.5,
+          "h": 505.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_319_0@375.png",
+        "1440": "shots/Root_319_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/322#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 322,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Home/About/Sustainability About · Sustainability Sourcing responsibly from over 150 countries. Buying close to origin, p",
+      "srcLine": 444,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 606
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 845.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 479.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_322_0@375.png",
+        "1440": "shots/Root_322_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/323#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 323,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: rgb(44, 62, 80);"
+      },
+      "words": "",
+      "allText": "Home/About/Sustainability",
+      "srcLine": 445,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_323_0@375.png",
+        "1440": "shots/Root_323_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/324#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 324,
+      "attrs": {
+        "href": "#/",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Home",
+      "allText": "Home",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Home",
+      "snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 38.4,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_324_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/325#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 325,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"325\">/</span>",
+      "box": {
+        "375": {
+          "x": 66.4,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78.4,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 146.4,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_325_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/326#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 326,
+      "attrs": {
+        "href": "#/about",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "About",
+      "allText": "About",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ hero.section }}",
+      "snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+      "box": {
+        "375": {
+          "x": 79.6,
+          "y": 153,
+          "w": 38.8,
+          "h": 23.3
+        },
+        "768": {
+          "x": 91.6,
+          "y": 165,
+          "w": 38.8,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 159.6,
+          "y": 177,
+          "w": 38.8,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_326_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/327#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 327,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"327\">/</span>",
+      "box": {
+        "375": {
+          "x": 126.4,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 138.4,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 206.4,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_327_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/328#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 328,
+      "attrs": {
+        "style": "color: rgb(44, 62, 80); font-weight: 500;"
+      },
+      "words": "Sustainability",
+      "allText": "Sustainability",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.crumb }}",
+      "snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+      "box": {
+        "375": {
+          "x": 139.6,
+          "y": 153,
+          "w": 87.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 151.6,
+          "y": 165,
+          "w": 87.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 219.6,
+          "y": 177,
+          "w": 87.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_328_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/329#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 329,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1.05fr) minmax(0px, 0.95fr); gap: 72px; align-items: center; margin-top: 40px;"
+      },
+      "words": "",
+      "allText": "About · Sustainability Sourcing responsibly from over 150 countries. Buying close to origin, packing on our own site and",
+      "srcLine": 448,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 554.7
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 782.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 1240,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_329_0@375.png",
+        "1440": "shots/Root_329_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/330#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 330,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "About · Sustainability Sourcing responsibly from over 150 countries. Buying close to origin, packing on our own site and",
+      "srcLine": 449,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 267.5
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 210.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 281.6,
+          "w": 613.2,
+          "h": 333.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_330_0@375.png",
+        "1440": "shots/Root_330_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/331#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 331,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 10px; font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(10, 110, 147); background: rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 999px;"
+      },
+      "words": "About · Sustainability",
+      "allText": "About · Sustainability",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.eyebrowText }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 256.5,
+          "h": 36.1
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 256.5,
+          "h": 36.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 281.6,
+          "w": 256.5,
+          "h": 36.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_331_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/332#0",
+      "parentKey": "Root/331#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 332,
+      "attrs": {
+        "style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(10, 126, 168);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+      "box": {
+        "375": {
+          "x": 36,
+          "y": 218.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 48,
+          "y": 242.3,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 116,
+          "y": 295.7,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_332_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/333#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 333,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(34px, 4.8vw, 60px); line-height: 1.08; letter-spacing: -0.02em; margin: 20px 0px 0px; text-wrap: balance; max-width: 880px;"
+      },
+      "words": "Sourcing responsibly from over 150 countries.",
+      "allText": "Sourcing responsibly from over 150 countries.",
+      "srcLine": 451,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "h1",
+      "srcOwnText": "{{ hero.title }}",
+      "snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 260.4,
+          "w": 335,
+          "h": 110.2
+        },
+        "768": {
+          "x": 32,
+          "y": 284.4,
+          "w": 704,
+          "h": 79.6
+        },
+        "1440": {
+          "x": 100,
+          "y": 337.8,
+          "w": 613.2,
+          "h": 194.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_333_0@375.png",
+        "1440": "shots/Root_333_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/334#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 334,
+      "attrs": {
+        "style": "font-size: clamp(16.5px, 1.4vw, 19px); color: rgb(44, 62, 80); line-height: 1.6; max-width: 620px; margin: 22px 0px 0px; text-wrap: pretty; text-shadow: rgba(255, 255, 255, 0.796) 0px 4px 12px;"
+      },
+      "words": "Buying close to origin, packing on our own site and planning efficient routes lets us cut waste and keep quality high.",
+      "allText": "Buying close to origin, packing on our own site and planning efficient routes lets us cut waste and keep quality high.",
+      "srcLine": 452,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ hero.intro }}",
+      "snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 392.5,
+          "w": 335,
+          "h": 79.2
+        },
+        "768": {
+          "x": 32,
+          "y": 386,
+          "w": 620,
+          "h": 52.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 554.2,
+          "w": 613.2,
+          "h": 60.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_334_0@375.png",
+        "1440": "shots/Root_334_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/340#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 340,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 462,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"340\"> <div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </di",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 507.7,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 482.8,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 240.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_340_0@375.png",
+        "1440": "shots/Root_340_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/341#0",
+      "parentKey": "Root/340#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 341,
+      "attrs": {
+        "style": "position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: rgba(255, 255, 255, 0.3); border: 5px solid rgb(255, 255, 255); box-shadow: rgba(44, 62, 80, 0.7) 0px 34px 60px -30px; translate: 0px -8px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 463,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 500.7,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 475.8,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 232.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_341_0@375.png",
+        "1440": "shots/Root_341_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/342#0",
+      "parentKey": "Root/341#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 342,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 464,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 25,
+          "y": 505.7,
+          "w": 325,
+          "h": 241.3
+        },
+        "768": {
+          "x": 37,
+          "y": 480.8,
+          "w": 694,
+          "h": 518
+        },
+        "1440": {
+          "x": 790.2,
+          "y": 237.3,
+          "w": 544.8,
+          "h": 406.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_342_0@375.png",
+        "1440": "shots/Root_342_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 108px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Our approach Four areas we focus on. 01 Direct sourcing We buy close to origin, such as sultanas from Iran and almonds f",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 811,
+          "w": 375,
+          "h": 925.6
+        },
+        "768": {
+          "x": 0,
+          "y": 1082.8,
+          "w": 768,
+          "h": 800.7
+        },
+        "1440": {
+          "x": 0,
+          "y": 744.3,
+          "w": 1440,
+          "h": 728.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_0@375.png",
+        "1440": "shots/Root_344_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#0",
+      "parentKey": "Root/344#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Our approach Four areas we focus on. 01 Direct sourcing We buy close to origin, such as sultanas from Iran and almonds f",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 875,
+          "w": 335,
+          "h": 797.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 704,
+          "h": 624.7
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 1240,
+          "h": 512.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_0@375.png",
+        "1440": "shots/Root_345_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/398#0",
+      "parentKey": "Root/345#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 398,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 0.85fr) minmax(0px, 1.15fr); gap: 72px; align-items: start;"
+      },
+      "words": "",
+      "allText": "Our approach Four areas we focus on. 01 Direct sourcing We buy close to origin, such as sultanas from Iran and almonds f",
+      "srcLine": 558,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ R.rowsCols }};gap:{{ R.splitGap }};align-items:start;\" data-dc-tpl=\"398\"> <div style=\"position:{{ R.sticky }};top:120px;min-width:0;\" data-dc-tpl=\"399\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"400\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 875,
+          "w": 335,
+          "h": 797.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 704,
+          "h": 624.7
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 1240,
+          "h": 512.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_398_0@375.png",
+        "1440": "shots/Root_398_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/399#0",
+      "parentKey": "Root/398#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 399,
+      "attrs": {
+        "style": "position: sticky; top: 120px; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Our approach Four areas we focus on.",
+      "srcLine": 559,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:{{ R.sticky }};top:120px;min-width:0;\" data-dc-tpl=\"399\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"400\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"401\"><span style=\"wi",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 875,
+          "w": 335,
+          "h": 100.5
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 704,
+          "h": 68.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 496.4,
+          "h": 82.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "sticky"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_399_0@375.png",
+        "1440": "shots/Root_399_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/401#0",
+      "parentKey": "Root/399#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 401,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(10, 126, 168); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Our approach",
+      "allText": "Our approach",
+      "srcLine": 561,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "400"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrow }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"401\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"402\"></span>{{ b.eyebrow }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 875,
+          "w": 335,
+          "h": 20.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 704,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 496.4,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_401_0@375.png",
+        "1440": "shots/Root_401_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/402#0",
+      "parentKey": "Root/401#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 402,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: var(--acc,#D8CA50); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 561,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "400"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"402\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 884,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 32,
+          "y": 1179.8,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 100,
+          "y": 861.4,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_402_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/403#0",
+      "parentKey": "Root/399#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 403,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 0px; text-wrap: balance;"
+      },
+      "words": "Four areas we focus on.",
+      "allText": "Four areas we focus on.",
+      "srcLine": 563,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"403\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 911.1,
+          "w": 335,
+          "h": 64.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1206.9,
+          "w": 704,
+          "h": 32.2
+        },
+        "1440": {
+          "x": 100,
+          "y": 888.5,
+          "w": 496.4,
+          "h": 46
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_403_0@375.png",
+        "1440": "shots/Root_403_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/408#0",
+      "parentKey": "Root/398#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 408,
+      "attrs": {
+        "style": "border-top: 1px solid rgba(30, 42, 60, 0.16); min-width: 0px;"
+      },
+      "words": "",
+      "allText": "01 Direct sourcing We buy close to origin, such as sultanas from Iran and almonds from California, and build long-term r",
+      "srcLine": 571,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border-top:1px solid rgba(30,42,60,.16);min-width:0;\" data-dc-tpl=\"408\"> <sc-for list=\"{{ b.items }}\" as=\"r\" hint-placeholder-count=\"4\" data-dc-tpl=\"409\"> <div sc-camel-on-click=\"{{ r.onClick }}\" style=\"display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:24px 6px;border-bottom:1px solid rgba(30,42,60,.1);cursor:{{ r.cursor }};transition:padding-left .25s ease-out,bac",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1011.5,
+          "w": 335,
+          "h": 661.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1283.1,
+          "w": 704,
+          "h": 512.3
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 852.3,
+          "w": 671.6,
+          "h": 512.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_408_0@375.png",
+        "1440": "shots/Root_408_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/410#0",
+      "parentKey": "Root/408#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 410,
+      "attrs": {
+        "class": "scpw",
+        "style": "display: grid; grid-template-columns: 40px minmax(0px, 1fr); gap: 16px; padding: 24px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.1); cursor: default; transition: padding-left 0.25s ease-out, background 0.25s;"
+      },
+      "words": "",
+      "allText": "01 Direct sourcing We buy close to origin, such as sultanas from Iran and almonds from California, and build long-term r",
+      "srcLine": 573,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div sc-camel-on-click=\"{{ r.onClick }}\" style=\"display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:24px 6px;border-bottom:1px solid rgba(30,42,60,.1);cursor:{{ r.cursor }};transition:padding-left .25s ease-out,background .25s;\" style-hover=\"padding-left:16px;background:rgba(10,126,168,.045);--pb:#2C3E50;--pf:#E7D768;--ps:1.05;--ax:4px\" data-dc-tpl=\"410\"> <span style=\"font-weigh",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1012.5,
+          "w": 335,
+          "h": 183.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1284.1,
+          "w": 704,
+          "h": 134
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 853.3,
+          "w": 671.6,
+          "h": 134
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_410_0@375.png",
+        "1440": "shots/Root_410_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/411#0",
+      "parentKey": "Root/410#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 411,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); padding-top: 5px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "01",
+      "allText": "01",
+      "srcLine": 574,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ r.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;padding-top:5px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"411\">{{ r.num }}</span>",
+      "box": {
+        "375": {
+          "x": 26,
+          "y": 1036.5,
+          "w": 40,
+          "h": 134.6
+        },
+        "768": {
+          "x": 38,
+          "y": 1308.1,
+          "w": 40,
+          "h": 85
+        },
+        "1440": {
+          "x": 674.4,
+          "y": 877.3,
+          "w": 40,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_411_0@375.png",
+        "1440": "shots/Root_411_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/412#0",
+      "parentKey": "Root/410#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 412,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Direct sourcing We buy close to origin, such as sultanas from Iran and almonds from California, and build long-term rela",
+      "srcLine": 575,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"412\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tp",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1036.5,
+          "w": 267,
+          "h": 134.6
+        },
+        "768": {
+          "x": 94,
+          "y": 1308.1,
+          "w": 636,
+          "h": 85
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 877.3,
+          "w": 603.6,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_412_0@375.png",
+        "1440": "shots/Root_412_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/413#0",
+      "parentKey": "Root/412#0",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 413,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;"
+      },
+      "words": "",
+      "allText": "Direct sourcing",
+      "srcLine": 576,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"415\"> <span style=\"font-size:11px;font-wei",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1036.5,
+          "w": 267,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1308.1,
+          "w": 636,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 877.3,
+          "w": 603.6,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_413_0@375.png",
+        "1440": "shots/Root_413_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/414#0",
+      "parentKey": "Root/413#0",
+      "depth": 8,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 414,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em;"
+      },
+      "words": "Direct sourcing",
+      "allText": "Direct sourcing",
+      "srcLine": 577,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1036.5,
+          "w": 149.2,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1308.1,
+          "w": 149.2,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 877.3,
+          "w": 149.2,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_414_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/420#0",
+      "parentKey": "Root/412#0",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 420,
+      "attrs": {
+        "style": "font-size: 15.5px; color: rgb(74, 85, 99); line-height: 1.6; margin-top: 6px; text-wrap: pretty;"
+      },
+      "words": "We buy close to origin, such as sultanas from Iran and almonds from California, and build long-term relationships with producers.",
+      "allText": "We buy close to origin, such as sultanas from Iran and almonds from California, and build long-term relationships with p",
+      "srcLine": 585,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.desc }}",
+      "snippet": "<div style=\"font-size:15.5px;color:#4A5563;line-height:1.6;margin-top:6px;text-wrap:pretty;\" data-dc-tpl=\"420\">{{ r.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1071.9,
+          "w": 267,
+          "h": 99.2
+        },
+        "768": {
+          "x": 94,
+          "y": 1343.5,
+          "w": 636,
+          "h": 49.6
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 912.8,
+          "w": 603.6,
+          "h": 49.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_420_0@375.png",
+        "1440": "shots/Root_420_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/410#1",
+      "parentKey": "Root/408#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 410,
+      "attrs": {
+        "class": "scpw",
+        "style": "display: grid; grid-template-columns: 40px minmax(0px, 1fr); gap: 16px; padding: 24px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.1); cursor: default; transition: padding-left 0.25s ease-out, background 0.25s;"
+      },
+      "words": "",
+      "allText": "02 Packing in Birmingham Processing and packing on our own site reduces handling and gives us control over packaging cho",
+      "srcLine": 573,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div sc-camel-on-click=\"{{ r.onClick }}\" style=\"display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:24px 6px;border-bottom:1px solid rgba(30,42,60,.1);cursor:{{ r.cursor }};transition:padding-left .25s ease-out,background .25s;\" style-hover=\"padding-left:16px;background:rgba(10,126,168,.045);--pb:#2C3E50;--pf:#E7D768;--ps:1.05;--ax:4px\" data-dc-tpl=\"410\"> <span style=\"font-weigh",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1196.1,
+          "w": 335,
+          "h": 158.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1418.1,
+          "w": 704,
+          "h": 134
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 987.4,
+          "w": 671.6,
+          "h": 134
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_410_1@375.png",
+        "1440": "shots/Root_410_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/411#1",
+      "parentKey": "Root/410#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 411,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); padding-top: 5px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "02",
+      "allText": "02",
+      "srcLine": 574,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ r.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;padding-top:5px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"411\">{{ r.num }}</span>",
+      "box": {
+        "375": {
+          "x": 26,
+          "y": 1220.1,
+          "w": 40,
+          "h": 109.8
+        },
+        "768": {
+          "x": 38,
+          "y": 1442.1,
+          "w": 40,
+          "h": 85
+        },
+        "1440": {
+          "x": 674.4,
+          "y": 1011.4,
+          "w": 40,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_411_1@375.png",
+        "1440": "shots/Root_411_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/412#1",
+      "parentKey": "Root/410#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 412,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Packing in Birmingham Processing and packing on our own site reduces handling and gives us control over packaging choice",
+      "srcLine": 575,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"412\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tp",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1220.1,
+          "w": 267,
+          "h": 109.8
+        },
+        "768": {
+          "x": 94,
+          "y": 1442.1,
+          "w": 636,
+          "h": 85
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1011.4,
+          "w": 603.6,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_412_1@375.png",
+        "1440": "shots/Root_412_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/413#1",
+      "parentKey": "Root/412#1",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 413,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;"
+      },
+      "words": "",
+      "allText": "Packing in Birmingham",
+      "srcLine": 576,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"415\"> <span style=\"font-size:11px;font-wei",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1220.1,
+          "w": 267,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1442.1,
+          "w": 636,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1011.4,
+          "w": 603.6,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_413_1@375.png",
+        "1440": "shots/Root_413_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/414#1",
+      "parentKey": "Root/413#1",
+      "depth": 8,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 414,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em;"
+      },
+      "words": "Packing in Birmingham",
+      "allText": "Packing in Birmingham",
+      "srcLine": 577,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1220.1,
+          "w": 230.2,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1442.1,
+          "w": 230.2,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1011.4,
+          "w": 230.2,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_414_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/420#1",
+      "parentKey": "Root/412#1",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 420,
+      "attrs": {
+        "style": "font-size: 15.5px; color: rgb(74, 85, 99); line-height: 1.6; margin-top: 6px; text-wrap: pretty;"
+      },
+      "words": "Processing and packing on our own site reduces handling and gives us control over packaging choices.",
+      "allText": "Processing and packing on our own site reduces handling and gives us control over packaging choices.",
+      "srcLine": 585,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.desc }}",
+      "snippet": "<div style=\"font-size:15.5px;color:#4A5563;line-height:1.6;margin-top:6px;text-wrap:pretty;\" data-dc-tpl=\"420\">{{ r.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1255.5,
+          "w": 267,
+          "h": 74.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1477.6,
+          "w": 636,
+          "h": 49.6
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1046.8,
+          "w": 603.6,
+          "h": 49.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_420_1@375.png",
+        "1440": "shots/Root_420_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/410#2",
+      "parentKey": "Root/408#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 410,
+      "attrs": {
+        "class": "scpw",
+        "style": "display: grid; grid-template-columns: 40px minmax(0px, 1fr); gap: 16px; padding: 24px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.1); cursor: default; transition: padding-left 0.25s ease-out, background 0.25s;"
+      },
+      "words": "",
+      "allText": "03 Efficient delivery Planned routes and consolidated drops from our Birmingham hub mean fewer part-empty vehicles.",
+      "srcLine": 573,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div sc-camel-on-click=\"{{ r.onClick }}\" style=\"display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:24px 6px;border-bottom:1px solid rgba(30,42,60,.1);cursor:{{ r.cursor }};transition:padding-left .25s ease-out,background .25s;\" style-hover=\"padding-left:16px;background:rgba(10,126,168,.045);--pb:#2C3E50;--pf:#E7D768;--ps:1.05;--ax:4px\" data-dc-tpl=\"410\"> <span style=\"font-weigh",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1354.9,
+          "w": 335,
+          "h": 158.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1552.2,
+          "w": 704,
+          "h": 134
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1121.4,
+          "w": 671.6,
+          "h": 134
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_410_2@375.png",
+        "1440": "shots/Root_410_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/411#2",
+      "parentKey": "Root/410#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 411,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); padding-top: 5px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "03",
+      "allText": "03",
+      "srcLine": 574,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ r.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;padding-top:5px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"411\">{{ r.num }}</span>",
+      "box": {
+        "375": {
+          "x": 26,
+          "y": 1378.9,
+          "w": 40,
+          "h": 109.8
+        },
+        "768": {
+          "x": 38,
+          "y": 1576.2,
+          "w": 40,
+          "h": 85
+        },
+        "1440": {
+          "x": 674.4,
+          "y": 1145.4,
+          "w": 40,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_411_2@375.png",
+        "1440": "shots/Root_411_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/412#2",
+      "parentKey": "Root/410#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 412,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Efficient delivery Planned routes and consolidated drops from our Birmingham hub mean fewer part-empty vehicles.",
+      "srcLine": 575,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"412\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tp",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1378.9,
+          "w": 267,
+          "h": 109.8
+        },
+        "768": {
+          "x": 94,
+          "y": 1576.2,
+          "w": 636,
+          "h": 85
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1145.4,
+          "w": 603.6,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_412_2@375.png",
+        "1440": "shots/Root_412_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/413#2",
+      "parentKey": "Root/412#2",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 413,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;"
+      },
+      "words": "",
+      "allText": "Efficient delivery",
+      "srcLine": 576,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"415\"> <span style=\"font-size:11px;font-wei",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1378.9,
+          "w": 267,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1576.2,
+          "w": 636,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1145.4,
+          "w": 603.6,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_413_2@375.png",
+        "1440": "shots/Root_413_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/414#2",
+      "parentKey": "Root/413#2",
+      "depth": 8,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 414,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em;"
+      },
+      "words": "Efficient delivery",
+      "allText": "Efficient delivery",
+      "srcLine": 577,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1378.9,
+          "w": 163.1,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1576.2,
+          "w": 163.1,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1145.4,
+          "w": 163.1,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_414_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/420#2",
+      "parentKey": "Root/412#2",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 420,
+      "attrs": {
+        "style": "font-size: 15.5px; color: rgb(74, 85, 99); line-height: 1.6; margin-top: 6px; text-wrap: pretty;"
+      },
+      "words": "Planned routes and consolidated drops from our Birmingham hub mean fewer part-empty vehicles.",
+      "allText": "Planned routes and consolidated drops from our Birmingham hub mean fewer part-empty vehicles.",
+      "srcLine": 585,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.desc }}",
+      "snippet": "<div style=\"font-size:15.5px;color:#4A5563;line-height:1.6;margin-top:6px;text-wrap:pretty;\" data-dc-tpl=\"420\">{{ r.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1414.4,
+          "w": 267,
+          "h": 74.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1611.6,
+          "w": 636,
+          "h": 49.6
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1180.8,
+          "w": 603.6,
+          "h": 49.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_420_2@375.png",
+        "1440": "shots/Root_420_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/410#3",
+      "parentKey": "Root/408#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 410,
+      "attrs": {
+        "class": "scpw",
+        "style": "display: grid; grid-template-columns: 40px minmax(0px, 1fr); gap: 16px; padding: 24px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.1); cursor: default; transition: padding-left 0.25s ease-out, background 0.25s;"
+      },
+      "words": "",
+      "allText": "04 Less food waste Stock rotation and close demand planning keep short-dated waste to a minimum.",
+      "srcLine": 573,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div sc-camel-on-click=\"{{ r.onClick }}\" style=\"display:grid;grid-template-columns:40px minmax(0,1fr);gap:16px;padding:24px 6px;border-bottom:1px solid rgba(30,42,60,.1);cursor:{{ r.cursor }};transition:padding-left .25s ease-out,background .25s;\" style-hover=\"padding-left:16px;background:rgba(10,126,168,.045);--pb:#2C3E50;--pf:#E7D768;--ps:1.05;--ax:4px\" data-dc-tpl=\"410\"> <span style=\"font-weigh",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1513.8,
+          "w": 335,
+          "h": 158.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1686.2,
+          "w": 704,
+          "h": 109.2
+        },
+        "1440": {
+          "x": 668.4,
+          "y": 1255.4,
+          "w": 671.6,
+          "h": 109.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_410_3@375.png",
+        "1440": "shots/Root_410_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/411#3",
+      "parentKey": "Root/410#3",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 411,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); padding-top: 5px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "04",
+      "allText": "04",
+      "srcLine": 574,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ r.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;padding-top:5px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"411\">{{ r.num }}</span>",
+      "box": {
+        "375": {
+          "x": 26,
+          "y": 1537.8,
+          "w": 40,
+          "h": 109.8
+        },
+        "768": {
+          "x": 38,
+          "y": 1710.2,
+          "w": 40,
+          "h": 60.2
+        },
+        "1440": {
+          "x": 674.4,
+          "y": 1279.4,
+          "w": 40,
+          "h": 60.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_411_3@375.png",
+        "1440": "shots/Root_411_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/412#3",
+      "parentKey": "Root/410#3",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 412,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Less food waste Stock rotation and close demand planning keep short-dated waste to a minimum.",
+      "srcLine": 575,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"412\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tp",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1537.8,
+          "w": 267,
+          "h": 109.8
+        },
+        "768": {
+          "x": 94,
+          "y": 1710.2,
+          "w": 636,
+          "h": 60.2
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1279.4,
+          "w": 603.6,
+          "h": 60.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_412_3@375.png",
+        "1440": "shots/Root_412_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/413#3",
+      "parentKey": "Root/412#3",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 413,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;"
+      },
+      "words": "",
+      "allText": "Less food waste",
+      "srcLine": 576,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;\" data-dc-tpl=\"413\"> <div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div> <sc-if value=\"{{ r.hasMeta }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"415\"> <span style=\"font-size:11px;font-wei",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1537.8,
+          "w": 267,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1710.2,
+          "w": 636,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1279.4,
+          "w": 603.6,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_413_3@375.png",
+        "1440": "shots/Root_413_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/414#3",
+      "parentKey": "Root/413#3",
+      "depth": 8,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 414,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em;"
+      },
+      "words": "Less food waste",
+      "allText": "Less food waste",
+      "srcLine": 577,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;\" data-dc-tpl=\"414\">{{ r.title }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1537.8,
+          "w": 154.5,
+          "h": 29.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1710.2,
+          "w": 154.5,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1279.4,
+          "w": 154.5,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_414_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/420#3",
+      "parentKey": "Root/412#3",
+      "depth": 7,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 420,
+      "attrs": {
+        "style": "font-size: 15.5px; color: rgb(74, 85, 99); line-height: 1.6; margin-top: 6px; text-wrap: pretty;"
+      },
+      "words": "Stock rotation and close demand planning keep short-dated waste to a minimum.",
+      "allText": "Stock rotation and close demand planning keep short-dated waste to a minimum.",
+      "srcLine": 585,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isRows }}",
+          "tpl": "397"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "r",
+          "tpl": "409"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ r.desc }}",
+      "snippet": "<div style=\"font-size:15.5px;color:#4A5563;line-height:1.6;margin-top:6px;text-wrap:pretty;\" data-dc-tpl=\"420\">{{ r.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 82,
+          "y": 1573.2,
+          "w": 267,
+          "h": 74.4
+        },
+        "768": {
+          "x": 94,
+          "y": 1745.6,
+          "w": 636,
+          "h": 24.8
+        },
+        "1440": {
+          "x": 730.4,
+          "y": 1314.9,
+          "w": 603.6,
+          "h": 24.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_420_3@375.png",
+        "1440": "shots/Root_420_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#1",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 108px 40px; background: linear-gradient(rgb(243, 234, 176) 0%, rgb(234, 221, 126) 100%); --acc: #0A7EA8; --accFg: #FFFFFF; --accLine: rgba(10,126,168,.28);"
+      },
+      "words": "",
+      "allText": "Packaging Better packaging, step by step. As we refresh our own-brand ranges we review materials and pack sizes, and we ",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 1736.6,
+          "w": 375,
+          "h": 841.8
+        },
+        "768": {
+          "x": 0,
+          "y": 1883.4,
+          "w": 768,
+          "h": 582.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 1472.7,
+          "w": 1440,
+          "h": 683.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_1@375.png",
+        "1440": "shots/Root_344_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#1",
+      "parentKey": "Root/344#1",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Packaging Better packaging, step by step. As we refresh our own-brand ranges we review materials and pack sizes, and we ",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1800.6,
+          "w": 335,
+          "h": 713.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1971.4,
+          "w": 704,
+          "h": 406.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1580.7,
+          "w": 1240,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_1@375.png",
+        "1440": "shots/Root_345_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/379#0",
+      "parentKey": "Root/345#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 379,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1fr) minmax(0px, 1fr); gap: 72px; align-items: center;"
+      },
+      "words": "",
+      "allText": "Packaging Better packaging, step by step. As we refresh our own-brand ranges we review materials and pack sizes, and we ",
+      "srcLine": 529,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ R.splitCols }};gap:{{ R.splitGap }};align-items:center;\" data-dc-tpl=\"379\"> <div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1800.6,
+          "w": 335,
+          "h": 713.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1971.4,
+          "w": 704,
+          "h": 406.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1580.7,
+          "w": 1240,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_379_0@375.png",
+        "1440": "shots/Root_379_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/380#0",
+      "parentKey": "Root/379#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 380,
+      "attrs": {
+        "style": "order: 1; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Packaging Better packaging, step by step. As we refresh our own-brand ranges we review materials and pack sizes, and we ",
+      "srcLine": 530,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1800.6,
+          "w": 335,
+          "h": 409.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1971.4,
+          "w": 330,
+          "h": 406.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1649.1,
+          "w": 584,
+          "h": 330.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_380_0@375.png",
+        "1440": "shots/Root_380_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/382#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 382,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(10, 126, 168); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Packaging",
+      "allText": "Packaging",
+      "srcLine": 532,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "381"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrow }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>{{ b.eyebrow }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1800.6,
+          "w": 335,
+          "h": 20.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1971.4,
+          "w": 330,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 1649.1,
+          "w": 584,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_382_0@375.png",
+        "1440": "shots/Root_382_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/383#0",
+      "parentKey": "Root/382#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 383,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: var(--acc,#D8CA50); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 532,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "381"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1809.7,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 32,
+          "y": 1980.5,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 100,
+          "y": 1658.2,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_383_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/384#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 384,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 0px; text-wrap: balance;"
+      },
+      "words": "Better packaging, step by step.",
+      "allText": "Better packaging, step by step.",
+      "srcLine": 534,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"384\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1836.7,
+          "w": 335,
+          "h": 64.4
+        },
+        "768": {
+          "x": 32,
+          "y": 2007.6,
+          "w": 330,
+          "h": 64.4
+        },
+        "1440": {
+          "x": 100,
+          "y": 1685.3,
+          "w": 584,
+          "h": 92
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_384_0@375.png",
+        "1440": "shots/Root_384_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/386#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 386,
+      "attrs": {
+        "style": "font-size: 17px; color: rgb(74, 85, 99); line-height: 1.65; margin: 18px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "As we refresh our own-brand ranges we review materials and pack sizes, and we offer bulk formats that cut packaging for high-volume kitchens.",
+      "allText": "As we refresh our own-brand ranges we review materials and pack sizes, and we offer bulk formats that cut packaging for ",
+      "srcLine": 536,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.body }}",
+          "as": "p",
+          "tpl": "385"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ p }}",
+      "snippet": "<p style=\"font-size:17px;color:#4A5563;line-height:1.65;margin:18px 0 0;text-wrap:pretty;\" data-dc-tpl=\"386\">{{ p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1919.1,
+          "w": 335,
+          "h": 112.2
+        },
+        "768": {
+          "x": 32,
+          "y": 2089.9,
+          "w": 330,
+          "h": 112.2
+        },
+        "1440": {
+          "x": 100,
+          "y": 1795.3,
+          "w": 584,
+          "h": 56.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_386_0@375.png",
+        "1440": "shots/Root_386_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/388#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 388,
+      "attrs": {
+        "style": "margin-top: 26px; display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 0px 24px;"
+      },
+      "words": "",
+      "allText": "Bulk formats for foodservice Recyclable outer cases Own-brand pack reviews",
+      "srcLine": 539,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"margin-top:26px;display:grid;grid-template-columns:{{ R.pointCols }};gap:0 24px;\" data-dc-tpl=\"388\"> <sc-for list=\"{{ b.points }}\" as=\"pt\" hint-placeholder-count=\"4\" data-dc-tpl=\"389\"> <div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;he",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2057.3,
+          "w": 335,
+          "h": 153
+        },
+        "768": {
+          "x": 32,
+          "y": 2228.1,
+          "w": 330,
+          "h": 150.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 1877.4,
+          "w": 584,
+          "h": 102
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_388_0@375.png",
+        "1440": "shots/Root_388_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/390#0",
+      "parentKey": "Root/388#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 390,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: baseline; padding: 13px 0px; border-top: 1px solid var(--accLine,rgba(30,42,60,.12)); font-size: 15.5px; font-weight: 600;"
+      },
+      "words": "Bulk formats for foodservice",
+      "allText": "Bulk formats for foodservice",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ pt }}",
+      "snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2057.3,
+          "w": 335,
+          "h": 51
+        },
+        "768": {
+          "x": 32,
+          "y": 2228.1,
+          "w": 153,
+          "h": 75
+        },
+        "1440": {
+          "x": 100,
+          "y": 1877.4,
+          "w": 280,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_390_0@375.png",
+        "1440": "shots/Root_390_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/391#0",
+      "parentKey": "Root/390#0",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 391,
+      "attrs": {
+        "style": "width: 8px; height: 8px; background: var(--acc,#D8CA50); border-radius: 50%; flex-shrink: 0; transform: translateY(-1px);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2079.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 32,
+          "y": 2250.1,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1899.4,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_391_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/390#1",
+      "parentKey": "Root/388#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 390,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: baseline; padding: 13px 0px; border-top: 1px solid var(--accLine,rgba(30,42,60,.12)); font-size: 15.5px; font-weight: 600;"
+      },
+      "words": "Recyclable outer cases",
+      "allText": "Recyclable outer cases",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ pt }}",
+      "snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2108.3,
+          "w": 335,
+          "h": 51
+        },
+        "768": {
+          "x": 209,
+          "y": 2228.1,
+          "w": 153,
+          "h": 75
+        },
+        "1440": {
+          "x": 404,
+          "y": 1877.4,
+          "w": 280,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_390_1@375.png",
+        "1440": "shots/Root_390_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/391#1",
+      "parentKey": "Root/390#1",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 391,
+      "attrs": {
+        "style": "width: 8px; height: 8px; background: var(--acc,#D8CA50); border-radius: 50%; flex-shrink: 0; transform: translateY(-1px);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2130.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 209,
+          "y": 2250.1,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 404,
+          "y": 1899.4,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_391_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/390#2",
+      "parentKey": "Root/388#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 390,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: baseline; padding: 13px 0px; border-top: 1px solid var(--accLine,rgba(30,42,60,.12)); font-size: 15.5px; font-weight: 600;"
+      },
+      "words": "Own-brand pack reviews",
+      "allText": "Own-brand pack reviews",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ pt }}",
+      "snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2159.3,
+          "w": 335,
+          "h": 51
+        },
+        "768": {
+          "x": 32,
+          "y": 2303.2,
+          "w": 153,
+          "h": 75
+        },
+        "1440": {
+          "x": 100,
+          "y": 1928.4,
+          "w": 280,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_390_2@375.png",
+        "1440": "shots/Root_390_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/391#2",
+      "parentKey": "Root/390#2",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 391,
+      "attrs": {
+        "style": "width: 8px; height: 8px; background: var(--acc,#D8CA50); border-radius: 50%; flex-shrink: 0; transform: translateY(-1px);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2181.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 32,
+          "y": 2325.2,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1950.4,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_391_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/394#0",
+      "parentKey": "Root/379#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 394,
+      "attrs": {
+        "style": "order: 2; position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 549,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"order:{{ b.imgOrder }};position:relative;min-width:0;\" data-dc-tpl=\"394\"> <div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2246.3,
+          "w": 335,
+          "h": 268
+        },
+        "768": {
+          "x": 406,
+          "y": 2042.8,
+          "w": 330,
+          "h": 264
+        },
+        "1440": {
+          "x": 756,
+          "y": 1580.7,
+          "w": 584,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_394_0@375.png",
+        "1440": "shots/Root_394_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/395#0",
+      "parentKey": "Root/394#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 395,
+      "attrs": {
+        "style": "position: relative; aspect-ratio: 4 / 3.2; border-radius: 22px; overflow: hidden; background: rgb(234, 244, 247); border: 5px solid rgb(255, 255, 255); box-shadow: rgba(44, 62, 80, 0.6) 0px 30px 54px -30px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 550,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2246.3,
+          "w": 335,
+          "h": 268
+        },
+        "768": {
+          "x": 406,
+          "y": 2042.8,
+          "w": 330,
+          "h": 264
+        },
+        "1440": {
+          "x": 756,
+          "y": 1580.7,
+          "w": 584,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_395_0@375.png",
+        "1440": "shots/Root_395_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/396#0",
+      "parentKey": "Root/395#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 396,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 551,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 25,
+          "y": 2251.3,
+          "w": 325,
+          "h": 258
+        },
+        "768": {
+          "x": 411,
+          "y": 2047.8,
+          "w": 320,
+          "h": 254
+        },
+        "1440": {
+          "x": 761,
+          "y": 1585.7,
+          "w": 574,
+          "h": 457.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_396_0@375.png",
+        "1440": "shots/Root_396_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#2",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 64px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 2578.3,
+          "w": 375,
+          "h": 488.1
+        },
+        "768": {
+          "x": 0,
+          "y": 2466.2,
+          "w": 768,
+          "h": 433.1
+        },
+        "1440": {
+          "x": 0,
+          "y": 2155.9,
+          "w": 1440,
+          "h": 472.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_2@375.png",
+        "1440": "shots/Root_344_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#2",
+      "parentKey": "Root/344#2",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2618.3,
+          "w": 335,
+          "h": 408.1
+        },
+        "768": {
+          "x": 32,
+          "y": 2518.2,
+          "w": 704,
+          "h": 329.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 2219.9,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_2@375.png",
+        "1440": "shots/Root_345_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/515#0",
+      "parentKey": "Root/345#2",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 515,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; border-radius: 26px; background: linear-gradient(135deg, rgb(14, 139, 184) 0%, rgb(10, 126, 168) 45%, rgb(7, 94, 128) 100%); color: rgb(255, 255, 255); padding: 68px 64px; display: grid; grid-template-columns: minmax(0px, 1.4fr) minmax(0px, 1fr); gap: 30px; align-items: center;"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 741,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(135deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);color:#FFFFFF;padding:{{ R.ctaPad }};display:grid;grid-template-columns:{{ R.ctaCols }};gap:30px;align-items:center;\" data-dc-tpl=\"515\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2618.3,
+          "w": 335,
+          "h": 408.1
+        },
+        "768": {
+          "x": 32,
+          "y": 2518.2,
+          "w": 704,
+          "h": 329.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 2219.9,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_515_0@375.png",
+        "1440": "shots/Root_515_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/516#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 516,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -90px; top: -110px; width: 340px; height: 340px; border-radius: 50%; border: 2px solid rgba(216, 202, 80, 0.55); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 742,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
+      "box": {
+        "375": {
+          "x": 100.6,
+          "y": 2511.7,
+          "w": 354.2,
+          "h": 354.2
+        },
+        "768": {
+          "x": 482.8,
+          "y": 2399.5,
+          "w": 348.1,
+          "h": 348.1
+        },
+        "1440": {
+          "x": 1066.6,
+          "y": 2089.5,
+          "w": 374.7,
+          "h": 374.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_516_0@375.png",
+        "1440": "shots/Root_516_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/517#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 517,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: 40px; top: -40px; width: 150px; height: 150px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.2); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 743,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
+      "box": {
+        "375": {
+          "x": 170,
+          "y": 2569.3,
+          "w": 161.8,
+          "h": 161.8
+        },
+        "768": {
+          "x": 537.8,
+          "y": 2483.3,
+          "w": 161.5,
+          "h": 161.5
+        },
+        "1440": {
+          "x": 1136.3,
+          "y": 2182.8,
+          "w": 162.2,
+          "h": 162.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_517_0@375.png",
+        "1440": "shots/Root_517_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/518#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 518,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(70% 90% at 0% 100%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 60%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 744,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"518\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2618.3,
+          "w": 335,
+          "h": 408.1
+        },
+        "768": {
+          "x": 32,
+          "y": 2518.2,
+          "w": 704,
+          "h": 329.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 2219.9,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_518_0@375.png",
+        "1440": "shots/Root_518_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/519#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 519,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 745,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"519\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2658.3,
+          "w": 287,
+          "h": 197.3
+        },
+        "768": {
+          "x": 76,
+          "y": 2570.2,
+          "w": 616,
+          "h": 138.3
+        },
+        "1440": {
+          "x": 164,
+          "y": 2287.9,
+          "w": 631.2,
+          "h": 208.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_519_0@375.png",
+        "1440": "shots/Root_519_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/520#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 520,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Trade accounts",
+      "allText": "Trade accounts",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrowText }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText }}</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2658.3,
+          "w": 287,
+          "h": 20.1
+        },
+        "768": {
+          "x": 76,
+          "y": 2570.2,
+          "w": 616,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 164,
+          "y": 2287.9,
+          "w": 631.2,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_520_0@375.png",
+        "1440": "shots/Root_520_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/521#0",
+      "parentKey": "Root/520#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 521,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: rgb(216, 202, 80); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2667.4,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 76,
+          "y": 2579.3,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 164,
+          "y": 2296.9,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_521_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/522#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 522,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(30px, 3.8vw, 48px); line-height: 1.06; letter-spacing: -0.015em; margin: 0px; text-wrap: balance;"
+      },
+      "words": "Open a trade account today.",
+      "allText": "Open a trade account today.",
+      "srcLine": 747,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,48px);line-height:1.06;letter-spacing:-.015em;margin:0;text-wrap:balance;\" data-dc-tpl=\"522\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2694.5,
+          "w": 287,
+          "h": 63.6
+        },
+        "768": {
+          "x": 76,
+          "y": 2606.3,
+          "w": 616,
+          "h": 31.8
+        },
+        "1440": {
+          "x": 164,
+          "y": 2324,
+          "w": 631.2,
+          "h": 101.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_522_0@375.png",
+        "1440": "shots/Root_522_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/523#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 523,
+      "attrs": {
+        "style": "font-size: 17px; color: rgb(227, 239, 244); line-height: 1.6; margin: 16px 0px 0px; max-width: 560px; text-wrap: pretty;"
+      },
+      "words": "Wholesale pricing, a named account manager and delivery across the UK and Europe.",
+      "allText": "Wholesale pricing, a named account manager and delivery across the UK and Europe.",
+      "srcLine": 748,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ b.body }}",
+      "snippet": "<p style=\"font-size:17px;color:#E3EFF4;line-height:1.6;margin:16px 0 0;max-width:560px;text-wrap:pretty;\" data-dc-tpl=\"523\">{{ b.body }}</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2774.1,
+          "w": 287,
+          "h": 81.6
+        },
+        "768": {
+          "x": 76,
+          "y": 2654.1,
+          "w": 560,
+          "h": 54.4
+        },
+        "1440": {
+          "x": 164,
+          "y": 2441.8,
+          "w": 560,
+          "h": 54.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_523_0@375.png",
+        "1440": "shots/Root_523_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/524#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 524,
+      "attrs": {
+        "style": "position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; justify-content: flex-end;"
+      },
+      "words": "",
+      "allText": "Become a Trade Customer Call 0121 771 4330",
+      "srcLine": 750,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;justify-content:{{ R.ctaJustify }};\" data-dc-tpl=\"524\"> <a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transiti",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2885.6,
+          "w": 287,
+          "h": 100.8
+        },
+        "768": {
+          "x": 76,
+          "y": 2738.5,
+          "w": 616,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 825.2,
+          "y": 2363.6,
+          "w": 450.8,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_524_0@375.png",
+        "1440": "shots/Root_524_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/525#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 525,
+      "attrs": {
+        "href": "#/apply",
+        "class": "scp14",
+        "style": "background: rgb(216, 202, 80); color: rgb(30, 42, 60); font-weight: 700; font-size: 16px; padding: 16px 24px; border-radius: 999px; display: inline-flex; align-items: center; gap: 10px; box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 24px -12px; transition: transform 0.2s, background 0.2s, box-shadow 0.3s;"
+      },
+      "words": "Become a Trade Customer",
+      "allText": "Become a Trade Customer",
+      "srcLine": 751,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.primary.label }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2885.6,
+          "w": 255.1,
+          "h": 56.8
+        },
+        "768": {
+          "x": 76,
+          "y": 2738.5,
+          "w": 255.1,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 873.5,
+          "y": 2363.6,
+          "w": 255.1,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_525_0@375.png",
+        "1440": "shots/Root_525_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/526#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 526,
+      "attrs": {
+        "href": "tel:01217714330",
+        "class": "scp5",
+        "style": "white-space: nowrap; color: rgb(255, 255, 255); font-weight: 700; font-size: 15.5px; border-bottom: 2px solid rgb(216, 202, 80); padding-bottom: 4px;"
+      },
+      "words": "Call 0121 771 4330",
+      "allText": "Call 0121 771 4330",
+      "srcLine": 752,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.secondary.label }}",
+      "snippet": "<a href=\"{{ b.secondary.href }}\" style=\"white-space:nowrap;color:#FFFFFF;font-weight:700;font-size:15.5px;border-bottom:2px solid #D8CA50;padding-bottom:4px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"526\">{{ b.secondary.label }}</a>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2956.4,
+          "w": 125.4,
+          "h": 30
+        },
+        "768": {
+          "x": 353.1,
+          "y": 2751.9,
+          "w": 125.4,
+          "h": 30
+        },
+        "1440": {
+          "x": 1150.6,
+          "y": 2377,
+          "w": 125.4,
+          "h": 30
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_526_0@375.png",
+        "1440": "shots/Root_526_0@1440.png"
+      }
+    }
+  ]
+}

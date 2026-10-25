@@ -1,0 +1,1352 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/201#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "",
+			"styleHash": "58a56450",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 269
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/hero",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/316#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "d912361f",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 435
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/decorative-image",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/319#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "2150bedf",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 438
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/breadcrumbs",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/323#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "3eca1cc0",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 445
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Trade",
+									"url": "#/apply"
+								},
+								"draftRef": {
+									"tpl": "Root/326#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scps",
+									"styleHash": "5f5d9423",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "d8aa523",
+									"line": 446
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Terms & Conditions"
+								},
+								"draftRef": {
+									"tpl": "Root/328#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "9fc9fc69",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "65e8415e",
+									"line": 446
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/331#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "51bda87f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "6e53944f",
+							"line": 450
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Trade terms and conditions."
+						},
+						"draftRef": {
+							"tpl": "Root/333#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "c183b96f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "7b3b221b",
+							"line": 451
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "The terms that apply to trade accounts and orders placed with Indus Foods Ltd."
+						},
+						"draftRef": {
+							"tpl": "Root/334#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "c1082518",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "aeaa3e5e",
+							"line": 452
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "a28a05cb",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/642#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "888c4eff",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 917
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/643#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "5765f62e",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 918
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "f4ee86d1",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "01"
+														},
+														"draftRef": {
+															"tpl": "Root/646#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596804",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "ac047198",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "02"
+														},
+														"draftRef": {
+															"tpl": "Root/646#1"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596807",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "cf40660d",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "03"
+														},
+														"draftRef": {
+															"tpl": "Root/646#2"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596806",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "cfd6a179",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "04"
+														},
+														"draftRef": {
+															"tpl": "Root/646#3"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596801",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#4"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d1151a7f",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "05"
+														},
+														"draftRef": {
+															"tpl": "Root/646#4"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596800",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#5"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "e84ec6ff",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "06"
+														},
+														"draftRef": {
+															"tpl": "Root/646#5"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596803",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/645#6"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "2ef1e863",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d9d08625",
+													"line": 920
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "07"
+														},
+														"draftRef": {
+															"tpl": "Root/646#6"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "195fe3df",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596802",
+															"line": 920
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/647#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "73effcfd",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 923
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/649#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "ba70f78b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 925
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Trade accounts"
+														},
+														"draftRef": {
+															"tpl": "Root/650#0"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "48abd1d1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "f4ee86d1",
+															"line": 926
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Trade accounts are available to registered businesses. We may request company details or references before an account is opened."
+														},
+														"draftRef": {
+															"tpl": "Root/652#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "6a80b56c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "9e0f9453",
+															"line": 927
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/649#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "ba70f78b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 925
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/650#1"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "48abd1d1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "ac047198",
+															"line": 926
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "02"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596807",
+																	"line": 926
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Orders are accepted subject to stock availability. Where possible we confirm substitutions or shortages before delivery."
+														},
+														"draftRef": {
+															"tpl": "Root/652#1"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "6a80b56c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "679d11f7",
+															"line": 927
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/649#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "ba70f78b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 925
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/650#2"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "48abd1d1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "cf40660d",
+															"line": 926
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "03"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596806",
+																	"line": 926
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Prices are quoted exclusive of VAT and may change in line with market conditions. Your account manager will tell you about price changes."
+														},
+														"draftRef": {
+															"tpl": "Root/652#2"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "6a80b56c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "d993757a",
+															"line": 927
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/649#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "ba70f78b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 925
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/650#3"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "48abd1d1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "cfd6a179",
+															"line": 926
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "04"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#3"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596801",
+																	"line": 926
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Delivery days and minimum order values are agreed when your account is opened."
+														},
+														"draftRef": {
+															"tpl": "Root/652#3"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "6a80b56c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "4525469e",
+															"line": 927
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/649#4"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "ba70f78b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 925
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/650#4"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "48abd1d1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "d1151a7f",
+															"line": 926
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "05"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#4"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596800",
+																	"line": 926
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Please check deliveries on arrival and report any shortages or damage promptly. Returns are accepted by agreement."
+														},
+														"draftRef": {
+															"tpl": "Root/652#4"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "6a80b56c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "7304680",
+															"line": 927
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/649#5"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "ba70f78b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 925
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/650#5"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "48abd1d1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "e84ec6ff",
+															"line": 926
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "06"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#5"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596803",
+																	"line": 926
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Payment terms are set out in your account agreement."
+														},
+														"draftRef": {
+															"tpl": "Root/652#5"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "6a80b56c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "fec94607",
+															"line": 927
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/649#6"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "ba70f78b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 925
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/650#6"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "48abd1d1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "d9d08625",
+															"line": 926
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "07"
+																},
+																"draftRef": {
+																	"tpl": "Root/651#6"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "9af28eca",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"h3"
+																	],
+																	"textHash": "596802",
+																	"line": 926
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Questions about these terms can be sent to amir@indusfoodsltd.com."
+														},
+														"draftRef": {
+															"tpl": "Root/652#6"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "6a80b56c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "35bcfc65",
+															"line": 927
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

@@ -1,0 +1,3572 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/201#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "",
+			"styleHash": "58a56450",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 269
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/hero",
+				"attributes": {
+					"variant": "split"
+				},
+				"draftRef": {
+					"tpl": "Root/316#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "d912361f",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 435
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/decorative-image",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/319#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "2150bedf",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 438
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/breadcrumbs",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/323#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "3eca1cc0",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 445
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Careers"
+								},
+								"draftRef": {
+									"tpl": "Root/328#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "9fc9fc69",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "df4e0434",
+									"line": 446
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/label",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/331#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "51bda87f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "acad0ee",
+							"line": 450
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Grow with a family business."
+						},
+						"draftRef": {
+							"tpl": "Root/333#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "c183b96f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "efafc095",
+							"line": 451
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "We’re a Birmingham employer with more than 60 years of history and plans to keep growing. Whether you’re starting out or bringing years of experience, there’s room to build a career here."
+						},
+						"draftRef": {
+							"tpl": "Root/334#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "c1082518",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "6586a039",
+							"line": 452
+						},
+						"innerBlocks": []
+					}
+				],
+				"handover": [
+					{
+						"owner": "content-page",
+						"kind": "presence",
+						"detail": "the hero image: choose it in the hero's split media setting"
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "f13b1390",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/347#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c3d2dfc0",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 479
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/348#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "def18a3e",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 480
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/350#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e7fd84e",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "848fdb5e",
+													"line": 482
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "What you can expect."
+												},
+												"draftRef": {
+													"tpl": "Root/352#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "bc4f20f9",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "99d4e011",
+													"line": 484
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/479#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "7e154ad9",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 682
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "01"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596804",
+																	"line": 692
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Family culture"
+														},
+														"draftRef": {
+															"tpl": "Root/490#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "5b22257f",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Work directly with the family who run the business, not layers of management."
+														},
+														"draftRef": {
+															"tpl": "Root/491#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "471858aa",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#1"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "02"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596807",
+																	"line": 692
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Training"
+														},
+														"draftRef": {
+															"tpl": "Root/490#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "f40e1385",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "On-the-job training and support for qualifications, from forklift licences to food safety."
+														},
+														"draftRef": {
+															"tpl": "Root/491#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "b0636d09",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#2"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "03"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596806",
+																	"line": 692
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Progression"
+														},
+														"draftRef": {
+															"tpl": "Root/490#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "b5ec7130",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Many of our team have grown into senior roles over years with us."
+														},
+														"draftRef": {
+															"tpl": "Root/491#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "fbfcf614",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#3"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "04"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#3"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596801",
+																	"line": 692
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "A growing site"
+														},
+														"draftRef": {
+															"tpl": "Root/490#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "d6b48d22",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Investment in our warehouse and production hub is creating new roles."
+														},
+														"draftRef": {
+															"tpl": "Root/491#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "9e6169f7",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#1"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "e8e06e5a",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/347#1"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c3d2dfc0",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 479
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/348#1"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "def18a3e",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 480
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/350#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e7fd84e",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d542e1b6",
+													"line": 482
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Current vacancies."
+												},
+												"draftRef": {
+													"tpl": "Root/352#1"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "bc4f20f9",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "5d6d3185",
+													"line": 484
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Apply for an open role below, or register your interest further down if you don’t see the right fit."
+												},
+												"draftRef": {
+													"tpl": "Root/354#0"
+												},
+												"draftFingerprint": {
+													"tag": "p",
+													"cls": "",
+													"styleHash": "ecef6f2a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "2fe9b63a",
+													"line": 486
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root/422#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "d0f27dfb",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 594
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "article",
+											"layout": "grid"
+										},
+										"draftRef": {
+											"tpl": "Root/424#0"
+										},
+										"draftFingerprint": {
+											"tag": "article",
+											"cls": "scpx",
+											"styleHash": "858b7fb7",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 596
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/425#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "73effcfd",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"article"
+													],
+													"textHash": "1505",
+													"line": 597
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/426#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "2a2f14b5",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 598
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Warehouse & logistics"
+																},
+																"draftRef": {
+																	"tpl": "Root/427#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "fbf3532a",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "9e2d5355",
+																	"line": 599
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Full-time"
+																},
+																"draftRef": {
+																	"tpl": "Root/428#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "342cc411",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "29235e2e",
+																	"line": 600
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Birmingham B11"
+																},
+																"draftRef": {
+																	"tpl": "Root/429#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "6fb17397",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "8d24d057",
+																	"line": 601
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Warehouse Operative"
+														},
+														"draftRef": {
+															"tpl": "Root/430#0"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "510aff58",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "bcfbc9c7",
+															"line": 603
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Picking, packing and loading ambient, chilled and frozen orders for trade customers across the UK. Forklift training is available."
+														},
+														"draftRef": {
+															"tpl": "Root/431#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "13710ba7",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "4a66971",
+															"line": 604
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Apply for this role"
+												},
+												"draftRef": {
+													"tpl": "Root/432#0"
+												},
+												"draftFingerprint": {
+													"tag": "button",
+													"cls": "scpy",
+													"styleHash": "a63a1e7f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"article"
+													],
+													"textHash": "3828ba38",
+													"line": 606
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "article",
+											"layout": "grid"
+										},
+										"draftRef": {
+											"tpl": "Root/424#1"
+										},
+										"draftFingerprint": {
+											"tag": "article",
+											"cls": "scpx",
+											"styleHash": "858b7fb7",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 596
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/425#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "73effcfd",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"article"
+													],
+													"textHash": "1505",
+													"line": 597
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/426#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "2a2f14b5",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 598
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Warehouse & logistics"
+																},
+																"draftRef": {
+																	"tpl": "Root/427#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "fbf3532a",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "9e2d5355",
+																	"line": 599
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Full-time"
+																},
+																"draftRef": {
+																	"tpl": "Root/428#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "342cc411",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "29235e2e",
+																	"line": 600
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Birmingham B11"
+																},
+																"draftRef": {
+																	"tpl": "Root/429#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "6fb17397",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "8d24d057",
+																	"line": 601
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Multi-drop Delivery Driver"
+														},
+														"draftRef": {
+															"tpl": "Root/430#1"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "510aff58",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "a347e7ca",
+															"line": 603
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Delivering to restaurants, shops and wholesalers on planned routes from our Birmingham hub. A Category C licence is required."
+														},
+														"draftRef": {
+															"tpl": "Root/431#1"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "13710ba7",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "675fb9da",
+															"line": 604
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Apply for this role"
+												},
+												"draftRef": {
+													"tpl": "Root/432#1"
+												},
+												"draftFingerprint": {
+													"tag": "button",
+													"cls": "scpy",
+													"styleHash": "a63a1e7f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"article"
+													],
+													"textHash": "3828ba38",
+													"line": 606
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "article",
+											"layout": "grid"
+										},
+										"draftRef": {
+											"tpl": "Root/424#2"
+										},
+										"draftFingerprint": {
+											"tag": "article",
+											"cls": "scpx",
+											"styleHash": "858b7fb7",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 596
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/425#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "73effcfd",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"article"
+													],
+													"textHash": "1505",
+													"line": 597
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/426#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "2a2f14b5",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 598
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Sales & account management"
+																},
+																"draftRef": {
+																	"tpl": "Root/427#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "fbf3532a",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "3c9894b9",
+																	"line": 599
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Full-time"
+																},
+																"draftRef": {
+																	"tpl": "Root/428#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "342cc411",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "29235e2e",
+																	"line": 600
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Birmingham B11"
+																},
+																"draftRef": {
+																	"tpl": "Root/429#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "6fb17397",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"article",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "8d24d057",
+																	"line": 601
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Trade Sales Executive"
+														},
+														"draftRef": {
+															"tpl": "Root/430#2"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "510aff58",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "4b462f4b",
+															"line": 603
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Looking after a portfolio of foodservice and retail accounts, taking orders and introducing customers to new lines."
+														},
+														"draftRef": {
+															"tpl": "Root/431#2"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "13710ba7",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"article",
+																"div"
+															],
+															"textHash": "6a1688ce",
+															"line": 604
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Apply for this role"
+												},
+												"draftRef": {
+													"tpl": "Root/432#2"
+												},
+												"draftFingerprint": {
+													"tag": "button",
+													"cls": "scpy",
+													"styleHash": "a63a1e7f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"article"
+													],
+													"textHash": "3828ba38",
+													"line": 606
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#2"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "f13b1390",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#2"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/398#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "888c4eff",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 558
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/399#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "e759e3cb",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 559
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/401#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e7fd84e",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d93002b",
+													"line": 561
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Where you could work."
+												},
+												"draftRef": {
+													"tpl": "Root/403#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "bc4f20f9",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "9bf3a35",
+													"line": 563
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "We recruit across four teams. Register your interest below and we’ll contact you when a role opens."
+												},
+												"draftRef": {
+													"tpl": "Root/405#0"
+												},
+												"draftFingerprint": {
+													"tag": "p",
+													"cls": "",
+													"styleHash": "ecef6f2a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "c8566e4e",
+													"line": 565
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/408#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "64285a33",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 571
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "67470026",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "01"
+														},
+														"draftRef": {
+															"tpl": "Root/411#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596804",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Warehouse & logistics"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "9e2d5355",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/container",
+																		"attributes": {
+																			"tagName": "div",
+																			"layout": "flex"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/418#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "button",
+																			"cls": "",
+																			"styleHash": "5976e269",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "176abeaa",
+																			"line": 582
+																		},
+																		"innerBlocks": [
+																			{
+																				"name": "sgs/icon",
+																				"attributes": {},
+																				"draftRef": {
+																					"tpl": "Root/419#0"
+																				},
+																				"draftFingerprint": {
+																					"tag": "span",
+																					"cls": "",
+																					"styleHash": "ebc72236",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"button"
+																					],
+																					"textHash": "1505",
+																					"line": 582
+																				},
+																				"innerBlocks": []
+																			}
+																		]
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Picking, packing, loading and driving across our Birmingham hub."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "30fc131f",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "67470026",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "02"
+														},
+														"draftRef": {
+															"tpl": "Root/411#1"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596807",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#1"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Production & packing"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#1"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "87d28d99",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/container",
+																		"attributes": {
+																			"tagName": "div",
+																			"layout": "flex"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/418#1"
+																		},
+																		"draftFingerprint": {
+																			"tag": "button",
+																			"cls": "",
+																			"styleHash": "5976e269",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "176abeaa",
+																			"line": 582
+																		},
+																		"innerBlocks": [
+																			{
+																				"name": "sgs/icon",
+																				"attributes": {},
+																				"draftRef": {
+																					"tpl": "Root/419#1"
+																				},
+																				"draftFingerprint": {
+																					"tag": "span",
+																					"cls": "",
+																					"styleHash": "ebc72236",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"button"
+																					],
+																					"textHash": "1505",
+																					"line": 582
+																				},
+																				"innerBlocks": []
+																			}
+																		]
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Running our processing and packing line for own-brand products."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#1"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "77901950",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "67470026",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "03"
+														},
+														"draftRef": {
+															"tpl": "Root/411#2"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596806",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#2"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Sales & account management"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#2"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "3c9894b9",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/container",
+																		"attributes": {
+																			"tagName": "div",
+																			"layout": "flex"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/418#2"
+																		},
+																		"draftFingerprint": {
+																			"tag": "button",
+																			"cls": "",
+																			"styleHash": "5976e269",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "176abeaa",
+																			"line": 582
+																		},
+																		"innerBlocks": [
+																			{
+																				"name": "sgs/icon",
+																				"attributes": {},
+																				"draftRef": {
+																					"tpl": "Root/419#2"
+																				},
+																				"draftFingerprint": {
+																					"tag": "span",
+																					"cls": "",
+																					"styleHash": "ebc72236",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"button"
+																					],
+																					"textHash": "1505",
+																					"line": 582
+																				},
+																				"innerBlocks": []
+																			}
+																		]
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Looking after trade customers and growing our accounts."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#2"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "f2dff4a5",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "67470026",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "04"
+														},
+														"draftRef": {
+															"tpl": "Root/411#3"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596801",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#3"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Office & finance"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#3"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "b8e060b",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	},
+																	{
+																		"name": "sgs/container",
+																		"attributes": {
+																			"tagName": "div",
+																			"layout": "flex"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/418#3"
+																		},
+																		"draftFingerprint": {
+																			"tag": "button",
+																			"cls": "",
+																			"styleHash": "5976e269",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "176abeaa",
+																			"line": 582
+																		},
+																		"innerBlocks": [
+																			{
+																				"name": "sgs/icon",
+																				"attributes": {},
+																				"draftRef": {
+																					"tpl": "Root/419#3"
+																				},
+																				"draftFingerprint": {
+																					"tag": "span",
+																					"cls": "",
+																					"styleHash": "ebc72236",
+																					"parentTags": [
+																						"main",
+																						"section",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"div",
+																						"button"
+																					],
+																					"textHash": "1505",
+																					"line": 582
+																				},
+																				"innerBlocks": []
+																			}
+																		]
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Purchasing, accounts, customer service and administration."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#3"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "9395122b",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#3"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "e8e06e5a",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#3"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/541#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "d0ec19dc",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 778
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/542#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "27190639",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 779
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/550#0"
+												},
+												"draftFingerprint": {
+													"tag": "form",
+													"cls": "",
+													"styleHash": "1505",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 789
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Register your interest"
+														},
+														"draftRef": {
+															"tpl": "Root/551#0"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "2faf55a9",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"form"
+															],
+															"textHash": "1691ddbb",
+															"line": 790
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Tell us about yourself and we’ll be in touch when a suitable role opens."
+														},
+														"draftRef": {
+															"tpl": "Root/552#0"
+														},
+														"draftFingerprint": {
+															"tag": "p",
+															"cls": "",
+															"styleHash": "9a044b2f",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"form"
+															],
+															"textHash": "29c3bd8e",
+															"line": 791
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "grid"
+														},
+														"draftRef": {
+															"tpl": "Root/553#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "bcd6be1",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"form"
+															],
+															"textHash": "1505",
+															"line": 792
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/form-field-text",
+																"attributes": {
+																	"label": "Full name",
+																	"helpText": "Email Phone Team Role CV About you"
+																},
+																"draftRef": {
+																	"tpl": "Root/560#0"
+																},
+																"draftFingerprint": {
+																	"tag": "input",
+																	"cls": "scp18",
+																	"styleHash": "faf6996a",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"form",
+																		"div",
+																		"label"
+																	],
+																	"textHash": "1505",
+																	"line": 797
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/form-field-email",
+																"attributes": {
+																	"label": "Full name",
+																	"helpText": "Email Phone Team Role CV About you"
+																},
+																"draftRef": {
+																	"tpl": "Root/560#1"
+																},
+																"draftFingerprint": {
+																	"tag": "input",
+																	"cls": "scp18",
+																	"styleHash": "faf6996a",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"form",
+																		"div",
+																		"label"
+																	],
+																	"textHash": "1505",
+																	"line": 797
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/form-field-phone",
+																"attributes": {
+																	"label": "Full name",
+																	"helpText": "Email Phone Team Role CV About you"
+																},
+																"draftRef": {
+																	"tpl": "Root/560#2"
+																},
+																"draftFingerprint": {
+																	"tag": "input",
+																	"cls": "scp18",
+																	"styleHash": "faf6996a",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"form",
+																		"div",
+																		"label"
+																	],
+																	"textHash": "1505",
+																	"line": 797
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/form-field-select",
+																"attributes": {
+																	"label": "Full name",
+																	"helpText": "Email Phone Team Role CV About you"
+																},
+																"draftRef": {
+																	"tpl": "Root/562#0"
+																},
+																"draftFingerprint": {
+																	"tag": "select",
+																	"cls": "scp19",
+																	"styleHash": "9a9c32d7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"form",
+																		"div",
+																		"label"
+																	],
+																	"textHash": "1505",
+																	"line": 800
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/form-field-select",
+																"attributes": {
+																	"label": "Full name",
+																	"helpText": "Email Phone Team Role CV About you"
+																},
+																"draftRef": {
+																	"tpl": "Root/562#1"
+																},
+																"draftFingerprint": {
+																	"tag": "select",
+																	"cls": "scp19",
+																	"styleHash": "9a9c32d7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"form",
+																		"div",
+																		"label"
+																	],
+																	"textHash": "1505",
+																	"line": 800
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/form-field-file",
+																"attributes": {
+																	"label": "Full name",
+																	"helpText": "Email Phone Team Role CV About you"
+																},
+																"draftRef": {
+																	"tpl": "Root/568#0"
+																},
+																"draftFingerprint": {
+																	"tag": "input",
+																	"cls": "",
+																	"styleHash": "d127836c",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"form",
+																		"div",
+																		"label"
+																	],
+																	"textHash": "1505",
+																	"line": 808
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/form-field-textarea",
+																"attributes": {
+																	"label": "Full name",
+																	"helpText": "Email Phone Team Role CV About you"
+																},
+																"draftRef": {
+																	"tpl": "Root/566#0"
+																},
+																"draftFingerprint": {
+																	"tag": "textarea",
+																	"cls": "scp18",
+																	"styleHash": "6fe15476",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"form",
+																		"div",
+																		"label"
+																	],
+																	"textHash": "1505",
+																	"line": 805
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/form-field-consent",
+														"attributes": {
+															"label": "Full name",
+															"required": true,
+															"helpText": "Register your interest Tell us about yourself and we’ll be in touch when a suitable role opens. Email Phone Team Role CV About you I agree to Indus Foods contacting me about this enquiry. Send application"
+														},
+														"draftRef": {
+															"tpl": "Root/570#0"
+														},
+														"draftFingerprint": {
+															"tag": "input",
+															"cls": "",
+															"styleHash": "9725c2a6",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"form",
+																"label"
+															],
+															"textHash": "1505",
+															"line": 814
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/button",
+														"attributes": {
+															"label": "Send application"
+														},
+														"draftRef": {
+															"tpl": "Root/571#0"
+														},
+														"draftFingerprint": {
+															"tag": "button",
+															"cls": "",
+															"styleHash": "389d248d",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"form"
+															],
+															"textHash": "29759c43",
+															"line": 817
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "aside"
+										},
+										"draftRef": {
+											"tpl": "Root/572#0"
+										},
+										"draftFingerprint": {
+											"tag": "aside",
+											"cls": "",
+											"styleHash": "4af0b3bf",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 821
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/decorative-image",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/573#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "2ecc3951",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"aside"
+													],
+													"textHash": "1505",
+													"line": 822
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/574#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "7daaa729",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"aside"
+													],
+													"textHash": "1505",
+													"line": 823
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/label",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/575#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "b902bca5",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"aside",
+																"div"
+															],
+															"textHash": "c189c62a",
+															"line": 824
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Prefer to talk first?"
+														},
+														"draftRef": {
+															"tpl": "Root/577#0"
+														},
+														"draftFingerprint": {
+															"tag": "h3",
+															"cls": "",
+															"styleHash": "73af07ab",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"aside",
+																"div"
+															],
+															"textHash": "d53cb07f",
+															"line": 825
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "stack"
+														},
+														"draftRef": {
+															"tpl": "Root/578#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "2010b272",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"aside",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 826
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/580#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "b95f0e66",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"aside",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "6923675e",
+																	"line": 828
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/580#1"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "b95f0e66",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"aside",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "6e1e2503",
+																	"line": 828
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/580#2"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "b95f0e66",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"aside",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "8b8fe9e0",
+																	"line": 828
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/icon-list",
+														"attributes": {
+															"items": [
+																{
+																	"text": "",
+																	"siteInfoSource": "phone"
+																},
+																{
+																	"text": "",
+																	"siteInfoSource": "email"
+																}
+															]
+														},
+														"draftRef": {
+															"tpl": "Root/583#0"
+														},
+														"draftFingerprint": {
+															"tag": "a",
+															"cls": "scp5",
+															"styleHash": "7ec7286f",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"aside",
+																"div",
+																"div"
+															],
+															"textHash": "f3097ff2",
+															"line": 832
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

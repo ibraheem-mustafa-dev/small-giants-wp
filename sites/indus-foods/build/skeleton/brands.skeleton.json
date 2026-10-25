@@ -1,0 +1,2287 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/201#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "",
+			"styleHash": "58a56450",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 269
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/hero",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/316#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "d912361f",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 435
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/decorative-image",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/319#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "2150bedf",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 438
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/breadcrumbs",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/323#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "3eca1cc0",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 445
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Brands",
+									"url": "#/brands"
+								},
+								"draftRef": {
+									"tpl": "Root/326#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scps",
+									"styleHash": "5f5d9423",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "a07c5b4d",
+									"line": 446
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "All Brands"
+								},
+								"draftRef": {
+									"tpl": "Root/328#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "9fc9fc69",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "e1ae00c",
+									"line": 446
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/label",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/331#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "51bda87f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "a07c5b4d",
+							"line": 450
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Our own brand, and the brands we distribute."
+						},
+						"draftRef": {
+							"tpl": "Root/333#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "c183b96f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "f6ccb55d",
+							"line": 451
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Alongside our own-label Sanam range, we supply trusted names like Shan, Green Leaf and The Lemon Tree to foodservice, retail and wholesale customers across the UK and Europe."
+						},
+						"draftRef": {
+							"tpl": "Root/334#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "c1082518",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "16adda40",
+							"line": 452
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "f13b1390",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/347#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c3d2dfc0",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 479
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/348#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "def18a3e",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 480
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/350#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e7fd84e",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "81ef65b7",
+													"line": 482
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Brands we supply."
+												},
+												"draftRef": {
+													"tpl": "Root/352#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "bc4f20f9",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "c115b9a2",
+													"line": 484
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Select a brand to see its range."
+												},
+												"draftRef": {
+													"tpl": "Root/354#0"
+												},
+												"draftFingerprint": {
+													"tag": "p",
+													"cls": "",
+													"styleHash": "ecef6f2a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "815c0460",
+													"line": 486
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/499#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "2a19f5ed",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 713
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brand-sanam"
+										},
+										"draftRef": {
+											"tpl": "Root/501#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#0"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Sanam"
+												},
+												"draftRef": {
+													"tpl": "Root/505#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "dcb5df5",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Own brand · rice, flour & quality foods"
+												},
+												"draftRef": {
+													"tpl": "Root/506#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "ea8481f6",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brand-shan"
+										},
+										"draftRef": {
+											"tpl": "Root/501#1"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#1"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Shan"
+												},
+												"draftRef": {
+													"tpl": "Root/505#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "7c8a30b1",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Authentic Asian spices & recipe mixes"
+												},
+												"draftRef": {
+													"tpl": "Root/506#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "4356fbb7",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brand-green-leaf"
+										},
+										"draftRef": {
+											"tpl": "Root/501#2"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#2"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Green Leaf"
+												},
+												"draftRef": {
+													"tpl": "Root/505#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "7cd7a730",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Herbs, pulses & pantry staples"
+												},
+												"draftRef": {
+													"tpl": "Root/506#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "1c2d0401",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brand-lemon-tree"
+										},
+										"draftRef": {
+											"tpl": "Root/501#3"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#3"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "The Lemon Tree"
+												},
+												"draftRef": {
+													"tpl": "Root/505#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "3bc99c1f",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Delicatessen & bakery"
+												},
+												"draftRef": {
+													"tpl": "Root/506#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "4213eb9",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brands"
+										},
+										"draftRef": {
+											"tpl": "Root/501#4"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#4"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#4"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Indus Foods"
+												},
+												"draftRef": {
+													"tpl": "Root/505#4"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "a00b9811",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Our own label"
+												},
+												"draftRef": {
+													"tpl": "Root/506#4"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "8e07fe7d",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brands"
+										},
+										"draftRef": {
+											"tpl": "Root/501#5"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#5"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#5"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Partner brand"
+												},
+												"draftRef": {
+													"tpl": "Root/505#5"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "68d04e30",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Distributed brand"
+												},
+												"draftRef": {
+													"tpl": "Root/506#5"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "bd641fed",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brands"
+										},
+										"draftRef": {
+											"tpl": "Root/501#6"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#6"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#6"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Partner brand"
+												},
+												"draftRef": {
+													"tpl": "Root/505#6"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "68d04e30",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Distributed brand"
+												},
+												"draftRef": {
+													"tpl": "Root/506#6"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "bd641fed",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brands"
+										},
+										"draftRef": {
+											"tpl": "Root/501#7"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#7"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#7"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Partner brand"
+												},
+												"draftRef": {
+													"tpl": "Root/505#7"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "68d04e30",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Distributed brand"
+												},
+												"draftRef": {
+													"tpl": "Root/506#7"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "bd641fed",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brands"
+										},
+										"draftRef": {
+											"tpl": "Root/501#8"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#8"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#8"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Partner brand"
+												},
+												"draftRef": {
+													"tpl": "Root/505#8"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "68d04e30",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Distributed brand"
+												},
+												"draftRef": {
+													"tpl": "Root/506#8"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "bd641fed",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack",
+											"sgsBlockLink": "#/brands"
+										},
+										"draftRef": {
+											"tpl": "Root/501#9"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp12",
+											"styleHash": "be7d2b95",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 715
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/502#9"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "60ba936a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 716
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/503#9"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 717
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Partner brand"
+												},
+												"draftRef": {
+													"tpl": "Root/505#9"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "68d04e30",
+													"line": 720
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Distributed brand"
+												},
+												"draftRef": {
+													"tpl": "Root/506#9"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "3ff7a3c",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a",
+														"div"
+													],
+													"textHash": "bd641fed",
+													"line": 721
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#1"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "e8e06e5a",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/379#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "2fad913c",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 529
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/380#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "2077cc23",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 530
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/382#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e7fd84e",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "40631ac8",
+													"line": 532
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Sanam, packed in Birmingham."
+												},
+												"draftRef": {
+													"tpl": "Root/384#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "bc4f20f9",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d25c98d8",
+													"line": 534
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Sanam is our flagship own-label range of premium rice, flour and quality food products, packed on our own production line in Birmingham, which we have run since the 1970s."
+												},
+												"draftRef": {
+													"tpl": "Root/386#0"
+												},
+												"draftFingerprint": {
+													"tag": "p",
+													"cls": "",
+													"styleHash": "846aed51",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "41631ee",
+													"line": 536
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/388#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "37ecd678",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 539
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "5c297023",
+															"line": 541
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "9176fee1",
+															"line": 541
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "c62b6a1a",
+															"line": 541
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/390#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "592aa752",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "c709fb94",
+															"line": 541
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Explore Sanam",
+													"url": "#/brand-sanam"
+												},
+												"draftRef": {
+													"tpl": "Root/393#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scpu",
+													"styleHash": "2dfd1a7d",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "4e67f1cc",
+													"line": 546
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/394#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "e2fa786c",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 549
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/395#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "83ab8cdd",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 550
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/396#0"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 551
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#2"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "a28a05cb",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#2"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/515#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "822e26d4",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 741
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/decorative-image",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/516#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "45f33a79",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 742
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/decorative-image",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/517#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "b0e74038",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 743
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/519#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "aa146b11",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 745
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/520#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "fd343297",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "9e949124",
+													"line": 746
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Want your own brand?"
+												},
+												"draftRef": {
+													"tpl": "Root/522#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "e108848a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "6c5d55ea",
+													"line": 747
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "We offer custom packaging and branding for retail and food service customers. Your brand, our quality."
+												},
+												"draftRef": {
+													"tpl": "Root/523#0"
+												},
+												"draftFingerprint": {
+													"tag": "p",
+													"cls": "",
+													"styleHash": "8c9a7edc",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "ca780c8f",
+													"line": 748
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/multi-button",
+										"attributes": {
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/524#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "d0d5913e",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 750
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Talk to us",
+													"url": "#/contact"
+												},
+												"draftRef": {
+													"tpl": "Root/525#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp14",
+													"styleHash": "d1712539",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "c189c62a",
+													"line": 751
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Request catalogue",
+													"url": "#/catalogue"
+												},
+												"draftRef": {
+													"tpl": "Root/526#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp5",
+													"styleHash": "d4775ff",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "9b742957",
+													"line": 752
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

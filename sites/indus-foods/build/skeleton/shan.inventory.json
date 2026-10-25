@@ -1,0 +1,6605 @@
+{
+  "generated": "2026-10-25T09:50:20.531Z",
+  "source": "http://127.0.0.1:53375/#/brand-shan",
+  "root": "main",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/201#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Brands"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Shan"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Brands · Distributed brand"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Shan: halal Asian food at great prices."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Authentic Asian spices and recipe mixes that kitchens rely o"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Open a trade account"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "All brands"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "About Shan"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Authentic recipe mixes."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Shan recipe mixes make it simple to cook consistent, authent"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Recipe mixes"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Spice blends"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Pastes & pickles"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Retail & catering packs"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "The range"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "What’s in the Shan range."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "01"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Recipe mixes"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Biryani, karahi, nihari and more."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "02"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Plain spices"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Chilli, turmeric, coriander and cumin."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "03"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Pastes & pickles"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Ready-to-use pastes and pickles."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Shan"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Stock Shan in your business."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Open a trade account for wholesale pricing on the full Shan "
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Become a Trade Customer"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Call 0121 771 4330"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 92,
+      "768": 92,
+      "1440": 92
+    },
+    "tagAgree": 92,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": [
+      {
+        "w": 1440,
+        "key": "Root/497#0",
+        "why": "not visible (box 0x0)"
+      },
+      {
+        "w": 1440,
+        "key": "Root/497#1",
+        "why": "not visible (box 0x0)"
+      },
+      {
+        "w": 1440,
+        "key": "Root/497#2",
+        "why": "not visible (box 0x0)"
+      },
+      {
+        "w": 375,
+        "key": "Root/497#0",
+        "why": "not visible (box 0x0)"
+      },
+      {
+        "w": 375,
+        "key": "Root/497#1",
+        "why": "not visible (box 0x0)"
+      },
+      {
+        "w": 375,
+        "key": "Root/497#2",
+        "why": "not visible (box 0x0)"
+      }
+    ]
+  },
+  "elements": [
+    {
+      "key": "Root/201#0",
+      "parentKey": "Root/8#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 201,
+      "attrs": {
+        "style": "position: relative; z-index: 1;"
+      },
+      "words": "",
+      "allText": "Home/Brands/Shan Brands · Distributed brand Shan: halal Asian food at great prices. Authentic Asian spices and recipe mi",
+      "srcLine": 269,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 2907.8
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 2441.4
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 2229.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_201_0@375.png",
+        "1440": "shots/Root_201_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/316#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 316,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; background: linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%); color: rgb(44, 62, 80); padding: 44px 40px 88px; min-height: auto; box-sizing: border-box;"
+      },
+      "words": "",
+      "allText": "Home/Brands/Shan Brands · Distributed brand Shan: halal Asian food at great prices. Authentic Asian spices and recipe mi",
+      "srcLine": 435,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 876
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 1050.6
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 617.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_316_0@375.png",
+        "1440": "shots/Root_316_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/318#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 318,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(90% 90% at 100% 0%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 55%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 437,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 876
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 1050.6
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 617.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_318_0@375.png",
+        "1440": "shots/Root_318_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/319#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 319,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -120px; bottom: -160px; width: 460px; height: 460px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.22); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 438,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+      "box": {
+        "375": {
+          "x": 22.3,
+          "y": 683.8,
+          "w": 492.2,
+          "h": 492.2
+        },
+        "768": {
+          "x": 419.5,
+          "y": 869.9,
+          "w": 472.1,
+          "h": 472.1
+        },
+        "1440": {
+          "x": 1086.3,
+          "y": 431.7,
+          "w": 481.9,
+          "h": 481.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_319_0@375.png",
+        "1440": "shots/Root_319_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/322#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 322,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Home/Brands/Shan Brands · Distributed brand Shan: halal Asian food at great prices. Authentic Asian spices and recipe mi",
+      "srcLine": 444,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 792
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 934.6
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 485.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_322_0@375.png",
+        "1440": "shots/Root_322_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/323#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 323,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: rgb(44, 62, 80);"
+      },
+      "words": "",
+      "allText": "Home/Brands/Shan",
+      "srcLine": 445,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_323_0@375.png",
+        "1440": "shots/Root_323_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/324#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 324,
+      "attrs": {
+        "href": "#/",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Home",
+      "allText": "Home",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Home",
+      "snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 38.4,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_324_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/325#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 325,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"325\">/</span>",
+      "box": {
+        "375": {
+          "x": 66.4,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78.4,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 146.4,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_325_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/326#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 326,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Brands",
+      "allText": "Brands",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ hero.section }}",
+      "snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+      "box": {
+        "375": {
+          "x": 79.6,
+          "y": 153,
+          "w": 45.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 91.6,
+          "y": 165,
+          "w": 45.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 159.6,
+          "y": 177,
+          "w": 45.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_326_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/327#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 327,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"327\">/</span>",
+      "box": {
+        "375": {
+          "x": 132.8,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 144.8,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 212.8,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_327_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/328#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 328,
+      "attrs": {
+        "style": "color: rgb(44, 62, 80); font-weight: 500;"
+      },
+      "words": "Shan",
+      "allText": "Shan",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.crumb }}",
+      "snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+      "box": {
+        "375": {
+          "x": 146,
+          "y": 153,
+          "w": 32.3,
+          "h": 23.3
+        },
+        "768": {
+          "x": 158,
+          "y": 165,
+          "w": 32.3,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 226,
+          "y": 177,
+          "w": 32.3,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_328_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/329#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 329,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1.05fr) minmax(0px, 0.95fr); gap: 72px; align-items: center; margin-top: 40px;"
+      },
+      "words": "",
+      "allText": "Brands · Distributed brand Shan: halal Asian food at great prices. Authentic Asian spices and recipe mixes that kitchens",
+      "srcLine": 448,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 740.7
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 871.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 1240,
+          "h": 422.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_329_0@375.png",
+        "1440": "shots/Root_329_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/330#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 330,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Brands · Distributed brand Shan: halal Asian food at great prices. Authentic Asian spices and recipe mixes that kitchens",
+      "srcLine": 449,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 453.5
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 299.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 613.2,
+          "h": 422.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_330_0@375.png",
+        "1440": "shots/Root_330_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/331#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 331,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 10px; font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(10, 110, 147); background: rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 999px;"
+      },
+      "words": "Brands · Distributed brand",
+      "allText": "Brands · Distributed brand",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.eyebrowText }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 307.8,
+          "h": 36.1
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 307.8,
+          "h": 36.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 307.8,
+          "h": 36.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_331_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/332#0",
+      "parentKey": "Root/331#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 332,
+      "attrs": {
+        "style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(10, 126, 168);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+      "box": {
+        "375": {
+          "x": 36,
+          "y": 218.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 48,
+          "y": 242.3,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 116,
+          "y": 254.3,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_332_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/333#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 333,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(34px, 4.8vw, 60px); line-height: 1.08; letter-spacing: -0.02em; margin: 20px 0px 0px; text-wrap: balance; max-width: 880px;"
+      },
+      "words": "Shan: halal Asian food at great prices.",
+      "allText": "Shan: halal Asian food at great prices.",
+      "srcLine": 451,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "h1",
+      "srcOwnText": "{{ hero.title }}",
+      "snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 260.4,
+          "w": 335,
+          "h": 110.2
+        },
+        "768": {
+          "x": 32,
+          "y": 284.4,
+          "w": 704,
+          "h": 79.6
+        },
+        "1440": {
+          "x": 100,
+          "y": 296.4,
+          "w": 613.2,
+          "h": 194.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_333_0@375.png",
+        "1440": "shots/Root_333_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/334#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 334,
+      "attrs": {
+        "style": "font-size: clamp(16.5px, 1.4vw, 19px); color: rgb(44, 62, 80); line-height: 1.6; max-width: 620px; margin: 22px 0px 0px; text-wrap: pretty; text-shadow: rgba(255, 255, 255, 0.796) 0px 4px 12px;"
+      },
+      "words": "Authentic Asian spices and recipe mixes that kitchens rely on. We stock the range for foodservice, retail and wholesale customers across the UK.",
+      "allText": "Authentic Asian spices and recipe mixes that kitchens rely on. We stock the range for foodservice, retail and wholesale ",
+      "srcLine": 452,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ hero.intro }}",
+      "snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 392.5,
+          "w": 335,
+          "h": 105.6
+        },
+        "768": {
+          "x": 32,
+          "y": 386,
+          "w": 620,
+          "h": 52.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 512.8,
+          "w": 613.2,
+          "h": 60.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_334_0@375.png",
+        "1440": "shots/Root_334_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/336#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 336,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px;"
+      },
+      "words": "",
+      "allText": "Open a trade account All brands",
+      "srcLine": 454,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasCtas }}",
+          "tpl": "335"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;\" data-dc-tpl=\"336\"> <sc-for list=\"{{ hero.ctas }}\" as=\"c\" hint-placeholder-count=\"2\" data-dc-tpl=\"337\"> <a href=\"{{ c.href }}\" data-mag=\"\" style=\"font-weight:600;padding:15px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;background:{{ c.bg }};color:{{ c.fg }};border:2px solid {{ c.border }};",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 528.1,
+          "w": 335,
+          "h": 129.6
+        },
+        "768": {
+          "x": 32,
+          "y": 468.8,
+          "w": 704,
+          "h": 58.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 603.6,
+          "w": 613.2,
+          "h": 58.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_336_0@375.png",
+        "1440": "shots/Root_336_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/338#0",
+      "parentKey": "Root/336#0",
+      "depth": 6,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 338,
+      "attrs": {
+        "href": "#/apply",
+        "class": "scpt",
+        "style": "font-weight: 600; padding: 15px 26px; border-radius: 999px; font-size: 16px; display: inline-flex; align-items: center; gap: 10px; background: rgb(0, 0, 0); color: rgb(216, 202, 80); border: 2px solid rgb(0, 0, 0); box-shadow: rgba(0, 0, 0, 0.45) 0px 8px 18px -8px; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;"
+      },
+      "words": "Open a trade account",
+      "allText": "Open a trade account",
+      "srcLine": 456,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasCtas }}",
+          "tpl": "335"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ hero.ctas }}",
+          "as": "c",
+          "tpl": "337"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ c.label }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ c.href }}\" data-mag=\"\" style=\"font-weight:600;padding:15px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;background:{{ c.bg }};color:{{ c.fg }};border:2px solid {{ c.border }};box-shadow:0 8px 18px -8px rgba(0,0,0,.45);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-sh",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 528.1,
+          "w": 227.1,
+          "h": 58.8
+        },
+        "768": {
+          "x": 32,
+          "y": 468.8,
+          "w": 227.1,
+          "h": 58.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 603.6,
+          "w": 227.1,
+          "h": 58.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_338_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/338#1",
+      "parentKey": "Root/336#0",
+      "depth": 6,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 338,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scpt",
+        "style": "font-weight: 600; padding: 15px 26px; border-radius: 999px; font-size: 16px; display: inline-flex; align-items: center; gap: 10px; background: rgb(10, 126, 168); color: rgb(255, 255, 255); border: 2px solid rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.45) 0px 8px 18px -8px; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;"
+      },
+      "words": "All brands",
+      "allText": "All brands",
+      "srcLine": 456,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasCtas }}",
+          "tpl": "335"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ hero.ctas }}",
+          "as": "c",
+          "tpl": "337"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ c.label }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ c.href }}\" data-mag=\"\" style=\"font-weight:600;padding:15px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;background:{{ c.bg }};color:{{ c.fg }};border:2px solid {{ c.border }};box-shadow:0 8px 18px -8px rgba(0,0,0,.45);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-sh",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 598.9,
+          "w": 149.5,
+          "h": 58.8
+        },
+        "768": {
+          "x": 271.1,
+          "y": 468.8,
+          "w": 149.5,
+          "h": 58.8
+        },
+        "1440": {
+          "x": 339.1,
+          "y": 603.6,
+          "w": 149.5,
+          "h": 58.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_338_1@375.png",
+        "1440": "shots/Root_338_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/340#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 340,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 462,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"340\"> <div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </di",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 693.7,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 571.6,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 243.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_340_0@375.png",
+        "1440": "shots/Root_340_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/341#0",
+      "parentKey": "Root/340#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 341,
+      "attrs": {
+        "style": "position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: rgba(255, 255, 255, 0.3); border: 5px solid rgb(255, 255, 255); box-shadow: rgba(44, 62, 80, 0.7) 0px 34px 60px -30px; translate: 0px -8px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 463,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 686.7,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 564.6,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 235.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_341_0@375.png",
+        "1440": "shots/Root_341_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/342#0",
+      "parentKey": "Root/341#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 342,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 464,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 25,
+          "y": 691.7,
+          "w": 325,
+          "h": 241.3
+        },
+        "768": {
+          "x": 37,
+          "y": 569.6,
+          "w": 694,
+          "h": 518
+        },
+        "1440": {
+          "x": 790.2,
+          "y": 240.3,
+          "w": 544.8,
+          "h": 406.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_342_0@375.png",
+        "1440": "shots/Root_342_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 108px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "About Shan Authentic recipe mixes. Shan recipe mixes make it simple to cook consistent, authentic dishes at home or in a",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 997,
+          "w": 375,
+          "h": 864.7
+        },
+        "768": {
+          "x": 0,
+          "y": 1171.6,
+          "w": 768,
+          "h": 530.7
+        },
+        "1440": {
+          "x": 0,
+          "y": 750.4,
+          "w": 1440,
+          "h": 683.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_0@375.png",
+        "1440": "shots/Root_344_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#0",
+      "parentKey": "Root/344#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "About Shan Authentic recipe mixes. Shan recipe mixes make it simple to cook consistent, authentic dishes at home or in a",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1061,
+          "w": 335,
+          "h": 736.7
+        },
+        "768": {
+          "x": 32,
+          "y": 1259.6,
+          "w": 704,
+          "h": 354.7
+        },
+        "1440": {
+          "x": 100,
+          "y": 858.4,
+          "w": 1240,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_0@375.png",
+        "1440": "shots/Root_345_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/379#0",
+      "parentKey": "Root/345#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 379,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1fr) minmax(0px, 1fr); gap: 72px; align-items: center;"
+      },
+      "words": "",
+      "allText": "About Shan Authentic recipe mixes. Shan recipe mixes make it simple to cook consistent, authentic dishes at home or in a",
+      "srcLine": 529,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ R.splitCols }};gap:{{ R.splitGap }};align-items:center;\" data-dc-tpl=\"379\"> <div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1061,
+          "w": 335,
+          "h": 736.7
+        },
+        "768": {
+          "x": 32,
+          "y": 1259.6,
+          "w": 704,
+          "h": 354.7
+        },
+        "1440": {
+          "x": 100,
+          "y": 858.4,
+          "w": 1240,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_379_0@375.png",
+        "1440": "shots/Root_379_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/380#0",
+      "parentKey": "Root/379#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 380,
+      "attrs": {
+        "style": "order: 1; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "About Shan Authentic recipe mixes. Shan recipe mixes make it simple to cook consistent, authentic dishes at home or in a",
+      "srcLine": 530,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1061,
+          "w": 335,
+          "h": 432.7
+        },
+        "768": {
+          "x": 32,
+          "y": 1259.6,
+          "w": 330,
+          "h": 354.7
+        },
+        "1440": {
+          "x": 100,
+          "y": 949.8,
+          "w": 584,
+          "h": 284.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_380_0@375.png",
+        "1440": "shots/Root_380_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/382#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 382,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(10, 126, 168); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "About Shan",
+      "allText": "About Shan",
+      "srcLine": 532,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "381"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrow }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>{{ b.eyebrow }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1061,
+          "w": 335,
+          "h": 20.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1259.6,
+          "w": 330,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 949.8,
+          "w": 584,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_382_0@375.png",
+        "1440": "shots/Root_382_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/383#0",
+      "parentKey": "Root/382#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 383,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: var(--acc,#D8CA50); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 532,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "381"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1070,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 32,
+          "y": 1268.6,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 100,
+          "y": 958.9,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_383_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/384#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 384,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 0px; text-wrap: balance;"
+      },
+      "words": "Authentic recipe mixes.",
+      "allText": "Authentic recipe mixes.",
+      "srcLine": 534,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"384\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1097.1,
+          "w": 335,
+          "h": 64.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1295.7,
+          "w": 330,
+          "h": 64.4
+        },
+        "1440": {
+          "x": 100,
+          "y": 986,
+          "w": 584,
+          "h": 46
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_384_0@375.png",
+        "1440": "shots/Root_384_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/386#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 386,
+      "attrs": {
+        "style": "font-size: 17px; color: rgb(74, 85, 99); line-height: 1.65; margin: 18px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Shan recipe mixes make it simple to cook consistent, authentic dishes at home or in a busy kitchen.",
+      "allText": "Shan recipe mixes make it simple to cook consistent, authentic dishes at home or in a busy kitchen.",
+      "srcLine": 536,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.body }}",
+          "as": "p",
+          "tpl": "385"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ p }}",
+      "snippet": "<p style=\"font-size:17px;color:#4A5563;line-height:1.65;margin:18px 0 0;text-wrap:pretty;\" data-dc-tpl=\"386\">{{ p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1179.5,
+          "w": 335,
+          "h": 84.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1378.1,
+          "w": 330,
+          "h": 84.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 1050,
+          "w": 584,
+          "h": 56.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_386_0@375.png",
+        "1440": "shots/Root_386_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/388#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 388,
+      "attrs": {
+        "style": "margin-top: 26px; display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 0px 24px;"
+      },
+      "words": "",
+      "allText": "Recipe mixes Spice blends Pastes & pickles Retail & catering packs",
+      "srcLine": 539,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"margin-top:26px;display:grid;grid-template-columns:{{ R.pointCols }};gap:0 24px;\" data-dc-tpl=\"388\"> <sc-for list=\"{{ b.points }}\" as=\"pt\" hint-placeholder-count=\"4\" data-dc-tpl=\"389\"> <div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;he",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1289.6,
+          "w": 335,
+          "h": 204.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1488.2,
+          "w": 330,
+          "h": 126
+        },
+        "1440": {
+          "x": 100,
+          "y": 1132,
+          "w": 584,
+          "h": 102
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_388_0@375.png",
+        "1440": "shots/Root_388_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/390#0",
+      "parentKey": "Root/388#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 390,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: baseline; padding: 13px 0px; border-top: 1px solid var(--accLine,rgba(30,42,60,.12)); font-size: 15.5px; font-weight: 600;"
+      },
+      "words": "Recipe mixes",
+      "allText": "Recipe mixes",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ pt }}",
+      "snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1289.6,
+          "w": 335,
+          "h": 51
+        },
+        "768": {
+          "x": 32,
+          "y": 1488.2,
+          "w": 153,
+          "h": 51
+        },
+        "1440": {
+          "x": 100,
+          "y": 1132,
+          "w": 280,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_390_0@375.png",
+        "1440": "shots/Root_390_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/391#0",
+      "parentKey": "Root/390#0",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 391,
+      "attrs": {
+        "style": "width: 8px; height: 8px; background: var(--acc,#D8CA50); border-radius: 50%; flex-shrink: 0; transform: translateY(-1px);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1311.6,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 32,
+          "y": 1510.2,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1154,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_391_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/390#1",
+      "parentKey": "Root/388#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 390,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: baseline; padding: 13px 0px; border-top: 1px solid var(--accLine,rgba(30,42,60,.12)); font-size: 15.5px; font-weight: 600;"
+      },
+      "words": "Spice blends",
+      "allText": "Spice blends",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ pt }}",
+      "snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1340.6,
+          "w": 335,
+          "h": 51
+        },
+        "768": {
+          "x": 209,
+          "y": 1488.2,
+          "w": 153,
+          "h": 51
+        },
+        "1440": {
+          "x": 404,
+          "y": 1132,
+          "w": 280,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_390_1@375.png",
+        "1440": "shots/Root_390_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/391#1",
+      "parentKey": "Root/390#1",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 391,
+      "attrs": {
+        "style": "width: 8px; height: 8px; background: var(--acc,#D8CA50); border-radius: 50%; flex-shrink: 0; transform: translateY(-1px);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1362.6,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 209,
+          "y": 1510.2,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 404,
+          "y": 1154,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_391_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/390#2",
+      "parentKey": "Root/388#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 390,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: baseline; padding: 13px 0px; border-top: 1px solid var(--accLine,rgba(30,42,60,.12)); font-size: 15.5px; font-weight: 600;"
+      },
+      "words": "Pastes & pickles",
+      "allText": "Pastes & pickles",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ pt }}",
+      "snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1391.6,
+          "w": 335,
+          "h": 51
+        },
+        "768": {
+          "x": 32,
+          "y": 1539.2,
+          "w": 153,
+          "h": 75
+        },
+        "1440": {
+          "x": 100,
+          "y": 1183.1,
+          "w": 280,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_390_2@375.png",
+        "1440": "shots/Root_390_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/391#2",
+      "parentKey": "Root/390#2",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 391,
+      "attrs": {
+        "style": "width: 8px; height: 8px; background: var(--acc,#D8CA50); border-radius: 50%; flex-shrink: 0; transform: translateY(-1px);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1413.6,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 32,
+          "y": 1561.2,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1205.1,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_391_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/390#3",
+      "parentKey": "Root/388#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 390,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: baseline; padding: 13px 0px; border-top: 1px solid var(--accLine,rgba(30,42,60,.12)); font-size: 15.5px; font-weight: 600;"
+      },
+      "words": "Retail & catering packs",
+      "allText": "Retail & catering packs",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ pt }}",
+      "snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1442.7,
+          "w": 335,
+          "h": 51
+        },
+        "768": {
+          "x": 209,
+          "y": 1539.2,
+          "w": 153,
+          "h": 75
+        },
+        "1440": {
+          "x": 404,
+          "y": 1183.1,
+          "w": 280,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_390_3@375.png",
+        "1440": "shots/Root_390_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/391#3",
+      "parentKey": "Root/390#3",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 391,
+      "attrs": {
+        "style": "width: 8px; height: 8px; background: var(--acc,#D8CA50); border-radius: 50%; flex-shrink: 0; transform: translateY(-1px);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 541,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasPoints }}",
+          "tpl": "387"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.points }}",
+          "as": "pt",
+          "tpl": "389"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1464.7,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 209,
+          "y": 1561.2,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 404,
+          "y": 1205.1,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_391_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/394#0",
+      "parentKey": "Root/379#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 394,
+      "attrs": {
+        "style": "order: 2; position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 549,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"order:{{ b.imgOrder }};position:relative;min-width:0;\" data-dc-tpl=\"394\"> <div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1529.7,
+          "w": 335,
+          "h": 268
+        },
+        "768": {
+          "x": 406,
+          "y": 1304.9,
+          "w": 330,
+          "h": 264
+        },
+        "1440": {
+          "x": 756,
+          "y": 858.4,
+          "w": 584,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_394_0@375.png",
+        "1440": "shots/Root_394_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/395#0",
+      "parentKey": "Root/394#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 395,
+      "attrs": {
+        "style": "position: relative; aspect-ratio: 4 / 3.2; border-radius: 22px; overflow: hidden; background: rgb(234, 244, 247); border: 5px solid rgb(255, 255, 255); box-shadow: rgba(44, 62, 80, 0.6) 0px 30px 54px -30px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 550,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1529.7,
+          "w": 335,
+          "h": 268
+        },
+        "768": {
+          "x": 406,
+          "y": 1304.9,
+          "w": 330,
+          "h": 264
+        },
+        "1440": {
+          "x": 756,
+          "y": 858.4,
+          "w": 584,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_395_0@375.png",
+        "1440": "shots/Root_395_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/396#0",
+      "parentKey": "Root/395#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 396,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 551,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 25,
+          "y": 1534.7,
+          "w": 325,
+          "h": 258
+        },
+        "768": {
+          "x": 411,
+          "y": 1309.9,
+          "w": 320,
+          "h": 254
+        },
+        "1440": {
+          "x": 761,
+          "y": 863.4,
+          "w": 574,
+          "h": 457.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_396_0@375.png",
+        "1440": "shots/Root_396_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#1",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 108px 40px; background: linear-gradient(rgb(243, 234, 176) 0%, rgb(234, 221, 126) 100%); --acc: #0A7EA8; --accFg: #FFFFFF; --accLine: rgba(10,126,168,.28);"
+      },
+      "words": "",
+      "allText": "The range What’s in the Shan range. 01 Recipe mixes Biryani, karahi, nihari and more. 02 Plain spices Chilli, turmeric, ",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 1861.7,
+          "w": 375,
+          "h": 706.2
+        },
+        "768": {
+          "x": 0,
+          "y": 1702.3,
+          "w": 768,
+          "h": 454.2
+        },
+        "1440": {
+          "x": 0,
+          "y": 1433.5,
+          "w": 1440,
+          "h": 484
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_1@375.png",
+        "1440": "shots/Root_344_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#1",
+      "parentKey": "Root/344#1",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "The range What’s in the Shan range. 01 Recipe mixes Biryani, karahi, nihari and more. 02 Plain spices Chilli, turmeric, ",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1925.7,
+          "w": 335,
+          "h": 578.2
+        },
+        "768": {
+          "x": 32,
+          "y": 1790.3,
+          "w": 704,
+          "h": 278.2
+        },
+        "1440": {
+          "x": 100,
+          "y": 1541.5,
+          "w": 1240,
+          "h": 268
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_1@375.png",
+        "1440": "shots/Root_345_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/347#0",
+      "parentKey": "Root/345#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 347,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 48px;"
+      },
+      "words": "",
+      "allText": "The range What’s in the Shan range.",
+      "srcLine": 479,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-si",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1925.7,
+          "w": 335,
+          "h": 100.5
+        },
+        "768": {
+          "x": 32,
+          "y": 1790.3,
+          "w": 704,
+          "h": 68.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 1541.5,
+          "w": 1240,
+          "h": 82.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_347_0@375.png",
+        "1440": "shots/Root_347_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/348#0",
+      "parentKey": "Root/347#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 348,
+      "attrs": {
+        "style": "max-width: 720px; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "The range What’s in the Shan range.",
+      "srcLine": 480,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2p",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1925.7,
+          "w": 335,
+          "h": 100.5
+        },
+        "768": {
+          "x": 32,
+          "y": 1790.3,
+          "w": 370.9,
+          "h": 68.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 1541.5,
+          "w": 529.8,
+          "h": 82.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_348_0@375.png",
+        "1440": "shots/Root_348_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/350#0",
+      "parentKey": "Root/348#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 350,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(10, 126, 168); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "The range",
+      "allText": "The range",
+      "srcLine": 482,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "349"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrow }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>{{ b.eyebrow }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1925.7,
+          "w": 335,
+          "h": 20.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1790.3,
+          "w": 370.9,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 1541.5,
+          "w": 529.8,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_350_0@375.png",
+        "1440": "shots/Root_350_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/351#0",
+      "parentKey": "Root/350#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 351,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: var(--acc,#D8CA50); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 482,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "349"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1934.7,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 32,
+          "y": 1799.3,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 100,
+          "y": 1550.6,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_351_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/352#0",
+      "parentKey": "Root/348#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 352,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 0px; text-wrap: balance;"
+      },
+      "words": "What’s in the Shan range.",
+      "allText": "What’s in the Shan range.",
+      "srcLine": 484,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"352\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1961.8,
+          "w": 335,
+          "h": 64.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1826.4,
+          "w": 370.9,
+          "h": 32.2
+        },
+        "1440": {
+          "x": 100,
+          "y": 1577.7,
+          "w": 529.8,
+          "h": 46
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_352_0@375.png",
+        "1440": "shots/Root_352_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/479#0",
+      "parentKey": "Root/345#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 479,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;"
+      },
+      "words": "",
+      "allText": "01 Recipe mixes Biryani, karahi, nihari and more. 02 Plain spices Chilli, turmeric, coriander and cumin. 03 Pastes & pic",
+      "srcLine": 682,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax({{ b.min }},1fr));gap:16px;\" data-dc-tpl=\"479\"> <sc-for list=\"{{ b.items }}\" as=\"c\" hint-placeholder-count=\"4\" data-dc-tpl=\"480\"> <a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-d",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2058.2,
+          "w": 335,
+          "h": 445.7
+        },
+        "768": {
+          "x": 32,
+          "y": 1906.6,
+          "w": 704,
+          "h": 161.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 1671.7,
+          "w": 1240,
+          "h": 137.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_479_0@375.png",
+        "1440": "shots/Root_479_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/481#0",
+      "parentKey": "Root/479#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 481,
+      "attrs": {
+        "class": "scp10",
+        "style": "position: relative; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s, border-color 0.35s;"
+      },
+      "words": "",
+      "allText": "01 Recipe mixes Biryani, karahi, nihari and more.",
+      "srcLine": 684,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-c",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2058.2,
+          "w": 335,
+          "h": 137.9
+        },
+        "768": {
+          "x": 32,
+          "y": 1906.6,
+          "w": 224,
+          "h": 161.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 1671.7,
+          "w": 402.7,
+          "h": 137.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_481_0@375.png",
+        "1440": "shots/Root_481_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/485#0",
+      "parentKey": "Root/481#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 485,
+      "attrs": {
+        "style": "position: relative; z-index: 2; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 0%; text-shadow: var(--ts,none); pointer-events: var(--cpe,auto);"
+      },
+      "words": "",
+      "allText": "01 Recipe mixes Biryani, karahi, nihari and more.",
+      "srcLine": 690,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:2;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;text-shadow:var(--ts,none);pointer-events:var(--cpe,auto);\" data-dc-tpl=\"485\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2059.2,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 33,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 101,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_485_0@375.png",
+        "1440": "shots/Root_485_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/486#0",
+      "parentKey": "Root/485#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 486,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "01",
+      "srcLine": 691,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span> <sc-if value=\"{{ c.hasTag }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"488\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2083.2,
+          "w": 285,
+          "h": 20.1
+        },
+        "768": {
+          "x": 57,
+          "y": 1931.6,
+          "w": 174,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 125,
+          "y": 1696.7,
+          "w": 352.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_486_0@375.png",
+        "1440": "shots/Root_486_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/487#0",
+      "parentKey": "Root/486#0",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 487,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); font-variant-numeric: tabular-nums;"
+      },
+      "words": "01",
+      "allText": "01",
+      "srcLine": 692,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2083.2,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 57,
+          "y": 1931.6,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 125,
+          "y": 1696.7,
+          "w": 13.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_487_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/490#0",
+      "parentKey": "Root/485#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 490,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em; line-height: 1.25;"
+      },
+      "words": "Recipe mixes",
+      "allText": "Recipe mixes",
+      "srcLine": 697,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;line-height:1.25;\" data-dc-tpl=\"490\">{{ c.title }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2113.3,
+          "w": 285,
+          "h": 23.8
+        },
+        "768": {
+          "x": 57,
+          "y": 1961.7,
+          "w": 174,
+          "h": 23.8
+        },
+        "1440": {
+          "x": 125,
+          "y": 1726.8,
+          "w": 352.7,
+          "h": 23.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_490_0@375.png",
+        "1440": "shots/Root_490_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/491#0",
+      "parentKey": "Root/485#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 491,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; text-wrap: pretty;"
+      },
+      "words": "Biryani, karahi, nihari and more.",
+      "allText": "Biryani, karahi, nihari and more.",
+      "srcLine": 698,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;\" data-dc-tpl=\"491\">{{ c.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2147.1,
+          "w": 285,
+          "h": 24
+        },
+        "768": {
+          "x": 57,
+          "y": 1995.5,
+          "w": 174,
+          "h": 48
+        },
+        "1440": {
+          "x": 125,
+          "y": 1760.6,
+          "w": 352.7,
+          "h": 24
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_491_0@375.png",
+        "1440": "shots/Root_491_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/495#0",
+      "parentKey": "Root/481#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 495,
+      "attrs": {
+        "class": "scp11",
+        "style": "position: absolute; inset: 0px; z-index: 0; background: rgb(234, 244, 247); clip-path: circle(var(--pr,0px) at var(--mx,50%) var(--my,50%)); transition: clip-path 0.4s cubic-bezier(0.16, 0.84, 0.32, 1);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 702,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-peek-layer=\"\" style=\"position:absolute;inset:0;z-index:0;background:#EAF4F7;clip-path:circle(var(--pr,0px) at var(--mx,50%) var(--my,50%));transition:clip-path .4s cubic-bezier(.16,.84,.32,1);\" style-after=\"content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.3) 100%);pointer-events:none;\" data-dc-tpl=\"495\"> <image-slot id=\"{{ ",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2059.2,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 33,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 101,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_495_0@375.png",
+        "1440": "shots/Root_495_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/496#0",
+      "parentKey": "Root/495#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 496,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 703,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ c.peekImg }}\" shape=\"rect\" placeholder=\"{{ c.peekLabel }}\" data-dc-tpl=\"496\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2059.2,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 33,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 101,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_496_0@375.png",
+        "1440": "shots/Root_496_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/497#0",
+      "parentKey": "Root/481#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 497,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; z-index: 1; left: var(--mx,50%); top: var(--my,50%); width: 180px; height: 180px; margin: -90px 0px 0px -90px; border-radius: 50%; border: 3px solid rgb(255, 255, 255); box-shadow: rgba(20, 40, 60, 0.45) 0px 12px 30px -8px; pointer-events: none; transform: scale(var(--pk,0)); transition: transform 0.4s cubic-bezier(0.16, 0.84, 0.32, 1), left 0.4s cubic-bezier(0.16, 0.84, 0.32, 1), top 0.4s cubic-bezier(0.16, 0.84, 0.32, 1);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 705,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span aria-hidden=\"true\" style=\"position:absolute;z-index:1;left:var(--mx,50%);top:var(--my,50%);width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;border:3px solid #FFFFFF;box-shadow:0 12px 30px -8px rgba(20,40,60,.45);pointer-events:none;transform:scale(var(--pk,0));transition:transform .4s cubic-bezier(.16,.84,.32,1),left .4s cubic-bezier(.16,.84,.32,1),top .4s cubic-bezier(.16,.",
+      "box": {
+        "375": {
+          "x": 187.5,
+          "y": 2127.1,
+          "w": 0,
+          "h": 0
+        },
+        "768": {
+          "x": 144,
+          "y": 1987.5,
+          "w": 0,
+          "h": 0
+        },
+        "1440": {
+          "x": 301.3,
+          "y": 1740.6,
+          "w": 0,
+          "h": 0
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/481#1",
+      "parentKey": "Root/479#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 481,
+      "attrs": {
+        "class": "scp10",
+        "style": "position: relative; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s, border-color 0.35s;"
+      },
+      "words": "",
+      "allText": "02 Plain spices Chilli, turmeric, coriander and cumin.",
+      "srcLine": 684,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-c",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2212.1,
+          "w": 335,
+          "h": 137.9
+        },
+        "768": {
+          "x": 272,
+          "y": 1906.6,
+          "w": 224,
+          "h": 161.9
+        },
+        "1440": {
+          "x": 518.7,
+          "y": 1671.7,
+          "w": 402.7,
+          "h": 137.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_481_1@375.png",
+        "1440": "shots/Root_481_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/485#1",
+      "parentKey": "Root/481#1",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 485,
+      "attrs": {
+        "style": "position: relative; z-index: 2; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 0%; text-shadow: var(--ts,none); pointer-events: var(--cpe,auto);"
+      },
+      "words": "",
+      "allText": "02 Plain spices Chilli, turmeric, coriander and cumin.",
+      "srcLine": 690,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:2;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;text-shadow:var(--ts,none);pointer-events:var(--cpe,auto);\" data-dc-tpl=\"485\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2213.1,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 273,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 519.7,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_485_1@375.png",
+        "1440": "shots/Root_485_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/486#1",
+      "parentKey": "Root/485#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 486,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "02",
+      "srcLine": 691,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span> <sc-if value=\"{{ c.hasTag }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"488\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2237.1,
+          "w": 285,
+          "h": 20.1
+        },
+        "768": {
+          "x": 297,
+          "y": 1931.6,
+          "w": 174,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 543.7,
+          "y": 1696.7,
+          "w": 352.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_486_1@375.png",
+        "1440": "shots/Root_486_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/487#1",
+      "parentKey": "Root/486#1",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 487,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); font-variant-numeric: tabular-nums;"
+      },
+      "words": "02",
+      "allText": "02",
+      "srcLine": 692,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2237.1,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 297,
+          "y": 1931.6,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 543.7,
+          "y": 1696.7,
+          "w": 13.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_487_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/490#1",
+      "parentKey": "Root/485#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 490,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em; line-height: 1.25;"
+      },
+      "words": "Plain spices",
+      "allText": "Plain spices",
+      "srcLine": 697,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;line-height:1.25;\" data-dc-tpl=\"490\">{{ c.title }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2267.2,
+          "w": 285,
+          "h": 23.8
+        },
+        "768": {
+          "x": 297,
+          "y": 1961.7,
+          "w": 174,
+          "h": 23.8
+        },
+        "1440": {
+          "x": 543.7,
+          "y": 1726.8,
+          "w": 352.7,
+          "h": 23.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_490_1@375.png",
+        "1440": "shots/Root_490_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/491#1",
+      "parentKey": "Root/485#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 491,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; text-wrap: pretty;"
+      },
+      "words": "Chilli, turmeric, coriander and cumin.",
+      "allText": "Chilli, turmeric, coriander and cumin.",
+      "srcLine": 698,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;\" data-dc-tpl=\"491\">{{ c.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2301,
+          "w": 285,
+          "h": 24
+        },
+        "768": {
+          "x": 297,
+          "y": 1995.5,
+          "w": 174,
+          "h": 48
+        },
+        "1440": {
+          "x": 543.7,
+          "y": 1760.6,
+          "w": 352.7,
+          "h": 24
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_491_1@375.png",
+        "1440": "shots/Root_491_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/495#1",
+      "parentKey": "Root/481#1",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 495,
+      "attrs": {
+        "class": "scp11",
+        "style": "position: absolute; inset: 0px; z-index: 0; background: rgb(234, 244, 247); clip-path: circle(var(--pr,0px) at var(--mx,50%) var(--my,50%)); transition: clip-path 0.4s cubic-bezier(0.16, 0.84, 0.32, 1);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 702,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-peek-layer=\"\" style=\"position:absolute;inset:0;z-index:0;background:#EAF4F7;clip-path:circle(var(--pr,0px) at var(--mx,50%) var(--my,50%));transition:clip-path .4s cubic-bezier(.16,.84,.32,1);\" style-after=\"content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.3) 100%);pointer-events:none;\" data-dc-tpl=\"495\"> <image-slot id=\"{{ ",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2213.1,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 273,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 519.7,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_495_1@375.png",
+        "1440": "shots/Root_495_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/496#1",
+      "parentKey": "Root/495#1",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 496,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 703,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ c.peekImg }}\" shape=\"rect\" placeholder=\"{{ c.peekLabel }}\" data-dc-tpl=\"496\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2213.1,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 273,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 519.7,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_496_1@375.png",
+        "1440": "shots/Root_496_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/497#1",
+      "parentKey": "Root/481#1",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 497,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; z-index: 1; left: var(--mx,50%); top: var(--my,50%); width: 180px; height: 180px; margin: -90px 0px 0px -90px; border-radius: 50%; border: 3px solid rgb(255, 255, 255); box-shadow: rgba(20, 40, 60, 0.45) 0px 12px 30px -8px; pointer-events: none; transform: scale(var(--pk,0)); transition: transform 0.4s cubic-bezier(0.16, 0.84, 0.32, 1), left 0.4s cubic-bezier(0.16, 0.84, 0.32, 1), top 0.4s cubic-bezier(0.16, 0.84, 0.32, 1);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 705,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span aria-hidden=\"true\" style=\"position:absolute;z-index:1;left:var(--mx,50%);top:var(--my,50%);width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;border:3px solid #FFFFFF;box-shadow:0 12px 30px -8px rgba(20,40,60,.45);pointer-events:none;transform:scale(var(--pk,0));transition:transform .4s cubic-bezier(.16,.84,.32,1),left .4s cubic-bezier(.16,.84,.32,1),top .4s cubic-bezier(.16,.",
+      "box": {
+        "375": {
+          "x": 187.5,
+          "y": 2281,
+          "w": 0,
+          "h": 0
+        },
+        "768": {
+          "x": 384,
+          "y": 1987.5,
+          "w": 0,
+          "h": 0
+        },
+        "1440": {
+          "x": 720,
+          "y": 1740.6,
+          "w": 0,
+          "h": 0
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/481#2",
+      "parentKey": "Root/479#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 481,
+      "attrs": {
+        "class": "scp10",
+        "style": "position: relative; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s, border-color 0.35s;"
+      },
+      "words": "",
+      "allText": "03 Pastes & pickles Ready-to-use pastes and pickles.",
+      "srcLine": 684,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-c",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2366,
+          "w": 335,
+          "h": 137.9
+        },
+        "768": {
+          "x": 512,
+          "y": 1906.6,
+          "w": 224,
+          "h": 161.9
+        },
+        "1440": {
+          "x": 937.3,
+          "y": 1671.7,
+          "w": 402.7,
+          "h": 137.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_481_2@375.png",
+        "1440": "shots/Root_481_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/485#2",
+      "parentKey": "Root/481#2",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 485,
+      "attrs": {
+        "style": "position: relative; z-index: 2; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 0%; text-shadow: var(--ts,none); pointer-events: var(--cpe,auto);"
+      },
+      "words": "",
+      "allText": "03 Pastes & pickles Ready-to-use pastes and pickles.",
+      "srcLine": 690,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:2;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;text-shadow:var(--ts,none);pointer-events:var(--cpe,auto);\" data-dc-tpl=\"485\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2367,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 513,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 938.3,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_485_2@375.png",
+        "1440": "shots/Root_485_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/486#2",
+      "parentKey": "Root/485#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 486,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "03",
+      "srcLine": 691,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span> <sc-if value=\"{{ c.hasTag }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"488\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2391,
+          "w": 285,
+          "h": 20.1
+        },
+        "768": {
+          "x": 537,
+          "y": 1931.6,
+          "w": 174,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 962.3,
+          "y": 1696.7,
+          "w": 352.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_486_2@375.png",
+        "1440": "shots/Root_486_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/487#2",
+      "parentKey": "Root/486#2",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 487,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); font-variant-numeric: tabular-nums;"
+      },
+      "words": "03",
+      "allText": "03",
+      "srcLine": 692,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2391,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 537,
+          "y": 1931.6,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 962.3,
+          "y": 1696.7,
+          "w": 13.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_487_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/490#2",
+      "parentKey": "Root/485#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 490,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em; line-height: 1.25;"
+      },
+      "words": "Pastes & pickles",
+      "allText": "Pastes & pickles",
+      "srcLine": 697,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;line-height:1.25;\" data-dc-tpl=\"490\">{{ c.title }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2421.1,
+          "w": 285,
+          "h": 23.8
+        },
+        "768": {
+          "x": 537,
+          "y": 1961.7,
+          "w": 174,
+          "h": 23.8
+        },
+        "1440": {
+          "x": 962.3,
+          "y": 1726.8,
+          "w": 352.7,
+          "h": 23.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_490_2@375.png",
+        "1440": "shots/Root_490_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/491#2",
+      "parentKey": "Root/485#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 491,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; text-wrap: pretty;"
+      },
+      "words": "Ready-to-use pastes and pickles.",
+      "allText": "Ready-to-use pastes and pickles.",
+      "srcLine": 698,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;\" data-dc-tpl=\"491\">{{ c.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2454.9,
+          "w": 285,
+          "h": 24
+        },
+        "768": {
+          "x": 537,
+          "y": 1995.5,
+          "w": 174,
+          "h": 48
+        },
+        "1440": {
+          "x": 962.3,
+          "y": 1760.6,
+          "w": 352.7,
+          "h": 24
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_491_2@375.png",
+        "1440": "shots/Root_491_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/495#2",
+      "parentKey": "Root/481#2",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 495,
+      "attrs": {
+        "class": "scp11",
+        "style": "position: absolute; inset: 0px; z-index: 0; background: rgb(234, 244, 247); clip-path: circle(var(--pr,0px) at var(--mx,50%) var(--my,50%)); transition: clip-path 0.4s cubic-bezier(0.16, 0.84, 0.32, 1);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 702,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-peek-layer=\"\" style=\"position:absolute;inset:0;z-index:0;background:#EAF4F7;clip-path:circle(var(--pr,0px) at var(--mx,50%) var(--my,50%));transition:clip-path .4s cubic-bezier(.16,.84,.32,1);\" style-after=\"content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,.3) 100%);pointer-events:none;\" data-dc-tpl=\"495\"> <image-slot id=\"{{ ",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2367,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 513,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 938.3,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_495_2@375.png",
+        "1440": "shots/Root_495_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/496#2",
+      "parentKey": "Root/495#2",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 496,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 703,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ c.peekImg }}\" shape=\"rect\" placeholder=\"{{ c.peekLabel }}\" data-dc-tpl=\"496\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2367,
+          "w": 333,
+          "h": 135.9
+        },
+        "768": {
+          "x": 513,
+          "y": 1907.6,
+          "w": 222,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 938.3,
+          "y": 1672.7,
+          "w": 400.7,
+          "h": 135.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_496_2@375.png",
+        "1440": "shots/Root_496_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/497#2",
+      "parentKey": "Root/481#2",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 497,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; z-index: 1; left: var(--mx,50%); top: var(--my,50%); width: 180px; height: 180px; margin: -90px 0px 0px -90px; border-radius: 50%; border: 3px solid rgb(255, 255, 255); box-shadow: rgba(20, 40, 60, 0.45) 0px 12px 30px -8px; pointer-events: none; transform: scale(var(--pk,0)); transition: transform 0.4s cubic-bezier(0.16, 0.84, 0.32, 1), left 0.4s cubic-bezier(0.16, 0.84, 0.32, 1), top 0.4s cubic-bezier(0.16, 0.84, 0.32, 1);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 705,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasPeek }}",
+          "tpl": "494"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span aria-hidden=\"true\" style=\"position:absolute;z-index:1;left:var(--mx,50%);top:var(--my,50%);width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;border:3px solid #FFFFFF;box-shadow:0 12px 30px -8px rgba(20,40,60,.45);pointer-events:none;transform:scale(var(--pk,0));transition:transform .4s cubic-bezier(.16,.84,.32,1),left .4s cubic-bezier(.16,.84,.32,1),top .4s cubic-bezier(.16,.",
+      "box": {
+        "375": {
+          "x": 187.5,
+          "y": 2434.9,
+          "w": 0,
+          "h": 0
+        },
+        "768": {
+          "x": 624,
+          "y": 1987.5,
+          "w": 0,
+          "h": 0
+        },
+        "1440": {
+          "x": 1138.7,
+          "y": 1740.6,
+          "w": 0,
+          "h": 0
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/344#2",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 64px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Shan Stock Shan in your business. Open a trade account for wholesale pricing on the full Shan range. Become a Trade Cust",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 2567.9,
+          "w": 375,
+          "h": 460.9
+        },
+        "768": {
+          "x": 0,
+          "y": 2156.5,
+          "w": 768,
+          "h": 405.9
+        },
+        "1440": {
+          "x": 0,
+          "y": 1917.6,
+          "w": 1440,
+          "h": 445.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_2@375.png",
+        "1440": "shots/Root_344_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#2",
+      "parentKey": "Root/344#2",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Shan Stock Shan in your business. Open a trade account for wholesale pricing on the full Shan range. Become a Trade Cust",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2607.9,
+          "w": 335,
+          "h": 380.9
+        },
+        "768": {
+          "x": 32,
+          "y": 2208.5,
+          "w": 704,
+          "h": 301.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 1981.6,
+          "w": 1240,
+          "h": 317.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_2@375.png",
+        "1440": "shots/Root_345_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/515#0",
+      "parentKey": "Root/345#2",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 515,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; border-radius: 26px; background: linear-gradient(135deg, rgb(14, 139, 184) 0%, rgb(10, 126, 168) 45%, rgb(7, 94, 128) 100%); color: rgb(255, 255, 255); padding: 68px 64px; display: grid; grid-template-columns: minmax(0px, 1.4fr) minmax(0px, 1fr); gap: 30px; align-items: center;"
+      },
+      "words": "",
+      "allText": "Shan Stock Shan in your business. Open a trade account for wholesale pricing on the full Shan range. Become a Trade Cust",
+      "srcLine": 741,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(135deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);color:#FFFFFF;padding:{{ R.ctaPad }};display:grid;grid-template-columns:{{ R.ctaCols }};gap:30px;align-items:center;\" data-dc-tpl=\"515\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2607.9,
+          "w": 335,
+          "h": 380.9
+        },
+        "768": {
+          "x": 32,
+          "y": 2208.5,
+          "w": 704,
+          "h": 301.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 1981.6,
+          "w": 1240,
+          "h": 317.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_515_0@375.png",
+        "1440": "shots/Root_515_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/516#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 516,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -90px; top: -110px; width: 340px; height: 340px; border-radius: 50%; border: 2px solid rgba(216, 202, 80, 0.55); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 742,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
+      "box": {
+        "375": {
+          "x": 101.4,
+          "y": 2476.1,
+          "w": 367.5,
+          "h": 367.5
+        },
+        "768": {
+          "x": 476,
+          "y": 2095.3,
+          "w": 351.6,
+          "h": 351.6
+        },
+        "1440": {
+          "x": 1096.2,
+          "y": 1859.3,
+          "w": 358.4,
+          "h": 358.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_516_0@375.png",
+        "1440": "shots/Root_516_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/517#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 517,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: 40px; top: -40px; width: 150px; height: 150px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.2); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 743,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
+      "box": {
+        "375": {
+          "x": 170.7,
+          "y": 2572.3,
+          "w": 155.2,
+          "h": 155.2
+        },
+        "768": {
+          "x": 542.2,
+          "y": 2176,
+          "w": 161.3,
+          "h": 161.3
+        },
+        "1440": {
+          "x": 1132.2,
+          "y": 1933.7,
+          "w": 164,
+          "h": 164
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_517_0@375.png",
+        "1440": "shots/Root_517_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/518#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 518,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(70% 90% at 0% 100%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 60%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 744,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"518\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2607.9,
+          "w": 335,
+          "h": 380.9
+        },
+        "768": {
+          "x": 32,
+          "y": 2208.5,
+          "w": 704,
+          "h": 301.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 1981.6,
+          "w": 1240,
+          "h": 317.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_518_0@375.png",
+        "1440": "shots/Root_518_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/519#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 519,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Shan Stock Shan in your business. Open a trade account for wholesale pricing on the full Shan range.",
+      "srcLine": 745,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"519\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2647.9,
+          "w": 287,
+          "h": 170.1
+        },
+        "768": {
+          "x": 76,
+          "y": 2260.5,
+          "w": 616,
+          "h": 111.1
+        },
+        "1440": {
+          "x": 164,
+          "y": 2049.6,
+          "w": 631.2,
+          "h": 181.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_519_0@375.png",
+        "1440": "shots/Root_519_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/520#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 520,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Shan",
+      "allText": "Shan",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrowText }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText }}</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2647.9,
+          "w": 287,
+          "h": 20.1
+        },
+        "768": {
+          "x": 76,
+          "y": 2260.5,
+          "w": 616,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 164,
+          "y": 2049.6,
+          "w": 631.2,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_520_0@375.png",
+        "1440": "shots/Root_520_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/521#0",
+      "parentKey": "Root/520#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 521,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: rgb(216, 202, 80); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2656.9,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 76,
+          "y": 2269.5,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 164,
+          "y": 2058.6,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_521_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/522#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 522,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(30px, 3.8vw, 48px); line-height: 1.06; letter-spacing: -0.015em; margin: 0px; text-wrap: balance;"
+      },
+      "words": "Stock Shan in your business.",
+      "allText": "Stock Shan in your business.",
+      "srcLine": 747,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,48px);line-height:1.06;letter-spacing:-.015em;margin:0;text-wrap:balance;\" data-dc-tpl=\"522\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2684,
+          "w": 287,
+          "h": 63.6
+        },
+        "768": {
+          "x": 76,
+          "y": 2296.6,
+          "w": 616,
+          "h": 31.8
+        },
+        "1440": {
+          "x": 164,
+          "y": 2085.7,
+          "w": 631.2,
+          "h": 101.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_522_0@375.png",
+        "1440": "shots/Root_522_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/523#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 523,
+      "attrs": {
+        "style": "font-size: 17px; color: rgb(227, 239, 244); line-height: 1.6; margin: 16px 0px 0px; max-width: 560px; text-wrap: pretty;"
+      },
+      "words": "Open a trade account for wholesale pricing on the full Shan range.",
+      "allText": "Open a trade account for wholesale pricing on the full Shan range.",
+      "srcLine": 748,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ b.body }}",
+      "snippet": "<p style=\"font-size:17px;color:#E3EFF4;line-height:1.6;margin:16px 0 0;max-width:560px;text-wrap:pretty;\" data-dc-tpl=\"523\">{{ b.body }}</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2763.6,
+          "w": 287,
+          "h": 54.4
+        },
+        "768": {
+          "x": 76,
+          "y": 2344.4,
+          "w": 560,
+          "h": 27.2
+        },
+        "1440": {
+          "x": 164,
+          "y": 2203.5,
+          "w": 560,
+          "h": 27.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_523_0@375.png",
+        "1440": "shots/Root_523_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/524#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 524,
+      "attrs": {
+        "style": "position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; justify-content: flex-end;"
+      },
+      "words": "",
+      "allText": "Become a Trade Customer Call 0121 771 4330",
+      "srcLine": 750,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;justify-content:{{ R.ctaJustify }};\" data-dc-tpl=\"524\"> <a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transiti",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2848,
+          "w": 287,
+          "h": 100.8
+        },
+        "768": {
+          "x": 76,
+          "y": 2401.6,
+          "w": 616,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 825.2,
+          "y": 2111.7,
+          "w": 450.8,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_524_0@375.png",
+        "1440": "shots/Root_524_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/525#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 525,
+      "attrs": {
+        "href": "#/apply",
+        "class": "scp14",
+        "style": "background: rgb(216, 202, 80); color: rgb(30, 42, 60); font-weight: 700; font-size: 16px; padding: 16px 24px; border-radius: 999px; display: inline-flex; align-items: center; gap: 10px; box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 24px -12px; transition: transform 0.2s, background 0.2s, box-shadow 0.3s;"
+      },
+      "words": "Become a Trade Customer",
+      "allText": "Become a Trade Customer",
+      "srcLine": 751,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.primary.label }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2848,
+          "w": 255.1,
+          "h": 56.8
+        },
+        "768": {
+          "x": 76,
+          "y": 2401.6,
+          "w": 255.1,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 873.5,
+          "y": 2111.7,
+          "w": 255.1,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_525_0@375.png",
+        "1440": "shots/Root_525_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/526#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 526,
+      "attrs": {
+        "href": "tel:01217714330",
+        "class": "scp5",
+        "style": "white-space: nowrap; color: rgb(255, 255, 255); font-weight: 700; font-size: 15.5px; border-bottom: 2px solid rgb(216, 202, 80); padding-bottom: 4px;"
+      },
+      "words": "Call 0121 771 4330",
+      "allText": "Call 0121 771 4330",
+      "srcLine": 752,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.secondary.label }}",
+      "snippet": "<a href=\"{{ b.secondary.href }}\" style=\"white-space:nowrap;color:#FFFFFF;font-weight:700;font-size:15.5px;border-bottom:2px solid #D8CA50;padding-bottom:4px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"526\">{{ b.secondary.label }}</a>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 2918.8,
+          "w": 125.4,
+          "h": 30
+        },
+        "768": {
+          "x": 353.1,
+          "y": 2415,
+          "w": 125.4,
+          "h": 30
+        },
+        "1440": {
+          "x": 1150.6,
+          "y": 2125.1,
+          "w": 125.4,
+          "h": 30
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_526_0@375.png",
+        "1440": "shots/Root_526_0@1440.png"
+      }
+    }
+  ]
+}

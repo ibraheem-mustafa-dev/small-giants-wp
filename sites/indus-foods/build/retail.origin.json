@@ -1,0 +1,1936 @@
+{
+  "cr-ref-retail-0": {
+    "tpl": "Root/201#0",
+    "fingerprint": {
+      "tag": "main",
+      "cls": "",
+      "styleHash": "58a56450",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 269
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-1": {
+    "tpl": "Root/316#0",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "a6c5ee06",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 435
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-2": {
+    "tpl": "Root/319#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "2150bedf",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 438
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-3": {
+    "tpl": "Root/323#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b8ae41de",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 445
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-4": {
+    "tpl": "Root/326#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scps",
+      "styleHash": "c4653cdd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "a487c20a",
+      "line": 446
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-5": {
+    "tpl": "Root/328#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "a0f55317",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "c44cce42",
+      "line": 446
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-6": {
+    "tpl": "Root/331#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "51bda87f",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "32f9c89e",
+      "line": 450
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-7": {
+    "tpl": "Root/333#0",
+    "fingerprint": {
+      "tag": "h1",
+      "cls": "",
+      "styleHash": "c183b96f",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "d1b84efc",
+      "line": 451
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-8": {
+    "tpl": "Root/334#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "755ee6a6",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "720c9366",
+      "line": 452
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-9": {
+    "tpl": "Root/336#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7a0592dc",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 454
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-10": {
+    "tpl": "Root/338#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpt",
+      "styleHash": "8deabbbc",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "fc9d1737",
+      "line": 456
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-11": {
+    "tpl": "Root/338#1",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpt",
+      "styleHash": "e190fcdb",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "62b71868",
+      "line": 456
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-12": {
+    "tpl": "Root/344#0",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "f13b1390",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 474
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-13": {
+    "tpl": "Root/345#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "cbf31f29",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 476
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-14": {
+    "tpl": "Root/379#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2fad913c",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 529
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-15": {
+    "tpl": "Root/380#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2077cc23",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 530
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-16": {
+    "tpl": "Root/382#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e7fd84e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "79d7c8dd",
+      "line": 532
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-17": {
+    "tpl": "Root/384#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "bc4f20f9",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1f9b8486",
+      "line": 534
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-18": {
+    "tpl": "Root/386#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "846aed51",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "6c36dcd6",
+      "line": 536
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-19": {
+    "tpl": "Root/388#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "37ecd678",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 539
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-20": {
+    "tpl": "Root/390#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "592aa752",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "26749958",
+      "line": 541
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-21": {
+    "tpl": "Root/390#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "592aa752",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "64592bd2",
+      "line": 541
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-22": {
+    "tpl": "Root/390#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "592aa752",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "39d04e7e",
+      "line": 541
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-23": {
+    "tpl": "Root/390#3",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "592aa752",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5dba7960",
+      "line": 541
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-24": {
+    "tpl": "Root/394#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e2fa786c",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 549
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-25": {
+    "tpl": "Root/395#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "83ab8cdd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 550
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-26": {
+    "tpl": "Root/396#0",
+    "fingerprint": {
+      "tag": "image-slot",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 551
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-27": {
+    "tpl": "Root/344#1",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "e8e06e5a",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 474
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-28": {
+    "tpl": "Root/345#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "cbf31f29",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 476
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-29": {
+    "tpl": "Root/379#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2fad913c",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 529
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-30": {
+    "tpl": "Root/380#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "59a70380",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 530
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-31": {
+    "tpl": "Root/382#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e7fd84e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "9e949124",
+      "line": 532
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-32": {
+    "tpl": "Root/384#1",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "bc4f20f9",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "e5271d48",
+      "line": 534
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-33": {
+    "tpl": "Root/386#1",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "846aed51",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "22b66cad",
+      "line": 536
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-34": {
+    "tpl": "Root/393#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpu",
+      "styleHash": "2dfd1a7d",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "dae1e906",
+      "line": 546
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-35": {
+    "tpl": "Root/394#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "a7bfbe4f",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 549
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-36": {
+    "tpl": "Root/395#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "83ab8cdd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 550
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-37": {
+    "tpl": "Root/396#1",
+    "fingerprint": {
+      "tag": "image-slot",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 551
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-38": {
+    "tpl": "Root/344#2",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "f13b1390",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 474
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-39": {
+    "tpl": "Root/345#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "cbf31f29",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 476
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-40": {
+    "tpl": "Root/398#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "888c4eff",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 558
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-41": {
+    "tpl": "Root/399#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e759e3cb",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 559
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-42": {
+    "tpl": "Root/401#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e7fd84e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "80adf10a",
+      "line": 561
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-43": {
+    "tpl": "Root/403#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "bc4f20f9",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "fdb74619",
+      "line": 563
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-44": {
+    "tpl": "Root/408#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "64285a33",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 571
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-45": {
+    "tpl": "Root/410#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpw",
+      "styleHash": "1596fbf6",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 573
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-46": {
+    "tpl": "Root/411#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "8fd9b32c",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "596804",
+      "line": 574
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-47": {
+    "tpl": "Root/412#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 575
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-48": {
+    "tpl": "Root/413#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "bf3821e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 576
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-49": {
+    "tpl": "Root/414#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1bac39e5",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "537bd186",
+      "line": 577
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-50": {
+    "tpl": "Root/420#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8c228764",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "a4b10a2c",
+      "line": 585
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-51": {
+    "tpl": "Root/410#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpw",
+      "styleHash": "1596fbf6",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 573
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-52": {
+    "tpl": "Root/411#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "8fd9b32c",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "596807",
+      "line": 574
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-53": {
+    "tpl": "Root/412#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 575
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-54": {
+    "tpl": "Root/413#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "bf3821e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 576
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-55": {
+    "tpl": "Root/414#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1bac39e5",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "95add3b0",
+      "line": 577
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-56": {
+    "tpl": "Root/420#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8c228764",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7c69f95f",
+      "line": 585
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-57": {
+    "tpl": "Root/410#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "scpw",
+      "styleHash": "1596fbf6",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 573
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-58": {
+    "tpl": "Root/411#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "8fd9b32c",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "596806",
+      "line": 574
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-59": {
+    "tpl": "Root/412#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "73effcfd",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 575
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-60": {
+    "tpl": "Root/413#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "bf3821e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 576
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-61": {
+    "tpl": "Root/414#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1bac39e5",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "8648027d",
+      "line": 577
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-62": {
+    "tpl": "Root/420#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8c228764",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "35d979d8",
+      "line": 585
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-63": {
+    "tpl": "Root/344#3",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "e8e06e5a",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 474
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-64": {
+    "tpl": "Root/345#3",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "cbf31f29",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 476
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-65": {
+    "tpl": "Root/347#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c3d2dfc0",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 479
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-66": {
+    "tpl": "Root/348#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "def18a3e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 480
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-67": {
+    "tpl": "Root/350#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e7fd84e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "eccd45ae",
+      "line": 482
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-68": {
+    "tpl": "Root/352#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "bc4f20f9",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "620f3396",
+      "line": 484
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-69": {
+    "tpl": "Root/365#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2da03a9e",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 508
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-70": {
+    "tpl": "Root/367#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpv",
+      "styleHash": "d6bf285",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 510
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-71": {
+    "tpl": "Root/370#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "61b25a89",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 513
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-72": {
+    "tpl": "Root/371#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b0c2af57",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 514
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-73": {
+    "tpl": "Root/372#0",
+    "fingerprint": {
+      "tag": "image-slot",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 515
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-74": {
+    "tpl": "Root/373#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "371b3dbf",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 517
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-75": {
+    "tpl": "Root/374#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4b2f64ec",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "596804",
+      "line": 518
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-76": {
+    "tpl": "Root/375#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "86ad801a",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "5452407a",
+      "line": 519
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-77": {
+    "tpl": "Root/376#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "11f090c7",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "18c517d4",
+      "line": 520
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-78": {
+    "tpl": "Root/377#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "a57e154f",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "e26e5c63",
+      "line": 521
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-79": {
+    "tpl": "Root/367#1",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpv",
+      "styleHash": "e3a40432",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 510
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-80": {
+    "tpl": "Root/370#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "61b25a89",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 513
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-81": {
+    "tpl": "Root/371#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b0c2af57",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 514
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-82": {
+    "tpl": "Root/372#1",
+    "fingerprint": {
+      "tag": "image-slot",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 515
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-83": {
+    "tpl": "Root/373#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "371b3dbf",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 517
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-84": {
+    "tpl": "Root/374#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4b2f64ec",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "596807",
+      "line": 518
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-85": {
+    "tpl": "Root/375#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "86ad801a",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "e3b34145",
+      "line": 519
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-86": {
+    "tpl": "Root/376#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "11f090c7",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "f344c3bf",
+      "line": 520
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-87": {
+    "tpl": "Root/377#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "50dfc788",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "2d5e9f7c",
+      "line": 521
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-88": {
+    "tpl": "Root/367#2",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpv",
+      "styleHash": "57a96326",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 510
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-89": {
+    "tpl": "Root/370#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "61b25a89",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 513
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-90": {
+    "tpl": "Root/371#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b0c2af57",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 514
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-91": {
+    "tpl": "Root/372#2",
+    "fingerprint": {
+      "tag": "image-slot",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 515
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-92": {
+    "tpl": "Root/373#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "371b3dbf",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 517
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-93": {
+    "tpl": "Root/374#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4b2f64ec",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "596801",
+      "line": 518
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-94": {
+    "tpl": "Root/375#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "86ad801a",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "32cd5487",
+      "line": 519
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-95": {
+    "tpl": "Root/376#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1379e2f9",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "2fe2cbde",
+      "line": 520
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-96": {
+    "tpl": "Root/377#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "42b42f49",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "a",
+        "div"
+      ],
+      "textHash": "1bf062be",
+      "line": 521
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-97": {
+    "tpl": "Root/344#4",
+    "fingerprint": {
+      "tag": "section",
+      "cls": "",
+      "styleHash": "a28a05cb",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 474
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-98": {
+    "tpl": "Root/345#4",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "cbf31f29",
+      "parentTags": [
+        "main",
+        "section"
+      ],
+      "textHash": "1505",
+      "line": 476
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-99": {
+    "tpl": "Root/515#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "822e26d4",
+      "parentTags": [
+        "main",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 741
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-100": {
+    "tpl": "Root/516#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "45f33a79",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 742
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-101": {
+    "tpl": "Root/517#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "b0e74038",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 743
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-102": {
+    "tpl": "Root/519#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "aa146b11",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 745
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-103": {
+    "tpl": "Root/520#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fd343297",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "f4ee86d1",
+      "line": 746
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-104": {
+    "tpl": "Root/522#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "e108848a",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5403b1e",
+      "line": 747
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-105": {
+    "tpl": "Root/523#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "8c9a7edc",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "45a89f81",
+      "line": 748
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-106": {
+    "tpl": "Root/524#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d0d5913e",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 750
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-107": {
+    "tpl": "Root/525#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp14",
+      "styleHash": "d1712539",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "fc5594e5",
+      "line": 751
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-retail-108": {
+    "tpl": "Root/526#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp5",
+      "styleHash": "d4775ff",
+      "parentTags": [
+        "main",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "d9580830",
+      "line": 752
+    },
+    "draft": "0fe5aee1c396a997"
+  }
+}

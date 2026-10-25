@@ -1,0 +1,325 @@
+[
+  {
+    "id": "D-1",
+    "scope": "home",
+    "node": "cr-ref-home-74",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 784px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-25 FR-48-50",
+    "snap": {
+      "draft": 784,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-2",
+    "scope": "home",
+    "node": "cr-ref-home-1",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1008px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-25 FR-48-50",
+    "snap": {
+      "draft": 1008,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-3",
+    "scope": "home",
+    "node": "cr-ref-home-1",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1040px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-25 FR-48-50",
+    "snap": {
+      "draft": 1040,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-4",
+    "scope": "food-service",
+    "node": "cr-ref-food-service-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-5",
+    "scope": "manufacturing",
+    "node": "cr-ref-manufacturing-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-6",
+    "scope": "retail",
+    "node": "cr-ref-retail-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-7",
+    "scope": "wholesale",
+    "node": "cr-ref-wholesale-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-8",
+    "scope": "brands",
+    "node": "cr-ref-brands-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-9",
+    "scope": "shan",
+    "node": "cr-ref-shan-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-10",
+    "scope": "sanam",
+    "node": "cr-ref-sanam-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-11",
+    "scope": "green-leaf",
+    "node": "cr-ref-green-leaf-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-12",
+    "scope": "lemon-tree",
+    "node": "cr-ref-lemon-tree-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-13",
+    "scope": "apply",
+    "node": "cr-ref-apply-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-14",
+    "scope": "catalogue",
+    "node": "cr-ref-catalogue-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-15",
+    "scope": "delivery",
+    "node": "cr-ref-delivery-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-16",
+    "scope": "terms",
+    "node": "cr-ref-terms-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-17",
+    "scope": "contact",
+    "node": "cr-ref-contact-48",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 784px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-25 FR-48-50",
+    "snap": {
+      "draft": 784,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-18",
+    "scope": "contact",
+    "node": "cr-ref-contact-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-19",
+    "scope": "faqs",
+    "node": "cr-ref-faqs-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-25 Bean ruling (24px target size)"
+  }
+]

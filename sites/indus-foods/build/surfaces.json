@@ -138,5 +138,588 @@
     "states": {
       "open": null
     }
+  },
+  "home": {
+    "tree": "trees/page/home.json",
+    "intakeSurface": "page-home",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 90
+    },
+    "walker": "qa/parity/home.fill-base.mjs",
+    "walkerFull": "qa/parity/home.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null,
+      "testimonial-1-of-4": null,
+      "testimonial-2-of-4": null,
+      "testimonial-3-of-4": null,
+      "testimonial-4-of-4": null,
+      "desktop-heritage-line": null,
+      "steps-connector": null
+    }
+  },
+  "about": {
+    "tree": "trees/page/about.json",
+    "intakeSurface": "page-about",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 92
+    },
+    "walker": "qa/parity/about.fill-base.mjs",
+    "walkerFull": "qa/parity/about.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null,
+      "pinned-timeline": null,
+      "swipe-timeline": null
+    }
+  },
+  "our-story": {
+    "tree": "trees/page/our-story.json",
+    "intakeSurface": "page-our-story",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 95
+    },
+    "walker": "qa/parity/our-story.fill-base.mjs",
+    "walkerFull": "qa/parity/our-story.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null,
+      "pinned-timeline": null,
+      "swipe-timeline": null
+    }
+  },
+  "certifications": {
+    "tree": "trees/page/certifications.json",
+    "intakeSurface": "page-certifications",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 97
+    },
+    "walker": "qa/parity/certifications.fill-base.mjs",
+    "walkerFull": "qa/parity/certifications.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "community": {
+    "tree": "trees/page/community.json",
+    "intakeSurface": "page-community",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 99
+    },
+    "walker": "qa/parity/community.fill-base.mjs",
+    "walkerFull": "qa/parity/community.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "sustainability": {
+    "tree": "trees/page/sustainability.json",
+    "intakeSurface": "page-sustainability",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 101
+    },
+    "walker": "qa/parity/sustainability.fill-base.mjs",
+    "walkerFull": "qa/parity/sustainability.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "careers": {
+    "tree": "trees/page/careers.json",
+    "intakeSurface": "page-careers",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 103
+    },
+    "walker": "qa/parity/careers.fill-base.mjs",
+    "walkerFull": "qa/parity/careers.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "food-service": {
+    "tree": "trees/page/food-service.json",
+    "intakeSurface": "page-food-service",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 105
+    },
+    "walker": "qa/parity/food-service.fill-base.mjs",
+    "walkerFull": "qa/parity/food-service.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "manufacturing": {
+    "tree": "trees/page/manufacturing.json",
+    "intakeSurface": "page-manufacturing",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 107
+    },
+    "walker": "qa/parity/manufacturing.fill-base.mjs",
+    "walkerFull": "qa/parity/manufacturing.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "retail": {
+    "tree": "trees/page/retail.json",
+    "intakeSurface": "page-retail",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 109
+    },
+    "walker": "qa/parity/retail.fill-base.mjs",
+    "walkerFull": "qa/parity/retail.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "wholesale": {
+    "tree": "trees/page/wholesale.json",
+    "intakeSurface": "page-wholesale",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 111
+    },
+    "walker": "qa/parity/wholesale.fill-base.mjs",
+    "walkerFull": "qa/parity/wholesale.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "brands": {
+    "tree": "trees/page/brands.json",
+    "intakeSurface": "page-brands",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 113
+    },
+    "walker": "qa/parity/brands.fill-base.mjs",
+    "walkerFull": "qa/parity/brands.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "sanam": {
+    "tree": "trees/page/sanam.json",
+    "intakeSurface": "page-brand-sanam",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 115
+    },
+    "walker": "qa/parity/sanam.fill-base.mjs",
+    "walkerFull": "qa/parity/sanam.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "shan": {
+    "tree": "trees/page/shan.json",
+    "intakeSurface": "page-brand-shan",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 117
+    },
+    "walker": "qa/parity/shan.fill-base.mjs",
+    "walkerFull": "qa/parity/shan.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "green-leaf": {
+    "tree": "trees/page/green-leaf.json",
+    "intakeSurface": "page-brand-green-leaf",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 119
+    },
+    "walker": "qa/parity/green-leaf.fill-base.mjs",
+    "walkerFull": "qa/parity/green-leaf.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "lemon-tree": {
+    "tree": "trees/page/lemon-tree.json",
+    "intakeSurface": "page-brand-lemon-tree",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 121
+    },
+    "walker": "qa/parity/lemon-tree.fill-base.mjs",
+    "walkerFull": "qa/parity/lemon-tree.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "apply": {
+    "tree": "trees/page/apply.json",
+    "intakeSurface": "page-apply",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 123
+    },
+    "walker": "qa/parity/apply.fill-base.mjs",
+    "walkerFull": "qa/parity/apply.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "catalogue": {
+    "tree": "trees/page/catalogue.json",
+    "intakeSurface": "page-catalogue",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 125
+    },
+    "walker": "qa/parity/catalogue.fill-base.mjs",
+    "walkerFull": "qa/parity/catalogue.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "delivery": {
+    "tree": "trees/page/delivery.json",
+    "intakeSurface": "page-delivery",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 127
+    },
+    "walker": "qa/parity/delivery.fill-base.mjs",
+    "walkerFull": "qa/parity/delivery.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "terms": {
+    "tree": "trees/page/terms.json",
+    "intakeSurface": "page-terms",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 129
+    },
+    "walker": "qa/parity/terms.fill-base.mjs",
+    "walkerFull": "qa/parity/terms.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "blog": {
+    "tree": "trees/page/blog.json",
+    "intakeSurface": "page-blog",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 131
+    },
+    "walker": "qa/parity/blog.fill-base.mjs",
+    "walkerFull": "qa/parity/blog.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "contact": {
+    "tree": "trees/page/contact.json",
+    "intakeSurface": "page-contact",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 133
+    },
+    "walker": "qa/parity/contact.fill-base.mjs",
+    "walkerFull": "qa/parity/contact.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "faqs": {
+    "tree": "trees/page/faqs.json",
+    "intakeSurface": "page-faqs",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 135
+    },
+    "walker": "qa/parity/faqs.fill-base.mjs",
+    "walkerFull": "qa/parity/faqs.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "supporting-the-trade-through-ramadan": {
+    "tree": "trees/post/supporting-the-trade-through-ramadan.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 137
+    },
+    "canvas": true,
+    "walker": "qa/parity/supporting-the-trade-through-ramadan.fill-base.mjs",
+    "walkerFull": "qa/parity/supporting-the-trade-through-ramadan.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "falak-rice-exclusive-uk-distribution": {
+    "tree": "trees/post/falak-rice-exclusive-uk-distribution.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 139
+    },
+    "canvas": true,
+    "walker": "qa/parity/falak-rice-exclusive-uk-distribution.fill-base.mjs",
+    "walkerFull": "qa/parity/falak-rice-exclusive-uk-distribution.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "inside-our-birmingham-packing-line": {
+    "tree": "trees/post/inside-our-birmingham-packing-line.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 141
+    },
+    "canvas": true,
+    "walker": "qa/parity/inside-our-birmingham-packing-line.fill-base.mjs",
+    "walkerFull": "qa/parity/inside-our-birmingham-packing-line.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "sixty-years-in-the-balti-triangle": {
+    "tree": "trees/post/sixty-years-in-the-balti-triangle.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 143
+    },
+    "canvas": true,
+    "walker": "qa/parity/sixty-years-in-the-balti-triangle.fill-base.mjs",
+    "walkerFull": "qa/parity/sixty-years-in-the-balti-triangle.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "ordering-ahead-for-eid": {
+    "tree": "trees/post/ordering-ahead-for-eid.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 145
+    },
+    "canvas": true,
+    "walker": "qa/parity/ordering-ahead-for-eid.fill-base.mjs",
+    "walkerFull": "qa/parity/ordering-ahead-for-eid.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "why-independents-still-matter": {
+    "tree": "trees/post/why-independents-still-matter.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 147
+    },
+    "canvas": true,
+    "walker": "qa/parity/why-independents-still-matter.fill-base.mjs",
+    "walkerFull": "qa/parity/why-independents-still-matter.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "form-enquiry": {
+    "tree": "trees/sgs_form/enquiry.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 149
+    },
+    "canvas": true,
+    "walker": "qa/parity/form-enquiry.fill-base.mjs",
+    "walkerFull": "qa/parity/form-enquiry.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    },
+    "provides": [
+      "sgs/form:enquiry"
+    ]
+  },
+  "form-careers": {
+    "tree": "trees/sgs_form/careers.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 151
+    },
+    "canvas": true,
+    "walker": "qa/parity/form-careers.fill-base.mjs",
+    "walkerFull": "qa/parity/form-careers.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    },
+    "provides": [
+      "sgs/form:careers"
+    ]
+  },
+  "form-catalogue": {
+    "tree": "trees/sgs_form/catalogue.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 153
+    },
+    "canvas": true,
+    "walker": "qa/parity/form-catalogue.fill-base.mjs",
+    "walkerFull": "qa/parity/form-catalogue.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    },
+    "provides": [
+      "sgs/form:catalogue"
+    ]
+  },
+  "form-trade-application": {
+    "tree": "trees/sgs_form/trade-application.json",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "postId": 163
+    },
+    "canvas": true,
+    "walker": "qa/parity/form-trade-application.fill-base.mjs",
+    "walkerFull": "qa/parity/form-trade-application.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "resting": null
+    },
+    "provides": [
+      "sgs/form:trade-application"
+    ]
   }
 }

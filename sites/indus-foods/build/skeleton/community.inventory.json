@@ -1,0 +1,5985 @@
+{
+  "generated": "2026-10-25T09:09:45.503Z",
+  "source": "http://127.0.0.1:53375/#/community",
+  "root": "main",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/201#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "About"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Community & Charity"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "About · Community & Charity"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Rooted in Sparkbrook for over 60 years."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "We started by serving Birmingham’s South Asian community, an"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Where we help"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Our community commitments."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "01"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Local food support"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Donating stock to food banks and community kitchens across B"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "02"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Ramadan & Eid"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Supporting mosques, community iftars and charity drives thro"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "03"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Local jobs"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Creating jobs in Sparkbrook as our warehouse and production "
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "04"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Independent businesses"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Backing the small caterers and shops that make up much of ou"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Our home"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Part of the Balti Triangle story."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Sparkbrook’s Ladypool Road helped introduce Britain to South"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Partnerships"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Partner with us on a community project."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "If you run a charity or community initiative in the Midlands"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Get in touch"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Call 0121 771 4330"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 85,
+      "768": 85,
+      "1440": 85
+    },
+    "tagAgree": 85,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/201#0",
+      "parentKey": "Root/8#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 201,
+      "attrs": {
+        "style": "position: relative; z-index: 1;"
+      },
+      "words": "",
+      "allText": "Home/About/Community & Charity About · Community & Charity Rooted in Sparkbrook for over 60 years. We started by serving",
+      "srcLine": 269,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 3559
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 2862.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 2468.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_201_0@375.png",
+        "1440": "shots/Root_201_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/316#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 316,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; background: linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%); color: rgb(44, 62, 80); padding: 44px 40px 88px; min-height: auto; box-sizing: border-box;"
+      },
+      "words": "",
+      "allText": "Home/About/Community & Charity About · Community & Charity Rooted in Sparkbrook for over 60 years. We started by serving",
+      "srcLine": 435,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 716.4
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 961.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 611.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_316_0@375.png",
+        "1440": "shots/Root_316_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/318#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 318,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(90% 90% at 100% 0%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 55%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 437,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 716.4
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 961.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 611.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_318_0@375.png",
+        "1440": "shots/Root_318_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/319#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 319,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -120px; bottom: -160px; width: 460px; height: 460px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.22); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 438,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+      "box": {
+        "375": {
+          "x": 4.4,
+          "y": 514.5,
+          "w": 497.3,
+          "h": 497.3
+        },
+        "768": {
+          "x": 418.2,
+          "y": 783.2,
+          "w": 474,
+          "h": 474
+        },
+        "1440": {
+          "x": 1084,
+          "y": 445,
+          "w": 485,
+          "h": 485
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_319_0@375.png",
+        "1440": "shots/Root_319_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/322#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 322,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Home/About/Community & Charity About · Community & Charity Rooted in Sparkbrook for over 60 years. We started by serving",
+      "srcLine": 444,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 632.4
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 845.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 479.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_322_0@375.png",
+        "1440": "shots/Root_322_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/323#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 323,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: rgb(44, 62, 80);"
+      },
+      "words": "",
+      "allText": "Home/About/Community & Charity",
+      "srcLine": 445,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_323_0@375.png",
+        "1440": "shots/Root_323_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/324#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 324,
+      "attrs": {
+        "href": "#/",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Home",
+      "allText": "Home",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Home",
+      "snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 38.4,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_324_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/325#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 325,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"325\">/</span>",
+      "box": {
+        "375": {
+          "x": 66.4,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78.4,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 146.4,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_325_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/326#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 326,
+      "attrs": {
+        "href": "#/about",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "About",
+      "allText": "About",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ hero.section }}",
+      "snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+      "box": {
+        "375": {
+          "x": 79.6,
+          "y": 153,
+          "w": 38.8,
+          "h": 23.3
+        },
+        "768": {
+          "x": 91.6,
+          "y": 165,
+          "w": 38.8,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 159.6,
+          "y": 177,
+          "w": 38.8,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_326_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/327#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 327,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"327\">/</span>",
+      "box": {
+        "375": {
+          "x": 126.4,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 138.4,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 206.4,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_327_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/328#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 328,
+      "attrs": {
+        "style": "color: rgb(44, 62, 80); font-weight: 500;"
+      },
+      "words": "Community & Charity",
+      "allText": "Community & Charity",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.crumb }}",
+      "snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+      "box": {
+        "375": {
+          "x": 139.6,
+          "y": 153,
+          "w": 136.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 151.6,
+          "y": 165,
+          "w": 136.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 219.6,
+          "y": 177,
+          "w": 136.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_328_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/329#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 329,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1.05fr) minmax(0px, 0.95fr); gap: 72px; align-items: center; margin-top: 40px;"
+      },
+      "words": "",
+      "allText": "About · Community & Charity Rooted in Sparkbrook for over 60 years. We started by serving Birmingham’s South Asian commu",
+      "srcLine": 448,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 581.1
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 782.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 1240,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_329_0@375.png",
+        "1440": "shots/Root_329_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/330#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 330,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "About · Community & Charity Rooted in Sparkbrook for over 60 years. We started by serving Birmingham’s South Asian commu",
+      "srcLine": 449,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 293.9
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 210.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 281.6,
+          "w": 613.2,
+          "h": 333.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_330_0@375.png",
+        "1440": "shots/Root_330_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/331#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 331,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 10px; font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(10, 110, 147); background: rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 999px;"
+      },
+      "words": "About · Community & Charity",
+      "allText": "About · Community & Charity",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.eyebrowText }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 316,
+          "h": 36.1
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 316,
+          "h": 36.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 281.6,
+          "w": 316,
+          "h": 36.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_331_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/332#0",
+      "parentKey": "Root/331#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 332,
+      "attrs": {
+        "style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(10, 126, 168);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+      "box": {
+        "375": {
+          "x": 36,
+          "y": 218.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 48,
+          "y": 242.3,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 116,
+          "y": 295.7,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_332_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/333#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 333,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(34px, 4.8vw, 60px); line-height: 1.08; letter-spacing: -0.02em; margin: 20px 0px 0px; text-wrap: balance; max-width: 880px;"
+      },
+      "words": "Rooted in Sparkbrook for over 60 years.",
+      "allText": "Rooted in Sparkbrook for over 60 years.",
+      "srcLine": 451,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "h1",
+      "srcOwnText": "{{ hero.title }}",
+      "snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 260.4,
+          "w": 335,
+          "h": 110.2
+        },
+        "768": {
+          "x": 32,
+          "y": 284.4,
+          "w": 704,
+          "h": 79.6
+        },
+        "1440": {
+          "x": 100,
+          "y": 337.8,
+          "w": 613.2,
+          "h": 194.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_333_0@375.png",
+        "1440": "shots/Root_333_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/334#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 334,
+      "attrs": {
+        "style": "font-size: clamp(16.5px, 1.4vw, 19px); color: rgb(44, 62, 80); line-height: 1.6; max-width: 620px; margin: 22px 0px 0px; text-wrap: pretty; text-shadow: rgba(255, 255, 255, 0.796) 0px 4px 12px;"
+      },
+      "words": "We started by serving Birmingham’s South Asian community, and we’re still based a few streets from where it began. Giving back is part of how we work.",
+      "allText": "We started by serving Birmingham’s South Asian community, and we’re still based a few streets from where it began. Givin",
+      "srcLine": 452,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ hero.intro }}",
+      "snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 392.5,
+          "w": 335,
+          "h": 105.6
+        },
+        "768": {
+          "x": 32,
+          "y": 386,
+          "w": 620,
+          "h": 52.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 554.2,
+          "w": 613.2,
+          "h": 60.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_334_0@375.png",
+        "1440": "shots/Root_334_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/340#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 340,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 462,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"340\"> <div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </di",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 534.1,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 482.8,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 240.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_340_0@375.png",
+        "1440": "shots/Root_340_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/341#0",
+      "parentKey": "Root/340#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 341,
+      "attrs": {
+        "style": "position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: rgba(255, 255, 255, 0.3); border: 5px solid rgb(255, 255, 255); box-shadow: rgba(44, 62, 80, 0.7) 0px 34px 60px -30px; translate: 0px -8px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 463,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 527.1,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 475.8,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 232.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_341_0@375.png",
+        "1440": "shots/Root_341_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/342#0",
+      "parentKey": "Root/341#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 342,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 464,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 25,
+          "y": 532.1,
+          "w": 325,
+          "h": 241.3
+        },
+        "768": {
+          "x": 37,
+          "y": 480.8,
+          "w": 694,
+          "h": 518
+        },
+        "1440": {
+          "x": 790.2,
+          "y": 237.3,
+          "w": 544.8,
+          "h": 406.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_342_0@375.png",
+        "1440": "shots/Root_342_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 108px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Where we help Our community commitments. 01 Local food support Donating stock to food banks and community kitchens acros",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 837.4,
+          "w": 375,
+          "h": 1660.1
+        },
+        "768": {
+          "x": 0,
+          "y": 1082.8,
+          "w": 768,
+          "h": 996.1
+        },
+        "1440": {
+          "x": 0,
+          "y": 744.3,
+          "w": 1440,
+          "h": 702
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_0@375.png",
+        "1440": "shots/Root_344_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#0",
+      "parentKey": "Root/344#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Where we help Our community commitments. 01 Local food support Donating stock to food banks and community kitchens acros",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 901.4,
+          "w": 335,
+          "h": 1532.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 704,
+          "h": 820.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 1240,
+          "h": 486
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_0@375.png",
+        "1440": "shots/Root_345_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/347#0",
+      "parentKey": "Root/345#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 347,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 48px;"
+      },
+      "words": "",
+      "allText": "Where we help Our community commitments.",
+      "srcLine": 479,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-si",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 901.4,
+          "w": 335,
+          "h": 100.5
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 704,
+          "h": 68.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 1240,
+          "h": 82.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_347_0@375.png",
+        "1440": "shots/Root_347_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/348#0",
+      "parentKey": "Root/347#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 348,
+      "attrs": {
+        "style": "max-width: 720px; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Where we help Our community commitments.",
+      "srcLine": 480,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2p",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 901.4,
+          "w": 335,
+          "h": 100.5
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 447.1,
+          "h": 68.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 638.8,
+          "h": 82.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_348_0@375.png",
+        "1440": "shots/Root_348_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/350#0",
+      "parentKey": "Root/348#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 350,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(10, 126, 168); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Where we help",
+      "allText": "Where we help",
+      "srcLine": 482,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "349"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrow }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>{{ b.eyebrow }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 901.4,
+          "w": 335,
+          "h": 20.1
+        },
+        "768": {
+          "x": 32,
+          "y": 1170.8,
+          "w": 447.1,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 852.3,
+          "w": 638.8,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_350_0@375.png",
+        "1440": "shots/Root_350_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/351#0",
+      "parentKey": "Root/350#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 351,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: var(--acc,#D8CA50); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 482,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "349"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 910.4,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 32,
+          "y": 1179.8,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 100,
+          "y": 861.4,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_351_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/352#0",
+      "parentKey": "Root/348#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 352,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 0px; text-wrap: balance;"
+      },
+      "words": "Our community commitments.",
+      "allText": "Our community commitments.",
+      "srcLine": 484,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"352\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 937.5,
+          "w": 335,
+          "h": 64.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1206.9,
+          "w": 447.1,
+          "h": 32.2
+        },
+        "1440": {
+          "x": 100,
+          "y": 888.5,
+          "w": 638.8,
+          "h": 46
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_352_0@375.png",
+        "1440": "shots/Root_352_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/479#0",
+      "parentKey": "Root/345#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 479,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;"
+      },
+      "words": "",
+      "allText": "01 Local food support Donating stock to food banks and community kitchens across Birmingham. 02 Ramadan & Eid Supporting",
+      "srcLine": 682,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax({{ b.min }},1fr));gap:16px;\" data-dc-tpl=\"479\"> <sc-for list=\"{{ b.items }}\" as=\"c\" hint-placeholder-count=\"4\" data-dc-tpl=\"480\"> <a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-d",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1033.9,
+          "w": 335,
+          "h": 1399.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1287.1,
+          "w": 704,
+          "h": 703.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 982.5,
+          "w": 1240,
+          "h": 355.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_479_0@375.png",
+        "1440": "shots/Root_479_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/481#0",
+      "parentKey": "Root/479#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 481,
+      "attrs": {
+        "class": "scp10",
+        "style": "position: relative; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s, border-color 0.35s;"
+      },
+      "words": "",
+      "allText": "01 Local food support Donating stock to food banks and community kitchens across Birmingham.",
+      "srcLine": 684,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-c",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1033.9,
+          "w": 335,
+          "h": 331.9
+        },
+        "768": {
+          "x": 32,
+          "y": 1287.1,
+          "w": 344,
+          "h": 355.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 982.5,
+          "w": 298,
+          "h": 355.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_481_0@375.png",
+        "1440": "shots/Root_481_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/483#0",
+      "parentKey": "Root/481#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 483,
+      "attrs": {
+        "style": "height: 170px; background: rgb(234, 244, 247); border-bottom: 1px solid rgba(30, 42, 60, 0.08);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 686,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:{{ b.imgH }};background:#EAF4F7;border-bottom:1px solid rgba(30,42,60,.08);\" data-dc-tpl=\"483\"> <image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1034.9,
+          "w": 333,
+          "h": 170
+        },
+        "768": {
+          "x": 33,
+          "y": 1288.1,
+          "w": 342,
+          "h": 170
+        },
+        "1440": {
+          "x": 101,
+          "y": 983.5,
+          "w": 296,
+          "h": 170
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_483_0@375.png",
+        "1440": "shots/Root_483_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/484#0",
+      "parentKey": "Root/483#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 484,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 687,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1034.9,
+          "w": 333,
+          "h": 169
+        },
+        "768": {
+          "x": 33,
+          "y": 1288.1,
+          "w": 342,
+          "h": 169
+        },
+        "1440": {
+          "x": 101,
+          "y": 983.5,
+          "w": 296,
+          "h": 169
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_484_0@375.png",
+        "1440": "shots/Root_484_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/485#0",
+      "parentKey": "Root/481#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 485,
+      "attrs": {
+        "style": "position: relative; z-index: 2; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 0%; text-shadow: var(--ts,none); pointer-events: var(--cpe,auto);"
+      },
+      "words": "",
+      "allText": "01 Local food support Donating stock to food banks and community kitchens across Birmingham.",
+      "srcLine": 690,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:2;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;text-shadow:var(--ts,none);pointer-events:var(--cpe,auto);\" data-dc-tpl=\"485\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1204.9,
+          "w": 333,
+          "h": 159.9
+        },
+        "768": {
+          "x": 33,
+          "y": 1458.1,
+          "w": 342,
+          "h": 183.9
+        },
+        "1440": {
+          "x": 101,
+          "y": 1153.5,
+          "w": 296,
+          "h": 183.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_485_0@375.png",
+        "1440": "shots/Root_485_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/486#0",
+      "parentKey": "Root/485#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 486,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "01",
+      "srcLine": 691,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span> <sc-if value=\"{{ c.hasTag }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"488\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1228.9,
+          "w": 285,
+          "h": 20.1
+        },
+        "768": {
+          "x": 57,
+          "y": 1482.1,
+          "w": 294,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 125,
+          "y": 1177.5,
+          "w": 248,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_486_0@375.png",
+        "1440": "shots/Root_486_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/487#0",
+      "parentKey": "Root/486#0",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 487,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); font-variant-numeric: tabular-nums;"
+      },
+      "words": "01",
+      "allText": "01",
+      "srcLine": 692,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1228.9,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 57,
+          "y": 1482.1,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 125,
+          "y": 1177.5,
+          "w": 13.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_487_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/490#0",
+      "parentKey": "Root/485#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 490,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em; line-height: 1.25;"
+      },
+      "words": "Local food support",
+      "allText": "Local food support",
+      "srcLine": 697,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;line-height:1.25;\" data-dc-tpl=\"490\">{{ c.title }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1259,
+          "w": 285,
+          "h": 23.8
+        },
+        "768": {
+          "x": 57,
+          "y": 1512.2,
+          "w": 294,
+          "h": 23.8
+        },
+        "1440": {
+          "x": 125,
+          "y": 1207.6,
+          "w": 248,
+          "h": 23.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_490_0@375.png",
+        "1440": "shots/Root_490_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/491#0",
+      "parentKey": "Root/485#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 491,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; text-wrap: pretty;"
+      },
+      "words": "Donating stock to food banks and community kitchens across Birmingham.",
+      "allText": "Donating stock to food banks and community kitchens across Birmingham.",
+      "srcLine": 698,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;\" data-dc-tpl=\"491\">{{ c.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1292.8,
+          "w": 285,
+          "h": 48
+        },
+        "768": {
+          "x": 57,
+          "y": 1546,
+          "w": 294,
+          "h": 48
+        },
+        "1440": {
+          "x": 125,
+          "y": 1241.4,
+          "w": 248,
+          "h": 72
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_491_0@375.png",
+        "1440": "shots/Root_491_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/481#1",
+      "parentKey": "Root/479#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 481,
+      "attrs": {
+        "class": "scp10",
+        "style": "position: relative; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s, border-color 0.35s;"
+      },
+      "words": "",
+      "allText": "02 Ramadan & Eid Supporting mosques, community iftars and charity drives through the busiest season of the year.",
+      "srcLine": 684,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-c",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1381.8,
+          "w": 335,
+          "h": 355.9
+        },
+        "768": {
+          "x": 392,
+          "y": 1287.1,
+          "w": 344,
+          "h": 355.9
+        },
+        "1440": {
+          "x": 414,
+          "y": 982.5,
+          "w": 298,
+          "h": 355.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_481_1@375.png",
+        "1440": "shots/Root_481_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/483#1",
+      "parentKey": "Root/481#1",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 483,
+      "attrs": {
+        "style": "height: 170px; background: rgb(234, 244, 247); border-bottom: 1px solid rgba(30, 42, 60, 0.08);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 686,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:{{ b.imgH }};background:#EAF4F7;border-bottom:1px solid rgba(30,42,60,.08);\" data-dc-tpl=\"483\"> <image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1382.8,
+          "w": 333,
+          "h": 170
+        },
+        "768": {
+          "x": 393,
+          "y": 1288.1,
+          "w": 342,
+          "h": 170
+        },
+        "1440": {
+          "x": 415,
+          "y": 983.5,
+          "w": 296,
+          "h": 170
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_483_1@375.png",
+        "1440": "shots/Root_483_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/484#1",
+      "parentKey": "Root/483#1",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 484,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 687,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1382.8,
+          "w": 333,
+          "h": 169
+        },
+        "768": {
+          "x": 393,
+          "y": 1288.1,
+          "w": 342,
+          "h": 169
+        },
+        "1440": {
+          "x": 415,
+          "y": 983.5,
+          "w": 296,
+          "h": 169
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_484_1@375.png",
+        "1440": "shots/Root_484_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/485#1",
+      "parentKey": "Root/481#1",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 485,
+      "attrs": {
+        "style": "position: relative; z-index: 2; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 0%; text-shadow: var(--ts,none); pointer-events: var(--cpe,auto);"
+      },
+      "words": "",
+      "allText": "02 Ramadan & Eid Supporting mosques, community iftars and charity drives through the busiest season of the year.",
+      "srcLine": 690,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:2;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;text-shadow:var(--ts,none);pointer-events:var(--cpe,auto);\" data-dc-tpl=\"485\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1552.8,
+          "w": 333,
+          "h": 183.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1458.1,
+          "w": 342,
+          "h": 183.9
+        },
+        "1440": {
+          "x": 415,
+          "y": 1153.5,
+          "w": 296,
+          "h": 183.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_485_1@375.png",
+        "1440": "shots/Root_485_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/486#1",
+      "parentKey": "Root/485#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 486,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "02",
+      "srcLine": 691,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span> <sc-if value=\"{{ c.hasTag }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"488\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1576.8,
+          "w": 285,
+          "h": 20.1
+        },
+        "768": {
+          "x": 417,
+          "y": 1482.1,
+          "w": 294,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 439,
+          "y": 1177.5,
+          "w": 248,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_486_1@375.png",
+        "1440": "shots/Root_486_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/487#1",
+      "parentKey": "Root/486#1",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 487,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); font-variant-numeric: tabular-nums;"
+      },
+      "words": "02",
+      "allText": "02",
+      "srcLine": 692,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1576.8,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 417,
+          "y": 1482.1,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 439,
+          "y": 1177.5,
+          "w": 13.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_487_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/490#1",
+      "parentKey": "Root/485#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 490,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em; line-height: 1.25;"
+      },
+      "words": "Ramadan & Eid",
+      "allText": "Ramadan & Eid",
+      "srcLine": 697,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;line-height:1.25;\" data-dc-tpl=\"490\">{{ c.title }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1606.9,
+          "w": 285,
+          "h": 23.8
+        },
+        "768": {
+          "x": 417,
+          "y": 1512.2,
+          "w": 294,
+          "h": 23.8
+        },
+        "1440": {
+          "x": 439,
+          "y": 1207.6,
+          "w": 248,
+          "h": 23.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_490_1@375.png",
+        "1440": "shots/Root_490_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/491#1",
+      "parentKey": "Root/485#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 491,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; text-wrap: pretty;"
+      },
+      "words": "Supporting mosques, community iftars and charity drives through the busiest season of the year.",
+      "allText": "Supporting mosques, community iftars and charity drives through the busiest season of the year.",
+      "srcLine": 698,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;\" data-dc-tpl=\"491\">{{ c.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1640.7,
+          "w": 285,
+          "h": 72
+        },
+        "768": {
+          "x": 417,
+          "y": 1546,
+          "w": 294,
+          "h": 72
+        },
+        "1440": {
+          "x": 439,
+          "y": 1241.4,
+          "w": 248,
+          "h": 72
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_491_1@375.png",
+        "1440": "shots/Root_491_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/481#2",
+      "parentKey": "Root/479#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 481,
+      "attrs": {
+        "class": "scp10",
+        "style": "position: relative; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s, border-color 0.35s;"
+      },
+      "words": "",
+      "allText": "03 Local jobs Creating jobs in Sparkbrook as our warehouse and production hub grow.",
+      "srcLine": 684,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-c",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1753.7,
+          "w": 335,
+          "h": 331.9
+        },
+        "768": {
+          "x": 32,
+          "y": 1659,
+          "w": 344,
+          "h": 331.9
+        },
+        "1440": {
+          "x": 728,
+          "y": 982.5,
+          "w": 298,
+          "h": 355.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_481_2@375.png",
+        "1440": "shots/Root_481_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/483#2",
+      "parentKey": "Root/481#2",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 483,
+      "attrs": {
+        "style": "height: 170px; background: rgb(234, 244, 247); border-bottom: 1px solid rgba(30, 42, 60, 0.08);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 686,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:{{ b.imgH }};background:#EAF4F7;border-bottom:1px solid rgba(30,42,60,.08);\" data-dc-tpl=\"483\"> <image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1754.7,
+          "w": 333,
+          "h": 170
+        },
+        "768": {
+          "x": 33,
+          "y": 1660,
+          "w": 342,
+          "h": 170
+        },
+        "1440": {
+          "x": 729,
+          "y": 983.5,
+          "w": 296,
+          "h": 170
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_483_2@375.png",
+        "1440": "shots/Root_483_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/484#2",
+      "parentKey": "Root/483#2",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 484,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 687,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1754.7,
+          "w": 333,
+          "h": 169
+        },
+        "768": {
+          "x": 33,
+          "y": 1660,
+          "w": 342,
+          "h": 169
+        },
+        "1440": {
+          "x": 729,
+          "y": 983.5,
+          "w": 296,
+          "h": 169
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_484_2@375.png",
+        "1440": "shots/Root_484_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/485#2",
+      "parentKey": "Root/481#2",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 485,
+      "attrs": {
+        "style": "position: relative; z-index: 2; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 0%; text-shadow: var(--ts,none); pointer-events: var(--cpe,auto);"
+      },
+      "words": "",
+      "allText": "03 Local jobs Creating jobs in Sparkbrook as our warehouse and production hub grow.",
+      "srcLine": 690,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:2;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;text-shadow:var(--ts,none);pointer-events:var(--cpe,auto);\" data-dc-tpl=\"485\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 1924.7,
+          "w": 333,
+          "h": 159.9
+        },
+        "768": {
+          "x": 33,
+          "y": 1830,
+          "w": 342,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 729,
+          "y": 1153.5,
+          "w": 296,
+          "h": 183.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_485_2@375.png",
+        "1440": "shots/Root_485_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/486#2",
+      "parentKey": "Root/485#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 486,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "03",
+      "srcLine": 691,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span> <sc-if value=\"{{ c.hasTag }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"488\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1948.7,
+          "w": 285,
+          "h": 20.1
+        },
+        "768": {
+          "x": 57,
+          "y": 1854,
+          "w": 294,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 753,
+          "y": 1177.5,
+          "w": 248,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_486_2@375.png",
+        "1440": "shots/Root_486_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/487#2",
+      "parentKey": "Root/486#2",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 487,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); font-variant-numeric: tabular-nums;"
+      },
+      "words": "03",
+      "allText": "03",
+      "srcLine": 692,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1948.7,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 57,
+          "y": 1854,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 753,
+          "y": 1177.5,
+          "w": 13.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_487_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/490#2",
+      "parentKey": "Root/485#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 490,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em; line-height: 1.25;"
+      },
+      "words": "Local jobs",
+      "allText": "Local jobs",
+      "srcLine": 697,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;line-height:1.25;\" data-dc-tpl=\"490\">{{ c.title }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 1978.8,
+          "w": 285,
+          "h": 23.8
+        },
+        "768": {
+          "x": 57,
+          "y": 1884.1,
+          "w": 294,
+          "h": 23.8
+        },
+        "1440": {
+          "x": 753,
+          "y": 1207.6,
+          "w": 248,
+          "h": 23.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_490_2@375.png",
+        "1440": "shots/Root_490_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/491#2",
+      "parentKey": "Root/485#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 491,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; text-wrap: pretty;"
+      },
+      "words": "Creating jobs in Sparkbrook as our warehouse and production hub grow.",
+      "allText": "Creating jobs in Sparkbrook as our warehouse and production hub grow.",
+      "srcLine": 698,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;\" data-dc-tpl=\"491\">{{ c.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2012.5,
+          "w": 285,
+          "h": 48
+        },
+        "768": {
+          "x": 57,
+          "y": 1917.9,
+          "w": 294,
+          "h": 48
+        },
+        "1440": {
+          "x": 753,
+          "y": 1241.4,
+          "w": 248,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_491_2@375.png",
+        "1440": "shots/Root_491_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/481#3",
+      "parentKey": "Root/479#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 481,
+      "attrs": {
+        "class": "scp10",
+        "style": "position: relative; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s, border-color 0.35s;"
+      },
+      "words": "",
+      "allText": "04 Independent businesses Backing the small caterers and shops that make up much of our customer base.",
+      "srcLine": 684,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ c.href }}\" data-peek=\"{{ c.peekAttr }}\" style=\"position:relative;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s,border-color .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);border-c",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2101.5,
+          "w": 335,
+          "h": 331.9
+        },
+        "768": {
+          "x": 392,
+          "y": 1659,
+          "w": 344,
+          "h": 331.9
+        },
+        "1440": {
+          "x": 1042,
+          "y": 982.5,
+          "w": 298,
+          "h": 355.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_481_3@375.png",
+        "1440": "shots/Root_481_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/483#3",
+      "parentKey": "Root/481#3",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 483,
+      "attrs": {
+        "style": "height: 170px; background: rgb(234, 244, 247); border-bottom: 1px solid rgba(30, 42, 60, 0.08);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 686,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:{{ b.imgH }};background:#EAF4F7;border-bottom:1px solid rgba(30,42,60,.08);\" data-dc-tpl=\"483\"> <image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2102.5,
+          "w": 333,
+          "h": 170
+        },
+        "768": {
+          "x": 393,
+          "y": 1660,
+          "w": 342,
+          "h": 170
+        },
+        "1440": {
+          "x": 1043,
+          "y": 983.5,
+          "w": 296,
+          "h": 170
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_483_3@375.png",
+        "1440": "shots/Root_483_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/484#3",
+      "parentKey": "Root/483#3",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 484,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 687,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.hasImg }}",
+          "tpl": "482"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ c.img }}\" shape=\"rect\" placeholder=\"{{ c.imgLabel }}\" data-dc-tpl=\"484\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2102.5,
+          "w": 333,
+          "h": 169
+        },
+        "768": {
+          "x": 393,
+          "y": 1660,
+          "w": 342,
+          "h": 169
+        },
+        "1440": {
+          "x": 1043,
+          "y": 983.5,
+          "w": 296,
+          "h": 169
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_484_3@375.png",
+        "1440": "shots/Root_484_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/485#3",
+      "parentKey": "Root/481#3",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 485,
+      "attrs": {
+        "style": "position: relative; z-index: 2; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1 1 0%; text-shadow: var(--ts,none); pointer-events: var(--cpe,auto);"
+      },
+      "words": "",
+      "allText": "04 Independent businesses Backing the small caterers and shops that make up much of our customer base.",
+      "srcLine": 690,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:2;padding:24px;display:flex;flex-direction:column;gap:10px;flex:1;text-shadow:var(--ts,none);pointer-events:var(--cpe,auto);\" data-dc-tpl=\"485\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2272.5,
+          "w": 333,
+          "h": 159.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1830,
+          "w": 342,
+          "h": 159.9
+        },
+        "1440": {
+          "x": 1043,
+          "y": 1153.5,
+          "w": 296,
+          "h": 183.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_485_3@375.png",
+        "1440": "shots/Root_485_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/486#3",
+      "parentKey": "Root/485#3",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 486,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "04",
+      "srcLine": 691,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"486\"> <span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span> <sc-if value=\"{{ c.hasTag }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"488\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2296.5,
+          "w": 285,
+          "h": 20.1
+        },
+        "768": {
+          "x": 417,
+          "y": 1854,
+          "w": 294,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 1067,
+          "y": 1177.5,
+          "w": 248,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_486_3@375.png",
+        "1440": "shots/Root_486_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/487#3",
+      "parentKey": "Root/486#3",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 487,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); font-variant-numeric: tabular-nums;"
+      },
+      "words": "04",
+      "allText": "04",
+      "srcLine": 692,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.num }}",
+      "snippet": "<span style=\"font-weight:700;font-size:13px;color:#0A7EA8;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"487\">{{ c.num }}</span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2296.5,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 417,
+          "y": 1854,
+          "w": 13.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 1067,
+          "y": 1177.5,
+          "w": 13.7,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_487_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/490#3",
+      "parentKey": "Root/485#3",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 490,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 19px; color: inherit; letter-spacing: -0.015em; line-height: 1.25;"
+      },
+      "words": "Independent businesses",
+      "allText": "Independent businesses",
+      "srcLine": 697,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:19px;color:inherit;letter-spacing:-.015em;line-height:1.25;\" data-dc-tpl=\"490\">{{ c.title }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2326.7,
+          "w": 285,
+          "h": 23.8
+        },
+        "768": {
+          "x": 417,
+          "y": 1884.1,
+          "w": 294,
+          "h": 23.8
+        },
+        "1440": {
+          "x": 1067,
+          "y": 1207.6,
+          "w": 248,
+          "h": 23.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_490_3@375.png",
+        "1440": "shots/Root_490_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/491#3",
+      "parentKey": "Root/485#3",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 491,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; text-wrap: pretty;"
+      },
+      "words": "Backing the small caterers and shops that make up much of our customer base.",
+      "allText": "Backing the small caterers and shops that make up much of our customer base.",
+      "srcLine": 698,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCards }}",
+          "tpl": "478"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.items }}",
+          "as": "c",
+          "tpl": "480"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ c.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;text-wrap:pretty;\" data-dc-tpl=\"491\">{{ c.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2360.4,
+          "w": 285,
+          "h": 48
+        },
+        "768": {
+          "x": 417,
+          "y": 1917.9,
+          "w": 294,
+          "h": 48
+        },
+        "1440": {
+          "x": 1067,
+          "y": 1241.4,
+          "w": 248,
+          "h": 72
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_491_3@375.png",
+        "1440": "shots/Root_491_3@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#1",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 108px 40px; background: linear-gradient(rgb(243, 234, 176) 0%, rgb(234, 221, 126) 100%); --acc: #0A7EA8; --accFg: #FFFFFF; --accLine: rgba(10,126,168,.28);"
+      },
+      "words": "",
+      "allText": "Our home Part of the Balti Triangle story. Sparkbrook’s Ladypool Road helped introduce Britain to South Asian food. Our ",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 2497.4,
+          "w": 375,
+          "h": 662.7
+        },
+        "768": {
+          "x": 0,
+          "y": 2078.9,
+          "w": 768,
+          "h": 440
+        },
+        "1440": {
+          "x": 0,
+          "y": 1446.4,
+          "w": 1440,
+          "h": 683.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_1@375.png",
+        "1440": "shots/Root_344_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#1",
+      "parentKey": "Root/344#1",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Our home Part of the Balti Triangle story. Sparkbrook’s Ladypool Road helped introduce Britain to South Asian food. Our ",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2561.4,
+          "w": 335,
+          "h": 534.7
+        },
+        "768": {
+          "x": 32,
+          "y": 2166.9,
+          "w": 704,
+          "h": 264
+        },
+        "1440": {
+          "x": 100,
+          "y": 1554.4,
+          "w": 1240,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_1@375.png",
+        "1440": "shots/Root_345_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/379#0",
+      "parentKey": "Root/345#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 379,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1fr) minmax(0px, 1fr); gap: 72px; align-items: center;"
+      },
+      "words": "",
+      "allText": "Our home Part of the Balti Triangle story. Sparkbrook’s Ladypool Road helped introduce Britain to South Asian food. Our ",
+      "srcLine": 529,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ R.splitCols }};gap:{{ R.splitGap }};align-items:center;\" data-dc-tpl=\"379\"> <div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2561.4,
+          "w": 335,
+          "h": 534.7
+        },
+        "768": {
+          "x": 32,
+          "y": 2166.9,
+          "w": 704,
+          "h": 264
+        },
+        "1440": {
+          "x": 100,
+          "y": 1554.4,
+          "w": 1240,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_379_0@375.png",
+        "1440": "shots/Root_379_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/380#0",
+      "parentKey": "Root/379#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 380,
+      "attrs": {
+        "style": "order: 2; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Our home Part of the Balti Triangle story. Sparkbrook’s Ladypool Road helped introduce Britain to South Asian food. Our ",
+      "srcLine": 530,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2561.4,
+          "w": 335,
+          "h": 230.7
+        },
+        "768": {
+          "x": 406,
+          "y": 2183.5,
+          "w": 330,
+          "h": 230.7
+        },
+        "1440": {
+          "x": 756,
+          "y": 1672.8,
+          "w": 584,
+          "h": 230.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_380_0@375.png",
+        "1440": "shots/Root_380_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/382#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 382,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(10, 126, 168); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Our home",
+      "allText": "Our home",
+      "srcLine": 532,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "381"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrow }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>{{ b.eyebrow }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2561.4,
+          "w": 335,
+          "h": 20.1
+        },
+        "768": {
+          "x": 406,
+          "y": 2183.5,
+          "w": 330,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 756,
+          "y": 1672.8,
+          "w": 584,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_382_0@375.png",
+        "1440": "shots/Root_382_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/383#0",
+      "parentKey": "Root/382#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 383,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: var(--acc,#D8CA50); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 532,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "381"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2570.5,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 406,
+          "y": 2192.6,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 756,
+          "y": 1681.9,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_383_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/384#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 384,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 0px; text-wrap: balance;"
+      },
+      "words": "Part of the Balti Triangle story.",
+      "allText": "Part of the Balti Triangle story.",
+      "srcLine": 534,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"384\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2597.6,
+          "w": 335,
+          "h": 64.4
+        },
+        "768": {
+          "x": 406,
+          "y": 2219.7,
+          "w": 330,
+          "h": 64.4
+        },
+        "1440": {
+          "x": 756,
+          "y": 1709,
+          "w": 584,
+          "h": 92
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_384_0@375.png",
+        "1440": "shots/Root_384_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/386#0",
+      "parentKey": "Root/380#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 386,
+      "attrs": {
+        "style": "font-size: 17px; color: rgb(74, 85, 99); line-height: 1.65; margin: 18px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Sparkbrook’s Ladypool Road helped introduce Britain to South Asian food. Our family has been part of that story since 1962, and our warehouse and head office are still in B11.",
+      "allText": "Sparkbrook’s Ladypool Road helped introduce Britain to South Asian food. Our family has been part of that story since 19",
+      "srcLine": 536,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.body }}",
+          "as": "p",
+          "tpl": "385"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ p }}",
+      "snippet": "<p style=\"font-size:17px;color:#4A5563;line-height:1.65;margin:18px 0 0;text-wrap:pretty;\" data-dc-tpl=\"386\">{{ p }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2680,
+          "w": 335,
+          "h": 112.2
+        },
+        "768": {
+          "x": 406,
+          "y": 2302,
+          "w": 330,
+          "h": 112.2
+        },
+        "1440": {
+          "x": 756,
+          "y": 1819,
+          "w": 584,
+          "h": 84.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_386_0@375.png",
+        "1440": "shots/Root_386_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/394#0",
+      "parentKey": "Root/379#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 394,
+      "attrs": {
+        "style": "order: 1; position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 549,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"order:{{ b.imgOrder }};position:relative;min-width:0;\" data-dc-tpl=\"394\"> <div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2828.1,
+          "w": 335,
+          "h": 268
+        },
+        "768": {
+          "x": 32,
+          "y": 2166.9,
+          "w": 330,
+          "h": 264
+        },
+        "1440": {
+          "x": 100,
+          "y": 1554.4,
+          "w": 584,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_394_0@375.png",
+        "1440": "shots/Root_394_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/395#0",
+      "parentKey": "Root/394#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 395,
+      "attrs": {
+        "style": "position: relative; aspect-ratio: 4 / 3.2; border-radius: 22px; overflow: hidden; background: rgb(234, 244, 247); border: 5px solid rgb(255, 255, 255); box-shadow: rgba(44, 62, 80, 0.6) 0px 30px 54px -30px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 550,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2828.1,
+          "w": 335,
+          "h": 268
+        },
+        "768": {
+          "x": 32,
+          "y": 2166.9,
+          "w": 330,
+          "h": 264
+        },
+        "1440": {
+          "x": 100,
+          "y": 1554.4,
+          "w": 584,
+          "h": 467.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_395_0@375.png",
+        "1440": "shots/Root_395_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/396#0",
+      "parentKey": "Root/395#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 396,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 551,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isSplit }}",
+          "tpl": "378"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 25,
+          "y": 2833.1,
+          "w": 325,
+          "h": 258
+        },
+        "768": {
+          "x": 37,
+          "y": 2171.9,
+          "w": 320,
+          "h": 254
+        },
+        "1440": {
+          "x": 105,
+          "y": 1559.4,
+          "w": 574,
+          "h": 457.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_396_0@375.png",
+        "1440": "shots/Root_396_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#2",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 64px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Partnerships Partner with us on a community project. If you run a charity or community initiative in the Midlands, we’d ",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 3160.1,
+          "w": 375,
+          "h": 519.9
+        },
+        "768": {
+          "x": 0,
+          "y": 2518.9,
+          "w": 768,
+          "h": 464.9
+        },
+        "1440": {
+          "x": 0,
+          "y": 2129.6,
+          "w": 1440,
+          "h": 472.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_2@375.png",
+        "1440": "shots/Root_344_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#2",
+      "parentKey": "Root/344#2",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Partnerships Partner with us on a community project. If you run a charity or community initiative in the Midlands, we’d ",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3200.1,
+          "w": 335,
+          "h": 439.9
+        },
+        "768": {
+          "x": 32,
+          "y": 2570.9,
+          "w": 704,
+          "h": 360.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 2193.6,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_2@375.png",
+        "1440": "shots/Root_345_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/515#0",
+      "parentKey": "Root/345#2",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 515,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; border-radius: 26px; background: linear-gradient(135deg, rgb(14, 139, 184) 0%, rgb(10, 126, 168) 45%, rgb(7, 94, 128) 100%); color: rgb(255, 255, 255); padding: 68px 64px; display: grid; grid-template-columns: minmax(0px, 1.4fr) minmax(0px, 1fr); gap: 30px; align-items: center;"
+      },
+      "words": "",
+      "allText": "Partnerships Partner with us on a community project. If you run a charity or community initiative in the Midlands, we’d ",
+      "srcLine": 741,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(135deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);color:#FFFFFF;padding:{{ R.ctaPad }};display:grid;grid-template-columns:{{ R.ctaCols }};gap:30px;align-items:center;\" data-dc-tpl=\"515\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3200.1,
+          "w": 335,
+          "h": 439.9
+        },
+        "768": {
+          "x": 32,
+          "y": 2570.9,
+          "w": 704,
+          "h": 360.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 2193.6,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_515_0@375.png",
+        "1440": "shots/Root_515_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/516#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 516,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -90px; top: -110px; width: 340px; height: 340px; border-radius: 50%; border: 2px solid rgba(216, 202, 80, 0.55); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 742,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
+      "box": {
+        "375": {
+          "x": 95.9,
+          "y": 3074.5,
+          "w": 358.7,
+          "h": 358.7
+        },
+        "768": {
+          "x": 460.6,
+          "y": 2432.6,
+          "w": 371.8,
+          "h": 371.8
+        },
+        "1440": {
+          "x": 1088,
+          "y": 2082.8,
+          "w": 343.1,
+          "h": 343.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_516_0@375.png",
+        "1440": "shots/Root_516_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/517#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 517,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: 40px; top: -40px; width: 150px; height: 150px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.2); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 743,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
+      "box": {
+        "375": {
+          "x": 138.5,
+          "y": 3160.9,
+          "w": 167.8,
+          "h": 167.8
+        },
+        "768": {
+          "x": 546.2,
+          "y": 2537.7,
+          "w": 159.2,
+          "h": 159.2
+        },
+        "1440": {
+          "x": 1149.1,
+          "y": 2156.6,
+          "w": 162.8,
+          "h": 162.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_517_0@375.png",
+        "1440": "shots/Root_517_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/518#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 518,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(70% 90% at 0% 100%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 60%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 744,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"518\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3200.1,
+          "w": 335,
+          "h": 439.9
+        },
+        "768": {
+          "x": 32,
+          "y": 2570.9,
+          "w": 704,
+          "h": 360.9
+        },
+        "1440": {
+          "x": 100,
+          "y": 2193.6,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_518_0@375.png",
+        "1440": "shots/Root_518_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/519#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 519,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Partnerships Partner with us on a community project. If you run a charity or community initiative in the Midlands, we’d ",
+      "srcLine": 745,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"519\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3240.1,
+          "w": 287,
+          "h": 229.1
+        },
+        "768": {
+          "x": 76,
+          "y": 2622.9,
+          "w": 616,
+          "h": 170.1
+        },
+        "1440": {
+          "x": 164,
+          "y": 2261.6,
+          "w": 631.2,
+          "h": 208.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_519_0@375.png",
+        "1440": "shots/Root_519_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/520#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 520,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Partnerships",
+      "allText": "Partnerships",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrowText }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText }}</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3240.1,
+          "w": 287,
+          "h": 20.1
+        },
+        "768": {
+          "x": 76,
+          "y": 2622.9,
+          "w": 616,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 164,
+          "y": 2261.6,
+          "w": 631.2,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_520_0@375.png",
+        "1440": "shots/Root_520_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/521#0",
+      "parentKey": "Root/520#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 521,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: rgb(216, 202, 80); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3249.2,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 76,
+          "y": 2631.9,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 164,
+          "y": 2270.6,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_521_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/522#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 522,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(30px, 3.8vw, 48px); line-height: 1.06; letter-spacing: -0.015em; margin: 0px; text-wrap: balance;"
+      },
+      "words": "Partner with us on a community project.",
+      "allText": "Partner with us on a community project.",
+      "srcLine": 747,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,48px);line-height:1.06;letter-spacing:-.015em;margin:0;text-wrap:balance;\" data-dc-tpl=\"522\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3276.3,
+          "w": 287,
+          "h": 95.4
+        },
+        "768": {
+          "x": 76,
+          "y": 2659,
+          "w": 616,
+          "h": 63.6
+        },
+        "1440": {
+          "x": 164,
+          "y": 2297.7,
+          "w": 631.2,
+          "h": 101.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_522_0@375.png",
+        "1440": "shots/Root_522_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/523#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 523,
+      "attrs": {
+        "style": "font-size: 17px; color: rgb(227, 239, 244); line-height: 1.6; margin: 16px 0px 0px; max-width: 560px; text-wrap: pretty;"
+      },
+      "words": "If you run a charity or community initiative in the Midlands, we’d like to hear from you.",
+      "allText": "If you run a charity or community initiative in the Midlands, we’d like to hear from you.",
+      "srcLine": 748,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ b.body }}",
+      "snippet": "<p style=\"font-size:17px;color:#E3EFF4;line-height:1.6;margin:16px 0 0;max-width:560px;text-wrap:pretty;\" data-dc-tpl=\"523\">{{ b.body }}</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3387.7,
+          "w": 287,
+          "h": 81.6
+        },
+        "768": {
+          "x": 76,
+          "y": 2738.6,
+          "w": 560,
+          "h": 54.4
+        },
+        "1440": {
+          "x": 164,
+          "y": 2415.5,
+          "w": 560,
+          "h": 54.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_523_0@375.png",
+        "1440": "shots/Root_523_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/524#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 524,
+      "attrs": {
+        "style": "position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; justify-content: flex-end;"
+      },
+      "words": "",
+      "allText": "Get in touch Call 0121 771 4330",
+      "srcLine": 750,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;justify-content:{{ R.ctaJustify }};\" data-dc-tpl=\"524\"> <a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transiti",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3499.2,
+          "w": 287,
+          "h": 100.8
+        },
+        "768": {
+          "x": 76,
+          "y": 2823,
+          "w": 616,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 825.2,
+          "y": 2337.3,
+          "w": 450.8,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_524_0@375.png",
+        "1440": "shots/Root_524_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/525#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 525,
+      "attrs": {
+        "href": "#/contact",
+        "class": "scp14",
+        "style": "background: rgb(216, 202, 80); color: rgb(30, 42, 60); font-weight: 700; font-size: 16px; padding: 16px 24px; border-radius: 999px; display: inline-flex; align-items: center; gap: 10px; box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 24px -12px; transition: transform 0.2s, background 0.2s, box-shadow 0.3s;"
+      },
+      "words": "Get in touch",
+      "allText": "Get in touch",
+      "srcLine": 751,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.primary.label }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3499.2,
+          "w": 157.9,
+          "h": 56.8
+        },
+        "768": {
+          "x": 76,
+          "y": 2823,
+          "w": 157.9,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 970.7,
+          "y": 2337.3,
+          "w": 157.9,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_525_0@375.png",
+        "1440": "shots/Root_525_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/526#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 526,
+      "attrs": {
+        "href": "tel:01217714330",
+        "class": "scp5",
+        "style": "white-space: nowrap; color: rgb(255, 255, 255); font-weight: 700; font-size: 15.5px; border-bottom: 2px solid rgb(216, 202, 80); padding-bottom: 4px;"
+      },
+      "words": "Call 0121 771 4330",
+      "allText": "Call 0121 771 4330",
+      "srcLine": 752,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.secondary.label }}",
+      "snippet": "<a href=\"{{ b.secondary.href }}\" style=\"white-space:nowrap;color:#FFFFFF;font-weight:700;font-size:15.5px;border-bottom:2px solid #D8CA50;padding-bottom:4px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"526\">{{ b.secondary.label }}</a>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3570,
+          "w": 125.4,
+          "h": 30
+        },
+        "768": {
+          "x": 255.9,
+          "y": 2836.4,
+          "w": 125.4,
+          "h": 30
+        },
+        "1440": {
+          "x": 1150.6,
+          "y": 2350.7,
+          "w": 125.4,
+          "h": 30
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_526_0@375.png",
+        "1440": "shots/Root_526_0@1440.png"
+      }
+    }
+  ]
+}

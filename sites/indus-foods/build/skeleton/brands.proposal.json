@@ -1,0 +1,3921 @@
+{
+	"generated": "2026-10-25T09:38:36.047Z",
+	"inventory": "2026-10-25T09:38:35.894Z",
+	"source": "http://127.0.0.1:53375/#/brands",
+	"surface": "page-brands",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 121,
+		"parts": 0,
+		"rows": 121,
+		"skeletonNodes": 95,
+		"expandedNodes": 95,
+		"low": 11,
+		"removed": 26,
+		"unresolved": 0,
+		"byRule": {
+			"hero": 1,
+			"decorationLayer": 2,
+			"decorativeShape": 3,
+			"heroInner": 3,
+			"label": 8,
+			"wholeCardLink": 10,
+			"mediaElement": 11,
+			"alignWrapper": 10,
+			"cardTitle": 10,
+			"dotMarker": 4
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/201#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_201_0@375.png",
+				"1440": "shots/Root_201_0@1440.png"
+			},
+			"snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/316#0",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/hero",
+			"action": null,
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)",
+			"source": "rule hero",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hero",
+			"candidates": [
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_316_0@375.png",
+				"1440": "shots/Root_316_0@1440.png"
+			},
+			"snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/318#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_318_0@375.png",
+				"1440": "shots/Root_318_0@1440.png"
+			},
+			"snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root/319#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorativeShape",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_319_0@375.png",
+				"1440": "shots/Root_319_0@1440.png"
+			},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 4,
+			"key": "Root/322#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_322_0@375.png",
+				"1440": "shots/Root_322_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/323#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/breadcrumbs",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/breadcrumbs",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_323_0@375.png",
+				"1440": "shots/Root_323_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root/324#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Home",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_324_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root/325#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "/",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_325_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"325\">/</span>",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/326#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Brands",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": "decision for Root/326#0 was made for \"a|About\" and the element is now \"a|Brands\"",
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_326_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+			"attributes": {
+				"label": "Brands",
+				"url": "#/brands"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/327#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "/",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_327_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"327\">/</span>",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/328#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "All Brands",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": "decision for Root/328#0 was made for \"span|About Us\" and the element is now \"span|All Brands\"",
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_328_0@1440.png"
+			},
+			"snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+			"attributes": {
+				"text": "All Brands"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/329#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_329_0@375.png",
+				"1440": "shots/Root_329_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/330#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_330_0@375.png",
+				"1440": "shots/Root_330_0@1440.png"
+			},
+			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/331#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Brands",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_331_0@1440.png"
+			},
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/332#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/331#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_332_0@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root/333#0",
+			"tag": "h1",
+			"depth": 5,
+			"words": "Our own brand, and the brands we distribute.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_333_0@375.png",
+				"1440": "shots/Root_333_0@1440.png"
+			},
+			"snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+			"attributes": {
+				"content": "Our own brand, and the brands we distribute."
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/334#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "Alongside our own-label Sanam range, we supply trusted names like Shan, Green Leaf and The Lemon Tree to foodservice, retail and wholesale customers across the UK and Europe.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_334_0@375.png",
+				"1440": "shots/Root_334_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+			"attributes": {
+				"text": "Alongside our own-label Sanam range, we supply trusted names like Shan, Green Leaf and The Lemon Tree to foodservice, retail and wholesale customers across the UK and Europe."
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/344#0",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_344_0@375.png",
+				"1440": "shots/Root_344_0@1440.png"
+			},
+			"snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/345#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_345_0@375.png",
+				"1440": "shots/Root_345_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/347#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_347_0@375.png",
+				"1440": "shots/Root_347_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-si",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/348#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_348_0@375.png",
+				"1440": "shots/Root_348_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2p",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/350#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Our portfolio",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_350_0@375.png",
+				"1440": "shots/Root_350_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>{{ b.eyebrow }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 22,
+			"key": "Root/351#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/350#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_351_0@1440.png"
+			},
+			"snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root/352#0",
+			"tag": "h2",
+			"depth": 5,
+			"words": "Brands we supply.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_352_0@375.png",
+				"1440": "shots/Root_352_0@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"352\">{{ b.title }}</h2>",
+			"attributes": {
+				"content": "Brands we supply."
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/354#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "Select a brand to see its range.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_354_0@375.png",
+				"1440": "shots/Root_354_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:17px;color:#4A5563;line-height:1.6;margin:16px 0 0;text-wrap:pretty;\" data-dc-tpl=\"354\">{{ b.intro }}</p>",
+			"attributes": {
+				"text": "Select a brand to see its range."
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/499#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 10 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_499_0@375.png",
+				"1440": "shots/Root_499_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fill,minmax({{ R.logoMin }},1fr));gap:16px;\" data-dc-tpl=\"499\"> <sc-for list=\"{{ b.items }}\" as=\"l\" hint-placeholder-count=\"8\" data-dc-tpl=\"500\"> <a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform ",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/501#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_0@375.png",
+				"1440": "shots/Root_501_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brand-sanam"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/502#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_0@375.png",
+				"1440": "shots/Root_502_0@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/503#0",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_0@375.png",
+				"1440": "shots/Root_503_0@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 29,
+			"key": "Root/504#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_0@375.png",
+				"1440": "shots/Root_504_0@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "Root/505#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "Sanam",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_0@375.png",
+				"1440": "shots/Root_505_0@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Sanam"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/506#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "Own brand · rice, flour & quality foods",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: Running descriptive copy with no link or heading role; sgs/text (replaces core/paragraph in the DB) is the right block."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_0@375.png",
+				"1440": "shots/Root_506_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Own brand · rice, flour & quality foods"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/501#1",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_1@375.png",
+				"1440": "shots/Root_501_1@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brand-shan"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/502#1",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_1@375.png",
+				"1440": "shots/Root_502_1@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/503#1",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_1@375.png",
+				"1440": "shots/Root_503_1@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 35,
+			"key": "Root/504#1",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_1@375.png",
+				"1440": "shots/Root_504_1@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 36,
+			"key": "Root/505#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "Shan",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_1@375.png",
+				"1440": "shots/Root_505_1@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Shan"
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root/506#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "Authentic Asian spices & recipe mixes",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_1@375.png",
+				"1440": "shots/Root_506_1@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Authentic Asian spices & recipe mixes"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root/501#2",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_2@375.png",
+				"1440": "shots/Root_501_2@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brand-green-leaf"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/502#2",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_2@375.png",
+				"1440": "shots/Root_502_2@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 40,
+			"key": "Root/503#2",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_2@375.png",
+				"1440": "shots/Root_503_2@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 41,
+			"key": "Root/504#2",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_2@375.png",
+				"1440": "shots/Root_504_2@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 42,
+			"key": "Root/505#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "Green Leaf",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_2@375.png",
+				"1440": "shots/Root_505_2@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Green Leaf"
+			}
+		},
+		{
+			"order": 43,
+			"key": "Root/506#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "Herbs, pulses & pantry staples",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_2@375.png",
+				"1440": "shots/Root_506_2@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Herbs, pulses & pantry staples"
+			}
+		},
+		{
+			"order": 44,
+			"key": "Root/501#3",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_3@375.png",
+				"1440": "shots/Root_501_3@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brand-lemon-tree"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root/502#3",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_3@375.png",
+				"1440": "shots/Root_502_3@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root/503#3",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_3@375.png",
+				"1440": "shots/Root_503_3@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 47,
+			"key": "Root/504#3",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_3@375.png",
+				"1440": "shots/Root_504_3@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 48,
+			"key": "Root/505#3",
+			"tag": "div",
+			"depth": 6,
+			"words": "The Lemon Tree",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_3@375.png",
+				"1440": "shots/Root_505_3@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "The Lemon Tree"
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root/506#3",
+			"tag": "div",
+			"depth": 6,
+			"words": "Delicatessen & bakery",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_3@375.png",
+				"1440": "shots/Root_506_3@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Delicatessen & bakery"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root/501#4",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_4@375.png",
+				"1440": "shots/Root_501_4@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brands"
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root/502#4",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_4@375.png",
+				"1440": "shots/Root_502_4@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root/503#4",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_4@375.png",
+				"1440": "shots/Root_503_4@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 53,
+			"key": "Root/504#4",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_4@375.png",
+				"1440": "shots/Root_504_4@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 54,
+			"key": "Root/505#4",
+			"tag": "div",
+			"depth": 6,
+			"words": "Indus Foods",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_4@375.png",
+				"1440": "shots/Root_505_4@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Indus Foods"
+			}
+		},
+		{
+			"order": 55,
+			"key": "Root/506#4",
+			"tag": "div",
+			"depth": 6,
+			"words": "Our own label",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_4@375.png",
+				"1440": "shots/Root_506_4@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Our own label"
+			}
+		},
+		{
+			"order": 56,
+			"key": "Root/501#5",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_5@375.png",
+				"1440": "shots/Root_501_5@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brands"
+			}
+		},
+		{
+			"order": 57,
+			"key": "Root/502#5",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_5@375.png",
+				"1440": "shots/Root_502_5@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 58,
+			"key": "Root/503#5",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_5@375.png",
+				"1440": "shots/Root_503_5@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 59,
+			"key": "Root/504#5",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_5@375.png",
+				"1440": "shots/Root_504_5@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 60,
+			"key": "Root/505#5",
+			"tag": "div",
+			"depth": 6,
+			"words": "Partner brand",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_5@375.png",
+				"1440": "shots/Root_505_5@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Partner brand"
+			}
+		},
+		{
+			"order": 61,
+			"key": "Root/506#5",
+			"tag": "div",
+			"depth": 6,
+			"words": "Distributed brand",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_5@375.png",
+				"1440": "shots/Root_506_5@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Distributed brand"
+			}
+		},
+		{
+			"order": 62,
+			"key": "Root/501#6",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_6@375.png",
+				"1440": "shots/Root_501_6@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brands"
+			}
+		},
+		{
+			"order": 63,
+			"key": "Root/502#6",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_6@375.png",
+				"1440": "shots/Root_502_6@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 64,
+			"key": "Root/503#6",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_6@375.png",
+				"1440": "shots/Root_503_6@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 65,
+			"key": "Root/504#6",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_6@375.png",
+				"1440": "shots/Root_504_6@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 66,
+			"key": "Root/505#6",
+			"tag": "div",
+			"depth": 6,
+			"words": "Partner brand",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_6@375.png",
+				"1440": "shots/Root_505_6@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Partner brand"
+			}
+		},
+		{
+			"order": 67,
+			"key": "Root/506#6",
+			"tag": "div",
+			"depth": 6,
+			"words": "Distributed brand",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_6@375.png",
+				"1440": "shots/Root_506_6@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Distributed brand"
+			}
+		},
+		{
+			"order": 68,
+			"key": "Root/501#7",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_7@375.png",
+				"1440": "shots/Root_501_7@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brands"
+			}
+		},
+		{
+			"order": 69,
+			"key": "Root/502#7",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_7@375.png",
+				"1440": "shots/Root_502_7@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 70,
+			"key": "Root/503#7",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_7@375.png",
+				"1440": "shots/Root_503_7@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 71,
+			"key": "Root/504#7",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_7@375.png",
+				"1440": "shots/Root_504_7@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 72,
+			"key": "Root/505#7",
+			"tag": "div",
+			"depth": 6,
+			"words": "Partner brand",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_7@375.png",
+				"1440": "shots/Root_505_7@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Partner brand"
+			}
+		},
+		{
+			"order": 73,
+			"key": "Root/506#7",
+			"tag": "div",
+			"depth": 6,
+			"words": "Distributed brand",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_7@375.png",
+				"1440": "shots/Root_506_7@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Distributed brand"
+			}
+		},
+		{
+			"order": 74,
+			"key": "Root/501#8",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_8@375.png",
+				"1440": "shots/Root_501_8@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brands"
+			}
+		},
+		{
+			"order": 75,
+			"key": "Root/502#8",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_8@375.png",
+				"1440": "shots/Root_502_8@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 76,
+			"key": "Root/503#8",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_8@375.png",
+				"1440": "shots/Root_503_8@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 77,
+			"key": "Root/504#8",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_8@375.png",
+				"1440": "shots/Root_504_8@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 78,
+			"key": "Root/505#8",
+			"tag": "div",
+			"depth": 6,
+			"words": "Partner brand",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_8@375.png",
+				"1440": "shots/Root_505_8@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Partner brand"
+			}
+		},
+		{
+			"order": 79,
+			"key": "Root/506#8",
+			"tag": "div",
+			"depth": 6,
+			"words": "Distributed brand",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_8@375.png",
+				"1440": "shots/Root_506_8@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Distributed brand"
+			}
+		},
+		{
+			"order": 80,
+			"key": "Root/501#9",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_501_9@375.png",
+				"1440": "shots/Root_501_9@1440.png"
+			},
+			"snippet": "<a href=\"{{ l.href }}\" style=\"display:flex;flex-direction:column;gap:12px;color:#1E2A3C;padding:12px;border-radius:22px;background:#FFFFFF;border:1px solid rgba(30,42,60,.1);transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.18);border-color:#D8CA50;color:#1E2A3C\" data-dc-tpl=\"501\"> <div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "#/brands"
+			}
+		},
+		{
+			"order": 81,
+			"key": "Root/502#9",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_502_9@375.png",
+				"1440": "shots/Root_502_9@1440.png"
+			},
+			"snippet": "<div style=\"height:130px;border-radius:12px;background:#F2F5F7;overflow:hidden;\" data-dc-tpl=\"502\"> <image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 82,
+			"key": "Root/503#9",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_503_9@375.png",
+				"1440": "shots/Root_503_9@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }} logo\" data-dc-tpl=\"503\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 83,
+			"key": "Root/504#9",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_504_9@375.png",
+				"1440": "shots/Root_504_9@1440.png"
+			},
+			"snippet": "<div style=\"padding:0 4px 4px;\" data-dc-tpl=\"504\"> <div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div> <div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 84,
+			"key": "Root/505#9",
+			"tag": "div",
+			"depth": 6,
+			"words": "Partner brand",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_505_9@375.png",
+				"1440": "shots/Root_505_9@1440.png"
+			},
+			"snippet": "<div style=\"font-weight:700;font-size:16px;\" data-dc-tpl=\"505\">{{ l.name }}</div>",
+			"attributes": {
+				"content": "Partner brand"
+			}
+		},
+		{
+			"order": 85,
+			"key": "Root/506#9",
+			"tag": "div",
+			"depth": 6,
+			"words": "Distributed brand",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_506_9@375.png",
+				"1440": "shots/Root_506_9@1440.png"
+			},
+			"snippet": "<div style=\"font-size:13.5px;color:#5E6873;margin-top:2px;line-height:1.4;\" data-dc-tpl=\"506\">{{ l.note }}</div>",
+			"attributes": {
+				"text": "Distributed brand"
+			}
+		},
+		{
+			"order": 86,
+			"key": "Root/344#1",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_344_1@375.png",
+				"1440": "shots/Root_344_1@1440.png"
+			},
+			"snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 87,
+			"key": "Root/345#1",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_345_1@375.png",
+				"1440": "shots/Root_345_1@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 88,
+			"key": "Root/379#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_379_0@375.png",
+				"1440": "shots/Root_379_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ R.splitCols }};gap:{{ R.splitGap }};align-items:center;\" data-dc-tpl=\"379\"> <div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 89,
+			"key": "Root/380#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_380_0@375.png",
+				"1440": "shots/Root_380_0@1440.png"
+			},
+			"snippet": "<div style=\"order:{{ b.textOrder }};min-width:0;\" data-dc-tpl=\"380\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"381\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;h",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 90,
+			"key": "Root/382#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Own brand",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_382_0@375.png",
+				"1440": "shots/Root_382_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"382\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>{{ b.eyebrow }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 91,
+			"key": "Root/383#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/382#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_383_0@1440.png"
+			},
+			"snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"383\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 92,
+			"key": "Root/384#0",
+			"tag": "h2",
+			"depth": 5,
+			"words": "Sanam, packed in Birmingham.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_384_0@375.png",
+				"1440": "shots/Root_384_0@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"384\">{{ b.title }}</h2>",
+			"attributes": {
+				"content": "Sanam, packed in Birmingham."
+			}
+		},
+		{
+			"order": 93,
+			"key": "Root/386#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "Sanam is our flagship own-label range of premium rice, flour and quality food products, packed on our own production line in Birmingham, which we have run since the 1970s.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_386_0@375.png",
+				"1440": "shots/Root_386_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:17px;color:#4A5563;line-height:1.65;margin:18px 0 0;text-wrap:pretty;\" data-dc-tpl=\"386\">{{ p }}</p>",
+			"attributes": {
+				"text": "Sanam is our flagship own-label range of premium rice, flour and quality food products, packed on our own production line in Birmingham, which we have run since the 1970s."
+			}
+		},
+		{
+			"order": 94,
+			"key": "Root/388#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_388_0@375.png",
+				"1440": "shots/Root_388_0@1440.png"
+			},
+			"snippet": "<div style=\"margin-top:26px;display:grid;grid-template-columns:{{ R.pointCols }};gap:0 24px;\" data-dc-tpl=\"388\"> <sc-for list=\"{{ b.points }}\" as=\"pt\" hint-placeholder-count=\"4\" data-dc-tpl=\"389\"> <div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;he",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 95,
+			"key": "Root/390#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "Premium rice",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_390_0@375.png",
+				"1440": "shots/Root_390_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 96,
+			"key": "Root/391#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+			"source": "rule dotMarker",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "dotMarker",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_391_0@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 97,
+			"key": "Root/390#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "Flour & atta",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_390_1@375.png",
+				"1440": "shots/Root_390_1@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 98,
+			"key": "Root/391#1",
+			"tag": "span",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+			"source": "rule dotMarker",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "dotMarker",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_391_1@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 99,
+			"key": "Root/390#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "Spices",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_390_2@375.png",
+				"1440": "shots/Root_390_2@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 100,
+			"key": "Root/391#2",
+			"tag": "span",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+			"source": "rule dotMarker",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "dotMarker",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_391_2@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 101,
+			"key": "Root/390#3",
+			"tag": "div",
+			"depth": 6,
+			"words": "Lentils, dried fruit & nuts",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_390_3@375.png",
+				"1440": "shots/Root_390_3@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:baseline;padding:13px 0;border-top:1px solid var(--accLine,rgba(30,42,60,.12));font-size:15.5px;font-weight:600;\" data-dc-tpl=\"390\"><span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>{{ pt }}</div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 102,
+			"key": "Root/391#3",
+			"tag": "span",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+			"source": "rule dotMarker",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "dotMarker",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_391_3@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;background:var(--acc,#D8CA50);border-radius:50%;flex-shrink:0;transform:translateY(-1px);\" data-dc-tpl=\"391\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 103,
+			"key": "Root/393#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Explore Sanam",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_393_0@375.png",
+				"1440": "shots/Root_393_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ b.link.href }}\" style=\"display:inline-flex;align-items:center;gap:8px;margin-top:30px;color:#1E2A3C;font-weight:700;font-size:15px;border-bottom:2px solid var(--acc,#D8CA50);padding-bottom:4px;transition:color .2s,gap .2s;\" style-hover=\"color:#0A7EA8;gap:12px\" data-dc-tpl=\"393\">{{ b.link.label }} {{ arrowIcon }}</a>",
+			"attributes": {
+				"label": "Explore Sanam",
+				"url": "#/brand-sanam"
+			}
+		},
+		{
+			"order": 104,
+			"key": "Root/394#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_394_0@375.png",
+				"1440": "shots/Root_394_0@1440.png"
+			},
+			"snippet": "<div style=\"order:{{ b.imgOrder }};position:relative;min-width:0;\" data-dc-tpl=\"394\"> <div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 105,
+			"key": "Root/395#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_395_0@375.png",
+				"1440": "shots/Root_395_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;aspect-ratio:{{ b.ratio }};border-radius:22px;overflow:hidden;background:#EAF4F7;border:5px solid #FFFFFF;box-shadow:0 30px 54px -30px rgba(44,62,80,.6);\" data-dc-tpl=\"395\"> <image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 106,
+			"key": "Root/396#0",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_396_0@375.png",
+				"1440": "shots/Root_396_0@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ b.img }}\" shape=\"rect\" placeholder=\"{{ b.imgLabel }}\" data-dc-tpl=\"396\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 107,
+			"key": "Root/344#2",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_344_2@375.png",
+				"1440": "shots/Root_344_2@1440.png"
+			},
+			"snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 108,
+			"key": "Root/345#2",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_345_2@375.png",
+				"1440": "shots/Root_345_2@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 109,
+			"key": "Root/515#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_515_0@375.png",
+				"1440": "shots/Root_515_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(135deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);color:#FFFFFF;padding:{{ R.ctaPad }};display:grid;grid-template-columns:{{ R.ctaCols }};gap:30px;align-items:center;\" data-dc-tpl=\"515\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 110,
+			"key": "Root/516#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorativeShape",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_516_0@375.png",
+				"1440": "shots/Root_516_0@1440.png"
+			},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 111,
+			"key": "Root/517#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorativeShape",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_517_0@375.png",
+				"1440": "shots/Root_517_0@1440.png"
+			},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 112,
+			"key": "Root/518#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_518_0@375.png",
+				"1440": "shots/Root_518_0@1440.png"
+			},
+			"snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"518\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 113,
+			"key": "Root/519#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_519_0@375.png",
+				"1440": "shots/Root_519_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"519\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 114,
+			"key": "Root/520#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "White label",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_520_0@375.png",
+				"1440": "shots/Root_520_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 115,
+			"key": "Root/521#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/520#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_521_0@1440.png"
+			},
+			"snippet": "<span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 116,
+			"key": "Root/522#0",
+			"tag": "h2",
+			"depth": 5,
+			"words": "Want your own brand?",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_522_0@375.png",
+				"1440": "shots/Root_522_0@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,48px);line-height:1.06;letter-spacing:-.015em;margin:0;text-wrap:balance;\" data-dc-tpl=\"522\">{{ b.title }}</h2>",
+			"attributes": {
+				"content": "Want your own brand?"
+			}
+		},
+		{
+			"order": 117,
+			"key": "Root/523#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "We offer custom packaging and branding for retail and food service customers. Your brand, our quality.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_523_0@375.png",
+				"1440": "shots/Root_523_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:17px;color:#E3EFF4;line-height:1.6;margin:16px 0 0;max-width:560px;text-wrap:pretty;\" data-dc-tpl=\"523\">{{ b.body }}</p>",
+			"attributes": {
+				"text": "We offer custom packaging and branding for retail and food service customers. Your brand, our quality."
+			}
+		},
+		{
+			"order": 118,
+			"key": "Root/524#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_524_0@375.png",
+				"1440": "shots/Root_524_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;justify-content:{{ R.ctaJustify }};\" data-dc-tpl=\"524\"> <a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transiti",
+			"attributes": {
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 119,
+			"key": "Root/525#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Talk to us",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_525_0@375.png",
+				"1440": "shots/Root_525_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
+			"attributes": {
+				"label": "Talk to us",
+				"url": "#/contact"
+			}
+		},
+		{
+			"order": 120,
+			"key": "Root/526#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Request catalogue",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_526_0@375.png",
+				"1440": "shots/Root_526_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ b.secondary.href }}\" style=\"white-space:nowrap;color:#FFFFFF;font-weight:700;font-size:15.5px;border-bottom:2px solid #D8CA50;padding-bottom:4px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"526\">{{ b.secondary.label }}</a>",
+			"attributes": {
+				"label": "Request catalogue",
+				"url": "#/catalogue"
+			}
+		}
+	]
+}

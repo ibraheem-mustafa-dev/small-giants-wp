@@ -1,0 +1,900 @@
+[
+	{
+		"name": "sgs/mega-panel",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Indus Foods Website v2/67#0"
+		},
+		"draftFingerprint": {
+			"tag": "div",
+			"cls": "",
+			"styleHash": "125e8249",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 85
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/mega-group",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Indus Foods Website v2/68#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "7df76ac9",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 86
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLink": "#/our-story"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/70#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp4",
+							"styleHash": "d35c7f4",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 88
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "01"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/71#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "15c6f24f",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "596804",
+									"line": 89
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/72#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 90
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "Our Story"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/73#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "f96199c2",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "28bf966e",
+											"line": 91
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Six decades of family heritage"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/74#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "db48d8c8",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "361ee1e8",
+											"line": 92
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLink": "#/certifications"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/70#1"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp4",
+							"styleHash": "d35c7f4",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 88
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "02"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/71#1"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "15c6f24f",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "596807",
+									"line": 89
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/72#1"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 90
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "Certifications"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/73#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "f96199c2",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "da9824ce",
+											"line": 91
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "BRC & Halal certified"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/74#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "db48d8c8",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "de5ab89f",
+											"line": 92
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLink": "#/community"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/70#2"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp4",
+							"styleHash": "d35c7f4",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 88
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "03"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/71#2"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "15c6f24f",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "596806",
+									"line": 89
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/72#2"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 90
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "Community & Charity"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/73#2"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "f96199c2",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "920cd30c",
+											"line": 91
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Giving back in Birmingham"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/74#2"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "db48d8c8",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "efc36161",
+											"line": 92
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLink": "#/sustainability"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/70#3"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp4",
+							"styleHash": "d35c7f4",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 88
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "04"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/71#3"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "15c6f24f",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "596801",
+									"line": 89
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/72#3"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 90
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "Sustainability"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/73#3"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "f96199c2",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "12bdfc80",
+											"line": 91
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Responsible sourcing"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/74#3"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "db48d8c8",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "b71bdc19",
+											"line": 92
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLink": "#/careers"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/70#4"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp4",
+							"styleHash": "d35c7f4",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 88
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "05"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/71#4"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "15c6f24f",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "596800",
+									"line": 89
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/72#4"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 90
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "Careers"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/73#4"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "f96199c2",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "df4e0434",
+											"line": 91
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Join our growing team"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/74#4"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "db48d8c8",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "e22546df",
+											"line": 92
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLink": "#/blog"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/70#5"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp4",
+							"styleHash": "d35c7f4",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 88
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "06"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/71#5"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "15c6f24f",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "596803",
+									"line": 89
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/72#5"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "73effcfd",
+									"parentTags": [
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 90
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "News & Blog"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/73#5"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "f96199c2",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "4c0a9c2a",
+											"line": 91
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Updates, recipes and trade news"
+										},
+										"draftRef": {
+											"tpl": "Indus Foods Website v2/74#5"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "db48d8c8",
+											"parentTags": [
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "f451bb2",
+											"line": 92
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-aside",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Indus Foods Website v2/76#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "f94a017b",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 98
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/77#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "22368b99",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 99
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/media",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/78#0"
+								},
+								"draftFingerprint": {
+									"tag": "image-slot",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 100
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Indus Foods Website v2/79#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "e8cb8e5d",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 102
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/label",
+								"attributes": {
+									"text": "Since 1962"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/80#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "711896cc",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "f4082c1b",
+									"line": 103
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Six decades of heritage"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/81#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "cf65745d",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "fe6c9e5e",
+									"line": 104
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers."
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/82#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "89d69dae",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "5e312d2c",
+									"line": 105
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Read our story",
+									"url": "#/our-story"
+								},
+								"draftRef": {
+									"tpl": "Indus Foods Website v2/83#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp5",
+									"styleHash": "695b152e",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "647f8ebc",
+									"line": 106
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

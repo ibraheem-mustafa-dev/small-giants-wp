@@ -1,0 +1,2350 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/201#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "",
+			"styleHash": "58a56450",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 269
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/hero",
+				"attributes": {
+					"variant": "split"
+				},
+				"draftRef": {
+					"tpl": "Root/316#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "d912361f",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 435
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/decorative-image",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/319#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "2150bedf",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 438
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/breadcrumbs",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/323#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "3eca1cc0",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 445
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Certifications"
+								},
+								"draftRef": {
+									"tpl": "Root/328#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "9fc9fc69",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "da9824ce",
+									"line": 446
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/label",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/331#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "51bda87f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "5d7f06d4",
+							"line": 450
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Quality and safety, independently checked."
+						},
+						"draftRef": {
+							"tpl": "Root/333#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "c183b96f",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "36f5a1a9",
+							"line": 451
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Our Birmingham site is BRC and Halal certified, and every product we pack goes through the same controls, from supplier approval to the moment it leaves our warehouse."
+						},
+						"draftRef": {
+							"tpl": "Root/334#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "c1082518",
+							"parentTags": [
+								"main",
+								"section",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "997fe5be",
+							"line": 452
+						},
+						"innerBlocks": []
+					}
+				],
+				"handover": [
+					{
+						"owner": "content-page",
+						"kind": "presence",
+						"detail": "the hero image: choose it in the hero's split media setting"
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "f13b1390",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/347#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c3d2dfc0",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 479
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/348#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "def18a3e",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 480
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/350#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e7fd84e",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "4092a024",
+													"line": 482
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Our certifications and memberships."
+												},
+												"draftRef": {
+													"tpl": "Root/352#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "bc4f20f9",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "c88d3e2",
+													"line": 484
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/479#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "93fd4e18",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 682
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/483#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "5976ba6d",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 686
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/484#0"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 687
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "01"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596804",
+																	"line": 692
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Food safety"
+																},
+																"draftRef": {
+																	"tpl": "Root/489#0"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "7a30eeed",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "3185403b",
+																	"line": 694
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "BRC Global Standard"
+														},
+														"draftRef": {
+															"tpl": "Root/490#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "2f037166",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Our processing and packing operation is audited against the BRCGS food safety standard."
+														},
+														"draftRef": {
+															"tpl": "Root/491#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "127d8ec5",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#1"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/483#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "5976ba6d",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 686
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/484#1"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 687
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "02"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596807",
+																	"line": 692
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Halal"
+																},
+																"draftRef": {
+																	"tpl": "Root/489#1"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "7a30eeed",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "d483ded",
+																	"line": 694
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Halal certified"
+														},
+														"draftRef": {
+															"tpl": "Root/490#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "5d5f54ea",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Halal certification covers our site and the handling of certified products."
+														},
+														"draftRef": {
+															"tpl": "Root/491#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "3377066d",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#2"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/483#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "5976ba6d",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 686
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/484#2"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 687
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "03"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596806",
+																	"line": 692
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Membership"
+																},
+																"draftRef": {
+																	"tpl": "Root/489#2"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "7a30eeed",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "85bf2357",
+																	"line": 694
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Today’s Group"
+														},
+														"draftRef": {
+															"tpl": "Root/490#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "3faf4577",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "A member of one of the UK’s largest buying groups for close to 35 years."
+														},
+														"draftRef": {
+															"tpl": "Root/491#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "b2f6b087",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/481#3"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp10",
+											"styleHash": "52f736f4",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 684
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/483#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "5976ba6d",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 686
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/media",
+														"attributes": {},
+														"draftRef": {
+															"tpl": "Root/484#3"
+														},
+														"draftFingerprint": {
+															"tag": "image-slot",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 687
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "stack"
+												},
+												"draftRef": {
+													"tpl": "Root/485#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "819e057f",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 690
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div",
+															"layout": "flex"
+														},
+														"draftRef": {
+															"tpl": "Root/486#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "27e0ee93",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 691
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "04"
+																},
+																"draftRef": {
+																	"tpl": "Root/487#3"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "902fce7",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "596801",
+																	"line": 692
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/label",
+																"attributes": {
+																	"text": "Membership"
+																},
+																"draftRef": {
+																	"tpl": "Root/489#3"
+																},
+																"draftFingerprint": {
+																	"tag": "span",
+																	"cls": "",
+																	"styleHash": "7a30eeed",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"a",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "85bf2357",
+																	"line": 694
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Federation of Wholesale Distributors"
+														},
+														"draftRef": {
+															"tpl": "Root/490#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "8baceca0",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "e9fecf9f",
+															"line": 697
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "We sit on the FWD council of members, representing wholesale at a national level."
+														},
+														"draftRef": {
+															"tpl": "Root/491#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "4e538a78",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"div"
+															],
+															"textHash": "40b89e8f",
+															"line": 698
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#1"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "e8e06e5a",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/398#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "888c4eff",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 558
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/399#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "e759e3cb",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 559
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/401#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "e7fd84e",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "666d8061",
+													"line": 561
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Controls at every step."
+												},
+												"draftRef": {
+													"tpl": "Root/403#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "bc4f20f9",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "6c6f3625",
+													"line": 563
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Certification is only as good as the process behind it."
+												},
+												"draftRef": {
+													"tpl": "Root/405#0"
+												},
+												"draftFingerprint": {
+													"tag": "p",
+													"cls": "",
+													"styleHash": "ecef6f2a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "89b3cb1d",
+													"line": 565
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/408#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "64285a33",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 571
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "1596fbf6",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "01"
+														},
+														"draftRef": {
+															"tpl": "Root/411#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596804",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Supplier approval"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#0"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "9e5aacd6",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "We vet the producers we import from before their products join our range."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "29456d13",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#1"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "1596fbf6",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "02"
+														},
+														"draftRef": {
+															"tpl": "Root/411#1"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596807",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#1"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#1"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Controlled storage"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#1"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "34434d56",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Ambient, chilled and frozen stock is stored and handled in dedicated areas."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#1"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "47d62961",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#2"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "1596fbf6",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "03"
+														},
+														"draftRef": {
+															"tpl": "Root/411#2"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596806",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#2"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#2"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "On-site packing"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#2"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "8c2f6bdb",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Our own-brand products are processed and packed on our own production line in Birmingham."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#2"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "98374751",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/410#3"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "scpw",
+													"styleHash": "1596fbf6",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 573
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "04"
+														},
+														"draftRef": {
+															"tpl": "Root/411#3"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "8fd9b32c",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "596801",
+															"line": 574
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/412#3"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 575
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/container",
+																"attributes": {
+																	"tagName": "div",
+																	"layout": "flex"
+																},
+																"draftRef": {
+																	"tpl": "Root/413#3"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "bf3821e",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "1505",
+																	"line": 576
+																},
+																"innerBlocks": [
+																	{
+																		"name": "sgs/heading",
+																		"attributes": {
+																			"content": "Traceability"
+																		},
+																		"draftRef": {
+																			"tpl": "Root/414#3"
+																		},
+																		"draftFingerprint": {
+																			"tag": "div",
+																			"cls": "",
+																			"styleHash": "1bac39e5",
+																			"parentTags": [
+																				"main",
+																				"section",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div",
+																				"div"
+																			],
+																			"textHash": "ac1d92e6",
+																			"line": 577
+																		},
+																		"innerBlocks": []
+																	}
+																]
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Batch records let us trace products back to source quickly if a question is raised."
+																},
+																"draftRef": {
+																	"tpl": "Root/420#3"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "8c228764",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "762921c4",
+																	"line": 585
+																},
+																"innerBlocks": []
+															}
+														]
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/344#2"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "a28a05cb",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 474
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/345#2"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cbf31f29",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 476
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/515#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "822e26d4",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 741
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/decorative-image",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/516#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "45f33a79",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 742
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/decorative-image",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/517#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "b0e74038",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 743
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/519#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "aa146b11",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 745
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/label",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/520#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "fd343297",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "6a18f219",
+													"line": 746
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "Need a certificate or spec sheet?"
+												},
+												"draftRef": {
+													"tpl": "Root/522#0"
+												},
+												"draftFingerprint": {
+													"tag": "h2",
+													"cls": "",
+													"styleHash": "e108848a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "6fb3c3d3",
+													"line": 747
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Our team can send current certificates and product specifications for your own audits."
+												},
+												"draftRef": {
+													"tpl": "Root/523#0"
+												},
+												"draftFingerprint": {
+													"tag": "p",
+													"cls": "",
+													"styleHash": "8c9a7edc",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "74db91ad",
+													"line": 748
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/multi-button",
+										"attributes": {
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/524#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "d0d5913e",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 750
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Contact the team",
+													"url": "#/contact"
+												},
+												"draftRef": {
+													"tpl": "Root/525#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp14",
+													"styleHash": "d1712539",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "66da90e1",
+													"line": 751
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Call 0121 771 4330",
+													"url": "tel:01217714330",
+													"linkSource": "phone"
+												},
+												"draftRef": {
+													"tpl": "Root/526#0"
+												},
+												"draftFingerprint": {
+													"tag": "a",
+													"cls": "scp5",
+													"styleHash": "d4775ff",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "d9580830",
+													"line": 752
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]
