@@ -3285,7 +3285,7 @@
 			"write": null,
 			"check": null,
 			"wave": "draft reading",
-			"note": "Settings exist only under the shorthand overflow (sgs/decorative-image, a fixed set of keywords) and -webkit-line-clamp; Fill reads the longhands overflow-x and overflow-y and the resolver matches a setting by its exact property, so a draft overflow-x, overflow-y, overflow-block, overflow-inline, text-overflow, scroll-behavior or scrollbar-gutter is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
+			"note": "Settings exist under the shorthand overflow (sgs/decorative-image and sgs/container, fixed sets of keywords), under overflow-x (sgs/container scrollSideways, its horizontal scroll mode) and -webkit-line-clamp; the resolver matches a setting by its exact property, so a draft overflow-y, overflow-block, overflow-inline, text-overflow, scroll-behavior or scrollbar-gutter is an unmapped row. Fill reads every longhand the draft declares (lib/fill-declared.mjs#extraProps)."
 		},
 		"css-group:overscroll-behavior": {
 			"recognise": null,

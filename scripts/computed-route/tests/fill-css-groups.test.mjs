@@ -91,7 +91,7 @@ const GAPS = {
 	'basic-user-interface': [ 'accent-color', 'appearance', 'caret-color', 'cursor', 'outline', 'outline-color', 'outline-offset', 'outline-style', 'outline-width', 'pointer-events', 'resize', 'user-select' ],
 	'logical-properties-and-values': [ 'margin-block-start', 'margin-block-end', 'padding-block-start', 'padding-block-end', 'padding-inline-end', 'block-size', 'inline-size', 'inset-block' ],
 	masking: [ 'clip', 'mask', 'mask-image', 'mask-size', 'mask-position', 'mask-repeat', 'mask-mode', 'mask-clip', 'mask-composite', 'mask-origin', 'mask-type', 'clip-rule' ],
-	overflow: [ 'overflow-x', 'overflow-y', 'overflow-block', 'overflow-inline', 'text-overflow', 'scroll-behavior', 'scrollbar-gutter' ],
+	overflow: [ 'overflow-y', 'overflow-block', 'overflow-inline', 'text-overflow', 'scroll-behavior', 'scrollbar-gutter' ],
 	'overscroll-behavior': [ 'overscroll-behavior', 'overscroll-behavior-x', 'overscroll-behavior-y' ],
 	'scroll-snap': [ 'scroll-margin', 'scroll-padding', 'scroll-snap-align', 'scroll-snap-type' ],
 	transforms: [ 'rotate', 'scale', 'perspective', 'perspective-origin', 'transform-origin', 'transform-style', 'transform-box', 'backface-visibility' ],
@@ -110,7 +110,7 @@ test( 'the groups kept as gaps stay gaps, name only properties no setting is sto
 
 test( 'the logical-properties and overflow gaps are exact-name gaps: the longhands have no setting while the shorthands do', () => {
 	// The resolver matches a setting by its exact property, so the longhands Fill reads find none.
-	for ( const [ prop, shorthand ] of [ [ 'margin-block-start', 'margin-block' ], [ 'overflow-x', 'overflow' ] ] ) {
+	for ( const [ prop, shorthand ] of [ [ 'margin-block-start', 'margin-block' ], [ 'overflow-y', 'overflow' ] ] ) {
 		const w = written( prop, '8px', '0px' );
 		assert.equal( w.res, undefined, `${ prop } has no setting to write` );
 		assert.ok( db.prepare( 'SELECT COUNT(*) n FROM block_attributes WHERE css_property = ?' ).get( shorthand ).n > 0, `${ shorthand } does have one` );
