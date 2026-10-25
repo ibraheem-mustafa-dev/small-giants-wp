@@ -1,5 +1,6 @@
 """FR-33-1 motion tokens: every easing a draft's tokens/*.css declares reaches settings.custom.easing, the
-client's own spring takes the spring slot, and the hover movement timing is proposed from the draft's transitions.
+client's own spring takes the spring slot, and the hover movement timing found in the draft's transitions is written to
+settings.custom.hover (a token reference where a token holds the value, the exact value otherwise).
 The fixtures are the declarations of the real Indus and Mama's token files.
 
 Run:  cd plugins/sgs-blocks/scripts/theme-extractor && python -m pytest tests/test_motion_tokens.py -q
@@ -105,3 +106,64 @@ def test_a_movement_transition_with_no_easing_is_ease():
 
 def test_a_draft_with_no_movement_transition_proposes_nothing():
     assert motion_tokens.movement_timing("transition:color .2s;transition:all .3s", None) is None
+
+
+THEME = {"settings": {"custom": {"duration": {"quick": "150ms", "fast": "250ms", "medium": "300ms"},
+                                 "easing": {"default": "cubic-bezier(0.4, 0, 0.2, 1)", "ease": "ease",
+                                            "spring": "cubic-bezier(0.34, 1.56, 0.64, 1)"},
+                                 "hover": {"duration": "var(--wp--custom--duration--fast)",
+                                           "easing": "var(--wp--custom--easing--emphasised)"}}}}
+
+
+def _hover(snap: dict) -> dict:
+    return snap["settings"]["custom"]["hover"]
+
+
+def test_the_movement_timing_is_written_as_an_exact_duration_and_the_spring_token(tmp_path):
+    html = "transition:transform .35s var(--ease-spring);transition:transform .35s var(--ease-spring)"
+    tokens = _tokens(tmp_path, INDUS)
+    snap = motion_tokens.apply_easings(_snap(), tokens, html, [])
+    trace: list = []
+    proposal = motion_tokens.propose_movement_timing(html, tokens, trace)
+    motion_tokens.apply_movement_timing(snap, proposal, THEME, trace)
+    assert _hover(snap) == {"duration": "350ms", "easing": "var(--wp--custom--easing--spring)"}
+    assert [r["what"] for r in trace if r["kind"] == "motion"] == ["settings.custom.hover.duration",
+                                                                  "settings.custom.hover.easing"]
+
+
+def test_a_clients_own_spring_is_referenced_through_its_slot(tmp_path):
+    html = "transition:transform .2s var(--mm-ease-spring)"
+    tokens = _tokens(tmp_path, MAMAS)
+    snap = motion_tokens.apply_easings(_snap(), tokens, html, [])
+    motion_tokens.apply_movement_timing(snap, motion_tokens.movement_timing(html, tokens), THEME, [])
+    assert snap["settings"]["custom"]["easing"]["spring"] == "cubic-bezier(0.3, 1.6, 0.5, 1)"
+    assert _hover(snap) == {"duration": "200ms", "easing": "var(--wp--custom--easing--spring)"}
+
+
+def test_a_duration_and_keyword_the_theme_holds_are_references():
+    snap: dict = {"settings": {"custom": {}}}
+    proposal = motion_tokens.movement_timing("transition:transform .25s;transition:transform 250ms ease", None)
+    motion_tokens.apply_movement_timing(snap, proposal, THEME, [])
+    assert _hover(snap) == {"duration": "var(--wp--custom--duration--fast)", "easing": "var(--wp--custom--easing--ease)"}
+
+
+def test_the_snapshots_own_duration_scale_wins_over_the_themes():
+    snap = {"settings": {"custom": {"duration": {"fast": "200ms"}}}}
+    proposal = motion_tokens.movement_timing("transition:transform .25s ease", None)
+    motion_tokens.apply_movement_timing(snap, proposal, THEME, [])
+    assert _hover(snap)["duration"] == "250ms"
+
+
+def test_a_curve_no_token_holds_is_written_exactly():
+    snap: dict = {}
+    proposal = motion_tokens.movement_timing("transition:transform .3s cubic-bezier(.1,.9,.3,1)", None)
+    motion_tokens.apply_movement_timing(snap, proposal, THEME, [])
+    assert _hover(snap) == {"duration": "var(--wp--custom--duration--medium)", "easing": "cubic-bezier(0.1, 0.9, 0.3, 1)"}
+
+
+def test_negative_control_a_draft_with_no_movement_transition_leaves_the_hover_timing_alone():
+    snap = {"settings": {"custom": {"hover": {"duration": "400ms", "easing": "linear"}}}}
+    trace: list = []
+    proposal = motion_tokens.propose_movement_timing("transition:color .2s;transition:all .3s", None, trace)
+    motion_tokens.apply_movement_timing(snap, proposal, THEME, trace)
+    assert _hover(snap) == {"duration": "400ms", "easing": "linear"} and trace == []

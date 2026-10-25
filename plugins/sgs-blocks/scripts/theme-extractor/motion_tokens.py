@@ -8,9 +8,12 @@ Two jobs, both read from the draft's ``tokens/*.css`` and the draft's own transi
    curve that overshoots 1 and is used most in the draft's CSS, takes the existing ``spring`` slot; every
    other curve is added under the token's name with its ``ease-`` stem removed, or skipped when an existing
    slot already holds the same curve.
-2. ``movement_timing`` proposes the hover movement timing: the duration and easing pair most used by the
-   draft's transitions of ``transform``, ``translate``, ``scale`` or ``rotate``. It is a report-only
-   proposal; nothing in the snapshot reads it.
+2. ``movement_timing`` finds the hover movement timing: the duration and easing pair most used by the
+   draft's transitions of ``transform``, ``translate``, ``scale`` or ``rotate``. ``apply_movement_timing``
+   writes it to ``settings.custom.hover.duration`` and ``.easing`` (printed as ``--wp--custom--hover--*``,
+   read by the Hover state's movement owners when the state stores no timing of its own). Each value is a
+   ``var()`` reference to the duration or easing token that holds the same value, or the exact value when
+   none does. A draft with no movement transition leaves the snapshot's hover timing as it was.
 """
 from __future__ import annotations
 
@@ -167,5 +170,42 @@ def propose_movement_timing(html: str, tokens, trace: list) -> dict | None:
     if proposal:
         trace.append({"kind": "proposal", "what": "hover-movement-timing",
                       "reason": "most-used duration and easing of the draft's transform, translate, scale and "
-                                "rotate transitions (report only; no snapshot key reads it)", **proposal})
+                                "rotate transitions (written to settings.custom.hover)", **proposal})
     return proposal
+
+
+def _token_scale(snap: dict, baseline: dict | None, group: str) -> dict:
+    """The site's ``settings.custom.<group>`` as WordPress merges it: the snapshot's keys over the theme's."""
+    theme = (((baseline or {}).get("settings") or {}).get("custom") or {}).get(group) or {}
+    own = ((snap.get("settings") or {}).get("custom") or {}).get(group) or {}
+    return {**theme, **own}
+
+
+def _duration_value(ms: int, scale: dict) -> str:
+    key = next((k for k, v in scale.items() if _milliseconds(str(v)) == ms), None)
+    return f"var(--wp--custom--duration--{key})" if key else f"{ms}ms"
+
+
+def _easing_value(curve: str, scale: dict) -> str:
+    def same(value) -> bool:
+        text = str(value).strip()
+        return (normalise_easing(text) or text.lower()) == curve
+    key = next((k for k, v in scale.items() if same(v)), None)
+    return f"var(--wp--custom--easing--{key})" if key else curve
+
+
+def apply_movement_timing(snap: dict, proposal: dict | None, baseline: dict | None, trace: list) -> dict:
+    """Write the movement timing to ``settings.custom.hover`` (see the module docstring). Run it after
+    ``apply_easings`` so the client's own spring is already in its slot."""
+    if not proposal:
+        return snap
+    hover = {
+        "duration": _duration_value(proposal["duration_ms"], _token_scale(snap, baseline, "duration")),
+        "easing": _easing_value(proposal["easing"], _token_scale(snap, baseline, "easing")),
+    }
+    snap.setdefault("settings", {}).setdefault("custom", {})["hover"] = hover
+    for key, value in hover.items():
+        trace.append({"kind": "motion", "what": f"settings.custom.hover.{key}",
+                      "reason": f"the draft's movement timing, {proposal['duration_ms']}ms {proposal['easing']} "
+                                f"({proposal['uses']} of {proposal['of']} movement transitions)", "value": value})
+    return snap
