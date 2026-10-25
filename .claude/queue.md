@@ -208,3 +208,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-25 S reseed-start (Phase 2 task 1: sgs-update from the main checkout at e2e3e9134, no dirty block.json; no deploy or build running)
 - 2026-10-25 S reseed-done (sgs-update-v2 clean, 97 blocks, no unexpected seed changes; framework DB current at e2e3e9134)
 - 2026-10-25 S site-run-start indus-foods (Phase 2: mysqldump, site-build --apply, manifest --apply, per-surface skeleton/Fill/build on indus-test; reads the framework DB, writes indus-test posts; hold reseeds and calibrations on the Indus blocks until site-run-end)
+- 2026-10-25 S note: Indus site-run driver scripts/computed-route/site-run.mjs running 39 surfaces on indus-test (builds serialised; walks 3 at once); no other session should build or deploy to indus-test until site-run-end
