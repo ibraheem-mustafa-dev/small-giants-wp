@@ -4,7 +4,8 @@
 // instrumentFinding): a NULL-routed, mistagged, uncalibrated or stale fitting setting makes it an I-class row.
 import { execFileSync } from 'node:child_process';
 import { isCssProperty } from './css-families.mjs';
-import { fromCommand, isEvidence, renderEvidence } from './gate-evidence.mjs';
+import { fromCommand, fromFile, isEvidence, renderEvidence } from './gate-evidence.mjs';
+import { LOOSE } from './resolve.mjs';
 import { GAP_CLASSES, HELD, UNASSESSED, ancestorsOf, classify, gapClassOf, instrumentFinding, staleCheck } from './gap-classes.mjs';
 
 // The DB-versus-code check per block (memoised): the DB's refresh time against the block's last commit and its uncommitted
@@ -42,9 +43,39 @@ export function baseClass( row ) {
 	return { class: row.fillClass, candidate: !! row.fillCandidate };
 }
 
+// FR-48-66 evidence for a row whose Fill reason is itself I-calibration, read from the calibration cache: the absent slot-map
+// file, the missing paint, or the paint key at the row's slot where no width holds a reading of the row's property. `files`
+// is { slotMap, paint } (paths). Null where the cache does hold the reading, or no file is named: the reason is then unproven.
+export function calibrationEvidence( row, cal, files ) {
+	if ( ! files ) {
+		return null;
+	}
+	if ( ! cal ) {
+		return fromFile( files.slotMap, row.slug, `no calibration slot map for ${ row.slug }` );
+	}
+	if ( cal.paintMissing ) {
+		return fromFile( files.paint, row.slug, cal.paintMissing );
+	}
+	if ( ! isCssProperty( row.key ) ) {
+		return null;
+	}
+	const slot = row.slot ?? '';
+	const found = Object.keys( cal.elements || {} ).find( ( k ) => LOOSE( k ) === LOOSE( slot ) );
+	const readKey = `(readKey ${ cal.readKey ?? 'unrecorded' })`;
+	if ( undefined === found ) {
+		return fromFile( files.paint, `elements[${ JSON.stringify( slot ) }].*.${ row.key }`, `the paint holds no element ${ slot || '(block root)' } ${ readKey }` );
+	}
+	const widths = Object.entries( cal.elements[ found ] || {} );
+	if ( widths.some( ( [ , styles ] ) => styles && Object.hasOwn( styles, row.key ) ) ) {
+		return null;
+	}
+	return fromFile( files.paint, `elements[${ JSON.stringify( found ) }].*.${ row.key }`, `no reading at ${ widths.map( ( [ w ] ) => w ).join( ', ' ) || 'any width' } ${ readKey }` );
+}
+
 // Adds gapClass, gapCandidate, gapVia, gapAttribute and gapEvidence to every row. i: { db, calFor( client, surface, block ) ->
-// calibration | null, freshness( slug ) -> { pass, class, evidence } }. A row whose block the framework DB does not hold (a class-name extension), or with no CSS property, keeps its base.
-export function classifyRows( rows, { db, calFor, freshness } ) {
+// calibration | null, calFiles( client, surface, block ) -> { slotMap, paint } | null, freshness( slug ) -> { pass, class,
+// evidence } }. A row whose Fill reason is I-calibration takes its evidence from the cache (calibrationEvidence). A row whose block the framework DB does not hold (a class-name extension), or with no CSS property, keeps its base.
+export function classifyRows( rows, { db, calFor, calFiles = () => null, freshness } ) {
 	const ancestors = ancestorsOf( db );
 	const known = db.prepare( 'SELECT 1 AS found FROM blocks WHERE slug = ?' );
 	const memo = new Map();
@@ -61,7 +92,8 @@ export function classifyRows( rows, { db, calFor, freshness } ) {
 			finding = memo.get( id );
 		}
 		const c = classify( base, finding );
-		return { ...row, gapClass: c.class, gapCandidate: !! c.candidate, gapVia: c.via ?? null, gapAttribute: c.attribute ?? null, gapEvidence: c.evidence ?? null };
+		const evidence = c.evidence ?? ( 'I-calibration' === c.class ? calibrationEvidence( row, calFor( row.client, row.surface, row.slug ), calFiles( row.client, row.surface, row.slug ) ) : null );
+		return { ...row, gapClass: c.class, gapCandidate: !! c.candidate, gapVia: c.via ?? null, gapAttribute: c.attribute ?? null, gapEvidence: evidence ?? null };
 	} );
 }
 

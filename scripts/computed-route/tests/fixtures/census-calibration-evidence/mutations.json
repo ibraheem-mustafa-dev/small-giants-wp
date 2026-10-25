@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/census-gap-class.mjs", "find": "const evidence = c.evidence ?? ( 'I-calibration' === c.class ? calibrationEvidence(", "replace": "const evidence = c.evidence ?? ( false ? calibrationEvidence(", "why": "a Fill-reason I-calibration row gets no cache evidence" },
+	{ "file": "lib/census-gap-class.mjs", "find": "return fromFile( files.slotMap, row.slug, `no calibration slot map for ${ row.slug }` );", "replace": "return null;", "why": "an absent slot map is not named" },
+	{ "file": "lib/census-gap-class.mjs", "find": "return fromFile( files.paint, row.slug, cal.paintMissing );", "replace": "return null;", "why": "a missing paint is not named" },
+	{ "file": "lib/census-gap-class.mjs", "find": "if ( widths.some( ( [ , styles ] ) => styles && Object.hasOwn( styles, row.key ) ) ) {", "replace": "if ( false ) {", "why": "a paint that holds the reading still yields evidence" },
+	{ "file": "lib/census-gap-class.mjs", "find": "const slot = row.slot ?? '';", "replace": "const slot = '';", "why": "the row's slot is ignored" },
+	{ "file": "lib/census-gap-class.mjs", "find": "if ( ! files ) {\n\t\treturn null;\n\t}", "replace": "if ( ! files ) {\n\t\tfiles = { slotMap: 'x', paint: 'x' };\n\t}", "why": "no file reader still yields evidence" },
+	{ "file": "lib/census-mechanism.mjs", "find": "slug: slugOf( f.node, f.block ), slot: f.slot,", "replace": "slug: slugOf( f.node, f.block ),", "why": "a Fill row's slot is dropped" }
+]

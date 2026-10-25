@@ -13,6 +13,7 @@ import { loadRules } from './lib/fill-census.mjs';
 import { blockLookup, surfaceRows, groupRows, SIGNATURE_PARTS } from './lib/census-mechanism.mjs';
 import { classifyRows, classCounts, gitFreshness } from './lib/census-gap-class.mjs';
 import { calibrationForSite } from './solve.mjs';
+import { paintFile, slotMapFile } from './lib/cache.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const args = process.argv.slice( 2 );
@@ -93,15 +94,19 @@ export function renderTable( { groups, unclassified, surfaces, clients, classes 
 }
 
 // The calibration of a block on the site a surface builds on (sites/<client>/build/surfaces.json), or null when the surface
-// names no site or the block has no cache.
+// names no site or the block has no cache; `.files` gives the same block's cache files ({ slotMap, paint }, repo-relative),
+// or null when the surface names no site.
 function calibrationReader( repo ) {
 	const cacheDir = path.join( repo, 'scripts', 'computed-route', 'cache' );
 	const sites = new Map();
 	const readers = new Map();
-	return ( client, surface, block ) => {
+	const siteOf = ( client, surface ) => {
 		const file = path.join( repo, 'sites', client, 'build', 'surfaces.json' );
 		sites.has( file ) || sites.set( file, fs.existsSync( file ) ? readJson( file ) : {} );
-		const site = sites.get( file )[ surface ]?.site;
+		return sites.get( file )[ surface ]?.site ?? null;
+	};
+	const read = ( client, surface, block ) => {
+		const site = siteOf( client, surface );
 		if ( ! site ) {
 			return null;
 		}
@@ -109,6 +114,12 @@ function calibrationReader( repo ) {
 		readers.has( key ) || readers.set( key, calibrationForSite( site, cacheDir )( block ) );
 		return readers.get( key );
 	};
+	const rel = ( f ) => path.relative( repo, f ).split( path.sep ).join( '/' );
+	read.files = ( client, surface, block ) => {
+		const site = siteOf( client, surface );
+		return site ? { slotMap: rel( slotMapFile( cacheDir, block ) ), paint: rel( paintFile( cacheDir, site, block ) ) } : null;
+	};
+	return read;
 }
 
 // Runs the census over the given clients' folders under `root`.
@@ -117,7 +128,8 @@ export function censusAll( { root: repo, clients, db = openDb() } ) {
 	const rules = loadRules();
 	const all = clients ?? dirs( path.join( repo, 'sites' ) ).filter( ( c ) => fs.existsSync( path.join( repo, 'sites', c, 'build', 'qa' ) ) );
 	const raw = all.flatMap( ( c ) => clientRows( c, path.join( repo, 'sites', c, 'build', 'qa' ), lookup, rules ) );
-	const classed = classifyRows( raw.flatMap( ( s ) => s.rows ), { db, calFor: calibrationReader( repo ), freshness: gitFreshness( { repo, db } ) } );
+	const calFor = calibrationReader( repo );
+	const classed = classifyRows( raw.flatMap( ( s ) => s.rows ), { db, calFor, calFiles: calFor.files, freshness: gitFreshness( { repo, db } ) } );
 	const surfaces = raw.map( ( s ) => ( { ...s, rows: classed.filter( ( r ) => r.client === s.client && r.surface === s.surface ) } ) );
 	const { groups, unclassified } = groupRows( classed );
 	return { clients: all, surfaces, groups, unclassified, classes: classCounts( classed ) };

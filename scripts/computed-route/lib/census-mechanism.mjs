@@ -215,7 +215,7 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 		const reason = hit ? rule?.class ?? null : ( key && wrote.has( key ) ? VOCAB.reasonClasses.wrote : VOCAB.reasonClasses.walkerOnly );
 		rows.push( {
 			client, surface, element: item.ref ? `${ item.ref }${ item.path ? ` ${ item.path }` : '' }` : item.pair,
-			slug: item.ref ? slugOf( item.ref, hit?.block, item.block ) : null, surfaceLevel: ! item.ref,
+			slug: item.ref ? slugOf( item.ref, hit?.block, item.block ) : null, slot: hit ? hit.slot : item.path || '', surfaceLevel: ! item.ref,
 			kind: item.kind, key: item.key, property: propertyFamily( item.kind, item.key, null, cell ), state,
 			runStates: item.runStates.length === walk.runStates.length ? 'all' : 'some', tier: tierPattern( item.widths, allWidths ),
 			side: hit ? 'both' : 'walker-only', reason, reasonText: hit?.reason ?? null, owner: rule?.owner ?? null, fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate,
@@ -225,7 +225,7 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 	for ( const f of fill.filter( ( r ) => ! used.has( r ) ) ) {
 		const rule = ruleOf( f );
 		rows.push( {
-			client, surface, element: `${ f.node }${ f.slot ? ` ${ f.slot }` : '' }`, slug: slugOf( f.node, f.block ), surfaceLevel: false,
+			client, surface, element: `${ f.node }${ f.slot ? ` ${ f.slot }` : '' }`, slug: slugOf( f.node, f.block ), slot: f.slot, surfaceLevel: false,
 			kind: 'fill', key: f.property, property: propertyFamily( 'style', f.property, f.value ), state: f.state, runStates: 'all',
 			tier: tierPattern( f.widths, allWidths ), side: VOCAB.fillSides[ f.origin ], reason: rule?.class ?? null, reasonText: f.reason ?? null, owner: rule?.owner ?? null, fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate,
 			draft: f.value, live: null, confirm: confirmBy.get( keyOf( f.node, f.slot, f.property, f.state ) ) ?? null
