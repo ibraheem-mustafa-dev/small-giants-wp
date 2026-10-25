@@ -275,6 +275,8 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
 			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ), ...( 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {} ) } );
+			// A no-setting row on an element's own box goes to the part-wide pass (lib/fill-ancestor.mjs::partWideWrites), which asks the enclosing blocks.
+			'no-setting' === res.gap && ! layer && ( st.hopRows ??= [] ).push( { row: st.out.unmapped.at( -1 ), rec, target, prop, draft: { ...draft }, siblings: allDrafts } );
 		} else if ( 'written' === res.status ) {
 			// A setting of a part is written only from the element paired to that part (lib/fill-part-pairing.mjs).
 			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ), targets: rec.targets, readAt: ( id, x ) => st.reads.widths?.[ x ]?.[ id ] } ) } ) ).filter( ( x ) => x.why );
@@ -314,8 +316,8 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 // when every check that can run did (lib/gap-classes.mjs): `own-slot` (a setting painting the element's own slot),
 // `calibrated-slots` (the other slots the block's settings for the property paint, alternateSlots), `equivalence` (the
 // css-equivalence engine, lib/css-equivalence), and `ancestor` (a setting on an enclosing block, lib/resolve.mjs::
-// resolveViaAncestor), which Fill does not run: it is listed under `unchecked`, never under `checks`. A painted layer
-// tries its own slot alone.
+// resolveViaAncestor), which the part-wide pass runs after the walk (lib/fill-ancestor.mjs::partWideWrites): it is listed
+// under `unchecked` until that pass has looked at the row and moved it to `checks`. A painted layer tries its own slot alone.
 export function checksRan( { layer, alternates, res, eq } ) {
 	return {
 		checks: [ 'own-slot', ...( layer ? [] : [ 'calibrated-slots' ] ), ...( res.equivalence || eq ? [ 'equivalence' ] : [] ) ],

@@ -18,6 +18,7 @@ import { json, makeState, snapsOf, planSpacing } from './fill-resolve-state.mjs'
 import { fillElement, unmapped } from './fill-resolve-element.mjs';
 import { completePaint } from './css-families.mjs';
 import { makeSettle } from './fill-held.mjs';
+import { partWideWrites } from './fill-ancestor.mjs';
 
 const PSEUDO_LAYERS = [ '::before', '::after' ];
 
@@ -161,6 +162,8 @@ export function fillTree( opts ) {
 		const read = rec.targets.filter( ( t ) => Object.keys( snapsOf( st, t.id ) ).length ).map( ( t ) => t.slot );
 		st.out.unread.push( ...unreadOf( { db: st.db, block: rec.name, cal, attributes: st.nodes[ rec.index ].node.attributes || {}, slots: read, written: new Set( st.out.writes.filter( ( w ) => w.index === rec.index ).map( ( w ) => w.attr ) ) } ).map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 	}
+	// A host block's setting that paints the same part on every instance of a child block is written once (FR-48-14b).
+	partWideWrites( st, opts.partWide );
 	const settleHeld = ( result ) => {
 		const r = settle( { unmapped: result.unmapped, writes: result.writes } );
 		return { unmapped: r.unmapped, alreadyHeld: [ ...( result.alreadyHeld || [] ), ...r.alreadyHeld ] };

@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\tpartWideWrites( st, opts.partWide );\n",
+		"replace": "",
+		"why": "Fill never runs the part-wide pass"
+	},
+	{
+		"file": "lib/fill-ancestor.mjs",
+		"find": "return null === d || ( Object.keys( d ).length && ! sameAsk( prop, d, p.draft ) );",
+		"replace": "return false;",
+		"why": "an instance asking another value no longer blocks the write"
+	},
+	{
+		"file": "lib/fill-ancestor.mjs",
+		"find": "if ( unmeasured.length ) {",
+		"replace": "if ( false ) {",
+		"why": "an unmeasured instance no longer blocks the write"
+	},
+	{
+		"file": "lib/fill-ancestor.mjs",
+		"find": "row.unchecked = ( row.unchecked || [] ).filter( ( c ) => 'ancestor' !== c );",
+		"replace": "row.unchecked = row.unchecked || [];",
+		"why": "a row the hop looked at still lists the ancestor check as unchecked"
+	},
+	{
+		"file": "lib/fill-ancestor.mjs",
+		"find": "return rec.targets.find( ( t ) => '' !== t.slot && json( t.finder ) === json( target.finder ) ) ?? null;",
+		"replace": "return null;",
+		"why": "a root row whose control is also the part is never answered"
+	},
+	{
+		"file": "lib/fill-ancestor.mjs",
+		"find": "return null !== home && '' !== home && tailOf( part, home );",
+		"replace": "return true;",
+		"why": "the content band setting is offered for a field part"
+	},
+	{
+		"file": "lib/fill-ancestor.mjs",
+		"find": "if ( clash.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a host holding another value is overwritten"
+	},
+	{
+		"file": "lib/fill-ancestor.mjs",
+		"find": "p.prop in SIZE_FAMILY || ",
+		"replace": "",
+		"why": "a size row is answered by a host write before the dimension pass can judge it"
+	}
+]
