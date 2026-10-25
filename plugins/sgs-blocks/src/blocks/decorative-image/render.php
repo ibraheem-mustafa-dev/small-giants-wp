@@ -32,6 +32,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
+require_once dirname( __DIR__, 3 ) . '/includes/media/atoms/box-shape.php';
 
 // ---------------------------------------------------------------------------
 // 0. Security sanitiser (contract §D) — every value that reaches the scoped
@@ -153,6 +154,11 @@ $sgs_di_fill   = sgs_background_paint_decl(
 );
 $sgs_di_height = sgs_responsive_normalise_object( $attributes['height'] ?? null );
 
+// The layer's shape: the box-shape atom's vocabulary and clip-path map, applied to the layer root so a
+// shaped layer clips its fill, border, shadow, image and content together.
+$sgs_di_shape = sgs_media_atom_box_shape_validate_shape( $attributes['shape'] ?? null );
+$sgs_di_clip  = sgs_media_atom_box_shape_clip_paths()[ $sgs_di_shape ] ?? '';
+
 // A layer with no media and no content renders only when it has something to draw: a
 // border width or gradient ring, a shadow or a fill. A height or a radius alone draws nothing.
 $sgs_di_paints_box = '' !== $sgs_di_border['facts']['width_top']
@@ -227,6 +233,7 @@ $root_decls = array_merge(
 	$sgs_di_border['base'],
 	$sgs_di_shadow['normal'],
 	'' !== $sgs_di_fill ? array( $sgs_di_fill ) : array(),
+	'' !== $sgs_di_clip ? array( 'clip-path:' . $sgs_di_clip ) : array(),
 	'' !== sgs_css_length_value( $sgs_di_height['desktop'] ?? '' ) ? array( 'height:' . sgs_css_length_value( $sgs_di_height['desktop'] ) ) : array()
 );
 

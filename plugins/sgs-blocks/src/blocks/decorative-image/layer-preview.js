@@ -11,6 +11,7 @@ import { resolveTier } from '../../utils/responsive';
 import { sgsBorderPreview } from '../../utils/border-preview';
 import { backgroundPaintPreview } from '../../utils/background-preview';
 import { composeShadow } from '../../utils/shadow-layers';
+import { css as boxShapeCss } from '../../components/media/atoms/box-shape';
 
 /**
  * @param {Object}  attributes Block attributes.
@@ -109,6 +110,13 @@ export function layerBoxPreview( attributes, tier, palette ) {
 	const shadow = composeShadow( boxShadow || '', boxShadowColour || '' );
 	if ( shadow ) {
 		style.boxShadow = shadow;
+	}
+
+	// The shape's clip-path comes from the box-shape atom's own emitter, the way the hero canvas reads it.
+	const clip = boxShapeCss( { attributes, prefix: '', blockSlug: 'sgs/decorative-image' } )
+		.find( ( decl ) => decl.startsWith( '--sgs-media-clip-path:' ) );
+	if ( clip ) {
+		style.clipPath = clip.slice( clip.indexOf( ':' ) + 1 );
 	}
 
 	const tierHeight = resolveTier( height, tier, '' ).value;

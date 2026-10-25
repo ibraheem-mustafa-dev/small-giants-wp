@@ -243,6 +243,55 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertStringContainsString( 'box-shadow:', $shadow['css'] );
 	}
 
+	public function test_an_empty_shaped_layer_paints_its_fill_and_border_clipped_to_the_shape(): void {
+		$expected = array(
+			'circle'  => 'circle(50%)',
+			'rounded' => 'inset(0 round 12px)',
+			'square'  => 'inset(0)',
+		);
+		foreach ( $expected as $shape => $clip ) {
+			$attrs          = $this->ring_attrs();
+			$attrs['shape'] = $shape;
+			$attrs['backgroundColour'] = '#112233';
+			$out            = $this->render_layer( $attrs );
+
+			$this->assertStringContainsString( 'sgs-decorative-image--shape', $out['html'], $shape . ': the empty layer still renders' );
+			$this->assertMatchesRegularExpression(
+				'/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*clip-path:' . preg_quote( $clip, '/' ) . '[;}]/',
+				$out['css'],
+				$shape . ': the clip is on the layer root rule'
+			);
+			$this->assertStringContainsString( 'background-color:#112233', $out['css'], $shape . ': the fill paints in the shape' );
+			$this->assertStringContainsString( 'border-style:solid', $out['css'], $shape . ': the border paints in the shape' );
+			$this->assertStringNotContainsString( '--sgs-media-', $out['css'], $shape . ': no second width or border writer from the media atom' );
+			$this->assertSame( 1, substr_count( $out['css'], 'width:340px' ), $shape . ': one width' );
+		}
+	}
+
+	public function test_no_shape_or_an_unknown_shape_prints_no_clip(): void {
+		foreach ( array( null, 'none', 'hexagon', '' ) as $shape ) {
+			$attrs = $this->ring_attrs();
+			if ( null !== $shape ) {
+				$attrs['shape'] = $shape;
+			}
+			$out = $this->render_layer( $attrs );
+
+			$this->assertStringNotContainsString( 'clip-path', $out['css'], var_export( $shape, true ) . ' prints no clip' );
+		}
+	}
+
+	public function test_a_shape_alone_draws_nothing_so_an_empty_layer_renders_nothing(): void {
+		$out = $this->render_layer( array( 'shape' => 'circle', 'height' => array( 'desktop' => '80px' ) ) );
+
+		$this->assertSame( '', trim( $out['html'] ) );
+	}
+
+	public function test_a_shaped_layer_with_content_clips_its_root(): void {
+		$out = $this->render_layer( array( 'shape' => 'circle' ), self::CONTENT );
+
+		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*clip-path:circle\(50%\)/', $out['css'] );
+	}
+
 	public function test_box_tiers_print_inside_their_device_queries(): void {
 		$attrs                = $this->ring_attrs();
 		$attrs['height']      = array(

@@ -6,7 +6,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import {
 	SgsColourPanel,
 	fillRow,
@@ -16,6 +16,8 @@ import {
 	ResponsiveOverride,
 	shadowAttrKeys,
 } from '../../components';
+import { SHAPE_OPTIONS } from '../../components/media/controls/MediaBoxShapeControls';
+import { validateShape } from '../../components/media/atoms/box-shape';
 
 const HEIGHT_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -73,6 +75,15 @@ export default function LayerBoxPanels( { attributes, setAttributes } ) {
 							/>
 						) }
 					</ResponsiveOverride>
+					<SelectControl
+						label={ __( 'Shape', 'sgs-blocks' ) }
+						help={ __( 'Clips the layer, its fill, border, image and content to a shape. Set a border, fill or shadow to draw an empty shape.', 'sgs-blocks' ) }
+						value={ validateShape( attributes.shape ) }
+						options={ SHAPE_OPTIONS }
+						onChange={ ( val ) => setAttributes( { shape: validateShape( val ) } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 					<SgsBorderControl
 						widthValues={ attributes.borderWidth ?? {} }
 						onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }

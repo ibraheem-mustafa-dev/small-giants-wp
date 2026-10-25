@@ -32,6 +32,7 @@ const NEW_ATTRIBUTES = [
 	'boxShadowColour',
 	'boxShadowColourHover',
 	'boxShadowHover',
+	'shape',
 ];
 
 jest.mock( '@wordpress/block-editor', () => ( {
@@ -42,6 +43,18 @@ jest.mock( '@wordpress/block-editor', () => ( {
 jest.mock( '@wordpress/components', () => ( {
 	__esModule: true,
 	PanelBody: ( { title, children } ) => require( 'react' ).createElement( 'section', { 'data-panel': title }, children ),
+	SelectControl: ( { label, value, options, onChange } ) =>
+		require( 'react' ).createElement( 'button', {
+			'data-select': label,
+			'data-value': value,
+			'data-options': JSON.stringify( options.map( ( o ) => o.value ) ),
+			onClick: () => onChange( 'circle' ),
+		} ),
+} ) );
+
+jest.mock( '../../src/components/media/controls/MediaBoxShapeControls', () => ( {
+	__esModule: true,
+	SHAPE_OPTIONS: [ 'none', 'rounded', 'circle', 'square' ].map( ( value ) => ( { label: value, value } ) ),
 } ) );
 
 jest.mock( '../../src/components', () => {
@@ -114,6 +127,22 @@ describe( 'Floating layer box panels', () => {
 		} );
 	} );
 
+	it( 'shows one Shape control with the media vocabulary and writes the shape attribute', () => {
+		const setAttributes = jest.fn();
+		const host = mount( { shape: 'rounded' }, setAttributes );
+		const shapes = host.querySelectorAll( '[data-select="Shape"]' );
+
+		expect( shapes.length ).toBe( 1 );
+		expect( shapes[ 0 ].closest( '[data-panel="Shape and border"]' ) ).not.toBeNull();
+		expect( shapes[ 0 ].dataset.value ).toBe( 'rounded' );
+		expect( JSON.parse( shapes[ 0 ].dataset.options ) ).toEqual( [ 'none', 'rounded', 'circle', 'square' ] );
+		expect( host.querySelectorAll( '[data-responsive="Width"], [data-length-control]' ).length ).toBe( 1 );
+		act( () => {
+			shapes[ 0 ].click();
+		} );
+		expect( setAttributes ).toHaveBeenCalledWith( { shape: 'circle' } );
+	} );
+
 	it( 'binds the border control to the border attributes and writes radius tiers into one object', () => {
 		const setAttributes = jest.fn();
 		const attributes = { borderRadius: { desktop: { topLeft: '4px' } }, borderStyle: 'solid', borderColour: 'primary' };
@@ -147,7 +176,7 @@ describe( 'Floating layer box panels', () => {
 
 	it( 'an unset layer prints nothing: every new attribute defaults empty, or solid for the border style', () => {
 		NEW_ATTRIBUTES.forEach( ( name ) => {
-			expect( [ '', {}, 'solid' ] ).toContainEqual( SCHEMA[ name ].default );
+			expect( [ '', {}, 'solid', 'none' ] ).toContainEqual( SCHEMA[ name ].default );
 		} );
 	} );
 } );

@@ -31,7 +31,7 @@
         },
         "sgs": {
             "motion": true,
-            "_comment_mediaElements": "Adopts object-fit, focal-point and overlay only, unprefixed (one media slot). box-shape is NOT adopted: its Width and WidthUnit bases are this block's own width and widthUnit, so the atom would put --sgs-media-width on the inner image of every wrapper layer and add a second Width row. The layer paints its own box (border, radius, fill, shadow, height) on its root through the block-private attributes below, built from the shared border, shadow and fill assemblers (sgs_border_element_decls, sgs_shadow_decls, sgs_background_paint_decl), the way sgs/before-after does for its frame.",
+            "_comment_mediaElements": "Adopts object-fit, focal-point and overlay only, unprefixed (one media slot). box-shape is NOT adopted as an atom: its Width, WidthUnit, Height and border bases are this block's own width, widthUnit, height and border attributes, so the atom would put --sgs-media-width and a second border on the inner image of every wrapper layer and add second Width, Height and border rows. The layer takes the atom's SHAPE only: the block-private `shape` attribute uses the atom's vocabulary and clip-path map (box-shape.js::validateShape, sgs_media_atom_box_shape_clip_paths) and clips the layer root. The layer paints its own box (border, radius, fill, shadow, height) on its root through the block-private attributes below, built from the shared border, shadow and fill assemblers (sgs_border_element_decls, sgs_shadow_decls, sgs_background_paint_decl), the way sgs/before-after does for its frame.",
             "mediaElements": [
                 { "prefix": "", "context": "element", "atoms": [ "object-fit", "focal-point", "overlay" ] }
             ],
@@ -163,6 +163,12 @@
         "overflow": {
             "type": "string",
             "default": "visible"
+        },
+        "_comment_shape": "Named shape on the layer root, the vocabulary sgs/media offers (box-shape atom): none, rounded, circle, square. Prints clip-path only; unset prints nothing. A shape alone draws nothing: an empty layer still needs a border, a fill or a shadow.",
+        "shape": {
+            "type": "string",
+            "enum": [ "none", "rounded", "circle", "square" ],
+            "default": "none"
         },
         "_comment_box": "The box the layer paints on its own root, so an empty layer can draw a ring, a disc or a tinted panel. Every attribute prints nothing while unset. A layer with no media and no content renders only when a border width, a gradient ring, a shadow or a fill is set.",
         "height": {
