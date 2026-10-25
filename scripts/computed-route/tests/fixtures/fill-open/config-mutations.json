@@ -1,0 +1,4 @@
+[
+ { "file": "lib/fill-config.mjs", "find": "${ opener?.state ? `, open: ${ openerSource( opener ) }` : open ?", "replace": "${ open ?", "why": "the walker never opens the draft state" },
+ { "file": "lib/fill-config.mjs", "find": "baseText: baseConfigText( { surface, draftUrl, liveUrl, open, opener, divergences,", "replace": "baseText: baseConfigText( { surface, draftUrl, liveUrl, open, divergences,", "why": "walkerConfigs drops the opener" }
+]
