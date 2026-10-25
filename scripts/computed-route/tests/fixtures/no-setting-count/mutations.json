@@ -7,5 +7,8 @@
  { "file": "tools/no-setting-count.mjs", "find": "name: 'label-dot-never-emitted'", "replace": "name: 'zz-label-dot-never-emitted'", "why": "the signature name changes" },
  { "file": "tools/no-setting-count.mjs", "find": "return 'other';", "replace": "return SIGNATURES[ 0 ].name;", "why": "a row matching no signature is given the first one" },
  { "file": "tools/no-setting-count.mjs", "find": "! isNoSetting( r ) && String( r.reason ?? '' ).includes( '[object Object]' )", "replace": "String( r.reason ?? '' ).includes( '[object Object]' )", "why": "the refused-motion count includes no-setting rows" },
- { "file": "tools/no-setting-count.mjs", "find": "fs.existsSync( path.join( dir, 'unmapped.json' ) ) ? dir : null", "replace": "dir", "why": "a named run without unmapped.json is not skipped" }
+ { "file": "tools/no-setting-count.mjs", "find": "fs.existsSync( path.join( dir, 'unmapped.json' ) ) ? dir : null", "replace": "dir", "why": "a named run without unmapped.json is not skipped" },
+ { "file": "tools/no-setting-count.mjs", "find": "'held:default' === row?.code || ", "replace": "", "why": "a held:default code no longer counts as held-default" },
+ { "file": "tools/no-setting-count.mjs", "find": "if ( isHeldDefault( row ) ) {", "replace": "if ( false ) {", "why": "held-default rows fall back into the signatures" },
+ { "file": "tools/no-setting-count.mjs", "find": "}  held-default (judged live)`", "replace": "}  held-default`", "why": "the printed line loses its name" }
 ]

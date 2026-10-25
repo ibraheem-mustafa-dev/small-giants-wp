@@ -1508,6 +1508,7 @@ Status: built as a chain, run against injected live probes (2026-10-22, `scripts
 | F-behaviour | an SGS feature lacks the behaviour (a seen-but-unsupported row, FR-48-34) | owning feature spec |
 | W-walker | a measuring artefact (mispair, unmeasured side, consequence of another row) | Spec 48 §3.6 |
 | W-route | a setting exists that the route did not find, calibrate or write | Spec 48 |
+| W-unchecked | a `no-setting` row that does not record every check as run (own slot, calibrated slots, equivalence, ancestor), or comes from a run that records none: not a framework gap until they have | Spec 48 |
 | I-stale | the DB or a cache is older than the code | `sgs-update-v2.py`, calibration |
 | I-unrouted | a fitting setting has a NULL `css_property` | `sgs-update-v2.py` |
 | I-mistag | a setting carries the wrong role | `sgs-update-v2.py` |
@@ -1518,7 +1519,7 @@ Status: built as a chain, run against injected live probes (2026-10-22, `scripts
 
 Today's triage (`scripts/computed-route/lib/triage.mjs::TRIAGE_CLASSES` = W, F, T, U, L) maps as follows:
 - **W** splits into W-walker (reasons `mispaired`, `same-element`, `unmeasured-side`, `no-live-element`, `consequence`, `unmapped-state`, `content`) and W-route (`resolver-*`, `resolver-blocked`, `canvas-settable`);
-- **F** with reason `no-setting` becomes F-setting, and F with `hardcode` becomes F-hardcode, each only after G0-G7. Until then it is a candidate;
+- **F** with reason `no-setting` becomes F-setting only when the Fill row records that every check ran and failed (`lib/gap-classes.mjs::mapResolverGap`; a row with an unchecked entry is W-unchecked, a `held:default` row is held and judged live), and F with `hardcode` becomes F-hardcode, each only after G0-G7. Until then it is a candidate;
 - **T** (the resolver would write a value the tree lacks) is W-route: the route's own debt;
 - **U** (`box-unexplained`) is W-walker until a box-geometry check per paired element explains it;
 - **L** (`ledger-consequence`) is CLIENT.
