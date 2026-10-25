@@ -698,7 +698,7 @@
       },
       "hover": {
         "duration": "var(--wp--custom--duration--fast)",
-        "easing": "var(--wp--custom--easing--emphasised)"
+        "easing": "var(--wp--custom--easing--spring)"
       },
       "duration": {
         "instant": "60ms",

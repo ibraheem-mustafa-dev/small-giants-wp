@@ -595,8 +595,8 @@
         "medium": "300ms cubic-bezier(0.25, 0.1, 0.25, 1)"
       },
       "hover": {
-        "duration": "var(--wp--custom--duration--fast)",
-        "easing": "var(--wp--custom--easing--emphasised)"
+        "duration": "350ms",
+        "easing": "var(--wp--custom--easing--spring)"
       },
       "duration": {
         "instant": "60ms",
