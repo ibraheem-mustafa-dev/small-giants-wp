@@ -1,0 +1,877 @@
+{
+	"generated": "2026-10-25T23:08:59.119Z",
+	"inventory": "2026-10-23T19:44:35.256Z",
+	"source": "http://127.0.0.1:52589/Indus%20Foods%20Website%20v2.dc.html#/careers",
+	"surface": "inline-form-careers",
+	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-49",
+			"kind": "result",
+			"name": "Inline form thank-you (careers)",
+			"openedBy": "submit (onSubmit preventDefault → sent[key] = true)",
+			"roots": [
+				"Indus Foods Website v2/543"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [
+		{
+			"key": "Indus Foods Website v2/570",
+			"field": "required",
+			"record": true,
+			"render": false
+		}
+	],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 42,
+		"parts": 11,
+		"rows": 31,
+		"skeletonNodes": 13,
+		"expandedNodes": 13,
+		"low": 0,
+		"removed": 18,
+		"unresolved": 0,
+		"byRule": {
+			"formHost": 1,
+			"formControl": 23
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/550#0",
+			"tag": "form",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/form",
+			"action": null,
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"source": "rule formHost",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formHost",
+			"candidates": [
+				{
+					"block": "sgs/form",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<form sc-camel-on-submit=\"{{ b.onSubmit }}\" data-dc-tpl=\"550\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p> <div style=\"display:grid;grid-template-columns:{{ R.fo",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root/551#0",
+			"tag": "h3",
+			"depth": 1,
+			"words": "Register your interest",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h3 -> sgs/heading (\"Heading level 3\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3>",
+			"attributes": {
+				"content": "Register your interest"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/552#0",
+			"tag": "p",
+			"depth": 1,
+			"words": "Tell us about yourself and we’ll be in touch when a suitable role opens.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p>",
+			"attributes": {
+				"text": "Tell us about yourself and we’ll be in touch when a suitable role opens."
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/553#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 7 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ R.formCols }};gap:18px;margin-top:28px;\" data-dc-tpl=\"553\"> <sc-for list=\"{{ b.fields }}\" as=\"fd\" hint-placeholder-count=\"6\" data-dc-tpl=\"554\"> <label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if val",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/555#0",
+			"tag": "label",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/556#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Full name",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root/558#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/556#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root/560#0",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
+			"attributes": {
+				"label": "Full name",
+				"helpText": "Email Phone Team Role CV About you"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/560#0"
+				}
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/555#1",
+			"tag": "label",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root/556#1",
+			"tag": "span",
+			"depth": 3,
+			"words": "Email",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/558#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/556#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/560#1",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-email",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-email",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
+			"attributes": {
+				"label": "Full name",
+				"helpText": "Email Phone Team Role CV About you"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/560#1"
+				}
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/555#2",
+			"tag": "label",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/556#2",
+			"tag": "span",
+			"depth": 3,
+			"words": "Phone",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/560#2",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-phone",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-phone",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
+			"attributes": {
+				"label": "Full name",
+				"helpText": "Email Phone Team Role CV About you"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/560#2"
+				}
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/555#3",
+			"tag": "label",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+			"attributes": {}
+		},
+		{
+			"order": 16,
+			"key": "Root/556#3",
+			"tag": "span",
+			"depth": 3,
+			"words": "Team",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 17,
+			"key": "Root/558#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/556#3)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/562#0",
+			"tag": "select",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-select",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-select",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [
+				"Root/564#0",
+				"Root/564#1",
+				"Root/564#2",
+				"Root/564#3",
+				"Root/564#4",
+				"Root/564#5"
+			],
+			"screenshots": {},
+			"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
+			"attributes": {
+				"label": "Full name",
+				"helpText": "Email Phone Team Role CV About you"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/562#0"
+				}
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/555#4",
+			"tag": "label",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+			"attributes": {}
+		},
+		{
+			"order": 20,
+			"key": "Root/556#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "Role",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root/562#1",
+			"tag": "select",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-select",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-select",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [
+				"Root/564#6",
+				"Root/564#7",
+				"Root/564#8",
+				"Root/564#9",
+				"Root/564#10"
+			],
+			"screenshots": {},
+			"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
+			"attributes": {
+				"label": "Full name",
+				"helpText": "Email Phone Team Role CV About you"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/562#1"
+				}
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/555#5",
+			"tag": "label",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root/556#5",
+			"tag": "span",
+			"depth": 3,
+			"words": "CV",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root/568#0",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-file",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-file",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input type=\"file\" style=\"width:100%;font-size:14px;padding:14px;border:1.5px dashed rgba(10,126,168,.4);border-radius:10px;background:#F4F9FB;color:#1E2A3C;\" data-dc-tpl=\"568\">",
+			"attributes": {
+				"label": "Full name",
+				"helpText": "Email Phone Team Role CV About you"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/555#6",
+			"tag": "label",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root/556#6",
+			"tag": "span",
+			"depth": 3,
+			"words": "About you",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root/566#0",
+			"tag": "textarea",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-textarea",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-textarea",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<textarea rows=\"5\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;resize:vertical;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"566\"></tex",
+			"attributes": {
+				"label": "Full name",
+				"helpText": "Email Phone Team Role CV About you"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/566#0"
+				}
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/569#0",
+			"tag": "label",
+			"depth": 1,
+			"words": "I agree to Indus Foods contacting me about this enquiry.",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;gap:12px;align-items:flex-start;margin-top:22px;font-size:14px;color:#4A5563;line-height:1.5;cursor:pointer;\" data-dc-tpl=\"569\"> <input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\"> I agree to Indus Foods contacting me about this enquiry. </label>",
+			"attributes": {}
+		},
+		{
+			"order": 29,
+			"key": "Root/570#0",
+			"tag": "input",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/form-field-consent",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-consent",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\">",
+			"attributes": {
+				"label": "Full name",
+				"required": true,
+				"helpText": "Register your interest Tell us about yourself and we’ll be in touch when a suitable role opens. Email Phone Team Role CV About you I agree to Indus Foods contacting me about this enquiry. Send application"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root/571#0",
+			"tag": "button",
+			"depth": 1,
+			"words": "Send application",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"submit\" sc-camel-on-mouse-enter=\"{{ btnEnter }}\" sc-camel-on-mouse-leave=\"{{ btnLeave }}\" data-mag=\"\" style=\"margin-top:26px;color:#FFFFFF;background:#0A7EA8;font-weight:700;padding:16px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;transition:transform .2s,box-shadow .3s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);",
+			"attributes": {
+				"label": "Send application"
+			}
+		}
+	]
+}

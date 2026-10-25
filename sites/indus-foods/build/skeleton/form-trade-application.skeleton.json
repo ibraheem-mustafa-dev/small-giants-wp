@@ -1,0 +1,1541 @@
+[
+	{
+		"name": "sgs/form",
+		"attributes": {
+			"layout": "grid"
+		},
+		"draftRef": {
+			"tpl": "Root>TradeApplication@466#0/6#0"
+		},
+		"draftFingerprint": {
+			"tag": "div",
+			"cls": "",
+			"styleHash": "4979cc05",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 13
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Business"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Trading name"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/39#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "scp1l",
+							"styleHash": "e55d5567",
+							"parentTags": [
+								"div",
+								"div",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 48
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root>TradeApplication@466#0/39#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Registered business name"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/39#1"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "scp1l",
+							"styleHash": "e55d5567",
+							"parentTags": [
+								"div",
+								"div",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 48
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root>TradeApplication@466#0/39#1"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"label": "Business structure"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/41#0"
+						},
+						"draftFingerprint": {
+							"tag": "select",
+							"cls": "scp1l",
+							"styleHash": "da550f47",
+							"parentTags": [
+								"div",
+								"div",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 51
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root>TradeApplication@466#0/41#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "VAT number",
+							"helpText": "Leave blank if you are not VAT registered."
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/39#2"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "scp1l",
+							"styleHash": "e55d5567",
+							"parentTags": [
+								"div",
+								"div",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 48
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root>TradeApplication@466#0/39#2"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"label": "Time trading"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/41#1"
+						},
+						"draftFingerprint": {
+							"tag": "select",
+							"cls": "scp1l",
+							"styleHash": "da550f47",
+							"parentTags": [
+								"div",
+								"div",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 51
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root>TradeApplication@466#0/41#1"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Premises"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Contact"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Ordering"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/form-review",
+				"attributes": {},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div"
+				},
+				"draftRef": {
+					"tpl": "Root>TradeApplication@466#0/7#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "d7de68dd",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 14
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/9#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a0e2188a",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 16
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/label",
+								"attributes": {
+									"text": "Step 1 of 5"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/10#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "8cb0fea6",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "3f731f7a",
+									"line": 17
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/12#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "a627efd7",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "327d012e",
+									"line": 18
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/16#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "2ca0dd5a",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 23
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/18#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "993d9dd8",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 25
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "1"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/19#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "67009aa0",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b594",
+											"line": 26
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Business"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/21#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "69cd336e",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "f3ba863",
+											"line": 27
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/18#1"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "8cebc2d6",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 25
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "2"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/19#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "c60b201",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b597",
+											"line": 26
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Premises"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/21#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "69cd336e",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "9c069443",
+											"line": 27
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/18#2"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "8cebc2d6",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 25
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "3"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/19#2"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "c60b201",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b596",
+											"line": 26
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Contact"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/21#2"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "69cd336e",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "d9d08625",
+											"line": 27
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/18#3"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "8cebc2d6",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 25
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "4"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/19#3"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "c60b201",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b591",
+											"line": 26
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Ordering"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/21#3"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "69cd336e",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "bee6d74b",
+											"line": 27
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/18#4"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "8cebc2d6",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 25
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "5"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/19#4"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "c60b201",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b590",
+											"line": 26
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Review"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/21#4"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "69cd336e",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "c44df61f",
+											"line": 27
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Tell us about your business"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/23#0"
+						},
+						"draftFingerprint": {
+							"tag": "h2",
+							"cls": "",
+							"styleHash": "45221537",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "34ca6ce8",
+							"line": 34
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "The basics we need to set up your account and check your details."
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/24#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "82204bd8",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "f1167631",
+							"line": 35
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/26#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "9dafbd8b",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 38
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/28#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "2227f0de",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 40
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/33#0"
+										},
+										"draftFingerprint": {
+											"tag": "label",
+											"cls": "",
+											"styleHash": "454eda67",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "adb12ee2",
+											"line": 45
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "*"
+												},
+												"draftRef": {
+													"tpl": "Root>TradeApplication@466#0/35#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "8a19ef39",
+													"parentTags": [
+														"div",
+														"div",
+														"div",
+														"div",
+														"div",
+														"label"
+													],
+													"textHash": "2b58f",
+													"line": 45
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/option-picker",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/47#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "706c044c",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 59
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/28#6"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "2227f0de",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 40
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Food hygiene rating"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/33#6"
+										},
+										"draftFingerprint": {
+											"tag": "label",
+											"cls": "",
+											"styleHash": "454eda67",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "59097ef1",
+											"line": 45
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/option-picker",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/47#1"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "706c044c",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 59
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "From your local authority (Food Standards Agency scheme)."
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/64#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "d2c9c594",
+											"parentTags": [
+												"div",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1ae2f3f9",
+											"line": 78
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/79#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "8442f06b",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 103
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Takes about 5 minutes · Your progress saves automatically"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/84#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "d2c9c594",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "525a9804",
+									"line": 107
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Continue"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/85#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "scp1p",
+									"styleHash": "da7fd760",
+									"parentTags": [
+										"div",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "13e59f84",
+									"line": 108
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "aside",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root>TradeApplication@466#0/86#0"
+				},
+				"draftFingerprint": {
+					"tag": "aside",
+					"cls": "",
+					"styleHash": "1bd60e4b",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 113
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/87#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "19950800",
+							"parentTags": [
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 114
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/88#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "3f26fc36",
+									"parentTags": [
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 115
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/label",
+										"attributes": {
+											"text": "Have these ready"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/89#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "cde97387",
+											"parentTags": [
+												"div",
+												"aside",
+												"div",
+												"button"
+											],
+											"textHash": "d88f9fbb",
+											"line": 115
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/icon",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/91#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "643ee16",
+											"parentTags": [
+												"div",
+												"aside",
+												"div",
+												"button"
+											],
+											"textHash": "1505",
+											"line": 115
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/93#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "8498ab8",
+									"parentTags": [
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 116
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/95#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "9b1ca309",
+											"parentTags": [
+												"div",
+												"aside",
+												"div",
+												"div"
+											],
+											"textHash": "9c551ef5",
+											"line": 118
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root>TradeApplication@466#0/96#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "e6ad9e98",
+													"parentTags": [
+														"div",
+														"aside",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 118
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/95#1"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "9b1ca309",
+											"parentTags": [
+												"div",
+												"aside",
+												"div",
+												"div"
+											],
+											"textHash": "e3d080bb",
+											"line": 118
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root>TradeApplication@466#0/96#1"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "e6ad9e98",
+													"parentTags": [
+														"div",
+														"aside",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 118
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/95#2"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "9b1ca309",
+											"parentTags": [
+												"div",
+												"aside",
+												"div",
+												"div"
+											],
+											"textHash": "eb46962",
+											"line": 118
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root>TradeApplication@466#0/96#2"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "e6ad9e98",
+													"parentTags": [
+														"div",
+														"aside",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 118
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/95#3"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "9b1ca309",
+											"parentTags": [
+												"div",
+												"aside",
+												"div",
+												"div"
+											],
+											"textHash": "a922406b",
+											"line": 118
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root>TradeApplication@466#0/96#3"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "e6ad9e98",
+													"parentTags": [
+														"div",
+														"aside",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 118
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root>TradeApplication@466#0/95#4"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "9b1ca309",
+											"parentTags": [
+												"div",
+												"aside",
+												"div",
+												"div"
+											],
+											"textHash": "a54a30a1",
+											"line": 118
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root>TradeApplication@466#0/96#4"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "e6ad9e98",
+													"parentTags": [
+														"div",
+														"aside",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 118
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/98#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "ad92f0b8",
+							"parentTags": [
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 122
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Need a hand?"
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/99#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "f5ec0b0a",
+									"parentTags": [
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "402d95b2",
+									"line": 123
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Our trade team can complete the application with you over the phone."
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/100#0"
+								},
+								"draftFingerprint": {
+									"tag": "p",
+									"cls": "",
+									"styleHash": "1d83a3aa",
+									"parentTags": [
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "5d1b59b4",
+									"line": 124
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "0121 771 4330",
+									"url": "tel:01217714330",
+									"linkSource": "phone",
+									"labelFromSiteInfo": true
+								},
+								"draftRef": {
+									"tpl": "Root>TradeApplication@466#0/101#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp1q",
+									"styleHash": "70db2873",
+									"parentTags": [
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "f3097ff2",
+									"line": 125
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root>TradeApplication@466#0/103#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "aa025ab5",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 128
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Prefer to apply over the phone?"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/104#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "4a5dd59",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1c504d48",
+							"line": 128
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Call 0121 771 4330",
+							"url": "tel:01217714330",
+							"linkSource": "phone"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/105#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scp1q",
+							"styleHash": "5fd1ad2",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "d9580830",
+							"line": 128
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		]
+	}
+]
