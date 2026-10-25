@@ -161,6 +161,32 @@ export function stateMotionRecords( reads, target ) {
 	return base ? [ { ...base, tiers } ] : [];
 }
 
+// A target's hover records once the state read is added: the inventory's records (`own`) keep every property they
+// carry, and the state read's records (`state`, stateMotionRecords) add only the properties no inventory hover record
+// covers. With an inventory hover record those properties join it, so the element keeps one hover layer (two hover
+// records on one element make two hover layers, which the motion schema refuses); with none, the state records are
+// the element's hover records. A state record's tiers keep only the properties they add.
+const propKey = ( p ) => ( 'padding-inline-start' === p ? 'padding-left' : p );
+export function withStateHover( own, state ) {
+	const hover = own.filter( ( r ) => 'hover' === r.trigger?.type );
+	const covered = new Set( hover.flatMap( ( r ) => ( r.properties || [] ).map( ( p ) => propKey( p.property ) ) ) );
+	const keep = ( r ) => ( r ? { ...r, properties: ( r.properties || [] ).filter( ( p ) => ! covered.has( propKey( p.property ) ) ) } : r );
+	const adds = state.map( ( r ) => ( {
+		...keep( r ),
+		...( r.tiers ? { tiers: Object.fromEntries( Object.entries( r.tiers ).map( ( [ k, t ] ) => [ k, keep( t ) ] ) ) } : {} ),
+	} ) ).filter( ( r ) => r.properties.length );
+	if ( ! adds.length ) {
+		return own;
+	}
+	if ( ! hover.length ) {
+		return [ ...own, ...adds ];
+	}
+	const into = hover[ 0 ];
+	const extra = adds.flatMap( ( r ) => r.properties );
+	const tiers = adds.find( ( r ) => r.tiers )?.tiers;
+	return own.map( ( r ) => ( r === into ? { ...r, properties: [ ...r.properties, ...extra ], ...( tiers && ! r.tiers ? { tiers } : {} ) } : r ) );
+}
+
 // The hover layer's tablet and mobile overrides for a record with `tiers`: { devices, unmapped }. baseLayer is the layer
 // hoverLayer made for the record; `layerOf(record)` makes one tier's layer; `perDevice(field)` says whether the layer
 // holds the field per device. A tier with no hover transform takes the neutral pose; an easing or other field the layer

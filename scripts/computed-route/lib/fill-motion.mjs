@@ -5,7 +5,7 @@
 // when lib/motion-validate.mjs passes the whole document. The entrances sampled at 375, 768 and 1440
 // (lib/fill-entrance.mjs) are the render check: a width whose measured delay or duration differs from the code by more
 // than one sampling step writes that tier's value, and the difference is reported.
-import { stateMotionRecords, withRestPadding, MOTION_STATE_PROPS } from './fill-state-motion.mjs';
+import { stateMotionRecords, withRestPadding, withStateHover } from './fill-state-motion.mjs';
 import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { classify } from './motion-layers.mjs';
 import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './motion-tokens.mjs';
@@ -316,9 +316,10 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			}
 			own = own.filter( ( r ) => ! held.some( ( x ) => x.r === r ) );
 			reads && ( own = withRestPadding( own, reads, t ) );
-			// A hover transform only the state read finds (no inventory record reaches the element) is the same hover layer.
-			if ( reads && targetName( n, t, targets, home ) && ! own.some( ( r ) => 'hover' === r.trigger?.type && ( r.properties || [] ).some( ( p ) => MOTION_STATE_PROPS.includes( p.property ) ) ) ) {
-				own = [ ...own, ...stateMotionRecords( reads, t ) ];
+			// A hover look only the state read finds (no inventory record reaches the element with that property) joins the
+			// element's one hover layer (lib/fill-state-motion.mjs::withStateHover).
+			if ( reads && targetName( n, t, targets, home ) ) {
+				own = withStateHover( own, stateMotionRecords( reads, t ) );
 			}
 			const lists = staggers.filter( ( p ) => p.at?.t === t && ! p.refused );
 			out.unmapped.push( ...staggers.filter( ( p ) => p.at?.t === t && p.refused ).map( ( p ) => ( { ...where, property: 'motion', value: p.r.id, reason: p.refused } ) ) );
