@@ -1,0 +1,11 @@
+[
+ {
+  "property": "order",
+  "value": "1",
+  "node": "n",
+  "reason": "no-setting: sgs/container has no setting for order",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ }
+]

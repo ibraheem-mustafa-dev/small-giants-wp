@@ -1,0 +1,20 @@
+[
+ {
+  "property": "position",
+  "value": "absolute",
+  "node": "n",
+  "reason": "no-setting: no position setting",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "order",
+  "value": "3",
+  "node": "n",
+  "reason": "no-setting: names [object Object]",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ }
+]

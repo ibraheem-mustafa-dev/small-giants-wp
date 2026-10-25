@@ -1,0 +1,11 @@
+[
+ { "file": "tools/no-setting-count.mjs", "find": "stamps[ stamps.length - 1 ]", "replace": "stamps[ 0 ]", "why": "the oldest run is read, not the newest" },
+ { "file": "tools/no-setting-count.mjs", "find": "fs.existsSync( path.join( surfaceDir, d, 'unmapped.json' ) ) ).sort()", "replace": "true ).sort()", "why": "a newer folder without unmapped.json is read" },
+ { "file": "tools/no-setting-count.mjs", "find": "String( row?.reason ?? '' ).startsWith( 'no-setting' )", "replace": "true", "why": "rows that are not no-setting are counted" },
+ { "file": "tools/no-setting-count.mjs", "find": "s.tests.every( ( [ field, re ] )", "replace": "s.tests.some( ( [ field, re ] )", "why": "one matching field is enough for a signature" },
+ { "file": "tools/no-setting-count.mjs", "find": "'^transition-(duration|timing-function|delay|property)$'", "replace": "'^transition-(duration|timing-function|delay)$'", "why": "a signature's pattern loses a property" },
+ { "file": "tools/no-setting-count.mjs", "find": "name: 'label-dot-never-emitted'", "replace": "name: 'zz-label-dot-never-emitted'", "why": "the signature name changes" },
+ { "file": "tools/no-setting-count.mjs", "find": "return 'other';", "replace": "return SIGNATURES[ 0 ].name;", "why": "a row matching no signature is given the first one" },
+ { "file": "tools/no-setting-count.mjs", "find": "! isNoSetting( r ) && String( r.reason ?? '' ).includes( '[object Object]' )", "replace": "String( r.reason ?? '' ).includes( '[object Object]' )", "why": "the refused-motion count includes no-setting rows" },
+ { "file": "tools/no-setting-count.mjs", "find": "fs.existsSync( path.join( dir, 'unmapped.json' ) ) ? dir : null", "replace": "dir", "why": "a named run without unmapped.json is not skipped" }
+]

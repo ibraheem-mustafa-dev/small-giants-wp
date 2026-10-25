@@ -1,0 +1,209 @@
+[
+ {
+  "property": "border-radius",
+  "value": "50%",
+  "node": "n",
+  "reason": "no-setting: sgs/decorative-image has no setting for border-radius",
+  "block": "sgs/decorative-image",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "font-kerning",
+  "value": "auto",
+  "node": "n",
+  "reason": "no-setting: sgs/media has no setting for font-kerning",
+  "block": "sgs/media",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "border-top-width",
+  "value": "1px",
+  "node": "n",
+  "reason": "no-setting: sgs/form-field-text has no setting for border-top-width",
+  "block": "sgs/form-field-text",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "column-gap",
+  "value": "8px",
+  "node": "n",
+  "reason": "no-setting: sgs/label has no setting for column-gap",
+  "block": "sgs/label",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0s",
+  "node": "n",
+  "reason": "no-setting: sgs/heading has no setting for transition-duration",
+  "block": "sgs/heading",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "position",
+  "value": "relative",
+  "node": "n",
+  "reason": "no-setting: no position setting; equivalence: 2 values: draft relative; the default paint is unmeasured",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-duration",
+  "value": "0.35s",
+  "node": "n",
+  "reason": "no-setting: sgs/container has no setting for transition-duration",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "background-size",
+  "value": "auto",
+  "node": "n",
+  "reason": "no-setting: sgs/container has no setting for background-size",
+  "block": "sgs/container",
+  "slot": "",
+  "state": "hover"
+ },
+ {
+  "property": "display",
+  "value": "flex",
+  "node": "n",
+  "reason": "no-setting: sgs/button has no setting for display",
+  "block": "sgs/button",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "background-color",
+  "value": "red",
+  "node": "n",
+  "reason": "no-setting: sgs/label has no setting for background-color",
+  "block": "sgs/label",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "flex-wrap",
+  "value": "wrap",
+  "node": "n",
+  "reason": "no-setting: sgs/breadcrumbs has no setting for flex-wrap",
+  "block": "sgs/breadcrumbs",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "color",
+  "value": "red",
+  "node": "n",
+  "reason": "no-setting: sgs/option-picker has no setting for color",
+  "block": "sgs/option-picker",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "box-shadow",
+  "value": "x",
+  "node": "n",
+  "reason": "no-setting: sgs/container has no setting for box-shadow",
+  "block": "sgs/container",
+  "slot": "",
+  "state": "hover"
+ },
+ {
+  "property": "overflow-x",
+  "value": "clip",
+  "node": "n",
+  "reason": "no-setting: sgs/container has no setting for overflow-x",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "padding-left",
+  "value": "16px",
+  "node": "n",
+  "reason": "no-setting: sgs/container has no setting for padding-left",
+  "block": "sgs/container",
+  "slot": "",
+  "state": "hover"
+ },
+ {
+  "property": "aspect-ratio",
+  "value": "16 / 9",
+  "node": "n",
+  "reason": "no-setting: sgs/media has no setting for aspect-ratio",
+  "block": "sgs/media",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "font-variant-numeric",
+  "value": "tabular-nums",
+  "node": "n",
+  "reason": "no-setting: sgs/text has no setting for font-variant-numeric",
+  "block": "sgs/text",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "cursor",
+  "value": "pointer",
+  "node": "n",
+  "reason": "no-setting: sgs/text has no setting for cursor",
+  "block": "sgs/text",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "text-shadow",
+  "value": "x",
+  "node": "n",
+  "reason": "no-setting: sgs/text has no setting for text-shadow",
+  "block": "sgs/text",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "font-weight",
+  "value": "700",
+  "node": "n",
+  "reason": "no-setting: sgs/button has no setting for font-weight",
+  "block": "sgs/button",
+  "slot": "",
+  "state": "hover"
+ },
+ {
+  "property": "order",
+  "value": "2",
+  "node": "n",
+  "reason": "no-setting: sgs/container has no setting for order",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "min-height",
+  "value": "0px",
+  "node": "n",
+  "reason": "ambiguous: minHeight, bgSvgMinHeight all paint min-height",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ },
+ {
+  "property": "transition-property",
+  "value": "x",
+  "node": "n",
+  "reason": "sgsMotion refused: [object Object]",
+  "block": "sgs/container",
+  "slot": "",
+  "state": null
+ }
+]
