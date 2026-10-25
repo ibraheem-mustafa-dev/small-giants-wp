@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-link-attrs.mjs", "find": " && 1 === imageAlts.length && slot === pictureSlot ) {", "replace": " && 1 === imageAlts.length ) {", "why": "the name is written from any slot" },
+	{ "file": "lib/fill-media.mjs", "find": "\tif ( is( snaps[ '' ] ) ) {\n\t\treturn '';\n\t}", "replace": "", "why": "the own element is not preferred" },
+	{ "file": "lib/fill-media.mjs", "find": "return 1 === inner.length ? inner[ 0 ] : null;\n}\n\n// img: the draft", "replace": "return inner[ 0 ] ?? null;\n}\n\n// img: the draft", "why": "two pictures pick the first" },
+	{ "file": "lib/fill-media.mjs", "find": "const is = ( s ) => !! ( s && ! s.missing && ( s.img || s.imageName ) );", "replace": "const is = ( s ) => !! ( s && ( s.img || s.imageName ) );", "why": "a missing read is a picture" },
+	{ "file": "lib/fill-media.mjs", "find": "const is = ( s ) => !! ( s && ! s.missing && ( s.img || s.imageName ) );", "replace": "const is = ( s ) => !! ( s && ! s.missing && s.img );", "why": "a named picture with no img is not a picture" }
+]

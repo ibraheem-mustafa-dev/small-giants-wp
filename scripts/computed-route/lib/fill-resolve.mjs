@@ -7,7 +7,7 @@ import { setAttr, refOf } from './tree.mjs';
 import { knownPaths } from './fill-prop.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
-import { imageSlots, mediaDecisions, nestedImage, factImage } from './fill-media.mjs';
+import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf } from './fill-media.mjs';
 import { mapDecisions } from './fill-map.mjs';
 import { iconDecisions } from './fill-icon.mjs';
 import { handoverEntry } from './fill-handover.mjs';
@@ -72,7 +72,7 @@ function fillContent( st, rec, ref, cal ) {
 	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: node.attributes || {}, evidence } ) );
 	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
-	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name ).map( ( s ) => s.alt ) } ) );
+	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
 	const image = nestedImage( atDesktop );
 	const imageTarget = rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );

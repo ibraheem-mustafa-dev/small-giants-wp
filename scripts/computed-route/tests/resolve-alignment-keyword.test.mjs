@@ -44,3 +44,25 @@ test( 'alignmentCanon: the main axis follows flex-direction, the cross axis flex
 	assert.ok( sameAlignment( 'align-items', 'END', 'flex-end', { display: 'flex', 'flex-wrap': 'nowrap' } ) );
 	assert.ok( ! sameAlignment( 'align-items', 'start', 'flex-end', { display: 'flex', 'flex-wrap': 'nowrap' } ) );
 } );
+
+test( 'alignmentCanon reversals: a reversed axis keeps the flex-* keyword, an unreversed one agrees with start and end', () => {
+	const flex = ( over ) => ( { display: 'flex', 'flex-direction': 'row', 'flex-wrap': 'nowrap', ...over } );
+	// row-reverse swaps main-start and main-end: flex-start is the far edge, so it is never `start`.
+	assert.equal( alignmentCanon( 'justify-content', 'flex-start', flex( { 'flex-direction': 'row-reverse' } ) ), 'flex-start' );
+	assert.ok( ! sameAlignment( 'justify-content', 'flex-start', 'start', flex( { 'flex-direction': 'row-reverse' } ) ) );
+	// column-reverse reverses the main axis too; a plain column does not.
+	assert.equal( alignmentCanon( 'justify-content', 'flex-end', flex( { 'flex-direction': 'column-reverse' } ) ), 'flex-end' );
+	assert.equal( alignmentCanon( 'justify-content', 'flex-end', flex( { 'flex-direction': 'column' } ) ), 'end' );
+	// A reversed direction leaves the cross axis alone: align-items follows flex-wrap only.
+	assert.equal( alignmentCanon( 'align-items', 'flex-start', flex( { 'flex-direction': 'column-reverse' } ) ), 'start' );
+	assert.equal( alignmentCanon( 'align-items', 'flex-start', flex( { 'flex-direction': 'row-reverse' } ) ), 'start' );
+	// wrap-reverse swaps cross-start and cross-end for align-content and align-items, and not justify-content.
+	assert.equal( alignmentCanon( 'align-content', 'flex-end', flex( { 'flex-wrap': 'wrap-reverse' } ) ), 'flex-end' );
+	assert.equal( alignmentCanon( 'align-content', 'flex-end', flex( { 'flex-wrap': 'wrap' } ) ), 'end' );
+	assert.equal( alignmentCanon( 'align-items', 'flex-start', flex( { 'flex-wrap': 'wrap-reverse' } ) ), 'flex-start' );
+	assert.equal( alignmentCanon( 'justify-content', 'flex-start', flex( { 'flex-wrap': 'wrap-reverse' } ) ), 'start' );
+	// direction is not read: start and flex-start both follow the writing mode (rtl puts both on the right), so only a
+	// reversed axis separates them, in rtl as in ltr.
+	assert.equal( alignmentCanon( 'justify-content', 'flex-start', flex( { direction: 'rtl' } ) ), 'start' );
+	assert.equal( alignmentCanon( 'justify-content', 'flex-start', flex( { direction: 'rtl', 'flex-direction': 'row-reverse' } ) ), 'flex-start' );
+} );

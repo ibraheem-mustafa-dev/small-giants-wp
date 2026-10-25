@@ -66,9 +66,11 @@ const targetWrite = ( schema, attr ) => {
 
 // writes, unmapped and notes for the link attributes of one block. calibration: the block's cache file; schema:
 // block.json attributes; anchor: whether supports.anchor is declared; attributes: what the node already holds; slots:
-// { path: { target, rel, id, ariaLabel, imageName } } (imageName: the aria-label of a role="img" element); imageAlts: the
-// block's image-alt settings from the framework DB (lib/fill-media.mjs::imageSlots).
-export function linkAttrDecisions( { calibration, schema = {}, anchor = false, attributes = {}, slots = {}, imageAlts = [] } ) {
+// { path: { target, rel, id, ariaLabel, imageName } } (imageName: the aria-label of an element that is a picture,
+// lib/fill-read-collect.mjs::collectMany); imageAlts: the block's image-alt settings from the framework DB
+// (lib/fill-media.mjs::imageSlots); pictureSlot: the slot of the node's one picture (lib/fill-media.mjs::pictureSlotOf),
+// the image those settings describe, or null.
+export function linkAttrDecisions( { calibration, schema = {}, anchor = false, attributes = {}, slots = {}, imageAlts = [], pictureSlot = null } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	const link = calibration?.link || {};
 	const gap = ( property, value, slot, reason ) => out.unmapped.push( { property, value, slot, reason } );
@@ -105,9 +107,9 @@ export function linkAttrDecisions( { calibration, schema = {}, anchor = false, a
 				gap( 'id', f.id, slot, '' === slot ? 'the block does not declare supports.anchor, so no setting holds its id' : `an id on the nested element "${ slot }" has no setting (anchor belongs to the block's root)` );
 			}
 		}
-		// A picture's own name (role="img" with an aria-label) is the image's text alternative: it goes to the block's one
-		// image-alt setting (the framework DB's `image-alt` role, imageAlts) when the block has exactly one.
-		if ( f.ariaLabel && f.imageName === f.ariaLabel && 1 === imageAlts.length ) {
+		// A picture's own name is the image's text alternative: it goes to the block's one image-alt setting (the framework
+		// DB's `image-alt` role, imageAlts) when the block has exactly one and the name is read on the node's picture slot.
+		if ( f.ariaLabel && f.imageName === f.ariaLabel && 1 === imageAlts.length && slot === pictureSlot ) {
 			put( { attr: imageAlts[ 0 ], value: f.imageName, merge: 'replace' }, 'image name (role img aria-label)' );
 		} else if ( f.ariaLabel ) {
 			const found = '' === slot && schema.ariaLabel ? { attr: 'ariaLabel' } : pick( schema, /^(aria[-_]?label|.*AriaLabel)$/i, hrefAttr );
