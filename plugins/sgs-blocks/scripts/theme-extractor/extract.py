@@ -842,10 +842,11 @@ def main(argv=None) -> int:
         if existing_path.is_file():
             snap = merge_onto(snap, json.loads(existing_path.read_text(encoding="utf-8")), trace, baseline)
     # FR-33-1: the draft's easings land in settings.custom.easing after the merge (the merge keeps the client's
-    # whole easing object), and its hover movement timing is proposed in the trace only.
+    # whole easing object), then its hover movement timing lands in settings.custom.hover.
     draft_tokens = token_files.read_token_files(draft.parent)
     motion_tokens.apply_easings(snap, draft_tokens, html, trace)
-    motion_tokens.propose_movement_timing(html, draft_tokens, trace)
+    movement = motion_tokens.propose_movement_timing(html, draft_tokens, trace)
+    motion_tokens.apply_movement_timing(snap, movement, baseline, trace)
     if confirmed is not None:
         # The merge may carry slugs Bean did not confirm; the confirmed map still decides.
         client_slugs = frozenset()
