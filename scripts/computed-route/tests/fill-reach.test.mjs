@@ -99,12 +99,12 @@ test( 'MUST FAIL: a label\'s root background is written to the setting that pain
 	assert.equal( w.after, 'primary' );
 } );
 
-test( 'MUST FAIL: a no-setting row records the checks that ran and lists the ancestor hop as unchecked', () => {
+test( 'MUST FAIL: a no-setting row records the checks that ran, the ancestor hop among them once the part-wide pass has looked at it', () => {
 	const out = run( 'sgs/label', { 'text-indent': '24px' }, { 'text-indent': '24px' } );
 	const row = out.unmapped.find( ( u ) => 'text-indent' === u.property );
 	assert.ok( row && row.reason.startsWith( 'no-setting' ), JSON.stringify( out.unmapped.map( ( u ) => [ u.property, u.reason.slice( 0, 60 ) ] ) ) );
-	assert.deepEqual( row.checks, [ 'own-slot', 'calibrated-slots', 'equivalence' ] );
-	assert.deepEqual( row.unchecked, [ 'ancestor' ] );
+	assert.deepEqual( row.checks, [ 'own-slot', 'calibrated-slots', 'equivalence', 'ancestor' ] );
+	assert.deepEqual( row.unchecked, [] );
 } );
 
 test( 'MUST FAIL: an element that declares no transition has no 0s duration row', () => {

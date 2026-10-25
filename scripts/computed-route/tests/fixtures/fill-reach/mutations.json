@@ -42,10 +42,10 @@
 		"why": "an element whose declared read failed would be judged undeclared"
 	},
 	{
-		"file": "lib/fill-resolve-element.mjs",
-		"find": "unchecked: [ 'ancestor' ],",
-		"replace": "unchecked: [],",
-		"why": "the ancestor hop would be recorded as run"
+		"file": "lib/fill-ancestor.mjs",
+		"find": "row.checks = [ ...new Set( [ ...( row.checks || [] ), 'ancestor' ] ) ];",
+		"replace": "row.checks = row.checks || [];",
+		"why": "a row the part-wide pass looked at would not record the ancestor check as run"
 	},
 	{
 		"file": "lib/fill-resolve-element.mjs",
