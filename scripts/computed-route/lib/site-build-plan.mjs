@@ -9,6 +9,7 @@
 // is created; an unmarked post already holding its type and slug (another author's) stops the run, so it is never
 // duplicated or renamed `<slug>-2`, and a stored id naming a same-slug post that has no row key and no tree hash (one a
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
+import { POST_TEMPLATE, templateSource } from './manifest-build.mjs';
 import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, builtTemplate, hasPost, orderRows, pageTreeFor, parentRow, rowKey, templateTreeFor, treeHash, wpType } from './site-build-map.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
@@ -166,9 +167,11 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 
 	// Site-owned template copies (FR-48-56): a shop row's tree builds the template it names, once per template, rebuilt only
 	// when its tree changed. A template two rows name is built from the row with a stage 3 tree, else the first.
+	// The posts share one template, the site's own copy of the theme's single-post template, shaped from the first post row.
 	const builders = new Map();
-	for ( const row of rows.filter( builtTemplate ) ) {
-		builders.set( builtTemplate( row ), [ ...( builders.get( builtTemplate( row ) ) || [] ), { row, ...templateTreeFor( repo, client, row ) } ] );
+	const owners = [ ...rows.filter( builtTemplate ).map( ( row ) => [ builtTemplate( row ), row ] ), ...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] ) ];
+	for ( const [ slug, row ] of owners ) {
+		builders.set( slug, [ ...( builders.get( slug ) || [] ), { row, ...templateTreeFor( repo, client, row ) } ] );
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
 	for ( const [ slug, list ] of builders ) {

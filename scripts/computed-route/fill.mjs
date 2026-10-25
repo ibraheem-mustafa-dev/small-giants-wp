@@ -270,7 +270,7 @@ export async function fillSurface( o ) {
 		// node's sgsMotion, with every target's entrance and endless animations sampled at 375, 768 and 1440 as the render
 		// check (and the source of the values the code computes at run time).
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
-		const { entrances: sampled, loops } = await sampleMotion( { url: readUrl, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
+		const { entrances: sampled, loops } = await sampleMotion( { url: readUrl, jobs, open: o.open || null, opener, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
 		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
 		result.writes.push( ...motion.writes );

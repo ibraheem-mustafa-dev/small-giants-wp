@@ -1,0 +1,9 @@
+[
+	{ "file": "site-run.mjs", "find": "const skip = entry.contentOnly && ! withContent ?", "replace": "const skip = false && entry.contentOnly && ! withContent ?", "why": "a content-only post surface is no longer skipped without --with-content" },
+	{ "file": "site-run.mjs", "find": "const skip = entry.contentOnly && ! withContent ?", "replace": "const skip = entry.contentOnly ?", "why": "--with-content no longer lets a post surface through" },
+	{ "file": "site-run.mjs", "find": "const hash = entry.draftRoute ? routeHash( entry.draftRoute ) ?? '' :", "replace": "const hash = false ? routeHash( entry.draftRoute ) ?? '' :", "why": "the entry's draftRoute is ignored for the route" },
+	{ "file": "site-run.mjs", "find": "const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );", "replace": "const postSlug = entry.contentOnly ? key : null;", "why": "the single template is not read at the post it is shaped from" },
+	{ "file": "site-run.mjs", "find": "const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );", "replace": "const postSlug = entry.fromPost ?? null;", "why": "a content-only post is not read at its own row" },
+	{ "file": "site-run.mjs", "find": "const named = entry.draftRoute && ! postSlug ?", "replace": "const named = false ?", "why": "a form's live address is not the page carrying its draftRoute" },
+	{ "file": "site-run.mjs", "find": "( 'home' !== own.route ? `#/${ own.route }` : '' )", "replace": "`#/${ own.route }`", "why": "the home page gets a hash" }
+]

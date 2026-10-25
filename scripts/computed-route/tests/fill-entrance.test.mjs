@@ -228,3 +228,30 @@ test( 'rotateOf reads the matrix angle and the rotate property and adds them; sh
 	assert.equal( shapeEntrance( { seenAt: 100, first: RISE, firstChange: RISE, start: 300, end: 900, loop: false, easing: 'ease-out' } ).easing, 'ease-out' );
 	assert.equal( shapeEntrance( { seenAt: 100, first: RISE, firstChange: RISE, start: 300, end: 900, loop: false } ).easing, null );
 } );
+
+const GATED_HTML = `<!doctype html><html><head><meta charset="utf-8"><style>body { margin: 0; } @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } } .panel { animation: rise 600ms ease-out both; height: 40px; }</style></head><body><div id="host"></div>
+<script>window.openPanel = () => { const p = document.createElement( 'div' ); p.className = 'panel'; document.getElementById( 'host' ).append( p ); };</script></body></html>`;
+
+test( 'MUST FAIL: entrance sampling sets the surface\'s state before it probes, so a drawer\'s entrance is read from the open drawer', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-entrance-opener-' ) );
+	fs.writeFileSync( path.join( dir, 'index.html' ), GATED_HTML );
+	const served = await serveDraft( dir );
+	try {
+		const jobs = [ { id: 'panel', finder: '.panel' } ];
+		const opened = [];
+		const openWith = async ( page, opener ) => {
+			opened.push( opener.state );
+			await page.evaluate( () => window.openPanel() );
+		};
+		const closed = await sampleMotion( { url: served.url, jobs, windowMs: 1500, sweep: null } );
+		assert.deepEqual( Object.keys( closed.entrances.panel ), [], 'negative control: with no opener the closed surface is not found' );
+		const withOpener = await sampleMotion( { url: served.url, jobs, windowMs: 3000, sweep: null, opener: { state: 'open', component: 'Root', keys: {}, expect: [] }, openWith } );
+		assert.deepEqual( opened, [ 'open', 'open', 'open' ], 'the state is set at each of the three widths' );
+		assert.deepEqual( Object.keys( withOpener.entrances.panel ).sort(), [ '1440', '375', '768' ] );
+		assert.equal( withOpener.entrances.panel[ 1440 ]?.trigger, 'load' );
+		await sampleMotion( { url: served.url, jobs, windowMs: 400, sweep: null, opener: { state: null, refused: [] }, openWith } );
+		assert.equal( opened.length, 3, 'an opener that refused its state sets nothing' );
+	} finally {
+		await served.close();
+	}
+} );

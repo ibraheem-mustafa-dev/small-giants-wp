@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/site-build-plan.mjs", "find": "...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] )", "replace": "", "why": "no single template is planned from the post rows" },
+	{ "file": "lib/site-build-plan.mjs", "find": "...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] )", "replace": "...rows.filter( ( r ) => 'post' === r.postType ).map( ( r ) => [ POST_TEMPLATE, r ] )", "why": "every post row offers the template, not the first one" }
+]
