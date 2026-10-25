@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-form-host.mjs",
+		"find": "if ( ! formSchemaOf( factRecord ) ) {",
+		"replace": "if ( true ) {",
+		"why": "no draft gets a form host"
+	},
+	{
+		"file": "lib/skeleton-form-host.mjs",
+		"find": "if ( 'sgs/form' === n.name ) {",
+		"replace": "if ( false ) {",
+		"why": "fields a form already holds are wrapped again"
+	},
+	{
+		"file": "lib/skeleton-form-host.mjs",
+		"find": "host.innerBlocks = skeleton;\n\t\treturn [ host ];",
+		"replace": "return skeleton;",
+		"why": "fields with no shared node get no form"
+	},
+	{
+		"file": "lib/skeleton-form-slots.mjs",
+		"find": "const hit = own.get( steps.slice( i ).join( ' > ' ) );",
+		"replace": "const hit = own.get( steps.slice( i ).join( ' > ' ) ) || [ ...own.values() ][ 0 ];",
+		"why": "a field whose calibration lacks the part gets another element as its slot"
+	},
+	{
+		"file": "lib/skeleton-form-slots.mjs",
+		"find": "if ( ! db || ! rules?.inputPart || ! rules?.inputPartHost ) {",
+		"replace": "if ( false ) {",
+		"why": "a missing database or rule is not refused"
+	}
+]

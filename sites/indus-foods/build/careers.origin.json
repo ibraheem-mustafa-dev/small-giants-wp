@@ -2260,6 +2260,9 @@
       "textHash": "1505",
       "line": 797
     },
+    "slots": {
+      ".sgs-form-field__input": "Root/560#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-careers-123": {
@@ -2280,6 +2283,9 @@
       ],
       "textHash": "1505",
       "line": 797
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/560#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -2302,6 +2308,9 @@
       "textHash": "1505",
       "line": 797
     },
+    "slots": {
+      ".sgs-form-field__input": "Root/560#2"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-careers-125": {
@@ -2323,6 +2332,9 @@
       "textHash": "1505",
       "line": 800
     },
+    "slots": {
+      ".sgs-form-field__input": "Root/562#0"
+    },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-careers-126": {
@@ -2343,6 +2355,9 @@
       ],
       "textHash": "1505",
       "line": 800
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/562#1"
     },
     "draft": "0fe5aee1c396a997"
   },
@@ -2385,6 +2400,9 @@
       ],
       "textHash": "1505",
       "line": 805
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/566#0"
     },
     "draft": "0fe5aee1c396a997"
   },

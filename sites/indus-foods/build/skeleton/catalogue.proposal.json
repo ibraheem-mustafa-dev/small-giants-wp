@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-25T10:00:47.918Z",
+	"generated": "2026-10-25T19:05:26.869Z",
 	"inventory": "2026-10-25T10:00:47.713Z",
 	"source": "http://127.0.0.1:53375/#/catalogue",
 	"surface": "page-catalogue",
@@ -55,6 +55,7 @@
 			"label": 6,
 			"wholeCardLink": 10,
 			"cardHeading": 10,
+			"formHost": 1,
 			"formControl": 23,
 			"dotMarker": 2,
 			"listWrapper": 1
@@ -3061,22 +3062,21 @@
 			"tag": "form",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/container",
+			"block": "sgs/form",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"source": "rule formHost",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formHost",
 			"candidates": [
 				{
-					"block": "sgs/container",
-					"score": 0.75,
+					"block": "sgs/form",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
-						"no row block fits: a generic wrapper"
+						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
 					]
 				}
 			],
@@ -3086,9 +3086,7 @@
 				"1440": "shots/Root_550_0@1440.png"
 			},
 			"snippet": "<form sc-camel-on-submit=\"{{ b.onSubmit }}\" data-dc-tpl=\"550\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p> <div style=\"display:grid;grid-template-columns:{{ R.fo",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 90,
@@ -3298,6 +3296,11 @@
 			"attributes": {
 				"label": "Name",
 				"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/560#0"
+				}
 			}
 		},
 		{
@@ -3401,6 +3404,11 @@
 			"attributes": {
 				"label": "Name",
 				"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/560#1"
+				}
 			}
 		},
 		{
@@ -3504,6 +3512,11 @@
 			"attributes": {
 				"label": "Name",
 				"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/560#2"
+				}
 			}
 		},
 		{
@@ -3585,6 +3598,11 @@
 			"attributes": {
 				"label": "Name",
 				"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/560#3"
+				}
 			}
 		},
 		{
@@ -3695,6 +3713,11 @@
 			"attributes": {
 				"label": "Name",
 				"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/562#0"
+				}
 			}
 		},
 		{
@@ -3802,6 +3825,11 @@
 			"attributes": {
 				"label": "Name",
 				"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/562#1"
+				}
 			}
 		},
 		{
@@ -3883,6 +3911,11 @@
 			"attributes": {
 				"label": "Name",
 				"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/566#0"
+				}
 			}
 		},
 		{

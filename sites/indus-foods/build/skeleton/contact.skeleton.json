@@ -1042,10 +1042,8 @@
 												},
 												"innerBlocks": [
 													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div"
-														},
+														"name": "sgs/form",
+														"attributes": {},
 														"draftRef": {
 															"tpl": "Root>EnquiryForm@468#0/6#0"
 														},
@@ -1358,7 +1356,12 @@
 																					"textHash": "1505",
 																					"line": 37
 																				},
-																				"innerBlocks": []
+																				"innerBlocks": [],
+																				"draftSlots": {
+																					".sgs-form-field__input": {
+																						"tpl": "Root>EnquiryForm@468#0/26#0"
+																					}
+																				}
 																			}
 																		]
 																	},
@@ -1414,7 +1417,12 @@
 																					"textHash": "1505",
 																					"line": 37
 																				},
-																				"innerBlocks": []
+																				"innerBlocks": [],
+																				"draftSlots": {
+																					".sgs-form-field__input": {
+																						"tpl": "Root>EnquiryForm@468#0/26#1"
+																					}
+																				}
 																			}
 																		]
 																	},
@@ -1470,7 +1478,12 @@
 																					"textHash": "1505",
 																					"line": 37
 																				},
-																				"innerBlocks": []
+																				"innerBlocks": [],
+																				"draftSlots": {
+																					".sgs-form-field__input": {
+																						"tpl": "Root>EnquiryForm@468#0/26#2"
+																					}
+																				}
 																			}
 																		]
 																	},
@@ -1526,7 +1539,12 @@
 																					"textHash": "1505",
 																					"line": 37
 																				},
-																				"innerBlocks": []
+																				"innerBlocks": [],
+																				"draftSlots": {
+																					".sgs-form-field__input": {
+																						"tpl": "Root>EnquiryForm@468#0/26#3"
+																					}
+																				}
 																			}
 																		]
 																	},
@@ -1582,7 +1600,12 @@
 																					"textHash": "1505",
 																					"line": 43
 																				},
-																				"innerBlocks": []
+																				"innerBlocks": [],
+																				"draftSlots": {
+																					".sgs-form-field__input": {
+																						"tpl": "Root>EnquiryForm@468#0/31#0"
+																					}
+																				}
 																			}
 																		]
 																	}
