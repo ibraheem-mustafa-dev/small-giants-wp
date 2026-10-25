@@ -5,7 +5,8 @@
 //   covered    a setting written on this element paints this value at this width (judged per tier, paintedAt): a shorthand
 //              setting whose parts include the property (and whose written part equals the draft's), a setting calibration
 //              saw change the property as a side effect, or an sgsMotion state that carries the transform and the transition;
-//   inherited  an inherited property on an element that holds no text of its own (a container whose descendants state their
+//   inherited  a font longhand on a leaf that prints no text of the block's content (nothing it shows takes the value), or an
+//              inherited property on an element that holds no text of its own (a container whose descendants state their
 //              own text looks), equal to what its parent renders, where the block's own stylesheet sets no value of it on
 //              that element (lib/fill-resolve-state.mjs::ownPaint, as Fill's baseline prefers it): such an element shows
 //              its own value, never the parent's;
@@ -28,6 +29,8 @@ import { layerGives, rootLayerTimings } from './census-conservation.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
 const TOL = 0.5;
+// The properties that paint only through text (every font longhand is inherited).
+const TEXT_ONLY = /^font-/;
 export const HELD_REASONS = [ 'covered', 'inherited', 'inert' ];
 // The engine's reason, as the resolver wrote it into the row (lib/resolve.mjs::noSetting).
 const inertDetail = ( row ) => /held \(inert\): (.*)$/.exec( String( row.reason ) )?.[ 1 ] ?? 'the equivalence engine judged the value to paint nothing';
@@ -226,6 +229,11 @@ export function makeSettle( st ) {
 			const own = ( w ) => ownPaint( cal, row.slot, w, row.property, parseFloat( snaps[ w ]?.styles?.[ 'font-size' ] ) || undefined );
 			if ( INHERITED.includes( row.property ) && rec.children.length > 0 && widths.every( ( w ) => undefined === own( w ) && same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ), contextAt( w ) ) ) ) {
 				return { reason: 'inherited', detail: `${ row.property } is inherited and this element holds no text of its own; its parent renders the same value` };
+			}
+			// A font longhand on a leaf that prints no text of the block's content at any width it states paints nothing the block
+			// shows (a custom element's own `:host` font resets, a design-tool artefact), whatever its parent renders.
+			if ( TEXT_ONLY.test( row.property ) && 0 === rec.children.length && widths.every( ( w ) => '' === ( snaps[ w ]?.words ?? null ) && undefined === own( w ) && same( row.property, values[ w ], snaps[ w ]?.styles?.[ row.property ], contextAt( w ) ) ) ) {
+				return { reason: 'inherited', detail: `${ row.property } is inherited and this element prints no text of the block's content, so its own value paints nothing the block shows (a design tool's font reset, not a design value)` };
 			}
 			return null;
 		}

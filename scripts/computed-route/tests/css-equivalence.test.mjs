@@ -142,3 +142,45 @@ test( 'timingHome: the setting that holds a timing longhand on a part, or none',
 	assert.equal( timingHome( { block: 'sgs/none', slot: '.other', longhand: 'transition-duration' }, { calibration: cal, db: null } ), null );
 	assert.throws( () => timingHome( { block: 'sgs/none', slot: part, longhand: 'opacity' }, { calibration: cal, db: null } ), /answers for/ );
 } );
+
+const parentAt = ( display ) => ( { 375: { display }, 768: { display }, 1440: { display } } );
+
+test( 'MUST FAIL: a draft display the browser blockified under a flex or grid parent equals the block\'s inline default paint', () => {
+	const cal = paintOf( { display: 'inline-flex' } );
+	const held = ask( 'display', 'flex', { calibration: cal, parent: parentAt( 'flex' ) } );
+	assert.deepEqual( [ held.verdict, held.reason ], [ 'held', 'default' ] );
+	assert.equal( ask( 'display', 'grid', { calibration: paintOf( { display: 'inline-grid' } ), parent: parentAt( 'grid' ) } ).reason, 'default' );
+	assert.equal( ask( 'display', 'block', { calibration: paintOf( { display: 'inline-block' } ), parent: parentAt( 'flex' ) } ).reason, 'default' );
+	// An absolutely positioned element is blockified whatever its parent is.
+	assert.equal( ask( 'display', 'flex', { calibration: cal, parent: parentAt( 'block' ), siblings: { position: every( 'absolute' ) } } ).reason, 'default' );
+	// Negative controls: a block parent blockifies nothing; another display is not equal; an unread parent decides nothing.
+	assert.equal( ask( 'display', 'flex', { calibration: cal, parent: parentAt( 'block' ) } ).verdict, 'gap' );
+	assert.equal( ask( 'display', 'block', { calibration: cal, parent: parentAt( 'flex' ) } ).verdict, 'gap' );
+	assert.equal( ask( 'display', 'flex', { calibration: cal } ).verdict, 'gap' );
+} );
+
+test( 'MUST FAIL: a hover value that is the property\'s initial value and the block\'s measured paint is a shorthand reset, held as default', () => {
+	const cal = paintOf( { 'background-size': 'auto', 'background-repeat': 'repeat' } );
+	const held = ask( 'background-size', 'auto', { calibration: cal, state: 'hover' } );
+	assert.deepEqual( [ held.verdict, held.reason ], [ 'held', 'default' ] );
+	assert.match( held.detail, /initial value/ );
+	// Negative controls: a hover value that changes the paint, an initial value the block does not paint, and a resting row.
+	assert.equal( ask( 'background-size', '100% 1px', { calibration: cal, state: 'hover' } ).verdict, 'gap' );
+	assert.equal( ask( 'background-repeat', 'repeat', { calibration: paintOf( { 'background-repeat': 'no-repeat' } ), state: 'hover' } ).verdict, 'gap' );
+	assert.equal( ask( 'background-size', 'auto', { calibration: paintOf( {} ), state: 'hover' } ).verdict, 'gap' );
+	assert.equal( ask( 'background-color', 'rgb(1, 2, 3)', { calibration: paintOf( { 'background-color': 'rgb(1, 2, 3)' } ), state: 'hover' } ).verdict, 'gap', 'not an initial value' );
+} );
+
+test( 'MUST FAIL: a block\'s root and an inner part that calibration measured as one box share their paint', () => {
+	const box = { width: '300px', height: '40px' };
+	const cal = ( listHeight = '40px' ) => ( { elements: Object.fromEntries( [ [ '', { display: 'block' } ], [ '.p__list', { display: 'flex', 'flex-wrap': 'wrap', height: listHeight } ], [ '.p__list::before', { display: 'block', 'flex-wrap': 'wrap', ...box } ] ].map( ( [ k, v ] ) => [ k, Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { ...box, ...v } ] ) ) ] ) ), settings: {}, discovered: {} } );
+	const held = ask( 'flex-wrap', 'wrap', { calibration: cal() } );
+	assert.deepEqual( [ held.verdict, held.reason ], [ 'held', 'default' ] );
+	assert.match( held.detail, /\.p__list/ );
+	// Negative controls: a part that measures as another box, a value the part does not paint, and a pseudo-element's box.
+	assert.equal( ask( 'flex-wrap', 'wrap', { calibration: cal( '30px' ) } ).verdict, 'gap' );
+	assert.equal( ask( 'flex-wrap', 'nowrap', { calibration: cal() } ).verdict, 'gap' );
+	assert.equal( ask( 'flex-wrap', 'wrap', { calibration: cal(), state: 'hover' } ).verdict, 'gap', 'a state value is not compared with a resting part paint' );
+	assert.equal( ask( 'display', 'block', { calibration: cal() } ).reason, 'default', 'the root\'s own paint still decides first' );
+	assert.equal( ask( 'flex-wrap', 'wrap', { calibration: { ...cal(), elements: { '': cal().elements[ '' ], '.p__list::before': cal().elements[ '.p__list::before' ] } } } ).verdict, 'gap', 'a pseudo-element is not a part of the same box' );
+} );
