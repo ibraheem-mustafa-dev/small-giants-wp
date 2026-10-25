@@ -17,10 +17,21 @@ import { clearField, pathAt, withTiers, withValue } from './hover-write';
 
 const NUMBER_TYPES = [ 'ratio', 'scale', 'percentage', 'opacity' ];
 
-// The atom for a field, with the props its type needs.
-function FieldAtom( { field, value, presetValue, onChange, hideLabel } ) {
+// The atom for a field, with the props its type needs. On Desktop (the tier a smaller device inherits from) a field
+// whose group names its unset default shows that name as the unset option.
+function FieldAtom( {
+	field,
+	value,
+	presetValue,
+	onChange,
+	hideLabel,
+	tier = 'desktop',
+} ) {
 	const Atom = ATOM_FOR_FIELD_TYPE[ field.fieldType ];
 	const extra = hideLabel ? { hideLabelFromVision: true } : {};
+	if ( field.unsetLabel && tier === 'desktop' ) {
+		extra.emptyLabel = field.unsetLabel;
+	}
 	if ( NUMBER_TYPES.includes( field.fieldType ) ) {
 		extra.type = field.fieldType;
 	}
@@ -102,6 +113,7 @@ export default function HoverFieldRow( { field, layer, onLayer } ) {
 						<FieldAtom
 							field={ field }
 							hideLabel
+							tier={ tier }
 							value={ value }
 							presetValue={ stampedValue(
 								layer,

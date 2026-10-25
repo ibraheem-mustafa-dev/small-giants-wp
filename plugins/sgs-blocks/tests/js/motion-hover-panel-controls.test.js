@@ -370,6 +370,29 @@ describe( 'the movement and the colour-and-shadow timings', () => {
 		expect( css ).toContain( 'box-shadow 300ms' );
 	} );
 
+	const unsetOption = ( label ) => byLabel( label, 'select' ).options[ 0 ].textContent;
+
+	it( 'MUST FAIL WITHOUT THE NAMED DEFAULT: an unset movement duration and easing name the site hover timing', () => {
+		mount( withState( { ...SCALE } ) );
+		expect( unsetOption( 'Duration' ) ).toBe( 'Site hover timing' );
+		expect( unsetOption( 'Easing' ) ).toBe( 'Site hover easing' );
+		expect( unsetOption( 'Colour and shadow duration' ) ).toBe( 'Site fast transition' );
+		const css = cssOf( current );
+		expect( css ).toContain( 'var(--wp--custom--hover--duration, var(--wp--custom--duration--fast))' );
+	} );
+
+	it( 'negative control: a Tablet duration inherits, so its unset option keeps Not set', () => {
+		global.__sgsDevice = 'Tablet';
+		mount( withState( { ...SCALE } ) );
+		expect( unsetOption( 'Duration' ) ).toBe( 'Not set' );
+	} );
+
+	it( 'an explicit duration and easing still win over the site hover timing', () => {
+		const css = cssOf( withState( { ...SCALE, values: { ...SCALE.values, duration: 120, easing: 'linear' } } ) );
+		expect( css ).toContain( '--sgs-mh-s 120ms linear 0ms' );
+		expect( css ).not.toContain( '--wp--custom--hover--duration' );
+	} );
+
 	it( 'draws the colour and shadow timing fields in their own group', () => {
 		mount( withState( { ...SCALE } ) );
 		expect( document.body.textContent ).toContain( 'Colour and shadow timing' );

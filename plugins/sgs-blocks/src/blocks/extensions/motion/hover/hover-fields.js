@@ -145,15 +145,29 @@ export const HOVER_GROUPS = Object.freeze( [
 		keys: [ 'restWidth', 'width' ],
 	},
 	{
+		// Unset, the movement runs on the site's hover movement timing (settings.custom.hover).
 		id: 'timing',
 		label: __( 'Timing of this state change', 'sgs-blocks' ),
 		keys: [ 'duration', 'delay', 'easing' ],
+		unsetLabels: {
+			duration: __( 'Site hover timing', 'sgs-blocks' ),
+			easing: __( 'Site hover easing', 'sgs-blocks' ),
+		},
 	},
 	{
 		// Colour, background, border and shadow changes on hover; unset, they run on the site's fast transition.
 		id: 'paint-timing',
 		label: __( 'Colour and shadow timing', 'sgs-blocks' ),
-		keys: [ 'paintDuration', 'paintEasing', 'shadowDuration', 'shadowEasing' ],
+		keys: [
+			'paintDuration',
+			'paintEasing',
+			'shadowDuration',
+			'shadowEasing',
+		],
+		unsetLabels: {
+			paintDuration: __( 'Site fast transition', 'sgs-blocks' ),
+			paintEasing: __( 'Site fast transition', 'sgs-blocks' ),
+		},
 	},
 ] );
 
@@ -175,22 +189,23 @@ export const FOCUS_GROUPS = Object.freeze( [
  * The fields of one values `$def`, grouped. A key the `$def` does not declare is left out and a group left with no key
  * is dropped, so the panel draws exactly what the schema holds.
  *
- * @param {string}  defName The values `$def` (`HoverStateValues`).
- * @param {Object}  groups  `HOVER_GROUPS` or `FOCUS_GROUPS`.
- * @param {Object=} root    The `$defs` to read (tests pass a changed copy).
- * @param {string[]=} omit  Keys left out for this element. A group marked `refusable` whose keys are left out stays in
- *                          the list with no fields and `refused: true`, so the panel can say why.
+ * @param {string}    defName The values `$def` (`HoverStateValues`).
+ * @param {Object}    groups  `HOVER_GROUPS` or `FOCUS_GROUPS`.
+ * @param {Object=}   root    The `$defs` to read (tests pass a changed copy).
+ * @param {string[]=} omit    Keys left out for this element. A group marked `refusable` whose keys are left out stays in
+ *                            the list with no fields and `refused: true`, so the panel can say why.
  * @return {{id: string, label: string, fields: Object[], driver: (Object|null), refused: boolean}[]} The groups with
  *         their fields.
  */
 export function fieldGroups( defName, groups, root = SCHEMA, omit = [] ) {
 	const properties = root[ defName ]?.properties || {};
-	const fieldFor = ( key ) => {
+	const fieldFor = ( key, unsetLabels ) => {
 		const node = properties[ key ];
 		const meta = node[ 'x-sgs-field' ] || {};
 		return {
 			key,
 			label: FIELD_LABELS[ key ].label,
+			unsetLabel: unsetLabels[ key ] || null,
 			lift: Boolean( FIELD_LABELS[ key ].lift ),
 			options: FIELD_LABELS[ key ].options || null,
 			node,
@@ -198,7 +213,7 @@ export function fieldGroups( defName, groups, root = SCHEMA, omit = [] ) {
 			perDevice: meta.perDevice === true,
 		};
 	};
-	const fieldsOf = ( keys = [] ) =>
+	const fieldsOf = ( keys = [], unsetLabels = {} ) =>
 		keys
 			.filter(
 				( key ) =>
@@ -207,7 +222,7 @@ export function fieldGroups( defName, groups, root = SCHEMA, omit = [] ) {
 					! HIDDEN_KEYS.includes( key ) &&
 					! omit.includes( key )
 			)
-			.map( fieldFor );
+			.map( ( key ) => fieldFor( key, unsetLabels ) );
 	return groups
 		.map( ( group ) => {
 			const driven = group.driver && properties[ group.driver.key ];
@@ -217,7 +232,7 @@ export function fieldGroups( defName, groups, root = SCHEMA, omit = [] ) {
 				refused:
 					group.refusable === true &&
 					group.keys.some( ( key ) => omit.includes( key ) ),
-				fields: fieldsOf( group.keys ),
+				fields: fieldsOf( group.keys, group.unsetLabels ),
 				driver: driven
 					? {
 							key: group.driver.key,
