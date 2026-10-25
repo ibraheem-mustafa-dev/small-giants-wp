@@ -279,7 +279,10 @@ $sgs_container_supports_css  .= sgs_typography_css_rule( $attributes, '', $sgs_c
 // bottom of the nearest scrolling ancestor at the pinned tiers; unset emits nothing.
 $sgs_container_supports_css .= sgs_container_pin_edge_css( $sgs_container_typography_sel, $attributes );
 
-$sgs_container_wrapper_opts = array( 'tag' => $html_tag );
+$sgs_container_wrapper_opts = array(
+	'tag'                => $html_tag,
+	'shadow_hover_shape' => true,
+);
 if ( ! empty( $sgs_container_supports_classes ) ) {
 	$sgs_container_wrapper_opts['extra_classes'] = $sgs_container_supports_classes;
 }

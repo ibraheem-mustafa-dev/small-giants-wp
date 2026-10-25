@@ -18,6 +18,7 @@ import { useSeparatorOverlay } from '../../shared/separators/useSeparatorOverlay
 import {
 	ResponsiveOverride,
 	ShadowControl,
+	shadowAttrKeys,
 	SgsColourPanel,
 	BOX_UNITS,
 	normaliseResponsiveBox,
@@ -28,6 +29,7 @@ import {
 } from '../../components';
 import ScrollSidewaysPanel from './components/ScrollSidewaysPanel';
 import PinEdgeControl from './components/PinEdgeControl';
+import OverflowControl from './components/OverflowControl';
 import { pinEdgeTopPreview } from './pin-edge-preview';
 import {
 	hasContentBand,
@@ -268,6 +270,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 				shadow,
 				attributes.shadowColour
 			),
+		} ),
+		...( ( attributes.overflow === 'hidden' ||
+			attributes.overflow === 'clip' ) && {
+			overflow: attributes.overflow,
 		} ),
 		...bgPreview.style,
 		...svgPreview.style,
@@ -807,6 +813,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						attributes={ attributes }
 						setAttributes={ setAttributes }
 					/>
+					<OverflowControl
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+					/>
 					<PinEdgeControl
 						attributes={ attributes }
 						setAttributes={ setAttributes }
@@ -1106,11 +1116,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						label={ __( 'Shadow', 'sgs-blocks' ) }
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						attrNames={ {
-							base: 'shadow',
-							colour: 'shadowColour',
-							hoverColour: 'shadowColourHover',
-						} }
+						attrNames={ shadowAttrKeys( 'shadow', {
+							hover: true,
+							hoverColour: true,
+						} ) }
 					/>
 				</PanelBody>
 
