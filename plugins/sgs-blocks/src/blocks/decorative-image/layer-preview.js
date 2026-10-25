@@ -8,6 +8,9 @@
  */
 
 import { resolveTier } from '../../utils/responsive';
+import { sgsBorderPreview } from '../../utils/border-preview';
+import { backgroundPaintPreview } from '../../utils/background-preview';
+import { composeShadow } from '../../utils/shadow-layers';
 
 /**
  * @param {Object}  attributes Block attributes.
@@ -62,4 +65,56 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 			.filter( Boolean )
 			.join( ' ' ),
 	};
+}
+
+/**
+ * The box the layer paints itself, as the canvas twin of what render.php adds to the root rule: border
+ * (width, style, colour, radius), fill, shadow and height, each for the previewed tier. A value left
+ * unset adds nothing.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Previewed tier: 'desktop' | 'tablet' | 'mobile'.
+ * @param {Array}  [palette]  Theme colour palette.
+ * @return {Object} React style fragment; {} when nothing is set.
+ */
+export function layerBoxPreview( attributes, tier, palette ) {
+	const {
+		borderWidth,
+		borderStyle,
+		borderColour,
+		borderColourGradient,
+		borderRadius,
+		backgroundColour,
+		backgroundColourGradient,
+		boxShadow,
+		boxShadowColour,
+		height,
+	} = attributes;
+
+	const style = {
+		...sgsBorderPreview(
+			{
+				widthValues: borderWidth,
+				styleValue: borderStyle,
+				colourValue: borderColour,
+				colourGradientValue: borderColourGradient,
+				radiusValues: borderRadius,
+			},
+			tier,
+			palette
+		),
+		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ),
+	};
+
+	const shadow = composeShadow( boxShadow || '', boxShadowColour || '' );
+	if ( shadow ) {
+		style.boxShadow = shadow;
+	}
+
+	const tierHeight = resolveTier( height, tier, '' ).value;
+	if ( tierHeight ) {
+		style.height = tierHeight;
+	}
+
+	return style;
 }

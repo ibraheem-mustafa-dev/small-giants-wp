@@ -165,6 +165,130 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertStringContainsString( 'max-width:30%', $out['css'] );
 	}
 
+	/**
+	 * The decorative ring a draft draws with an empty element: 340px square, a 2px translucent
+	 * border, a 50% radius, nothing inside.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function ring_attrs(): array {
+		return array(
+			'width'           => array( 'desktop' => 340 ),
+			'maxWidthPercent' => 100,
+			'height'          => array( 'desktop' => '340px' ),
+			'borderWidth'     => array(
+				'top'    => '2px',
+				'right'  => '2px',
+				'bottom' => '2px',
+				'left'   => '2px',
+			),
+			'borderStyle'     => 'solid',
+			'borderColour'    => 'rgba(216,202,80,.55)',
+			'borderRadius'    => array(
+				'desktop' => array(
+					'topLeft'     => '50%',
+					'topRight'    => '50%',
+					'bottomRight' => '50%',
+					'bottomLeft'  => '50%',
+				),
+			),
+		);
+	}
+
+	public function test_an_empty_layer_with_a_border_and_radius_renders_the_ring(): void {
+		$out = $this->render_layer( $this->ring_attrs() );
+
+		$this->assertMatchesRegularExpression(
+			'#<span class="sgs-decorative-image sgs-decorative-image--shape sgs-di-[a-f0-9]{8}" aria-hidden="true" role="presentation"></span>#',
+			$out['html'],
+			'the empty layer is one hidden span'
+		);
+		$this->assertStringContainsString( 'width:340px', $out['css'] );
+		$this->assertStringContainsString( 'height:340px', $out['css'] );
+		$this->assertStringContainsString( 'border-style:solid', $out['css'] );
+		$this->assertStringContainsString( 'border-width:2px 2px 2px 2px', $out['css'] );
+		$this->assertMatchesRegularExpression( '/border-color:#D8CA50/i', $out['css'] );
+		foreach ( array( 'top-left', 'top-right', 'bottom-right', 'bottom-left' ) as $corner ) {
+			$this->assertStringContainsString( 'border-' . $corner . '-radius:50%', $out['css'] );
+		}
+		$this->assertStringNotContainsString( 'style="', $out['html'], 'no inline style attribute' );
+	}
+
+	public function test_an_empty_layer_with_a_height_or_radius_alone_draws_nothing_so_renders_nothing(): void {
+		$attrs = $this->ring_attrs();
+		unset( $attrs['borderWidth'], $attrs['borderColour'] );
+		$out = $this->render_layer( $attrs );
+
+		$this->assertSame( '', trim( $out['html'] ) );
+	}
+
+	public function test_an_empty_layer_with_only_a_fill_or_a_shadow_renders(): void {
+		$fill = $this->render_layer(
+			array(
+				'height'           => array( 'desktop' => '80px' ),
+				'backgroundColour' => '#112233',
+			)
+		);
+		$this->assertStringContainsString( 'sgs-decorative-image--shape', $fill['html'] );
+		$this->assertStringContainsString( 'background-color:#112233', $fill['css'] );
+		$this->assertStringContainsString( 'height:80px', $fill['css'] );
+
+		$shadow = $this->render_layer(
+			array(
+				'boxShadow'       => '0 4px 12px',
+				'boxShadowColour' => '#000000',
+			)
+		);
+		$this->assertStringContainsString( 'sgs-decorative-image--shape', $shadow['html'] );
+		$this->assertStringContainsString( 'box-shadow:', $shadow['css'] );
+	}
+
+	public function test_box_tiers_print_inside_their_device_queries(): void {
+		$attrs                = $this->ring_attrs();
+		$attrs['height']      = array(
+			'desktop' => '340px',
+			'tablet'  => '240px',
+			'mobile'  => '120px',
+		);
+		$out = $this->render_layer( $attrs );
+
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*height:240px/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*height:120px/', $out['css'] );
+	}
+
+	/**
+	 * Layers that set none of the new box attributes render exactly as before: the fixture holds the
+	 * markup and CSS the block produced before the box controls existed, one entry per render shape
+	 * (naked image, art-direction tiers, overlay wrapper, object fit, image with content, content
+	 * only, video).
+	 *
+	 * @return array<string, array{0: array<string, mixed>, 1: string, 2: string, 3: string}>
+	 */
+	public static function baseline_cases(): array {
+		$file  = __DIR__ . '/fixtures/decorative-image-baseline.json';
+		$cases = json_decode( (string) file_get_contents( $file ), true, 512, JSON_THROW_ON_ERROR );
+		$out   = array();
+		foreach ( $cases as $name => $case ) {
+			$out[ $name ] = array( $case['attrs'], $case['content'], $case['html'], $case['css'] );
+		}
+		return $out;
+	}
+
+	/**
+	 * @dataProvider baseline_cases
+	 *
+	 * @param array<string, mixed> $attrs   Attributes the fixture was rendered with.
+	 * @param string               $content Inner content it was rendered with.
+	 * @param string               $html    Expected markup.
+	 * @param string               $css     Expected scoped CSS.
+	 */
+	public function test_a_layer_without_box_settings_renders_byte_identical_to_before( array $attrs, string $content, string $html, string $css ): void {
+		$out = $this->render_layer( $attrs, $content );
+
+		$this->assertSame( $html, $out['html'] );
+		$this->assertSame( $css, $out['css'] );
+	}
+
 	public function test_opacity_falls_back_to_fully_opaque(): void {
 		$out = $this->render_layer( array(), self::CONTENT );
 

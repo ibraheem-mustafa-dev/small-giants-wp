@@ -2,7 +2,7 @@
  * The Floating layer's canvas twin: layerPreviewStyle mirrors the rules render.php emits for the positioned root
  * (tests/php/DecorativeImageLayerTest.php asserts the same literals on the PHP side).
  */
-import { layerPreviewStyle } from '../../src/blocks/decorative-image/layer-preview';
+import { layerPreviewStyle, layerBoxPreview } from '../../src/blocks/decorative-image/layer-preview';
 
 describe( 'layerPreviewStyle', () => {
 	it( 'Fit the content is max-content capped at the parent, whatever the tier', () => {
@@ -48,5 +48,52 @@ describe( 'layerPreviewStyle', () => {
 		const style = layerPreviewStyle( { flipX: true }, 'desktop', true );
 		expect( style.opacity ).toBe( 1 );
 		expect( style.transform ).toBe( 'translate(-50%, -50%) scaleX(-1)' );
+	} );
+} );
+
+describe( 'layerBoxPreview', () => {
+	const ring = {
+		borderWidth: { top: '2px', right: '2px', bottom: '2px', left: '2px' },
+		borderStyle: 'solid',
+		borderColour: 'rgba(216,202,80,.55)',
+		borderRadius: { desktop: { topLeft: '50%', topRight: '50%', bottomRight: '50%', bottomLeft: '50%' } },
+		height: { desktop: '340px', mobile: '120px' },
+	};
+
+	it( 'previews the ring: border, 50% radius and height, as render.php prints them', () => {
+		const style = layerBoxPreview( ring, 'desktop' );
+		expect( style.borderStyle ).toBe( 'solid' );
+		expect( style.borderWidth ).toBe( '2px 2px 2px 2px' );
+		expect( style.borderColor ).toBe( 'rgba(216,202,80,.55)' );
+		expect( style.borderTopLeftRadius ).toBe( '50%' );
+		expect( style.borderBottomRightRadius ).toBe( '50%' );
+		expect( style.height ).toBe( '340px' );
+	} );
+
+	it( 'a narrower tier inherits the wider height until it sets its own', () => {
+		expect( layerBoxPreview( ring, 'tablet' ).height ).toBe( '340px' );
+		expect( layerBoxPreview( ring, 'mobile' ).height ).toBe( '120px' );
+	} );
+
+	it( 'paints the fill and the shadow', () => {
+		const style = layerBoxPreview(
+			{ backgroundColour: '#112233', boxShadow: '0 4px 12px', boxShadowColour: '#000000' },
+			'desktop'
+		);
+		expect( style.backgroundColor ).toBe( '#112233' );
+		expect( style.boxShadow ).toBe( '0px 4px 12px 0px #000000' );
+	} );
+
+	it( 'a gradient fill wins over the flat colour', () => {
+		const style = layerBoxPreview(
+			{ backgroundColour: '#112233', backgroundColourGradient: 'linear-gradient(red, blue)' },
+			'desktop'
+		);
+		expect( style.backgroundImage ).toBe( 'linear-gradient(red, blue)' );
+		expect( style.backgroundColor ).toBeUndefined();
+	} );
+
+	it( 'an unset box adds nothing, so an existing layer previews as before', () => {
+		expect( layerBoxPreview( {}, 'desktop' ) ).toEqual( {} );
 	} );
 } );

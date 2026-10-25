@@ -1,0 +1,89 @@
+{
+ "image_only": {
+  "attrs": {
+   "imageUrl": "https://example.test/uploads/photo.jpg",
+   "imageId": 0
+  },
+  "content": "",
+  "html": "<style>.sgs-di-78e0997e.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}</style><img src=\"https://example.test/uploads/photo.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-78e0997e\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" />",
+  "css": ".sgs-di-78e0997e.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}"
+ },
+ "image_tiers_fade": {
+  "attrs": {
+   "imageUrl": "https://example.test/uploads/photo.jpg",
+   "imageId": 0,
+   "imageUrlMobile": "https://example.test/m.jpg",
+   "imageUrlTablet": "https://example.test/t.jpg",
+   "fadeOnScroll": true,
+   "hideOnMobile": true,
+   "rotation": {
+    "desktop": 12,
+    "tablet": 5
+   },
+   "width": {
+    "desktop": 240,
+    "mobile": 120
+   },
+   "maxWidthPercent": 30
+  },
+  "content": "",
+  "html": "<style>.sgs-di-fb00af09.sgs-decorative-image{position:absolute;left:50%;top:50%;width:240px;max-width:30%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}@media (max-width:1023px){.sgs-di-fb00af09.sgs-decorative-image{transform:translate(-50%, -50%) rotate(5deg);}}@media (max-width:767px){.sgs-di-fb00af09.sgs-decorative-image{width:120px;}}@media(max-width:767px){.sgs-di-fb00af09.sgs-decorative-image--desktop{display:none}}@media(min-width:768px){.sgs-di-fb00af09.sgs-decorative-image--mobile{display:none}}@media(min-width:768px) and (max-width:1023px){.sgs-di-fb00af09.sgs-decorative-image--desktop{display:none}}@media(max-width:767px){.sgs-di-fb00af09.sgs-decorative-image--tablet{display:none}}@media(min-width:1024px){.sgs-di-fb00af09.sgs-decorative-image--tablet{display:none}}</style><img src=\"https://example.test/uploads/photo.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-fb00af09 sgs-decorative-image--desktop\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" /><img src=\"https://example.test/t.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-fb00af09 sgs-decorative-image--tablet\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" /><img src=\"https://example.test/m.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-fb00af09 sgs-decorative-image--mobile\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" />",
+  "css": ".sgs-di-fb00af09.sgs-decorative-image{position:absolute;left:50%;top:50%;width:240px;max-width:30%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}@media (max-width:1023px){.sgs-di-fb00af09.sgs-decorative-image{transform:translate(-50%, -50%) rotate(5deg);}}@media (max-width:767px){.sgs-di-fb00af09.sgs-decorative-image{width:120px;}}@media(max-width:767px){.sgs-di-fb00af09.sgs-decorative-image--desktop{display:none}}@media(min-width:768px){.sgs-di-fb00af09.sgs-decorative-image--mobile{display:none}}@media(min-width:768px) and (max-width:1023px){.sgs-di-fb00af09.sgs-decorative-image--desktop{display:none}}@media(max-width:767px){.sgs-di-fb00af09.sgs-decorative-image--tablet{display:none}}@media(min-width:1024px){.sgs-di-fb00af09.sgs-decorative-image--tablet{display:none}}"
+ },
+ "image_overlay_wrapper": {
+  "attrs": {
+   "imageUrl": "https://example.test/uploads/photo.jpg",
+   "imageId": 0,
+   "overlayColour": "#ff0000",
+   "overlayOpacity": 40
+  },
+  "content": "",
+  "html": "<style>.sgs-di-c070147a.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}.sgs-di-c070147a{--sgs-media-overlay-colour:#ff0000;--sgs-media-overlay-opacity:0.4}</style><span class=\"sgs-decorative-image sgs-media-box sgs-di-c070147a\" aria-hidden=\"true\" role=\"presentation\"><img src=\"https://example.test/uploads/photo.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image__media sgs-media-el\" alt=\"\" /></span>",
+  "css": ".sgs-di-c070147a.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}.sgs-di-c070147a{--sgs-media-overlay-colour:#ff0000;--sgs-media-overlay-opacity:0.4}"
+ },
+ "image_fit": {
+  "attrs": {
+   "imageUrl": "https://example.test/uploads/photo.jpg",
+   "imageId": 0,
+   "objectFit": "contain",
+   "objectPosition": "20% 30%"
+  },
+  "content": "",
+  "html": "<style>.sgs-di-3cc62cdc.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}.sgs-di-3cc62cdc{--sgs-media-object-fit:contain;--sgs-media-object-position:20% 30%}</style><img src=\"https://example.test/uploads/photo.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-3cc62cdc\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" />",
+  "css": ".sgs-di-3cc62cdc.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}.sgs-di-3cc62cdc{--sgs-media-object-fit:contain;--sgs-media-object-position:20% 30%}"
+ },
+ "image_content": {
+  "attrs": {
+   "imageUrl": "https://example.test/uploads/photo.jpg",
+   "imageId": 0,
+   "imageDecorative": true
+  },
+  "content": "<p class=sgs-test-copy>Baked</p>",
+  "html": "<style>.sgs-di-fc549222.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}</style><div class=\"sgs-decorative-image sgs-decorative-image--layer sgs-decorative-image--over-image sgs-di-fc549222\"><img src=\"https://example.test/uploads/photo.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image__media sgs-media-el\" alt=\"\" aria-hidden=\"true\" /><div class=\"sgs-decorative-image__content\"><p class=sgs-test-copy>Baked</p></div></div>",
+  "css": ".sgs-di-fc549222.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}"
+ },
+ "content_only": {
+  "attrs": {
+   "rotation": {
+    "desktop": 12
+   },
+   "widthUnit": "auto"
+  },
+  "content": "<p class=sgs-test-copy>Baked</p>",
+  "html": "<style>.sgs-di-c39af5df.sgs-decorative-image{position:absolute;left:50%;top:50%;width:max-content;max-width:100%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}</style><div class=\"sgs-decorative-image sgs-decorative-image--layer sgs-di-c39af5df\"><div class=\"sgs-decorative-image__content\"><p class=sgs-test-copy>Baked</p></div></div>",
+  "css": ".sgs-di-c39af5df.sgs-decorative-image{position:absolute;left:50%;top:50%;width:max-content;max-width:100%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}"
+ },
+ "video": {
+  "attrs": {
+   "decorMedia": {
+    "url": "https://example.test/v.mp4",
+    "type": "video",
+    "id": 0,
+    "mime": "video/mp4"
+   }
+  },
+  "content": "",
+  "html": "<style>.sgs-di-5780f381.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}</style><span class=\"sgs-decorative-image sgs-decorative-image--video sgs-di-5780f381\" aria-hidden=\"true\" role=\"presentation\"><video class=\"sgs-media sgs-media--video sgs-media--sgs-decorative-image\" autoplay loop muted playsinline aria-label=\"Background video\"><source src=\"https://example.test/v.mp4\" type=\"video/mp4\"></video></span>",
+  "css": ".sgs-di-5780f381.sgs-decorative-image{position:absolute;left:50%;top:50%;width:200px;max-width:20%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%);overflow:visible;}"
+ }
+}

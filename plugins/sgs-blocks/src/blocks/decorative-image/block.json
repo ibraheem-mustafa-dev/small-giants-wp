@@ -23,12 +23,22 @@
     "supports": {
         "anchor": true,
         "html": false,
+        "color": {
+            "background": false,
+            "gradients": false,
+            "text": false,
+            "__experimentalSkipSerialization": true
+        },
         "sgs": {
             "motion": true,
-            "_comment_mediaElements": "Wave 6 (2026-09-02). This block never had object-fit/focal-point/overlay controls before — adopting three atoms only, unprefixed (this block has one media slot). box-shape is DELIBERATELY NOT declared: border-radius/sizing-mode is a genuinely NEW capability this block never exposed, and adding it is out of scope for this preserve-existing-behaviour migration (flagged as a judgement call, not silently dropped). maxWidthPercent stays a bare percentage number via registry.js's own `reads` mapping (box-shape.reads['sgs/decorative-image'].maxWidthPercent) — untouched, unrenamed, since box-shape is not adopted here.",
+            "_comment_mediaElements": "Adopts object-fit, focal-point and overlay only, unprefixed (one media slot). box-shape is NOT adopted: its Width and WidthUnit bases are this block's own width and widthUnit, so the atom would put --sgs-media-width on the inner image of every wrapper layer and add a second Width row. The layer paints its own box (border, radius, fill, shadow, height) on its root through the block-private attributes below, built from the shared border, shadow and fill assemblers (sgs_border_element_decls, sgs_shadow_decls, sgs_background_paint_decl), the way sgs/before-after does for its frame.",
             "mediaElements": [
                 { "prefix": "", "context": "element", "atoms": [ "object-fit", "focal-point", "overlay" ] }
             ],
+            "boxFamilies": {
+                "borderRadius": [ "borderRadius" ],
+                "borderWidth": [ "borderWidth" ]
+            },
             "fx": {
                 "motionSurface": true,
                 "_comment_motionSurface": "Spec 38 §2, MotionPath row: 'Exposure surface: Inspector on `sgs/decorative-image`' — cited by name as that effect's primary target, and §10's reduced-motion table separately names this block's existing reduced-motion arm as the reference implementation MotionPath's own Suppress behaviour matches. This block has no text/section/svg/svg-subtree/track/item-set signal of its own (it renders a raster <img> or video, absolutely positioned — no RichText, no containerKind, no bgSvgContent, no scrollable overflow, no filter pairing), so `generate-fx-qualifying-blocks.py`'s normal requires-based route resolves zero provisions for it. `motion-path`/`scrub` both have `requires='none'` (broadly available wherever a panel already exists) but cannot, by themselves, CREATE a panel anywhere — that rule is what stops every sgs/* block acquiring a panel from `scrub` alone. This flag is the block's own declaration that it is a legitimate host regardless, read by `_block_provisions()` alongside `draggable`/`pairedFilter` and satisfying the panel gate the same way a real requires-match would. Mirrors `providesNatively` above (a fact the block owns) for the opposite direction: that excludes an effect this block already has natively; this includes a block that has no requires-derivable structural provision but is still spec-named as a legitimate fx target."
@@ -37,7 +47,7 @@
                 "image": {
                     "label": "Image",
                     "order": 1,
-                    "clusters": [ "layout", "fill", "position", "animation" ],
+                    "clusters": [ "layout", "fill", "border", "position", "animation" ],
                     "isWrapper": true,
                     "prefix": "",
                     "attrMap": {
@@ -45,7 +55,25 @@
                         "css:width": "width",
                         "css:opacity": "opacity",
                         "css:z-index": "zIndex",
-                        "css:transform": "rotation"
+                        "css:transform": "rotation",
+                        "css:background-color": "backgroundColour",
+                        "css:background-image": "backgroundColourGradient",
+                        "css:border-width": "borderWidth",
+                        "css:border-style": "borderStyle",
+                        "css:border-color": "borderColour",
+                        "css:border-color-gradient": "borderColourGradient",
+                        "css:border-radius": "borderRadius",
+                        "css:box-shadow": "boxShadow",
+                        "css:box-shadow-color": "boxShadowColour",
+                        "css:height": "height"
+                    },
+                    "states": {
+                        "hover": {
+                            "attrMap": {
+                                "css:box-shadow": "boxShadowHover",
+                                "css:box-shadow-color": "boxShadowColourHover"
+                            }
+                        }
                     },
                     "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are percentage-based anchor coordinates for the whole floating element, not literal CSS top/bottom offsets or object-position within a box, so they are deliberately left unmapped — css:top/css:bottom stay genuine gaps rather than being force-mapped to a different semantic. No layer field is declared (this is not a composite). The old motion cluster (transition-duration/transition-timing-function) is still deliberately NOT declared here — these are JS-driven scroll-triggered parameters, not CSS transitions, and mapping them there would misrepresent the mechanism."
                 }
@@ -135,6 +163,56 @@
         "overflow": {
             "type": "string",
             "default": "visible"
+        },
+        "_comment_box": "The box the layer paints on its own root, so an empty layer can draw a ring, a disc or a tinted panel. Every attribute prints nothing while unset. A layer with no media and no content renders only when a border width, a gradient ring, a shadow or a fill is set.",
+        "height": {
+            "type": "object",
+            "default": {}
+        },
+        "backgroundColour": {
+            "type": "string",
+            "default": ""
+        },
+        "backgroundColourGradient": {
+            "type": "string",
+            "default": ""
+        },
+        "borderWidth": {
+            "type": "object",
+            "default": {}
+        },
+        "borderStyle": {
+            "type": "string",
+            "enum": [ "none", "solid", "dashed", "dotted", "double", "groove", "ridge", "inset", "outset" ],
+            "default": "solid"
+        },
+        "borderColour": {
+            "type": "string",
+            "default": ""
+        },
+        "borderColourGradient": {
+            "type": "string",
+            "default": ""
+        },
+        "borderRadius": {
+            "type": "object",
+            "default": {}
+        },
+        "boxShadow": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadowColour": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadowColourHover": {
+            "type": "string",
+            "default": ""
+        },
+        "boxShadowHover": {
+            "type": "string",
+            "default": ""
         },
         "hideOnTablet": {
             "type": "boolean",
