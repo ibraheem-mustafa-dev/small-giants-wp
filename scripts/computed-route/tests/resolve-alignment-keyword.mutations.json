@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/css-equivalence/keywords.mjs", "find": "return reversed ? v : side;", "replace": "return side;", "why": "the reverse check is dropped" },
+	{ "file": "lib/css-equivalence/keywords.mjs", "find": "/-reverse$/.test( String( axis ).trim() )", "replace": "/^row-reverse$/.test( String( axis ).trim() )", "why": "column-reverse is treated as column" },
+	{ "file": "lib/css-equivalence/keywords.mjs", "find": "/-reverse$/.test( String( axis ).trim() )", "replace": "/^column-reverse$/.test( String( axis ).trim() )", "why": "row-reverse is treated as row" },
+	{ "file": "lib/css-equivalence/keywords.mjs", "find": "'wrap-reverse' === String( axis ).trim()", "replace": "false", "why": "wrap-reverse is ignored" },
+	{ "file": "lib/css-equivalence/keywords.mjs", "find": "const axis = CROSS.includes( prop ) ? ctx[ 'flex-wrap' ] : ctx[ 'flex-direction' ];", "replace": "const axis = ctx[ 'flex-direction' ] ?? ctx[ 'flex-wrap' ];", "why": "the cross axis reads flex-direction" },
+	{ "file": "lib/css-equivalence/keywords.mjs", "find": "if ( /(?:^|-)grid$/.test( display ) ) {\n\t\treturn side;", "replace": "if ( /(?:^|-)grid$/.test( display ) ) {\n\t\treturn v;", "why": "a grid no longer agrees" },
+	{ "file": "lib/css-equivalence/keywords.mjs", "find": "if ( ! /(?:^|-)flex$/.test( display ) ) {\n\t\treturn v;", "replace": "if ( false ) {\n\t\treturn v;", "why": "a block box is treated as flex" }
+]

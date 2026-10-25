@@ -56,22 +56,42 @@ test( 'MUST FAIL: aria-label is written where the block has the attribute and ra
 
 test( 'MUST FAIL: a role="img" element\'s aria-label is the picture\'s name and goes to the block\'s one image-alt setting', () => {
 	const logo = blockSchema( 'sgs/responsive-logo' );
-	const r = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt' ] } );
+	const r = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt' ], pictureSlot: '' } );
 	assert.equal( val( r, 'alt' ), 'Acme Ltd' );
 	assert.deepEqual( r.unmapped, [], 'the name has a home, so no gap' );
 	// Negative controls: a label that is not the picture's own name, a block with no image-alt setting, two image-alt settings.
 	const linkName = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Go home', imageName: null } }, imageAlts: [ 'alt' ] } );
 	assert.equal( val( linkName, 'alt' ), undefined );
 	assert.equal( linkName.unmapped[ 0 ].property, 'aria-label' );
-	const noAlt = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [] } );
+	const noAlt = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [], pictureSlot: '' } );
 	assert.deepEqual( noAlt.writes, [] );
 	assert.equal( noAlt.unmapped[ 0 ].property, 'aria-label' );
-	const two = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt', 'altMobile' ] } );
+	const two = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt', 'altMobile' ], pictureSlot: '' } );
 	assert.deepEqual( two.writes, [] );
 	// A held alt is kept, and a different one is a note.
-	const held = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt' ], attributes: { alt: 'Acme' } } );
+	const held = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt' ], pictureSlot: '', attributes: { alt: 'Acme' } } );
 	assert.deepEqual( held.writes, [] );
 	assert.match( held.notes[ 0 ], /alt holds "Acme"/ );
+} );
+
+test( 'MUST FAIL: a picture name is written to the image-alt setting only from the picture slot of the node', () => {
+	const logo = blockSchema( 'sgs/responsive-logo' );
+	const slots = { '': { ariaLabel: 'Home', imageName: null }, '.sgs-x__badge': { ariaLabel: 'Award', imageName: 'Award' } };
+	const other = linkAttrDecisions( { calibration: {}, schema: logo, slots, imageAlts: [ 'alt' ], pictureSlot: '' } );
+	assert.equal( val( other, 'alt' ), undefined, 'a name on another slot than the picture the alt describes' );
+	assert.ok( other.unmapped.some( ( u ) => 'Award' === u.value && 'aria-label' === u.property ), 'it stays a named aria-label row' );
+	assert.equal( val( linkAttrDecisions( { calibration: {}, schema: logo, slots, imageAlts: [ 'alt' ] } ), 'alt' ), undefined, 'no picture slot, no alt write' );
+	assert.equal( val( linkAttrDecisions( { calibration: {}, schema: logo, slots, imageAlts: [ 'alt' ], pictureSlot: '.sgs-x__badge' } ), 'alt' ), 'Award', 'the name on the picture slot is written (positive control)' );
+} );
+
+test( 'pictureSlotOf: the own element of the node when it is a picture, else its one picture slot', async () => {
+	const { pictureSlotOf } = await import( '../lib/fill-media.mjs' );
+	assert.equal( pictureSlotOf( { '': { imageName: 'Brand' }, '.a': { img: { src: 'x' } } } ), '' );
+	assert.equal( pictureSlotOf( { '': { imageName: null }, '.a': { img: { src: 'x' } } } ), '.a' );
+	assert.equal( pictureSlotOf( { '': {}, '.a': { imageName: 'A' } } ), '.a' );
+	assert.equal( pictureSlotOf( { '': {}, '.a': { imageName: 'A' }, '.b': { img: { src: 'y' } } } ), null, 'two pictures, none chosen' );
+	assert.equal( pictureSlotOf( { '': { missing: true, imageName: 'A' } } ), null, 'a missing read is no picture' );
+	assert.equal( pictureSlotOf( {} ), null );
 } );
 
 test( 'a value the node already holds is kept, and a contradiction is a note, not an overwrite', () => {

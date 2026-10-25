@@ -55,3 +55,51 @@ test( 'rowAnimate is written only where the block declares it', () => {
 	const { attrs } = strip( reads( () => '0s' ), { hasAttr: ( b, a ) => 'rowAnimate' !== a } );
 	assert.deepEqual( attrs, { rowHideOnScroll: { desktop: 'on' } } );
 } );
+
+// A state look of target `t` at every width: the toggled or state rule's declared and rendered longhands.
+const withLook = ( r, look ) => ( { ...r, states: byWidth( () => ( { looks: { t: [ { pseudo: null, ...look } ] } } ) ) } );
+
+test( 'MUST FAIL: a row timed only in a toggled or state rule keeps the default', () => {
+	const toggled = withLook( reads( () => '0s' ), { states: [ 'is-hidden' ], declared: { 'transition-duration': '0.3s', 'transition-property': 'transform' }, rendered: { 'transition-duration': '0.3s' } } );
+	assert.deepEqual( strip( toggled ).attrs, { rowHideOnScroll: { desktop: 'on' } } );
+	const rendered = withLook( reads( () => '0s' ), { states: [ 'hover' ], declared: {}, rendered: { 'transition-duration': '0s, 200ms' } } );
+	assert.deepEqual( strip( rendered ).attrs, { rowHideOnScroll: { desktop: 'on' } }, 'a state look\'s rendered timing counts' );
+	const animated = withLook( reads( () => '0s' ), { states: [ 'open' ], declared: { 'animation-duration': '0.4s' } } );
+	assert.deepEqual( strip( animated ).attrs, { rowHideOnScroll: { desktop: 'on' } }, 'a state animation times the row' );
+	const still = withLook( reads( () => '0s' ), { states: [ 'hover' ], declared: { color: 'red' }, rendered: { 'transition-duration': '0s' } } );
+	assert.deepEqual( strip( still ).attrs.rowAnimate, false, 'a state look that times nothing leaves the row still (positive control)' );
+} );
+
+test( 'MUST FAIL: a row read at one width only is not judged for every device', () => {
+	const one = { widths: { 1440: { t: { styles: { 'transition-duration': '0s' } } } }, declared: { 1440: { t: {} } } };
+	assert.deepEqual( strip( one ).attrs, { rowHideOnScroll: { desktop: 'on' } } );
+	const failed = { ...reads( () => '0s' ), failures: [ { id: 't', owner: 0, width: 768, read: 'declared', reason: 'threw' } ] };
+	assert.deepEqual( strip( failed ).attrs, { rowHideOnScroll: { desktop: 'on' } }, 'a failed declared read judges nothing' );
+	// The decided rule: a width the row does not render at (the finder found nothing visible) is not a width it times at.
+	const hiddenAtPhone = { widths: byWidth( ( w ) => ( { t: 375 === w ? { missing: true } : { styles: { 'transition-duration': '0s' } } } ) ), declared: byWidth( () => ( { t: {} } ) ) };
+	assert.deepEqual( strip( hiddenAtPhone ).attrs.rowAnimate, false );
+	const nowhere = { widths: byWidth( () => ( { t: { missing: true } } ) ), declared: byWidth( () => ( {} ) ) };
+	assert.deepEqual( strip( nowhere ).attrs, { rowHideOnScroll: { desktop: 'on' } }, 'a row that renders nowhere is not judged' );
+} );
+
+test( 'a site-header-row that does not scroll away gets no rowAnimate through motionWrites (negative control)', async () => {
+	const { motionWrites } = await import( '../lib/fill-motion.mjs' );
+	const { motionDb } = await import( '../lib/motion-db.mjs' );
+	const { loadMotionSchema } = await import( '../lib/motion-schema.mjs' );
+	const { openDb } = await import( '../lib/db.mjs' );
+	const { motionFixtureDb } = await import( './fixtures/motion-fixture-db.mjs' );
+	const mdb = motionDb( openDb( motionFixtureDb( { 'sgs/site-header': [], 'sgs/site-header-row': [] } ) ) );
+	const style = ( ...pairs ) => ( { style: { static: pairs, holes: [] } } );
+	// Site/12 comes after the pinned bar, so it is not a strip; the second run has no pinned bar at all.
+	const template = { elements: { 'Site/10': { realParent: 'Site/1', srcLine: 10, ...style( [ 'position', 'sticky' ], [ 'top', '0' ] ), parentChain: [ 'Site/1' ] }, 'Site/12': { realParent: 'Site/1', srcLine: 12, ...style(), parentChain: [ 'Site/1' ] } } };
+	const header = { id: 'S-1', name: 'S-1', mechanism: 'js-style-write', status: 'active', element: { dc: 'Site', template_tpl_id: '10', selector: 'ref setHeaderEl', description: 'Header bar' }, trigger: { type: 'scroll-position', detail: 'window scroll: scrollY > 8' }, source: { code: 'this._headerEl.style.boxShadow = window.scrollY > 8 ?' }, properties: [ { property: 'box-shadow', from: 'none', to: '0 10px 30px -18px rgba(20,40,60,.35)' } ], duration_ms: 300, delay_ms: 0, easing: 'ease', iterations: 1, direction: 'normal' };
+	const run = ( records ) => {
+		const nodes = [ [ 'sgs/site-header', '10' ], [ 'sgs/site-header-row', '12' ] ].map( ( [ name, tpl ], index ) => ( { index, name, targets: [ { id: `${ index }:`, slot: '', finder: { tpl: `Site/${ tpl }#0` } } ] } ) );
+		const flat = nodes.map( ( n ) => ( { name: n.name, attributes: {}, ref: `r${ n.index }` } ) );
+		const r = { widths: byWidth( () => ( { '1:': { styles: { 'transition-duration': '0s' } } } ) ), declared: byWidth( () => ( {} ) ) };
+		motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records, mdb, schema: loadMotionSchema(), rawSnapshot: { settings: { custom: {} } }, hasAttr: () => true, template, reads: r } );
+		return flat[ 1 ].attributes;
+	};
+	assert.equal( run( [ header ] ).rowAnimate, undefined, 'a row after the pinned bar' );
+	assert.equal( run( [] ).rowAnimate, undefined, 'no pinned bar' );
+} );

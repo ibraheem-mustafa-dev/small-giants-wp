@@ -95,7 +95,7 @@ export function writePaint( dir, site, block, paint ) {
 }
 
 // The calibration a reader works from: the slot map with THIS site's default paint merged in as `elements`. Null when the
-// block has no slot map. A site with no paint file gets `elements: {}` and `paintMissing` naming the site, never another
+// block has no slot map; `paintReadKey` is the read list the paint was measured under. A site with no paint file gets `elements: {}` and `paintMissing` naming the site, never another
 // site's paint. A file read under an older READ_KEY is returned as it is: what it recorded is still true, and a property
 // the read list gained since reads as absent until the site is recalibrated (stage 0 reports that slot map stale).
 export function loadCalibration( dir, block, site ) {
@@ -107,7 +107,7 @@ export function loadCalibration( dir, block, site ) {
 	if ( ! paint ) {
 		return { ...slotMap, elements: {}, paintMissing: site ? `no default paint for ${ site }; run calibrate.mjs on that site` : 'no site named, so no default paint to read' };
 	}
-	return { ...slotMap, elements: paint.elements || {}, paintKey: paint.paintKey, paintSite: paint.site };
+	return { ...slotMap, elements: paint.elements || {}, paintKey: paint.paintKey, paintSite: paint.site, paintReadKey: paint.readKey ?? null };
 }
 
 // Why a run on `site` must leave the block's slot map alone, or null when it may write it: a slot map whose key is current

@@ -62,3 +62,23 @@ test( 'MUST FAIL: census rows carry the Fill row\'s slot', () => {
 	const { rows } = surfaceRows( { client: 'c', surface: 's', report: null, run, lookup: ( slug ) => ( { slug, parent_block: null } ) } );
 	assert.equal( rows[ 0 ].slot, '.sgs-container__inner' );
 } );
+
+test( 'MUST FAIL: a state row whose reading lives only in a state paint gets no default-paint evidence, so the census refuses it', () => {
+	// The default paint lacks the key; only the hover paint holds it. The cache's paint is the resting one, so it says
+	// nothing about the hover reading.
+	const cal = { readKey: 'k1', elements: { '': { 375: { color: 'red' }, 1440: { color: 'red' } } }, states: { hover: { '': { 1440: { 'transition-property': 'all' } } } } };
+	const rows = classifyRows( [ row( { state: 'hover' } ) ], { db: db(), calFor: () => cal, calFiles: files, freshness: fresh } );
+	assert.equal( rows[ 0 ].gapClass, 'I-calibration' );
+	assert.equal( rows[ 0 ].gapEvidence, null );
+	assert.throws( () => classCounts( rows ), /I-calibration with no evidence for its class/ );
+	assert.equal( calibrationEvidence( row( { state: 'focus' } ), { elements: {}, paintMissing: 'no default paint for site-a' }, files() ), null, 'a missing default paint says nothing about a state reading' );
+	assert.equal( calibrationEvidence( row( { state: 'hover' } ), null, files() ).file, 'cache/container.json', 'no slot map is evidence for every state' );
+	assert.ok( isEvidence( calibrationEvidence( row( { state: 'default' } ), cal, files() ) ), 'a default row still reads the default paint (positive control)' );
+	assert.ok( isEvidence( calibrationEvidence( row( { state: null } ), cal, files() ) ), 'a null state is the default' );
+} );
+
+test( 'MUST FAIL: the evidence names the paint file\'s own readKey', () => {
+	const e = calibrationEvidence( row(), { readKey: 'slotmap-k', paintReadKey: 'paint-k', elements: { '': { 1440: { color: 'red' } } } }, files() );
+	assert.match( e.line, /\(readKey paint-k\)/ );
+	assert.match( calibrationEvidence( row(), paint( { color: 'red' } ), files() ).line, /\(readKey k1\)/, 'a paint with no readKey of its own names the slot map\'s' );
+} );

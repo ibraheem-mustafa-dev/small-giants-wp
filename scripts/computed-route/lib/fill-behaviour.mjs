@@ -106,7 +106,8 @@ export function applySettings( { items, n, out, where, flat, hasAttr = declaredA
 
 // The header row that scrolls away above the pinned header bar: `rowHideOnScroll` on a `sgs/site-header-row` whose
 // element is one of the strip keys. The row's collapse animates unless `rowAnimate` is off: where the block declares it
-// and the draft's row times nothing at rest at every width it is read at (stillAtRest), it is written off.
+// and the draft's row times nothing at rest at every width it renders at and in none of its state looks (stillAtRest), it
+// is written off.
 export function applyStrip( { n, target, key, idx, out, where, flat, hasAttr = declaredAttr, reads = null } ) {
 	if ( 'sgs/site-header-row' !== n.name || ! idx.stripKeys.has( key ) || flat[ n.index ].attributes?.rowHideOnScroll?.desktop || ! hasAttr( n.name, 'rowHideOnScroll' ) ) {
 		return;
@@ -118,16 +119,31 @@ export function applyStrip( { n, target, key, idx, out, where, flat, hasAttr = d
 	if ( still && hasAttr( n.name, 'rowAnimate' ) ) {
 		const w = setAttr( flat[ n.index ], { attr: 'rowAnimate', value: false } );
 		out.writes.push( { node: where.node, block: n.name, slot: where.slot, prop: 'rowAnimate', attr: 'rowAnimate', before: w.before, after: w.after, widths: [], how: 'motion' } );
-		out.notes.push( { ...where, text: `the draft's row times nothing at rest (transition-duration ${ still.join( ', ' ) } at 375, 768 and 1440 where read), so its collapse jumps: rowAnimate off` } );
+		out.notes.push( { ...where, text: `the draft's row times nothing at rest (transition-duration ${ still.join( ', ' ) } at every width it renders at, and no state look times it), so its collapse jumps: rowAnimate off` } );
 	}
 }
 
-// The resting transition-duration of a target at each width it is read at (the code's declaration, else the rendered
-// value), when every entry of every one is 0; else null (a width timed, an unreadable value, or nothing read).
-function stillAtRest( reads, id ) {
-	const values = READ_WIDTHS.map( ( w ) => reads?.declared?.[ w ]?.[ id ]?.[ 'transition-duration' ] ?? reads?.widths?.[ w ]?.[ id ]?.styles?.[ 'transition-duration' ] ).filter( ( v ) => undefined !== v );
+// The resting transition-duration of a target at each width it renders at (the code's declaration, else the rendered
+// value), when every entry of every one is 0 and no state look of the target (reads.states, the hover, focus, toggled
+// and logic-state rules) times anything; else null. A width the finder found nothing visible at (`missing`) is one the
+// target does not render at; a width with no read, a declared read that failed, a timing that cannot be read, or no
+// rendering width at all judges nothing.
+export function stillAtRest( reads, id ) {
+	const values = [];
+	for ( const w of READ_WIDTHS ) {
+		const snap = reads?.widths?.[ w ]?.[ id ];
+		if ( snap?.missing ) {
+			continue;
+		}
+		const v = reads?.declared?.[ w ]?.[ id ]?.[ 'transition-duration' ] ?? snap?.styles?.[ 'transition-duration' ];
+		if ( undefined === v || ( reads?.failures || [] ).some( ( f ) => f.id === id && Number( f.width ) === w ) ) {
+			return null;
+		}
+		values.push( v );
+	}
 	const zero = ( v ) => String( v ).split( ',' ).every( ( x ) => 0 === timeToMs( x.trim() ) );
-	return values.length && values.every( zero ) ? values : null;
+	const timed = READ_WIDTHS.some( ( w ) => ( reads?.states?.[ w ]?.looks?.[ id ] || [] ).some( ( l ) => [ l.declared, l.rendered ].some( ( o ) => [ 'transition-duration', 'animation-duration' ].some( ( p ) => undefined !== o?.[ p ] && ! zero( o[ p ] ) ) ) ) );
+	return values.length && values.every( zero ) && ! timed ? values : null;
 }
 
 const layerCount = ( el, effect, hover ) => ( ( hover ? el?.hover?.effects : el?.effects ) || [] ).filter( ( l ) => l.effect === effect ).length;

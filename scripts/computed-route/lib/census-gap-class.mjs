@@ -45,13 +45,19 @@ export function baseClass( row ) {
 
 // FR-48-66 evidence for a row whose Fill reason is itself I-calibration, read from the calibration cache: the absent slot-map
 // file, the missing paint, or the paint key at the row's slot where no width holds a reading of the row's property. `files`
-// is { slotMap, paint } (paths). Null where the cache does hold the reading, or no file is named: the reason is then unproven.
+// is { slotMap, paint } (paths). The cache's paint is the default (resting) paint, so a row in a state (hover, focus, any
+// state other than `default`) has only the absent slot map as evidence: its state paint was never looked at, so no paint
+// reading proves or disproves it. The readKey named is the paint file's own, else the slot map's. Null where the cache
+// does hold the reading, the row's state paint was not read, or no file is named: the reason is then unproven.
 export function calibrationEvidence( row, cal, files ) {
 	if ( ! files ) {
 		return null;
 	}
 	if ( ! cal ) {
 		return fromFile( files.slotMap, row.slug, `no calibration slot map for ${ row.slug }` );
+	}
+	if ( ! [ undefined, null, 'default' ].includes( row.state ) ) {
+		return null;
 	}
 	if ( cal.paintMissing ) {
 		return fromFile( files.paint, row.slug, cal.paintMissing );
@@ -61,7 +67,7 @@ export function calibrationEvidence( row, cal, files ) {
 	}
 	const slot = row.slot ?? '';
 	const found = Object.keys( cal.elements || {} ).find( ( k ) => LOOSE( k ) === LOOSE( slot ) );
-	const readKey = `(readKey ${ cal.readKey ?? 'unrecorded' })`;
+	const readKey = `(readKey ${ cal.paintReadKey ?? cal.readKey ?? 'unrecorded' })`;
 	if ( undefined === found ) {
 		return fromFile( files.paint, `elements[${ JSON.stringify( slot ) }].*.${ row.key }`, `the paint holds no element ${ slot || '(block root)' } ${ readKey }` );
 	}

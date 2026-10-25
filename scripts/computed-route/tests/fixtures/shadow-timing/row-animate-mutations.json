@@ -3,10 +3,18 @@
 	{ "file": "lib/fill-behaviour.mjs", "find": "still && hasAttr( n.name, 'rowAnimate' )", "replace": "still", "why": "rowAnimate is written where the block does not declare it" },
 	{ "file": "lib/fill-behaviour.mjs", "find": "{ attr: 'rowAnimate', value: false }", "replace": "{ attr: 'rowAnimate', value: true }", "why": "the row is written to animate" },
 	{ "file": "lib/fill-behaviour.mjs", "find": "values.length && values.every( zero )", "replace": "values.every( zero )", "why": "a row with no width read is judged still" },
-	{ "file": "lib/fill-behaviour.mjs", "find": "values.every( zero ) ? values : null", "replace": "values.some( zero ) ? values : null", "why": "one still width judges the row still" },
+	{ "file": "lib/fill-behaviour.mjs", "find": "values.every( zero ) && ! timed ? values : null", "replace": "values.some( zero ) && ! timed ? values : null", "why": "one still width judges the row still" },
 	{ "file": "lib/fill-behaviour.mjs", "find": "String( v ).split( ',' ).every(", "replace": "String( v ).split( ',' ).some(", "why": "one untimed entry judges the list still" },
 	{ "file": "lib/fill-behaviour.mjs", "find": "0 === timeToMs( x.trim() )", "replace": "! timeToMs( x.trim() )", "why": "an unreadable timing is taken as 0" },
-	{ "file": "lib/fill-behaviour.mjs", "find": "reads?.declared?.[ w ]?.[ id ]?.[ 'transition-duration' ] ?? reads?.widths", "replace": "reads?.widths", "why": "the rendered value beats the code's declaration" },
-	{ "file": "lib/fill-behaviour.mjs", "find": "?? reads?.widths?.[ w ]?.[ id ]?.styles?.[ 'transition-duration' ] )", "replace": ")", "why": "the rendered resting timing is never read" },
-	{ "file": "lib/fill-motion.mjs", "find": "applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );", "replace": "applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr } );", "why": "the motion writer passes no reads" }
+	{ "file": "lib/fill-behaviour.mjs", "find": "const v = reads?.declared?.[ w ]?.[ id ]?.[ 'transition-duration' ] ?? snap?.styles", "replace": "const v = snap?.styles", "why": "the rendered value beats the code's declaration" },
+	{ "file": "lib/fill-behaviour.mjs", "find": " ?? snap?.styles?.[ 'transition-duration' ];", "replace": ";", "why": "the rendered resting timing is never read" },
+	{ "file": "lib/fill-motion.mjs", "find": "applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );", "replace": "applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr } );", "why": "the motion writer passes no reads" },
+	{"file": "lib/fill-behaviour.mjs", "find": "\t\tif ( snap?.missing ) {\n\t\t\tcontinue;\n\t\t}", "replace": "\t\tif ( ! snap || snap.missing ) {\n\t\t\tcontinue;\n\t\t}", "why": "an unread width is skipped like one the row does not render at"},
+	{"file": "lib/fill-behaviour.mjs", "find": "if ( undefined === v || ( reads?.failures || [] ).some( ( f ) => f.id === id && Number( f.width ) === w ) ) {", "replace": "if ( undefined === v ) {", "why": "a failed declared read is judged"},
+	{"file": "lib/fill-behaviour.mjs", "find": "return values.length && values.every( zero ) && ! timed ? values : null;", "replace": "return values.length && values.every( zero ) ? values : null;", "why": "the state looks are ignored"},
+	{"file": "lib/fill-behaviour.mjs", "find": "[ l.declared, l.rendered ].some(", "replace": "[ l.declared ].some(", "why": "a state look's rendered timing is ignored"},
+	{"file": "lib/fill-behaviour.mjs", "find": "[ 'transition-duration', 'animation-duration' ].some(", "replace": "[ 'transition-duration' ].some(", "why": "a state animation is ignored"},
+	{"file": "lib/fill-behaviour.mjs", "find": "\t\tif ( snap?.missing ) {\n\t\t\tcontinue;\n\t\t}", "replace": "\t\tif ( snap?.missing ) {\n\t\t\treturn null;\n\t\t}", "why": "a width the row does not render at stops the judgement"},
+	{"file": "lib/fill-behaviour.mjs", "find": "return values.length && values.every( zero ) && ! timed ? values : null;", "replace": "return values.every( zero ) && ! timed ? values : null;", "why": "a row that renders nowhere is judged still"},
+	{"file": "lib/fill-behaviour.mjs", "find": "if ( still && hasAttr( n.name, 'rowAnimate' ) ) {", "replace": "if ( hasAttr( n.name, 'rowAnimate' ) ) {", "why": "rowAnimate is written without the judgement"}
 ]

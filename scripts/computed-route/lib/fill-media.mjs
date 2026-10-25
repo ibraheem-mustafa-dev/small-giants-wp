@@ -99,6 +99,18 @@ export function nestedImage( snaps ) {
 	return 1 === inner.length ? inner[ 0 ] : null;
 }
 
+// The slot of the one picture a node holds, the image its image settings describe: the node's own element when it is a
+// picture (an image read, or a picture's own name), else the single descendant slot that is one. snaps: { slot: the
+// element's desktop read }. null when none or when two slots each are one.
+export function pictureSlotOf( snaps ) {
+	const is = ( s ) => !! ( s && ! s.missing && ( s.img || s.imageName ) );
+	if ( is( snaps[ '' ] ) ) {
+		return '';
+	}
+	const inner = Object.entries( snaps ).filter( ( [ , s ] ) => is( s ) ).map( ( [ slot ] ) => slot );
+	return 1 === inner.length ? inner[ 0 ] : null;
+}
+
 // img: the draft element's image read { tag, src, alt, caption } (null when the element holds no single image). A
 // <figure> or <picture> mapped to a block with no image setting is a wrapper, not a gap; a bare <img> there is one.
 // media: { map, site, origin } (map null when media-map.json is missing). attributes: what the node already holds
