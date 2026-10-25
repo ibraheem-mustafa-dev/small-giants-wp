@@ -54,6 +54,26 @@ test( 'MUST FAIL: aria-label is written where the block has the attribute and ra
 	assert.equal( no.unmapped[ 0 ].value, 'Book now' );
 } );
 
+test( 'MUST FAIL: a role="img" element\'s aria-label is the picture\'s name and goes to the block\'s one image-alt setting', () => {
+	const logo = blockSchema( 'sgs/responsive-logo' );
+	const r = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt' ] } );
+	assert.equal( val( r, 'alt' ), 'Acme Ltd' );
+	assert.deepEqual( r.unmapped, [], 'the name has a home, so no gap' );
+	// Negative controls: a label that is not the picture's own name, a block with no image-alt setting, two image-alt settings.
+	const linkName = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Go home', imageName: null } }, imageAlts: [ 'alt' ] } );
+	assert.equal( val( linkName, 'alt' ), undefined );
+	assert.equal( linkName.unmapped[ 0 ].property, 'aria-label' );
+	const noAlt = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [] } );
+	assert.deepEqual( noAlt.writes, [] );
+	assert.equal( noAlt.unmapped[ 0 ].property, 'aria-label' );
+	const two = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt', 'altMobile' ] } );
+	assert.deepEqual( two.writes, [] );
+	// A held alt is kept, and a different one is a note.
+	const held = linkAttrDecisions( { calibration: {}, schema: logo, slots: { '': { ariaLabel: 'Acme Ltd', imageName: 'Acme Ltd' } }, imageAlts: [ 'alt' ], attributes: { alt: 'Acme' } } );
+	assert.deepEqual( held.writes, [] );
+	assert.match( held.notes[ 0 ], /alt holds "Acme"/ );
+} );
+
 test( 'a value the node already holds is kept, and a contradiction is a note, not an overwrite', () => {
 	const r = run( 'sgs/button', { '': { ariaLabel: 'Book now' } }, { attributes: { ariaLabel: 'Reserve' } } );
 	assert.deepEqual( r.writes, [] );

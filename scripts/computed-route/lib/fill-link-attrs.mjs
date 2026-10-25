@@ -5,7 +5,7 @@
 //   target  a boolean "opens in new tab" setting (`...NewTab`) or a string target setting (`...Target`, `_blank` when its enum allows it)
 //   rel     a string setting named `rel` or `...Rel`
 //   id      the `anchor` attribute, when the block declares supports.anchor (WordPress stores a block's id there)
-//   aria-label  a string setting named `ariaLabel` or `...AriaLabel`
+//   aria-label  a string setting named `ariaLabel` or `...AriaLabel`; on a role="img" element, the block's image-alt setting
 // The setting that belongs to a link is the one sharing its address setting's prefix (`linkUrl` takes `linkTarget`, `ctaUrl`
 // takes `ctaTarget`); a bare `url` takes the block's only candidate. rel tokens the block adds itself for a new tab
 // (noopener, noreferrer) are not a difference. Facts per slot: { target, rel, id, ariaLabel } (null where the draft has none).
@@ -66,8 +66,9 @@ const targetWrite = ( schema, attr ) => {
 
 // writes, unmapped and notes for the link attributes of one block. calibration: the block's cache file; schema:
 // block.json attributes; anchor: whether supports.anchor is declared; attributes: what the node already holds; slots:
-// { path: { target, rel, id, ariaLabel } }.
-export function linkAttrDecisions( { calibration, schema = {}, anchor = false, attributes = {}, slots = {} } ) {
+// { path: { target, rel, id, ariaLabel, imageName } } (imageName: the aria-label of a role="img" element); imageAlts: the
+// block's image-alt settings from the framework DB (lib/fill-media.mjs::imageSlots).
+export function linkAttrDecisions( { calibration, schema = {}, anchor = false, attributes = {}, slots = {}, imageAlts = [] } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	const link = calibration?.link || {};
 	const gap = ( property, value, slot, reason ) => out.unmapped.push( { property, value, slot, reason } );
@@ -104,7 +105,11 @@ export function linkAttrDecisions( { calibration, schema = {}, anchor = false, a
 				gap( 'id', f.id, slot, '' === slot ? 'the block does not declare supports.anchor, so no setting holds its id' : `an id on the nested element "${ slot }" has no setting (anchor belongs to the block's root)` );
 			}
 		}
-		if ( f.ariaLabel ) {
+		// A picture's own name (role="img" with an aria-label) is the image's text alternative: it goes to the block's one
+		// image-alt setting (the framework DB's `image-alt` role, imageAlts) when the block has exactly one.
+		if ( f.ariaLabel && f.imageName === f.ariaLabel && 1 === imageAlts.length ) {
+			put( { attr: imageAlts[ 0 ], value: f.imageName, merge: 'replace' }, 'image name (role img aria-label)' );
+		} else if ( f.ariaLabel ) {
 			const found = '' === slot && schema.ariaLabel ? { attr: 'ariaLabel' } : pick( schema, /^(aria[-_]?label|.*AriaLabel)$/i, hrefAttr );
 			found.attr ? put( { attr: found.attr, value: f.ariaLabel, merge: 'replace' }, 'aria-label' ) : gap( 'aria-label', f.ariaLabel, slot, `no setting of the block holds the aria-label of "${ slot }" (${ found.gap })` );
 		}

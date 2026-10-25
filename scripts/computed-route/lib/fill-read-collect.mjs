@@ -52,6 +52,11 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		snap.rel = anchor?.getAttribute( 'rel' ) || null;
 		snap.id = el.getAttribute( 'id' ) || null;
 		snap.ariaLabel = el.getAttribute( 'aria-label' ) || anchor?.getAttribute( 'aria-label' ) || null;
+		// A picture's own name: the aria-label of a role="img" element (WAI-ARIA img role), or of a textless element with no
+		// role, no link inside and no control role of its own (a custom-element picture before its script gives it a role).
+		const ownLabel = el.getAttribute( 'aria-label' ) || null;
+		const bare = ! snap.words && ! anchors.length && ! el.matches( 'a, button, input, select, textarea, [role]' );
+		snap.imageName = ownLabel && ( 'img' === el.getAttribute( 'role' ) || bare ) ? ownLabel : null;
 		// A form control, a checkbox button or a group of choice chips: what the field blocks hold as settings (lib/fill-form.mjs).
 		snap.form = ( () => {
 			const text = ( n ) => ( n.textContent || '' ).replace( /\s+/g, ' ' ).trim();

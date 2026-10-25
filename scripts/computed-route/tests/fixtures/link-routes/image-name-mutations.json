@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-read-collect.mjs", "find": "snap.imageName = ownLabel && ( 'img' === el.getAttribute( 'role' ) || bare ) ? ownLabel : null;", "replace": "snap.imageName = ownLabel && 'img' === el.getAttribute( 'role' ) ? ownLabel : null;", "why": "a roleless picture's name is not read" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "snap.imageName = ownLabel && ( 'img' === el.getAttribute( 'role' ) || bare ) ? ownLabel : null;", "replace": "snap.imageName = ownLabel && bare ? ownLabel : null;", "why": "a role img element's name is not read" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "const bare = ! snap.words && ! anchors.length && ! el.matches( 'a, button, input, select, textarea, [role]' );", "replace": "const bare = ! anchors.length && ! el.matches( 'a, button, input, select, textarea, [role]' );", "why": "an element with words is taken as a picture" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "const bare = ! snap.words && ! anchors.length && ! el.matches( 'a, button, input, select, textarea, [role]' );", "replace": "const bare = ! snap.words && ! el.matches( 'button, input, select, textarea, [role]' );", "why": "a link is taken as a picture" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "const bare = ! snap.words && ! anchors.length && ! el.matches( 'a, button, input, select, textarea, [role]' );", "replace": "const bare = ! snap.words && ! anchors.length && ! el.matches( 'a, input, select, textarea, [role]' );", "why": "a button is taken as a picture" }
+]
