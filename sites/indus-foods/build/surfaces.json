@@ -644,6 +644,7 @@
   },
   "form-enquiry": {
     "tree": "trees/sgs_form/enquiry.json",
+    "intakeSurface": "contact-enquiry",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -655,6 +656,7 @@
     "walkerFull": "qa/parity/form-enquiry.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/contact",
     "states": {
       "resting": null
     },
@@ -664,6 +666,7 @@
   },
   "form-careers": {
     "tree": "trees/sgs_form/careers.json",
+    "intakeSurface": "inline-form-careers",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -675,6 +678,7 @@
     "walkerFull": "qa/parity/form-careers.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/careers",
     "states": {
       "resting": null
     },
@@ -684,6 +688,7 @@
   },
   "form-catalogue": {
     "tree": "trees/sgs_form/catalogue.json",
+    "intakeSurface": "inline-form-catalogue",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -695,6 +700,7 @@
     "walkerFull": "qa/parity/form-catalogue.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/catalogue",
     "states": {
       "resting": null
     },
@@ -704,6 +710,7 @@
   },
   "form-trade-application": {
     "tree": "trees/sgs_form/trade-application.json",
+    "intakeSurface": "trade-account-application",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -715,6 +722,7 @@
     "walkerFull": "qa/parity/form-trade-application.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/apply",
     "states": {
       "resting": null
     },

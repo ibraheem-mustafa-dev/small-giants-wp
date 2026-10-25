@@ -17,6 +17,8 @@ import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-re
 import { formStepNodes } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
 import { fieldInputSlot } from './skeleton-form-slots.mjs';
+import { linkedFormOf } from './skeleton-form-link.mjs';
+import { detectReferences } from './references.mjs';
 import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
 import { makeContent } from './skeleton-write-content.mjs';
@@ -94,8 +96,9 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // sites/<client>/build/skeleton/built-surfaces.json), motion (template keys whose own animation loops a translate), clientDecisions, picks ({ key: decision }), calKeys (slug ->
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
-// client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null } ) {
+// client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record),
+// formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link) and refs (lib/references.mjs::detectReferences) }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences() } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -106,7 +109,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
 	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, motion, view, scope, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName }, motion, view, scope, formLinkOf, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -183,6 +187,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && String( top.attributes[ k ] ) !== String( carry[ k ] ) );
 		r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
+		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2).
+		if ( 'formLink' === r.rule ) {
+			delete node.draftRef;
+			delete node.draftFingerprint;
+		}
 		nodeOfKey[ e.key ] = node;
 		handover.length && ( node.handover = handover );
 		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ top.attributes[ k ] }, which is not applied; the build carries ${ carry[ k ] } (${ said[ k ] })` );
@@ -263,7 +272,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 
 	const rootNode = buildNode( m.root, null );
-	const skeleton = formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind } );
+	const skeleton = formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
 	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).

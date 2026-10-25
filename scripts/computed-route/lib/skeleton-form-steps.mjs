@@ -46,9 +46,10 @@ const fieldsOf = ( list, out = [] ) => {
 };
 
 // The skeleton with the form's steps and review proposed, or the skeleton itself when the surface is not a form, the draft holds
-// no multi-step schema, or the form already carries step nodes.
-export function formStepNodes( skeleton, { factRecord, surfaceKind } ) {
-	const schema = 'form' === surfaceKind ? formSchemaOf( factRecord ) : null;
+// no multi-step schema, or the form already carries step nodes. `component` is the draft component the form surface's record
+// names (its `dc`): its own schema, never another form's; none reads the first schema the record holds.
+export function formStepNodes( skeleton, { factRecord, surfaceKind, component = null } ) {
+	const schema = 'form' === surfaceKind ? formSchemaOf( factRecord, component ) : null;
 	if ( ! schema || schema.steps.length < 2 ) {
 		return skeleton;
 	}

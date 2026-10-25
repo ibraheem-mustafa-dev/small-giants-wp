@@ -1,0 +1,1472 @@
+{
+	"generated": "2026-10-25T23:09:00.837Z",
+	"inventory": "2026-10-23T19:48:26.496Z",
+	"source": "http://127.0.0.1:54362/Indus%20Foods%20Website%20v2.dc.html#/contact",
+	"surface": "contact-enquiry",
+	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-60",
+			"kind": "result",
+			"name": "Message sent",
+			"openedBy": "valid submit + 900ms",
+			"roots": [
+				"EnquiryForm/43"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [
+		{
+			"key": "EnquiryForm/13",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		}
+	],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 52,
+		"parts": 0,
+		"rows": 52,
+		"skeletonNodes": 28,
+		"expandedNodes": 28,
+		"low": 5,
+		"removed": 24,
+		"unresolved": 0,
+		"byRule": {
+			"formHost": 1,
+			"optionSetForm": 19,
+			"formControl": 11
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root>EnquiryForm@468#0/6#0",
+			"tag": "form",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/form",
+			"action": null,
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"source": "rule formHost",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formHost",
+			"candidates": [
+				{
+					"block": "sgs/form",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<form sc-camel-on-submit=\"{{ submit }}\" sc-camel-no-validate=\"{{ true }}\" data-dc-tpl=\"6\"> <div style=\"display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;\" data-dc-tpl=\"7\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);co",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root>EnquiryForm@468#0/7#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;\" data-dc-tpl=\"7\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"9\">What can we help with?</h3> <span style=\"font-size:1",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root>EnquiryForm@468#0/8#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "01",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"8\">01</span>",
+			"attributes": {
+				"text": "01"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root>EnquiryForm@468#0/9#0",
+			"tag": "h3",
+			"depth": 2,
+			"words": "What can we help with?",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h3 -> sgs/heading (\"Heading level 3\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"9\">What can we help with?</h3>",
+			"attributes": {
+				"content": "What can we help with?"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root>EnquiryForm@468#0/10#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "Choose all that apply",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"10\">Choose all that apply</span>",
+			"attributes": {
+				"text": "Choose all that apply"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root>EnquiryForm@468#0/11#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/form-field-tiles",
+			"action": null,
+			"reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)",
+			"source": "rule optionSetForm",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"candidates": [
+				{
+					"block": "sgs/form-field-tiles",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.topicCols }};gap:12px;margin-top:18px;\" data-dc-tpl=\"11\"> <sc-for list=\"{{ topics }}\" as=\"tp\" hint-placeholder-count=\"6\" data-dc-tpl=\"12\"> <button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};back",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root>EnquiryForm@468#0/13#0",
+			"tag": "button",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root>EnquiryForm@468#0/14#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "New trade account",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root>EnquiryForm@468#0/15#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Open an account with us",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root>EnquiryForm@468#0/13#1",
+			"tag": "button",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root>EnquiryForm@468#0/14#1",
+			"tag": "span",
+			"depth": 3,
+			"words": "Existing order",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root>EnquiryForm@468#0/15#1",
+			"tag": "span",
+			"depth": 3,
+			"words": "Delivery, invoice or account help",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root>EnquiryForm@468#0/13#2",
+			"tag": "button",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root>EnquiryForm@468#0/14#2",
+			"tag": "span",
+			"depth": 3,
+			"words": "Product enquiry",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root>EnquiryForm@468#0/15#2",
+			"tag": "span",
+			"depth": 3,
+			"words": "Ranges, specs and availability",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root>EnquiryForm@468#0/13#3",
+			"tag": "button",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+			"attributes": {}
+		},
+		{
+			"order": 16,
+			"key": "Root>EnquiryForm@468#0/14#3",
+			"tag": "span",
+			"depth": 3,
+			"words": "White label",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 17,
+			"key": "Root>EnquiryForm@468#0/15#3",
+			"tag": "span",
+			"depth": 3,
+			"words": "Your brand, our products",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root>EnquiryForm@468#0/13#4",
+			"tag": "button",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root>EnquiryForm@468#0/14#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "Careers",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 20,
+			"key": "Root>EnquiryForm@468#0/15#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "Working at Indus Foods",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root>EnquiryForm@468#0/13#5",
+			"tag": "button",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ tp.onClick }}\" aria-pressed=\"{{ tp.on }}\" style=\"position:relative;text-align:left;padding:18px 18px 18px 20px;border-radius:20px;border:2px solid {{ tp.ring }};background:{{ tp.bg }};color:{{ tp.fg }};cursor:pointer;display:flex;flex-direction:column;gap:4px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,box-sha",
+			"attributes": {}
+		},
+		{
+			"order": 22,
+			"key": "Root>EnquiryForm@468#0/14#5",
+			"tag": "span",
+			"depth": 3,
+			"words": "Something else",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:17px;\" data-dc-tpl=\"14\">{{ tp.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root>EnquiryForm@468#0/15#5",
+			"tag": "span",
+			"depth": 3,
+			"words": "Anything we haven’t covered",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root>EnquiryForm@468#0/11#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;opacity:.85;\" data-dc-tpl=\"15\">{{ tp.desc }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root>EnquiryForm@468#0/20#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;align-items:baseline;gap:14px;margin-top:36px;\" data-dc-tpl=\"20\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"21\">02</span> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"22\">Your details</h3> </div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root>EnquiryForm@468#0/21#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "02",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"21\">02</span>",
+			"attributes": {
+				"text": "02"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root>EnquiryForm@468#0/22#0",
+			"tag": "h3",
+			"depth": 2,
+			"words": "Your details",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h3 -> sgs/heading (\"Heading level 3\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,26px);color:#2C3E50;margin:0;\" data-dc-tpl=\"22\">Your details</h3>",
+			"attributes": {
+				"content": "Your details"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root>EnquiryForm@468#0/23#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.fieldCols }};gap:18px;margin-top:18px;\" data-dc-tpl=\"23\"> <sc-for list=\"{{ fields }}\" as=\"f\" hint-placeholder-count=\"4\" data-dc-tpl=\"24\"> <div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root>EnquiryForm@468#0/25#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root>EnquiryForm@468#0/26#0",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+			"attributes": {
+				"label": "Your name"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#0"
+				}
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root>EnquiryForm@468#0/27#0",
+			"tag": "label",
+			"depth": 3,
+			"words": "Your name",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+			"attributes": {}
+		},
+		{
+			"order": 31,
+			"key": "Root>EnquiryForm@468#0/25#1",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root>EnquiryForm@468#0/26#1",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+			"attributes": {
+				"label": "Business name (optional)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#1"
+				}
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root>EnquiryForm@468#0/27#1",
+			"tag": "label",
+			"depth": 3,
+			"words": "Business name (optional)",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+			"attributes": {}
+		},
+		{
+			"order": 34,
+			"key": "Root>EnquiryForm@468#0/25#2",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 35,
+			"key": "Root>EnquiryForm@468#0/26#2",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-email",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-email",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+			"attributes": {
+				"label": "Email"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#2"
+				}
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root>EnquiryForm@468#0/27#2",
+			"tag": "label",
+			"depth": 3,
+			"words": "Email",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+			"attributes": {}
+		},
+		{
+			"order": 37,
+			"key": "Root>EnquiryForm@468#0/25#3",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"25\"> <input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root>EnquiryForm@468#0/26#3",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-phone",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-phone",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" sc-camel-on-focus=\"{{ f.onFocus }}\" sc-camel-on-blur=\"{{ f.onBlur }}\" autocomplete=\"{{ f.ac }}\" style=\"height:62px;padding:22px 18px 6px;border-radius:16px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition",
+			"attributes": {
+				"label": "Phone (optional)"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/26#3"
+				}
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root>EnquiryForm@468#0/27#3",
+			"tag": "label",
+			"depth": 3,
+			"words": "Phone (optional)",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"position:absolute;left:19px;top:{{ f.lTop }};font-size:{{ f.lSize }};font-weight:600;color:{{ f.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"27\">{{ f.label }}</label>",
+			"attributes": {}
+		},
+		{
+			"order": 40,
+			"key": "Root>EnquiryForm@468#0/30#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:1 / -1;position:relative;\" data-dc-tpl=\"30\"> <textarea id=\"enq-msg\" value=\"{{ msg.value }}\" sc-camel-on-change=\"{{ msg.onChange }}\" sc-camel-on-focus=\"{{ msg.onFocus }}\" sc-camel-on-blur=\"{{ msg.onBlur }}\" sc-camel-max-length=\"{{ 800 }}\" rows=\"5\" style=\"padding:30px 18px 14px;border-radius:16px;border:1.5px solid {{ msg.border }};background:{{ msg.bg }};font-size:17px;color",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 41,
+			"key": "Root>EnquiryForm@468#0/31#0",
+			"tag": "textarea",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-textarea",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-textarea",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<textarea id=\"enq-msg\" value=\"{{ msg.value }}\" sc-camel-on-change=\"{{ msg.onChange }}\" sc-camel-on-focus=\"{{ msg.onFocus }}\" sc-camel-on-blur=\"{{ msg.onBlur }}\" sc-camel-max-length=\"{{ 800 }}\" rows=\"5\" style=\"padding:30px 18px 14px;border-radius:16px;border:1.5px solid {{ msg.border }};background:{{ msg.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;resize:vertica",
+			"attributes": {
+				"label": "How can we help?"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>EnquiryForm@468#0/31#0"
+				}
+			}
+		},
+		{
+			"order": 42,
+			"key": "Root>EnquiryForm@468#0/32#0",
+			"tag": "label",
+			"depth": 3,
+			"words": "How can we help?",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"enq-msg\" style=\"position:absolute;left:19px;top:{{ msg.lTop }};font-size:{{ msg.lSize }};font-weight:600;color:{{ msg.lColor }};pointer-events:none;transition:top .2s,font-size .2s,color .2s;\" data-dc-tpl=\"32\">How can we help?</label>",
+			"attributes": {}
+		},
+		{
+			"order": 43,
+			"key": "Root>EnquiryForm@468#0/33#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "0 / 800",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;right:16px;bottom:14px;font-size:14px;color:#8793A0;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"33\">{{ msg.count }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 44,
+			"key": "Root>EnquiryForm@468#0/36#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:22px;\" data-dc-tpl=\"36\"> <span style=\"font-weight:700;font-size:16px;margin-right:4px;flex-basis:{{ L.prefBasis }};\" data-dc-tpl=\"37\">Reply by</span> <sc-for list=\"{{ prefs }}\" as=\"p\" hint-placeholder-count=\"3\" data-dc-tpl=\"38\"> <button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-rad",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root>EnquiryForm@468#0/37#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "Reply by",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:16px;margin-right:4px;flex-basis:{{ L.prefBasis }};\" data-dc-tpl=\"37\">Reply by</span>",
+			"attributes": {
+				"text": "Reply by"
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root>EnquiryForm@468#0/39#0",
+			"tag": "button",
+			"depth": 2,
+			"words": "Email",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
+			"attributes": {
+				"label": "Email"
+			}
+		},
+		{
+			"order": 47,
+			"key": "Root>EnquiryForm@468#0/39#1",
+			"tag": "button",
+			"depth": 2,
+			"words": "Phone",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
+			"attributes": {
+				"label": "Phone"
+			}
+		},
+		{
+			"order": 48,
+			"key": "Root>EnquiryForm@468#0/39#2",
+			"tag": "button",
+			"depth": 2,
+			"words": "WhatsApp",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ p.onClick }}\" style=\"padding:9px 18px;border-radius:999px;border:1.5px solid {{ p.ring }};background:{{ p.bg }};color:{{ p.fg }};font-weight:700;font-size:15px;cursor:pointer;transition:background .2s,color .2s,border-color .2s;\" data-dc-tpl=\"39\">{{ p.label }}</button>",
+			"attributes": {
+				"label": "WhatsApp"
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root>EnquiryForm@468#0/40#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:30px;padding-top:24px;border-top:1px solid #EEF2F5;\" data-dc-tpl=\"40\"> <span style=\"font-size:15px;color:#5E6873;max-width:420px;\" data-dc-tpl=\"41\">We reply within one working day. Your details are only used to answer your enquiry.</span> <button type=\"submit\" style=\"width:{{ L.btnW }};just",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root>EnquiryForm@468#0/41#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "We reply within one working day. Your details are only used to answer your enquiry.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;max-width:420px;\" data-dc-tpl=\"41\">We reply within one working day. Your details are only used to answer your enquiry.</span>",
+			"attributes": {
+				"text": "We reply within one working day. Your details are only used to answer your enquiry."
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root>EnquiryForm@468#0/42#0",
+			"tag": "button",
+			"depth": 2,
+			"words": "Send message",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"submit\" style=\"width:{{ L.btnW }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:15px 30px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transfor",
+			"attributes": {
+				"label": "Send message"
+			}
+		}
+	]
+}

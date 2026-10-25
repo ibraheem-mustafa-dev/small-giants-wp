@@ -4,7 +4,11 @@
 // sites/<client>/build/surfaces.json[surface].draftUrl.
 //   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --root <selector>
 //     (a header surface's inventory also holds the strips beside its root, rules.headerSlots)
+//   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --saved
+//     (the inventory intake saved for the surface's intake skeleton, in the served key space: a form surface, which is read at its
+//     page's route and has no root selector of its own)
 //   node scripts/computed-route/skeleton.mjs propose   --client <slug> --surface <name> [--site-name <text>]
+//     (a page's proposal holds each form on it as one linked form block, lib/skeleton-form-link.mjs)
 //     (the surfaces.json entry names its intake skeleton in `intakeSurface`: the proposal takes that skeleton's kind, name and
 //     built post, the intake motion inventory's loops, and the client decisions saved under that slug)
 //   node scripts/computed-route/skeleton.mjs review   --client <slug> --surface <name>
@@ -28,6 +32,9 @@ import { reviewHtml } from './lib/skeleton-review.mjs';
 import { calKeysFor, calSettingsFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { carriedIds } from './lib/skeleton-carried.mjs';
+import { formLinksFor } from './lib/skeleton-form-link.mjs';
+import { detectReferences } from './lib/references.mjs';
+import { savedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
@@ -118,7 +125,9 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound:\n- ${ bad.join( '\n- ' ) }` );
 	}
-	const r = propose( { inventory, facts, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, db } );
+	const refs = detectReferences();
+	const formLinks = formLinksFor( { repo, client, refs } );
+	const r = propose( { inventory, facts, formLinks, refs, surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
@@ -134,7 +143,12 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 	}
 	const p = skeletonPaths( { client, surface, repo } );
 	const log = ( m ) => console.log( m );
-	if ( 'inventory' === cmd ) {
+	if ( 'inventory' === cmd && argv.includes( '--saved' ) ) {
+		const surfaces = JSON.parse( fs.readFileSync( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), 'utf8' ) );
+		const inv = savedInventoryOf( { repo, client, surface, surfaces, intake: readJson( path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' ), null ) } );
+		json( p.inventory, inv );
+		log( `inventory ${ surface }: ${ inv.elements.length } elements (intake's saved inventory, in the served key space)` );
+	} else if ( 'inventory' === cmd ) {
 		const root = flag( '--root' );
 		if ( ! root || ! ( p.draftUrl || p.draftDir ) ) {
 			throw new Error( '--root <selector> is required, and the surface needs a draftUrl or a draftDir in surfaces.json' );

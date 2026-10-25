@@ -433,6 +433,11 @@
 			"inputPart": "field-input",
 			"inputPartHost": "sgs/form"
 		},
+		"formLink": {
+			"block": "sgs/form",
+			"reason": "a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25)",
+			"droppedReason": "a second element under the form's root: the form is one linked embed, so nothing else of the form stays on the page"
+		},
 		"formHost": {
 			"tag": "form",
 			"block": "sgs/form",
