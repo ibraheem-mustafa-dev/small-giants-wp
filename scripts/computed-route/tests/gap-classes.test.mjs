@@ -43,7 +43,8 @@ test( 'negative control: a measuring artefact and a route gap stay different, as
 	assert.equal( cls( 'W', 'uncalibrated-fit' ).class, 'I-calibration' );
 	assert.equal( cls( 'W', 'attribute' ).class, 'W-route' );
 	assert.equal( mapResolverGap( 'uncalibrated' ).class, 'I-calibration' );
-	assert.equal( mapResolverGap( 'no-setting' ).class, 'F-setting' );
+	assert.equal( mapResolverGap( 'no-setting', { checks: [ 'own-slot', 'calibrated-slots', 'equivalence', 'ancestor' ], unchecked: [] } ).class, 'F-setting' );
+	assert.equal( mapResolverGap( 'no-setting' ).class, 'W-unchecked' );
 	assert.equal( mapResolverGap( 'shape' ).class, 'W-route' );
 } );
 

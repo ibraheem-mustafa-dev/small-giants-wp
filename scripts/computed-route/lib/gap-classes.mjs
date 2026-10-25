@@ -11,6 +11,10 @@ export const I_CLASSES = GAP_CLASSES.filter( ( c ) => c.startsWith( 'I-' ) );
 // Classes a row can carry in a report that has no triage verdict behind it.
 export const UNASSESSED = 'unassessed';
 export const HELD = 'held';
+// A `no-setting` row whose record does not show every check ran: not a framework gap yet, and not a known route fault either.
+export const UNCHECKED = 'W-unchecked';
+// The checks a `no-setting` row must record as run before it may be F-setting (lib/fill-resolve-element.mjs::checksRan).
+export const REQUIRED_CHECKS = [ 'own-slot', 'calibrated-slots', 'equivalence', 'ancestor' ];
 
 // The class name itself, or a throw when it is not one of FR-48-65's.
 export function gapClassOf( cls ) {
@@ -58,9 +62,24 @@ export function mapTriage( verdict ) {
 	throw new Error( `triage class ${ JSON.stringify( cls ) } with reason ${ JSON.stringify( reason ) } is not in FR-48-65's mapping` );
 }
 
-// The class of a Fill resolver gap read as triage reads it (`resolver-<gap>`): uncalibrated is calibration debt and
-// no-setting a framework candidate; every other gap is the route's own.
-export const mapResolverGap = ( gap ) => mapTriage( 'no-setting' === gap ? { class: 'F', decidedBy: gap } : { class: 'W', decidedBy: `resolver-${ gap }` } );
+// The evidence of a `no-setting` row ({ reason, code, checks, unchecked }): the held verdict the equivalence engine returned
+// (a held row is judged live by lib/confirm-live.mjs::judgeUnmapped), or the checks the row records as run.
+const isHeld = ( row ) => String( row?.code ?? '' ).startsWith( 'held:' ) || /\bheld \((default|inert)\)/.test( String( row?.reason ?? '' ) );
+const allChecked = ( row ) => Array.isArray( row?.checks ) && REQUIRED_CHECKS.every( ( c ) => row.checks.includes( c ) ) && ! ( row.unchecked ?? [] ).length;
+
+// The class of a Fill resolver gap read as triage reads it (`resolver-<gap>`): uncalibrated is calibration debt and every other
+// gap but no-setting is the route's own. A no-setting row is judged on its own evidence (`row`: { reason, code, checks,
+// unchecked }): held when the engine held it, F-setting (a candidate) only when it records every check ran and failed, and
+// W-unchecked otherwise, a row from an older run that records no checks included.
+export function mapResolverGap( gap, row = null ) {
+	if ( 'no-setting' !== gap ) {
+		return mapTriage( { class: 'W', decidedBy: `resolver-${ gap }` } );
+	}
+	if ( isHeld( row ) ) {
+		return { class: HELD, candidate: false, owner: 'Spec 48 (judged live: lib/confirm-live.mjs::judgeUnmapped)', reason: 'held' };
+	}
+	return allChecked( row ) ? mapTriage( { class: 'F', decidedBy: gap } ) : result( UNCHECKED, false, 'unchecked' );
+}
 
 // A db handle whose block_attributes rows leave out each NULL-css_property row that calibration discovered
 // (isDiscovered( row )): an enum setting such as container.layout is routed through discovery, never unrouted.

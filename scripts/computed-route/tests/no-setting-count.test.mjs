@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
-import { SIGNATURES, countClient, signatureOf } from '../tools/no-setting-count.mjs';
+import { SIGNATURES, countClient, countRows, signatureOf } from '../tools/no-setting-count.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROOT = path.join( HERE, 'fixtures', 'no-setting-count', 'root' );
@@ -60,4 +60,18 @@ test( 'the command prints the total, and --json prints the same counts', () => {
 	assert.match( text.stdout, /^no-setting rows: 23 across 2 surfaces/ );
 	assert.equal( JSON.parse( spawnSync( process.execPath, [ ...args, '--json' ], { encoding: 'utf8' } ).stdout ).total, 23 );
 	assert.equal( spawnSync( process.execPath, [ args[ 0 ] ], { encoding: 'utf8' } ).status, 2 );
+} );
+
+test( 'MUST FAIL a held-default row is its own line, in no signature, and still part of the total', () => {
+	const row = ( extra ) => ( { block: 'sgs/container', property: 'box-shadow', value: 'x', state: 'hover', reason: 'no-setting: sgs/container has no setting for box-shadow', ...extra } );
+	const r = countRows( [ row( {} ), row( { code: 'held:default' } ), row( { reason: 'no-setting: y; held (default): the block paints it' } ), row( { code: 'held:inert' } ) ] );
+	assert.equal( r.total, 4 );
+	assert.equal( r.heldDefault, 2 );
+	assert.equal( r.bySignature[ 'container-hover-shadow' ], 2, 'the held-default rows are in no signature; an inert hold stays in its signature' );
+	assert.equal( Object.values( r.bySignature ).reduce( ( a, b ) => a + b, 0 ) + r.heldDefault, r.total );
+} );
+
+test( 'MUST FAIL the command prints the held-default line', () => {
+	const out = spawnSync( process.execPath, [ path.join( HERE, '..', 'tools', 'no-setting-count.mjs' ), 'alpha', '--root', ROOT ], { encoding: 'utf8' } ).stdout;
+	assert.match( out, /^\s+\d+  held-default \(judged live\)$/m );
 } );

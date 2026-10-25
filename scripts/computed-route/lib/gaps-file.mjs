@@ -11,7 +11,7 @@ import { isEvidence } from './gate-evidence.mjs';
 // The class's owner (FR-48-65).
 export const OWNERS = {
 	'F-setting': 'owning framework spec', 'F-hardcode': 'owning framework spec', 'F-block': 'Spec 02', 'F-vocabulary': 'Spec 32',
-	'F-behaviour': 'owning feature spec', 'W-walker': 'Spec 48 §3.6', 'W-route': 'Spec 48', 'I-stale': 'sgs-update-v2.py, calibration',
+	'F-behaviour': 'owning feature spec', 'W-walker': 'Spec 48 §3.6', 'W-route': 'Spec 48', 'W-unchecked': 'Spec 48 (the check the row lacks)', 'I-stale': 'sgs-update-v2.py, calibration',
 	'I-unrouted': 'sgs-update-v2.py', 'I-mistag': 'sgs-update-v2.py', 'I-calibration': 'calibration (§3.2)', 'draft-defect': 'Claude Design',
 	'render-wins': 'the surface report', CLIENT: 'the client\'s ledger',
 };

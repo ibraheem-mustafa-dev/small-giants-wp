@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/gap-classes.mjs", "find": "String( row?.code ?? '' ).startsWith( 'held:' ) || ", "replace": "", "why": "a held code no longer makes a row held" },
+	{ "file": "lib/gap-classes.mjs", "find": ".test( String( row?.reason ?? '' ) );", "replace": ".test( '' );", "why": "a held (default) reason no longer makes a row held" },
+	{ "file": "lib/gap-classes.mjs", "find": "return allChecked( row ) ? mapTriage", "replace": "return true ? mapTriage", "why": "a row with no evidence is F-setting" },
+	{ "file": "lib/gap-classes.mjs", "find": " && ! ( row.unchecked ?? [] ).length;", "replace": ";", "why": "an unchecked entry no longer stops F-setting" },
+	{ "file": "lib/gap-classes.mjs", "find": "REQUIRED_CHECKS.every( ( c ) => row.checks.includes( c ) )", "replace": "true", "why": "a check that never ran no longer stops F-setting" },
+	{ "file": "lib/gap-classes.mjs", "find": ": result( UNCHECKED, false, 'unchecked' );", "replace": ": result( 'W-route', false, 'unchecked' );", "why": "an unchecked row is W-route" },
+	{ "file": "lib/gap-classes.mjs", "find": "return allChecked( row ) ? mapTriage( { class: 'F', decidedBy: gap } )", "replace": "return false ? mapTriage( { class: 'F', decidedBy: gap } )", "why": "a fully checked row is never F-setting" },
+	{ "file": "lib/census-mechanism.mjs", "find": "if ( 'no-setting' === rule?.class && fill ) {", "replace": "if ( false ) {", "why": "the census classes a no-setting row by its label" },
+	{ "file": "lib/census-mechanism.mjs", "find": "block: r.block, code: r.code, checks: r.checks, unchecked: r.unchecked }", "replace": "block: r.block }", "why": "the census drops the row's evidence" }
+]

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { familyOf, physicalOf, isCssProperty } from './css-families.mjs';
 import { classify, loadRules } from './fill-census.mjs';
+import { mapResolverGap } from './gap-classes.mjs';
 
 const VOCAB = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'census-mechanisms.json' ), 'utf8' ) );
 const FILL_STATE = VOCAB.fillStatePatterns.map( ( p ) => new RegExp( p, 'i' ) );
@@ -177,11 +178,20 @@ function valueWidths( value ) {
 
 // The Fill run's rows: every UNMAPPED and already-held row.
 export function fillRows( run ) {
-	const row = ( origin, r, state ) => ( { origin, node: r.node, slot: r.slot || '', property: r.property, state, widths: valueWidths( r.value ), value: r.value, reason: r.reason, block: r.block } );
+	const row = ( origin, r, state ) => ( { origin, node: r.node, slot: r.slot || '', property: r.property, state, widths: valueWidths( r.value ), value: r.value, reason: r.reason, block: r.block, code: r.code, checks: r.checks, unchecked: r.unchecked } );
 	return [
 		...( run.unmapped ?? [] ).map( ( r ) => row( 'unmapped', r, fillState( r.reason ) ) ),
 		...( run.held ?? [] ).map( ( r ) => row( 'held', r, r.state || 'default' ) )
 	];
+}
+
+// A Fill row's FR-48-65 class: its rule's, except that a `no-setting` row is classed on its own recorded evidence (lib/gap-classes.mjs::mapResolverGap).
+function fillClassOf( rule, fill ) {
+	if ( 'no-setting' === rule?.class && fill ) {
+		const c = mapResolverGap( 'no-setting', fill );
+		return { fillClass: c.class, fillCandidate: c.candidate };
+	}
+	return { fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate };
 }
 
 const keyOf = ( node, slot, property, state ) => [ node, slot || '', property, state ].join( SEP );
@@ -218,7 +228,7 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 			slug: item.ref ? slugOf( item.ref, hit?.block, item.block ) : null, slot: hit ? hit.slot : item.path || '', surfaceLevel: ! item.ref,
 			kind: item.kind, key: item.key, property: propertyFamily( item.kind, item.key, null, cell ), state,
 			runStates: item.runStates.length === walk.runStates.length ? 'all' : 'some', tier: tierPattern( item.widths, allWidths ),
-			side: hit ? 'both' : 'walker-only', reason, reasonText: hit?.reason ?? null, owner: rule?.owner ?? null, fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate,
+			side: hit ? 'both' : 'walker-only', reason, reasonText: hit?.reason ?? null, owner: rule?.owner ?? null, ...fillClassOf( rule, hit ),
 			draft: cell.draft, live: cell.live, confirm: key ? confirmBy.get( key ) ?? null : null
 		} );
 	}
@@ -227,7 +237,7 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 		rows.push( {
 			client, surface, element: `${ f.node }${ f.slot ? ` ${ f.slot }` : '' }`, slug: slugOf( f.node, f.block ), slot: f.slot, surfaceLevel: false,
 			kind: 'fill', key: f.property, property: propertyFamily( 'style', f.property, f.value ), state: f.state, runStates: 'all',
-			tier: tierPattern( f.widths, allWidths ), side: VOCAB.fillSides[ f.origin ], reason: rule?.class ?? null, reasonText: f.reason ?? null, owner: rule?.owner ?? null, fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate,
+			tier: tierPattern( f.widths, allWidths ), side: VOCAB.fillSides[ f.origin ], reason: rule?.class ?? null, reasonText: f.reason ?? null, owner: rule?.owner ?? null, ...fillClassOf( rule, f ),
 			draft: f.value, live: null, confirm: confirmBy.get( keyOf( f.node, f.slot, f.property, f.state ) ) ?? null
 		} );
 	}

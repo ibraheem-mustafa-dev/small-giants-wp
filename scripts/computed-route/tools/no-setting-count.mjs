@@ -6,7 +6,10 @@
 // or the folder named by --runs (a stamp such as 2026-10-25T08-36-16; surfaces without it are skipped).
 // A row is a `no-setting` row when its reason starts with "no-setting". It takes the FIRST signature below whose every
 // field pattern matches the row's own block, property, value, state and reason; a row matching none is "other".
-// Prints the total, each signature's count, then the block and property pairs; exit 0, or 2 on a usage error.
+// A row the equivalence engine held as the block's default paint (code `held:default`, or `held (default)` in the reason) is
+// counted on its own line, `held-default (judged live)`, and in no signature: lib/confirm-live.mjs::judgeUnmapped decides it,
+// so a fix that turns gaps into held rows shows as a drop in the signatures. The total still holds every `no-setting` row.
+// Prints the total, each signature's count, the held-default line, then the block and property pairs; exit 0, or 2 on a usage error.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
@@ -49,6 +52,8 @@ const text = ( v ) => ( 'string' === typeof v ? v : null == v ? '' : JSON.string
 
 export const isNoSetting = ( row ) => String( row?.reason ?? '' ).startsWith( 'no-setting' );
 
+export const isHeldDefault = ( row ) => 'held:default' === row?.code || /held \(default\)/.test( String( row?.reason ?? '' ) );
+
 // The name of the first signature the row matches, or "other".
 export function signatureOf( row ) {
 	for ( const s of COMPILED ) {
@@ -64,13 +69,18 @@ export function countRows( rows ) {
 	const noSetting = rows.filter( isNoSetting );
 	const bySignature = {};
 	const byPair = {};
+	let heldDefault = 0;
 	for ( const row of noSetting ) {
+		if ( isHeldDefault( row ) ) {
+			heldDefault++;
+			continue;
+		}
 		const name = signatureOf( row );
 		bySignature[ name ] = ( bySignature[ name ] ?? 0 ) + 1;
 		const pair = `${ row.block } ${ row.property }`;
 		byPair[ pair ] = ( byPair[ pair ] ?? 0 ) + 1;
 	}
-	return { total: noSetting.length, bySignature, byPair, byBlock: tally( noSetting.map( ( r ) => r.block ) ) };
+	return { total: noSetting.length, heldDefault, bySignature, byPair, byBlock: tally( noSetting.map( ( r ) => r.block ) ) };
 }
 
 function tally( keys ) {
@@ -91,7 +101,7 @@ export function runFolder( surfaceDir, stamp ) {
 	return stamps.length ? path.join( surfaceDir, stamps[ stamps.length - 1 ] ) : null;
 }
 
-// Counts a client's runs: { surfaces: { <surface>: { run, total } }, total, bySignature, byPair, byBlock, motionRefusals }.
+// Counts a client's runs: { surfaces: { <surface>: { run, total } }, total, heldDefault, bySignature, byPair, byBlock, motionRefusals }.
 export function countClient( { root, client, surfaces = null, stamp = null } ) {
 	const fillDir = path.join( root, 'sites', client, 'build', 'qa', 'fill' );
 	if ( ! fs.existsSync( fillDir ) ) {
@@ -142,6 +152,7 @@ function print( result ) {
 	for ( const s of [ ...SIGNATURES.map( ( x ) => x.name ), 'other' ] ) {
 		lines.push( `  ${ String( result.bySignature[ s ] ?? 0 ).padStart( 5 ) }  ${ s }` );
 	}
+	lines.push( '', `${ String( result.heldDefault ).padStart( 5 ) }  held-default (judged live)` );
 	lines.push( '', 'by block:' );
 	sorted( result.byBlock ).forEach( ( [ k, v ] ) => lines.push( `  ${ String( v ).padStart( 5 ) }  ${ k }` ) );
 	lines.push( '', 'by block and property (top 40):' );
