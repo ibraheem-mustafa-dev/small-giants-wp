@@ -1,10 +1,11 @@
 // Fill resolution state (FR-47-4 steps 2 and 3): the run state built once, the baselines an element is judged against,
 // the divergence ledger view and the spacing-ownership plan per node.
 import { HOVER_PROPS } from '../../parity/lib/collect.mjs';
-import { blockSchema } from './resolve.mjs';
+import { blockSchema, splitProperty } from './resolve.mjs';
 import { refOf, walk } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { INHERITED, CARRIED, defaultPaint } from './fill-prop.mjs';
+import { calSameBox } from './fill-same-box.mjs';
 import { pageBaseline } from './fill-page.mjs';
 import { spacingOwnership } from './fill-spacing.mjs';
 import { unstyledBaseline } from './fill-fixture.mjs';
@@ -25,9 +26,22 @@ export function valueText( draft ) {
 // A setting at such a slot (a parent's `child*` setting) is read from the nested block's own element, never from the parent's.
 export const reachesChildBlock = ( slot ) => String( slot ?? '' ).split( /\s*>\s*|\s+/ ).some( ( step ) => /^\.sgs-[a-z0-9]+(?:-[a-z0-9]+)*(?::nth-of-type\(\d+\))?$/.test( step ) );
 
-// The settings (other than the slot itself) a carried property could be painted by: the slots of the block's settings for
-// that property, from calibration, except those that paint a nested block's element.
-export function alternateSlots( cal, prop, draft = {} ) {
+// The box and paint properties a block's settings paint on a part of the element's own box: the border family, radius
+// corners, background, box-shadow, opacity and overflow.
+const BOX_PAINT = /^(background-.+|border-.+|box-shadow|opacity|overflow(-[xy])?)$/;
+
+// Whether `part` is a paint layer of the element at `own` (its `::before` or `::after`) or a part calibration measured as the
+// same box (lib/fill-same-box.mjs::calSameBox): the places a setting can paint the element's own box. A part that is a
+// different box (an overlay, a glyph, an inner band with its own padding) is not the element's paint.
+const ownBox = ( cal, own, part ) => part === `${ own }::before` || part === `${ own }::after` || calSameBox( cal, own, part );
+
+// The slots other than the element's own where a setting for a property could paint it, from calibration (the slot truth,
+// R-47-6), except those that paint a nested block's element. A carried property (text, gap, alignment: read on the root,
+// painted on an inner element) tries every such slot. A box or paint property (BOX_PAINT) tries those of the element's own
+// box (ownBox) when the caller names `apart`, the slots the node's other targets read and `own` the slot being read: a slot
+// another target reads is that element's own business (its own reading finds the setting), and a part of its own box with
+// no element of its own in the draft (a label's `::after` layer, an icon's shape) is not. Any other property tries none.
+export function alternateSlots( cal, prop, draft = {}, apart = null, own = '' ) {
 	// A layout setting calibration discovered painting display sits on the element laying out the children. A hide
 	// (display:none at any width) stays on the element's own slot: the layout element is not the one the draft hides.
 	if ( 'display' === prop ) {
@@ -36,11 +50,29 @@ export function alternateSlots( cal, prop, draft = {} ) {
 		}
 		return Object.values( cal?.discovered || {} ).flatMap( ( d ) => d.display?.slots || [] );
 	}
-	if ( ! CARRIED.includes( prop ) ) {
+	const carried = CARRIED.includes( prop );
+	if ( ! carried && ! ( apart && BOX_PAINT.test( prop ) ) ) {
 		return [];
 	}
-	const short = prop.replace( /^(row|column)-gap$/, 'gap' );
-	return Object.values( cal?.settings || {} ).filter( ( s ) => ( s.property === prop || s.property === short ) && ! s.state ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ).filter( ( p ) => ! reachesChildBlock( p ) );
+	const names = new Set( [ prop, prop.replace( /^(row|column)-gap$/, 'gap' ), splitProperty( prop ).short ] );
+	const taken = new Set( ( apart || [] ).map( ( p ) => String( p ?? '' ) ) );
+	return Object.values( cal?.settings || {} ).filter( ( s ) => names.has( s.property ) && ! s.state ).flatMap( ( s ) => [ ...( s.slots || [ s.slot ] ), ...( s.reaches || [] ) ] ).filter( ( p ) => ! reachesChildBlock( p ) && ( carried || ( ! taken.has( String( p ?? '' ) ) && ownBox( cal, own, String( p ?? '' ) ) ) ) );
+}
+
+export const RADIUS_CORNERS = [ 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius' ];
+
+// The four corner radii of an element as one `border-radius` draft ({ width: value }), when every corner is stated at the
+// same widths with one value per width (a circle's 50%, a card's 8px): the shorthand is then the one reading the slot is
+// chosen for, and one row stands for four. Null when any corner is missing or two differ at a width. drafts: { prop:
+// { width: value } }.
+export function mergedRadius( drafts ) {
+	const [ first, ...rest ] = RADIUS_CORNERS.map( ( p ) => drafts[ p ] || {} );
+	const widths = Object.keys( first );
+	if ( ! widths.length ) {
+		return null;
+	}
+	const same = ( d ) => Object.keys( d ).length === widths.length && widths.every( ( w ) => undefined !== d[ w ] && String( d[ w ] ).trim() === String( first[ w ] ).trim() );
+	return rest.every( same ) ? { ...first } : null;
 }
 
 // The state a Fill run reads: one object built once, passed to every step.

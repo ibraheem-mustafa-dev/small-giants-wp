@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( ! carried && ! ( apart && BOX_PAINT.test( prop ) ) ) {",
+		"replace": "if ( ! carried ) {",
+		"why": "a box or paint property would try no calibrated slot: a label's background never reaches its ::after setting"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "( carried || ( ! taken.has( String( p ?? '' ) ) && ownBox( cal, own, String( p ?? '' ) ) ) )",
+		"replace": "true",
+		"why": "a slot another target reads, or a part that is another box, would be offered: an overlay colour written from the element's background"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "apart && BOX_PAINT.test( prop )",
+		"replace": "apart",
+		"why": "padding and size would move onto a part's setting: an icon's width written to its glyph size"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "|| calSameBox( cal, own, part );",
+		"replace": "|| true;",
+		"why": "any part would count as the element's own box"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "return rest.every( same ) ? { ...first } : null;",
+		"replace": "return { ...first };",
+		"why": "unequal corners would merge into one radius"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "undefined === declared[ 'transition-duration' ] &&",
+		"replace": "",
+		"why": "a declared 0s transition duration would be dropped as not painted"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "return null !== declared && undefined",
+		"replace": "return undefined",
+		"why": "an element whose declared read failed would be judged undeclared"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "unchecked: [ 'ancestor' ],",
+		"replace": "unchecked: [],",
+		"why": "the ancestor hop would be recorded as run"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "...( layer ? [] : [ 'calibrated-slots' ] ),",
+		"replace": "",
+		"why": "a row would not record that the calibrated slots were tried"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "return 1 === rest.length && rest[ 0 ].css_element ? rest : tied;",
+		"replace": "return tied;",
+		"why": "a container's min-height stays ambiguous between minHeight and bgSvgMinHeight"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "! r.css_element && null !== canonicalSlotOf( db, block, r.attr_name )",
+		"replace": "! r.css_element",
+		"why": "a setting with no element and no part would lose a tie: the hover gradient pair would resolve to the text gradient"
+	}
+]

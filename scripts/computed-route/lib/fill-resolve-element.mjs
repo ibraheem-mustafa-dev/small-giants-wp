@@ -14,7 +14,7 @@ import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
 import { elementContext } from './fill-held.mjs';
 import { samePaint } from './css-equivalence/tolerance.mjs';
-import { GAP_PROPS, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
+import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Writes one resolver result into the node, recording each change. Returns the number of settings changed. `slot` is the
 // element the setting sits on; `res.readSlot`, when it differs, the element the value was read on (a property read on the
@@ -173,10 +173,33 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		return false;
 	} ) ) ] ) );
 	const gapProp = {};
-	for ( const prop of ids ) {
+	// Four equal corner radii are read as the one `border-radius` they make, unless the ledger decides one of the corners.
+	const radius = layer ? null : mergedRadius( allDrafts );
+	const merged = radius && ! RADIUS_CORNERS.some( ( c ) => {
+		const v = ledgerView( st, rec, ref, c, allDrafts[ c ], layer );
+		return v.held.length || v.rules.length;
+	} );
+	if ( merged ) {
+		allDrafts[ 'border-radius' ] = radius;
+		RADIUS_CORNERS.forEach( ( c ) => delete allDrafts[ c ] );
+	}
+	for ( const prop of merged ? [ ...ids.filter( ( p ) => ! RADIUS_CORNERS.includes( p ) ), 'border-radius' ] : ids ) {
 		let draft = allDrafts[ prop ];
 		let rendered = null;
 		let notPlain = [];
+		// A 0s transition duration the draft never declares is the CSS initial value, not a design value (lib/fill-prop.mjs::
+		// notPainted). It stays among the element's other draft properties (`allDrafts`, the context the resolver breaks ties
+		// with) and is left out of what is resolved here, as a settled row.
+		if ( ! layer && 'transition-duration' === prop ) {
+			draft = { ...draft };
+			for ( const w of Object.keys( draft ) ) {
+				const declaredHere = st.reads.declared?.[ w ]?.[ target.id ] ?? null;
+				if ( notPainted( prop, snaps[ w ].styles || {}, snaps[ w ], declaredHere ) ) {
+					settled( st, rec, ref, { slot, property: prop, value: String( draft[ w ] ), widths: [ Number( w ) ], reason: 'not-painted', detail: `at ${ w }: ${ notPaintedWhy( prop, snaps[ w ].styles || {}, snaps[ w ], declaredHere ) }` } );
+					delete draft[ w ];
+				}
+			}
+		}
 		if ( ! Object.keys( draft ).length ) {
 			continue;
 		}
@@ -239,7 +262,8 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			}
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
-		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...( layer ? [] : alternateSlots( cal, prop, draft ).filter( ( s ) => s !== slot ) ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );
+		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
+		const res = resolveProperty( { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : agreedDeclared( st, target, prop, draft, fontPx ), contextAt } );
 		const { eq, landed } = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? ratioWrite( st, rec, target, prop, draft, notPlain, { baselineFn, apply, rendered } ) : { eq: null, landed: false };
 		// A maximum height written from the rendered heights replaces the not-plain rows (each width's height is what it
 		// paints) and carries their values on its note; a result that wrote nothing keeps them as rows.
@@ -250,7 +274,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'equal', detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
-			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ) } );
+			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ), ...( 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {} ) } );
 		} else if ( 'written' === res.status ) {
 			// A setting of a part is written only from the element paired to that part (lib/fill-part-pairing.mjs).
 			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ), targets: rec.targets, readAt: ( id, x ) => st.reads.widths?.[ x ]?.[ id ] } ) } ) ).filter( ( x ) => x.why );
@@ -286,9 +310,26 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	}
 }
 
+// The checks a `no-setting` row went through before it was raised, for the census to class a row as a framework gap only
+// when every check that can run did (lib/gap-classes.mjs): `own-slot` (a setting painting the element's own slot),
+// `calibrated-slots` (the other slots the block's settings for the property paint, alternateSlots), `equivalence` (the
+// css-equivalence engine, lib/css-equivalence), and `ancestor` (a setting on an enclosing block, lib/resolve.mjs::
+// resolveViaAncestor), which Fill does not run: it is listed under `unchecked`, never under `checks`. A painted layer
+// tries its own slot alone.
+export function checksRan( { layer, alternates, res, eq } ) {
+	return {
+		checks: [ 'own-slot', ...( layer ? [] : [ 'calibrated-slots' ] ), ...( res.equivalence || eq ? [ 'equivalence' ] : [] ) ],
+		unchecked: [ 'ancestor' ],
+		alternates: alternates.length,
+	};
+}
+
 // Why a property lib/fill-prop.mjs::notPainted judges inert paints nothing on this element at this width: the zero width,
 // the missing line or the instant transition that leaves it unseen (a gap's reason is gapPaintsNothing's).
-export function notPaintedWhy( prop, styles, snap = null ) {
+export function notPaintedWhy( prop, styles, snap = null, declared = null ) {
+	if ( 'transition-duration' === prop && null !== declared && undefined === declared[ prop ] ) {
+		return `${ prop } ${ styles[ prop ] } is the initial value: the draft declares no transition on this element`;
+	}
 	if ( /gap$/.test( prop ) ) {
 		return gapPaintsNothing( prop, styles, snap );
 	}
