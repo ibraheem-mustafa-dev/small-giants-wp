@@ -190,6 +190,18 @@ if ( ! empty( $sfr_transparent_on_tiers ) || ! empty( $sfr_hide_on_scroll_tiers 
 	}
 }
 
+// The row's animation settings (rowAnimate, rowShrinkDuration, rowShrinkEasing,
+// rowShrinkPadding) for whichever of scroll-away and shrink the row has; a row
+// with neither prints none of them.
+$sfr_moves = array();
+if ( ! empty( $sfr_shrink_tiers ) ) {
+	$sfr_moves[] = 'shrink';
+}
+if ( ! empty( $sfr_hide_on_scroll_tiers ) ) {
+	$sfr_moves[] = 'scroll-away';
+}
+$css .= sgs_row_shrink_settings_css( $root_sel, $attributes, $sfr_moves );
+
 // "Shrink hides a chosen element". SERVER-SIDE BACKSTOP, identical to
 // sgs/site-header-row: the helper re-validates the stored target against this
 // row's real children and refuses any block flagged supports.sgs.headerEssential.
@@ -205,7 +217,6 @@ if ( ! empty( $sfr_shrink_tiers ) ) {
 			isset( $attributes['padding'] ) ? $attributes['padding'] : array()
 		);
 	}
-	$css .= sgs_row_shrink_settings_css( $root_sel, $attributes );
 
 	$sfr_hide_target = sgs_resolve_row_shrink_hide_target( $block, isset( $attributes['rowShrinkHideTarget'] ) ? $attributes['rowShrinkHideTarget'] : '' );
 	if ( '' !== $sfr_hide_target ) {

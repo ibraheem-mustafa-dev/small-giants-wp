@@ -560,7 +560,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_row_shrink_css` | `function sgs_row_shrink_css( $selector, $padding )` | Build the per-instance "shrunk" vertical-padding CSS for one row. |
 | `sgs_block_is_header_essential` | `function sgs_block_is_header_essential( $block_name )` | Is this block type flagged as essential header furniture? |
 | `sgs_resolve_row_shrink_hide_target` | `function sgs_resolve_row_shrink_hide_target( $block, $raw_target )` | Validate the stored shrink-hide target against this row's actual children. |
-| `sgs_row_shrink_settings_css` | `function sgs_row_shrink_settings_css( $root_sel, array $attributes )` | The row's own shrink settings: an explicit shrunk padding (rowShrinkPadding, per device, all four sides) in place of the proportional… |
+| `sgs_row_shrink_settings_css` | `function sgs_row_shrink_settings_css( $root_sel, array $attributes, array $moves )` | The row's own scroll-animation settings, printed only for the behaviours the row has. |
 
 #### `includes/helpers-scoped-instance-vars.php` — 3 function(s)
 
