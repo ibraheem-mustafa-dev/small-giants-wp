@@ -94,7 +94,8 @@
 						"css:border-color": "borderColour",
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
-						"css:overflow": "scrollSideways",
+						"css:overflow": "overflow",
+						"css:overflow-x": "scrollSideways",
 						"css:position": "pinEdge",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
@@ -115,7 +116,8 @@
 								"css:color-gradient": "textColourHoverGradient",
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient",
-								"css:-webkit-text-stroke-color": "textStrokeColourHover"
+								"css:-webkit-text-stroke-color": "textStrokeColourHover",
+								"css:box-shadow": "shadowHover"
 							}
 						}
 					}
@@ -412,6 +414,17 @@
 		"shadowColourHover": {
 			"type": "string",
 			"default": ""
+		},
+		"shadowHover": {
+			"type": "string",
+			"default": "",
+			"description": "Hover-state box-shadow SHAPE (a preset slug or a layered shape), painted on :hover and :focus-within in place of the resting shape; colour comes from shadowColourHover, else shadowColour. Unset: the resting shape (with the automatic lift) applies."
+		},
+		"overflow": {
+			"type": "string",
+			"enum": [ "visible", "hidden", "clip" ],
+			"default": "visible",
+			"description": "Root overflow. 'clip' crops content that sticks out without making the container a scroll container, so position:sticky inside still works; 'hidden' crops and does make it one; 'visible' (default) prints nothing, leaving the shape-divider and SVG-background modes their own hidden. The sideways-scroll row (scrollSideways) paints on the items' row, not the root."
 		},
 		"maxWidth": {
 			"type": "object",

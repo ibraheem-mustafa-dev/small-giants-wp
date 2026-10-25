@@ -566,6 +566,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// textColourHover pairs work per-block.
 			$shadow_colour_hover = $attributes['shadowColourHover'] ?? '';
 			$shadow_colour_hover = is_array( $shadow_colour_hover ) ? '' : $shadow_colour_hover;
+			// HOVER SHAPE (`shadowHover`): read only for a caller that opts in with
+			// $opts['shadow_hover_shape']. Other blocks that run through this wrapper
+			// declare a `shadowHover` of their own (info-box, testimonial, post-grid) and paint
+			// it in their own render.php, so reading it here would draw it twice.
+			$shadow_hover = ! empty( $opts['shadow_hover_shape'] ) ? ( $attributes['shadowHover'] ?? '' ) : '';
+			$shadow_hover = is_array( $shadow_hover ) ? '' : (string) $shadow_hover;
+			// Root overflow (`overflow`: visible | hidden | clip). `visible` is the default and
+			// prints nothing, so the shape-divider and SVG-background modes keep their own
+			// `overflow:hidden` from style.css unless a value is chosen.
+			$overflow_choice = $attributes['overflow'] ?? '';
+			$overflow_choice = ( is_string( $overflow_choice ) && in_array( $overflow_choice, array( 'hidden', 'clip' ), true ) ) ? $overflow_choice : '';
 			$max_width     = $attributes['maxWidth'] ?? '';
 			$max_width     = is_array( $max_width ) ? '' : $max_width;
 			// Raw read — sanitised via $sgs_css_length after the closure is defined (~line 211).
@@ -1185,6 +1196,10 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// near-invisible on dark sections. It now defaults to rgba(0,0,0,0.1).
 				// The resting declaration carries the forced-colours outline fallback.
 				$base_outer_decls = array_merge( $base_outer_decls, sgs_shadow_box_decls( $shadow, $shadow_colour ) );
+			}
+
+			if ( '' !== $overflow_choice ) {
+				$base_outer_decls[] = 'overflow:' . $overflow_choice;
 			}
 
 			// Surface ground: backdrop blur and saturate, for the blocks that declare
@@ -2280,6 +2295,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				|| $has_base_band
 				|| $has_base_grid
 				|| $has_base_outer
+				|| '' !== $shadow_hover
 				|| $container_queries
 				|| '' !== $overlay_decls
 				|| ( $has_bg_video && ( ! empty( $bg_video_tablet['url'] ) || ! empty( $bg_video_mobile['url'] ) ) ) // D6: universal.
@@ -2460,12 +2476,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				$responsive_css .= '.' . $uid . '{' . implode( ';', $base_outer_decls ) . '}';
 			}
 
-			// HOVER-state outer shadow colour (Rule 31, 2026-08-22) — same shape
-			// as the resting rule above, reusing the resting shadow SHAPE with the
-			// hover-state colour composed in. Emitted only when a hover colour is
-			// actually set, so a block never using the hover state adds no CSS.
-			if ( $shadow && $shadow_colour_hover && $uid ) {
-				$shadow_hover_value = sgs_shadow_value_composed( $shadow, $shadow_colour_hover );
+			// HOVER-state outer shadow (Rule 31, 2026-08-22) — same shape as the resting
+			// rule above: the hover shape when one is set, else the resting SHAPE, with the
+			// hover colour (else the resting colour) composed in. Emitted only when a hover
+			// shape or colour is actually set, so a block never using the hover state adds
+			// no CSS.
+			if ( ( $shadow_hover || ( $shadow && $shadow_colour_hover ) ) && $uid ) {
+				// An explicit hover shape wins over the resting one (it can lift, grow or
+				// soften, not only recolour); the hover colour falls back to the resting colour.
+				$shadow_hover_value = sgs_shadow_value_composed(
+					'' !== $shadow_hover ? $shadow_hover : $shadow,
+					'' !== $shadow_colour_hover ? $shadow_colour_hover : $shadow_colour
+				);
 				if ( '' !== $shadow_hover_value ) {
 					// sgs-shadow-fallback: hover state only; the resting rule carries the forced-colours fallback
 					$responsive_css .= sgs_hover_state_rules( '.' . $uid, 'box-shadow:' . $shadow_hover_value, ':focus-within' );
