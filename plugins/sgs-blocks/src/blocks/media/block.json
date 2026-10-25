@@ -93,6 +93,7 @@
 						"css:height": "height",
 						"css:max-width": "maxWidth",
 						"css:max-height": "maxHeight",
+						"css:aspect-ratio": "aspectRatio",
 						"css:border-width": "borderWidth",
 						"css:border-style": "borderStyle",
 						"css:border-color": "borderColour",

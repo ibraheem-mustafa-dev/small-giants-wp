@@ -9,7 +9,7 @@ import { motionDb } from '../lib/motion-db.mjs';
 import { loadMotionSchema } from '../lib/motion-schema.mjs';
 import { motionWrites } from '../lib/fill-motion.mjs';
 import { fillStates, stateDrafts } from '../lib/fill-state.mjs';
-import { stateMotionRecords, splitList } from '../lib/fill-state-motion.mjs';
+import { stateMotionRecords, stateHover, splitList } from '../lib/fill-state-motion.mjs';
 import { motionFixtureDb } from './fixtures/motion-fixture-db.mjs';
 
 const schema = loadMotionSchema();
@@ -108,4 +108,84 @@ test( 'MUST FAIL: an easing that differs by width is raised, since the hover lay
 	const other = { ...TIMING, 'transition-timing-function': 'ease, linear' };
 	const { out } = run( 'sgs/icon', perWidth( '0:', { 375: 'scale(1.15)', 768: 'scale(1.15)', 1440: 'scale(1.15)' }, { 375: other, 768: TIMING, 1440: TIMING } ) );
 	assert.ok( out.unmapped.some( ( u ) => /holds easing for all devices/.test( u.reason ) ), JSON.stringify( out.unmapped ) );
+} );
+
+// A hover that moves an element's start padding is the hover layer's `indent`, the delta from the resting padding
+// (Spec 38A §5.1). Real case: the Indus numbered rows (6px at rest, 16px on hover) and mega-panel links (6px to 12px).
+const padReads = ( id, { rest = '6px', hover = '16px', restKey = 'padding-left', hoverKey = 'padding-left', by = {} } = {} ) => {
+	const looks = ( w ) => ( { looks: { [ id ]: [ { states: [ 'hover' ], declared: { [ hoverKey ]: by[ w ] ?? hover }, rendered: { [ hoverKey ]: by[ w ] ?? hover }, read: 'entered' } ] } } );
+	const timing = { 'transition-property': 'padding-left', 'transition-duration': '0.2s', 'transition-timing-function': 'ease' };
+	const dec = { ...timing, ...( null === rest ? {} : { [ restKey ]: rest } ) };
+	return { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { [ id ]: { styles: { ...timing, 'padding-left': rest ?? '0px' } } } ] ) ), declared: { 375: { [ id ]: dec }, 768: { [ id ]: dec }, 1440: { [ id ]: dec } }, states: { 375: looks( 375 ), 768: looks( 768 ), 1440: looks( 1440 ) } };
+};
+
+for ( const block of [ 'sgs/icon', 'sgs/card' ] ) {
+	test( `MUST FAIL: ${ block } takes a hover start-padding change as the hover layer's indent, the delta from the resting padding`, () => {
+		const { flat, out } = run( block, padReads( '0:' ) );
+		const v = flat[ 0 ].attributes.sgsMotion?.elements?.root?.hover?.state?.values;
+		assert.ok( v, JSON.stringify( out.unmapped ) );
+		assert.equal( v.indent, 10 );
+		assert.equal( v.duration, 200, 'the padding\'s own duration' );
+	} );
+}
+
+test( 'MUST FAIL: the resting padding is read from the element, a missing declaration falling back to its rendered padding', () => {
+	assert.equal( run( 'sgs/icon', padReads( '0:', { rest: '6px', hover: '12px' } ) ).flat[ 0 ].attributes.sgsMotion.elements.root.hover.state.values.indent, 6 );
+	assert.equal( run( 'sgs/icon', padReads( '0:', { rest: null, hover: '12px' } ) ).flat[ 0 ].attributes.sgsMotion.elements.root.hover.state.values.indent, 12 );
+} );
+
+test( 'MUST FAIL: padding-inline-start is the same indent, and a delta of 0 writes nothing', () => {
+	assert.equal( run( 'sgs/icon', padReads( '0:', { hoverKey: 'padding-inline-start', restKey: 'padding-inline-start' } ) ).flat[ 0 ].attributes.sgsMotion.elements.root.hover.state.values.indent, 10 );
+	assert.deepEqual( stateMotionRecords( padReads( '0:', { rest: '16px', hover: '16px' } ), { id: '0:' } ), [] );
+} );
+
+test( 'MUST FAIL: a start-padding hover that is not a px length is raised with its reason, never guessed', () => {
+	const r = padReads( '0:', { hover: 'calc(1em + 2px)' } );
+	assert.deepEqual( stateMotionRecords( r, { id: '0:' } ), [] );
+	assert.match( stateHover( r, { id: '0:' } ).gaps[ 0 ], /padding-left/ );
+} );
+
+test( 'MUST FAIL: a start-padding hover that differs by width is held per device', () => {
+	const { flat } = run( 'sgs/icon', padReads( '0:', { by: { 375: '8px' } } ) );
+	const hover = flat[ 0 ].attributes.sgsMotion.elements.root.hover.state;
+	assert.equal( hover.values.indent, 10 );
+	assert.equal( hover.devices?.mobile?.indent, 2 );
+} );
+
+test( 'MUST FAIL: a transform and a start-padding hover on one element share one hover layer', () => {
+	const r = reads( '0:' );
+	const p = padReads( '0:' );
+	const merged = { ...r, declared: p.declared, states: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { looks: { '0:': [ { ...r.states[ w ].looks[ '0:' ][ 0 ], declared: { transform: HOVER, 'padding-left': '16px' } } ] } } ] ) ), widths: { 375: { '0:': { styles: { ...TIMING, 'padding-left': '6px' } } }, 768: { '0:': { styles: { ...TIMING, 'padding-left': '6px' } } }, 1440: { '0:': { styles: { ...TIMING, 'padding-left': '6px' } } } } };
+	merged.declared = { 375: { '0:': { ...TIMING, 'padding-left': '6px' } }, 768: { '0:': { ...TIMING, 'padding-left': '6px' } }, 1440: { '0:': { ...TIMING, 'padding-left': '6px' } } };
+	const v = run( 'sgs/icon', merged ).flat[ 0 ].attributes.sgsMotion.elements.root.hover.state.values;
+	assert.equal( v.scale, 1.15 );
+	assert.equal( v.indent, 10 );
+} );
+
+test( 'MUST FAIL: the state pass leaves a start-padding hover to the motion layer on a motion block and raises it on any other', () => {
+	const cal = { settings: {}, elements: { '': { 375: {}, 768: {}, 1440: {} } } };
+	const call = ( block ) => fillStates( { tree: [ { name: block, attributes: {} } ], nodes: [ { index: 0, name: block, targets: [ { id: '0:', slot: '', finder: 'a' } ] } ], reads: padReads( '0:' ), calFor: () => cal, db: openDb( motionFixtureDb( { 'sgs/icon': [] } ) ), snapshot: { palette: [], spacing: [], fontSizes: [] } } );
+	assert.ok( ! call( 'sgs/icon' ).unmapped.some( ( u ) => 'padding-left' === u.property ), 'handed to the motion layer' );
+	assert.ok( call( 'sgs/text' ).unmapped.some( ( u ) => 'padding-left' === u.property ), 'raised where no motion layer exists' );
+} );
+
+// The draft's `style-hover="padding-left:16px"` names only the hover value, so the inventory's record has no resting
+// value; the indent is the delta from the element's own resting padding (6px here), not the 16px itself.
+const hoverRecord = ( from ) => ( { id: 'TR', mechanism: 'css-transition', status: 'active', group: 'hover', element: { dc: 'Site', template_tpl_id: '10' }, trigger: { type: 'hover' }, properties: [ { property: 'padding-left', from, to: '16px', duration_ms: 250, delay_ms: 0, easing: 'ease-out' } ], duration_ms: 250, delay_ms: 0, easing: 'ease-out' } );
+const runRecord = ( block, record, r ) => {
+	const nodes = [ { index: 0, name: block, targets: [ { id: '0:', slot: '', finder: { tpl: 'Site/10#0' } } ] } ];
+	const flat = [ { name: block, attributes: {}, ref: 'r0' } ];
+	const out = motionWrites( { nodes, flat, refOf: ( x ) => x.ref, records: [ record ], mdb, schema, rawSnapshot: { settings: { custom: {} } }, reads: r } );
+	return { out, v: flat[ 0 ].attributes.sgsMotion?.elements?.root?.hover?.state?.values };
+};
+
+test( 'MUST FAIL: an inventory hover padding with no resting value takes the element\'s resting padding, so the indent is the delta', () => {
+	const { v, out } = runRecord( 'sgs/card', hoverRecord( null ), padReads( '0:' ) );
+	assert.ok( v, JSON.stringify( out.unmapped ) );
+	assert.equal( v.indent, 10 );
+} );
+
+test( 'a record that names its own resting padding, or an element whose resting padding is not px, is left as it is', () => {
+	assert.equal( runRecord( 'sgs/card', hoverRecord( '4px' ), padReads( '0:' ) ).v.indent, 12 );
+	assert.equal( runRecord( 'sgs/card', hoverRecord( null ), padReads( '0:', { rest: '1em' } ) ).v.indent, 16 );
 } );
