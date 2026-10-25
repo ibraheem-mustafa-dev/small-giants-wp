@@ -67,6 +67,7 @@ export default function LayerBoxPanels( { attributes, setAttributes } ) {
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Height', 'sgs-blocks' ) }
+								hideLabelFromVision
 								value={ ownValue || '' }
 								placeholder={ inherited ? effectiveValue || '' : '' }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
