@@ -190,11 +190,12 @@ function itemHost( db, block ) {
 	return hosts.get( block );
 }
 
-// Validates one node's document and writes it, or reports it refused.
-function writeNode( n, doc, pending, { flat, ref, schema, out, reads } ) {
+// Validates one node's document and writes it, or reports it refused with each error and each refusal's text
+// (a refusal is { id, text, layers }, lib/motion-refusals.mjs::elementRefusals).
+export function writeNode( n, doc, pending, { flat, ref, schema, out, reads } ) {
 	const verdict = validateMotionWrite( doc, schema );
 	if ( ! verdict.valid ) {
-		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: pending.join( ', ' ), reason: `sgsMotion refused: ${ [ ...verdict.errors, ...verdict.refusals ].join( '; ' ) }` } );
+		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: pending.join( ', ' ), reason: `sgsMotion refused: ${ [ ...verdict.errors, ...verdict.refusals.map( ( r ) => ( 'string' === typeof r ? r : r.text ) ) ].join( '; ' ) }` } );
 		return;
 	}
 	const { before, after } = setAttr( flat[ n.index ], { attr: 'sgsMotion', value: doc } );

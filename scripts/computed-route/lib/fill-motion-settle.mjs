@@ -12,10 +12,11 @@ import { exactHome } from './fill-part-pairing.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defaultPaint } from './fill-prop.mjs';
+import { defaultPaint, INHERITED } from './fill-prop.mjs';
 import { CSS_WIDE } from './fill-declared.mjs';
 import { longhandsOf, layerTimings, layerGives } from './census-conservation.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
+import { timingDuplicates } from './fill-timing.mjs';
 
 // A row's value per width: a per-width JSON object as written, a plain value at every width the read declares.
 function perWidth( row, declaredAt ) {
@@ -53,13 +54,14 @@ function carries( prop, raw, values, tok ) {
 const PROPS = [ 'transition-duration', 'transition-delay', 'transition-timing-function', 'width' ];
 
 // opts: { unmapped, writes (the motion pass's writes), nodes, flat, refOf, mdb, db, calFor, reads, rawSnapshot }.
-// Returns { unmapped (the rows still raised), answered ([ row + { widths } ], for passSettled) }.
+// Returns { unmapped (the rows still raised), answered ([ row + { widths } ], for passSettled) }. A resting timing the state
+// pass raised per property leaves no generic row beside it (lib/fill-timing.mjs::timingDuplicates): it is dropped, not settled.
 export function motionSettled( { unmapped, writes, nodes, flat, refOf, mdb, db, calFor, reads, rawSnapshot } ) {
 	const tokens = clientTokens( rawSnapshot );
 	const tok = ( v ) => ( 'string' === typeof v && v.startsWith( 'token:' ) ? tokens[ v.slice( 6 ) ] : v );
 	const kept = [];
 	const answered = [];
-	for ( const row of unmapped ) {
+	for ( const row of timingDuplicates( unmapped ).unmapped ) {
 		const n = row.slot && PROPS.includes( row.property ) && ! row.state ? nodes.find( ( x ) => refOf( flat[ x.index ] ) === row.node ) : null;
 		const t = n?.targets.find( ( x ) => x.slot === ( row.slot ?? '' ) );
 		const doc = t ? writes.find( ( w ) => w.node === row.node && 'motion' === w.how && 'sgsMotion' === w.attr )?.after : null;
@@ -134,6 +136,8 @@ export function baseTransitions() {
 const names = ( v ) => LIST( v ).map( ( x ) => x.toLowerCase() ).filter( Boolean );
 // Whether transitioning `a` transitions every longhand `b` sets (`all` covers everything).
 const covers = ( a, b ) => 'all' === a || longhandsOf( b ).every( ( l ) => longhandsOf( a ).includes( l ) );
+// The properties a moving hover state's own entries transition, which Fill does not rebuild (liveList `complete`).
+const MOVEMENT = [ 'transform', 'translate', 'scale', 'rotate' ];
 const uncovered = ( list, by ) => list.filter( ( p ) => ! by.some( ( q ) => covers( q, p ) ) );
 // A transition-behavior list per transitioned property: the entry at the property's place, the list repeating when shorter.
 const behaviours = ( props, list ) => props.map( ( p, i ) => [ p, list.length ? list[ i % list.length ] : 'normal' ] );
@@ -160,8 +164,27 @@ function liveList( { n, t, w, motion, mdb, db, cal, base } ) {
 	return undefined === at( 'transition-property' ) ? null : { props: names( at( 'transition-property' ) ), behaviours: undefined === behaviour ? null : names( behaviour ), complete: true, by: 'paint' };
 }
 
-// One resting read's outcome at one width: { settle: 'equal' | 'motion' } or { reason } (an UNMAPPED row's).
-function listOutcome( { prop, draft, behaviour, live, block, part } ) {
+// What the draft's state looks change at one width: { own, up } or null where no state look was read there. `own` holds
+// the properties the target's own looks declare differently from rest (a pseudo-element's look is another element's);
+// `up` holds those of every target of the node's ancestors, which an inherited property follows
+// (lib/fill-state-reach.mjs::ancestorLook).
+function changingAt( reads, nodes, n, t, w ) {
+	if ( ! reads?.states?.[ w ] ) {
+		return null;
+	}
+	const declared = ( ids ) => new Set( ids.flatMap( ( id ) => ( reads.states[ w ].looks?.[ id ] || [] ).filter( ( l ) => ! l.pseudo ).flatMap( ( l ) => Object.keys( l.declared || {} ) ) ).flatMap( longhandsOf ) );
+	const above = [];
+	for ( let p = n.parent; null !== p && undefined !== p; p = nodes[ p ]?.parent ) {
+		above.push( ...( nodes[ p ]?.targets || [] ).map( ( x ) => x.id ) );
+	}
+	return { own: declared( [ t.id ] ), up: declared( above ) };
+}
+
+// One resting read's outcome at one width: { settle: 'equal' | 'motion', inert } or { reason } (an UNMAPPED row's).
+// `changing`: what the states change at this width (changingAt), or null where unread: a live list that also transitions
+// properties the draft does not is inert (settled, `inert` naming them) when none of them changes, an inherited one also
+// from an ancestor's look.
+function listOutcome( { prop, draft, behaviour, live, block, part, changing = null } ) {
 	if ( ! live || ( 'transition-behavior' === prop && ! live.behaviours ) ) {
 		return { reason: `calibration has no reading of ${ prop } for ${ part } of ${ block } (lib/calibrate-props.mjs::READ_PROPS does not read it), so whether live transitions the draft's ${ draft.join( ', ' ) }${ 'transition-behavior' === prop ? ` with behaviour ${ behaviour.join( ', ' ) }` : '' } is unknown` };
 	}
@@ -180,6 +203,9 @@ function listOutcome( { prop, draft, behaviour, live, block, part } ) {
 	const exact = 'paint' === live.by ? draft.join( ',' ) === live.props.join( ',' ) : live.complete && ! more.length && ! less.length;
 	if ( exact ) {
 		return { settle };
+	}
+	if ( changing && more.length && ! less.length && ! uncovered( draft, live.props ).some( ( p ) => ! MOVEMENT.includes( p ) ) && more.every( ( p ) => ! longhandsOf( p ).some( ( l ) => changing.own.has( l ) || ( INHERITED.includes( p ) && changing.up.has( l ) ) ) ) ) {
+		return { settle, inert: more };
 	}
 	const diff = [ more.length ? `live also transitions ${ more.join( ', ' ) }` : '', less.length ? `the draft also transitions ${ less.join( ', ' ) }` : '' ].filter( Boolean ).join( '; ' ) || ( live.complete ? 'the same properties in another order' : 'Fill cannot tell whether the movement, an effect or the entrance adds a property the draft does not transition' );
 	return { reason: `no-setting: ${ block } has no setting for which properties ${ part } transitions; ${ whose }, the draft ${ draft.join( ', ' ) }: ${ diff }` };
@@ -205,8 +231,8 @@ export function transitionListOutcomes( { nodes, flat, refOf, reads, writes, mdb
 						continue;
 					}
 					const draft = names( decl[ 'transition-property' ] ?? 'all' );
-					const o = listOutcome( { prop, draft, behaviour: names( decl[ 'transition-behavior' ] ?? 'normal' ), live: liveList( { n, t, w, motion, mdb, db, cal, base } ), block: n.name, part } );
-					const key = `${ t.id }|${ prop }|${ o.settle ?? o.reason }`;
+					const o = listOutcome( { prop, draft, behaviour: names( decl[ 'transition-behavior' ] ?? 'normal' ), live: liveList( { n, t, w, motion, mdb, db, cal, base } ), block: n.name, part, changing: changingAt( reads, nodes, n, t, w ) } );
+					const key = `${ t.id }|${ prop }|${ o.settle ?? o.reason }|${ ( o.inert || [] ).join() }`;
 					const row = rows.get( key ) || { o, node: n.ref, block: n.name, slot: t.slot ?? '', property: prop, at: {} };
 					row.at[ w ] = decl[ prop ];
 					rows.set( key, row );
@@ -217,7 +243,8 @@ export function transitionListOutcomes( { nodes, flat, refOf, reads, writes, mdb
 	const out = { settled: [], unmapped: [] };
 	for ( const { o, at, ...row } of rows.values() ) {
 		const value = JSON.stringify( at );
-		const detail = 'equal' === o.settle ? 'the element\'s calibrated default paint transitions the draft\'s properties at these widths' : 'lib/fill-motion-settle.mjs: the written sgsMotion hover state transitions the draft\'s properties at these widths';
+		const how = 'equal' === o.settle ? "the element's calibrated default paint transitions the draft's properties at these widths" : "lib/fill-motion-settle.mjs: the written sgsMotion hover state transitions the draft's properties at these widths";
+		const detail = o.inert ? `${ how }, and also ${ o.inert.join( ', ' ) }, which no state changes there, so nothing animates that the draft does not` : how;
 		o.settle ? out.settled.push( { ...row, value, widths: Object.keys( at ).map( Number ), reason: o.settle, detail } ) : out.unmapped.push( { ...row, state: null, value, reason: o.reason } );
 	}
 	return out;

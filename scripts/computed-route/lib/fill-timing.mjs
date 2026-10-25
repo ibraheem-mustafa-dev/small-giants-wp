@@ -274,6 +274,16 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 	return out;
 }
 
+// The resting rows of a timing longhand the generic pass raised beside the state pass's own `timing-*` rows for the same
+// node, element and longhand: the state pass splits the list per property and names each group, so one row per timing
+// is kept, the state pass's. rows: the surface's UNMAPPED rows. Returns { unmapped (the rows kept), dropped }.
+export function timingDuplicates( rows ) {
+	const key = ( r ) => `${ r.node }|${ r.slot ?? '' }|${ r.property }`;
+	const own = new Set( rows.filter( ( r ) => LIST_PROPS.includes( r.property ) && ! r.state && /^timing-/.test( String( r.reason ) ) ).map( key ) );
+	const dropped = rows.filter( ( r ) => LIST_PROPS.includes( r.property ) && ! r.state && ! /^timing-/.test( String( r.reason ) ) && own.has( key( r ) ) );
+	return { unmapped: rows.filter( ( r ) => ! dropped.includes( r ) ), dropped };
+}
+
 // Whether a resting timing times nothing at every width it is read at: a 0s duration or delay (the initial value, no
 // transition and no wait), or an easing whose duration is 0s there. rest: { width: value }; duration: the resting
 // transition-duration by width, or null.
