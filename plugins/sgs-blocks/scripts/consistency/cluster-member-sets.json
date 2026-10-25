@@ -238,6 +238,22 @@
 						"TextIndent"
 					],
 					"note": "SGS-only — no nativeSupportsPath: core has no `typography.textIndent` (or any) supports key; the paired UnitControl+RangeControl UI is a faithful reimplementation of core's own PRIVATE TextIndentControl (absent from @wordpress/block-editor's public components/index.js), including its 'Line indent' label and per-unit slider bounds. Currently 1 attr: sgs/text.textIndent, via the shared TypographyControls component. sgs/heading does NOT declare this attribute (verified by grep — heading's block.json has no textIndent-shaped key). Draft addition pending Bean sign-off — see setting-registry-additions.json for the paired golden-master row."
+				},
+				{
+					"key": "css:font-variant-numeric",
+					"label": "Number style",
+					"suffixes": [
+						"FontVariantNumeric"
+					],
+					"note": "SGS-only, no nativeSupportsPath. An enum string (tabular-nums and the other number styles) painted as font-variant-numeric by sgs_typography_css_rule() and set through the shared TypographyControls (opt-in number style row). First adopters sgs/text, sgs/heading, sgs/label (2026-10-25)."
+				},
+				{
+					"key": "css:text-shadow-color",
+					"label": "Text shadow colour",
+					"suffixes": [
+						"TextShadowColour"
+					],
+					"note": "SGS-only, no nativeSupportsPath. The colour part of the text shadow (a palette slug or any CSS colour), painted through sgs_colour_value()."
 				}
 			]
 		},
@@ -337,11 +353,10 @@
 					"key": "css:text-shadow",
 					"label": "Text shadow",
 					"suffixes": [
-						"BgSvgTextShadow"
+						"BgSvgTextShadow",
+						"TextShadow"
 					],
-					"appliesToLayers": [
-						"OUTER"
-					]
+					"note": "Text shadow on any element that shows text: the SVG background layer toggle (BgSvgTextShadow, outer layer) and the typography text shadow (TextShadow, through TypographyControls; sgs/text, sgs/heading, sgs/label, 2026-10-25). One key, one cluster (check-cluster-coverage.py)."
 				},
 				{
 					"key": "css:fill",

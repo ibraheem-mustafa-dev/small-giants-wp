@@ -2550,6 +2550,15 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "fontWeightHover",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "iconColour",
       "fields": {
         "css_property": "color",
@@ -6718,6 +6727,15 @@
     },
     {
       "slug": "sgs/container",
+      "attr": "overflow",
+      "fields": {
+        "css_property": "overflow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
       "attr": "overlayGradient",
       "fields": {
         "css_property": "background-image"
@@ -7586,6 +7604,39 @@
     },
     {
       "slug": "sgs/decorative-image",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "backgroundColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "borderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "borderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
       "attr": "decorMedia",
       "fields": {
         "css_property": "max-width",
@@ -7596,6 +7647,14 @@
       "slug": "sgs/decorative-image",
       "attr": "flipX",
       "fields": {}
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "height",
+      "fields": {
+        "css_property": "height",
+        "css_element": "wrapper"
+      }
     },
     {
       "slug": "sgs/decorative-image",
@@ -7641,6 +7700,14 @@
       "attr": "rotation",
       "fields": {
         "css_property": "transform",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "shape",
+      "fields": {
+        "css_property": "clip-path",
         "css_element": "wrapper"
       }
     },
@@ -13553,6 +13620,14 @@
     },
     {
       "slug": "sgs/heading",
+      "attr": "fontVariantNumeric",
+      "fields": {
+        "css_property": "font-variant-numeric",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
       "attr": "fontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -13704,6 +13779,14 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "textShadow",
+      "fields": {
+        "css_property": "text-shadow",
         "css_element": "wrapper"
       }
     },
@@ -15629,6 +15712,14 @@
     },
     {
       "slug": "sgs/label",
+      "attr": "fontVariantNumeric",
+      "fields": {
+        "css_property": "font-variant-numeric",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
       "attr": "fontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -15756,6 +15847,14 @@
       "attr": "textDecoration",
       "fields": {
         "css_property": "text-decoration",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/label",
+      "attr": "textShadow",
+      "fields": {
+        "css_property": "text-shadow",
         "css_element": "wrapper"
       }
     },
@@ -28512,6 +28611,14 @@
     },
     {
       "slug": "sgs/text",
+      "attr": "fontVariantNumeric",
+      "fields": {
+        "css_property": "font-variant-numeric",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
       "attr": "fontWeight",
       "fields": {
         "css_property": "font-weight",
@@ -28665,6 +28772,14 @@
       "attr": "textIndent",
       "fields": {
         "css_property": "text-indent",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textShadow",
+      "fields": {
+        "css_property": "text-shadow",
         "css_element": "wrapper"
       }
     },
@@ -32711,7 +32826,7 @@
       "slug": "sgs/container",
       "attr": "scrollSideways",
       "fields": {
-        "css_property": "overflow",
+        "css_property": "overflow-x",
         "css_layer": "OUTER",
         "css_element": "wrapper"
       }
@@ -32723,6 +32838,16 @@
         "css_property": "box-shadow-color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "shadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
+        "css_state": "hover"
       }
     },
     {
@@ -32893,6 +33018,67 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "number",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "borderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "borderColourGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "borderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "boxShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "wrapper",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "boxShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper",
         "css_state": "hover"
       }
     },
@@ -34537,6 +34723,14 @@
       }
     },
     {
+      "slug": "sgs/heading",
+      "attr": "textShadowColour",
+      "fields": {
+        "css_property": "text-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/hero",
       "attr": "backgroundColour",
       "fields": {
@@ -35086,6 +35280,14 @@
       }
     },
     {
+      "slug": "sgs/label",
+      "attr": "textShadowColour",
+      "fields": {
+        "css_property": "text-shadow-color",
+        "css_element": "wrapper"
+      }
+    },
+    {
       "slug": "sgs/language-switch",
       "attr": "linkColourGradient",
       "fields": {
@@ -35212,6 +35414,14 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "value"
+      }
+    },
+    {
+      "slug": "sgs/media",
+      "attr": "aspectRatio",
+      "fields": {
+        "css_property": "aspect-ratio",
+        "css_element": "wrapper"
       }
     },
     {
@@ -41208,6 +41418,14 @@
         "css_property": "color-gradient",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/text",
+      "attr": "textShadowColour",
+      "fields": {
+        "css_property": "text-shadow-color",
+        "css_element": "wrapper"
       }
     },
     {

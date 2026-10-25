@@ -63,6 +63,7 @@
                         "css:border-color": "borderColour",
                         "css:border-color-gradient": "borderColourGradient",
                         "css:border-radius": "borderRadius",
+                        "css:clip-path": "shape",
                         "css:box-shadow": "boxShadow",
                         "css:box-shadow-color": "boxShadowColour",
                         "css:height": "height"

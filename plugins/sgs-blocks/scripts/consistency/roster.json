@@ -418,8 +418,8 @@
       "replaces": null,
       "has_render_php": true,
       "surfaces": {
-        "styling": false,
-        "colour": false,
+        "styling": true,
+        "colour": true,
         "link": true,
         "media": true,
         "animation": true

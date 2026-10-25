@@ -3074,7 +3074,7 @@
 			},
 			"shared_component": "ShadowControl (when arbitrary)",
 			"spec_ref": "Spec 35 Part B (Shadow completeness) + Part C Effects",
-			"current_state": "1 instance (sgs/hero bgSvgTextShadow, boolean) — a legibility toggle over an SVG background layer",
+			"current_state": "1 instance (sgs/hero bgSvgTextShadow, boolean) — a legibility toggle over an SVG background layer Also sgs/text, sgs/heading, sgs/label textShadow through TypographyControls (2026-10-25).",
 			"divergence": "boolean-only; no arbitrary shadow path",
 			"divergence_severity": "low",
 			"notes": "Added 2026-08-09 (D537 §4 vocabulary gate). A genuine CSS property that the 58-row registry lacked; it is the property behind hero's bgSvgTextShadow. NOT a synonym for css:box-shadow — that paints the BOX, this paints the GLYPHS."
@@ -3433,6 +3433,50 @@
 			"divergence": "None against core's own precedent — this control is a faithful rebuild of core's private TextIndentControl (same UnitControl+RangeControl shape, same unit-dependent bounds, same label), reimplemented because it is not exported publicly rather than because SGS diverged from a different design.",
 			"divergence_severity": "none",
 			"notes": "This row exists to close `check-element-manifest-conformance.js`'s orphan_style_defect finding: sgs/text's attrMap already declares \"css:text-indent\": \"textIndent\" and the block.json attribute (`textIndent`, type string, default '') is real and rendered, but no setting-registry row nor cluster-member-sets.json 'text' cluster member existed to classify it. Grep confirms sgs/heading does not declare a textIndent-shaped attribute — this is currently sgs/text-only."
+		},
+		{
+			"setting_key": "css:font-variant-numeric",
+			"category": "css-property",
+			"label": "Number style",
+			"optimal_control": {
+				"component": "SelectControl via TypographyControls (opt-in number style row)",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "TypographyControls",
+			"spec_ref": "Spec 02 (sgs/text, sgs/heading, sgs/label typography)",
+			"current_state": "3 instances (sgs/text, sgs/heading, sgs/label fontVariantNumeric)",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "Added 2026-10-25, Phase 3 loop 1 (plan .claude/plans/2026-10-25-phase3-loop1.md U7a)."
+		},
+		{
+			"setting_key": "css:text-shadow-color",
+			"category": "css-property",
+			"label": "Text shadow colour",
+			"optimal_control": {
+				"component": "Colour picker via TypographyControls (opt-in text shadow row)",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset"
+			},
+			"shared_component": "TypographyControls",
+			"spec_ref": "Spec 02 (sgs/text, sgs/heading, sgs/label typography)",
+			"current_state": "3 instances (sgs/text, sgs/heading, sgs/label textShadowColour)",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "Added 2026-10-25, Phase 3 loop 1 (plan .claude/plans/2026-10-25-phase3-loop1.md U7a)."
 		}
 	]
 }
