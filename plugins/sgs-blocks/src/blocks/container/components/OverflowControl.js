@@ -8,7 +8,7 @@
  * @package SGS\Blocks
  */
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@wordpress/components';
+import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
 
 export const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -24,17 +24,21 @@ export const OVERFLOW_OPTIONS = [
  */
 export default function OverflowControl( { attributes, setAttributes } ) {
 	return (
-		<SelectControl
+		<ToggleGroupControl
 			label={ __( 'Overflow', 'sgs-blocks' ) }
 			value={ attributes.overflow || 'visible' }
-			options={ OVERFLOW_OPTIONS }
 			onChange={ ( value ) => setAttributes( { overflow: value } ) }
 			help={ __(
 				'Clip crops anything that sticks out of the container and keeps sticky items inside working. Hidden crops too, but sticky items inside stop sticking. Visible shows everything.',
 				'sgs-blocks'
 			) }
+			isBlock
 			__nextHasNoMarginBottom
 			__next40pxDefaultSize
-		/>
+		>
+			{ OVERFLOW_OPTIONS.map( ( opt ) => (
+				<ToggleGroupControlOption key={ opt.value } value={ opt.value } label={ opt.label } />
+			) ) }
+		</ToggleGroupControl>
 	);
 }
