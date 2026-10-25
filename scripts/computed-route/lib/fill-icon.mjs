@@ -1,13 +1,13 @@
 // Icons for Fill (FR-48-39, the inline-SVG part): the one writer for a whole `<svg>` subtree. The draft's SVG reaches Fill
 // as markup with its painted values resolved (lib/fill-read.mjs `svg`: the computed fill, stroke and stroke width on each
 // drawing element, a colour equal to the icon's own colour as `currentColor`), and the block that draws it is `sgs/icon`:
-//   1. a node the skeleton already made a brand icon bound to Site Info (iconSource "brand", the social-icons row) draws the
-//      registry's glyph, so the draft's SVG is checked against that glyph and nothing is written;
-//   2. a mark that is a registry brand glyph with its own SVG is that brand (iconSource "brand" and its brandName);
-//   3. a stroke mark that is a Lucide icon drawn the way Lucide draws it (2 wide, round caps and joins) is that icon
+// The source is decided from the draft's mark alone, never from the iconSource the node already holds (a skeleton-made brand
+// icon, or a value an earlier write left):
+//   1. a mark that is a registry brand glyph with its own SVG is that brand (iconSource "brand" and its brandName);
+//   2. a stroke mark that is a Lucide icon drawn the way Lucide draws it (2 wide, round caps and joins) is that icon
 //      (iconSource "lucide" and its iconName);
-//   4. anything else is the client's own mark: iconSource "custom" and the sanitised markup as iconSvg, with iconFill for a
-//      filled mark.
+//   3. anything else is the client's own mark: iconSource "custom" and the sanitised markup as iconSvg, with iconFill for a
+//      filled mark. A brand icon bound to Site Info whose draft SVG is not its registry glyph is this case; its link binding stays.
 // The sanitiser is the block's own: the tags and attributes `sgs_svg_kses_allowed_tags()` keeps, read from
 // plugins/sgs-blocks/includes/helpers-svg-kses.php; a tag it would drop (script, foreignObject, style, animation) is a named
 // UNMAPPED row and is left out of the markup, never written for the page to discard.
@@ -242,11 +242,6 @@ export function iconDecisions( { svg, schema, attributes = {}, allowed = null } 
 			out.writes.push( { attr, value, merge: 'replace' } );
 		}
 	};
-	if ( 'brand' === attributes.iconSource ) {
-		const drawn = brandSignatures().bySlug.get( attributes.brandName );
-		drawn && drawn !== sig && out.notes.push( `the draft SVG is not the "${ attributes.brandName }" brand glyph the icon draws; the brand glyph is kept` );
-		return out;
-	}
 	const brand = brandSignatures().bySig.get( sig );
 	const lucide = lucideStyle ? lucideSignatures().get( sig ) : null;
 	if ( brand ) {
