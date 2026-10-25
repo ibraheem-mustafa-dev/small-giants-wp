@@ -119,7 +119,7 @@ export function buildFooterRows( e, block, c ) {
 	};
 	const rowOf = ( slot, els, floats = [] ) => {
 		const parent = 'none' === plan.mode ? block : F.rowBlock;
-		const floated = () => floats.flatMap( ( x ) => ( x.strip ? [ c.buildNode( x, F.rowBlock ) ] : c.buildChildren( e, parent, [ x ] ) ) ).filter( Boolean );
+		const floated = () => floats.flatMap( ( x ) => ( x.strip ? c.buildNode( x, F.rowBlock ) : c.buildChildren( e, parent, [ x ] ) ) ).filter( Boolean );
 		const alternatives = () => wides.filter( ( w ) => slotOfWide( w ) === slot ).flatMap( ( w ) => c.buildNode( w, parent ) ).filter( Boolean );
 		if ( 1 === els.length && 'none' !== plan.mode ) {
 			const row = slotRow( els[ 0 ], slot );
