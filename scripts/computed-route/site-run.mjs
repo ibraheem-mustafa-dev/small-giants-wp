@@ -6,9 +6,11 @@
 // A surface's inventory root and opener come from its intake skeleton record: a surface that exists only while a draft state
 // holds (record `root.viaState`) takes the inventory intake saved with that state open
 // (build/intake/inventories/<intakeSurface>.json) and Fill opens the same state (lib/fill-open.mjs); any other surface is read
-// live at the tag of the record's root element, at its route.
+// live at the tag of the record's root element, at its route. A form opens on its page (entry `draftRoute`) and its live address
+// is that page's; a `contentOnly` post surface is skipped unless `--with-content` is passed; the `single` template surface
+// (target `{ template }`) is read at the post it is shaped from (`fromPost`) and built through `wp-build-page.js --template`.
 //   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b] [--skip-stages inventory,walk]
-//        [--stages inventory,propose,fill,build,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>]
+//        [--stages inventory,propose,fill,build,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
 // Fill and walks run <jobs> at a time; builds run one at a time (they write the site's database).
 import fs from 'fs';
@@ -67,10 +69,20 @@ function liveBase( envFile, envKey ) {
 	return line.slice( line.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ).replace( /\/+$/, '' );
 }
 
-// The hash a surface opens at (its page row's route, else its intake record's route), and the page row for the live address.
-function routeOf( key, skel, rows ) {
-	const row = rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) );
-	return { row, hash: row ? ( 'home' !== row.route ? `#/${ row.route }` : '' ) : routeHash( skel?.route ) ?? '' };
+// Where one surface is read: the draft route it opens at, the page-map row whose permalink is its live address, and why it is
+// skipped (a content-only post surface runs only with `--with-content`). The route is the entry's `draftRoute` (a form's
+// page, a post's route), else its page row's route, else its intake record's route. A post surface (`contentOnly`) and the
+// single-post template (`fromPost`) are read at the post row's address; a form is read on its page, the page row carrying
+// its `draftRoute`; any other surface at the page row its key names.
+export function surfaceReach( { key, entry, skel, rows, withContent = false } ) {
+	const routeName = ( r ) => String( r ?? '' ).replace( /^#?\/?/, '' );
+	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
+	const own = postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) );
+	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
+	const row = own ?? named ?? null;
+	const skip = entry.contentOnly && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null;
+	const hash = entry.draftRoute ? routeHash( entry.draftRoute ) ?? '' : own && 'page' === own.postType ? ( 'home' !== own.route ? `#/${ own.route }` : '' ) : routeHash( skel?.route ) ?? '';
+	return { row, hash, skip };
 }
 
 export async function main( argv ) {
@@ -78,13 +90,14 @@ export async function main( argv ) {
 	const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
 	const site = flag( '--site' );
 	if ( ! client || ! site ) {
-		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages ...] [--jobs 3] [--widths 1440,768,375] [--live-base <url>]' );
+		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages ...] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]' );
 	}
 	const stages = ( flag( '--stages' ) || ALL_STAGES.join( ',' ) ).split( ',' );
 	const only = flag( '--only' ) ? flag( '--only' ).split( ',' ) : null;
 	const jobs = Number( flag( '--jobs', '3' ) );
 	const widths = flag( '--widths', '1440,768,375' );
 	const liveOverride = flag( '--live-base' );
+	const withContent = argv.includes( '--with-content' );
 	const build = path.join( REPO, 'sites', client, 'build' );
 	const surfaces = readJson( path.join( build, 'surfaces.json' ) );
 	const rows = readJson( path.join( build, 'page-map.json' ) );
@@ -107,7 +120,10 @@ export async function main( argv ) {
 		const entry = surfaces[ key ];
 		const skel = intake.skeletons?.[ entry.intakeSurface ];
 		const kind = skel?.kind;
-		const { row, hash } = routeOf( key, skel, rows );
+		const { row, hash, skip } = surfaceReach( { key, entry, skel, rows, withContent } );
+		if ( skip ) {
+			return note( key, 'skipped', true, 0, skip );
+		}
 		const draftUrl = `${ server.url }${ hash }`;
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
 		const liveUrl = row ? `${ base }${ permalinkOf( row, rows ) }` : `${ base }/`;
@@ -193,7 +209,8 @@ export async function main( argv ) {
 			}
 		}
 		const tree = path.relative( REPO, path.join( out, 'filled.tree.json' ) );
-		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, '--post-id', String( entry.target.postId ) ];
+		// The single-post template builds as the site's own template copy (FR-48-56), every other surface into its post.
+		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, ...( entry.target.template ? [ '--template', entry.target.template ] : [ '--post-id', String( entry.target.postId ) ] ) ];
 		if ( ! await step( 'build', () => exclusive( async () => {
 			await exec( 'dry', 'node', [ ...builder, '--dry-run' ] );
 			return exec( 'build', 'node', builder );

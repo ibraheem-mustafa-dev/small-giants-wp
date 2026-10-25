@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/fill-entrance.mjs", "find": "opener?.state && await openWith( page, opener );", "replace": "", "why": "sampling never sets the surface's state" },
+	{ "file": "lib/fill-entrance.mjs", "find": "opener?.state && await openWith( page, opener );", "replace": "opener && await openWith( page, opener );", "why": "a refused opener (no state) still sets a state" }
+]

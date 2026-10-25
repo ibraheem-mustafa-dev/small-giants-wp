@@ -8,6 +8,7 @@ import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { makeHelpers } from '../../parity/lib/helpers.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
 import { loadChromium, routeDraft } from './fill-read.mjs';
+import { openState } from './fill-open.mjs';
 
 const RESOLVE = resolveFinder.toString();
 
@@ -140,9 +141,11 @@ export const SWEEP = { afterMs: 1500, everyMs: 700, step: 0.7, settleMs: 2500 };
 
 // Probes the entrances of every job (the skeleton's targets) on the draft at one width. The probe starts before the
 // page's own scripts and the draft's open step, so a load animation and a single-page draft's view both play inside the
-// window, and it sweeps down the page so a scroll entrance plays too (`sweep: null` keeps the page still). Returns
-// { id: raw probe result }.
-export async function sampleEntrances( { url, jobs, open = null, width = 1440, windowMs = 4500, sweep = SWEEP, headless = true, external = false, mirror = {} } ) {
+// window, and it sweeps down the page so a scroll entrance plays too (`sweep: null` keeps the page still). A surface that
+// exists only while a draft state holds (a drawer, a mega-menu panel) passes its `opener` (lib/fill-open.mjs::stateOpener),
+// and the page's state is set through `openWith` once the page has loaded, as the read does, so the entrances sampled are
+// those of the open surface. Returns { id: raw probe result }.
+export async function sampleEntrances( { url, jobs, open = null, opener = null, openWith = openState, width = 1440, windowMs = 4500, sweep = SWEEP, headless = true, external = false, mirror = {} } ) {
 	const { chromium } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
@@ -157,6 +160,7 @@ export async function sampleEntrances( { url, jobs, open = null, width = 1440, w
 		if ( open ) {
 			await h.clickText( open, { wait: 50 } );
 		}
+		opener?.state && await openWith( page, opener );
 		const raw = await page.evaluate( () => window.__fillProbe );
 		await settleAnimations( page, { floor: 0 } );
 		return raw;
