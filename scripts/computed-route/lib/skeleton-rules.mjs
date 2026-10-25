@@ -337,6 +337,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The rules in precedence order; the first verdict wins. Each takes x: { e, st (declared style), text (all its
 	// words), kidsB (block children), parentBlock }.
 	const RULES = [
+		// The draft's form on a page is the reference block linked to the saved form (lib/skeleton-form-link.mjs); the elements
+		// of a form already linked are absorbed into it.
+		( { e } ) => {
+			const link = hooks.formLinkOf( e );
+			if ( ! link ) {
+				return null;
+			}
+			return link.remove ? v( 'formLink', { action: 'remove', reason: R.formLink?.droppedReason } ) : v( 'formLink', { block: link.block, absorb: true, attributes: link.attributes } );
+		},
 		// A bar above the header (by surface kind and name) is the header's top row.
 		( { e } ) => {
 			const hit = 0 === e.depth && ( R.surfaceRoot?.entries || [] ).find( ( x ) => x.kind === surface.kind && new RegExp( x.namePattern, 'i' ).test( surface.name || '' ) );
@@ -355,8 +364,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return ring ? v( 'decorativeShape', { block: R.decorativeShape?.block || null } ) : v( 'decorationLayer', { action: 'remove' } );
 		},
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
-		// A draft <form> element is the form block; its fields sit inside it.
-		( { e } ) => ( R.formHost && view.realTag( e ) === R.formHost.tag ? v( 'formHost', { block: R.formHost.block } ) : null ),
+		// A draft <form> element is the form block; its fields sit inside it. The root of a form surface is the saved form's root
+		// block whatever its tag (a wizard drawn in a <div>): the saved form's root must be the form block, which the linked embed renders.
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place.
 		( { e } ) => {
