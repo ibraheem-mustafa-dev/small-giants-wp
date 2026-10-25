@@ -23,7 +23,8 @@ import { INHERITED, canon, defaultPaint } from './fill-prop.mjs';
 import { snapsOf, ownPaint } from './fill-resolve-state.mjs';
 import { familyOf, expand, physicalOf, partKey, isCssProperty } from './css-families.mjs';
 import { propertyChannels, IDENTITY } from './motion-channels.mjs';
-import { msOf, easingOf, clientTokens } from './motion-tokens.mjs';
+import { clientTokens } from './motion-tokens.mjs';
+import { layerGives, rootLayerTimings } from './census-conservation.mjs';
 
 const WIDTHS = [ 375, 768, 1440 ];
 const TOL = 0.5;
@@ -156,25 +157,21 @@ export function coveredBySetting( row, values, writes, cal, contextAt = () => ( 
 	return null;
 }
 
-// covered, by the sgsMotion states written on the node: the transform channels, the duration and the easing.
-function coveredByMotion( row, values, writes, tokens ) {
+// covered, by the sgsMotion layers written on the node: the timing longhands by every timing the root's layers give them
+// (lib/census-conservation.mjs::layerGives: duration, paint and shadow durations, easings and delays), and the transform
+// channels by one layer's state values.
+export function coveredByMotion( row, values, writes, tokens ) {
 	if ( '' !== row.slot ) {
 		return null;
 	}
-	const states = writes.filter( ( w ) => 'motion' === w.how && w.after?.elements?.root ).flatMap( ( w ) => Object.entries( w.after.elements.root ).filter( ( [ , v ] ) => v?.state?.values ).map( ( [ k, v ] ) => ( { attr: w.attr, key: k, values: v.state.values } ) ) );
-	const resolve = ( v ) => ( 'string' === typeof v && v.startsWith( 'token:' ) ? tokens[ v.slice( 6 ) ] : v );
+	const motion = writes.filter( ( w ) => 'motion' === w.how && w.after?.elements?.root );
+	if ( TIMING.includes( row.property ) ) {
+		const w = motion.find( ( x ) => Object.values( values ).every( ( raw ) => layerGives( row.property, raw, rootLayerTimings( x.after )[ row.property ], tokens ) ) );
+		return w ? `${ w.attr } carries it in its layers` : null;
+	}
+	const states = motion.flatMap( ( w ) => Object.entries( w.after.elements.root ).filter( ( [ , v ] ) => v?.state?.values ).map( ( [ k, v ] ) => ( { attr: w.attr, key: k, values: v.state.values } ) ) );
 	for ( const s of states ) {
 		const ok = Object.values( values ).every( ( raw ) => {
-			if ( 'transition-duration' === row.property ) {
-				const ms = msOf( resolve( s.values.duration ) );
-				const list = String( raw ).split( ',' ).map( ( x ) => msOf( x ) );
-				return null !== ms && list.every( ( x ) => x === ms );
-			}
-			if ( 'transition-timing-function' === row.property ) {
-				const e = easingOf( resolve( s.values.easing ) );
-				const list = String( raw ).split( /,(?![^(]*\))/ ).map( ( x ) => easingOf( x ) );
-				return null !== e && list.every( ( x ) => x === e );
-			}
 			const { channels, unsupported = [], other } = propertyChannels( row.property, raw );
 			return ! other && ! unsupported.length && Object.keys( channels ).length > 0 && Object.entries( channels ).every( ( [ k, v ] ) => 'number' === typeof ( s.values[ k ] ?? IDENTITY[ k ] ) && Math.abs( ( s.values[ k ] ?? IDENTITY[ k ] ) - v ) <= Math.max( 0.005, 0.005 * Math.abs( v ) ) );
 		} );
@@ -184,6 +181,8 @@ function coveredByMotion( row, values, writes, tokens ) {
 	}
 	return null;
 }
+
+const TIMING = [ 'transition-duration', 'transition-timing-function', 'transition-delay' ];
 
 // Builds the classifier for one Fill run. st: the Fill run state (lib/fill-resolve-state.mjs::makeState).
 // Returns settle( { unmapped, writes } ) → { unmapped (the rows still raised), alreadyHeld ([ row + { reason, detail } ]) }.

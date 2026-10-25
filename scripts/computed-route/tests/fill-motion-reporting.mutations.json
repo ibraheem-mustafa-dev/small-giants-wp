@@ -1,0 +1,92 @@
+[
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "( 'string' === typeof r ? r : r.text )",
+		"replace": "r",
+		"why": "a refusal object is joined as [object Object]"
+	},
+	{
+		"file": "lib/fill-timing.mjs",
+		"find": "&& own.has( key( r ) ) );",
+		"replace": "&& true );",
+		"why": "every generic timing row is dropped, not only the ones a state-pass row duplicates"
+	},
+	{
+		"file": "lib/fill-timing.mjs",
+		"find": "`${ r.node }|${ r.slot ?? '' }|${ r.property }`",
+		"replace": "`${ r.node }||${ r.property }`",
+		"why": "the element is ignored in the duplicate key"
+	},
+	{
+		"file": "lib/fill-timing.mjs",
+		"find": "const dropped = rows.filter( ( r ) => LIST_PROPS.includes( r.property ) && ! r.state &&",
+		"replace": "const dropped = rows.filter( ( r ) => LIST_PROPS.includes( r.property ) &&",
+		"why": "a state row's generic timing is dropped as a duplicate of the resting one"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "of timingDuplicates( unmapped ).unmapped )",
+		"replace": "of unmapped )",
+		"why": "the generic row is raised beside the per-property rows again"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "if ( TIMING.includes( row.property ) ) {",
+		"replace": "if ( false ) {",
+		"why": "timing rows take the transform path and are never covered"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "rootLayerTimings( x.after )[ row.property ], tokens ) ) );",
+		"replace": "[ x.after.elements.root.hover.state.values[ 'transition-duration' === row.property ? 'duration' : 'easing' ] ], tokens ) ) );",
+		"why": "only the layer's own duration and easing credit a timing, paint and shadow timings are ignored"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "! longhandsOf( p ).some( ( l ) => changing.own.has( l )",
+		"replace": "! longhandsOf( p ).some( ( l ) => false",
+		"why": "an extra property a state changes is settled as inert"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "if ( changing && more.length && ! less.length &&",
+		"replace": "if ( changing && more.length &&",
+		"why": "a list that lacks a draft property is settled as a superset"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "filter( ( l ) => ! l.pseudo )",
+		"replace": "filter( ( l ) => true )",
+		"why": "a pseudo-element's state counts as this element's change"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "! uncovered( draft, live.props ).some( ( p ) => ! MOVEMENT.includes( p ) ) && ",
+		"replace": "",
+		"why": "a draft property live does not list is ignored on an incomplete list"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "if ( ! reads?.states?.[ w ] ) {",
+		"replace": "if ( false ) {",
+		"why": "an unread state set is taken as no change"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "|| ( INHERITED.includes( p ) && changing.up.has( l ) )",
+		"replace": "",
+		"why": "an inherited property an ancestor's state changes is taken as unchanged"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "( INHERITED.includes( p ) && changing.up.has( l ) )",
+		"replace": "changing.up.has( l )",
+		"why": "an ancestor's look changes a property that is not inherited"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "p = nodes[ p ]?.parent )",
+		"replace": "p = null )",
+		"why": "only the first ancestor is read"
+	}
+]
