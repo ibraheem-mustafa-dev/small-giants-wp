@@ -22,10 +22,13 @@ export const NORMAL_ZERO = [ ...NORMAL_ZERO_LONGHANDS, ...Object.keys( MDN ).fil
 
 const FLEX_OR_GRID = /(?:^|[-\s])(?:flex|grid)$|^-webkit-(?:inline-)?box$/;
 const OUT_OF_FLOW = /^(?:absolute|fixed)$/;
+// CSS Display 3 §2.7: an inline-level display computes as its block-level twin on a box that is blockified.
+const BLOCKIFIED = { inline: 'block', 'inline-block': 'block', 'inline-flex': 'flex', 'inline-grid': 'grid', 'inline-table': 'table', '-webkit-inline-box': '-webkit-box' };
 const known = ( v ) => undefined !== v && null !== v && '' !== v;
 
 // A value as the browser paints it, for comparing. ctx: { parentDisplay, position, direction } of the element at the
-// width, each optional. A `normal` spacing or gap is 0px; an `auto` minimum height is 0px only on a box that is no flex or
+// width, each optional. An inline-level display is its block-level twin on a flex or grid item and on an out-of-flow box
+// (CSS Display 3 §2.7, blockification; an unknown parent leaves it as it is). A `normal` spacing or gap is 0px; an `auto` minimum height is 0px only on a box that is no flex or
 // grid item (CSS Sizing 3 §5.2: on an item it is content-based), so an unknown parent leaves it as `auto`; text-align
 // start and end are their physical sides only where the direction is read (CSS Text 3 §6.1), else left as they are.
 export function paintCanon( prop, v, ctx = {} ) {
@@ -35,6 +38,10 @@ export function paintCanon( prop, v, ctx = {} ) {
 	const s = String( v ).trim();
 	if ( 'normal' === s && NORMAL_ZERO.includes( prop ) ) {
 		return '0px';
+	}
+	if ( 'display' === prop && BLOCKIFIED[ s ] ) {
+		const blockified = known( ctx.position ) && OUT_OF_FLOW.test( ctx.position ) ? true : ( known( ctx.parentDisplay ) && 'contents' !== ctx.parentDisplay ? FLEX_OR_GRID.test( ctx.parentDisplay ) : false );
+		return blockified ? BLOCKIFIED[ s ] : v;
 	}
 	if ( 'auto' === s && 'min-height' === prop ) {
 		const item = known( ctx.position ) && OUT_OF_FLOW.test( ctx.position ) ? false : ( known( ctx.parentDisplay ) && 'contents' !== ctx.parentDisplay ? FLEX_OR_GRID.test( ctx.parentDisplay ) : null );

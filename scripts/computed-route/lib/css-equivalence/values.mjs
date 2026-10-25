@@ -51,7 +51,7 @@ export function canonical( prop, value ) {
 
 // Whether two values of `prop` paint the same. A timing list compares item by item (the items pair with the element's
 // transition-property list, so their order counts); a transform by its matrix.
-export function sameCanonical( prop, a, b ) {
+export function sameCanonical( prop, a, b, ctx = {} ) {
 	if ( undefined === a || undefined === b || null === a || null === b ) {
 		return false;
 	}
@@ -62,7 +62,7 @@ export function sameCanonical( prop, a, b ) {
 		const [ ma, mb ] = [ transformMatrix( a ), transformMatrix( b ) ];
 		return ma && mb ? sameMatrix( ma, mb ) : String( a ).trim() === String( b ).trim();
 	}
-	return samePaint( prop, a, b );
+	return samePaint( prop, a, b, ctx );
 }
 
 // Whether two per-width values agree at every width both state, with at least one shared width.
