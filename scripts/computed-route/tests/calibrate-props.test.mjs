@@ -26,6 +26,14 @@ test( 'MUST FAIL: calibration reads every property a block default, the theme or
 	assert.deepEqual( missing, [], 'unread properties have no recorded default paint, so a draft value equal to the block default reads as a no-setting row' );
 } );
 
+// Phase 3 loop 1 (.claude/reports/2026-10-25-no-setting-diagnosis.md): position and z-index painted by block stylesheets
+// (`.sgs-container`, `.sgs-hero`, `:where(.sgs-container) > *`) were never read, so ~741 Indus rows had an unmeasured default;
+// the resting transition list and behaviour, and background-origin, could not settle against the default paint.
+test( 'MUST FAIL: position, z-index, the transition list and behaviour, and background-origin are read', () => {
+	const missing = [ 'position', 'z-index', 'transition-property', 'transition-behavior', 'background-origin' ].filter( ( p ) => ! READ_PROPS.includes( p ) );
+	assert.deepEqual( missing, [] );
+} );
+
 test( 'MUST FAIL: an inset setting is read on all four sides', () => {
 	assert.deepEqual( longhands( 'inset' ), [ 'top', 'right', 'bottom', 'left' ] );
 } );
