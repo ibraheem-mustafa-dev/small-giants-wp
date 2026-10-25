@@ -4,6 +4,7 @@ import {
 	useInnerBlocksProps,
 	InnerBlocks,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import {
@@ -20,7 +21,8 @@ import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePa
 import { elementCustomProperties, requiresBox } from '../../components/media/canvasStyle';
 import { usePreviewTier } from '../../utils';
 import LayerImagePanel from './LayerImagePanel';
-import { layerPreviewStyle } from './layer-preview';
+import LayerBoxPanels from './LayerBoxPanels';
+import { layerPreviewStyle, layerBoxPreview } from './layer-preview';
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -104,6 +106,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// preview shows the tier the editor is previewing, a narrower tier inheriting
 	// from the wider one as the frontend's @media overrides do.
 	const previewTier = usePreviewTier();
+	const [ colourPalette ] = useSettings( 'color.palette' );
 
 	// -------------------------------------------------------------------------
 	// Media-atom canvas mirror (Wave 6, 2026-09-02) — object-fit/focal-point/
@@ -162,6 +165,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		previewTier,
 		0 < blockCount
 	);
+	// The layer's own box (border, fill, shadow, height), painted on the same element as the position.
+	const boxStyle = layerBoxPreview( attributes, previewTier, colourPalette );
 	const widthUnitValue = widthUnit || 'px';
 	const widthLabel = '%' === widthUnitValue
 		? __( 'Width (%)', 'sgs-blocks' )
@@ -169,6 +174,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	return (
 		<>
+			<LayerBoxPanels attributes={ attributes } setAttributes={ setAttributes } />
 			<InspectorControls>
 				<LayerImagePanel
 					media={ effectiveMedia }
@@ -313,7 +319,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							value={ maxWidthPercent }
 							onChange={ ( val ) => setAttributes( { maxWidthPercent: val } ) }
 							min={ 0 }
-							max={ 50 }
+							max={ 100 }
 							step={ 1 }
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize
@@ -590,7 +596,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							]
 								.filter( Boolean )
 								.join( ' ' ) }
-							style={ { ...layerStyle, ...mediaBoxStyle } }
+							style={ { ...layerStyle, ...boxStyle, ...mediaBoxStyle } }
 						>
 							{ effectiveMedia && 'video' === effectiveMedia.type && (
 								<video

@@ -113,10 +113,56 @@ $width_mobile        = $width_obj['mobile'] ?? null;
 $rotation_mobile     = $rotation_obj['mobile'] ?? null;
 $hide_on_mobile      = $attributes['hideOnMobile'] ?? false;
 
-// A layer needs media, inner content, or both. Content is the rendered inner blocks.
+// A layer needs media, inner content, or both, or it paints a box of its own (a ring, a
+// disc, a tinted panel). Content is the rendered inner blocks.
 $has_media   = ! ( empty( $decor_media['url'] ) && ! $image_url );
 $has_content = '' !== trim( (string) $content );
-if ( ! $has_media && ! $has_content ) {
+
+// The box the layer paints itself: border, shadow and fill on the layer root, from the
+// same shared assemblers sgs/before-after uses. The uid and root selector are needed
+// here because the border's gradient ring is a standalone rule on the root.
+$uid      = 'sgs-di-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
+$root_sel = '.' . $uid . '.sgs-decorative-image';
+
+$sgs_di_border = sgs_border_element_decls(
+	$attributes,
+	'',
+	$root_sel,
+	array(
+		'colour' => array(
+			'base'     => 'borderColour',
+			'gradient' => 'borderColourGradient',
+		),
+		'radius' => 'borderRadius',
+		'facts'  => true,
+	)
+);
+$sgs_di_shadow = sgs_shadow_decls(
+	$attributes,
+	array(
+		'base'         => 'boxShadow',
+		'colour'       => 'boxShadowColour',
+		'hover'        => 'boxShadowHover',
+		'hover_colour' => 'boxShadowColourHover',
+	),
+	$block->name ?? ''
+);
+$sgs_di_fill   = sgs_background_paint_decl(
+	isset( $attributes['backgroundColour'] ) ? (string) $attributes['backgroundColour'] : '',
+	isset( $attributes['backgroundColourGradient'] ) ? (string) $attributes['backgroundColourGradient'] : ''
+);
+$sgs_di_height = sgs_responsive_normalise_object( $attributes['height'] ?? null );
+
+// A layer with no media and no content renders only when it has something to draw: a
+// border width or gradient ring, a shadow or a fill. A height or a radius alone draws nothing.
+$sgs_di_paints_box = '' !== $sgs_di_border['facts']['width_top']
+	|| array() !== $sgs_di_border['tablet']
+	|| array() !== $sgs_di_border['mobile']
+	|| array() !== $sgs_di_border['rules']
+	|| array() !== $sgs_di_shadow['normal']
+	|| '' !== $sgs_di_fill;
+$sgs_di_shape_only = ! $has_media && ! $has_content;
+if ( $sgs_di_shape_only && ! $sgs_di_paints_box ) {
 	return;
 }
 
@@ -128,9 +174,6 @@ $width_unit     = in_array( $width_unit_raw, array( 'px', '%', 'auto' ), true ) 
 // Scoped CSS assembly (contract §A). uid is a CLASS — this block declares
 // `supports.anchor`, so the scope token must never be an id (Spec 32 FR-32-4).
 // ---------------------------------------------------------------------------
-
-$uid      = 'sgs-di-' . substr( md5( wp_json_encode( $attributes ) ), 0, 8 );
-$root_sel = '.' . $uid . '.sgs-decorative-image';
 
 // Base declarations — position/size/opacity/z-index/transform. `opacity`
 // reads a CSS custom property so the runtime fade-on-scroll in view.js only
@@ -180,7 +223,11 @@ $root_decls = array_merge(
 		'z-index:' . $z_index_css,
 		'transform:' . $sgs_di_transform( $rotation ),
 		'overflow:' . $overflow,
-	)
+	),
+	$sgs_di_border['base'],
+	$sgs_di_shadow['normal'],
+	'' !== $sgs_di_fill ? array( $sgs_di_fill ) : array(),
+	'' !== sgs_css_length_value( $sgs_di_height['desktop'] ?? '' ) ? array( 'height:' . sgs_css_length_value( $sgs_di_height['desktop'] ) ) : array()
 );
 
 $scoped_css   = array();
@@ -239,6 +286,26 @@ $sgs_di_tier_css   = sgs_responsive_css_rule(
 if ( '' !== $sgs_di_tier_css ) {
 	$scoped_css[] = $sgs_di_tier_css;
 }
+
+// The box's own tiers (border width and radius, height), its hover shadow and its gradient
+// ring. Tier rules print after the base rule, so a device value wins inside its query.
+foreach ( array( 'tablet' => 1023, 'mobile' => 767 ) as $sgs_di_tier => $sgs_di_max ) {
+	$sgs_di_tier_decls = $sgs_di_border[ $sgs_di_tier ];
+	$sgs_di_tier_h     = sgs_css_length_value( $sgs_di_height[ $sgs_di_tier ] ?? '' );
+	if ( '' !== $sgs_di_tier_h ) {
+		$sgs_di_tier_decls[] = 'height:' . $sgs_di_tier_h;
+	}
+	if ( $sgs_di_tier_decls ) {
+		$scoped_css[] = '@media(max-width:' . $sgs_di_max . 'px){' . $root_sel . '{' . implode( ';', $sgs_di_tier_decls ) . ';}}';
+	}
+}
+if ( $sgs_di_border['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $sgs_di_border['hover'] ) );
+}
+if ( $sgs_di_shadow['hover'] ) {
+	$scoped_css[] = sgs_hover_state_rules( $root_sel, implode( ';', $sgs_di_shadow['hover'] ), ':focus-within' );
+}
+$scoped_css = array_merge( $scoped_css, $sgs_di_border['rules'] );
 
 // ---------------------------------------------------------------------------
 // Media-atom layer (Wave 6, 2026-09-02) — object-fit / focal-point (element
@@ -423,7 +490,7 @@ $has_treatment = $has_media && sgs_motion_root_has_effect( $attributes, 'surface
 // the identical constraint independently). Generalising the wrapper-takes-
 // root-role shape this file already uses for $has_treatment means overlay
 // gets it for free with no second implementation.
-$sgs_di_wants_wrapper = $has_treatment || $sgs_di_requires_box || $has_content;
+$sgs_di_wants_wrapper = $has_treatment || $sgs_di_requires_box || $has_content || $sgs_di_shape_only;
 
 $tier_imgs = array();
 foreach ( $has_media ? array( 'Tablet', 'Mobile' ) : array() as $sgs_tier ) {
@@ -503,6 +570,9 @@ if ( $sgs_di_wants_wrapper ) {
 	if ( $has_treatment ) {
 		$sgs_di_wrapper_class[] = 'sgs-decorative-image--treated';
 	}
+	if ( $sgs_di_shape_only ) {
+		$sgs_di_wrapper_class[] = 'sgs-decorative-image--shape';
+	}
 	if ( $sgs_di_requires_box ) {
 		// `sgs-media-box` is the shared atom layer's marker for the overlay's
 		// ::after paint (class-sgs-media-element.php::CLASS_BOX) — added
@@ -520,7 +590,7 @@ if ( $sgs_di_wants_wrapper ) {
 	if ( '' !== $sgs_di_anchor ) {
 		$wrapper_attrs['id'] = $sgs_di_anchor;
 	}
-	if ( $image_decorative && ! $has_content ) {
+	if ( ( $image_decorative || $sgs_di_shape_only ) && ! $has_content ) {
 		$wrapper_attrs['aria-hidden'] = 'true';
 		$wrapper_attrs['role']        = 'presentation';
 	}
