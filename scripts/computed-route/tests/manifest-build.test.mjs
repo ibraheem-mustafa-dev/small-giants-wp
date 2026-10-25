@@ -312,15 +312,88 @@ test( 'argument errors are usage errors that name the problem', () => {
 	f.done();
 } );
 
-test( 'a form or post row is unmatched and the command still exits 0', () => {
-	const out = run( [ row( 'sgs_form', 'enquiry', 8 ), row( 'post', 'news', 9 ) ], [ rec( 'S-1', 'form', 'Enquiry Form' ) ] );
-	assert.deepEqual( out.entries[ 'form-enquiry' ].states, { resting: null } );
-	assert.equal( out.unmatched.length, 2 );
+test( 'a row of a post type with no record kind is unmatched and the command still exits 0', () => {
+	const out = run( [ row( 'sgs_modal_x', 'enquiry', 8 ) ], [ rec( 'S-1', 'form', 'Enquiry Form' ) ] );
+	assert.deepEqual( out.entries[ 'enquiry' ].states, { resting: null } );
+	assert.equal( out.unmatched.length, 1 );
 	assert.equal( out.unresolved.length, 0 );
 	const f = fixture( { rows: [ row( 'sgs_form', 'enquiry', 8 ) ], records: [] } );
 	const got = f.go();
-	assert.equal( got.status, 0, said( got ) );
+	assert.equal( got.status, 1, said( got ) );
+	assert.match( said( got ), /states-unresolved form-enquiry: no form record matches/ );
 	f.done();
+} );
+
+// The Indus forms: two inline in the entry draft (slug = the page's route), two component files mounted by a page.
+const formRecords = [
+	rec( 'S-48', 'form', 'Inline form (careers)', undefined, { dc: 'Site', route: '/careers', page_key: 'careers' } ),
+	rec( 'S-50', 'form', 'Inline form (catalogue)', undefined, { dc: 'Site', route: '/catalogue', page_key: 'catalogue' } ),
+	rec( 'S-52', 'form', 'Trade account application', undefined, { dc: 'TradeApplication', route: '/apply', page_key: 'apply' } ),
+	rec( 'S-59', 'form', 'Contact enquiry', undefined, { dc: 'EnquiryForm', route: '/contact', page_key: 'contact' } ),
+];
+const formRows = [
+	row( 'sgs_form', 'enquiry', 149, { title: 'Enquiry Form' } ),
+	row( 'sgs_form', 'careers', 151, { title: 'Register your interest' } ),
+	row( 'sgs_form', 'catalogue', 153, { title: 'Where should we send it?' } ),
+	row( 'sgs_form', 'trade-application', 163, { title: 'Trade Application' } ),
+];
+
+test( 'MUST FAIL: a form row matches its handoff record by the page it sits on, never by title', () => {
+	const ids = Object.fromEntries( formRows.map( ( r ) => [ r.slug, matchRecord( r, formRecords ).record?.id ] ) );
+	assert.deepEqual( ids, { enquiry: 'S-59', careers: 'S-48', catalogue: 'S-50', 'trade-application': 'S-52' } );
+	// a row that names its own route wins over its slug, and a form prefix on the slug is not part of the page
+	assert.equal( matchRecord( row( 'sgs_form', 'form-x', 1, { route: '/apply' } ), formRecords ).record.id, 'S-52' );
+	assert.equal( matchRecord( row( 'sgs_form', 'form-careers', 1 ), formRecords ).record.id, 'S-48' );
+	// a title equal to a record's name is not a match
+	const byTitle = matchRecord( row( 'sgs_form', 'nothing', 1, { title: 'Contact enquiry' } ), formRecords );
+	assert.equal( byTitle.record, undefined );
+	assert.match( byTitle.reason, /no form record matches/ );
+} );
+
+test( 'MUST FAIL: two form records on one page are unresolved, not picked', () => {
+	const two = [ ...formRecords, rec( 'S-60', 'form', 'Second', undefined, { dc: 'Site', route: '/careers', page_key: 'careers' } ) ];
+	const m = matchRecord( row( 'sgs_form', 'careers', 151 ), two );
+	assert.equal( m.record, undefined );
+	assert.match( m.reason, /2 form records match \(S-48, S-60\)/ );
+} );
+
+test( 'MUST FAIL: a form surface is read on its page route and provides its form; no form is unmatched', () => {
+	const out = run( formRows, formRecords );
+	assert.equal( out.unmatched.length, 0 );
+	assert.equal( out.unresolved.length, 0 );
+	assert.deepEqual( Object.fromEntries( Object.entries( out.entries ).map( ( [ k, e ] ) => [ k, e.draftRoute ] ) ), { 'form-enquiry': '/contact', 'form-careers': '/careers', 'form-catalogue': '/catalogue', 'form-trade-application': '/apply' } );
+	assert.deepEqual( out.entries[ 'form-enquiry' ].provides, [ 'sgs/form:enquiry' ] );
+	assert.deepEqual( out.entries[ 'form-enquiry' ].draftIndex, 'Site.dc.html' );
+	assert.deepEqual( Object.entries( out.matched ).map( ( [ k, id ] ) => `${ k }=${ id }` ), [ 'form-enquiry=S-59', 'form-careers=S-48', 'form-catalogue=S-50', 'form-trade-application=S-52' ] );
+} );
+
+// Draft posts: one theme template surface for a single post, each post row content-only.
+const postRows = [ row( 'post', 'first-post', 137, { route: 'post-post-1' } ), row( 'post', 'second-post', 139, { route: 'post-post-2' } ) ];
+const postRecords = [ rec( 'S-39', 'page', 'First', undefined, { page_key: 'post-post-1', route: '/post-post-1', blocks: [ 'article', 'posts', 'cta' ] } ), rec( 'S-40', 'page', 'Second', undefined, { page_key: 'post-post-2', route: '/post-post-2' } ) ];
+
+test( 'MUST FAIL: the post rows give one single-template surface shaped from the first draft post, and each post row is content-only', () => {
+	const out = run( postRows, postRecords );
+	assert.deepEqual( Object.keys( out.entries ), [ 'first-post', 'second-post', 'single' ] );
+	const t = out.entries.single;
+	assert.deepEqual( t.target, { template: 'single' } );
+	assert.equal( t.canvas, true );
+	assert.equal( t.fromPost, 'first-post' );
+	assert.equal( t.tree, out.entries[ 'first-post' ].tree );
+	assert.equal( t.walker, 'qa/parity/single.fill-base.mjs' );
+	assert.equal( t.draftRoute, '/post-post-1' );
+	assert.equal( out.matched.single, 'S-39' );
+	assert.deepEqual( postRows.map( ( r ) => out.entries[ r.slug ].contentOnly ), [ true, true ] );
+	assert.deepEqual( out.entries[ 'first-post' ].target, { postId: 137 } );
+	assert.equal( 'contentOnly' in t, false );
+	assert.equal( out.unmatched.length, 0 );
+} );
+
+test( 'MUST FAIL: no post row gives no template surface; a page with the key single is a hard error; --only single builds only the template', () => {
+	assert.equal( 'single' in run( [ row( 'page', 'home', 1 ) ], [] ).entries, false );
+	assert.throws( () => run( [ ...postRows, row( 'page', 'single', 5 ) ], postRecords ), /both give the key single/ );
+	const only = run( postRows, postRecords, { only: [ 'single' ] } );
+	assert.deepEqual( Object.keys( only.entries ), [ 'single' ] );
+	assert.equal( only.stale.length, 0 );
 } );
 
 test( '--only limits the run to the named keys; an unknown key is a usage error naming the valid ones', () => {
