@@ -94,6 +94,7 @@
 								"css:border-color": "borderColourHover",
 								"css:border-color-gradient": "borderColourHoverGradient",
 								"css:box-shadow": "boxShadowHover",
+								"css:font-weight": "fontWeightHover",
 								"css:-webkit-text-stroke-color": "textStrokeColourHover"
 							}
 						}
@@ -284,6 +285,10 @@
 				"underline"
 			],
 			"default": "none"
+		},
+		"fontWeightHover": {
+			"type": "string",
+			"default": ""
 		},
 		"fontSize": {
 			"type": "object",

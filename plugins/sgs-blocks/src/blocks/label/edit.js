@@ -354,6 +354,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								showTextAlign
 								showTextWrap
 								showTextStroke
+								showNumberStyle
+								showTextShadow
 								showTextColumns
 								showWritingMode
 							/>

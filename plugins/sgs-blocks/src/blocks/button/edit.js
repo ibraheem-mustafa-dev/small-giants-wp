@@ -34,6 +34,7 @@ import {
 	normaliseResponsiveBox,
 	SgsBoxControl,
 	LinkPopoverContent,
+	SGS_FONT_WEIGHT_OPTIONS,
 } from '../../components';
 import {
 	ToolsPanel,
@@ -171,6 +172,7 @@ export default function Edit( {
 		borderColourHover,
 		borderColourHoverGradient,
 		textDecorationHover,
+		fontWeightHover,
 		borderStyle,
 		borderWidth,
 		contentAlign,
@@ -1206,7 +1208,10 @@ export default function Edit( {
 				<ToolsPanel
 					label={ __( 'Hover effects', 'sgs-blocks' ) }
 					resetAll={ () =>
-						setAttributes( { textDecorationHover: 'none' } )
+						setAttributes( {
+							textDecorationHover: 'none',
+							fontWeightHover: '',
+						} )
 					}
 				>
 					<ToolsPanelItem
@@ -1225,6 +1230,25 @@ export default function Edit( {
 							options={ UNDERLINE_HOVER_OPTIONS }
 							onChange={ ( val ) =>
 								setAttributes( { textDecorationHover: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Weight on hover', 'sgs-blocks' ) }
+						hasValue={ () => !! fontWeightHover }
+						onDeselect={ () =>
+							setAttributes( { fontWeightHover: '' } )
+						}
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Weight on hover', 'sgs-blocks' ) }
+							value={ fontWeightHover || '' }
+							options={ SGS_FONT_WEIGHT_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { fontWeightHover: val } )
 							}
 							__nextHasNoMarginBottom
 							__next40pxDefaultSize

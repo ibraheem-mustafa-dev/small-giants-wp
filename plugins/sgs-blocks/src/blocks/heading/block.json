@@ -71,6 +71,9 @@
 						"css:text-wrap": "textWrap",
 						"css:-webkit-text-stroke-width": "textStrokeWidth",
 						"css:-webkit-text-stroke-color": "textStrokeColour",
+						"css:font-variant-numeric": "fontVariantNumeric",
+						"css:text-shadow": "textShadow",
+						"css:text-shadow-color": "textShadowColour",
 						"css:writing-mode": "writingMode",
 						"css:font-family": "fontFamily",
 						"css:padding": "padding",
@@ -422,6 +425,19 @@
 			"default": ""
 		},
 		"textStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"fontVariantNumeric": {
+			"type": "string",
+			"enum": [ "", "normal", "tabular-nums", "proportional-nums", "lining-nums", "oldstyle-nums" ],
+			"default": ""
+		},
+		"textShadow": {
+			"type": "string",
+			"default": ""
+		},
+		"textShadowColour": {
 			"type": "string",
 			"default": ""
 		},

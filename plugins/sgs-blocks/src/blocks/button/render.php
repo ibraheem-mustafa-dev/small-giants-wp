@@ -462,6 +462,12 @@ if ( 'underline' === $text_decoration_hover ) {
 	$hover_rules[] = 'text-decoration:underline';
 }
 
+// Hover weight: a bare keyword or number (400, 700, bold). Empty keeps the resting weight on hover and focus.
+$font_weight_hover = preg_replace( '/[^a-z0-9]/i', '', (string) ( $attributes['fontWeightHover'] ?? '' ) );
+if ( '' !== (string) $font_weight_hover ) {
+	$hover_rules[] = 'font-weight:' . $font_weight_hover;
+}
+
 // Hover box shadow.
 if ( $box_shadow_decls['hover'] ) {
 	$hover_rules = array_merge( $hover_rules, $box_shadow_decls['hover'] );

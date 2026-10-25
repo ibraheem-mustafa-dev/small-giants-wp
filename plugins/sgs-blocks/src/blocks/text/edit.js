@@ -548,6 +548,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						showTextAlign={ true }
 						showTextWrap={ true }
 						showTextStroke
+						showNumberStyle
+						showTextShadow
 						showTextColumns={ true }
 						showTextIndent={ true }
 						showWritingMode={ true }
