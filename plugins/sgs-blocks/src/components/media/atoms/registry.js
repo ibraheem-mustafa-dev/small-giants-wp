@@ -314,7 +314,8 @@ export const MEDIA_ATOMS = {
 			},
 			'sgs/decorative-image': {
 				// This is sgs/decorative-image's OWN independent maxWidthPercent —
-				// a block-private attr that never adopted the box-shape atom, and
+				// a block-private attr (the block takes this atom's Shape
+				// vocabulary only, not its bases), and
 				// is UNRELATED to (and unaffected by) the shared atom's own
 				// MaxWidthPercent, which was deleted 2026-09-07 — see
 				// box-shape.js's docblock note on that deletion.

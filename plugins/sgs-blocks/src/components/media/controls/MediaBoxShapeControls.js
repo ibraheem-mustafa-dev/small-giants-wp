@@ -42,7 +42,7 @@ const MODE_OPTIONS = [
 	{ label: __( 'Fill space', 'sgs-blocks' ), value: 'fill' },
 ];
 
-const SHAPE_OPTIONS = [
+export const SHAPE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 	{ label: __( 'Rounded', 'sgs-blocks' ), value: 'rounded' },
 	{ label: __( 'Circle', 'sgs-blocks' ), value: 'circle' },

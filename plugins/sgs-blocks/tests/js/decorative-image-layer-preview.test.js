@@ -97,3 +97,17 @@ describe( 'layerBoxPreview', () => {
 		expect( layerBoxPreview( {}, 'desktop' ) ).toEqual( {} );
 	} );
 } );
+
+describe( 'layerBoxPreview shape', () => {
+	it( 'clips the canvas layer to the shape render.php clips the root to', () => {
+		expect( layerBoxPreview( { shape: 'circle' }, 'desktop', [] ).clipPath ).toBe( 'circle(50%)' );
+		expect( layerBoxPreview( { shape: 'rounded' }, 'desktop', [] ).clipPath ).toBe( 'inset(0 round 12px)' );
+		expect( layerBoxPreview( { shape: 'square' }, 'desktop', [] ).clipPath ).toBe( 'inset(0)' );
+	} );
+
+	it( 'no shape, none or an unknown shape prints no clip', () => {
+		[ {}, { shape: 'none' }, { shape: 'hexagon' } ].forEach( ( attrs ) => {
+			expect( layerBoxPreview( attrs, 'desktop', [] ).clipPath ).toBeUndefined();
+		} );
+	} );
+} );
