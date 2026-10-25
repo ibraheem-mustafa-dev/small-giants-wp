@@ -224,6 +224,8 @@ Per client, inside `S site-run-start <client>` / `S site-run-end`. The order is 
 5. the walker at 1440/768/375 with hover, effects and motion, three surfaces at a time in the background (a failed surface is logged and the run continues);
 6. `census-all.mjs` over the three clients.
 
+**Phase 2 interrupted for Phase 3 loop 1 (Bean, 2026-10-25).** The first Indus pass (25 of 40 surfaces, driver `scripts/computed-route/site-run.mjs`) showed about 80% of Fill's `no-setting` rows are the route's own faults (`.claude/reports/2026-10-25-no-setting-diagnosis.md`), so the faults are fixed before Mama's and Eye Care are cloned: `.claude/plans/2026-10-25-phase3-loop1.md`. A council rejected moving Fill to Node parse-only reading (Spec 48 FR-48-24 stands; Fill gains a state opener instead). Phase 2 also gains: the form kind in the manifest, the single-post template surface, and Eye Care's full intake (its intake is palette-only).
+
 **Done when** Bean has the cross-client cause table: each mechanism class with its rows per client, the existing setting or mechanism it lands on, and the Spec 48 FR that owns it.
 
 ## Phase 3: root causes and universal fixes (waits on Phase 2's table)
