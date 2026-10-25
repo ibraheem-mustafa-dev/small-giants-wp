@@ -16,7 +16,8 @@
  * writing-mode and column-count as flat values, each against the same
  * allowlist PHP uses; -webkit-text-stroke-width per device tier and
  * -webkit-text-stroke-color as a solid colour (the hover colour is not
- * previewed inline: an inline style cannot carry :hover). text-indent is not mirrored: PHP emits it only on a
+ * previewed inline: an inline style cannot carry :hover). font-variant-numeric and
+ * text-shadow (X Y BLUR layers, colour from the sibling attribute) mirror their PHP rule too. text-indent is not mirrored: PHP emits it only on a
  * caller-supplied adjacent-sibling selector, never on the element itself.
  *
  * The device tier is the one the editor is previewing (pass usePreviewTier()):
@@ -36,6 +37,7 @@
  */
 
 import { colourVar } from './tokens';
+import { splitTop, parseLayer, resolveColour, formatLength, MAX_BYTES, MAX_LAYERS } from './shadow-layers';
 
 const TIER_CHAIN = {
 	desktop: [ 'desktop' ],
@@ -62,6 +64,52 @@ const KEYWORD_SUFFIXES = {
 	'TextWrap': [ 'textWrap', [ 'wrap', 'nowrap', 'balance', 'pretty', 'stable' ] ],
 	'WritingMode': [ 'writingMode', [ 'horizontal-tb', 'vertical-rl', 'vertical-lr' ] ],
 };
+
+const NUMBER_STYLES = [ 'normal', 'tabular-nums', 'proportional-nums', 'lining-nums', 'oldstyle-nums' ];
+
+// Twin of sgs_font_variant_numeric_value(): every keyword on the list, or nothing.
+function numberStyleValue( raw ) {
+	if ( 'string' !== typeof raw || '' === raw.trim() ) {
+		return '';
+	}
+	const tokens = [ ...new Set( raw.trim().toLowerCase().split( /\s+/ ) ) ];
+	return tokens.length <= NUMBER_STYLES.length && tokens.every( ( t ) => NUMBER_STYLES.includes( t ) ) ? tokens.join( ' ' ) : '';
+}
+
+// Twin of sgs_text_shadow_value(): X Y BLUR layers, never a spread or `inset`; a layer's own colour wins over the
+// sibling colour, and with neither it prints no colour.
+function textShadowValue( shape, colour ) {
+	const text = 'string' === typeof shape ? shape.trim() : '';
+	if ( '' === text || text.length > MAX_BYTES ) {
+		return '';
+	}
+	if ( 'none' === text.toLowerCase() ) {
+		return 'none';
+	}
+	const layers = splitTop( text, ',' );
+	if ( layers.length > MAX_LAYERS ) {
+		return '';
+	}
+	const list = 'string' === typeof colour && '' !== colour.trim() ? splitTop( colour, ',' ).slice( 0, 64 ) : [];
+	const out = [];
+	let last = '';
+	layers.forEach( ( layer, index ) => {
+		if ( list[ index ] ) {
+			last = list[ index ];
+		}
+		const fields = parseLayer( layer );
+		if ( ! fields || fields.inset ) {
+			return;
+		}
+		const given = null !== fields.colour ? fields.colour : last;
+		const css = '' !== given ? resolveColour( given ) : '';
+		if ( null === css ) {
+			return;
+		}
+		out.push( `${ formatLength( fields.x ) } ${ formatLength( fields.y ) } ${ formatLength( fields.blur ) }${ css ? ' ' + css : '' }` );
+	} );
+	return out.join( ', ' );
+}
 
 const isUnset = ( v ) => undefined === v || null === v || '' === v || 'inherit' === v;
 
@@ -213,6 +261,16 @@ export function typographyPreviewStyle( attributes, prefix = '', tier = 'desktop
 	const strokeColour = colourVar( attributes[ attrKey( 'TextStrokeColour' ) ] );
 	if ( strokeColour ) {
 		style.WebkitTextStrokeColor = strokeColour;
+	}
+
+	const numeric = numberStyleValue( attributes[ attrKey( 'FontVariantNumeric' ) ] );
+	if ( numeric ) {
+		style.fontVariantNumeric = numeric;
+	}
+
+	const textShadow = textShadowValue( attributes[ attrKey( 'TextShadow' ) ], attributes[ attrKey( 'TextShadowColour' ) ] );
+	if ( textShadow ) {
+		style.textShadow = textShadow;
 	}
 
 	const columns = attributes[ attrKey( 'TextColumns' ) ];

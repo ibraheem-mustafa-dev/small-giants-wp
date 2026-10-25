@@ -795,6 +795,10 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'TextStrokeWidth',
 		'TextStrokeColour',
 		'TextStrokeColourHover',
+		// Number style and text shadow: read through the same dynamic-key call.
+		'FontVariantNumeric',
+		'TextShadow',
+		'TextShadowColour',
 		// Added 2026-09-06 alongside the helper's column-count / text-indent /
 		// writing-mode branches — same dynamic-key reason as every suffix above.
 		//

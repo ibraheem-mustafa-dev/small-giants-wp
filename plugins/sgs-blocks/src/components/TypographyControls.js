@@ -88,6 +88,7 @@ import {
 import ResponsiveControl from './ResponsiveControl';
 import ResponsiveOverride from './ResponsiveOverride';
 import DesignTokenPicker from './DesignTokenPicker';
+import { NumberStyleRow, TextShadowRow } from './TypographyNumberShadowRows';
 import {
 	VStack,
 	UnitControl,
@@ -397,6 +398,10 @@ export function typographyAttrKeys( prefix ) {
 		textStrokeWidth: typographyAttrName( prefix, 'TextStrokeWidth' ),
 		textStrokeColour: typographyAttrName( prefix, 'TextStrokeColour' ),
 		textStrokeColourHover: typographyAttrName( prefix, 'TextStrokeColourHover' ),
+		// OPT-IN (showNumberStyle / showTextShadow).
+		fontVariantNumeric: typographyAttrName( prefix, 'FontVariantNumeric' ),
+		textShadow: typographyAttrName( prefix, 'TextShadow' ),
+		textShadowColour: typographyAttrName( prefix, 'TextShadowColour' ),
 		// Hover companions (D309). Consumed only when showHover is enabled AND the
 		// block declares + renders them (else the dead-control gate flags it).
 		fontWeightHover: typographyAttrName( prefix, 'FontWeightHover' ),
@@ -493,6 +498,12 @@ function parseUnitValue( raw, currentUnit ) {
  *   OPT-IN: only pass true when the block declares {prefix}TextStrokeWidth,
  *   {prefix}TextStrokeColour and {prefix}TextStrokeColourHover. Emitted
  *   server-side by sgs_typography_css_rule().
+ * @param {boolean}  [props.showNumberStyle=false] Offer a number style dropdown
+ *   (`font-variant-numeric`). OPT-IN: only pass true when the block declares
+ *   {prefix}FontVariantNumeric. Emitted server-side by sgs_typography_css_rule().
+ * @param {boolean}  [props.showTextShadow=false] Offer a text shadow (X, Y, blur
+ *   and colour). OPT-IN: only pass true when the block declares {prefix}TextShadow
+ *   and {prefix}TextShadowColour. Emitted server-side by sgs_typography_css_rule().
  * @param {boolean}  [props.showFontFamily=false] Offer a font-family picker
  *   sourced from the theme.json `typography.fontFamilies` preset list (same
  *   opt-in shape as fontSizePresets). OPT-IN: only pass true when the block
@@ -518,6 +529,8 @@ function TypographyControlsFields( {
 	showTextAlign = false,
 	showTextWrap = false,
 	showTextStroke = false,
+	showNumberStyle = false,
+	showTextShadow = false,
 	showTextColumns = false,
 	showTextIndent = false,
 	showWritingMode = false,
@@ -1424,6 +1437,16 @@ function TypographyControlsFields( {
 						] }
 					/>
 				</>
+			) }
+
+			{ /* ── Number style and text shadow ── SGS-ONLY (core has neither).
+			     OPT-IN (showNumberStyle / showTextShadow): the block must DECLARE
+			     the attributes first (D338); see TypographyNumberShadowRows.js. */ }
+			{ showNumberStyle && (
+				<NumberStyleRow attributes={ attributes } setAttributes={ setAttributes } keys={ k } />
+			) }
+			{ showTextShadow && (
+				<TextShadowRow attributes={ attributes } setAttributes={ setAttributes } keys={ k } />
 			) }
 
 			{ /* Hover typography (D309). Opt-in: only render for a block that

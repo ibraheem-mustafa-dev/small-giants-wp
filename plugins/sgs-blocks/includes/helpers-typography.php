@@ -46,6 +46,7 @@ require_once __DIR__ . '/helpers-hover-state.php';
 // sgs_link_underline_css() — how the links sgs_link_colour_css() colours are
 // underlined; loaded here so every caller of one has the other.
 require_once __DIR__ . '/helpers-link-underline.php';
+require_once __DIR__ . '/helpers-text-shadow.php';
 
 if ( ! function_exists( 'sgs_typography_attr' ) ) {
 	/**
@@ -195,6 +196,9 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$k_stroke      = sgs_typography_attr( $prefix, 'TextStrokeWidth' );
 		$k_stroke_col  = sgs_typography_attr( $prefix, 'TextStrokeColour' );
 		$k_stroke_hov  = sgs_typography_attr( $prefix, 'TextStrokeColourHover' );
+		$k_numeric     = sgs_typography_attr( $prefix, 'FontVariantNumeric' );
+		$k_shadow      = sgs_typography_attr( $prefix, 'TextShadow' );
+		$k_shadow_col  = sgs_typography_attr( $prefix, 'TextShadowColour' );
 
 		// Numeric responsive families (font-size / line-height / letter-spacing) may
 		// each be stored EITHER as the modern {desktop,tablet,mobile} OBJECT (Spec 35
@@ -482,6 +486,22 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$stroke_colour = isset( $attributes[ $k_stroke_col ] ) ? sgs_colour_value( (string) $attributes[ $k_stroke_col ] ) : '';
 		if ( '' !== $stroke_colour ) {
 			$base_decls[] = '-webkit-text-stroke-color:' . $stroke_colour . ';';
+		}
+
+		// Number style — a short allowlist of figure keywords (tabular figures keep a changing number's digits
+		// the same width). Flat scalar, no responsive tier. An unset or off-list value prints nothing.
+		$numeric = sgs_font_variant_numeric_value( $attributes[ $k_numeric ] ?? '' );
+		if ( '' !== $numeric ) {
+			$base_decls[] = 'font-variant-numeric:' . $numeric . ';';
+		}
+
+		// Text shadow — X Y BLUR layers plus an optional colour, composed by sgs_text_shadow_value().
+		$text_shadow = sgs_text_shadow_value(
+			isset( $attributes[ $k_shadow ] ) ? (string) $attributes[ $k_shadow ] : '',
+			isset( $attributes[ $k_shadow_col ] ) ? (string) $attributes[ $k_shadow_col ] : ''
+		);
+		if ( '' !== $text_shadow ) {
+			$base_decls[] = 'text-shadow:' . $text_shadow . ';';
 		}
 
 		if ( ! empty( $base_decls ) ) {
