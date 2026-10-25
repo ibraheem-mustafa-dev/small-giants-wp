@@ -9,7 +9,7 @@ import path from 'path';
 import { openDb } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { recogniseBehaviour, hostsFromTemplate } from './motion-behaviours.mjs';
-import { validateMotionWrite } from './motion-validate.mjs';
+import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { timeToMs } from './resolve.mjs';
 
@@ -258,7 +258,7 @@ export function applyControls( { controls, written, out, schema = undefined } ) 
 		const element = 'hover.effects' === target.list ? { hover: { effects: [ merged ] } } : { effects: [ merged ] };
 		const verdict = undefined === schema ? { valid: true } : validateMotionWrite( { v: 1, elements: { [ target.at ]: element } }, schema );
 		if ( ! verdict.valid ) {
-			out.unmapped.push( { ...at, property: 'motion', value: r.id, reason: `${ b.effect } ${ JSON.stringify( b.values ) } on ${ b.of }'s layer is refused: ${ [ ...verdict.errors, ...verdict.refusals ].join( '; ' ) }` } );
+			out.unmapped.push( { ...at, property: 'motion', value: r.id, reason: `${ b.effect } ${ JSON.stringify( b.values ) } on ${ b.of }'s layer is refused: ${ verdictProblems( verdict ).join( '; ' ) }` } );
 			continue;
 		}
 		target.layer.values = merged.values;

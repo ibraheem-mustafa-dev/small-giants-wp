@@ -64,11 +64,15 @@ export function validateMotionWrite( doc, schema ) {
 	return { valid: result.valid && custom.length === 0, errors: [ ...result.errors, ...custom ], refusals: result.refusals };
 }
 
+// Every problem of a verdict as text: its errors, then each refusal's text (a refusal is a string or
+// { id, text, layers }, lib/motion-refusals.mjs::elementRefusals).
+export const verdictProblems = ( verdict ) => [ ...verdict.errors, ...verdict.refusals.map( ( r ) => ( 'string' === typeof r ? r : r.text ) ) ];
+
 // Throws one Error listing every problem; returns the document when it is writable.
 export function assertMotionWritable( doc, schema ) {
 	const r = validateMotionWrite( doc, schema );
 	if ( ! r.valid ) {
-		throw new Error( `sgsMotion write refused:\n${ [ ...r.errors, ...r.refusals ].map( ( e ) => `  ${ e }` ).join( '\n' ) }` );
+		throw new Error( `sgsMotion write refused:\n${ verdictProblems( r ).map( ( e ) => `  ${ e }` ).join( '\n' ) }` );
 	}
 	return doc;
 }

@@ -6,7 +6,7 @@
 // (lib/fill-entrance.mjs) are the render check: a width whose measured delay or duration differs from the code by more
 // than one sampling step writes that tier's value, and the difference is reported.
 import { stateMotionRecords, MOTION_STATE_PROPS } from './fill-state-motion.mjs';
-import { validateMotionWrite } from './motion-validate.mjs';
+import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { classify } from './motion-layers.mjs';
 import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
@@ -195,7 +195,7 @@ function itemHost( db, block ) {
 export function writeNode( n, doc, pending, { flat, ref, schema, out, reads } ) {
 	const verdict = validateMotionWrite( doc, schema );
 	if ( ! verdict.valid ) {
-		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: pending.join( ', ' ), reason: `sgsMotion refused: ${ [ ...verdict.errors, ...verdict.refusals.map( ( r ) => ( 'string' === typeof r ? r : r.text ) ) ].join( '; ' ) }` } );
+		out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'motion', value: pending.join( ', ' ), reason: `sgsMotion refused: ${ verdictProblems( verdict ).join( '; ' ) }` } );
 		return;
 	}
 	const { before, after } = setAttr( flat[ n.index ], { attr: 'sgsMotion', value: doc } );
