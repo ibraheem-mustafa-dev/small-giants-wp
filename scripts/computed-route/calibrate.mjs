@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Block calibration command (FR-47-2).
-//   node scripts/computed-route/calibrate.mjs --site eye-care-test --client eye-care-ward-end --blocks sgs/heading,sgs/text
+//   node scripts/computed-route/calibrate.mjs --site local-eye-care --client eye-care-ward-end --blocks sgs/heading,sgs/text
+//   (calibrate on a client's local WSL mirror, `local-*` in calibration-targets.json, refreshed and build-synced first:
+//   .claude/dev-setup.md, scripts/local-wp/README.md; a Hostinger test site overloads under a many-block run)
 //   [--recalibrate] re-measures a block's slot map and this site's default paint even when both are current: one
 //   measured on another site is replaced, and a marker or state-target change (which the read key does not cover)
 //   takes effect.
