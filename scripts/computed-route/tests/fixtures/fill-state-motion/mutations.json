@@ -1,13 +1,13 @@
 [
 	{
 		"file": "lib/fill-motion.mjs",
-		"find": "targetName( n, t, targets ) && ! own.some(",
+		"find": "targetName( n, t, targets, home ) && ! own.some(",
 		"replace": "false && ! own.some(",
 		"why": "a state-look hover would never reach sgsMotion"
 	},
 	{
 		"file": "lib/fill-state.mjs",
-		"find": "if ( mdb && 'hover' === state && ! pseudo && MOTION_STATE_PROPS.includes( prop ) && motionHolds( mdb, rec, target ) ) {",
+		"find": "if ( mdb && 'hover' === state && ! pseudo && MOTION_STATE_PROPS.includes( prop ) && motionHolds( mdb, rec, target, ( el ) => exactHome( db, rec.name, cal, el ) ) ) {",
 		"replace": "if ( false ) {",
 		"why": "the state pass would raise a transform the motion layer writes"
 	},
@@ -58,5 +58,59 @@
 		"find": "held.gaps.forEach(",
 		"replace": "[].forEach(",
 		"why": "a width the motion layer cannot hold would vanish with no row"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "export const MOTION_STATE_PROPS = [ 'transform', ...INDENT_PROPS ];",
+		"replace": "export const MOTION_STATE_PROPS = [ 'transform' ];",
+		"why": "the state pass would raise a start-padding hover the motion layer writes"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "from !== to && properties.push(",
+		"replace": "properties.push(",
+		"why": "a padding hover with no change would write an indent of 0"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "if ( null === to || null === from ) {",
+		"replace": "if ( false ) {",
+		"why": "a calc() or em padding would be guessed as a px delta"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "|| shorthands.includes( p ) );",
+		"replace": "|| false );",
+		"why": "a padding shorthand's transition would not time the padding"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "rest[ key ] ?? rendered[ key ] ?? rendered[ 'padding-left' ] ?? '0px' );\n\t\t\tif",
+		"replace": "'0px' );\n\t\t\tif",
+		"why": "the resting padding would be taken as 0 instead of read from the element"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "const key = INDENT_PROPS.find( ( k ) => look.declared?.[ k ] );",
+		"replace": "const key = 'padding-left' === INDENT_PROPS[ 0 ] && look.declared?.[ 'padding-left' ] ? 'padding-left' : null;",
+		"why": "padding-inline-start would not be read as the same indent"
+	},
+	{
+		"file": "lib/fill-motion.mjs",
+		"find": "reads && ( own = withRestPadding( own, reads, t ) );",
+		"replace": "",
+		"why": "an inventory hover padding would be written as the hover value itself (16) instead of the delta from the resting padding"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "return null === from ? r : {",
+		"replace": "return true ? r : {",
+		"why": "the resting padding would never be filled in"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "( null === p.from || undefined === p.from )",
+		"replace": "true",
+		"why": "a record that names its own resting padding would be overwritten by the element's"
 	}
 ]

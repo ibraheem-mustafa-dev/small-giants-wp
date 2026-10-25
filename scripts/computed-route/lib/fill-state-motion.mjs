@@ -5,7 +5,9 @@
 // has no template identity of its own, so no inventory record reaches it).
 import { READ_WIDTHS } from './fill-read.mjs';
 
-export const MOTION_STATE_PROPS = [ 'transform' ];
+// The state looks the hover layer holds: the transform, and a change of the start padding as `indent` (Spec 38A §5.1).
+export const INDENT_PROPS = [ 'padding-left', 'padding-inline-start' ];
+export const MOTION_STATE_PROPS = [ 'transform', ...INDENT_PROPS ];
 
 // A comma list split outside parentheses ("cubic-bezier(.34, 1.56, .64, 1), ease" is two entries).
 export function splitList( text ) {
@@ -31,46 +33,71 @@ export function splitList( text ) {
 
 const ms = ( t ) => ( /ms$/.test( t ) ? parseFloat( t ) : /s$/.test( t ) ? Math.round( parseFloat( t ) * 1000 ) : NaN );
 
-// The entry of a transition list that times `prop`: the one at the property's place in transition-property, else the
-// first (a list of one is every property's). The list wraps when shorter than the property list, as CSS does.
-function timed( list, props, prop ) {
-	const at = props.findIndex( ( p ) => p === prop || 'all' === p );
+// The entry of a transition list that times `prop`: the one at the property's place in transition-property (the
+// property, a shorthand that holds it, or `all`), else the first (a list of one is every property's). The list wraps
+// when shorter than the property list, as CSS does.
+function timed( list, props, prop, shorthands = [] ) {
+	const at = props.findIndex( ( p ) => p === prop || 'all' === p || shorthands.includes( p ) );
 	const i = at < 0 ? 0 : at;
 	return list.length ? list[ i % list.length ] : undefined;
 }
 
-// The hover transform one width's state looks give a target: { record } (the hover record the motion writer takes),
-// { gap } (a hover transform the motion layer cannot hold, with the reason) or {} (no hover transform at that width).
+// A length in px (a unitless 0 too) as a number, else null.
+const px = ( v ) => ( /^-?(?:\d+\.?\d*|\.\d+)px$/.test( String( v ?? '' ).trim() ) ? parseFloat( v ) : /^0$/.test( String( v ?? '' ).trim() ) ? 0 : null );
+const fmt = ( n ) => `${ Math.round( n * 100 ) / 100 }px`;
+
+// The hover look one width's state looks give a target: { record } (the hover record the motion writer takes, one
+// property for the transform and one for a start-padding change), { gap } (a hover the motion layer cannot hold, with
+// the reason) or {} (no hover transform or start-padding change at that width).
 function hoverAt( reads, target, w ) {
+	const rest = reads.declared?.[ w ]?.[ target.id ] || {};
+	const rendered = reads.widths?.[ w ]?.[ target.id ]?.styles || {};
+	const timing = ( prop, shorthands ) => {
+		const props = splitList( rest[ 'transition-property' ] ?? rendered[ 'transition-property' ] ?? '' );
+		return {
+			duration_ms: ( ( d ) => ( Number.isNaN( d ) ? 0 : d ) )( ms( timed( splitList( rest[ 'transition-duration' ] ?? rendered[ 'transition-duration' ] ), props, prop, shorthands ) ) ),
+			delay_ms: ( ( d ) => ( Number.isNaN( d ) ? 0 : d ) )( ms( timed( splitList( rest[ 'transition-delay' ] ?? rendered[ 'transition-delay' ] ?? '0s' ), props, prop, shorthands ) ) ),
+			easing: timed( splitList( rest[ 'transition-timing-function' ] ?? rendered[ 'transition-timing-function' ] ), props, prop, shorthands ) || 'ease',
+		};
+	};
+	const properties = [];
 	for ( const look of reads.states?.[ w ]?.looks?.[ target.id ] || [] ) {
 		const states = [ ...look.states ].sort().join( '+' );
-		const declared = look.declared?.transform;
-		if ( 'hover' !== states || look.pseudo || ! declared ) {
+		if ( 'hover' !== states || look.pseudo ) {
 			continue;
 		}
-		if ( /var\(|calc\(/.test( declared ) ) {
-			return { gap: `the hover transform at ${ w }px (${ declared }) holds a var() or calc(), and the motion hover layer takes a literal transform` };
+		const declared = look.declared?.transform;
+		if ( declared ) {
+			if ( /var\(|calc\(/.test( declared ) ) {
+				return { gap: `the hover transform at ${ w }px (${ declared }) holds a var() or calc(), and the motion hover layer takes a literal transform` };
+			}
+			properties.push( { property: 'transform', from: null, to: declared, ...timing( 'transform' ) } );
 		}
-		const rest = reads.declared?.[ w ]?.[ target.id ] || {};
-		const rendered = reads.widths?.[ w ]?.[ target.id ]?.styles || {};
-		const props = splitList( rest[ 'transition-property' ] ?? rendered[ 'transition-property' ] ?? '' );
-		const dur = ms( timed( splitList( rest[ 'transition-duration' ] ?? rendered[ 'transition-duration' ] ), props, 'transform' ) );
-		const del = ms( timed( splitList( rest[ 'transition-delay' ] ?? rendered[ 'transition-delay' ] ?? '0s' ), props, 'transform' ) );
-		const ease = timed( splitList( rest[ 'transition-timing-function' ] ?? rendered[ 'transition-timing-function' ] ), props, 'transform' );
-		return {
-			record: {
-				id: `STATE-${ target.id }`,
-				name: `Hover transform read from the state look of ${ target.id }`,
-				mechanism: 'css-transition',
-				status: 'active',
-				group: 'hover',
-				trigger: { type: 'hover', detail: 'the draft\'s :hover look (state read)' },
-				element: { template_tpl_id: null },
-				properties: [ { property: 'transform', from: null, to: declared, duration_ms: Number.isNaN( dur ) ? 0 : dur, delay_ms: Number.isNaN( del ) ? 0 : del, easing: ease || 'ease' } ],
-			},
-		};
+		const key = INDENT_PROPS.find( ( k ) => look.declared?.[ k ] );
+		if ( key ) {
+			const to = px( look.declared[ key ] );
+			const from = px( rest[ key ] ?? rendered[ key ] ?? rendered[ 'padding-left' ] ?? '0px' );
+			if ( null === to || null === from ) {
+				return { gap: `the hover ${ key } at ${ w }px (${ look.declared[ key ] } from ${ rest[ key ] ?? rendered[ key ] ?? rendered[ 'padding-left' ] ?? '0px' }) is not a px length, and the hover layer's indent is the px change of the start padding` };
+			}
+			from !== to && properties.push( { property: 'padding-left', from: fmt( from ), to: fmt( to ), ...timing( 'padding-left', [ 'padding' ] ) } );
+		}
 	}
-	return {};
+	if ( ! properties.length ) {
+		return {};
+	}
+	return {
+		record: {
+			id: `STATE-${ target.id }`,
+			name: `Hover look read from the state look of ${ target.id }`,
+			mechanism: 'css-transition',
+			status: 'active',
+			group: 'hover',
+			trigger: { type: 'hover', detail: "the draft's :hover look (state read)" },
+			element: { template_tpl_id: null },
+			properties,
+		},
+	};
 }
 
 const sameHover = ( a, b ) => JSON.stringify( a?.properties ) === JSON.stringify( b?.properties );
@@ -106,6 +133,24 @@ export function stateHover( reads, target ) {
 		}
 	}
 	return { base, tiers, gaps };
+}
+
+// Hover records whose start-padding change carries no resting value (the draft's `style-hover="padding-left:16px"` names
+// only the hover value) with `from` set to the element's resting padding, read at the widest width (declared first, else
+// rendered), so the hover layer's indent is the delta and not the hover padding itself. A record whose resting padding is
+// not a px length, and any other record, is returned as it is.
+export function withRestPadding( records, reads, target ) {
+	const w = Math.max( ...READ_WIDTHS );
+	const rest = reads?.declared?.[ w ]?.[ target.id ] || {};
+	const rendered = reads?.widths?.[ w ]?.[ target.id ]?.styles || {};
+	return records.map( ( r ) => {
+		const open = ( p ) => INDENT_PROPS.includes( p.property ) && ( null === p.from || undefined === p.from );
+		if ( ! ( r.properties || [] ).some( open ) ) {
+			return r;
+		}
+		const from = px( rest[ 'padding-left' ] ?? rest[ 'padding-inline-start' ] ?? rendered[ 'padding-left' ] ?? rendered[ 'padding-inline-start' ] );
+		return null === from ? r : { ...r, properties: r.properties.map( ( p ) => ( open( p ) ? { ...p, from: fmt( from ) } : p ) ) };
+	} );
 }
 
 // The hover records a target's state looks make: [ record ] with one transform property, or []. The record carries the
