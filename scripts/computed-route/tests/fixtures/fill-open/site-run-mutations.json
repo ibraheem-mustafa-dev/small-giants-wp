@@ -1,0 +1,7 @@
+[
+ { "file": "site-run.mjs", "find": "key: served( e.key ), ", "replace": "key: e.key, ", "why": "an element key stays in intake's key space and no finder resolves" },
+ { "file": "site-run.mjs", "find": "...( e.parentKey ? { parentKey: served( e.parentKey ) } : {} ), template: own( e )", "replace": "template: own( e )", "why": "parent keys are left in intake's space" },
+ { "file": "site-run.mjs", "find": "rootKey: served( inv.checks.rootKey )", "replace": "rootKey: inv.checks.rootKey", "why": "the root key is not translated" },
+ { "file": "site-run.mjs", "find": "String( key ).startsWith( `${ rootComponent }>` )", "replace": "false", "why": "an imported host's chain keeps the component name" },
+ { "file": "site-run.mjs", "find": "template: own( e )", "replace": "template: e.template", "why": "the host name is not translated" }
+]

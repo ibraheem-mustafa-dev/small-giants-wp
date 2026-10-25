@@ -7,7 +7,7 @@
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
 // Reads sites/<client>/build/surfaces.json (the surface's walker states), sites/<client>/theme-snapshot.json and the
 // divergence ledger; writes into --out (and adds each width-threshold snap to that ledger as a `breakpoint-snap` entry): filled.tree.json, fill-report.md, fill-report.json, unmapped.json,
-// handover.json, binding-groups.json, breakpoints.json, the generated walker config and, when the draft's focus, press or link-state looks
+// handover.json, binding-groups.json, breakpoints.json, opener.json (the state a drawer or panel surface was opened with, the widths it rendered at and any state refused), the generated walker config and, when the draft's focus, press or link-state looks
 // live in the theme, theme-snapshot.patch.json (the keys to merge into the client's theme-snapshot.json: Fill never
 // edits it). It never builds a page and never writes the surface's own tree file. Beside the tree it writes <surface>.origin.json (cr-ref to tpl key and fingerprint) when the
 // skeleton names its draft elements by tpl finder.
@@ -23,6 +23,7 @@ import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
+import { stateOpener, withRoute, refusalRows } from './lib/fill-open.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { fillStates } from './lib/fill-state.mjs';
@@ -171,11 +172,20 @@ export async function fillSurface( o ) {
 		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
 		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
 		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
+		// A drawer or mega-menu panel exists only while its draft state holds: the opener (lib/fill-open.mjs) names the state
+		// from the surface's handoff record, and a route-mounted component is read on its own route. Null for any other surface.
+		const intakeData = fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
+		const skeletonRecord = intakeData?.skeletons?.[ entry.intakeSurface ] ?? null;
+		const handoffFile = path.join( repo, 'sites', o.client, 'handoff', 'surfaces.json' );
+		const handoffRecord = skeletonRecord && fs.existsSync( handoffFile ) ? ( JSON.parse( fs.readFileSync( handoffFile, 'utf8' ) ).records || [] ).find( ( r ) => r.id === skeletonRecord.id ) : null;
+		const opener = stateOpener( { entry, skeleton: skeletonRecord, record: handoffRecord, facts, rootComponent: intakeParts.rootComponent } );
+		const readUrl = opener ? withRoute( url, opener.route ) : url;
+		opener && log( opener.state ? `state opener: "${ opener.state }" ${ JSON.stringify( opener.keys ) } on ${ opener.component }${ opener.route && '*' !== opener.route ? ` at ${ opener.route }` : '' }${ opener.dropped.length ? ` (not offered: ${ opener.dropped.map( ( d ) => d.key ).join( ', ' ) })` : '' }` : `state opener refused: ${ opener.refused.map( ( r ) => r.reason ).join( '; ' ) }` );
 		// FR-48-60 to FR-48-62: the draft elements of the shop parts (build/shop-parts.json locators) are measured at their parts' slots.
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const shopRecord = loadShopParts( buildDir );
 		const shopTargets = shopPartTargets( { record: shopRecord, nodes, facts, rootComponent: intakeParts.rootComponent, db, calFor } );
-		const reads = await readDraft( { url, nodes, open: o.open || null, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
+		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
@@ -200,6 +210,10 @@ export async function fillSurface( o ) {
 			writeDraftDefects( draftDefectsFile( { client: o.client, repo, listed: defectLooks.listed } ), { client: o.client, repo } );
 		}
 		result.unmapped.push( ...states.unmapped );
+		// A state whose surface never rendered is refused, never read as a closed surface: its gap row names the state and why.
+		const widthsOpen = Object.entries( reads.opener?.widths || {} ).filter( ( [ , v ] ) => v.ok ).map( ( [ w ] ) => Number( w ) );
+		const refused = opener ? [ ...opener.refused, ...( opener.state && ! widthsOpen.length ? [ { state: opener.state, reason: Object.values( reads.opener?.widths || {} ).find( ( v ) => v.reason )?.reason ?? 'it rendered at no width' } ] : [] ) ] : [];
+		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused }, nodes, flat, refOf } ) );
 		// A logo whose width changes with the screen is written as its per-device size (lib/fill-logo-size.mjs).
 		const logos = logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped } );
 		result.writes.push( ...logos.writes );
@@ -256,7 +270,7 @@ export async function fillSurface( o ) {
 		// node's sgsMotion, with every target's entrance and endless animations sampled at 375, 768 and 1440 as the render
 		// check (and the source of the values the code computes at run time).
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
-		const { entrances: sampled, loops } = await sampleMotion( { url, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
+		const { entrances: sampled, loops } = await sampleMotion( { url: readUrl, jobs, open: o.open || null, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
 		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
 		result.writes.push( ...motion.writes );
@@ -302,7 +316,7 @@ export async function fillSurface( o ) {
 		// The skeleton inventory beside the skeleton places each slot's draft element (a part drawn outside its block's).
 		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
 		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
-		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: url, liveUrl: o.liveUrl, open: o.open || null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
+		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: opener?.state ? opener : null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		writeOrigin();
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
@@ -314,6 +328,8 @@ export async function fillSurface( o ) {
 ` );
 		}
 		put( 'unmapped.json', JSON.stringify( unmappedList( result.unmapped ), null, 1 ) );
+		opener && put( 'opener.json', `${ JSON.stringify( { surface: o.surface, id: opener.id, component: opener.component, route: opener.route, state: opener.state, keys: opener.keys, dropped: opener.dropped, expect: opener.expect, widths: reads.opener?.widths || {}, widthsOpen, refused }, null, 1 ) }
+` );
 		put( 'binding-groups.json', JSON.stringify( bound, null, 1 ) );
 		put( 'handover.json', JSON.stringify( result.handover, null, 1 ) );
 		put( 'breakpoints.json', JSON.stringify( steps, null, 1 ) );

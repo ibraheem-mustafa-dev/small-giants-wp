@@ -152,3 +152,18 @@ test( 'MUST FAIL WITHOUT BESIDE STRIPS: a top bar the skeleton draws from beside
 	// A sibling no selector names (a loop copy past the first) cannot be excluded, so neither side is rooted.
 	assert.equal( surfaceRoots( skeletonNodes( skeleton ), tree, { elements, beside: [ ...beside, { key: 'R/300#1', side: 'after' } ] } ), null );
 } );
+
+test( 'MUST FAIL: a state-driven surface\'s walker opens the same draft state Fill read, in place of the click-text open', async () => {
+	const { nodes, tree } = prepared();
+	const opener = { state: 'open', component: 'Root', keys: { active: 1 } };
+	const cfg = await load( walkerConfigs( { surface: 'fx', nodes, tree, draftUrl: 'http://127.0.0.1:1/draft.html', liveUrl: 'http://live/', open: 'About', opener, divergences: null, state: 'open' } ) );
+	assert.equal( typeof cfg.draft.open, 'function' );
+	const calls = [];
+	const h = { page: { evaluate: async ( fn, arg ) => calls.push( [ fn.name, arg ] ), waitForTimeout: async () => {} }, clickText: async () => calls.push( 'clickText' ) };
+	await cfg.draft.open( h );
+	assert.deepEqual( calls, [ [ 'setStateInPage', { component: 'Root', keys: { active: 1 } } ] ] );
+	const plain = await load( walkerConfigs( { surface: 'fx', nodes, tree, draftUrl: 'http://127.0.0.1:1/draft.html', liveUrl: 'http://live/', open: 'About', divergences: null, state: 'opening' } ) );
+	const clicked = [];
+	await plain.draft.open( { clickText: async ( re ) => clicked.push( re ) } );
+	assert.deepEqual( clicked, [ 'About' ], 'a surface with no state keeps the click-text open' );
+} );
