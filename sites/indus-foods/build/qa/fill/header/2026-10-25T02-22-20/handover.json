@@ -1,0 +1,86 @@
+[
+ {
+  "owner": "site-info",
+  "kind": "link",
+  "node": "cr-ref-header-8",
+  "block": "sgs/icon",
+  "slot": "",
+  "evidence": {
+   "key": "linkUrl",
+   "draft": "/",
+   "width": 1440,
+   "siteInfoKey": "socials.linkedin",
+   "kind": "link",
+   "ref": "cr-ref-header-8",
+   "path": ""
+  },
+  "reason": "linkUrl is bound to Site Info \"socials.linkedin\"; the draft links to /, kept as the fallback. Fill Site Info \"socials.linkedin\" from it"
+ },
+ {
+  "owner": "site-info",
+  "kind": "link",
+  "node": "cr-ref-header-9",
+  "block": "sgs/icon",
+  "slot": "",
+  "evidence": {
+   "key": "linkUrl",
+   "draft": "/",
+   "width": 1440,
+   "siteInfoKey": "socials.facebook",
+   "kind": "link",
+   "ref": "cr-ref-header-9",
+   "path": ""
+  },
+  "reason": "linkUrl is bound to Site Info \"socials.facebook\"; the draft links to /, kept as the fallback. Fill Site Info \"socials.facebook\" from it"
+ },
+ {
+  "owner": "site-info",
+  "kind": "link",
+  "node": "cr-ref-header-10",
+  "block": "sgs/icon",
+  "slot": "",
+  "evidence": {
+   "key": "linkUrl",
+   "draft": "/",
+   "width": 1440,
+   "siteInfoKey": "socials.google",
+   "kind": "link",
+   "ref": "cr-ref-header-10",
+   "path": ""
+  },
+  "reason": "linkUrl is bound to Site Info \"socials.google\"; the draft links to /, kept as the fallback. Fill Site Info \"socials.google\" from it"
+ },
+ {
+  "owner": "site-info",
+  "kind": "link",
+  "node": "cr-ref-header-11",
+  "block": "sgs/icon",
+  "slot": "",
+  "evidence": {
+   "key": "linkUrl",
+   "draft": "/",
+   "width": 1440,
+   "siteInfoKey": "socials.instagram",
+   "kind": "link",
+   "ref": "cr-ref-header-11",
+   "path": ""
+  },
+  "reason": "linkUrl is bound to Site Info \"socials.instagram\"; the draft links to /, kept as the fallback. Fill Site Info \"socials.instagram\" from it"
+ },
+ {
+  "owner": "site-info",
+  "kind": "presence",
+  "node": "cr-ref-header-13",
+  "block": "sgs/responsive-logo",
+  "slot": "",
+  "evidence": {
+   "key": "presence",
+   "draft": "shown",
+   "width": 1440,
+   "kind": "presence",
+   "ref": "cr-ref-header-13",
+   "path": ""
+  },
+  "reason": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+ }
+]
