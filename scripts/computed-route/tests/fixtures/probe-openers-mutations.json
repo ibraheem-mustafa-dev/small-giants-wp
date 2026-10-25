@@ -1,0 +1,11 @@
+[
+ { "file": "tools/probe-openers.mjs", "find": "'state-values' === g.construct", "replace": "true", "why": "every gap row names surfaces, not only state-values rows" },
+ { "file": "tools/probe-openers.mjs", "find": "if ( ! row.mounted ) {", "replace": "if ( false ) {", "why": "a page with no instance reads as an applied state" },
+ { "file": "tools/probe-openers.mjs", "find": "if ( row.notLiveKeys.length ) {", "replace": "if ( false ) {", "why": "a key the instance never held reads as applied" },
+ { "file": "tools/probe-openers.mjs", "find": "if ( /placeholder|description/.test( row.opener ) ) {", "replace": "if ( false ) {", "why": "a placeholder value reads as an own key" },
+ { "file": "tools/probe-openers.mjs", "find": "if ( nested.length ) {", "replace": "if ( false ) {", "why": "a placeholder inside an object value is offered as concrete" },
+ { "file": "tools/probe-openers.mjs", "find": "if ( bad.length ) {", "replace": "if ( false ) {", "why": "a dotted render value is offered as a state key" },
+ { "file": "tools/probe-openers.mjs", "find": "if ( ! entries.length ) {", "replace": "if ( false ) {", "why": "a state with no keys is offered" },
+ {"file": "tools/probe-openers.mjs", "find": "/^(<.*>|\\{.*\\})$/.test( v )", "replace": "/^<.*>$/.test( v )", "why": "a prose description such as {a, b} is taken as a value"},
+ { "file": "tools/probe-openers.mjs", "find": "/^(closed|default)$/i.test( st.name || '' )", "replace": "false", "why": "a closed state is named an opener" }
+]
