@@ -30,7 +30,8 @@ test( 'MUST FAIL (CR4, a large calibration page timed out loading the editor at 
 		assert.equal( ( text.match( /timeout:\s*60000/g ) || [] ).length, 0, `${ f } keeps no hardcoded 60 s` );
 		assert.match( text, /timeout: EDITOR_TIMEOUT_MS/ );
 	}
-	assert.match( fs.readFileSync( new URL( '../calibrate.mjs', import.meta.url ), 'utf8' ), /ensureLoggedIn\( shared\.page, env, EDITOR_TIMEOUT_MS \)/ );
+	assert.match( fs.readFileSync( new URL( '../calibrate.mjs', import.meta.url ), 'utf8' ), /openRunSession\( site, env, EDITOR_TIMEOUT_MS \)/ );
+	assert.match( fs.readFileSync( new URL( '../lib/wp-run-session.mjs', import.meta.url ), 'utf8' ), /ensureLoggedIn\( shared\.page, env, timeout \)/ );
 } );
 
 test( 'a fixture names its own chunk size; a bad value falls back to the default', () => {

@@ -23,6 +23,7 @@ import { permalinkOf } from './lib/fill-route.mjs';
 import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
 import { routeHash, withRoute } from './lib/fill-open.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
+import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
@@ -219,6 +220,10 @@ export async function main( argv ) {
 		} ) );
 	}
 
+	// One logged-in browser for every build of the run (lib/wp-run-session.mjs): each wp-build-page.js child attaches through
+	// SGS_CDP_URL instead of launching and logging in on its own.
+	const withEnv = keys.map( ( k ) => surfaces[ k ] ).find( ( e ) => e?.envFile && e?.envKey );
+	const session = stages.includes( 'build' ) && withEnv ? await openRunSession( site, readEnv( withEnv.envFile, withEnv.envKey ) ) : null;
 	const pending = [ ...keys ];
 	await Promise.all( Array.from( { length: jobs }, async () => {
 		while ( pending.length ) {
@@ -231,6 +236,7 @@ export async function main( argv ) {
 		}
 	} ) );
 	await server.close();
+	session && await session.close();
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
 	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage. ${ path.join( dir, 'status.json' ) }` );
 }

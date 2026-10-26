@@ -19,6 +19,7 @@ import { readLinkTextReport } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
+import { openRunSession, closeStrayTabs, readEnv } from './lib/wp-run-session.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -88,6 +89,9 @@ try {
 		process.exit( 0 );
 	}
 	const build = wpBuildPage( repo, site );
+	// One logged-in browser for every page the run builds (lib/wp-run-session.mjs): each wp-build-page.js child attaches
+	// through SGS_CDP_URL instead of launching and logging in on its own.
+	const session = await openRunSession( site, readEnv( path.join( '.claude', 'secrets', `${ site }.env` ), site.toUpperCase().replace( /[^A-Z0-9]/g, '' ), repo ) );
 	writeIdsSite( mapFile, site );
 	const onId = ( key, id ) => {
 		ids[ key ] = id;
@@ -99,7 +103,9 @@ try {
 		const p = 'posts' === phase ? first : plan();
 		console.log( `${ phase }: running ${ p.actions.filter( ( a ) => a.phase === phase ).length } step(s)` );
 		ran += applyPhase( p.actions, phase, { wp, build, onId, log: console.log, refs } );
+		await closeStrayTabs( session );
 	}
+	await session.close();
 	const left = tally( plan().actions );
 	console.log( `${ ran } step(s) run (${ counts.creates } to create, ${ counts.changes } to change, ${ counts.adopts } to adopt when the run began); page map ${ path.relative( repo, mapFile ) }` );
 	if ( left.creates || left.changes || left.adopts ) {

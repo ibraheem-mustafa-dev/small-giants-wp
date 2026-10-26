@@ -38,6 +38,7 @@ import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longha
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
+import { openRunSession, closeStrayTabs, readEnv } from './lib/wp-run-session.mjs';
 
 export { remotePlugin, EDITOR_ONLY, BUNDLE_TEXT, normaliseBundle, TEXT_FILE, lfText, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 
@@ -77,43 +78,8 @@ async function build( target, treeFile, extra = [] ) {
 	return { code: r.status, json, timedOut: r.timedOut, err: ( r.stderr || '' ) + ( r.stdout || '' ) };
 }
 
-// One browser for the whole run (scripts/lib/wp-session.js): every block's reads and every wp-build-page.js child use
-// the same window and one login, kept between runs in a per-site profile under the gitignored cache.
-// SGS_CDP_URL already set: attach to that browser instead (an everyday Chrome started with --remote-debugging-port,
-// which the host's edge does not challenge as it does Playwright's Chrome for Testing); only the run's own tab closes.
-async function openBrowser( site, env ) {
-	const require = createRequire( import.meta.url );
-	const wpSession = require( '../lib/wp-session.js' );
-	const closeOnExit = require( '../lib/close-browser-on-exit.js' );
-	const { chromium } = await import( 'playwright' );
-	if ( process.env.SGS_CDP_URL ) {
-		const attached = await wpSession.connectShared( chromium );
-		await wpSession.ensureLoggedIn( attached.page, env, EDITOR_TIMEOUT_MS );
-		return attached;
-	}
-	closeOnExit.closeBrowserOnExit();
-	// SGS_HEADED=1 runs headed (Hostinger's edge challenges a headless browser under load); scrollbars hidden as the walker hides them,
-	// or a headed window lays the page out about 15px narrower than its viewport.
-	const shared = await wpSession.launchShared( chromium, { profileDir: path.join( CACHE, `.profile-${ site }` ), headless: ! process.env.SGS_HEADED, args: [ '--hide-scrollbars', ...closeOnExit.browserOwnerArgs() ] } );
-	await wpSession.ensureLoggedIn( shared.page, env, EDITOR_TIMEOUT_MS );
-	return shared;
-}
-
-// Tabs a child left open (a wp-build-page.js that exited through fail()) are closed so the window does not fill up.
-async function closeStrayTabs( shared ) {
-	await Promise.all( shared.context.pages().filter( ( p ) => p !== shared.page ).map( ( p ) => p.close().catch( () => {} ) ) );
-}
-
-function readEnv( file, key ) {
-	const o = {};
-	fs.readFileSync( path.resolve( REPO, file ), 'utf8' ).split( /\r?\n/ ).forEach( ( l ) => {
-		const m = l.match( /^([A-Z0-9_]+)=(.*)$/ );
-		if ( m ) {
-			o[ m[ 1 ] ] = m[ 2 ].trim().replace( /^["']|["']$/g, '' );
-		}
-	} );
-	return { url: o[ `WP_URL_${ key }` ].replace( /\/+$/, '' ), user: o[ `WP_USER_${ key }` ], pwd: o[ `WP_PWD_${ key }` ] };
-}
+// One browser for the whole run, one login (lib/wp-run-session.mjs).
+const openBrowser = ( site, env ) => openRunSession( site, env, EDITOR_TIMEOUT_MS );
 
 // Every attribute name the block declares today (its own and the shared extensions'), from the framework DB: the slot
 // map refusal ignores a setting the block no longer has.
