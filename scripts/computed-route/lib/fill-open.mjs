@@ -10,13 +10,14 @@
 // whose listed `sc_if_tpl_ids` did not render is refused (a gap row naming the state and the reason), never read as a
 // closed surface.
 import { setDraftState } from './intake-state.mjs';
+import { ROOT_HOST, isStatePage, stateRouteHash } from './state-route.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
 
 // The property an UNMAPPED row names for a refused state: no one property was read.
 export const STATE_REFUSED = '(state opener)';
 
-// The name the runtime gives the served entry draft's component.
-export const ROOT_HOST = 'Root';
+// The name the runtime gives the served entry draft's component (lib/state-route.mjs).
+export { ROOT_HOST };
 const IDENT = /^[A-Za-z_$][\w$]*$/;
 const CLOSED = /^(closed|default)$/i;
 const lower = ( s ) => String( s ).toLowerCase();
@@ -56,10 +57,20 @@ export function usableKeys( keys, live ) {
 // The hash a record's route is opened at, or null for the entry page ('*', '/' or none).
 export const routeHash = ( route ) => ( null == route || [ '*', '/', '' ].includes( route ) ? null : `#/${ String( route ).replace( /^#?\/?/, '' ) }` );
 
-// The url with its hash replaced by the record's route; unchanged for an entry-page record.
-export function withRoute( url, route ) {
-	const hash = routeHash( route );
+// The url with its hash replaced by the record's route; unchanged for an entry-page record. A state-page export
+// (`routing`, intake.json `routing`) has no URL for a route: the hash is the state route lib/state-route.mjs::applyStateRoute
+// sets on the loaded draft.
+export function withRoute( url, route, routing = null ) {
+	const state = isStatePage( routing ) ? stateRouteHash( route ) : null;
+	const hash = isStatePage( routing ) ? ( state ? `#${ state }` : null ) : routeHash( route );
 	return hash ? `${ String( url ).split( '#' )[ 0 ] }${ hash }` : url;
+}
+
+// The url Fill reads a surface at: a state-driven surface (`opener`) at its record's route, and any surface of a state-page
+// export (`routing`, intake.json `routing`) at its own route's state, since such a draft has no URL for a route. Every other
+// surface keeps the url it was given (a hash draft's page surfaces carry their route in the url already).
+export function readUrlOf( { url, opener, record, routing } ) {
+	return opener || isStatePage( routing ) ? withRoute( url, opener?.route ?? record?.route ?? null, routing ) : url;
 }
 
 // The opener for one surface, or null when the surface is not state-driven (its intake skeleton's root does not exist

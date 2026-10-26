@@ -22,6 +22,7 @@ import { readInventory } from './lib/skeleton-inventory.mjs';
 import { permalinkOf } from './lib/fill-route.mjs';
 import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
 import { routeHash, withRoute } from './lib/fill-open.mjs';
+import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -63,15 +64,18 @@ function liveBase( envFile, envKey ) {
 // skipped (a content-only post surface runs only with `--with-content`). The route is the entry's `draftRoute` (a form's
 // page, a post's route), else its page row's route, else its intake record's route. A post surface (`contentOnly`) and the
 // single-post template (`fromPost`) are read at the post row's address; a form is read on its page, the page row carrying
-// its `draftRoute`; any other surface at the page row its key names.
-export function surfaceReach( { key, entry, skel, rows, withContent = false } ) {
+// its `draftRoute`; any other surface at the page row its key names. `routing` (intake.json `routing`) names the adapter: a
+// state-page draft is reached by state, so the hash is that state route (lib/state-route.mjs).
+export function surfaceReach( { key, entry, skel, rows, withContent = false, routing = null } ) {
 	const routeName = ( r ) => String( r ?? '' ).replace( /^#?\/?/, '' );
 	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
 	const own = postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) );
 	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
 	const row = own ?? named ?? null;
 	const skip = entry.contentOnly && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null;
-	const hash = entry.draftRoute ? routeHash( entry.draftRoute ) ?? '' : own && 'page' === own.postType ? ( 'home' !== own.route ? `#/${ own.route }` : '' ) : routeHash( skel?.route ) ?? '';
+	// A state-page draft ignores a route hash: its route is the state fragment Fill, the inventory read and the walker set on the loaded draft.
+	const at = ( r ) => ( isStatePage( routing ) ? ( stateRouteHash( r ) ? `#${ stateRouteHash( r ) }` : '' ) : routeHash( r ) ?? '' );
+	const hash = entry.draftRoute ? at( entry.draftRoute ) : own && 'page' === own.postType ? ( 'home' !== own.route ? at( own.route ) : '' ) : at( skel?.route );
 	return { row, hash, skip };
 }
 
@@ -110,7 +114,7 @@ export async function main( argv ) {
 		const entry = surfaces[ key ];
 		const skel = intake.skeletons?.[ entry.intakeSurface ];
 		const kind = skel?.kind;
-		const { row, hash, skip } = surfaceReach( { key, entry, skel, rows, withContent } );
+		const { row, hash, skip } = surfaceReach( { key, entry, skel, rows, withContent, routing: intake.routing ?? null } );
 		if ( skip ) {
 			return note( key, 'skipped', true, 0, skip );
 		}
@@ -187,7 +191,7 @@ export async function main( argv ) {
 			if ( o && ! o.widthsOpen.length ) {
 				throw new Error( `opener failure: ${ o.refused.map( ( r ) => r.reason ).join( '; ' ).slice( 0, 400 ) }` );
 			}
-			walkUrl = o?.route ? withRoute( draftUrl, o.route ) : draftUrl;
+			walkUrl = o?.route ? withRoute( draftUrl, o.route, intake.routing ?? null ) : draftUrl;
 			return o ? `${ tail } (state "${ o.state }" open at ${ o.widthsOpen.join( ', ' ) }px)` : tail;
 		} ) ) {
 			return;

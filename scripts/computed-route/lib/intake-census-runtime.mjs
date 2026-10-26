@@ -32,6 +32,7 @@
 // fails is a gap row too.
 import { openSandbox } from './intake-sandbox.mjs';
 import { preparePage, gotoDraft, settleRest } from './intake-harness.mjs';
+import { moveToHash } from './state-route.mjs';
 import { CALL_KINDS, isCode, splitId, buildModel, positionOf, codeTarget, callAt, countAt } from './intake-census-map.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
 import { collectUsage, mergeRuntimeUsage } from './intake-usage.mjs';
@@ -196,9 +197,7 @@ export async function runtimeCensus( { folder, entry, harPath, visits = [ entry 
 				if ( 0 === i ) {
 					await gotoDraft( page, sb.origin, group.file, { hash: v.hash, timeout } );
 				} else {
-					await page.evaluate( ( h ) => {
-						window.location.hash = h;
-					}, v.hash );
+					await moveToHash( page, v.hash );
 				}
 				const ts = Date.now();
 				const settle = await settleRest( page, opts );

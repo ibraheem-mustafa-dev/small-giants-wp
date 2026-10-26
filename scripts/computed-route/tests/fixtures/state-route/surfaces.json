@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "project": "State route fixture",
+  "generated": "2026-10-26",
+  "records": [
+    { "id": "S-01", "kind": "page", "name": "home", "dc": "Home", "template_tpl_id": "7", "route": "home", "parent": null, "opened_by": "route", "closed_by": "route", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ], "time_dependent": { "value": false, "reason": "" } },
+    { "id": "S-02", "kind": "page", "name": "shop", "dc": "Home", "template_tpl_id": "10", "route": "shop", "parent": null, "opened_by": "route", "closed_by": "route", "states": [ { "name": "default", "state_keys": {}, "how_to_reach": "load" } ], "time_dependent": { "value": false, "reason": "" } }
+  ]
+}
