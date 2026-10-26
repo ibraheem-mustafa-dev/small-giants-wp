@@ -9,6 +9,7 @@
 // (a post carrying a row key is adopted) and its write-back replaces them. The site phase also sets the site options the
 // draft's behaviours need (the route fade) from sites/<client>/build/site-options.json, which --promote-options fills from a
 // Fill run (lib/site-build-options.mjs). Exit 0 done, 1 failure or a stopped run, 2 usage.
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
@@ -61,8 +62,12 @@ const print = ( plan ) => {
 try {
 	// The rows as this site sees them: ids written for another site name nothing here.
 	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
-	const runPhp = wpEvalRunner( {}, site, repo );
-	const wp = wpCommand( {}, site, repo );
+	// A local mirror's calibration target names its WSL docroot (`pluginDir`), so its wp-cli runs there instead of over SSH;
+	// a site with no target entry runs over SSH as before.
+	const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
+	const target = ( fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
+	const runPhp = wpEvalRunner( target, site, repo );
+	const wp = wpCommand( target, site, repo );
 	const ids = {};
 	let rows = original;
 	const plan = () => {
