@@ -13,6 +13,7 @@ import { specHit } from './skeleton-facts.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
+import { commerceRegion } from './skeleton-commerce-region.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -541,7 +542,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const h = handlerOf( e );
 		return !! h && [ 'a', 'button' ].includes( e.tag ) && Object.values( view.surfaces ).some( ( s ) => 'drawer' === s.kind && String( view.openers[ s.id ] || '' ).split( /[^\w$]+/ ).includes( h ) );
 	};
+	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
+	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
 	const STRUCTURES = [
+		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
+		// itself (rules.commerceRegion): the region's children are absorbed into it.
+		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {
@@ -664,5 +670,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand };
+	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region };
 }

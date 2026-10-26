@@ -116,7 +116,27 @@
 	"rules": {
 		"doc": "Framework-wide verdicts that settle an element before any scoring (lib/skeleton-rules.mjs holds the mechanisms; each verdict names its rule id on the row, and the review groups rows by it). Precedence: a client decision, then these rules, then a finaliser pick or a standing element decision, then the database scoring. Every block named here is checked against the framework database on load.",
 		"decided": "Bean, review of 2026-10-13 (Spec 48 FR-48-6)",
-		"coreExceptions": [],
+		"coreExceptions": [
+			{
+				"block": "core/post-content",
+				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
+			}
+		],
+		"commerceRegion": {
+			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
+			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",
+			"roles": {
+				"cart": { "block": "core/post-content", "reason": "the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button" },
+				"checkout": { "block": "core/post-content", "reason": "the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary" },
+				"account": { "block": "core/post-content", "reason": "the account page's content is WooCommerce's account output inside sgs/account (kept by site build), which draws the sign-in and account forms" },
+				"shop": {
+					"block": "woocommerce/product-collection",
+					"attributes": { "queryId": 0, "query": { "inherit": true, "perPage": 24, "isProductCollectionBlock": true }, "tagName": "div", "displayLayout": { "type": "flex", "columns": 3, "shrinkColumns": true }, "queryContextIncludes": [ "collection" ] },
+					"inner": [ { "name": "woocommerce/product-template", "innerBlocks": [ { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product" } } ] } ],
+					"reason": "WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built eye-care-test archive-product copy has them; its column count is the draft's cards per row at 1440"
+				}
+			}
+		},
 		"drawsChildren": {
 			"reason": "a block that draws the draft element's children itself, though it is neither a leaf nor holds an array item schema: the children are absorbed, never built",
 			"blocks": [

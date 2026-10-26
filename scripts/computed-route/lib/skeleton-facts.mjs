@@ -88,6 +88,23 @@ export function decisionsProblems( facts ) {
 	if ( r.footerSlots && ( ! r.footerSlots.slotAttribute || ! facts.attr( r.footerSlots.rowBlock, r.footerSlots.slotAttribute ) || ! Array.isArray( r.footerSlots.slots ) || 3 !== r.footerSlots.slots.length ) ) {
 		problems.push( `rules.footerSlots must name three slots and a slot attribute that ${ r.footerSlots.rowBlock } has` );
 	}
+	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
+	// database), or a known SGS block; its money pattern compiles.
+	for ( const [ role, spec ] of Object.entries( r.commerceRegion?.roles || {} ) ) {
+		const all = [ spec.block, ...JSON.stringify( spec.inner || [] ).match( /"name":"[^"]+"/g )?.map( ( x ) => x.slice( 8, -1 ) ) || [] ];
+		for ( const slug of all ) {
+			if ( slug?.startsWith( 'core/' ) ? ! ( r.coreExceptions || [] ).some( ( x ) => x.block === slug ) : ! slug?.startsWith( 'woocommerce/' ) ) {
+				slug?.startsWith( 'core/' ) ? problems.push( `rules.commerceRegion.${ role } names ${ slug }, a core block not listed in rules.coreExceptions` ) : known( slug, `rules.commerceRegion.${ role }` );
+			}
+		}
+	}
+	if ( r.commerceRegion ) {
+		try {
+			new RegExp( r.commerceRegion.money );
+		} catch ( e ) {
+			problems.push( `rules.commerceRegion.money does not compile: ${ e.message }` );
+		}
+	}
 	( r.coreExceptions || [] ).forEach( ( x, i ) => ( ! x.block?.startsWith( 'core/' ) || ! String( x.reason || '' ).trim() ) && problems.push( `rules.coreExceptions[${ i }] must name a core block and give its reason` ) );
 	( r.surfaceRoot?.entries || [] ).forEach( ( x, i ) => specs0.push( [ `rules.surfaceRoot[${ i }]`, { patterns: [ x.namePattern ], flags: 'i' } ] ) );
 	const specs = [ ...specs0, ...( d.briefOnlyLines || [] ).map( ( s ) => [ `briefOnlyLines.${ s.id }`, s ] ), ...Object.entries( d.siteInfoPatterns || {} ).map( ( [ k, s ] ) => [ `siteInfoPatterns.${ k }`, s ] ), [ 'addressLinkPatterns', d.addressLinkPatterns ], [ 'logoImage', d.logoImage ],
