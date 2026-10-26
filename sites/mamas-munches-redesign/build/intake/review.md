@@ -4,18 +4,19 @@ Taken on 2026-10-19T01:02:50.451Z; manifest 1.0, files hash d5ed630059b071ef.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1627; 905 need reading, 722 are confident proposals that Accept all covers (skeleton block choices 617, missing features 105).
+Rows: 1610; 835 need reading, 775 are confident proposals that Accept all covers (skeleton block choices 670, missing features 105).
 
 Not defects counted, not listed: breakpoint 4, reached-when-forced 103, render-wins 27.
 
 Marks per section (first value = Accept all):
 - Page map: `accept`, `edit:<field>=<value>`, `drop`
-- Palette roles: `accept`, `role:<slug>`, `one-off`
+- Palette roles: `accept`, `role:<slug>[,<slug>...]`, `one-off`
 - Site Info: `accept`, `edit:<value>`, `drop`
 - Flags: `accept-flagged`, `not-flagged`
 - Draft defects: `accept`, `render-wins`
 - Not defects: unwired code: `not-a-defect`, `defect`
 - Missing features: `map:<block>`, `difference`, `build`, `gap:<wave>`
+- Script effects: `accept`, `block:<slug>`, `difference`
 - Skeleton block choices: `accept`, `block:<slug>`, `remove`
 - Inventory diffs: `ours`, `theirs`
 - Notices: `noted`
@@ -142,38 +143,13 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `missing:Basket:27` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Basket:30` | <div>: no SGS block fits it | no block proposed | 2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Basket:43` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:101` | <span>: no SGS block fits it | no block proposed | 4 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:109` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:112` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:114` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:132` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Checkout:40` | <span>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Checkout:41` | <span>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:53` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:55` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:59` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:89` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:92` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:95` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:97` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Contact:53` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Contact:55` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Contact:58` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Contact:66` | <textarea>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Gifts:27` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Gifts:61` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Gifts:65` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Help:18` | <input>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Home:136` | <div>: no SGS block fits it | no block proposed | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Home:75` | <span>: no SGS block fits it | no block proposed | 4 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Shop:17` | <select>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:Shop:50` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:SignIn:29` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:SignIn:33` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:SiteFooter:54` | <div>: no SGS block fits it | no block proposed | 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:SiteHeader:137` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:SiteHeader:154` | <input>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
 | `missing:handler@Home:132/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database |  |
 | `missing:handler@Home:222/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database |  |
 
@@ -291,43 +267,18 @@ Accept all: [ ]
 
 Accept all: [ ]
 
-### Needs a decision (unresolved): no block (34)
+### Needs a decision (unresolved): no block (9)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-basket-dc-html:Basket/27#0` | page-basket-dc-html Basket/27#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:page-basket-dc-html:Basket/30` | page-basket-dc-html Basket/30 <div> | no block | 0: 2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-basket-dc-html:Basket/43#0` | page-basket-dc-html Basket/43#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/137#0` | page-basket-dc-html Basket>SiteHeader@7#0/137#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/154#0` | page-basket-dc-html Basket>SiteHeader@7#0/154#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/101` | page-checkout-dc-html Checkout/101 <span> | no block | 0: 4 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/109#0` | page-checkout-dc-html Checkout/109#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/112#0` | page-checkout-dc-html Checkout/112#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/114#0` | page-checkout-dc-html Checkout/114#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/132#0` | page-checkout-dc-html Checkout/132#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:page-checkout-dc-html:Checkout/40#0` | page-checkout-dc-html Checkout/40#0 <span> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:page-checkout-dc-html:Checkout/41#0` | page-checkout-dc-html Checkout/41#0 <span> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/53#0` | page-checkout-dc-html Checkout/53#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/55#0` | page-checkout-dc-html Checkout/55#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/59#0` | page-checkout-dc-html Checkout/59#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/89#0` | page-checkout-dc-html Checkout/89#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/92#0` | page-checkout-dc-html Checkout/92#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/95#0` | page-checkout-dc-html Checkout/95#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/97#0` | page-checkout-dc-html Checkout/97#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-contact-dc-html:Contact/53#0` | page-contact-dc-html Contact/53#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-contact-dc-html:Contact/55#0` | page-contact-dc-html Contact/55#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-contact-dc-html:Contact/58#0` | page-contact-dc-html Contact/58#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-contact-dc-html:Contact/66#0` | page-contact-dc-html Contact/66#0 <textarea> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:page-gifts-dc-html:Gifts/27#0` | page-gifts-dc-html Gifts/27#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-gifts-dc-html:Gifts/61#0` | page-gifts-dc-html Gifts/61#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-gifts-dc-html:Gifts/65#0` | page-gifts-dc-html Gifts/65#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-help-dc-html:Help/18#0` | page-help-dc-html Help/18#0 <input> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:page-home-dc-html:Home/136` | page-home-dc-html Home/136 <div> | no block | 0: 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-home-dc-html:Home/75` | page-home-dc-html Home/75 <span> | no block | 0: 4 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-shop-dc-html:Shop/17#0` | page-shop-dc-html Shop/17#0 <select> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:page-shop-dc-html:Shop/50#0` | page-shop-dc-html Shop/50#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-signin-dc-html:SignIn/29#0` | page-signin-dc-html SignIn/29#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-signin-dc-html:SignIn/33#0` | page-signin-dc-html SignIn/33#0 <input> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/54#0` | site-footer Home>SiteFooter@250#0/54#0 <div> | no block | 0: 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 
 ### Needs a decision (low): block:sgs/business-info (1)
@@ -350,27 +301,19 @@ Accept all: [ ]
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/69#0` | nav-drawer-left Home>SiteHeader@7#0/69#0 <img> | block:sgs/media | 0.29: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/141` | page-basket-dc-html Basket>SiteHeader@7/141 <img> | block:sgs/media | 0.29: 2 copies of one template element |  |
 
-### Needs a decision (low): block:sgs/multi-button (20)
+### Needs a decision (low): block:sgs/multi-button (12)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-account-dc-html:Account/22#0` | page-account-dc-html Account/22#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-basket-dc-html:Basket/68#0` | page-basket-dc-html Basket/68#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-checkout-dc-html:Checkout/35#0` | page-checkout-dc-html Checkout/35#0 <div> | block:sgs/multi-button | 0.51: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/73#0` | page-checkout-dc-html Checkout/73#0 <div> | block:sgs/multi-button | 0.51: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-contact-dc-html:Contact/48#0` | page-contact-dc-html Contact/48#0 <div> | block:sgs/multi-button | 0.51 |  |
-| `skeleton:page-gifts-dc-html:Gifts/17#0` | page-gifts-dc-html Gifts/17#0 <div> | block:sgs/multi-button | 0.51 |  |
-| `skeleton:page-gifts-dc-html:Gifts/21#0` | page-gifts-dc-html Gifts/21#0 <div> | block:sgs/multi-button | 0.51 |  |
-| `skeleton:page-help-dc-html:Help/19#0` | page-help-dc-html Help/19#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-home-dc-html:Home/116#0` | page-home-dc-html Home/116#0 <div> | block:sgs/multi-button | 0.51: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/20#0` | page-home-dc-html Home/20#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-home-dc-html:Home/219#0` | page-home-dc-html Home/219#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-home-dc-html:Home/233#0` | page-home-dc-html Home/233#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-home-dc-html:Home/24#0` | page-home-dc-html Home/24#0 <div> | block:sgs/multi-button | 0.51 |  |
-| `skeleton:page-home-dc-html:Home/78#0` | page-home-dc-html Home/78#0 <div> | block:sgs/multi-button | 0.51: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/85#0` | page-home-dc-html Home/85#0 <div> | block:sgs/multi-button | 0.51: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteHeader@7#0/38#0` | page-home-dc-html Home>SiteHeader@7#0/38#0 <nav> | block:sgs/multi-button | 0.51: 8 copies of one template element on 8 surfaces |  |
-| `skeleton:page-shop-dc-html:Shop/21#0` | page-shop-dc-html Shop/21#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-signin-dc-html:SignIn/23#0` | page-signin-dc-html SignIn/23#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:page-signin-dc-html:SignIn/36#0` | page-signin-dc-html SignIn/36#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/57#0` | site-footer Home>SiteFooter@250#0/57#0 <span> | block:sgs/multi-button | 0.51: 9 copies of one template element on 9 surfaces |  |
@@ -391,7 +334,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/13#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/13#0 <header> | block:sgs/site-header | 0.58 |  |
 
-### Needs a decision (low): block:sgs/text (181)
+### Needs a decision (low): block:sgs/text (169)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -420,8 +363,6 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket/66#0` | page-basket-dc-html Basket/66#0 <span> "£30.45" | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket/71#0` | page-basket-dc-html Basket/71#0 <div> "Baked fresh for you · with you in 3–5 days" | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/135#0` | page-basket-dc-html Basket>SiteHeader@7#0/135#0 <div> "You’re £8.50 away from free UK delivery" | block:sgs/text | 0.25 |  |
-| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/156#0` | page-basket-dc-html Basket>SiteHeader@7#0/156#0 <span> "This is a gift" | block:sgs/text | 0.25 |  |
-| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/157#0` | page-basket-dc-html Basket>SiteHeader@7#0/157#0 <span> "Add a message. We leave the prices off." | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/170#0` | page-basket-dc-html Basket>SiteHeader@7#0/170#0 <span> "Subtotal" | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/171#0` | page-basket-dc-html Basket>SiteHeader@7#0/171#0 <span> "£26.50" | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/172#0` | page-basket-dc-html Basket>SiteHeader@7#0/172#0 <div> "Baked fresh for you · with you in 3–5 days" | block:sgs/text | 0.25 |  |
@@ -429,9 +370,6 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/144` | page-basket-dc-html Basket>SiteHeader@7/144 <div> "Oat · Milk choc · Strawberry" | block:sgs/text | 0.25: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/147` | page-basket-dc-html Basket>SiteHeader@7/147 <span> "1" | block:sgs/text | 0.25: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/150` | page-basket-dc-html Basket>SiteHeader@7/150 <div> "£21.50" | block:sgs/text | 0.25: 2 copies of one template element |  |
-| `skeleton:page-checkout-dc-html:Checkout/103` | page-checkout-dc-html Checkout/103 <b> "Royal Mail Tracked 48" | block:sgs/text | 0.25: 4 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/104` | page-checkout-dc-html Checkout/104 <span> "Arrives 2–3 days after the bake" | block:sgs/text | 0.25: 4 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/105` | page-checkout-dc-html Checkout/105 <b> "£3.95" | block:sgs/text | 0.25: 4 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/107#0` | page-checkout-dc-html Checkout/107#0 <legend> "4 · Payment" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/12#0` | page-checkout-dc-html Checkout/12#0 <span> "Secure checkout" | block:sgs/text | 0.25 |  |
 | `skeleton:page-checkout-dc-html:Checkout/122#0` | page-checkout-dc-html Checkout/122#0 <div> "Your order" | block:sgs/text | 0.25 |  |
@@ -448,8 +386,8 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/143#0` | page-checkout-dc-html Checkout/143#0 <div> "Baked fresh for you · with you in 3–5 days" | block:sgs/text | 0.25 |  |
 | `skeleton:page-checkout-dc-html:Checkout/33#0` | page-checkout-dc-html Checkout/33#0 <div> "last bit, promise" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/43#0` | page-checkout-dc-html Checkout/43#0 <legend> "1 · Your details" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/61#0` | page-checkout-dc-html Checkout/61#0 <span> "Create an account (optional)" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/62#0` | page-checkout-dc-html Checkout/62#0 <span> "See your bake dates and manage subscriptions online." | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-checkout-dc-html:Checkout/61#0` | page-checkout-dc-html Checkout/61#0 <span> "Create an account (optional)" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout-dc-html:Checkout/62#0` | page-checkout-dc-html Checkout/62#0 <span> "See your bake dates and manage subscriptions online." | block:sgs/text | 0.25 |  |
 | `skeleton:page-checkout-dc-html:Checkout/72#0` | page-checkout-dc-html Checkout/72#0 <legend> "2 · Who’s it for?" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/86#0` | page-checkout-dc-html Checkout/86#0 <legend> "3 · Delivery" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact-dc-html:Contact/12#0` | page-contact-dc-html Contact/12#0 <div> "pop the kettle on ☕" | block:sgs/text | 0.25 |  |
@@ -470,7 +408,6 @@ Accept all: [ ]
 | `skeleton:page-gifts-dc-html:Gifts/52` | page-gifts-dc-html Gifts/52 <div> "Pick a gift" | block:sgs/text | 0.25: 3 copies of one template element |  |
 | `skeleton:page-gifts-dc-html:Gifts/53` | page-gifts-dc-html Gifts/53 <div> "A gift box, the 40-day bundle, a Taster Trio or a gift card." | block:sgs/text | 0.25: 3 copies of one template element |  |
 | `skeleton:page-gifts-dc-html:Gifts/57#0` | page-gifts-dc-html Gifts/57#0 <div> "go on, have a go" | block:sgs/text | 0.25 |  |
-| `skeleton:page-gifts-dc-html:Gifts/63#0` | page-gifts-dc-html Gifts/63#0 <textarea> "Congratulations, mama! One for the 3am feed. So proud of you." | block:sgs/text | 0.25 |  |
 | `skeleton:page-gifts-dc-html:Gifts/69#0` | page-gifts-dc-html Gifts/69#0 <div> "Dear Aisha," | block:sgs/text | 0.25 |  |
 | `skeleton:page-gifts-dc-html:Gifts/70#0` | page-gifts-dc-html Gifts/70#0 <div> "Congratulations, mama! One for the 3am feed. So proud of you." | block:sgs/text | 0.25 |  |
 | `skeleton:page-gifts-dc-html:Gifts/71#0` | page-gifts-dc-html Gifts/71#0 <div> "Sara x" | block:sgs/text | 0.25 |  |
@@ -540,7 +477,6 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/37#0` | page-home-dc-html Home/37#0 <div> "3am snack sorted ♥" | block:sgs/text | 0.25 |  |
 | `skeleton:page-home-dc-html:Home/40#0` | page-home-dc-html Home/40#0 <span> "to order" | block:sgs/text | 0.25 |  |
 | `skeleton:page-home-dc-html:Home/41#0` | page-home-dc-html Home/41#0 <div> "baked with love" | block:sgs/text | 0.25 |  |
-| `skeleton:page-home-dc-html:Home/42#0` | page-home-dc-html Home/42#0 <div> "Baked fresh when you orderHandmade in BirminghamRegistered food businessFree UK delivery over £35" | block:sgs/text | 0.25 |  |
 | `skeleton:page-home-dc-html:Home/51#0` | page-home-dc-html Home/51#0 <span> "I’m feeding a little one" | block:sgs/text | 0.25 |  |
 | `skeleton:page-home-dc-html:Home/52#0` | page-home-dc-html Home/52#0 <span> "Build your own box, or subscribe and save 10% on every one." | block:sgs/text | 0.25 |  |
 | `skeleton:page-home-dc-html:Home/59#0` | page-home-dc-html Home/59#0 <span> "I’m spoiling a new mum" | block:sgs/text | 0.25 |  |
@@ -548,14 +484,9 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/67#0` | page-home-dc-html Home/67#0 <div> "your cookie, your way" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/84#0` | page-home-dc-html Home/84#0 <span> "Pick up to 3 and we’ll split your box between them" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/89#0` | page-home-dc-html Home/89#0 <div> "Your 20: 10 strawberry · 10 mango" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/95` | page-home-dc-html Home/95 <span> "8" | block:sgs/text | 0.25: 6 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/96` | page-home-dc-html Home/96 <span> "£9.50" | block:sgs/text | 0.25: 6 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/97` | page-home-dc-html Home/97 <span> "£1.19 each" | block:sgs/text | 0.25: 6 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/10#0` | page-home-dc-html Home>SiteHeader@7#0/10#0 <span> "With you in 3–5 days" | block:sgs/text | 0.25: 8 copies of one template element on 8 surfaces |  |
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/12#0` | page-home-dc-html Home>SiteHeader@7#0/12#0 <span> "Free UK delivery over £35" | block:sgs/text | 0.25: 8 copies of one template element on 8 surfaces |  |
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/7#0` | page-home-dc-html Home>SiteHeader@7#0/7#0 <span> "✦ Baked fresh when you order" | block:sgs/text | 0.25: 8 copies of one template element on 8 surfaces |  |
+| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/53#0` | page-home-dc-html Home>SiteHeader@7#0/53#0 <span> "Basket" | block:sgs/text | 0.25: 8 copies of one template element on 8 surfaces |  |
+| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/54#0` | page-home-dc-html Home>SiteHeader@7#0/54#0 <span> "0" | block:sgs/text | 0.25: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-shop-dc-html:Shop/12#0` | page-shop-dc-html Shop/12#0 <div> "fresh from Zainab’s kitchen" | block:sgs/text | 0.25 |  |
-| `skeleton:page-shop-dc-html:Shop/16#0` | page-shop-dc-html Shop/16#0 <span> "Sort" | block:sgs/text | 0.25 |  |
 | `skeleton:page-shop-dc-html:Shop/27#0` | page-shop-dc-html Shop/27#0 <div> "5 treats to choose from" | block:sgs/text | 0.25 |  |
 | `skeleton:page-shop-dc-html:Shop/34#0` | page-shop-dc-html Shop/34#0 <span> "your cookie, your way ✦" | block:sgs/text | 0.25 |  |
 | `skeleton:page-shop-dc-html:Shop/35#0` | page-shop-dc-html Shop/35#0 <span> "Build your own box" | block:sgs/text | 0.25 |  |
@@ -571,11 +502,11 @@ Accept all: [ ]
 | `skeleton:page-signin-dc-html:SignIn/103` | page-signin-dc-html SignIn/103 <div> "See when Zainab bakes your box and when it’s posted." | block:sgs/text | 0.25: 3 copies of one template element |  |
 | `skeleton:page-signin-dc-html:SignIn/11#0` | page-signin-dc-html SignIn/11#0 <div> "welcome back, mama" | block:sgs/text | 0.25 |  |
 | `skeleton:page-signin-dc-html:SignIn/96#0` | page-signin-dc-html SignIn/96#0 <div> "why have an account?" | block:sgs/text | 0.25 |  |
-| `skeleton:site-footer:Home>SiteFooter@250#0/18#0` | site-footer Home>SiteFooter@250#0/18#0 <div> "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/42#0` | site-footer Home>SiteFooter@250#0/42#0 <div> "say hello" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/7#0` | site-footer Home>SiteFooter@250#0/7#0 <div> "fresh out the oven…" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/53#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/53#0 <span> "Basket" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/54#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/54#0 <span> "0" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/10#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/10#0 <span> "With you in 3–5 days" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/12#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/12#0 <span> "Free UK delivery over £35" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/7#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/7#0 <span> "✦ Baked fresh when you order" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
 
 ### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (11)
 
@@ -637,6 +568,14 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/197#0` | page-home-dc-html Home/197#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
 | `skeleton:page-home-dc-html:Home/198#0` | page-home-dc-html Home/198#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
 
+### Settled by rule drawerOpener: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it (3)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/49#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/49#0 <button> | absorbed | 1: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/53#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/53#0 <span> "Basket" | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/54#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/54#0 <span> "0" | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it |  |
+
 ### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (13)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
@@ -655,6 +594,78 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250#0/45#0` | site-footer Home>SiteFooter@250#0/45#0 <a> | block:sgs/icon | 0.9: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/50#0` | site-footer Home>SiteFooter@250#0/50#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
 
+### Settled by rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) (50)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:checkout-form:Checkout/60#0` | checkout-form Checkout/60#0 <span> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-basket-dc-html:Basket/42#0` | page-basket-dc-html Basket/42#0 <label> | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-basket-dc-html:Basket/43#0` | page-basket-dc-html Basket/43#0 <input> | block:sgs/form-field-checkbox | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/153#0` | page-basket-dc-html Basket>SiteHeader@7#0/153#0 <label> | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/154#0` | page-basket-dc-html Basket>SiteHeader@7#0/154#0 <input> | block:sgs/form-field-checkbox | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/155#0` | page-basket-dc-html Basket>SiteHeader@7#0/155#0 <span> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/108#0` | page-checkout-dc-html Checkout/108#0 <label> "Card number" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/109#0` | page-checkout-dc-html Checkout/109#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/111#0` | page-checkout-dc-html Checkout/111#0 <label> "Expiry" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/112#0` | page-checkout-dc-html Checkout/112#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/113#0` | page-checkout-dc-html Checkout/113#0 <label> "Security code" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/114#0` | page-checkout-dc-html Checkout/114#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/132#0` | page-checkout-dc-html Checkout/132#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/52#0` | page-checkout-dc-html Checkout/52#0 <label> "Email" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/53#0` | page-checkout-dc-html Checkout/53#0 <input> | block:sgs/form-field-email | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/54#0` | page-checkout-dc-html Checkout/54#0 <label> "Mobile, for delivery updates (optional)" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/55#0` | page-checkout-dc-html Checkout/55#0 <input> | block:sgs/form-field-phone | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/58#0` | page-checkout-dc-html Checkout/58#0 <label> | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/59#0` | page-checkout-dc-html Checkout/59#0 <input> | block:sgs/form-field-checkbox | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/88#0` | page-checkout-dc-html Checkout/88#0 <label> "Postcode" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/89#0` | page-checkout-dc-html Checkout/89#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/91#0` | page-checkout-dc-html Checkout/91#0 <label> "Address line 1" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/92#0` | page-checkout-dc-html Checkout/92#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/94#0` | page-checkout-dc-html Checkout/94#0 <label> "Address line 2 (optional)" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/95#0` | page-checkout-dc-html Checkout/95#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/96#0` | page-checkout-dc-html Checkout/96#0 <label> "Town or city" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/97#0` | page-checkout-dc-html Checkout/97#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/52#0` | page-contact-dc-html Contact/52#0 <label> "Your name" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/53#0` | page-contact-dc-html Contact/53#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/54#0` | page-contact-dc-html Contact/54#0 <label> "Email" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/55#0` | page-contact-dc-html Contact/55#0 <input> | block:sgs/form-field-email | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/57#0` | page-contact-dc-html Contact/57#0 <label> "Order number (if you have it)" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/58#0` | page-contact-dc-html Contact/58#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/65#0` | page-contact-dc-html Contact/65#0 <label> "Message" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact-dc-html:Contact/66#0` | page-contact-dc-html Contact/66#0 <textarea> | block:sgs/form-field-textarea | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-gifts-dc-html:Gifts/60#0` | page-gifts-dc-html Gifts/60#0 <label> "To" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-gifts-dc-html:Gifts/61#0` | page-gifts-dc-html Gifts/61#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-gifts-dc-html:Gifts/62#0` | page-gifts-dc-html Gifts/62#0 <label> "Your message" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-gifts-dc-html:Gifts/63#0` | page-gifts-dc-html Gifts/63#0 <textarea> "Congratulations, mama! One for the 3am feed. So proud of you." | block:sgs/form-field-textarea | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-gifts-dc-html:Gifts/64#0` | page-gifts-dc-html Gifts/64#0 <label> "From" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-gifts-dc-html:Gifts/65#0` | page-gifts-dc-html Gifts/65#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-help-dc-html:Help/13#0` | page-help-dc-html Help/13#0 <label> | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-help-dc-html:Help/18#0` | page-help-dc-html Help/18#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-shop-dc-html:Shop/15#0` | page-shop-dc-html Shop/15#0 <label> | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-shop-dc-html:Shop/16#0` | page-shop-dc-html Shop/16#0 <span> "Sort" | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-shop-dc-html:Shop/17#0` | page-shop-dc-html Shop/17#0 <select> | block:sgs/form-field-select | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin-dc-html:SignIn/28#0` | page-signin-dc-html SignIn/28#0 <label> "Email" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin-dc-html:SignIn/29#0` | page-signin-dc-html SignIn/29#0 <input> | block:sgs/form-field-email | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin-dc-html:SignIn/32#0` | page-signin-dc-html SignIn/32#0 <label> "Password" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin-dc-html:SignIn/33#0` | page-signin-dc-html SignIn/33#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+
+### Settled by rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part (6)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:checkout-form:Checkout/31#0` | checkout-form Checkout/31#0 <form> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:gift-finder:Gifts/24#0` | gift-finder Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:gift-note-preview:Gifts/61#0` | gift-note-preview Gifts/61#0 <input> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:help-search-category-chips:Help/18#0` | help-search-category-chips Help/18#0 <input> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:product-buy-box:Product/108#0` | product-buy-box Product/108#0 <button> "Add to basket · £21.50" | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+
+### Settled by rule headerSlots: a strip above the header's main bar is its top row (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/5#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/5#0 <div> | block:sgs/site-header-row | 1: a strip above the header's main bar is its top row |  |
+
 ### Settled by rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) (9)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
@@ -669,7 +680,7 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop/8#0` | page-shop-dc-html Shop/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
 | `skeleton:page-signin-dc-html:SignIn/8#0` | page-signin-dc-html SignIn/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
 
-### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (143)
+### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (140)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -685,7 +696,6 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket/44#0` | page-basket-dc-html Basket/44#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-basket-dc-html:Basket/56#0` | page-basket-dc-html Basket/56#0 <aside> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-basket-dc-html:Basket/9#0` | page-basket-dc-html Basket/9#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/102` | page-checkout-dc-html Checkout/102 <span> | unwrap | 1: 2 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-checkout-dc-html:Checkout/106#0` | page-checkout-dc-html Checkout/106#0 <fieldset> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-checkout-dc-html:Checkout/121#0` | page-checkout-dc-html Checkout/121#0 <aside> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-checkout-dc-html:Checkout/125` | page-checkout-dc-html Checkout/125 <div> | unwrap | 1: 2 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
@@ -697,7 +707,6 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/60#0` | page-checkout-dc-html Checkout/60#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-checkout-dc-html:Checkout/71#0` | page-checkout-dc-html Checkout/71#0 <fieldset> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-checkout-dc-html:Checkout/85#0` | page-checkout-dc-html Checkout/85#0 <fieldset> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/98#0` | page-checkout-dc-html Checkout/98#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-contact-dc-html:Contact/10#0` | page-contact-dc-html Contact/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-contact-dc-html:Contact/11#0` | page-contact-dc-html Contact/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-contact-dc-html:Contact/15#0` | page-contact-dc-html Contact/15#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
@@ -798,7 +807,6 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/81#0` | page-home-dc-html Home/81#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/9#0` | page-home-dc-html Home/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/90#0` | page-home-dc-html Home/90#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/94=unwrap` | page-home-dc-html Home/94=unwrap <button> | unwrap | 1: 1 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-shop-dc-html:Shop/11#0` | page-shop-dc-html Shop/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-shop-dc-html:Shop/26#0` | page-shop-dc-html Shop/26#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-shop-dc-html:Shop/30` | page-shop-dc-html Shop/30 <div> | unwrap | 1: 5 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
@@ -817,7 +825,7 @@ Accept all: [ ]
 | `skeleton:page-signin-dc-html:SignIn/95#0` | page-signin-dc-html SignIn/95#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-signin-dc-html:SignIn/97#0` | page-signin-dc-html SignIn/97#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 
-### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (19)
+### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (18)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -837,7 +845,6 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/77#0` | page-home-dc-html Home/77#0 <div> "2 · Chips" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-home-dc-html:Home/83#0` | page-home-dc-html Home/83#0 <span> "3 · Flavours" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-home-dc-html:Home/91#0` | page-home-dc-html Home/91#0 <div> "4 · How many" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
-| `skeleton:page-home-dc-html:Home/99` | page-home-dc-html Home/99 <span> "Most popular" | block:sgs/label | 1: 4 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-shop-dc-html:Shop/44=sgs/label` | page-shop-dc-html Shop/44=sgs/label <span> "10% off every box" | block:sgs/label | 1: 1 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/3` | page-shop-dc-html Shop>ProductCard@31/3 <span> "Build your own" | block:sgs/label | 1: 9 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 
@@ -857,6 +864,13 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250/16` | site-footer Home>SiteFooter@250/16 <a> | absorbed | 1: 54 copies of one template element on 9 surfaces; drawn by sgs/gallery: rule logoGrid |  |
 | `skeleton:site-footer:Home>SiteFooter@250/17` | site-footer Home>SiteFooter@250/17 <img> | absorbed | 1: 54 copies of one template element on 9 surfaces; drawn by sgs/gallery: rule logoGrid |  |
 
+### Settled by rule marqueeCodeItems: a strip whose items are created in code and whose own animation loops a translate for ever is a marquee like one with template items: a scrolling sgs/trust-bar (Bean, 2026-10-21) (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-home-dc-html:Home/42#0` | page-home-dc-html Home/42#0 <div> "Baked fresh when you orderHandmade in BirminghamRegistered food businessFree UK delivery over £35" | block:sgs/trust-bar | 1: a strip whose items are created in code and whose own animation loops a translate for ever is a marquee like one with template items: a scrolling sgs/trust-bar (Bean, 2026-10-21) |  |
+| `skeleton:site-footer:Home>SiteFooter@250#0/18#0` | site-footer Home>SiteFooter@250#0/18#0 <div> "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦" | block:sgs/trust-bar | 1: 9 copies of one template element on 9 surfaces; a strip whose items are created in code and whose own animation loops a translate for ever is a marquee like one with template items: a scrolling sgs/trust-bar (Bean, 2026-10-21) |  |
+
 ### Settled by rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu (6)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
@@ -868,24 +882,68 @@ Accept all: [ ]
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/42#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/42#0 <a> "Help" | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/43#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/43#0 <a> "Contact" | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation |  |
 
-### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (16)
+### Settled by rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it (14)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-checkout-dc-html:Checkout/74#0` | page-checkout-dc-html Checkout/74#0 <button> "Send to my address" | block:sgs/button | 1: 2 copies of one template element on 2 surfaces; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
-| `skeleton:page-checkout-dc-html:Checkout/75#0` | page-checkout-dc-html Checkout/75#0 <span> "for me" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/button: rule pillButton |  |
-| `skeleton:page-checkout-dc-html:Checkout/76#0` | page-checkout-dc-html Checkout/76#0 <button> "Send to someone else" | block:sgs/button | 1: 2 copies of one template element on 2 surfaces; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
-| `skeleton:page-checkout-dc-html:Checkout/77#0` | page-checkout-dc-html Checkout/77#0 <span> "it’s a gift ♥" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-home-dc-html:Home/72#0` | page-home-dc-html Home/72#0 <div> | block:sgs/option-picker | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it |  |
+| `skeleton:page-home-dc-html:Home/74` | page-home-dc-html Home/74 <button> "Classic oat" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/75` | page-home-dc-html Home/75 <span> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/78#0` | page-home-dc-html Home/78#0 <div> | block:sgs/option-picker | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it |  |
+| `skeleton:page-home-dc-html:Home/80` | page-home-dc-html Home/80 <button> "Milk choc" | absorbed | 1: 8 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/85#0` | page-home-dc-html Home/85#0 <div> | block:sgs/option-picker | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it |  |
+| `skeleton:page-home-dc-html:Home/87` | page-home-dc-html Home/87 <button> "Vanilla" | absorbed | 1: 22 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/88` | page-home-dc-html Home/88 <span> "✓" | absorbed | 1: 22 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/92#0` | page-home-dc-html Home/92#0 <div> | block:sgs/option-picker | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it |  |
+| `skeleton:page-home-dc-html:Home/94` | page-home-dc-html Home/94 <button> | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/95` | page-home-dc-html Home/95 <span> "8" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/96` | page-home-dc-html Home/96 <span> "£9.50" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/97` | page-home-dc-html Home/97 <span> "£1.19 each" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+| `skeleton:page-home-dc-html:Home/99` | page-home-dc-html Home/99 <span> "Most popular" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet |  |
+
+### Settled by rule optionSetFilter: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) (9)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-gifts-dc-html:Gifts/17#0` | page-gifts-dc-html Gifts/17#0 <div> | block:sgs/option-picker | 1: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) |  |
+| `skeleton:page-gifts-dc-html:Gifts/19` | page-gifts-dc-html Gifts/19 <button> "Baby shower" | absorbed | 1: 4 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter |  |
+| `skeleton:page-gifts-dc-html:Gifts/21#0` | page-gifts-dc-html Gifts/21#0 <div> | block:sgs/option-picker | 1: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) |  |
+| `skeleton:page-gifts-dc-html:Gifts/23` | page-gifts-dc-html Gifts/23 <button> "Any" | absorbed | 1: 3 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter |  |
+| `skeleton:page-help-dc-html:Help/19#0` | page-help-dc-html Help/19#0 <div> | block:sgs/option-picker | 1: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) |  |
+| `skeleton:page-help-dc-html:Help/21` | page-help-dc-html Help/21 <button> "All" | absorbed | 1: 6 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter |  |
+| `skeleton:page-shop-dc-html:Shop/21#0` | page-shop-dc-html Shop/21#0 <div> | block:sgs/option-picker | 1: a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21) |  |
+| `skeleton:page-shop-dc-html:Shop/23` | page-shop-dc-html Shop/23 <button> "All" | absorbed | 1: 7 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter |  |
+| `skeleton:page-shop-dc-html:Shop/24` | page-shop-dc-html Shop/24 <span> "5" | absorbed | 1: 7 copies of one template element; drawn by sgs/option-picker: rule optionSetFilter |  |
+
+### Settled by rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) (14)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-checkout-dc-html:Checkout/100` | page-checkout-dc-html Checkout/100 <button> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/101` | page-checkout-dc-html Checkout/101 <span> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/102` | page-checkout-dc-html Checkout/102 <span> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/103` | page-checkout-dc-html Checkout/103 <b> "Royal Mail Tracked 48" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/104` | page-checkout-dc-html Checkout/104 <span> "Arrives 2–3 days after the bake" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/105` | page-checkout-dc-html Checkout/105 <b> "£3.95" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/73#0` | page-checkout-dc-html Checkout/73#0 <div> | block:sgs/form-field-tiles | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) |  |
+| `skeleton:page-checkout-dc-html:Checkout/74#0` | page-checkout-dc-html Checkout/74#0 <button> "Send to my address" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/75#0` | page-checkout-dc-html Checkout/75#0 <span> "for me" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/76#0` | page-checkout-dc-html Checkout/76#0 <button> "Send to someone else" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/77#0` | page-checkout-dc-html Checkout/77#0 <span> "it’s a gift ♥" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+| `skeleton:page-checkout-dc-html:Checkout/98#0` | page-checkout-dc-html Checkout/98#0 <div> | block:sgs/form-field-tiles | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) |  |
+| `skeleton:page-contact-dc-html:Contact/48#0` | page-contact-dc-html Contact/48#0 <div> | block:sgs/form-field-tiles | 1: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) |  |
+| `skeleton:page-contact-dc-html:Contact/50` | page-contact-dc-html Contact/50 <button> "My order" | absorbed | 1: 5 copies of one template element; drawn by sgs/form-field-tiles: rule optionSetForm |  |
+
+### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (8)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
 | `skeleton:page-home-dc-html:Home/130#0` | page-home-dc-html Home/130#0 <a> "All gifts" | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:page-home-dc-html:Home/131#0` | page-home-dc-html Home/131#0 <span> "→" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 | `skeleton:page-home-dc-html:Home/21#0` | page-home-dc-html Home/21#0 <a> "Build your box" | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:page-home-dc-html:Home/22#0` | page-home-dc-html Home/22#0 <span> "→" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 | `skeleton:page-home-dc-html:Home/25#0` | page-home-dc-html Home/25#0 <a> "4.3 on Trustpilot" | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:page-home-dc-html:Home/26#0` | page-home-dc-html Home/26#0 <span> "★★★★★" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
-| `skeleton:page-home-dc-html:Home/87` | page-home-dc-html Home/87 <button> "Vanilla" | block:sgs/button | 1: 22 copies of one template element on 2 surfaces; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
-| `skeleton:page-home-dc-html:Home/88` | page-home-dc-html Home/88 <span> "✓" | absorbed | 1: 22 copies of one template element on 2 surfaces; drawn by sgs/button: rule pillButton |  |
-| `skeleton:page-shop-dc-html:Shop/23` | page-shop-dc-html Shop/23 <button> "All" | block:sgs/button | 1: 7 copies of one template element; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
-| `skeleton:page-shop-dc-html:Shop/24` | page-shop-dc-html Shop/24 <span> "5" | absorbed | 1: 7 copies of one template element; drawn by sgs/button: rule pillButton |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/24#0` | site-footer Home>SiteFooter@250#0/24#0 <a> "Build your box" | block:sgs/button | 1: 9 copies of one template element on 9 surfaces; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/25#0` | site-footer Home>SiteFooter@250#0/25#0 <span> "→" | absorbed | 1: 9 copies of one template element on 9 surfaces; drawn by sgs/button: rule pillButton |  |
 
@@ -915,8 +973,8 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/11#0` | page-home-dc-html Home>SiteHeader@7#0/11#0 <span> "·" | remove | 1: 8 copies of one template element on 8 surfaces; a typed divider between items is the row's separators setting, not a block |  |
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/9#0` | page-home-dc-html Home>SiteHeader@7#0/9#0 <span> "·" | remove | 1: 8 copies of one template element on 8 surfaces; a typed divider between items is the row's separators setting, not a block |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/11#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/11#0 <span> "·" | remove | 1: 9 copies of one template element on 9 surfaces; a typed divider between items is the row's separators setting, not a block |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/9#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/9#0 <span> "·" | remove | 1: 9 copies of one template element on 9 surfaces; a typed divider between items is the row's separators setting, not a block |  |
 
 ### Settled by rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) (7)
 
@@ -930,14 +988,16 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/215#0` | page-home-dc-html Home/215#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 | `skeleton:page-shop-dc-html:Shop/45#0` | page-shop-dc-html Shop/45#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 
-### Settled by rule widthWrapper: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place (2)
+### Settled by rule widthWrapper: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:site-footer:Home>SiteFooter@250#0/20#0` | site-footer Home>SiteFooter@250#0/20#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place |  |
-| `skeleton:site-footer:Home>SiteFooter@250#0/4#0` | site-footer Home>SiteFooter@250#0/4#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place |  |
+| `skeleton:build-your-zookie:Home/64#0` | build-your-zookie Home/64#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
+| `skeleton:site-footer:Home>SiteFooter@250#0/20#0` | site-footer Home>SiteFooter@250#0/20#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
+| `skeleton:site-footer:Home>SiteFooter@250#0/4#0` | site-footer Home>SiteFooter@250#0/4#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/6#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/6#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
 
-### Confident proposals (Accept all covers these) (347)
+### Confident proposals (Accept all covers these) (311)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -952,23 +1012,20 @@ Accept all: [ ]
 | `skeleton:build-your-zookie:Home/107#0` | build-your-zookie Home/107#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:build-your-zookie:Home/109#0` | build-your-zookie Home/109#0 <span> | block:sgs/container | 1 |  |
 | `skeleton:build-your-zookie:Home/112#0` | build-your-zookie Home/112#0 <span> | block:sgs/container | 1 |  |
-| `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/container | 0.75 |  |
 | `skeleton:build-your-zookie:Home/65#0` | build-your-zookie Home/65#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:build-your-zookie:Home/66#0` | build-your-zookie Home/66#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:build-your-zookie:Home/70#0` | build-your-zookie Home/70#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:build-your-zookie:Home/76#0` | build-your-zookie Home/76#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:build-your-zookie:Home/81#0` | build-your-zookie Home/81#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:build-your-zookie:Home/90#0` | build-your-zookie Home/90#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:checkout-form:Checkout/102` | checkout-form Checkout/102 <span> | block:sgs/container | 1: 2 copies of one template element |  |
 | `skeleton:checkout-form:Checkout/106#0` | checkout-form Checkout/106#0 <fieldset> | block:sgs/container | 1 |  |
-| `skeleton:checkout-form:Checkout/31#0` | checkout-form Checkout/31#0 <form> | block:sgs/container | 1 |  |
 | `skeleton:checkout-form:Checkout/32#0` | checkout-form Checkout/32#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:checkout-form:Checkout/42#0` | checkout-form Checkout/42#0 <fieldset> | block:sgs/container | 1 |  |
 | `skeleton:checkout-form:Checkout/57#0` | checkout-form Checkout/57#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:checkout-form:Checkout/60#0` | checkout-form Checkout/60#0 <span> | block:sgs/container | 1 |  |
+| `skeleton:checkout-form:Checkout/61#0` | checkout-form Checkout/61#0 <span> "Create an account (optional)" | remove | 1: inside a removed element (Checkout/60#0) |  |
+| `skeleton:checkout-form:Checkout/62#0` | checkout-form Checkout/62#0 <span> "See your bake dates and manage subscriptions online." | remove | 1: inside a removed element (Checkout/60#0) |  |
 | `skeleton:checkout-form:Checkout/71#0` | checkout-form Checkout/71#0 <fieldset> | block:sgs/container | 1 |  |
 | `skeleton:checkout-form:Checkout/85#0` | checkout-form Checkout/85#0 <fieldset> | block:sgs/container | 1 |  |
-| `skeleton:checkout-form:Checkout/98#0` | checkout-form Checkout/98#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/104#0` | nav-drawer-left Home>SiteHeader@7#0/104#0 <div> | block:sgs/container | 0.75: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/107#0` | nav-drawer-left Home>SiteHeader@7#0/107#0 <a> "WhatsApp" | block:sgs/icon-list | 0.7: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/112#0` | nav-drawer-left Home>SiteHeader@7#0/112#0 <a> "Email" | block:sgs/icon-list | 0.7: 9 copies of one template element on 9 surfaces |  |
@@ -1006,7 +1063,6 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket/36` | page-basket-dc-html Basket/36 <button> "−" | block:sgs/button | 0.75: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/38` | page-basket-dc-html Basket/38 <button> "+" | block:sgs/button | 0.75: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/39` | page-basket-dc-html Basket/39 <button> "Remove" | block:sgs/button | 0.75: 2 copies of one template element |  |
-| `skeleton:page-basket-dc-html:Basket/42#0` | page-basket-dc-html Basket/42#0 <label> | block:sgs/container | 1 |  |
 | `skeleton:page-basket-dc-html:Basket/57#0` | page-basket-dc-html Basket/57#0 <div> "Summary" | block:sgs/heading | 0.8 |  |
 | `skeleton:page-basket-dc-html:Basket/58#0` | page-basket-dc-html Basket/58#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-basket-dc-html:Basket/6#0` | page-basket-dc-html Basket/6#0 <div> | block:sgs/container | 0.75 |  |
@@ -1022,8 +1078,8 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/136#0` | page-basket-dc-html Basket>SiteHeader@7#0/136#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/138#0` | page-basket-dc-html Basket>SiteHeader@7#0/138#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/152#0` | page-basket-dc-html Basket>SiteHeader@7#0/152#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/153#0` | page-basket-dc-html Basket>SiteHeader@7#0/153#0 <label> | block:sgs/container | 1 |  |
-| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/155#0` | page-basket-dc-html Basket>SiteHeader@7#0/155#0 <span> | block:sgs/container | 1 |  |
+| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/156#0` | page-basket-dc-html Basket>SiteHeader@7#0/156#0 <span> "This is a gift" | remove | 1: inside a removed element (Basket>SiteHeader@7#0/155#0) |  |
+| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/157#0` | page-basket-dc-html Basket>SiteHeader@7#0/157#0 <span> "Add a message. We leave the prices off." | remove | 1: inside a removed element (Basket>SiteHeader@7#0/155#0) |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/168#0` | page-basket-dc-html Basket>SiteHeader@7#0/168#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/169#0` | page-basket-dc-html Basket>SiteHeader@7#0/169#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/173#0` | page-basket-dc-html Basket>SiteHeader@7#0/173#0 <a> "Checkout securely" | block:sgs/icon-list | 0.7 |  |
@@ -1036,11 +1092,7 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/149` | page-basket-dc-html Basket>SiteHeader@7/149 <div> | block:sgs/container | 1: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/151` | page-basket-dc-html Basket>SiteHeader@7/151 <button> "Remove" | block:sgs/button | 0.75: 2 copies of one template element |  |
 | `skeleton:page-checkout-dc-html:Checkout/10#0` | page-checkout-dc-html Checkout/10#0 <a> | block:sgs/container | 0.75 |  |
-| `skeleton:page-checkout-dc-html:Checkout/100` | page-checkout-dc-html Checkout/100 <button> | block:sgs/container | 1: 4 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/108#0` | page-checkout-dc-html Checkout/108#0 <label> "Card number" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/110#0` | page-checkout-dc-html Checkout/110#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/111#0` | page-checkout-dc-html Checkout/111#0 <label> "Expiry" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/113#0` | page-checkout-dc-html Checkout/113#0 <label> "Security code" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/115#0` | page-checkout-dc-html Checkout/115#0 <div> "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts." | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/116#0` | page-checkout-dc-html Checkout/116#0 <a> "Full allergen info" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/117#0` | page-checkout-dc-html Checkout/117#0 <button> "Pay £30.45" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
@@ -1060,33 +1112,21 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/39#0` | page-checkout-dc-html Checkout/39#0 <div> "or pay by card" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/50#0` | page-checkout-dc-html Checkout/50#0 <div> "Checking out as a guest." | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/51#0` | page-checkout-dc-html Checkout/51#0 <a> "Have an account? Sign in" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/52#0` | page-checkout-dc-html Checkout/52#0 <label> "Email" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/54#0` | page-checkout-dc-html Checkout/54#0 <label> "Mobile, for delivery updates (optional)" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/58#0` | page-checkout-dc-html Checkout/58#0 <label> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/6#0` | page-checkout-dc-html Checkout/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-checkout-dc-html:Checkout/7#0` | page-checkout-dc-html Checkout/7#0 <header> | block:sgs/container | 0.75 |  |
 | `skeleton:page-checkout-dc-html:Checkout/8#0` | page-checkout-dc-html Checkout/8#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-checkout-dc-html:Checkout/87#0` | page-checkout-dc-html Checkout/87#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/88#0` | page-checkout-dc-html Checkout/88#0 <label> "Postcode" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/9#0` | page-checkout-dc-html Checkout/9#0 <a> "← Basket" | block:sgs/button | 0.75 |  |
 | `skeleton:page-checkout-dc-html:Checkout/90#0` | page-checkout-dc-html Checkout/90#0 <button> "Find address" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/91#0` | page-checkout-dc-html Checkout/91#0 <label> "Address line 1" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/93#0` | page-checkout-dc-html Checkout/93#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/94#0` | page-checkout-dc-html Checkout/94#0 <label> "Address line 2 (optional)" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/96#0` | page-checkout-dc-html Checkout/96#0 <label> "Town or city" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact-dc-html:Contact/13#0` | page-contact-dc-html Contact/13#0 <h1> "Say hello to Zainab" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/14#0` | page-contact-dc-html Contact/14#0 <p> "Questions about an order, a gift, allergens or a bulk order for a baby shower or event? Get in touch however suits you." | block:sgs/text | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/18#0` | page-contact-dc-html Contact/18#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/40#0` | page-contact-dc-html Contact/40#0 <span> "Zainab@mamasmunches.com" | block:sgs/business-info | 0.8 |  |
 | `skeleton:page-contact-dc-html:Contact/41#0` | page-contact-dc-html Contact/41#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/45#0` | page-contact-dc-html Contact/45#0 <h2> "Send a message" | block:sgs/heading | 0.75 |  |
-| `skeleton:page-contact-dc-html:Contact/50` | page-contact-dc-html Contact/50 <button> "My order" | block:sgs/button | 0.75: 5 copies of one template element |  |
 | `skeleton:page-contact-dc-html:Contact/51#0` | page-contact-dc-html Contact/51#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-contact-dc-html:Contact/52#0` | page-contact-dc-html Contact/52#0 <label> "Your name" | block:sgs/container | 1 |  |
-| `skeleton:page-contact-dc-html:Contact/54#0` | page-contact-dc-html Contact/54#0 <label> "Email" | block:sgs/container | 1 |  |
-| `skeleton:page-contact-dc-html:Contact/57#0` | page-contact-dc-html Contact/57#0 <label> "Order number (if you have it)" | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/6#0` | page-contact-dc-html Contact/6#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-contact-dc-html:Contact/65#0` | page-contact-dc-html Contact/65#0 <label> "Message" | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/67#0` | page-contact-dc-html Contact/67#0 <button> "Send message →" | block:sgs/button | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/7#0` | page-contact-dc-html Contact/7#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/77` | page-contact-dc-html Contact/77 <a> "When will my order arrive?" | block:sgs/icon-list | 0.7: 4 copies of one template element |  |
@@ -1094,9 +1134,7 @@ Accept all: [ ]
 | `skeleton:page-gifts-dc-html:Gifts/10#0` | page-gifts-dc-html Gifts/10#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-gifts-dc-html:Gifts/13#0` | page-gifts-dc-html Gifts/13#0 <h1> "Gifts she’ll actually eat" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/14#0` | page-gifts-dc-html Gifts/14#0 <p> "Baked fresh when you order and sent with your note. We always leave the prices off." | block:sgs/text | 0.75 |  |
-| `skeleton:page-gifts-dc-html:Gifts/19` | page-gifts-dc-html Gifts/19 <button> "Baby shower" | block:sgs/button | 0.75: 4 copies of one template element |  |
-| `skeleton:page-gifts-dc-html:Gifts/23` | page-gifts-dc-html Gifts/23 <button> "Any" | block:sgs/button | 0.75: 3 copies of one template element |  |
-| `skeleton:page-gifts-dc-html:Gifts/24#0` | page-gifts-dc-html Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-gifts-dc-html:Gifts/24#0` | page-gifts-dc-html Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/button | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/25#0` | page-gifts-dc-html Gifts/25#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/26#0` | page-gifts-dc-html Gifts/26#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/29#0` | page-gifts-dc-html Gifts/29#0 <div> | block:sgs/container | 0.75 |  |
@@ -1107,15 +1145,10 @@ Accept all: [ ]
 | `skeleton:page-gifts-dc-html:Gifts/58#0` | page-gifts-dc-html Gifts/58#0 <h2> "Write her a note" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/59#0` | page-gifts-dc-html Gifts/59#0 <p> "See how it’ll look in the box. You can finish it at checkout." | block:sgs/text | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/6#0` | page-gifts-dc-html Gifts/6#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-gifts-dc-html:Gifts/60#0` | page-gifts-dc-html Gifts/60#0 <label> "To" | block:sgs/container | 1 |  |
-| `skeleton:page-gifts-dc-html:Gifts/62#0` | page-gifts-dc-html Gifts/62#0 <label> "Your message" | block:sgs/container | 1 |  |
-| `skeleton:page-gifts-dc-html:Gifts/64#0` | page-gifts-dc-html Gifts/64#0 <label> "From" | block:sgs/container | 1 |  |
 | `skeleton:page-gifts-dc-html:Gifts/7#0` | page-gifts-dc-html Gifts/7#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/79#0` | page-gifts-dc-html Gifts/79#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-gifts-dc-html:Gifts/83#0` | page-gifts-dc-html Gifts/83#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/12#0` | page-help-dc-html Help/12#0 <h1> "Help & FAQs" | block:sgs/heading | 0.75 |  |
-| `skeleton:page-help-dc-html:Help/13#0` | page-help-dc-html Help/13#0 <label> | block:sgs/container | 0.75 |  |
-| `skeleton:page-help-dc-html:Help/21` | page-help-dc-html Help/21 <button> "All" | block:sgs/button | 0.75: 6 copies of one template element |  |
 | `skeleton:page-help-dc-html:Help/27` | page-help-dc-html Help/27 <button> | block:sgs/container | 1: 12 copies of one template element |  |
 | `skeleton:page-help-dc-html:Help/33#0` | page-help-dc-html Help/33#0 <p> "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days." | block:sgs/text | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/40#0` | page-help-dc-html Help/40#0 <h2> "Delivery" | block:sgs/heading | 0.75 |  |
@@ -1193,16 +1226,11 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/53#0` | page-home-dc-html Home/53#0 <span> "Build your box" | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/6#0` | page-home-dc-html Home/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/61#0` | page-home-dc-html Home/61#0 <span> "Shop gifts" | block:sgs/container | 1 |  |
-| `skeleton:page-home-dc-html:Home/64#0` | page-home-dc-html Home/64#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/64#0` | page-home-dc-html Home/64#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/68#0` | page-home-dc-html Home/68#0 <h2> "Build your Zookie" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/69#0` | page-home-dc-html Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/7#0` | page-home-dc-html Home/7#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-home-dc-html:Home/72#0` | page-home-dc-html Home/72#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/74` | page-home-dc-html Home/74 <button> "Classic oat" | block:sgs/container | 1: 4 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/80` | page-home-dc-html Home/80 <button> "Milk choc" | block:sgs/button | 0.75: 8 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/82#0` | page-home-dc-html Home/82#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/92#0` | page-home-dc-html Home/92#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-home-dc-html:Home/94=sgs/container` | page-home-dc-html Home/94=sgs/container <button> | block:sgs/container | 1: 5 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteFooter@250#0/19#0` | page-home-dc-html Home>SiteFooter@250#0/19#0 <div> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteFooter@250#0/2#0` | page-home-dc-html Home>SiteFooter@250#0/2#0 <footer> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteFooter@250#0/20#0` | page-home-dc-html Home>SiteFooter@250#0/20#0 <div> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
@@ -1219,13 +1247,13 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home>SiteHeader@7#0/41#0` | page-home-dc-html Home>SiteHeader@7#0/41#0 <a> "Subscribe & save" | block:sgs/button | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteHeader@7#0/42#0` | page-home-dc-html Home>SiteHeader@7#0/42#0 <a> "Help" | block:sgs/button | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteHeader@7#0/43#0` | page-home-dc-html Home>SiteHeader@7#0/43#0 <a> "Contact" | block:sgs/button | 0.75: 8 copies of one template element on 8 surfaces |  |
+| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/49#0` | page-home-dc-html Home>SiteHeader@7#0/49#0 <button> | block:sgs/container | 1: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteHeader@7#0/5#0` | page-home-dc-html Home>SiteHeader@7#0/5#0 <div> | block:sgs/container | 1: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteHeader@7#0/56#0` | page-home-dc-html Home>SiteHeader@7#0/56#0 <aside> | block:sgs/container | 1: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteHeader@7#0/6#0` | page-home-dc-html Home>SiteHeader@7#0/6#0 <div> | block:sgs/container | 1: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-shop-dc-html:Shop/10#0` | page-shop-dc-html Shop/10#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/13#0` | page-shop-dc-html Shop/13#0 <h1> "The shop" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-shop-dc-html:Shop/14#0` | page-shop-dc-html Shop/14#0 <p> "Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35." | block:sgs/text | 0.75 |  |
-| `skeleton:page-shop-dc-html:Shop/15#0` | page-shop-dc-html Shop/15#0 <label> | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/28#0` | page-shop-dc-html Shop/28#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/32#0` | page-shop-dc-html Shop/32#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/37#0` | page-shop-dc-html Shop/37#0 <span> "Start building" | block:sgs/container | 1 |  |
@@ -1246,14 +1274,11 @@ Accept all: [ ]
 | `skeleton:page-signin-dc-html:SignIn/14#0` | page-signin-dc-html SignIn/14#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-signin-dc-html:SignIn/24#0` | page-signin-dc-html SignIn/24#0 <button> "Sign in" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/25#0` | page-signin-dc-html SignIn/25#0 <button> "Create account" | block:sgs/button | 0.75 |  |
-| `skeleton:page-signin-dc-html:SignIn/28#0` | page-signin-dc-html SignIn/28#0 <label> "Email" | block:sgs/container | 1 |  |
-| `skeleton:page-signin-dc-html:SignIn/32#0` | page-signin-dc-html SignIn/32#0 <label> "Password" | block:sgs/container | 1 |  |
 | `skeleton:page-signin-dc-html:SignIn/37#0` | page-signin-dc-html SignIn/37#0 <button> "Sign in →" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/38#0` | page-signin-dc-html SignIn/38#0 <button> "Forgotten your password?" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/6#0` | page-signin-dc-html SignIn/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/7#0` | page-signin-dc-html SignIn/7#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/99` | page-signin-dc-html SignIn/99 <div> | block:sgs/container | 1: 3 copies of one template element |  |
-| `skeleton:product-buy-box:Product/108#0` | product-buy-box Product/108#0 <button> "Add to basket · £21.50" | block:sgs/button | 0.75 |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/19#0` | site-footer Home>SiteFooter@250#0/19#0 <div> | block:sgs/site-footer-row | 1 |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/2#0` | site-footer Home>SiteFooter@250#0/2#0 <footer> | block:sgs/site-footer | 1 |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/21#0` | site-footer Home>SiteFooter@250#0/21#0 <div> | block:sgs/container | 1: 9 copies of one template element on 9 surfaces |  |
@@ -1287,7 +1312,6 @@ Accept all: [ ]
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/35#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/35#0 <div> | block:sgs/site-header-row | 1 |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/36#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/36#0 <a> | block:sgs/container | 0.75: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/44#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/44#0 <div> | block:sgs/container | 1: 9 copies of one template element on 9 surfaces |  |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/49#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/49#0 <button> | block:sgs/container | 1: 9 copies of one template element on 9 surfaces |  |
 
 ## Inventory diffs (inventory-diff)
 
