@@ -194,6 +194,7 @@
     "walkerFull": "qa/parity/form-send.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
     "draftIndex": "Home.dc.html",
+    "draftRoute": "Contact.dc.html",
     "states": {
       "resting": null
     },
@@ -203,6 +204,7 @@
   },
   "flow-choice-flow-gifts-she-ll-actually-eat": {
     "tree": "trees/sgs_choice_flow/choice-flow-gifts-she-ll-actually-eat.json",
+    "intakeSurface": "gift-finder",
     "envFile": ".claude/secrets/local-mamas.env",
     "envKey": "LOCALMAMAS",
     "site": "local-mamas",
@@ -220,6 +222,7 @@
   },
   "flow-choice-flow-build-your-zookie": {
     "tree": "trees/sgs_choice_flow/choice-flow-build-your-zookie.json",
+    "intakeSurface": "build-your-zookie",
     "envFile": ".claude/secrets/local-mamas.env",
     "envKey": "LOCALMAMAS",
     "site": "local-mamas",
@@ -286,6 +289,7 @@
   },
   "drawer-menu": {
     "tree": "trees/sgs_drawer/drawer-menu.json",
+    "intakeSurface": "nav-drawer-left",
     "envFile": ".claude/secrets/local-mamas.env",
     "envKey": "LOCALMAMAS",
     "site": "local-mamas",

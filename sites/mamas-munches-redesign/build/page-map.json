@@ -324,7 +324,8 @@
     "postType": "sgs_form",
     "collection": "static",
     "flags": [],
-    "id": 157
+    "id": 157,
+    "draftId": "surfaces.json S-34"
   },
   {
     "slug": "choice-flow-gifts-she-ll-actually-eat",
@@ -335,7 +336,8 @@
     "postType": "sgs_choice_flow",
     "collection": "static",
     "flags": [],
-    "id": 159
+    "id": 159,
+    "draftId": "surfaces.json S-20"
   },
   {
     "slug": "choice-flow-build-your-zookie",
@@ -346,7 +348,8 @@
     "postType": "sgs_choice_flow",
     "collection": "static",
     "flags": [],
-    "id": 161
+    "id": 161,
+    "draftId": "surfaces.json S-08"
   },
   {
     "slug": "footer",
@@ -357,7 +360,8 @@
     "postType": "sgs_footer",
     "collection": "static",
     "flags": [],
-    "id": 176
+    "id": 176,
+    "draftId": "surfaces.json S-05"
   },
   {
     "slug": "header",
@@ -368,7 +372,8 @@
     "postType": "sgs_header",
     "collection": "static",
     "flags": [],
-    "id": 178
+    "id": 178,
+    "draftId": "surfaces.json S-01"
   },
   {
     "slug": "drawer-menu",
@@ -379,6 +384,7 @@
     "postType": "sgs_drawer",
     "collection": "static",
     "flags": [],
-    "id": 180
+    "id": 180,
+    "draftId": "surfaces.json S-02"
   }
 ]
