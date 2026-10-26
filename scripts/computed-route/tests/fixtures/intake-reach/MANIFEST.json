@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-26",
+  "project": "Reach opener fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 1074,
+      "sha256": "37ea85afa18de07f96cac6f6aae244002644081ec76aa2b2646b41552da6692c"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 659,
+      "sha256": "e40951248e1ce7e5e2bec9374fd72694c0a9e1ddcd2b119bb4baa22cd07a1330"
+    }
+  ]
+}

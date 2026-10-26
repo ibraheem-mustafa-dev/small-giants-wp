@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="font-family:system-ui,sans-serif;color:#222">
+  <main style="padding:24px">
+    <h1 style="margin:0 0 12px;font-size:32px">Frames</h1>
+    <button type="button" style="padding:10px 18px">Choose lenses</button>
+  </main>
+  <sc-if value="{{ lens.open }}">
+    <div role="dialog" aria-label="Lens configurator" style="position:fixed;inset:10%;padding:24px;background:#fff;border:1px solid #222">
+      <h2 style="margin:0 0 8px;font-size:24px">Choose your lenses</h2>
+      <p style="margin:0">Step {{ lens.step }}</p>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { lens: { open: false, step: 0 } };
+  renderVals() {
+    return { lens: this.state.lens };
+  }
+}
+</script>
+</body>
+</html>

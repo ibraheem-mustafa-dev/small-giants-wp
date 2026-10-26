@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "project": "Reach opener fixture",
+  "generated": "2026-10-26",
+  "records": [
+    { "id": "S-01", "kind": "modal", "name": "Lens configurator", "dc": "Home", "template_tpl_id": "5", "route": "*", "parent": null, "opened_by": "the Choose lenses button", "closed_by": "close", "states": [ { "name": "closed", "state_keys": { "lens": "{open:false}" }, "how_to_reach": "L.setState({lens:{...L.state.lens, open:false}})" }, { "name": "open", "state_keys": { "lens": "{open:true}" }, "how_to_reach": "Tap Choose lenses; L.setState({lens:{...L.state.lens, open:true}})" } ], "time_dependent": { "value": false, "reason": "" } }
+  ]
+}

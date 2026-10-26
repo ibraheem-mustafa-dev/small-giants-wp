@@ -27,7 +27,7 @@ import { readRouting } from './intake-routing.mjs';
 import { stateRouteHash } from './state-route.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
-import { setDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
+import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
 import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
@@ -208,17 +208,60 @@ const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows
 	...contextOf( inventory, proposal, r.key ),
 } ) );
 
+// The `<ident>.setState(<args>)` calls of a surfaces.json state's how_to_reach, in order: [{ ident, args }] (the args'
+// source with its brackets and quotes balanced; a call whose parentheses never close is left out).
+export function reachCalls( text ) {
+	const out = [];
+	const re = /(?<![\w$.])([A-Za-z_$][\w$]*)\s*\.\s*setState\s*\(/g;
+	for ( let m; ( m = re.exec( String( text || '' ) ) ); ) {
+		const src = m.input;
+		const close = { '(': ')', '[': ']', '{': '}' };
+		const stack = [ ')' ];
+		let i = re.lastIndex;
+		for ( ; i < src.length && stack.length; i++ ) {
+			const c = src[ i ];
+			if ( '\'' === c || '"' === c || '`' === c ) {
+				for ( i++; i < src.length && src[ i ] !== c; i++ ) {
+					'\\' === src[ i ] && i++;
+				}
+			} else if ( close[ c ] ) {
+				stack.push( close[ c ] );
+			} else if ( c === stack.at( -1 ) ) {
+				stack.pop();
+			} else if ( /[)\]}]/.test( c ) ) {
+				break;
+			}
+		}
+		if ( ! stack.length ) {
+			out.push( { ident: m[ 1 ], args: src.slice( re.lastIndex, i - 1 ).trim() } );
+			re.lastIndex = i;
+		}
+	}
+	return out;
+}
+
 // State-driven surfaces (a drawer, a mega-menu panel, a modal) render only when their state opens. The ways to open one,
-// in order: each surfaces.json state whose keys are plain state keys with concrete values (a state named "open" first;
-// "closed" and "default" never), then each template handler of the surface's component whose method `opened_by` names.
+// in order: each surfaces.json state (a state named "open" first; "closed" and "default" never) by its plain state keys
+// (`state`: identifier keys with concrete values) and by the setState calls its how_to_reach gives (`reach`, run on the
+// component's logic as the draft's own code would); a state whose keys are all plain JSON-safe values tries `state`
+// first, one with a key holding a JS literal ("{open:true}", "[]") or a comparison (">= 768", "768–1023") tries `reach`
+// first. Then each template handler of the surface's component whose method `opened_by` names.
 const IDENT = /^[A-Za-z_$][\w$]*$/;
+const NOT_A_VALUE = /^\s*(?:[[{].*[\]}]|[<>]=?\s*-?\d.*|-?\d+(?:\.\d+)?\s*[–-]\s*-?\d.*|<.*>)\s*$/;
 export function openers( s, census = null ) {
+	const shut = ( st ) => /^(closed|default)$/i.test( st.name || '' );
 	const concrete = ( st ) => {
 		const keys = Object.entries( st.state_keys || {} );
-		return keys.length && keys.every( ( [ n, v ] ) => IDENT.test( n ) && ! ( 'string' === typeof v && /^<.*>$/.test( v ) ) ) && ! /^(closed|default)$/i.test( st.name || '' );
+		return keys.length && keys.every( ( [ n, v ] ) => IDENT.test( n ) && ! ( 'string' === typeof v && /^<.*>$/.test( v ) ) );
 	};
-	const states = ( s.states || [] ).filter( concrete ).sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );
-	const out = states.map( ( st ) => ( { via: 'state', state: st.name, keys: st.state_keys } ) );
+	const plain = ( st ) => Object.values( st.state_keys || {} ).every( ( v ) => ! ( 'string' === typeof v && NOT_A_VALUE.test( v ) ) );
+	const states = ( s.states || [] ).filter( ( st ) => ! shut( st ) ).sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );
+	const out = states.flatMap( ( st ) => {
+		const set = concrete( st ) ? [ { via: 'state', state: st.name, keys: st.state_keys } ] : [];
+		const calls = reachCalls( st.how_to_reach );
+		const reach = calls.length ? [ { via: 'reach', state: st.name, calls } ] : [];
+		return plain( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
+	} );
 	const named = new Set( String( s.openedBy || '' ).match( /[A-Za-z_$][\w$]*(?=\s*\()|\b[a-z]+[A-Z][\w$]*\b/g ) || [] );
 	for ( const r of census?.rows || [] ) {
 		if ( 'handler' === r.kind && 'template' === r.detail?.wiring && r.component === s.component && r.detail.event && ( named.has( r.detail.method ) || named.has( r.detail.expression ) ) ) {
@@ -227,19 +270,22 @@ export function openers( s, census = null ) {
 	}
 	return out;
 }
-export const describeOpener = ( o ) => ( 'state' === o.via ? `state "${ o.state }" ${ JSON.stringify( o.keys ) }` : `trigger ${ o.event } on ${ o.draftId }${ o.method ? ` (${ o.method })` : '' }` );
+export const describeOpener = ( o ) => ( 'state' === o.via ? `state "${ o.state }" ${ JSON.stringify( o.keys ) }` : 'reach' === o.via ? `reach "${ o.state }" ${ o.calls.map( ( c ) => `${ c.ident }.setState(${ c.args })` ).join( '; ' ) }` : `trigger ${ o.event } on ${ o.draftId }${ o.method ? ` (${ o.method })` : '' }` );
 
 // Marks the surface root at the current width. When it does not render and `opener` is given, applies it (a state is
-// set; a trigger is fired only while the root is absent, so a toggle never closes it) and settles, then marks again.
+// set, a reach's setState calls run; a trigger is fired only while the root is absent, so a toggle never closes it) and
+// settles, then marks again.
 async function markAt( page, s, settle, opener = null ) {
 	const args = [ s.component, s.rootTpl, s.slug, ROOT_MARK, 'page' === s.kind ];
 	const m = await page.evaluate( markRoot, args );
 	if ( ! m.error || ! opener ) {
 		return m;
 	}
-	const reached = 'state' === opener.via ? await setDraftState( page, { component: s.component, keys: opener.keys } ) : await fireTrigger( page, { component: s.component, draftId: opener.draftId }, opener.event );
+	const reached = 'state' === opener.via ? await setDraftState( page, { component: s.component, keys: opener.keys } )
+		: 'reach' === opener.via ? await reachDraftState( page, { component: s.component, calls: opener.calls } )
+			: await fireTrigger( page, { component: s.component, draftId: opener.draftId }, opener.event );
 	if ( ! reached ) {
-		return { error: `${ describeOpener( opener ) } reached nothing (component not mounted or trigger not rendered)` };
+		return { error: `${ describeOpener( opener ) } reached nothing (component not mounted, trigger not rendered or setState call threw)` };
 	}
 	await settle( page );
 	return page.evaluate( markRoot, args );
