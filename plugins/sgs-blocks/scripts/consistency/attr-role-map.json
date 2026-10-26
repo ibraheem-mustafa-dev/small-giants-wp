@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9473,
+    "row_count": 9476,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4438,6 +4438,7 @@
     "sgs/heading::textDecoration": "typography",
     "sgs/heading::textShadow": "visual",
     "sgs/heading::textShadowColour": "color",
+    "sgs/heading::textShadowColourHover": "color",
     "sgs/heading::textStrokeColour": "color",
     "sgs/heading::textStrokeColourHover": "color",
     "sgs/heading::textStrokeWidth": "typography",
@@ -5016,6 +5017,7 @@
     "sgs/label::textDecoration": "typography",
     "sgs/label::textShadow": "visual",
     "sgs/label::textShadowColour": "color",
+    "sgs/label::textShadowColourHover": "color",
     "sgs/label::textStrokeColour": "color",
     "sgs/label::textStrokeColourHover": "color",
     "sgs/label::textStrokeWidth": "typography",
@@ -8893,6 +8895,7 @@
     "sgs/text::textIndent": "typography",
     "sgs/text::textShadow": "visual",
     "sgs/text::textShadowColour": "color",
+    "sgs/text::textShadowColourHover": "color",
     "sgs/text::textStrokeColour": "color",
     "sgs/text::textStrokeColourHover": "color",
     "sgs/text::textStrokeWidth": "typography",
