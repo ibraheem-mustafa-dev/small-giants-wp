@@ -195,9 +195,10 @@ export async function preparePage( page, opts = {} ) {
 	return o;
 }
 
-// Opens a draft page and waits for the runtime to stamp it; throws if the in-page harness reported an error.
-export async function gotoDraft( page, origin, file, { hash = '', timeout = 60000 } = {} ) {
-	const url = `${ origin }/${ file.split( '/' ).map( encodeURIComponent ).join( '/' ) }${ hash ? `#${ hash.replace( /^#/, '' ) }` : '' }`;
+// Opens a draft page (`query`: the route's query string, without its `?`) and waits for the runtime to stamp it; throws
+// if the in-page harness reported an error.
+export async function gotoDraft( page, origin, file, { hash = '', query = '', timeout = 60000 } = {} ) {
+	const url = `${ origin }/${ file.split( '/' ).map( encodeURIComponent ).join( '/' ) }${ query ? `?${ query.replace( /^\?/, '' ) }` : '' }${ hash ? `#${ hash.replace( /^#/, '' ) }` : '' }`;
 	await page.goto( url, { waitUntil: 'load', timeout } );
 	await page.waitForFunction( () => document.querySelector( '#dc-root [data-dc-tpl]' ) && 'function' === typeof window.__dcAnnotatedTemplate && window.__dcAnnotatedTemplate( window.__dcRootName() ), null, { timeout } );
 	// A state-page route (lib/state-route.mjs) is set on the live logic; any other hash is already the page's own.
@@ -442,16 +443,16 @@ export async function sampleAt( page, { target, times, kind = 'animation', read,
 	return out;
 }
 
-// Opens a fresh sandbox for one run, prepares its page and opens the draft at `file` (plus `hash`, a hash route) at
-// `width`. Returns { sb, page, options, settings, close }.
-export async function openHarness( { folder, index, harPath, file = index, hash = '', width = 1440, height = 900, timeout = 60000, ...opts } ) {
+// Opens a fresh sandbox for one run, prepares its page and opens the draft at `file` (plus `query`, the route's query
+// string, and `hash`, a hash route) at `width`. Returns { sb, page, options, settings, close }.
+export async function openHarness( { folder, index, harPath, file = index, query = '', hash = '', width = 1440, height = 900, timeout = 60000, ...opts } ) {
 	const options = harnessOptions( opts );
 	const sb = await openSandbox( { folder, index, harPath, mode: 'replay', widths: [ width ], timeout } );
 	try {
 		const page = await sb.newPage();
 		await page.setViewportSize( { width, height } );
 		await preparePage( page, options );
-		await gotoDraft( page, sb.origin, file, { hash, timeout } );
+		await gotoDraft( page, sb.origin, file, { hash, query, timeout } );
 		return { sb, page, options, settings: harnessSettings( options ), close: () => sb.close() };
 	} catch ( e ) {
 		await sb.close();

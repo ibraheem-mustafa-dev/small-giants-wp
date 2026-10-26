@@ -122,6 +122,12 @@ test( 'MUST FAIL (d): hash and files drafts keep their URLs and visit lists exac
 	assert.deepEqual( visitOf( 'About.dc.html', { entry: 'Home.dc.html', routing: () => FILES } ), { file: 'About.dc.html', hash: '' } );
 } );
 
+test( 'MUST FAIL: a page-file route with a query string opens its file with that query (a template page reads its item from it)', () => {
+	assert.deepEqual( visitOf( 'About.dc.html?id=first', { entry: 'Home.dc.html', routing: () => FILES } ), { file: 'About.dc.html', hash: '', query: 'id=first' } );
+	assert.deepEqual( visitOf( '/About.dc.html?id=first#team', { entry: 'Home.dc.html', routing: () => FILES } ), { file: 'About.dc.html', hash: 'team', query: 'id=first' } );
+	assert.match( visitOf( 'Nowhere.dc.html?id=first', { entry: 'Home.dc.html', routing: () => FILES } ).error, /not a page file of the export/ );
+} );
+
 test( 'MUST FAIL: openStateRoute puts the live logic in the route and the route renders; a missing component is refused', async () => {
 	const { sb, page } = await open();
 	try {
