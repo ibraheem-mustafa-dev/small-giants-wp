@@ -13,6 +13,7 @@ import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { narrowedLists } from '../lib/skeleton-narrowing.mjs';
+import { handoverProblems } from '../lib/fill-handover.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
@@ -94,7 +95,7 @@ const group = ( r ) => rows( r ).find( ( x ) => 'div' === x.tag && 1 === x.depth
 const inForm = ( inner ) => N( 'section', {}, [ N( 'form', {}, [ inner ] ) ] );
 const chipLoop = () => N( 'div', {}, [ N( 'button', { loop: 'chips', attrs: { 'aria-pressed': '{{ x.on }}' }, words: 'A' } ) ] );
 const withList = ( inner ) => N( 'section', {}, [ inner, N( 'ul', {}, [ item( 'shown' ) ] ) ] );
-const FILTER = { owner: 'site-build', kind: 'filter', detail: 'the choice narrows a list on this page: wire it to the list\'s filter' };
+const FILTER = { owner: 'behaviour', kind: 'behaviour', detail: 'the choice narrows a list on this page: wire it to the list\'s filter' };
 
 test( 'optionSetForm: a group of pressable chips inside a form element is the tiles field that absorbs its chips; MUST FAIL without the entry', () => {
 	const r = run( inForm( chips() ) );
@@ -120,6 +121,7 @@ test( 'optionSetFilter: chips whose handlers write a state key another list is f
 	const r = run( withList( chipLoop() ), { logic: LOGIC() } );
 	assert.deepEqual( [ group( r ).block, group( r ).rule ], [ 'sgs/option-picker', 'optionSetFilter' ] );
 	assert.deepEqual( group( r ).handover, FILTER );
+	assert.deepEqual( handoverProblems( [ group( r ).handover ], 'the picker' ), [], 'MUST FAIL: the filter hand-over names a handover owner and kind Fill accepts' );
 	const off = run( withList( chipLoop() ), { logic: LOGIC(), off: [ 'optionSetFilter' ] } );
 	assert.deepEqual( [ group( off ).block, group( off ).rule, group( off ).handover ], [ 'sgs/option-picker', 'optionSet', undefined ] );
 } );

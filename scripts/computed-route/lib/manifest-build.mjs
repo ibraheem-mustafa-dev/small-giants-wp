@@ -75,8 +75,17 @@ function formOnPage( row, r ) {
 	return r.page_key === slug || ( null != r.dc && formName( r.dc ) === slug );
 }
 
-// The handoff record of a row: { record } or { reason }.
+// The handoff record id a page-map row names (`draftId: 'surfaces.json <id>'`), or null.
+const rowRecordId = ( row ) => /^surfaces\.json (\S+)$/.exec( String( row?.draftId ?? '' ) )?.[ 1 ] ?? null;
+
+// The handoff record of a row: { record } or { reason }. A row naming its record by id takes that record; any other row
+// is matched by kind, then a page by page_key, a form by its page, another kind by name.
 export function matchRecord( row, records ) {
+	const id = rowRecordId( row );
+	const named = null != id ? records.filter( ( r ) => r.id === id ) : [];
+	if ( 1 === named.length ) {
+		return { record: named[ 0 ] };
+	}
 	const kind = KINDS[ row.postType ];
 	if ( ! kind ) {
 		return { reason: `no record kind for post type ${ row.postType }` };
@@ -166,10 +175,16 @@ export function statesOf( record, vocab, ctx = null ) {
 	return out;
 }
 
-// Intake's record of the same kind whose name matches the row (a page by page_key), or null.
-function intakeRecord( row, intake ) {
+// Intake's record with the matched handoff record's id, else the one of the same kind whose name matches the row (a page
+// by page_key), or null.
+function intakeRecord( row, intake, record ) {
 	const kind = KINDS[ row.postType ];
-	const found = ( intake?.inventory?.surfaces?.records || [] ).filter( ( r ) => r.kind === kind && ( 'form' === kind ? formOnPage( row, r ) : 'page' === kind ? null != row.route && r.page_key === pageKeyOf( row.route ) : norm( r.name ) === norm( row.title ) ) );
+	const all = intake?.inventory?.surfaces?.records || [];
+	const byId = all.filter( ( r ) => null != record?.id && r.id === record.id );
+	if ( 1 === byId.length ) {
+		return byId[ 0 ];
+	}
+	const found = all.filter( ( r ) => r.kind === kind && ( 'form' === kind ? formOnPage( row, r ) : 'page' === kind ? null != row.route && r.page_key === pageKeyOf( row.route ) : norm( r.name ) === norm( row.title ) ) );
 	return 1 === found.length ? found[ 0 ] : null;
 }
 
@@ -224,7 +239,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		const mine = { unresolved: [], pointer: [], dropped: [], disagree: [] };
 		const match = matchRecord( row, records );
 		let states = { resting: null };
-		if ( ! KINDS[ row.postType ] ) {
+		if ( ! match.record && ! KINDS[ row.postType ] ) {
 			out.unmatched.push( { key, reason: 'states-unmatched', why: `no match rule for post type ${ row.postType }` } );
 		} else if ( match.record && ( match.record.states || [] ).length ) {
 			const ctx = facts?.state?.[ match.record.dc ] ?? null;
@@ -233,7 +248,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			states = got.states;
 			got.pointer.forEach( ( name ) => mine.pointer.push( { key, name } ) );
 			got.dropped.forEach( ( name ) => mine.dropped.push( { key, name } ) );
-			const theirs = intakeRecord( row, intake );
+			const theirs = intakeRecord( row, intake, match.record );
 			if ( theirs && nameSet( theirs ).join( '\n' ) !== nameSet( match.record ).join( '\n' ) ) {
 				mine.disagree.push( { key, handoff: nameSet( match.record ), intake: nameSet( theirs ) } );
 			}

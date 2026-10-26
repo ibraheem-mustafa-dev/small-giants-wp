@@ -703,6 +703,10 @@
             }
           }
         },
+        "draftId": {
+          "type": "string",
+          "pattern": "^surfaces\\.json \\S+$"
+        },
         "id": {
           "type": [
             "integer",

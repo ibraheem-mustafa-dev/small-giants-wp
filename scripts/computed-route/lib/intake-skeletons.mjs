@@ -140,8 +140,9 @@ function markRoot( [ component, tpl, mark, attr, isPage ] ) {
 	return { copies: live.length, tag: root.tagName.toLowerCase(), viaCondition: ! live.length, viaMain };
 }
 
-// Where a surface is opened: { file, hash } or { error }. A '*' or '/' route is the entry at its default route; a hash
-// export opens `#<route>`; a page-file export opens the file a route names; a state-page export sets the route's state.
+// Where a surface is opened: { file, hash, query? } or { error }. A '*' or '/' route is the entry at its default route; a
+// hash export opens `#<route>`; a page-file export opens the file a route names, with the route's query string (`query`,
+// as a template page reads its item from `?id=…`); a state-page export sets the route's state.
 export function visitOf( route, { entry, routing } ) {
 	if ( null == route || '*' === route || '/' === route || '' === route ) {
 		return { file: entry, hash: '' };
@@ -154,8 +155,9 @@ export function visitOf( route, { entry, routing } ) {
 		return { file: entry, hash: route };
 	}
 	if ( 'files' === r.adapter ) {
-		const [ file, frag = '' ] = route.replace( /^\//, '' ).split( '#' );
-		return r.routes.some( ( x ) => x.key === file ) ? { file, hash: frag } : { error: `route ${ route } is not a page file of the export` };
+		const [ place, frag = '' ] = route.replace( /^\//, '' ).split( '#' );
+		const [ file, query = '' ] = place.split( '?' );
+		return r.routes.some( ( x ) => x.key === file ) ? { file, hash: frag, ...( query ? { query } : {} ) } : { error: `route ${ route } is not a page file of the export` };
 	}
 	// A state-page route opens the entry and sets the route's state (lib/state-route.mjs); a route the export does not have is a named gap.
 	const key = String( route ).replace( /^#?\/?/, '' );
@@ -373,7 +375,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 			fail( s, v.error );
 			continue;
 		}
-		const k = `${ v.file }#${ v.hash }`;
+		const k = `${ v.file }?${ v.query || '' }#${ v.hash }`;
 		groups.has( k ) || groups.set( k, { ...v, list: [] } );
 		groups.get( k ).list.push( s );
 	}
@@ -385,11 +387,11 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 			const t0 = Date.now();
 			let h;
 			try {
-				h = await openHarness( { folder, index, harPath, file: g.file, hash: g.hash, width: 1440, ...harness } );
+				h = await openHarness( { folder, index, harPath, file: g.file, query: g.query, hash: g.hash, width: 1440, ...harness } );
 				await settleRest( h.page, h.options );
 			} catch ( e ) {
 				h && await h.close();
-				g.list.forEach( ( s ) => fail( s, `the harness run for ${ g.file }${ g.hash ? `#${ g.hash }` : '' } failed: ${ e.message.split( '\n' )[ 0 ] }`, u ) );
+				g.list.forEach( ( s ) => fail( s, `the harness run for ${ g.file }${ g.query ? `?${ g.query }` : '' }${ g.hash ? `#${ g.hash }` : '' } failed: ${ e.message.split( '\n' )[ 0 ] }`, u ) );
 				return u;
 			}
 			try {
@@ -439,7 +441,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 				}
 			} finally {
 				const unlisted = h.sb.requests.filter( ( r ) => 'unlisted' === r.kind ).map( ( r ) => r.url );
-				u.runs.push( { file: g.file, hash: g.hash, surfaces: g.list.map( ( s ) => s.slug ), requests: h.sb.requests.length, unlisted, blocked: [ ...h.sb.blocked ], proxyAttempts: [ ...h.sb.proxyAttempts ], ms: Date.now() - t0 } );
+				u.runs.push( { file: g.query ? `${ g.file }?${ g.query }` : g.file, hash: g.hash, surfaces: g.list.map( ( s ) => s.slug ), requests: h.sb.requests.length, unlisted, blocked: [ ...h.sb.blocked ], proxyAttempts: [ ...h.sb.proxyAttempts ], ms: Date.now() - t0 } );
 				await h.close();
 			}
 			return u;

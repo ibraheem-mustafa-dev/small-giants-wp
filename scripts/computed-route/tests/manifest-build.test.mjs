@@ -39,6 +39,20 @@ test( 'a lone record of the kind matches whatever its name; a page matches by pa
 	assert.equal( matchRecord( row( 'page', 'b' ), pages ).record.id, 'S-2' );
 } );
 
+test( 'MUST FAIL: a page-map row naming its handoff record by id takes that record, whatever its name or kind', () => {
+	const records = [ rec( 'S-2', 'drawer', 'Nav drawer (left)', undefined, { dc: 'SiteHeader' } ), rec( 'S-4', 'drawer', 'Basket drawer (right)', undefined, { dc: 'SiteHeader' } ),
+		rec( 'S-8', 'form', 'Build your Zookie', [ { name: 'step two', state_keys: { step: 2 } } ], { dc: 'Home', page_key: 'Home' } ), rec( 'S-34', 'form', 'Contact form', undefined, { dc: 'Contact', page_key: 'Contact' } ) ];
+	assert.equal( matchRecord( row( 'sgs_drawer', 'drawer-menu', 1, { title: 'Menu', draftId: 'surfaces.json S-2' } ), records ).record?.id, 'S-2' );
+	assert.equal( matchRecord( row( 'sgs_form', 'form-send', 1, { title: 'send', draftId: 'surfaces.json S-34' } ), records ).record?.id, 'S-34' );
+	const flow = row( 'sgs_choice_flow', 'choice-flow-build', 7, { title: 'Build', draftId: 'surfaces.json S-8' } );
+	assert.equal( matchRecord( flow, records ).record?.id, 'S-8', 'a choice flow has no record kind of its own, so only its id reaches the record' );
+	const out = run( [ flow ], records, { intake: { skeletons: { 'build-your-zookie': { id: 'S-8' } } } } );
+	assert.equal( out.entries[ 'flow-choice-flow-build' ].intakeSurface, 'build-your-zookie' );
+	assert.equal( out.matched[ 'flow-choice-flow-build' ], 'S-8' );
+	assert.equal( matchRecord( row( 'sgs_drawer', 'drawer-menu', 1, { title: 'Menu' } ), records ).record, undefined, 'with no id the name rule still decides' );
+	assert.equal( matchRecord( row( 'sgs_drawer', 'drawer-menu', 1, { title: 'Nav drawer (left)', draftId: 'surfaces.json S-99' } ), records ).record?.id, 'S-2', 'an id no record holds falls back to the name rule' );
+} );
+
 test( 'a CPT row is a canvas and a page is not', () => {
 	const { entries } = run( [ row( 'sgs_drawer', 'menu', 5 ), row( 'page', 'home', 6 ) ] );
 	assert.equal( entries[ 'drawer-menu' ].canvas, true );
