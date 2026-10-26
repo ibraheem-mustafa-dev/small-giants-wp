@@ -2270,7 +2270,7 @@ Findings: `.claude/reports/2026-10-06-session-c2/CANVAS-SETTABLE-CONFIRMATION.md
 
 ### `lib/site-build-plan.mjs`
 - `PHASES`, `PERMALINKS`; `planBuild({ rows, state, repo, client, frontRoute? })` → `{ actions, problems, notes, options }`; `tally(actions)` → `{ creates, changes, adopts }`.
-- `wooContentRole(row)` → `'cart'`, `'checkout'`, `'my account'` or null: a page WooCommerce renders itself (its template, or WooCommerce's own page name). `planBuild` takes such a page over but never rebuilds its content, and `site-run.mjs` skips its Fill, build and walk (Bean 2026-10-26: commerce pages keep WooCommerce's Cart and Checkout blocks and account shortcode or block, as `eye-care-test` has them, and are styled, never rebuilt from the draft's markup).
+- `wooContentRole(row)` → `'cart'`, `'checkout'`, `'my account'` or null: a page WooCommerce renders itself (its template, or WooCommerce's own page name). `planBuild` takes such a page over but never rebuilds its content, and `site-run.mjs` skips its Fill, build and walk (Bean 2026-10-26: the page content keeps WooCommerce's Cart and Checkout blocks and account shortcode or block; the draft's layout goes into the site's own `cart`, `checkout` and `page-my-account` template copies with WooCommerce's block in the form region, Spec 48 FR-48-56 and FR-48-87, not built).
 
 ### `lib/site-build-apply.mjs`
 - `wpBuildPage(repo, site)` → `(target, tree) => id`; `applyPhase(actions, phase, { wp, build, onId, log?, refs? })` → steps run.
