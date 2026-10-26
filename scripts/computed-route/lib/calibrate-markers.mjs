@@ -33,6 +33,9 @@ const BOX = { desktop: [ 11, 13, 17, 19 ], tablet: [ 21, 23, 25, 27 ], mobile: [
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const TIERS = [ 'desktop', 'tablet', 'mobile' ];
 
+// A text shadow's shape: offset, offset, blur (no spread); its colour setting composes against it (shadowPartners).
+export const TEXT_SHADOW_SHAPE = '2px 3px 4px';
+
 // Markers for free-text settings that take a CSS keyword or value (no enum in block.json: the options live in the
 // editor control). A value equal to the setting's default is skipped.
 export const KEYWORDS = {
@@ -42,6 +45,11 @@ export const KEYWORDS = {
 	'font-style': [ 'italic' ],
 	'text-decoration': [ 'underline' ],
 	'box-shadow': [ '0 0 0 3px #13579b' ],
+	'text-shadow': [ `${ TEXT_SHADOW_SHAPE } #13579b` ],
+	'overflow': [ 'hidden', 'clip' ],
+	'grid-auto-rows': [ '37px' ],
+	'align-content': [ 'center', 'space-between' ],
+	'scrollbar-color': [ '#13579b #9b1357' ],
 	'text-align': [ 'center', 'right' ],
 	'aspect-ratio': [ '7 / 3' ],
 	'align-items': [ 'center', 'flex-end' ],
@@ -130,18 +138,21 @@ export function borderPartners( attr, prop, schema ) {
 	return out;
 }
 
-// A shadow shape the hover colour is composed against: x, y, blur, spread.
+// A shadow shape the hover colour is composed against: x, y, blur, spread. A text shadow has no spread.
 export const SHADOW_SHAPE = '0px 4px 12px 0px';
+const SHADOW_SHAPES = { 'box-shadow-color': SHADOW_SHAPE, 'text-shadow-color': TEXT_SHADOW_SHAPE };
 
 // The partner a shadow colour needs to paint: the shape it colours. A colour alone composes no shadow
-// (helpers-colour-variants.php::sgs_shadow_decls), so boxShadowColourHover is dead without boxShadow or boxShadowHover.
+// (helpers-colour-variants.php::sgs_shadow_decls), so boxShadowColourHover is dead without boxShadow or boxShadowHover,
+// and textShadowColour without textShadow.
 // Named from the setting's own stem (boxShadowColourHover → boxShadow, cardShadowColourHover → cardShadow).
 export function shadowPartners( attr, prop, schema ) {
-	if ( 'box-shadow-color' !== prop ) {
+	const shapeValue = SHADOW_SHAPES[ prop ];
+	if ( ! shapeValue ) {
 		return {};
 	}
 	const shape = attr.replace( /Colou?r(Hover)?$/, '' );
-	return shape !== attr && schema[ shape ] && types( schema[ shape ] ).includes( 'string' ) ? { [ shape ]: SHADOW_SHAPE } : {};
+	return shape !== attr && schema[ shape ] && types( schema[ shape ] ).includes( 'string' ) ? { [ shape ]: shapeValue } : {};
 }
 
 // Value-form markers (Spec 48 FR-48-2). A fluid length is a formula of the viewport width, so each marker's expected
