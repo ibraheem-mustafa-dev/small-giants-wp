@@ -41,3 +41,11 @@ test( 'a page surface keeps its page row\'s route and the home page has no hash'
 	assert.deepEqual( ( ( r ) => [ r.row.slug, r.hash ] )( surfaceReach( { key: 'careers', entry: {}, skel: { route: '/ignored' }, rows: ROWS } ) ), [ 'careers', '#/careers' ] );
 	assert.equal( surfaceReach( { key: 'home', entry: {}, skel: null, rows: ROWS } ).hash, '' );
 } );
+
+test( 'MUST FAIL: a page-file draft takes no hash - its draft file (draftIndex) is the page, served as its own index', () => {
+	const files = { adapter: 'files' };
+	const rows = [ row( { slug: 'contact', route: 'Contact.dc.html' } ) ];
+	assert.equal( surfaceReach( { key: 'contact', entry: { draftIndex: 'Contact.dc.html' }, skel: { route: 'Contact.dc.html' }, rows, routing: files } ).hash, '' );
+	assert.equal( surfaceReach( { key: 'form-send', entry: { draftRoute: 'Contact.dc.html' }, skel: null, rows, routing: files } ).hash, '' );
+	assert.equal( surfaceReach( { key: 'contact', entry: {}, skel: null, rows, routing: { adapter: 'hash' } } ).hash, '#/Contact.dc.html', 'a hash draft keeps its route hash' );
+} );

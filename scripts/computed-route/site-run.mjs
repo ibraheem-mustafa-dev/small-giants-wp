@@ -66,7 +66,8 @@ function liveBase( envFile, envKey ) {
 // page, a post's route), else its page row's route, else its intake record's route. A post surface (`contentOnly`) and the
 // single-post template (`fromPost`) are read at the post row's address; a form is read on its page, the page row carrying
 // its `draftRoute`; any other surface at the page row its key names. `routing` (intake.json `routing`) names the adapter: a
-// state-page draft is reached by state, so the hash is that state route (lib/state-route.mjs).
+// state-page draft is reached by state, so the hash is that state route (lib/state-route.mjs); a page-file draft is reached
+// by the file the surface's `draftIndex` names, so it takes no hash.
 export function surfaceReach( { key, entry, skel, rows, withContent = false, routing = null } ) {
 	const routeName = ( r ) => String( r ?? '' ).replace( /^#?\/?/, '' );
 	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
@@ -75,7 +76,7 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 	const row = own ?? named ?? null;
 	const skip = entry.contentOnly && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null;
 	// A state-page draft ignores a route hash: its route is the state fragment Fill, the inventory read and the walker set on the loaded draft.
-	const at = ( r ) => ( isStatePage( routing ) ? ( stateRouteHash( r ) ? `#${ stateRouteHash( r ) }` : '' ) : routeHash( r ) ?? '' );
+	const at = ( r ) => ( 'files' === routing?.adapter ? '' : isStatePage( routing ) ? ( stateRouteHash( r ) ? `#${ stateRouteHash( r ) }` : '' ) : routeHash( r ) ?? '' );
 	const hash = entry.draftRoute ? at( entry.draftRoute ) : own && 'page' === own.postType ? ( 'home' !== own.route ? at( own.route ) : '' ) : at( skel?.route );
 	return { row, hash, skip };
 }
@@ -107,8 +108,14 @@ export async function main( argv ) {
 		save();
 		console.log( `${ ok ? 'ok  ' : 'FAIL' } ${ key } ${ stage } ${ Math.round( ms / 1000 ) }s${ detail ? ` - ${ detail }` : '' }` );
 	};
-	const first = surfaces[ keys[ 0 ] ];
-	const server = await serveDraft( assertDraftPage( path.join( REPO, first.draftDir ), first.draftIndex ), { index: first.draftIndex } );
+	// One draft server per draft file, serving that file as its index (a page-file draft has one file per page; a hash or
+	// state-page draft names one entry file for every surface).
+	const servers = new Map();
+	const serverFor = ( entry ) => {
+		const id = `${ entry.draftDir }|${ entry.draftIndex }`;
+		servers.has( id ) || servers.set( id, serveDraft( assertDraftPage( path.join( REPO, entry.draftDir ), entry.draftIndex ), { index: entry.draftIndex } ) );
+		return servers.get( id );
+	};
 	const certs = process.env.NODE_EXTRA_CA_CERTS || 'C:\\Users\\Bean\\AppData\\Roaming\\Python\\Python313\\site-packages\\certifi\\cacert.pem';
 
 	async function one( key ) {
@@ -119,7 +126,7 @@ export async function main( argv ) {
 		if ( skip ) {
 			return note( key, 'skipped', true, 0, skip );
 		}
-		const draftUrl = `${ server.url }${ hash }`;
+		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
 		const liveUrl = row ? `${ base }${ permalinkOf( row, rows ) }` : `${ base }/`;
 		const step = async ( stage, fn ) => {
@@ -239,7 +246,7 @@ export async function main( argv ) {
 			}
 		}
 	} ) );
-	await server.close();
+	await Promise.all( [ ...servers.values() ].map( async ( x ) => ( await x ).close() ) );
 	session && await session.close();
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
 	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage. ${ path.join( dir, 'status.json' ) }` );
