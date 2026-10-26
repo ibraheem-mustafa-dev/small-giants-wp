@@ -1,0 +1,56 @@
+{
+  "form-send": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "20 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "11 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 410,
+      "detail": "fill form-send: 64 settings written, 173 UNMAPPED, 0 handover, 0 fluid, 38 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\form-send\\2026-10-26T22-28-43\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":157,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 223,
+      "detail": "report written (exit 1: form-send: 72 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\form-send\\report.md, )"
+    }
+  },
+  "product": {
+    "inventory": {
+      "ok": true,
+      "seconds": 79,
+      "detail": "382 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "220 nodes, 54 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 298,
+      "detail": "fill product: 1721 settings written, 765 UNMAPPED, 9 handover, 1 fluid, 296 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\product\\2026-10-26T22-30-03\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 15,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//single-product\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1417,
+      "detail": "report written (exit 1: product: 2021 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\product\\report.md, co)"
+    }
+  }
+}

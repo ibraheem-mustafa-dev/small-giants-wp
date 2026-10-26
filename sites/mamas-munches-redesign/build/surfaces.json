@@ -183,6 +183,7 @@
   },
   "form-send": {
     "tree": "trees/sgs_form/form-send.json",
+    "intakeSurface": "contact-form",
     "envFile": ".claude/secrets/local-mamas.env",
     "envKey": "LOCALMAMAS",
     "site": "local-mamas",

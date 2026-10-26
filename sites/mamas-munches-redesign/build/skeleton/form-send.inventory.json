@@ -1,0 +1,1301 @@
+{
+  "generated": "2026-10-26T22:15:59.693Z",
+  "source": "http://127.0.0.1:52529/Contact.dc.html",
+  "root": "[data-sgs-skeleton-root=\"contact-form\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/44#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "My order"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "A gift"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Allergens"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Baby shower or event"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Something else"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 20,
+      "768": 20,
+      "1440": 20
+    },
+    "tagAgree": 20,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/44#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "form",
+      "template": "Root",
+      "tpl": 44,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 16px;"
+      },
+      "words": "",
+      "allText": "Send a message What’s it about? My orderA giftAllergensBaby shower or eventSomething else Your name Email Order number (",
+      "srcLine": 46,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "form",
+      "srcOwnText": "",
+      "snippet": "<form sc-camel-on-submit=\"{{ send }}\" style=\"display:flex;flex-direction:column;gap:16px\" data-dc-tpl=\"44\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2> <div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"dis",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1277.3,
+          "w": 295,
+          "h": 740.5
+        },
+        "768": {
+          "x": 66,
+          "y": 804.2,
+          "w": 636,
+          "h": 602.8
+        },
+        "1440": {
+          "x": 142,
+          "y": 849,
+          "w": 631.2,
+          "h": 609.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/45#0",
+      "parentKey": "Root/44#0",
+      "depth": 1,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 45,
+      "attrs": {
+        "style": "margin: 0px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 42px; line-height: 1.05;"
+      },
+      "words": "Send a message",
+      "allText": "Send a message",
+      "srcLine": 47,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "Send a message",
+      "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1277.3,
+          "w": 295,
+          "h": 31.5
+        },
+        "768": {
+          "x": 66,
+          "y": 804.2,
+          "w": 636,
+          "h": 37.8
+        },
+        "1440": {
+          "x": 142,
+          "y": 849,
+          "w": 631.2,
+          "h": 44.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/46#0",
+      "parentKey": "Root/44#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 46,
+      "attrs": {},
+      "words": "",
+      "allText": "What’s it about? My orderA giftAllergensBaby shower or eventSomething else",
+      "srcLine": 48,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radi",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1324.8,
+          "w": 295,
+          "h": 174
+        },
+        "768": {
+          "x": 66,
+          "y": 858,
+          "w": 636,
+          "h": 122
+        },
+        "1440": {
+          "x": 142,
+          "y": 909.1,
+          "w": 631.2,
+          "h": 122
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/47#0",
+      "parentKey": "Root/46#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 47,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 15px; margin-bottom: 8px;"
+      },
+      "words": "What’s it about?",
+      "allText": "What’s it about?",
+      "srcLine": 49,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "What’s it about?",
+      "snippet": "<div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1324.8,
+          "w": 295,
+          "h": 18
+        },
+        "768": {
+          "x": 66,
+          "y": 858,
+          "w": 636,
+          "h": 18
+        },
+        "1440": {
+          "x": 142,
+          "y": 909.1,
+          "w": 631.2,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/48#0",
+      "parentKey": "Root/46#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 48,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 8px;"
+      },
+      "words": "",
+      "allText": "My orderA giftAllergensBaby shower or eventSomething else",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow ",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1350.8,
+          "w": 295,
+          "h": 148
+        },
+        "768": {
+          "x": 66,
+          "y": 884,
+          "w": 636,
+          "h": 96
+        },
+        "1440": {
+          "x": 142,
+          "y": 935.1,
+          "w": 631.2,
+          "h": 96
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/50#0",
+      "parentKey": "Root/48#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 50,
+      "attrs": {
+        "type": "button",
+        "class": "scp2",
+        "style": "min-height: 44px; padding: 0px 16px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transform: translate(-2px, -2px); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "My order",
+      "allText": "My order",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ topics }}",
+          "as": "o",
+          "tpl": "49"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 1348.8,
+          "w": 97.9,
+          "h": 44
+        },
+        "768": {
+          "x": 64,
+          "y": 882,
+          "w": 97.9,
+          "h": 44
+        },
+        "1440": {
+          "x": 140,
+          "y": 933.1,
+          "w": 97.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/50#1",
+      "parentKey": "Root/48#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 50,
+      "attrs": {
+        "type": "button",
+        "class": "scp2",
+        "style": "min-height: 44px; padding: 0px 16px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "A gift",
+      "allText": "A gift",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ topics }}",
+          "as": "o",
+          "tpl": "49"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 145.9,
+          "y": 1350.8,
+          "w": 74.3,
+          "h": 44
+        },
+        "768": {
+          "x": 171.9,
+          "y": 884,
+          "w": 74.3,
+          "h": 44
+        },
+        "1440": {
+          "x": 247.9,
+          "y": 935.1,
+          "w": 74.3,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/50#2",
+      "parentKey": "Root/48#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 50,
+      "attrs": {
+        "type": "button",
+        "class": "scp2",
+        "style": "min-height: 44px; padding: 0px 16px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Allergens",
+      "allText": "Allergens",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ topics }}",
+          "as": "o",
+          "tpl": "49"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 228.2,
+          "y": 1350.8,
+          "w": 102.2,
+          "h": 44
+        },
+        "768": {
+          "x": 254.2,
+          "y": 884,
+          "w": 102.2,
+          "h": 44
+        },
+        "1440": {
+          "x": 330.2,
+          "y": 935.1,
+          "w": 102.2,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/50#3",
+      "parentKey": "Root/48#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 50,
+      "attrs": {
+        "type": "button",
+        "class": "scp2",
+        "style": "min-height: 44px; padding: 0px 16px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Baby shower or event",
+      "allText": "Baby shower or event",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ topics }}",
+          "as": "o",
+          "tpl": "49"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1402.8,
+          "w": 186.9,
+          "h": 44
+        },
+        "768": {
+          "x": 364.3,
+          "y": 884,
+          "w": 186.9,
+          "h": 44
+        },
+        "1440": {
+          "x": 440.3,
+          "y": 935.1,
+          "w": 186.9,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/50#4",
+      "parentKey": "Root/48#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 50,
+      "attrs": {
+        "type": "button",
+        "class": "scp2",
+        "style": "min-height: 44px; padding: 0px 16px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Something else",
+      "allText": "Something else",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ topics }}",
+          "as": "o",
+          "tpl": "49"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1454.8,
+          "w": 146.7,
+          "h": 44
+        },
+        "768": {
+          "x": 66,
+          "y": 936,
+          "w": 146.7,
+          "h": 44
+        },
+        "1440": {
+          "x": 142,
+          "y": 987.1,
+          "w": 146.7,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/51#0",
+      "parentKey": "Root/44#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 51,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: 1fr 1fr; gap: 14px;"
+      },
+      "words": "",
+      "allText": "Your name Email",
+      "srcLine": 52,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.two }};gap:14px\" data-dc-tpl=\"51\"> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"52\">Your name<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1514.8,
+          "w": 295,
+          "h": 170
+        },
+        "768": {
+          "x": 66,
+          "y": 996,
+          "w": 636,
+          "h": 78
+        },
+        "1440": {
+          "x": 142,
+          "y": 1047.1,
+          "w": 631.2,
+          "h": 78
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/52#0",
+      "parentKey": "Root/51#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 52,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Your name",
+      "allText": "Your name",
+      "srcLine": 53,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Your name",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"52\">Your name<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"53\"></label>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1514.8,
+          "w": 295,
+          "h": 78
+        },
+        "768": {
+          "x": 66,
+          "y": 996,
+          "w": 311,
+          "h": 78
+        },
+        "1440": {
+          "x": 142,
+          "y": 1047.1,
+          "w": 308.6,
+          "h": 78
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/53#0",
+      "parentKey": "Root/52#0",
+      "depth": 3,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 53,
+      "attrs": {
+        "style": "height: 54px; border: 2px solid rgb(58, 42, 34); border-radius: 14px; padding: 0px 16px; font-size: 16px; background: rgb(255, 250, 240); width: 100%; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 53,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"53\">",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1538.8,
+          "w": 295,
+          "h": 54
+        },
+        "768": {
+          "x": 66,
+          "y": 1020,
+          "w": 311,
+          "h": 54
+        },
+        "1440": {
+          "x": 142,
+          "y": 1071.1,
+          "w": 308.6,
+          "h": 54
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/54#0",
+      "parentKey": "Root/51#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 54,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Email",
+      "allText": "Email",
+      "srcLine": 54,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Email",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"54\">Email<input type=\"email\" required=\"{{ true }}\" autocomplete=\"email\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"55\"></label>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1606.8,
+          "w": 295,
+          "h": 78
+        },
+        "768": {
+          "x": 391,
+          "y": 996,
+          "w": 311,
+          "h": 78
+        },
+        "1440": {
+          "x": 464.6,
+          "y": 1047.1,
+          "w": 308.6,
+          "h": 78
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/55#0",
+      "parentKey": "Root/54#0",
+      "depth": 3,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 55,
+      "attrs": {
+        "type": "email",
+        "style": "height: 54px; border: 2px solid rgb(58, 42, 34); border-radius: 14px; padding: 0px 16px; font-size: 16px; background: rgb(255, 250, 240); width: 100%; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 54,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input type=\"email\" required=\"{{ true }}\" autocomplete=\"email\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"55\">",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1630.8,
+          "w": 295,
+          "h": 54
+        },
+        "768": {
+          "x": 391,
+          "y": 1020,
+          "w": 311,
+          "h": 54
+        },
+        "1440": {
+          "x": 464.6,
+          "y": 1071.1,
+          "w": 308.6,
+          "h": 54
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/57#0",
+      "parentKey": "Root/44#0",
+      "depth": 1,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 57,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Order number (if you have it)",
+      "allText": "Order number (if you have it)",
+      "srcLine": 56,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ showOrder }}",
+          "tpl": "56"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Order number (if you have it)",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"57\">Order number (if you have it)<input placeholder=\"MM-1042\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"58\"></label>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1700.8,
+          "w": 295,
+          "h": 78
+        },
+        "768": {
+          "x": 66,
+          "y": 1090,
+          "w": 636,
+          "h": 78
+        },
+        "1440": {
+          "x": 142,
+          "y": 1141.1,
+          "w": 631.2,
+          "h": 78
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/58#0",
+      "parentKey": "Root/57#0",
+      "depth": 2,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 58,
+      "attrs": {
+        "style": "height: 54px; border: 2px solid rgb(58, 42, 34); border-radius: 14px; padding: 0px 16px; font-size: 16px; background: rgb(255, 250, 240); width: 100%; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 56,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ showOrder }}",
+          "tpl": "56"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input placeholder=\"MM-1042\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"58\">",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1724.8,
+          "w": 295,
+          "h": 54
+        },
+        "768": {
+          "x": 66,
+          "y": 1114,
+          "w": 636,
+          "h": 54
+        },
+        "1440": {
+          "x": 142,
+          "y": 1165.1,
+          "w": 631.2,
+          "h": 54
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/65#0",
+      "parentKey": "Root/44#0",
+      "depth": 1,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 65,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Message",
+      "allText": "Message",
+      "srcLine": 58,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Message",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"65\">Message<textarea required=\"{{ true }}\" rows=\"5\" style=\"border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical\" data-dc-tpl=\"66\"></textarea></label>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1794.8,
+          "w": 295,
+          "h": 147
+        },
+        "768": {
+          "x": 66,
+          "y": 1184,
+          "w": 636,
+          "h": 147
+        },
+        "1440": {
+          "x": 142,
+          "y": 1235.1,
+          "w": 631.2,
+          "h": 147
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/66#0",
+      "parentKey": "Root/65#0",
+      "depth": 2,
+      "tag": "textarea",
+      "template": "Root",
+      "tpl": 66,
+      "attrs": {
+        "style": "border: 2px solid rgb(58, 42, 34); border-radius: 14px; padding: 12px 16px; font-size: 16px; background: rgb(255, 250, 240); resize: vertical;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 58,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "textarea",
+      "srcOwnText": "",
+      "snippet": "<textarea required=\"{{ true }}\" rows=\"5\" style=\"border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical\" data-dc-tpl=\"66\"></textarea>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1818.8,
+          "w": 295,
+          "h": 123
+        },
+        "768": {
+          "x": 66,
+          "y": 1208,
+          "w": 636,
+          "h": 123
+        },
+        "1440": {
+          "x": 142,
+          "y": 1259.1,
+          "w": 631.2,
+          "h": 123
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/67#0",
+      "parentKey": "Root/44#0",
+      "depth": 1,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 67,
+      "attrs": {
+        "type": "submit",
+        "class": "scp3 scp4",
+        "style": "align-self: flex-start; height: 60px; padding: 0px 30px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); font-weight: 700; font-size: 17px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Send message →",
+      "allText": "Send message →",
+      "srcLine": 59,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ notSent }}",
+          "tpl": "43"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Send message →",
+      "snippet": "<button type=\"submit\" style=\"align-self:flex-start;height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:17px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" style-",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 1957.8,
+          "w": 200.1,
+          "h": 60
+        },
+        "768": {
+          "x": 66,
+          "y": 1347,
+          "w": 200.1,
+          "h": 60
+        },
+        "1440": {
+          "x": 142,
+          "y": 1398.1,
+          "w": 200.1,
+          "h": 60
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    }
+  ],
+  "sources": {
+    "files": {
+      "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
+      "Basket.dc.html": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e",
+      "Checkout.dc.html": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b",
+      "Confirmation.dc.html": "ddfcd751828e19d938d173826d514e40830a97221e4c6fa19e03c7836053f046",
+      "Contact.dc.html": "7044b48beb77c75507cebaf71ef867ca65e3301bb5463b3c96ffa1fc20107572",
+      "Gifts.dc.html": "c653d9aa8ca4475d3f1cfc45bd1f691341abd57ed56bedf07ee3cbfde2e227a9",
+      "Help.dc.html": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6",
+      "Home.dc.html": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca",
+      "Product.dc.html": "8100f5944df6e5191dc960779a192e7b5116417ffefc39270247c08b04936960",
+      "ProductCard.dc.html": "2f393444d81d0d03701e01e790a5aa5a49e0ecb46ba8ab2071f7193e34211f30",
+      "README.md": "68ecf2bfb10c99e8ebfe9f85d5f094d51b0b0f114c650e861a05951e69cb7bf7",
+      "Shop.dc.html": "0dabe1dff85052f3258910eca5f86e3d0aa23746907450bf855912fd2c378a80",
+      "SignIn.dc.html": "df5318346b9d9c84d026ea73bd034cd4a83dd5fe71fd3abd0e6f32cd716c1926",
+      "SiteFooter.dc.html": "7a3f377969e9e4c48d67080bdf5aed13509e7b583de0e0deed71f81b49b45b9b",
+      "SiteHeader.dc.html": "46e9c1365470b53cd9f3c8577f48ff93e97b663ae70a736af1eeb3ae9f02d0f2",
+      "animations.json": "2fa588d44cb089f53d1beeb0159ec3c1d9d2066b60da5f66c6e574c7ef4b7a82",
+      "assets/logo-horizontal.png": "55fd2eef5bfbd2ae7aa067b3cfdfd5f0c2170185540935d152cac25bd8dad49c",
+      "assets/logo-round.png": "d1c039733af429dcaf0b2c8a051248cc1702c9501db1fcaf44d58eb427ce7815",
+      "assets/photo-bags-pink.jpg": "3aee33ac0ff61ff2005175c225879567d0591a9180a22e71543fc72e72179334",
+      "assets/photo-bun-case.jpg": "9875e09f8751f4f974025ad72aee8a773fec2262646e302d59a05209b197335d",
+      "assets/photo-gift-heart.jpg": "7825c0c1f5aaaf160cd0c4b4aab58b0824f99cfa9b927ca5f96fad2f308e3479",
+      "assets/photo-hero-mug.jpg": "6f5411ae2730cd6edf90b6a2c71e5714f6f6d9b4dcedf778a083a4538afa7cdf",
+      "assets/photo-pair-love.jpg": "c100f3ec56b7133a8ec26bb64dfa09d10f6dbc4499468ceabaf4acbeb2ced6f0",
+      "assets/photo-tray-love.jpg": "dc2306611ac203dbef6579eee755cf0d4bb6fb250f25216fd88caf17c423f63c",
+      "store.js": "5136ec82d5671747da32799d692b6c4ff5a39c2f0514e2398cc0a1a7a1545179",
+      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+      "surfaces.json": "cdfd32645458176d39be7a1306c23c4a58d74f6e837d0948fd9a2900820361c2",
+      "tokens/colors.css": "ef63ad226532ea7fac236ae01c9f0ab6afe09766644ec6eb64048c19b2ebf899",
+      "tokens/spacing.css": "f2ee00b6ce5813407d7938c18ad869209a6c92bb861a56355f540a66399bf5fa",
+      "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
+    },
+    "route": {
+      "commit": "e868a2d5a75ce6d4b617e0430dbed8ebcd506d99"
+    }
+  }
+}

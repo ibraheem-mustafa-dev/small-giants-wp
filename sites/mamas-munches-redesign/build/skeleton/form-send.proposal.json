@@ -1,0 +1,634 @@
+{
+	"generated": "2026-10-26T22:28:43.729Z",
+	"inventory": "2026-10-26T22:15:59.693Z",
+	"source": "http://127.0.0.1:52529/Contact.dc.html",
+	"surface": "contact-form",
+	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-35",
+			"kind": "result",
+			"name": "Contact sent",
+			"openedBy": "Submit",
+			"roots": [
+				"Contact/68"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [
+		{
+			"key": "Contact/50",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Contact/53",
+			"field": "required",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Contact/55",
+			"field": "required",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Contact/66",
+			"field": "required",
+			"record": true,
+			"render": false
+		}
+	],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 20,
+		"parts": 0,
+		"rows": 20,
+		"skeletonNodes": 11,
+		"expandedNodes": 11,
+		"low": 1,
+		"removed": 9,
+		"unresolved": 0,
+		"byRule": {
+			"formHost": 1,
+			"optionSetForm": 6,
+			"formControl": 8
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/44#0",
+			"tag": "form",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/form",
+			"action": null,
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"source": "rule formHost",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formHost",
+			"candidates": [
+				{
+					"block": "sgs/form",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<form sc-camel-on-submit=\"{{ send }}\" style=\"display:flex;flex-direction:column;gap:16px\" data-dc-tpl=\"44\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2> <div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"dis",
+			"attributes": {
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/45#0",
+			"tag": "h2",
+			"depth": 1,
+			"words": "Send a message",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2>",
+			"attributes": {
+				"content": "Send a message"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/46#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radi",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/47#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "What’s it about?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div>",
+			"attributes": {
+				"text": "What’s it about?"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/48#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/form-field-tiles",
+			"action": null,
+			"reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)",
+			"source": "rule optionSetForm",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"candidates": [
+				{
+					"block": "sgs/form-field-tiles",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow ",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/50#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "My order",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root/48#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root/50#1",
+			"tag": "button",
+			"depth": 3,
+			"words": "A gift",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root/48#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root/50#2",
+			"tag": "button",
+			"depth": 3,
+			"words": "Allergens",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root/48#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/50#3",
+			"tag": "button",
+			"depth": 3,
+			"words": "Baby shower or event",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root/48#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root/50#4",
+			"tag": "button",
+			"depth": 3,
+			"words": "Something else",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSetForm",
+			"into": "Root/48#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};font-size:15px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/51#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.two }};gap:14px\" data-dc-tpl=\"51\"> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"52\">Your name<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/52#0",
+			"tag": "label",
+			"depth": 2,
+			"words": "Your name",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"52\">Your name<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"53\"></label>",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/53#0",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"53\">",
+			"attributes": {
+				"label": "Your name",
+				"required": true,
+				"helpText": "Email"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/53#0"
+				}
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/54#0",
+			"tag": "label",
+			"depth": 2,
+			"words": "Email",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"54\">Email<input type=\"email\" required=\"{{ true }}\" autocomplete=\"email\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"55\"></label>",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/55#0",
+			"tag": "input",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/form-field-email",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-email",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input type=\"email\" required=\"{{ true }}\" autocomplete=\"email\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"55\">",
+			"attributes": {
+				"label": "Your name",
+				"required": true,
+				"helpText": "Email"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/55#0"
+				}
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/57#0",
+			"tag": "label",
+			"depth": 1,
+			"words": "Order number (if you have it)",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"57\">Order number (if you have it)<input placeholder=\"MM-1042\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"58\"></label>",
+			"attributes": {}
+		},
+		{
+			"order": 16,
+			"key": "Root/58#0",
+			"tag": "input",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input placeholder=\"MM-1042\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-width:0\" data-dc-tpl=\"58\">",
+			"attributes": {
+				"label": "Your name",
+				"helpText": "Send a message What’s it about? My order A gift Allergens Baby shower or event Something else Email Order number (if you have it) Message Send message →"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/58#0"
+				}
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/65#0",
+			"tag": "label",
+			"depth": 1,
+			"words": "Message",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"65\">Message<textarea required=\"{{ true }}\" rows=\"5\" style=\"border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical\" data-dc-tpl=\"66\"></textarea></label>",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/66#0",
+			"tag": "textarea",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/form-field-textarea",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-textarea",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<textarea required=\"{{ true }}\" rows=\"5\" style=\"border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical\" data-dc-tpl=\"66\"></textarea>",
+			"attributes": {
+				"label": "Your name",
+				"required": true,
+				"helpText": "Send a message What’s it about? My order A gift Allergens Baby shower or event Something else Email Order number (if you have it) Message Send message →"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/66#0"
+				}
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/67#0",
+			"tag": "button",
+			"depth": 1,
+			"words": "Send message →",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"submit\" style=\"align-self:flex-start;height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;font-size:17px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" style-",
+			"attributes": {
+				"label": "Send message →"
+			}
+		}
+	]
+}
