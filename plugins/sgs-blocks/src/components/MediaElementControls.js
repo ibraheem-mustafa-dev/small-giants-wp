@@ -142,14 +142,10 @@ export const MEDIA_BASES = {
 		'AspectRatio',
 		'Shape',
 		'Height',
-		'HeightUnit',
 		'MaxHeight',
-		'MaxHeightUnit',
 		'MaxWidth',
-		'MaxWidthUnit',
 		'MinHeight',
 		'Width',
-		'WidthUnit',
 		// A genuine editable radius for `Shape:'rounded'`, distinct from the
 		// clip-path vocabulary (2026-09-01). NEW attribute — no existing block
 		// declares it, so nothing breaks. Tiered (see MEDIA_TIERED_BASES below):
@@ -300,7 +296,7 @@ export const MEDIA_ATTR_TYPES = {
 
 	// ── PRESENTATION.
 	//
-	// ⛔ TWO BASES CARRY A TYPE CONFLICT ACROSS SURFACES, and the type declared
+	// ⛔ ONE BASE CARRIES A TYPE CONFLICT ACROSS SURFACES, and the type declared
 	// here is what a FRESH adoption gets - never a retrofit of an existing one.
 	// A block's own declaration always wins at injection, so the divergent
 	// surfaces keep their shape and the atom READS it (see the atom registry's
@@ -309,8 +305,7 @@ export const MEDIA_ATTR_TYPES = {
 	//   Height  object here. `sgs/media` and `sgs/before-after` agree; but
 	//           `sgs/product-card` declares `imageHeight` as a plain "180px"
 	//           STRING. Two concepts under one base - see the census traps.
-	//   Width   object here. `sgs/decorative-image` agrees; `sgs/hero` declares
-	//           `splitMediaWidth` as a NUMBER paired with `splitMediaWidthUnit`.
+	//   Width   object here. `sgs/decorative-image` agrees.
 	//
 	// Declaring a union would accept both and lose the shape validation that
 	// makes a mismatched value fail loudly instead of silently (D549).
@@ -324,14 +319,10 @@ export const MEDIA_ATTR_TYPES = {
 	AspectRatio: 'string',
 	Shape: 'string',
 	Height: 'object',
-	HeightUnit: 'string',
 	MaxHeight: 'object',
-	MaxHeightUnit: 'string',
 	MaxWidth: 'object',
-	MaxWidthUnit: 'string',
 	MinHeight: 'object',
 	Width: 'object',
-	WidthUnit: 'string',
 	// A 4-corner box-family object ({topLeft,topRight,bottomLeft,bottomRight}),
 	// matching ResponsiveBorderRadiusControl's own per-tier shape.
 	BorderRadius: 'object',

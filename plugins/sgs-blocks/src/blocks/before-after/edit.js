@@ -486,7 +486,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		handleIconColourHoverGradient,
 		handleIconSource,
 		handleIconName,
-		heightUnit,
 		boxShadow,
 		boxShadowColour,
 	} = attributes;
@@ -819,51 +818,22 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Frame size', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /*
-						  `height` is now a TIER OBJECT (Spec 35 pass) — ONE attr
-						  holding {desktop,tablet,mobile}, same shape as `maxWidth`
-						  below. `heightTablet`/`heightMobile` are no longer
-						  declared by block.json. Each tier still stores a plain
-						  NUMBER (not a unit-suffixed string) sharing the single
-						  `heightUnit` attr — that per-tier-number/shared-unit
-						  encoding is unchanged from before this migration, only
-						  the storage location (one object vs three flat attrs)
-						  moved.
-					*/ }
 					<ResponsiveOverride
 						label={ __( 'Height', 'sgs-blocks' ) }
 						value={ attributes.height }
 						onChange={ ( obj ) => setAttributes( { height: obj } ) }
 					>
-						{ ( { tier, ownValue, effectiveValue, inherited, setOwnValue } ) => {
-							const val = inherited ? effectiveValue : ownValue;
-							return (
-								<SgsLengthControl
-									presets={ false }
-									value={
-										null === val || undefined === val || '' === val
-											? ''
-											: `${ val }${ heightUnit }`
-									}
-									placeholder={ inherited && '' !== effectiveValue ? `${ effectiveValue }${ heightUnit }` : '' }
-									onChange={ ( v ) => {
-										if ( ! v ) {
-											setOwnValue( '' );
-											return;
-										}
-										const parsed = Number.parseFloat( v );
-										const unitMatch = /[a-z%]+$/i.exec(
-											String( v )
-										);
-										setOwnValue( Number.isFinite( parsed ) ? parsed : '' );
-										if ( 'desktop' === tier && unitMatch ) {
-											setAttributes( { heightUnit: unitMatch[ 0 ] } );
-										}
-									} }
-									units={ HEIGHT_UNITS }
-								/>
-							);
-						} }
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Height', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								units={ HEIGHT_UNITS }
+							/>
+						) }
 					</ResponsiveOverride>
 					{ /*
 					  `maxWidth` is a TIER OBJECT (Spec 35 pass 2) — ONE attr holding

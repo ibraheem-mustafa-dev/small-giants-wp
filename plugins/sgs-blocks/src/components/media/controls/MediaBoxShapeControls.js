@@ -18,13 +18,11 @@
  * atom's own `control()`) decides which panel these rows land in, matching
  * every other media-atom control (`ObjectFitField`, `FocalPositionField`).
  *
- * ── Length fields are ONE LINE (2026-09-01) ─────────────────────────────
- * Height/Width/MaxWidth/MaxHeight are stored as a tier object of plain
- * NUMBERS paired with a SEPARATE flat unit attribute (box-shape.js's own
- * documented storage shape) — NOT `SgsLengthControl`'s single combined CSS
- * length STRING contract. `combineLength()`/`splitLength()` below bridge the
- * two on display/write, so every field still renders as one integrated
- * number+unit input instead of a `TextControl` beside a `SelectControl`.
+ * ── Length fields ────────────────────────────────────────────────────────
+ * Height/Width/MaxWidth/MaxHeight are each a per-device object of CSS length
+ * strings (`{desktop,tablet,mobile}`, unit inside the string). Every field is
+ * an `SgsLengthControl` inside `ResponsiveOverride`, writing its own string
+ * straight into the device's slot.
  *
  * @package SGS\Blocks
  */
@@ -34,6 +32,7 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../primitives';
 import { RATIO_OPTIONS } from '../../MediaSizingPanel.js';
 import SgsBorderControl from '../../SgsBorderControl.js';
 import SgsLengthControl from '../../SgsLengthControl.js';
+import ResponsiveOverride from '../../ResponsiveOverride';
 
 const MODE_OPTIONS = [
 	{ label: __( 'Auto', 'sgs-blocks' ), value: 'auto' },
@@ -58,70 +57,25 @@ const LENGTH_UNITS = [
 ];
 
 /**
- * Combine a tier NUMBER + a shared UNIT string into the one CSS-length string
- * `SgsLengthControl` displays (e.g. 20 + 'px' -> "20px").
- *
- * @param {number|string|undefined} value Tier value.
- * @param {string}                  unit  Shared unit attribute value.
- * @return {string} Combined length, or '' when unset.
+ * One per-device length row for a box-shape length field.
  */
-function combineLength( value, unit ) {
-	if ( undefined === value || null === value || '' === value ) {
-		return '';
-	}
-	return `${ value }${ unit || 'px' }`;
-}
-
-/**
- * Split a CSS-length string back into a `{ value, unit }` pair for the tier
- * attribute + shared unit attribute. An empty/unparseable input clears the
- * tier value and leaves the unit untouched (the caller only writes the unit
- * attribute when a new one is actually present).
- *
- * @param {string} raw Combined length string from `SgsLengthControl`.
- * @return {{value: (number|undefined), unit: (string|undefined)}}
- */
-function splitLength( raw ) {
-	if ( ! raw ) {
-		return { value: undefined, unit: undefined };
-	}
-	const m = String( raw ).trim().match( /^(-?\d*\.?\d+)([a-z%]*)$/i );
-	if ( ! m ) {
-		return { value: undefined, unit: undefined };
-	}
-	return {
-		value: '' === m[ 1 ] ? undefined : Number( m[ 1 ] ),
-		unit: m[ 2 ] || undefined,
-	};
-}
-
-/**
- * One integrated number+unit row for a box-shape length field.
- */
-function LengthFieldRow( {
-	label,
-	value,
-	unit,
-	onChangeValue,
-	onChangeUnit,
-	disabled,
-	hiddenReason,
-} ) {
+function LengthFieldRow( { label, value, onChange, disabled, hiddenReason } ) {
 	return (
-		<SgsLengthControl
-			label={ label }
-			help={ disabled ? hiddenReason : undefined }
-			value={ combineLength( value, unit ) }
-			units={ LENGTH_UNITS }
-			disabled={ disabled }
-			onChange={ ( raw ) => {
-				const next = splitLength( raw );
-				onChangeValue( next.value );
-				if ( next.unit && next.unit !== unit ) {
-					onChangeUnit( next.unit );
-				}
-			} }
-		/>
+		<ResponsiveOverride label={ label } value={ value } onChange={ onChange }>
+			{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+				<SgsLengthControl
+					presets={ false }
+					label={ label }
+					hideLabelFromVision
+					help={ disabled ? hiddenReason : undefined }
+					value={ ownValue || '' }
+					placeholder={ inherited ? effectiveValue || '' : '' }
+					units={ LENGTH_UNITS }
+					disabled={ disabled }
+					onChange={ ( v ) => setOwnValue( v || '' ) }
+				/>
+			) }
+		</ResponsiveOverride>
 	);
 }
 
@@ -134,26 +88,17 @@ function LengthFieldRow( {
  * @param {Function} props.onRatioChange
  * @param {string}   props.shape            'none' | 'rounded' | 'circle' | 'square'.
  * @param {Function} props.onShapeChange
- * @param {Object}   props.heightValue      `{desktop,tablet,mobile}` numbers.
+ * @param {Object}   props.heightValue      `{desktop,tablet,mobile}` length strings.
  * @param {Function} props.onHeightChange
- * @param {string}   props.heightUnit
- * @param {Function} props.onHeightUnitChange
  * @param {string}   props.minHeightValue   Desktop-tier CSS length string
  *                                          (unit-embedded, e.g. "40vh").
  * @param {Function} props.onMinHeightChange
- * @param {Object}   [props.widthValue]     `{desktop,tablet,mobile}` numbers.
+ * @param {Object}   [props.widthValue]     `{desktop,tablet,mobile}` length strings.
  * @param {Function} [props.onWidthChange]
- * @param {string}   [props.widthUnit]
- * @param {Function} [props.onWidthUnitChange]
- * @param {Object}   [props.maxWidthValue]  `{desktop}` — not tiered (box-shape's
- *                                          `css()` only ever reads `.desktop`).
+ * @param {Object}   [props.maxWidthValue]  `{desktop,tablet,mobile}` length strings.
  * @param {Function} [props.onMaxWidthChange]
- * @param {string}   [props.maxWidthUnit]
- * @param {Function} [props.onMaxWidthUnitChange]
- * @param {Object}   [props.maxHeightValue] `{desktop}` — not tiered, same as MaxWidth.
+ * @param {Object}   [props.maxHeightValue] `{desktop,tablet,mobile}` length strings.
  * @param {Function} [props.onMaxHeightChange]
- * @param {string}   [props.maxHeightUnit]
- * @param {Function} [props.onMaxHeightUnitChange]
  * @param {Object}   [props.borderWidthValue]     `{top,right,bottom,left}` —
  *                                          `SgsBorderControl`'s own `widthValues`
  *                                          shape. Untiered — per-device border
@@ -194,22 +139,14 @@ export default function MediaBoxShapeControls( {
 	onShapeChange,
 	heightValue,
 	onHeightChange,
-	heightUnit,
-	onHeightUnitChange,
 	minHeightValue,
 	onMinHeightChange,
 	widthValue,
 	onWidthChange,
-	widthUnit,
-	onWidthUnitChange,
 	maxWidthValue,
 	onMaxWidthChange,
-	maxWidthUnit,
-	onMaxWidthUnitChange,
 	maxHeightValue,
 	onMaxHeightChange,
-	maxHeightUnit,
-	onMaxHeightUnitChange,
 	borderWidthValue,
 	onBorderWidthChange,
 	borderStyleValue,
@@ -253,12 +190,10 @@ export default function MediaBoxShapeControls( {
 
 			<LengthFieldRow
 				label={ __( 'Height', 'sgs-blocks' ) }
-				value={ heightObj.desktop }
-				unit={ heightUnit }
+				value={ heightObj }
 				disabled={ heightDisabled }
 				hiddenReason={ heightHiddenReason }
-				onChangeValue={ ( v ) => onHeightChange( { ...heightObj, desktop: v } ) }
-				onChangeUnit={ onHeightUnitChange }
+				onChange={ onHeightChange }
 			/>
 
 			<div aria-disabled={ ratioDisabled }>
@@ -324,30 +259,24 @@ export default function MediaBoxShapeControls( {
 			{ onWidthChange && (
 				<LengthFieldRow
 					label={ __( 'Width', 'sgs-blocks' ) }
-					value={ widthObj.desktop }
-					unit={ widthUnit }
-					onChangeValue={ ( v ) => onWidthChange( { ...widthObj, desktop: v } ) }
-					onChangeUnit={ onWidthUnitChange }
+					value={ widthObj }
+					onChange={ onWidthChange }
 				/>
 			) }
 
 			{ onMaxWidthChange && (
 				<LengthFieldRow
 					label={ __( 'Max width', 'sgs-blocks' ) }
-					value={ maxWidthObj.desktop }
-					unit={ maxWidthUnit }
-					onChangeValue={ ( v ) => onMaxWidthChange( { ...maxWidthObj, desktop: v } ) }
-					onChangeUnit={ onMaxWidthUnitChange }
+					value={ maxWidthObj }
+					onChange={ onMaxWidthChange }
 				/>
 			) }
 
 			{ onMaxHeightChange && (
 				<LengthFieldRow
 					label={ __( 'Max height', 'sgs-blocks' ) }
-					value={ maxHeightObj.desktop }
-					unit={ maxHeightUnit }
-					onChangeValue={ ( v ) => onMaxHeightChange( { ...maxHeightObj, desktop: v } ) }
-					onChangeUnit={ onMaxHeightUnitChange }
+					value={ maxHeightObj }
+					onChange={ onMaxHeightChange }
 				/>
 			) }
 

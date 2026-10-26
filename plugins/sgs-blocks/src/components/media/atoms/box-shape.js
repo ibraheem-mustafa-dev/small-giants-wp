@@ -65,18 +65,14 @@
  * atom EMITS the spaced canonical form always, and READS both — see
  * `normaliseRatio()`.
  *
- * THREE `reads` TRAPS, ALL MEASURED (registry.js `box-shape.reads`):
+ * `reads` TRAP, MEASURED (registry.js `box-shape.reads`):
  *   - `sgs/product-card`'s `imageHeight` is a plain `"180px"` STRING, not
  *     this atom's tier-object shape. `resolveHeight()` accepts either.
- *   - `sgs/hero`'s `splitMediaWidth` is a NUMBER paired with
- *     `splitMediaWidthUnit`, not a tier object. `resolveWidth()` accepts
- *     either.
  *
- * `MaxWidthPercent` was DELETED (2026-09-07) — a percentage max-width IS a
- * max-width with a `%` unit, and `%` is already in `MaxWidthUnit`'s allowed
- * values, so the dedicated attribute/custom-property/control row was a
- * second cascade layer for zero capability loss. `sgs/decorative-image`
- * (which never adopted this atom) holds its own per-device `maxWidth` length.
+ * A percentage max-width is a max-width with a `%` unit, so there is no
+ * dedicated percentage attribute. Height, Width, MaxWidth and MaxHeight each
+ * store one CSS length string per device (`{desktop,tablet,mobile}`, unit
+ * inside the string) and print through `cssLengthValue()`.
  *
  * `css()` mirrors `includes/media/atoms/box-shape.php`'s
  * `sgs_media_atom_box_shape_css()` byte-for-byte — enforced by
@@ -92,6 +88,7 @@
  */
 import { mediaStoredAttrName } from '../../MediaElementControls.js';
 import { colourVar } from '../../../utils/tokens.js';
+import { cssLengthValue } from '../../../utils/css-length.js';
 import { MEDIA_ATOMS } from './registry.js';
 
 const ATOM_ID = 'box-shape';
@@ -194,55 +191,47 @@ export function validateShape( value ) {
 }
 
 /**
- * Read a Height-shaped value in EITHER stored shape: this atom's own tier
- * object (`{desktop,tablet,mobile}`, numbers) or `sgs/product-card`'s flat
- * unit-embedded STRING (`"180px"`).
+ * Read a per-device tier object of CSS length strings, ignoring any other
+ * shape or an empty tier.
  *
  * @param {*} raw Raw attribute value.
- * @return {Object} `{desktop,tablet,mobile}` — numbers when the source was a
- *                  tier object, or a single unit-embedded string under
- *                  `desktop` when the source was the flat-string shape
- *                  (flagged via `__unitEmbedded` so the caller does not also
- *                  append a separate unit).
+ * @return {Object} `{desktop,tablet,mobile}` (only the set tiers).
  */
-export function resolveHeight( raw ) {
-	if ( 'string' === typeof raw && raw ) {
-		return { desktop: raw, __unitEmbedded: true };
-	}
+function resolveTierStrings( raw ) {
+	const out = {};
 	if ( raw && 'object' === typeof raw ) {
-		const out = {};
 		[ 'desktop', 'tablet', 'mobile' ].forEach( ( t ) => {
-			if ( 'number' === typeof raw[ t ] || ( 'string' === typeof raw[ t ] && '' !== raw[ t ] ) ) {
+			if ( 'string' === typeof raw[ t ] && '' !== raw[ t ] ) {
 				out[ t ] = raw[ t ];
 			}
 		} );
-		return out;
 	}
-	return {};
+	return out;
 }
 
 /**
- * Read a Width-shaped value in EITHER stored shape: this atom's own tier
- * object, or `sgs/hero`'s `splitMediaWidth` NUMBER (a single desktop value,
- * paired with `splitMediaWidthUnit` handled by the caller).
+ * Read a Height-shaped value: a per-device tier object of CSS length strings,
+ * or `sgs/product-card`'s flat `"180px"` string (read as the desktop value).
  *
  * @param {*} raw Raw attribute value.
- * @return {Object} `{desktop,tablet,mobile}`.
+ * @return {Object} `{desktop,tablet,mobile}` (only the set tiers).
  */
-export function resolveWidth( raw ) {
-	if ( 'number' === typeof raw ) {
+export function resolveHeight( raw ) {
+	if ( 'string' === typeof raw && raw ) {
 		return { desktop: raw };
 	}
-	if ( raw && 'object' === typeof raw ) {
-		const out = {};
-		[ 'desktop', 'tablet', 'mobile' ].forEach( ( t ) => {
-			if ( 'number' === typeof raw[ t ] || ( 'string' === typeof raw[ t ] && '' !== raw[ t ] ) ) {
-				out[ t ] = raw[ t ];
-			}
-		} );
-		return out;
-	}
-	return {};
+	return resolveTierStrings( raw );
+}
+
+/**
+ * Read a Width-shaped value: this atom's per-device tier object of CSS length
+ * strings.
+ *
+ * @param {*} raw Raw attribute value.
+ * @return {Object} `{desktop,tablet,mobile}` (only the set tiers).
+ */
+export function resolveWidth( raw ) {
+	return resolveTierStrings( raw );
 }
 
 /**
@@ -486,17 +475,6 @@ export function resolveBorderColour( value ) {
 	return colourVar( value.trim() ) || value.trim();
 }
 
-/** Format a numeric-or-string tier value with its unit, unless already unit-embedded. */
-function formatLength( value, unit, alreadyEmbedded ) {
-	if ( undefined === value || null === value || '' === value ) {
-		return '';
-	}
-	if ( alreadyEmbedded || 'string' === typeof value ) {
-		return String( value );
-	}
-	return `${ value }${ unit || 'px' }`;
-}
-
 /**
  * Height/Aspect ratio are mutually exclusive (registry.js `requires`); the
  * other rows (Shape, min/max/width) are independent of sizing mode.
@@ -542,6 +520,24 @@ export function validate( value, kind = 'shape' ) {
 }
 
 /**
+ * Push one `--name`, `--name-tablet`, `--name-mobile` declaration per set
+ * device, each value passed through `cssLengthValue()` (the twin of
+ * `sgs_css_length_value()`).
+ *
+ * @param {string[]} decls Declarations, appended to.
+ * @param {string}   name  Custom property name without a device suffix.
+ * @param {Object}   tiers `{desktop,tablet,mobile}` length strings.
+ */
+function pushTierLengths( decls, name, tiers ) {
+	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
+		const val = cssLengthValue( tiers[ pair[ 0 ] ] );
+		if ( val ) {
+			decls.push( `${ name }${ pair[ 1 ] }:${ val }` );
+		}
+	} );
+}
+
+/**
  * Custom-property declarations for this atom. Mirrors
  * `includes/media/atoms/box-shape.php`'s `sgs_media_atom_box_shape_css()`
  * exactly.
@@ -561,17 +557,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 
 	if ( 'height' === mode ) {
 		const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );
-		const unitKey = mediaStoredAttrName( blockSlug, prefix, 'HeightUnit' );
-		const resolved = resolveHeight( attributes[ heightKey ] );
-		const unit = attributes[ unitKey ] || 'px';
-		[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
-			const tier = pair[ 0 ];
-			const suffix = pair[ 1 ];
-			const val = formatLength( resolved[ tier ], unit, resolved.__unitEmbedded );
-			if ( val ) {
-				decls.push( `--sgs-media-height${ suffix }:${ val }` );
-			}
-		} );
+		pushTierLengths( decls, '--sgs-media-height', resolveHeight( attributes[ heightKey ] ) );
 	}
 
 	if ( 'ratio' === mode ) {
@@ -583,17 +569,7 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 	}
 
 	const widthKey = mediaStoredAttrName( blockSlug, prefix, 'Width' );
-	const widthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'WidthUnit' );
-	const resolvedWidth = resolveWidth( attributes[ widthKey ] );
-	const widthUnit = attributes[ widthUnitKey ] || 'px';
-	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
-		const tier = pair[ 0 ];
-		const suffix = pair[ 1 ];
-		const val = formatLength( resolvedWidth[ tier ], widthUnit, false );
-		if ( val ) {
-			decls.push( `--sgs-media-width${ suffix }:${ val }` );
-		}
-	} );
+	pushTierLengths( decls, '--sgs-media-width', resolveWidth( attributes[ widthKey ] ) );
 
 	const minHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MinHeight' );
 	const minHeightRaw = attributes[ minHeightKey ];
@@ -607,39 +583,11 @@ export function css( { attributes, prefix = '', blockSlug = '' } ) {
 		}
 	} );
 
-	// max-width/max-height (2026-09-08 fix, mirrors box-shape.php): previously
-	// read the DESKTOP tier only and string-concatenated a unit directly onto
-	// an already-unit-embedded stored value (e.g. "440px" + "px" = "440pxpx"),
-	// an invalid CSS length. Fixed to match width's/min-height's own pattern:
-	// loop all three tiers via the shared formatLength() helper, which leaves
-	// an already-embedded-unit string unchanged instead of appending a second one.
 	const maxWidthKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidth' );
-	const maxWidthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthUnit' );
-	const maxWidthRaw = attributes[ maxWidthKey ];
-	const maxWidthObj = maxWidthRaw && 'object' === typeof maxWidthRaw ? maxWidthRaw : {};
-	const maxWidthUnit = attributes[ maxWidthUnitKey ] || 'px';
-	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
-		const tier = pair[ 0 ];
-		const suffix = pair[ 1 ];
-		const val = formatLength( maxWidthObj[ tier ], maxWidthUnit, false );
-		if ( val ) {
-			decls.push( `--sgs-media-max-width${ suffix }:${ val }` );
-		}
-	} );
+	pushTierLengths( decls, '--sgs-media-max-width', resolveTierStrings( attributes[ maxWidthKey ] ) );
 
 	const maxHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeight' );
-	const maxHeightUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeightUnit' );
-	const maxHeightRaw = attributes[ maxHeightKey ];
-	const maxHeightObj = maxHeightRaw && 'object' === typeof maxHeightRaw ? maxHeightRaw : {};
-	const maxHeightUnit = attributes[ maxHeightUnitKey ] || 'px';
-	[ [ 'desktop', '' ], [ 'tablet', '-tablet' ], [ 'mobile', '-mobile' ] ].forEach( ( pair ) => {
-		const tier = pair[ 0 ];
-		const suffix = pair[ 1 ];
-		const val = formatLength( maxHeightObj[ tier ], maxHeightUnit, false );
-		if ( val ) {
-			decls.push( `--sgs-media-max-height${ suffix }:${ val }` );
-		}
-	} );
+	pushTierLengths( decls, '--sgs-media-max-height', resolveTierStrings( attributes[ maxHeightKey ] ) );
 
 	const shapeKey = mediaStoredAttrName( blockSlug, prefix, 'Shape' );
 	const shape = validateShape( attributes[ shapeKey ] );

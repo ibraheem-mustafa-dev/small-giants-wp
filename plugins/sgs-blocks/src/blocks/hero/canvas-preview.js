@@ -18,6 +18,7 @@ import {
 	borderRadiusLonghands,
 	RADIUS_STYLE_KEYS,
 } from '../../utils';
+import { cssLengthValue } from '../../utils/css-length.js';
 import {
 	css as boxShapeCss,
 	normaliseRatio,
@@ -33,14 +34,9 @@ const TIER_CHAIN = {
 const ALIGN_MAP = { top: 'flex-start', center: 'center', bottom: 'flex-end' };
 const TEXT_ALIGNS = [ 'left', 'center', 'right', 'start', 'end', 'justify' ];
 
-const isUnset = ( v ) => undefined === v || null === v || '' === v;
-
-/**
- * A `{desktop}` object whose control never writes another tier (the box-shape
- * atom's max-width/max-height): render.php paints that one value at every width.
- */
-function singleTierValue( obj ) {
-	return obj && 'object' === typeof obj ? obj.desktop : undefined;
+/** One device's length string for a per-device object, as render.php prints it (`sgs_css_length_value`). */
+function deviceLength( obj, tier ) {
+	return cssLengthValue( tierValueOf( obj, tier ) );
 }
 
 /** The value of one custom property in the box-shape atom's own declaration list. */
@@ -187,13 +183,11 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 	// Split media element (`.sgs-hero__split-media`).
 	const image = {};
 	if ( isSplit ) {
-		const unitW = attributes.splitMediaWidthUnit || '%';
-		const width = tierValueOf( attributes.splitMediaWidth, tier );
-		if ( 'custom' === attributes.splitMediaObjectFit && ! isUnset( width ) ) {
-			image.width = `${ Math.abs( parseInt( width, 10 ) ) || 0 }${ unitW }`;
+		const width = deviceLength( attributes.splitMediaWidth, tier );
+		if ( 'custom' === attributes.splitMediaObjectFit && width ) {
+			image.width = width;
 		}
-		const height = tierValueOf( attributes.splitMediaHeight, tier );
-		image.height = isUnset( height ) ? '100%' : `${ Math.abs( parseInt( height, 10 ) ) || 0 }${ attributes.splitMediaHeightUnit || 'px' }`;
+		image.height = deviceLength( attributes.splitMediaHeight, tier ) || '100%';
 		Object.assign( image, tierBoxLonghands( attributes.splitMediaPadding, tier, 'padding' ) );
 		// Only the corners set at this tier or a wider one, as render.php prints them (sgs_corner_object_longhands).
 		Object.assign( image, borderRadiusLonghands( {
@@ -217,13 +211,13 @@ export function heroCanvasPreview( attributes, { tier = 'desktop', palette = [],
 		if ( minH ) {
 			image.minHeight = minH;
 		}
-		const maxW = singleTierValue( attributes.splitMediaMaxWidth );
-		if ( ! isUnset( maxW ) && /^\d+(\.\d+)?$/.test( String( maxW ) ) ) {
-			image.maxWidth = `${ Math.abs( parseInt( maxW, 10 ) ) }${ attributes.splitMediaMaxWidthUnit || 'px' }`;
+		const maxW = deviceLength( attributes.splitMediaMaxWidth, tier );
+		if ( maxW ) {
+			image.maxWidth = maxW;
 		}
-		const maxH = singleTierValue( attributes.splitMediaMaxHeight );
-		if ( ! isUnset( maxH ) && /^\d+(\.\d+)?$/.test( String( maxH ) ) ) {
-			image.maxHeight = `${ Math.abs( parseInt( maxH, 10 ) ) }${ attributes.splitMediaMaxHeightUnit || 'px' }`;
+		const maxH = deviceLength( attributes.splitMediaMaxHeight, tier );
+		if ( maxH ) {
+			image.maxHeight = maxH;
 		}
 	}
 

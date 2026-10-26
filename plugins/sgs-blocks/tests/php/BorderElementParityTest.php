@@ -224,7 +224,7 @@ final class BorderElementParityTest extends TestCase {
 		),
 		'before-after'              => array(
 			'attrs' => array(
-				'heightUnit'     => 'px',
+				'height'     => array( 'desktop' => '400px' ),
 				'beforeImageUrl' => 'https://example.test/before.jpg',
 				'afterImageUrl'  => 'https://example.test/after.jpg',
 			),

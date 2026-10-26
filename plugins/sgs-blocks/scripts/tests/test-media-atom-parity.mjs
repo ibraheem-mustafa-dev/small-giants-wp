@@ -116,8 +116,7 @@ const FIXTURE = {
 		mediaSizing: 'ratio',
 		aspectRatio: '16 / 9',
 		shape: 'circle',
-		height: { desktop: 320, tablet: 240 },
-		heightUnit: 'px',
+		height: { desktop: '320px', tablet: '240px' },
 		minHeight: { desktop: '40vh' },
 		// box-shape — the border's own paint (2026-09-02), ungated by shape.
 		borderRadius: { topLeft: 8, topRight: 8, bottomRight: 8, bottomLeft: 8 },
@@ -187,7 +186,7 @@ function phpDeclarations( id, fixture = FIXTURE ) {
 const BOX_SHAPE_CASES = [
 	{
 		name: 'derived: Height stored, mode ABSENT -> height emits',
-		patch: { mediaSizing: undefined, aspectRatio: '', height: { desktop: 320 }, heightUnit: 'px' },
+		patch: { mediaSizing: undefined, aspectRatio: '', height: { desktop: '320px' } },
 		expect: ( d ) => d.some( ( x ) => x.startsWith( '--sgs-media-height:' ) ),
 		because: 'a stored height with no mode used to render nothing at all',
 	},
@@ -205,13 +204,13 @@ const BOX_SHAPE_CASES = [
 	},
 	{
 		name: 'NEGATIVE CONTROL: explicit auto + stored Height -> height SUPPRESSED',
-		patch: { mediaSizing: 'auto', aspectRatio: '', height: { desktop: 320 }, heightUnit: 'px' },
+		patch: { mediaSizing: 'auto', aspectRatio: '', height: { desktop: '320px' } },
 		expect: ( d ) => ! d.some( ( x ) => x.startsWith( '--sgs-media-height:' ) ),
 		because: 'an explicit client choice must still beat the derivation, or the fix has replaced one silent override with another',
 	},
 	{
 		name: 'max-width set (covers the emitter that broke parity)',
-		patch: { maxWidth: { desktop: 640 }, maxWidthUnit: 'px' },
+		patch: { maxWidth: { desktop: '640px', mobile: '90%' }, maxHeight: { desktop: 'none', tablet: '50vh' }, width: { mobile: 'calc(100% - 2rem)' } },
 		expect: ( d ) => d.some( ( x ) => x.startsWith( '--sgs-media-max-width:' ) ),
 		because: 'the uncovered emitter whose stray semicolon broke byte-parity',
 	},

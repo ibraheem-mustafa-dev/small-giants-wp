@@ -32,14 +32,10 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 	const ratioKey = mediaStoredAttrName( blockSlug, prefix, 'AspectRatio' );
 	const shapeKey = mediaStoredAttrName( blockSlug, prefix, 'Shape' );
 	const heightKey = mediaStoredAttrName( blockSlug, prefix, 'Height' );
-	const heightUnitKey = mediaStoredAttrName( blockSlug, prefix, 'HeightUnit' );
 	const minHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MinHeight' );
 	const widthKey = mediaStoredAttrName( blockSlug, prefix, 'Width' );
-	const widthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'WidthUnit' );
 	const maxWidthKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidth' );
-	const maxWidthUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxWidthUnit' );
 	const maxHeightKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeight' );
-	const maxHeightUnitKey = mediaStoredAttrName( blockSlug, prefix, 'MaxHeightUnit' );
 	const borderRadiusKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadius' );
 	const borderRadiusTabletKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusTablet' );
 	const borderRadiusMobileKey = mediaStoredAttrName( blockSlug, prefix, 'BorderRadiusMobile' );
@@ -75,22 +71,14 @@ export function control( { attributes, setAttributes, prefix = '', blockSlug = '
 			onShapeChange={ ( v ) => setAttributes( { [ shapeKey ]: validateShape( v ) } ) }
 			heightValue={ resolveHeight( attributes[ heightKey ] ) }
 			onHeightChange={ ( v ) => setAttributes( { [ heightKey ]: v } ) }
-			heightUnit={ attributes[ heightUnitKey ] }
-			onHeightUnitChange={ ( v ) => setAttributes( { [ heightUnitKey ]: v } ) }
 			minHeightValue={ minHeightObj.desktop }
 			onMinHeightChange={ ( v ) => setAttributes( { [ minHeightKey ]: { ...minHeightObj, desktop: v } } ) }
 			widthValue={ resolveWidth( attributes[ widthKey ] ) }
 			onWidthChange={ ( v ) => setAttributes( { [ widthKey ]: v } ) }
-			widthUnit={ attributes[ widthUnitKey ] }
-			onWidthUnitChange={ ( v ) => setAttributes( { [ widthUnitKey ]: v } ) }
 			maxWidthValue={ maxWidthObj }
 			onMaxWidthChange={ ( v ) => setAttributes( { [ maxWidthKey ]: v } ) }
-			maxWidthUnit={ attributes[ maxWidthUnitKey ] }
-			onMaxWidthUnitChange={ ( v ) => setAttributes( { [ maxWidthUnitKey ]: v } ) }
 			maxHeightValue={ maxHeightObj }
 			onMaxHeightChange={ ( v ) => setAttributes( { [ maxHeightKey ]: v } ) }
-			maxHeightUnit={ attributes[ maxHeightUnitKey ] }
-			onMaxHeightUnitChange={ ( v ) => setAttributes( { [ maxHeightUnitKey ]: v } ) }
 			borderWidthValue={ attributes[ borderWidthKey ] ?? {} }
 			onBorderWidthChange={ ( v ) => setAttributes( { [ borderWidthKey ]: v } ) }
 			borderStyleValue={ attributes[ borderStyleKey ] }

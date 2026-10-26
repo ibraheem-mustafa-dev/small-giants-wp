@@ -15,7 +15,7 @@
  *   transitionDuration, transitionEasing,
  *   bgVideo*,
  *   headline/subHeadlineMarginBottom*, subHeadlineMaxWidth,
- *   splitMediaObjectFit/Position, splitMediaWidth*, splitMediaHeight (TIER OBJECT), splitMediaBorderStyle/Colour,
+ *   splitMediaObjectFit/Position, splitMediaWidth, splitMediaHeight (per-device length objects), splitMediaBorderStyle/Colour,
  *   splitColumnRatio*, splitGap*,
  *   splitContentOrder, splitContentOrderTablet, splitContentOrderMobile,
  *   verticalAlignment.
@@ -26,8 +26,7 @@
  * BOX-GROUP (contract §B, 2026-07-09): splitMediaBorderRadius, splitMediaBorderWidth,
  * splitMediaPadding, mediaPadding, contentPadding are box
  * OBJECTS ({top,right,bottom,left} / {topLeft,topRight,bottomLeft,bottomRight},
- * base + Tablet + Mobile tiers) — no more flat per-side attrs or *Unit
- * companions. The block's `padding` is read + emitted entirely by
+ * base + Tablet + Mobile tiers) — no more flat per-side attrs. The block's `padding` is read + emitted entirely by
  * SGS_Container_Wrapper on the content band (a split hero has no band, so it
  * stays on the section); the other 3 families are read + emitted here,
  * block-private.
@@ -276,27 +275,10 @@ $bg_video_mobile = $attributes['bgVideoMobile'] ?? null;
 // directly now (Wave 6).
 $image_object_fit = $attributes['splitMediaObjectFit'] ?? 'cover';
 
-// splitMediaWidth is a TIER OBJECT {desktop,tablet,mobile} as of Priority 4
-// (2026-09-07, migrate-tier-object.py --fix) — the splitMediaWidthTablet/
-// Mobile siblings no longer exist. sgs_responsive_normalise_object() is the
-// canonical reader (helpers-responsive.php:273), matching minHeight/
-// splitMediaPadding above.
-$image_width_obj    = sgs_responsive_normalise_object( $attributes['splitMediaWidth'] ?? null );
-$image_width        = $image_width_obj['desktop'] ?? null;
-$image_width_tablet = $image_width_obj['tablet'] ?? null;
-$image_width_mobile = $image_width_obj['mobile'] ?? null;
-$image_width_unit   = sgs_css_length_value( $attributes['splitMediaWidthUnit'] ?? '%' );
-
-// splitMediaHeight is a TIER OBJECT (Spec 35): one attr carrying all three tiers,
-// replacing the splitMediaHeight/splitMediaHeightTablet/splitMediaHeightMobile trio 2026-08-10.
-// It also absorbed the removed splitImageHeight family — see the emission site.
-// sgs_responsive_normalise_object() is the canonical reader (helpers-responsive.php:273);
-// it always returns desktop/tablet/mobile keys, so the emission code below is unchanged.
-$image_height_obj    = sgs_responsive_normalise_object( $attributes['splitMediaHeight'] ?? null );
-$image_height        = $image_height_obj['desktop'] ?? null;
-$image_height_tablet = $image_height_obj['tablet'] ?? null;
-$image_height_mobile = $image_height_obj['mobile'] ?? null;
-$image_height_unit   = sgs_css_length_value( $attributes['splitMediaHeightUnit'] ?? 'px' );
+// splitMediaWidth and splitMediaHeight are per-device objects of CSS length
+// strings ({desktop,tablet,mobile}, unit inside each string). They print through
+// sgs_emit_responsive_css() below.
+$image_height_desktop = sgs_responsive_normalise_object( $attributes['splitMediaHeight'] ?? null )['desktop'] ?? null;
 
 // splitMediaPadding — inner padding on the <img> element itself. Owned
 // tier-object attr {desktop,tablet,mobile}, each { top, right, bottom, left }
@@ -704,9 +686,8 @@ if ( $is_split ) {
 	// Split-image height is NOT emitted here. The `splitImageHeight` family wrote
 	// `height` to `.sgs-hero__split-image` — the exact same property on the exact
 	// same element as `splitMediaHeight` below, so the two contended for one routing
-	// slot. `splitMediaHeight` is the survivor: it carries a configurable unit
-	// (`splitMediaHeightUnit`) rather than hardcoding px, forces no `object-fit`, and is
-	// named consistently across all three tiers. See the splitMediaHeight block below.
+	// slot. `splitMediaHeight` is the survivor: it carries a length string with its own unit,
+	// forces no `object-fit`, and is named consistently across all three tiers. See the splitMediaHeight block below.
 
 	// Desktop/base column order. Blank ('') = natural DOM order (content is
 	// first in markup, so it lands in the first/left grid track). 'media-first'
@@ -850,18 +831,17 @@ if ( $is_split ) {
 	);
 }
 
-// ── splitMediaWidth: base + tablet + mobile (custom fit only) ──────────────────
-// Base moved here from the inline style="" on the split <img> (Pattern A).
+// ── splitMediaWidth: per device (custom fit only) ──────────────────────────────
 if ( 'custom' === $image_object_fit ) {
-	if ( null !== $image_width ) {
-		$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{width:' . absint( $image_width ) . esc_attr( $image_width_unit ) . '}';
-	}
-	if ( null !== $image_width_tablet ) {
-		$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{width:' . absint( $image_width_tablet ) . esc_attr( $image_width_unit ) . '}}';
-	}
-	if ( null !== $image_width_mobile ) {
-		$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{width:' . absint( $image_width_mobile ) . esc_attr( $image_width_unit ) . '}}';
-	}
+	$responsive_css .= sgs_emit_responsive_css(
+		'.' . $uid . ' .sgs-hero__split-media',
+		array(
+			array(
+				'value' => $attributes['splitMediaWidth'] ?? null,
+				'css'   => 'width',
+			),
+		)
+	);
 }
 
 // ── splitMediaHeight: base + tablet + mobile, UNCONDITIONAL ────────────────────
@@ -893,17 +873,18 @@ if ( 'custom' === $image_object_fit ) {
 // (0,1,0) fallback silently beating a block default at equal or lower
 // specificity; see plugins/sgs-blocks/CLAUDE.md's media-atom findings).
 // An explicit `splitMediaHeight` value below still overrides it.
-if ( null !== $image_height ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height ) . esc_attr( $image_height_unit ) . '}';
-} else {
+if ( null === $image_height_desktop || '' === sgs_css_length_value( $image_height_desktop ) ) {
 	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{height:100%}';
 }
-if ( null !== $image_height_tablet ) {
-	$responsive_css .= '@media (max-width:1023px){.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height_tablet ) . esc_attr( $image_height_unit ) . '}}';
-}
-if ( null !== $image_height_mobile ) {
-	$responsive_css .= '@media (max-width:767px){.' . $uid . ' .sgs-hero__split-media{height:' . absint( $image_height_mobile ) . esc_attr( $image_height_unit ) . '}}';
-}
+$responsive_css .= sgs_emit_responsive_css(
+	'.' . $uid . ' .sgs-hero__split-media',
+	array(
+		array(
+			'value' => $attributes['splitMediaHeight'] ?? null,
+			'css'   => 'height',
+		),
+	)
+);
 
 // ── C19 item 3 (2026-09-04): box-shape atom's remaining bases — sizing MODE,
 // named SHAPE, aspect ratio, min-height, max-width/height/percent. Reuses the
@@ -943,11 +924,7 @@ $image_min_height_bp  = array(
 );
 foreach ( $image_min_height_bp as $sgs_hero_min_height_tier => $sgs_hero_min_height_bp ) {
 	$sgs_hero_min_height_val = $image_min_height_obj[ $sgs_hero_min_height_tier ] ?? null;
-	$sgs_hero_min_height_css = sgs_media_atom_box_shape_format_length(
-		$sgs_hero_min_height_val,
-		'px',
-		! empty( $image_min_height_obj['__unitEmbedded'] )
-	);
+	$sgs_hero_min_height_css = sgs_css_length_value( $sgs_hero_min_height_val ?? '' );
 	if ( '' === $sgs_hero_min_height_css ) {
 		continue;
 	}
@@ -957,20 +934,20 @@ foreach ( $image_min_height_bp as $sgs_hero_min_height_tier => $sgs_hero_min_hei
 		: '@media (max-width:' . $sgs_hero_min_height_bp . '){' . $sgs_hero_min_height_decl . '}';
 }
 
-// splitMediaMaxWidth / splitMediaMaxHeight — DESKTOP tier only, matching the
-// atom's own css() (no tablet/mobile reach for max-width/max-height).
-$image_max_width_obj  = is_array( $attributes['splitMediaMaxWidth'] ?? null ) ? $attributes['splitMediaMaxWidth'] : array();
-$image_max_width_unit = sgs_css_length_value( $attributes['splitMediaMaxWidthUnit'] ?? 'px' );
-if ( isset( $image_max_width_obj['desktop'] ) && '' !== $image_max_width_obj['desktop'] && is_numeric( $image_max_width_obj['desktop'] ) ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{max-width:' . absint( $image_max_width_obj['desktop'] ) . esc_attr( $image_max_width_unit ) . '}';
-}
-
-$image_max_height_obj  = is_array( $attributes['splitMediaMaxHeight'] ?? null ) ? $attributes['splitMediaMaxHeight'] : array();
-$image_max_height_unit = sgs_css_length_value( $attributes['splitMediaMaxHeightUnit'] ?? 'px' );
-if ( isset( $image_max_height_obj['desktop'] ) && '' !== $image_max_height_obj['desktop'] && is_numeric( $image_max_height_obj['desktop'] ) ) {
-	$responsive_css .= '.' . $uid . ' .sgs-hero__split-media{max-height:' . absint( $image_max_height_obj['desktop'] ) . esc_attr( $image_max_height_unit ) . '}';
-}
-
+// splitMediaMaxWidth / splitMediaMaxHeight — per-device length strings.
+$responsive_css .= sgs_emit_responsive_css(
+	'.' . $uid . ' .sgs-hero__split-media',
+	array(
+		array(
+			'value' => $attributes['splitMediaMaxWidth'] ?? null,
+			'css'   => 'max-width',
+		),
+		array(
+			'value' => $attributes['splitMediaMaxHeight'] ?? null,
+			'css'   => 'max-height',
+		),
+	)
+);
 
 // ── mediaPadding: box-object family — base + tablet + mobile (on .sgs-hero__media).
 $media_pad_base = sgs_box_object_longhands( $media_padding_obj, 'padding' );

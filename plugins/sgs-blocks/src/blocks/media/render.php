@@ -174,44 +174,6 @@ if ( ! function_exists( 'sgs_media_tier_data_attrs' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_media_css_length' ) ) {
-	/**
-	 * Normalise a dimensional value to a validated CSS length string.
-	 *
-	 * Accepts unit-embedded strings ("440px", "100%", "50vh"), bare numbers
-	 * (back-compat — the legacy `*Unit` attr is appended, defaulting to px), and
-	 * a `var(--…)` custom-property reference. Every non-var value is validated
-	 * against the sgs_media_validate_unit() allowlist so no CSS injection passes.
-	 *
-	 * @param string $value         The raw dimension string from block attributes.
-	 * @param string $unit_fallback Legacy unit to append when $value is a bare number.
-	 * @return string A validated CSS length, or '' when the value is empty/invalid.
-	 */
-	function sgs_media_css_length( string $value, string $unit_fallback = 'px' ): string {
-		$value = trim( $value );
-		if ( '' === $value ) {
-			return '';
-		}
-		// Bare number → append the matching legacy unit (validated).
-		if ( is_numeric( $value ) ) {
-			return $value . sgs_media_validate_unit( $unit_fallback );
-		}
-		// var(--token) or var(--token, fallback) — no braces/semicolons allowed.
-		if ( preg_match( '/^var\(\s*--[a-zA-Z0-9-]+(?:\s*,\s*[^;{}()]+)?\)$/', $value ) ) {
-			return $value;
-		}
-		// Unit-embedded length: numeric prefix + an allowed unit.
-		if ( preg_match( '/^(-?\d*\.?\d+)([a-z%]+)$/i', $value, $mm ) ) {
-			$allowed = array( 'px', '%', 'em', 'rem', 'vw', 'vh', 'svw', 'svh', 'ch' );
-			$unit    = strtolower( $mm[2] );
-			if ( in_array( $unit, $allowed, true ) ) {
-				return $mm[1] . $unit;
-			}
-		}
-		return '';
-	}
-}
-
 // ---------------------------------------------------------------------------
 // 4. Anchor / internal scope token.
 //

@@ -383,25 +383,13 @@
 			"type": "object",
 			"default": {}
 		},
-		"maxWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"maxHeight": {
 			"type": "object",
 			"default": {}
 		},
-		"maxHeightUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"height": {
 			"type": "object",
 			"default": {}
-		},
-		"heightUnit": {
-			"type": "string",
-			"default": "px"
 		},
 		"objectFit": {
 			"type": "string",

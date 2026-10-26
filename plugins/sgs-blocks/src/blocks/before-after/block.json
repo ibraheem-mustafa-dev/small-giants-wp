@@ -529,20 +529,12 @@
 		"height": {
 			"type": "object",
 			"default": {
-				"desktop": 400
+				"desktop": "400px"
 			}
-		},
-		"heightUnit": {
-			"type": "string",
-			"default": "px"
 		},
 		"maxWidth": {
 			"type": "object",
 			"default": {}
-		},
-		"maxWidthUnit": {
-			"type": "string",
-			"default": "px"
 		},
 		"boxShadow": {
 			"type": "string",

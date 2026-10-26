@@ -118,7 +118,7 @@ final class FocusProxyMarkupTest extends TestCase {
 			array(
 				'beforeImageUrl' => 'https://example.test/before.jpg',
 				'afterImageUrl'  => 'https://example.test/after.jpg',
-				'heightUnit'     => 'px',
+				'height'     => array( 'desktop' => '400px' ),
 			)
 		);
 		$xp = $this->xpath( $out['html'] );

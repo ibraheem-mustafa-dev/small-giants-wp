@@ -137,14 +137,12 @@ $max_width        = $max_width_tiers['desktop'] ?? '';
 $max_width_tablet = $max_width_tiers['tablet'] ?? '';
 $max_width_mobile = $max_width_tiers['mobile'] ?? '';
 
-// `height` is a TIER OBJECT (Spec 35) — block.json declares no separate
-// heightTablet/heightMobile keys. `heightUnit` stays a separate flat attr
-// (one unit for all tiers).
-$height_tiers  = sgs_responsive_normalise_object( $attributes['height'] ?? null );
-$height        = isset( $height_tiers['desktop'] ) ? (float) $height_tiers['desktop'] : 400;
-$height_unit   = in_array( $attributes['heightUnit'] ?? 'px', array( 'px', 'vh', 'em', 'rem', '%' ), true ) ? $attributes['heightUnit'] : 'px';
-$height_tablet = $height_tiers['tablet'] ?? null;
-$height_mobile = $height_tiers['mobile'] ?? null;
+// `height` is a per-device object of CSS length strings ({desktop,tablet,mobile},
+// unit inside each string). A stage with no desktop height is 400px tall.
+$height_tiers = sgs_responsive_normalise_object( $attributes['height'] ?? null );
+if ( '' === sgs_css_length_value( $height_tiers['desktop'] ?? '' ) ) {
+	$height_tiers['desktop'] = '400px';
+}
 
 $divider_colour  = $attributes['dividerColour'] ?? '';
 $divider_width   = isset( $attributes['dividerWidth'] ) ? max( 1, (float) $attributes['dividerWidth'] ) : 3;
@@ -260,13 +258,15 @@ if ( '' !== $mwm_safe ) {
 
 // --- Stage height (base + tiers). ---
 $stage_sel    = $root_sel . ' .wp-block-sgs-before-after__stage';
-$scoped_css[] = "{$stage_sel}{height:" . round( $height, 2 ) . $height_unit . ';}';
-if ( null !== $height_tablet && '' !== $height_tablet ) {
-	$scoped_css[] = '@media(max-width:1023px){' . "{$stage_sel}{height:" . round( (float) $height_tablet, 2 ) . $height_unit . ';}}';
-}
-if ( null !== $height_mobile && '' !== $height_mobile ) {
-	$scoped_css[] = '@media(max-width:767px){' . "{$stage_sel}{height:" . round( (float) $height_mobile, 2 ) . $height_unit . ';}}';
-}
+$scoped_css[] = sgs_emit_responsive_css(
+	$stage_sel,
+	array(
+		array(
+			'value' => $height_tiers,
+			'css'   => 'height',
+		),
+	)
+);
 
 // --- Default split position — the CSS-only, zero-JS comparison state. ---
 $scoped_css[] = "{$root_sel}{--sgs-before-after-position:" . round( $start_position, 2 ) . '%;}';

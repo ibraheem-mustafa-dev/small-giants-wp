@@ -243,11 +243,9 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		// Priority 4 (2026-09-07, migrate-tier-object.py --fix) — the
 		// splitMediaWidthTablet/Mobile siblings no longer exist.
 		splitMediaWidth,
-		splitMediaWidthUnit,
 		// splitMediaHeight is a TIER OBJECT {desktop,tablet,mobile} as of 2026-08-10 —
 		// the splitMediaHeightTablet/splitMediaHeightMobile siblings no longer exist.
 		splitMediaHeight,
-		splitMediaHeightUnit,
 		// Box-object families (contract §B, 2026-07-09).
 		splitMediaBorderRadius,
 		splitMediaBorderRadiusTablet,
@@ -287,9 +285,7 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		splitMediaAspectRatio,
 		splitMediaMinHeight,
 		splitMediaMaxWidth,
-		splitMediaMaxWidthUnit,
 		splitMediaMaxHeight,
-		splitMediaMaxHeightUnit,
 		contentBackground,
 		contentBackgroundGradient,
 		// contentPadding is a TIER-OF-BOXES OBJECT {desktop,tablet,mobile} —
@@ -1506,17 +1502,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaObjectPosition: { desktop: 'center center', mobile: 'center 20%' },
 								// TIER OBJECT (Priority 4, 2026-09-07) — mirrors block.json's default ({}).
 								splitMediaWidth: {},
-								splitMediaWidthUnit: '%',
 								splitMediaHeight: {},
-								splitMediaHeightUnit: 'px',
 								splitMediaMediaSizing: undefined,
 								splitMediaShape: 'none',
 								splitMediaAspectRatio: '',
 								splitMediaMinHeight: {},
 								splitMediaMaxWidth: {},
-								splitMediaMaxWidthUnit: 'px',
 								splitMediaMaxHeight: {},
-								splitMediaMaxHeightUnit: 'px',
 								splitMediaBorderRadius: {},
 								splitMediaBorderRadiusTablet: {},
 								splitMediaBorderRadiusMobile: {},
@@ -1558,18 +1550,14 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								( splitMediaObjectPosition?.tablet ?? '' ) !== '' ||
 								( splitMediaObjectPosition?.mobile ?? 'center 20%' ) !== 'center 20%' ||
 								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
-								splitMediaWidthUnit !== '%' ||
-								Object.keys( splitMediaHeight ?? {} ).length > 0 ||
-								splitMediaHeightUnit !== 'px'
+								Object.keys( splitMediaHeight ?? {} ).length > 0
 							}
 							onDeselect={ () =>
 								setAttributes( {
 									splitMediaObjectFit: 'cover',
 									splitMediaObjectPosition: { desktop: 'center center', mobile: 'center 20%' },
 									splitMediaWidth: {},
-									splitMediaWidthUnit: '%',
 									splitMediaHeight: {},
-									splitMediaHeightUnit: 'px',
 								} )
 							}
 							isShownByDefault
@@ -1606,14 +1594,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 								splitMediaShape !== 'none' ||
 								!! splitMediaAspectRatio ||
 								Object.keys( splitMediaWidth ?? {} ).length > 0 ||
-								splitMediaWidthUnit !== '%' ||
 								Object.keys( splitMediaHeight ?? {} ).length > 0 ||
-								splitMediaHeightUnit !== 'px' ||
 								Object.keys( splitMediaMinHeight ?? {} ).length > 0 ||
 								Object.keys( splitMediaMaxWidth ?? {} ).length > 0 ||
-								splitMediaMaxWidthUnit !== 'px' ||
 								Object.keys( splitMediaMaxHeight ?? {} ).length > 0 ||
-								splitMediaMaxHeightUnit !== 'px' ||
 								Object.keys( splitMediaBorderWidth ?? {} ).length > 0 ||
 								splitMediaBorderStyle !== '' ||
 								splitMediaBorderColour !== '' ||
@@ -1634,14 +1618,10 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 									splitMediaShape: 'none',
 									splitMediaAspectRatio: '',
 									splitMediaWidth: {},
-									splitMediaWidthUnit: '%',
 									splitMediaHeight: {},
-									splitMediaHeightUnit: 'px',
 									splitMediaMinHeight: {},
 									splitMediaMaxWidth: {},
-									splitMediaMaxWidthUnit: 'px',
 									splitMediaMaxHeight: {},
-									splitMediaMaxHeightUnit: 'px',
 									splitMediaBorderRadius: {},
 									splitMediaBorderRadiusTablet: {},
 									splitMediaBorderRadiusMobile: {},
