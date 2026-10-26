@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-26",
+  "project": "Census files-adapter fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Contact.dc.html",
+      "bytes": 1054,
+      "sha256": "cdfcfd1a39be0ff82f595a952ce239fdf5a79d1565b2e50cf087227ed6520268"
+    },
+    {
+      "path": "Home.dc.html",
+      "bytes": 634,
+      "sha256": "6c3d497776e6d28d80bba2489a5cf71bb9434a7a389f2c9ac9ad7bb43ee22618"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    }
+  ]
+}

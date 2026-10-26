@@ -147,9 +147,21 @@ export function crossCheck( sources, rows ) {
 }
 
 // The static pass: { rows, gaps, sources, counts, blocked }. Renders the drafts once in the sandbox (draftSources), parses each
-// draft's logic and each helmet script file once (a file loaded by several drafts is read once).
-export async function staticCensus( { folder, entry, harPath = null, sandbox = null, timeout = 60000 } ) {
-	const sources = await draftSources( { folder, entry, harPath, sandbox, timeout } );
+// draft's logic and each helmet script file once (a file loaded by several drafts is read once). `entries` are the page files
+// to read (entry first): a draft with one file per page holds constructs no other file imports, so each page file is read and
+// each component is taken from the first file that holds it.
+export async function staticCensus( { folder, entry, entries = [ entry ], harPath = null, sandbox = null, timeout = 60000 } ) {
+	const sources = [];
+	sources.blocked = [];
+	const seen = new Set();
+	for ( const file of new Set( [ entry, ...entries ] ) ) {
+		const got = await draftSources( { folder, entry: file, harPath, sandbox, timeout } );
+		for ( const s of got.filter( ( x ) => ! seen.has( x.component ) ) ) {
+			seen.add( s.component );
+			sources.push( s );
+		}
+		sources.blocked.push( ...( got.blocked || [] ) );
+	}
 	const rows = [];
 	const gaps = [];
 	const scriptsDone = new Set();
@@ -190,7 +202,9 @@ const isEmpty = ( v ) => null == v || '' === v || ( Array.isArray( v ) && ! v.le
 export async function runCensus( { folder, entry, registry = null, root, readers = {}, harPath = null, sandbox = null, census = null, timeout = 60000, runtime = null } ) {
 	const reg = registry || loadRegistry();
 	// The static pass opens a sandbox of its own: it holds one browser-unit pool slot (lib/intake-pool.mjs).
-	const base = census || await withSlot( () => staticCensus( { folder, entry, harPath, sandbox, timeout } ) );
+	// Every page file the runtime visits names (a visit is `<file>` or `<file>#<hash>`).
+	const entries = ( runtime?.visits || [] ).map( ( v ) => String( v ).split( '#' )[ 0 ] ).filter( Boolean );
+	const base = census || await withSlot( () => staticCensus( { folder, entry, entries, harPath, sandbox, timeout } ) );
 	const gaps = [ ...base.gaps ];
 	const problems = [];
 	let run = null;

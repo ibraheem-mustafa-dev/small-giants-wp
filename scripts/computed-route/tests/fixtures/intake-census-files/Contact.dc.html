@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<main style="padding:24px;font-family:system-ui,sans-serif">
+  <sc-if value="{{ notSent }}">
+    <form onSubmit="{{ send }}" style="display:flex;flex-direction:column;gap:16px">
+      <h2 style="margin:0;font-size:24px">Send a message</h2>
+      <button type="submit" style="padding:10px 18px">Send</button>
+    </form>
+  </sc-if>
+  <sc-if value="{{ sent }}">
+    <p style="margin:0">Thanks, we will reply soon.</p>
+  </sc-if>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;400px&quot;}}">
+class Component extends DCLogic {
+  state = { sent: false };
+  send = ( e ) => { e.preventDefault(); this.setState( { sent: true } ); };
+  renderVals() {
+    return { sent: this.state.sent, notSent: ! this.state.sent, send: this.send };
+  }
+}
+</script>
+</body>
+</html>
