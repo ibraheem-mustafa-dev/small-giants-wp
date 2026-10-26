@@ -224,7 +224,8 @@
     "postType": "sgs_form",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "draftId": "surfaces.json S-34"
   },
   {
     "slug": "header",
@@ -235,7 +236,8 @@
     "postType": "sgs_header",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "draftId": "surfaces.json S-03"
   },
   {
     "slug": "footer",
@@ -246,7 +248,8 @@
     "postType": "sgs_footer",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "draftId": "surfaces.json S-06"
   },
   {
     "slug": "drawer-eye-care-birmingham",
@@ -257,7 +260,8 @@
     "postType": "sgs_drawer",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "draftId": "surfaces.json S-05"
   },
   {
     "slug": "modal-size-guide",
@@ -268,7 +272,8 @@
     "postType": "sgs_modal",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "draftId": "surfaces.json S-25"
   },
   {
     "slug": "choice-flow-add-prescription-lenses",
@@ -279,7 +284,8 @@
     "postType": "sgs_choice_flow",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "draftId": "surfaces.json S-27"
   },
   {
     "slug": "mega-menu-sunglasses",
@@ -290,7 +296,8 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": null,
+    "draftId": "surfaces.json S-04"
   },
   {
     "slug": "mega-menu-brands",

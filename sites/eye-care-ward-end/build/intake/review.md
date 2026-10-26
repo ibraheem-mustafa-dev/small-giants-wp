@@ -1,12 +1,12 @@
 # Intake review: eye-care-ward-end
 
-Taken on 2026-10-26T07:08:35.388Z; manifest 1.0, files hash 262dd0304564cd78.
+Taken on 2026-10-26T21:15:22.158Z; manifest 1.0, files hash 262dd0304564cd78.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review eye-care-ward-end`.
 
-Rows: 840; 680 need reading, 160 are confident proposals that Accept all covers (skeleton block choices 123, missing features 37).
+Rows: 1436; 803 need reading, 633 are confident proposals that Accept all covers (skeleton block choices 596, missing features 37).
 
-Not defects counted, not listed: breakpoint 52, prop-variant 201, reached-when-forced 206, render-wins 2141.
+Not defects counted, not listed: breakpoint 46, prop-variant 91, reached-when-forced 242, render-wins 1270.
 
 Marks per section (first value = Accept all):
 - Page map: `accept`, `edit:<field>=<value>`, `drop`
@@ -54,39 +54,39 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `palette:--acc-ink` | **changed** --acc-ink #6F6152 | role:link-hover | 0.95: the draft's comment on --acc-ink says "link hover" ("kicker text, link hover") |  |
+| `palette:--acc-soft` | **changed** --acc-soft #EFEAE2 | role:custom-acc-soft | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
+| `palette:--border-default` | **changed** --border-default #E6E1DA | role:border,accent-light | 0.98: the draft declares --border-default: var(--hairline); usage agrees |  |
+| `palette:--button-primary-bg` | **changed** --button-primary-bg #141414 | role:heading,link,text,primary | 0.85: the most used heading colour on light grounds (30 headings) |  |
+| `palette:--control-off` | **changed** --control-off #C9C2B8 | role:custom-control-off | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
+| `palette:--hairline` | **changed** --hairline #E6E1DA | role:accent-light,border | 0.85: the light ground of the accent's hue (613 grounds and lines) |  |
+| `palette:--ink` | **changed** --ink #141414 | role:heading,link,text,primary | 0.85: the most used heading colour on light grounds (30 headings) |  |
+| `palette:--surface-card` | **changed** --surface-card #FFFFFF | role:accent-text,surface-alt | 0.85: the colour of the most text on the accent ground (1 characters) |  |
+| `palette:--surface-soft` | **changed** --surface-soft #F0EBE3 | role:custom-surface-soft | 0.3: name says surface, but surface-alt is read from usage on --white (#FFFFFF) |  |
+| `palette:--text-4` | **changed** --text-4 #8B8478 | role:section-text | 0.85: the colour of the most text on the section ground (55 characters) |  |
+| `palette:--text-body` | **changed** --text-body #141414 | role:text,heading,link,primary | 0.98: the draft declares --text-body: var(--ink); usage agrees |  |
+| `palette:--wa-border` | **changed** --wa-border #B7E5C7 | role:custom-wa-border | 0.8: a saturated border is not the divider slug (FR-33-2 border guard) |  |
+| `palette:--wa-ink-deep` | **changed** --wa-ink-deep #12301E | role:custom-wa-ink-deep | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
+| `palette:--wa-soft` | **changed** --wa-soft #E9F9EF | role:custom-wa-soft | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) |  |
+| `palette:--white` | **changed** --white #FFFFFF | role:accent-text,surface-alt | 0.85: the colour of the most text on the accent ground (1 characters) |  |
 | `palette:--acc` | --acc #9C8B78 | role:accent | 0.98: the draft's comment on --acc says "badges" ("badges, focus ring, ticker icons, selection"); usage agrees | accept |
-| `palette:--acc-ink` | --acc-ink #6F6152 | role:accent-text,link-hover | 0.85: the accent's own ink: the text colour of its hue (161 characters; the accent ground holds no text) | role:accent-text,link-hover |
-| `palette:--acc-soft` | --acc-soft #EFEAE2 | role:accent-light | 0.85: the light ground of the accent's hue (34 grounds and lines, carrying the accent ink) | accept |
-| `palette:--border-default` | --border-default #E6E1DA | role:border | 0.98: the draft declares --border-default: var(--hairline); usage agrees | accept |
 | `palette:--border-strong` | --border-strong #D8D2C8 | role:custom-border-strong | 0.3: name says border, but border is read from usage on --hairline (#E6E1DA) | accept |
 | `palette:--border-warm` | --border-warm #D5CCBD | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--button-primary-bg` | --button-primary-bg #141414 | role:heading,link,section-text,text,primary | 0.85: the most used heading colour on light grounds (5 headings) | accept |
-| `palette:--button-primary-fg` | --button-primary-fg #FAF8F5 | role:footer-bg,text-inverse,surface,primary-text | 0.85: the footer's ground on 1 page(s) | accept |
-| `palette:--control-off` | --control-off #C9C2B8 | no slug (one-off) | unused: no element in the draft uses this value | accept |
+| `palette:--button-primary-fg` | --button-primary-fg #FAF8F5 | role:footer-bg,text-inverse,surface,primary-text | 0.85: the footer's ground on 11 page(s) | accept |
 | `palette:--focus-ring` | --focus-ring #9C8B78 | role:accent | 0.98: the draft's comment on --acc says "badges" ("badges, focus ring, ticker icons, selection"); usage agrees | accept |
-| `palette:--hairline` | --hairline #E6E1DA | role:border | 0.98: the draft declares --border-default: var(--hairline); usage agrees | accept |
-| `palette:--ink` | --ink #141414 | role:heading,link,section-text,text,primary | 0.85: the most used heading colour on light grounds (5 headings) | accept |
 | `palette:--ink-hover` | --ink-hover #2A2A2A | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--paper` | --paper #FAF8F5 | role:footer-bg,text-inverse,surface,primary-text | 0.85: the footer's ground on 1 page(s) | accept |
+| `palette:--paper` | --paper #FAF8F5 | role:footer-bg,text-inverse,surface,primary-text | 0.85: the footer's ground on 11 page(s) | accept |
 | `palette:--success` | --success #1B7F43 | role:success | 0.98: the draft's comment on --success says "in stock" ("in stock"); usage agrees | accept |
-| `palette:--surface-alt` | --surface-alt #F3F0EB | role:section | 0.85: the most used ground after the page, raised and primary grounds (12 elements) | role:custom-surface-alt |
-| `palette:--surface-card` | --surface-card #FFFFFF | role:surface-alt | 0.98: the draft declares --surface-card: var(--white); usage agrees | role:surface-alt,section |
+| `palette:--surface-alt` | --surface-alt #F3F0EB | role:section | 0.85: the most used ground after the page, raised and primary grounds (44 elements) | role:custom-surface-alt |
 | `palette:--surface-page` | --surface-page #FAF8F5 | role:surface,footer-bg,text-inverse,primary-text | 0.98: the draft declares --surface-page: var(--paper); usage agrees | accept |
-| `palette:--surface-soft` | --surface-soft #F0EBE3 | role:accent-light | 0.85: the light ground of the accent's hue (34 grounds and lines, carrying the accent ink) | accept |
-| `palette:--text-2` | --text-2 #5E584F | role:text-muted | 0.85: the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (438 characters) | accept |
+| `palette:--text-2` | --text-2 #5E584F | role:text-muted | 0.85: the colour of the most text after the text, heading and accent text, at least 10 L* lighter than the text (3919 characters) | accept |
 | `palette:--text-3` | --text-3 #77716A | role:custom-text-3 | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
-| `palette:--text-4` | --text-4 #8B8478 | role:custom-text-4 | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
-| `palette:--text-body` | --text-body #141414 | role:text,heading,link,section-text,primary | 0.98: the draft declares --text-body: var(--ink); usage agrees | accept |
 | `palette:--text-faint` | --text-faint #A39C90 | role:custom-text-faint | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
 | `palette:--text-muted` | --text-muted #6B655E | role:custom-text-muted | 0.3: name says muted text, but text-muted is read from usage on --text-2 (#5E584F) | accept |
 | `palette:--text-strong` | --text-strong #4A453E | role:custom-text-strong | 0.3: name says body text, but text is read from usage on --ink (#141414) | accept |
-| `palette:--wa` | --wa #25D366 | role:whatsapp | 0.85: the ground of the links that open WhatsApp (2 elements) | accept |
-| `palette:--wa-border` | --wa-border #B7E5C7 | no slug (one-off) | unused: no element in the draft uses this value | accept |
+| `palette:--wa` | --wa #25D366 | role:whatsapp | 0.85: the ground of the links that open WhatsApp (15 elements) | accept |
 | `palette:--wa-hover` | --wa-hover #1EBE5A | no slug (one-off) | unused: no element in the draft uses this value | accept |
 | `palette:--wa-ink` | --wa-ink #0B2B17 | role:custom-wa-ink | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | accept |
-| `palette:--wa-ink-deep` | --wa-ink-deep #12301E | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--wa-soft` | --wa-soft #E9F9EF | no slug (one-off) | unused: no element in the draft uses this value | accept |
-| `palette:--white` | --white #FFFFFF | role:surface-alt | 0.98: the draft declares --surface-card: var(--white); usage agrees | role:surface-alt,section |
 
 ## Site Info (site-info)
 
@@ -137,14 +137,25 @@ Accept all: [ ]
 | `flag:stock:Eye Care Birmingham:116` | stock: https://images.unsplash.com/photo-1577803645773-f96470509666?w=2200&q=82&auto=format&fit=crop | accept-flagged | image on the stock host images.unsplash.com |  |
 | `flag:stock:Eye Care Birmingham:219` | stock: https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1500&q=82&auto=format&fit=crop | accept-flagged | image on the stock host images.unsplash.com |  |
 
+## Draft defects (draft-defect)
+
+Accept all: [ ]
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `defect-group:Eye Care Birmingham:componentDidMount` | Eye Care Birmingham componentDidMount: 2 defects (timer, handler) at Eye Care Birmingham:js:2647:81, Eye Care Birmingham:js:2650:4 | build the code's intent |  |  |
+
 ## Missing features (missing-feature)
 
 Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:Eye Care Birmingham:19` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Eye Care Birmingham:20` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Eye Care Birmingham:19` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/nav-bar-menu |
+| `missing:Eye Care Birmingham:20` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/nav-bar-menu |
+| `missing:Eye Care Birmingham:382` | <span>: no SGS block fits it | no block proposed | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Eye Care Birmingham:516` | <span>: no SGS block fits it | no block proposed | 5 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Frame Card:3` | <div>: no SGS block fits it | no block proposed | 10 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
 
 ### Confident proposals (Accept all covers these)
 
@@ -192,12 +203,21 @@ Accept all: [ ]
 
 Accept all: [ ]
 
-### Needs a decision (unresolved): no block (2)
+### Needs a decision (unresolved): no block (5)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/19#0` | header Eye Care Birmingham/19#0 <span> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
 | `skeleton:header:Eye Care Birmingham/20#0` | header Eye Care Birmingham/20#0 <span> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/3` | page-home Eye Care Birmingham>Frame Card@139/3 <div> | no block | 0: 10 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
+| `skeleton:page-product:Eye Care Birmingham/382` | page-product Eye Care Birmingham/382 <span> | no block | 0: 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
+| `skeleton:page-product:Eye Care Birmingham/516` | page-product Eye Care Birmingham/516 <span> | no block | 0: 5 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
+
+### Needs a decision (low): block:sgs/business-info (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-help:Eye Care Birmingham/657#0` | page-help Eye Care Birmingham/657#0 <p> "Call the clinic on 0121 729 8233 , or send me a message and I'll get back to you." | block:sgs/business-info | 0.41 |  |
 
 ### Needs a decision (low): block:sgs/card-grid (1)
 
@@ -205,17 +225,41 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:mega-menu:Eye Care Birmingham/56#0` | mega-menu Eye Care Birmingham/56#0 <div> | block:sgs/card-grid | 0.5 |  |
 
-### Needs a decision (low): block:sgs/media (1)
+### Needs a decision (low): block:sgs/media (5)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:mobile-menu:Eye Care Birmingham/1194#0` | mobile-menu Eye Care Birmingham/1194#0 <img> | block:sgs/media | 0.29 |  |
+| `skeleton:page-home:Eye Care Birmingham/179#0` | page-home Eye Care Birmingham/179#0 <img> | block:sgs/media | 0.29 |  |
+| `skeleton:page-home:Eye Care Birmingham/200` | page-home Eye Care Birmingham/200 <img> | block:sgs/media | 0.29: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/219#0` | page-home Eye Care Birmingham/219#0 <img> | block:sgs/media | 0.29 |  |
+| `skeleton:page-home:Eye Care Birmingham/245#0` | page-home Eye Care Birmingham/245#0 <img> | block:sgs/media | 0.29 |  |
 
-### Needs a decision (low): block:sgs/multi-button (1)
+### Needs a decision (low): block:sgs/multi-button (14)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:footer:Eye Care Birmingham/1158#0` | footer Eye Care Birmingham/1158#0 <span> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/744#0` | page-checkout Eye Care Birmingham/744#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-contact:Eye Care Birmingham/733#0` | page-contact Eye Care Birmingham/733#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-help:Eye Care Birmingham/643#0` | page-help Eye Care Birmingham/643#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-help:Eye Care Birmingham/658#0` | page-help Eye Care Birmingham/658#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-home:Eye Care Birmingham/123#0` | page-home Eye Care Birmingham/123#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-home:Eye Care Birmingham/127#0` | page-home Eye Care Birmingham/127#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-home:Eye Care Birmingham/187#0` | page-home Eye Care Birmingham/187#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/29` | page-home Eye Care Birmingham>Frame Card@139/29 <div> | block:sgs/multi-button | 0.51: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-product:Eye Care Birmingham/354#0` | page-product Eye Care Birmingham/354#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-product:Eye Care Birmingham/418#0` | page-product Eye Care Birmingham/418#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-shop:Eye Care Birmingham/288#0` | page-shop Eye Care Birmingham/288#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-shop:Eye Care Birmingham/292#0` | page-shop Eye Care Birmingham/292#0 <div> | block:sgs/multi-button | 0.51 |  |
+| `skeleton:page-shop:Eye Care Birmingham/298#0` | page-shop Eye Care Birmingham/298#0 <div> | block:sgs/multi-button | 0.51 |  |
+
+### Needs a decision (low): block:sgs/quote (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-home:Eye Care Birmingham/204` | page-home Eye Care Birmingham/204 <blockquote> "Had a lovely experience taking my daughter here. The optician Fatima is very good with children and made the experience enjoyable for my daughter. The receptionist was also very welcoming." | block:sgs/quote | 0.5: 13 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/524` | page-product Eye Care Birmingham/524 <blockquote> "Bought with single vision lenses and the tint matches the originals exactly. Nobody can tell they're prescription." | block:sgs/quote | 0.5: 3 copies of one template element |  |
 
 ### Needs a decision (low): block:sgs/responsive-logo (1)
 
@@ -229,13 +273,115 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/13#0` | header Eye Care Birmingham/13#0 <header> | block:sgs/site-header | 0.58 |  |
 
-### Needs a decision (low): block:sgs/text (19)
+### Needs a decision (low): block:sgs/social-icons (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-home:Eye Care Birmingham/209#0` | page-home Eye Care Birmingham/209#0 <div> | block:sgs/social-icons | 0.51 |  |
+
+### Needs a decision (low): block:sgs/text (115)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/10` | header Eye Care Birmingham/10 <span> "100% genuine, supplied direct by the brands" | block:sgs/text | 0.25: 8 copies of one template element |  |
 | `skeleton:header:Eye Care Birmingham/47#0` | header Eye Care Birmingham/47#0 <span> "Bag" | block:sgs/text | 0.25 |  |
 | `skeleton:header:Eye Care Birmingham/51#0` | header Eye Care Birmingham/51#0 <span> "0" | block:sgs/text | 0.25 |  |
+| `skeleton:page-about:Eye Care Birmingham/616#0` | page-about Eye Care Birmingham/616#0 <div> "BSc (Hons)" | block:sgs/text | 0.25 |  |
+| `skeleton:page-about:Eye Care Birmingham/619#0` | page-about Eye Care Birmingham/619#0 <div> "MCOptom" | block:sgs/text | 0.25 |  |
+| `skeleton:page-about:Eye Care Birmingham/622#0` | page-about Eye Care Birmingham/622#0 <div> "DipTp(IP)" | block:sgs/text | 0.25 |  |
+| `skeleton:page-about:Eye Care Birmingham/625#0` | page-about Eye Care Birmingham/625#0 <div> "Paediatric Eye Care" | block:sgs/text | 0.25 |  |
+| `skeleton:page-account:Eye Care Birmingham/929=sgs/text` | page-account Eye Care Birmingham/929=sgs/text <span> "Orders" | block:sgs/text | 0.25: 1 copies of one template element |  |
+| `skeleton:page-account:Eye Care Birmingham/930#0` | page-account Eye Care Birmingham/930#0 <span> "3" | block:sgs/text | 0.25 |  |
+| `skeleton:page-account:Eye Care Birmingham/941` | page-account Eye Care Birmingham/941 <span> "EC-10471" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-account:Eye Care Birmingham/942` | page-account Eye Care Birmingham/942 <span> "2 October 2026" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-account:Eye Care Birmingham/943` | page-account Eye Care Birmingham/943 <span> "Oakley Holbrook, with prescription lenses" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-account:Eye Care Birmingham/946` | page-account Eye Care Birmingham/946 <span> "£248" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-checkout:Eye Care Birmingham/754#0` | page-checkout Eye Care Birmingham/754#0 <span> "1" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/772#0` | page-checkout Eye Care Birmingham/772#0 <span> "2" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/776#0` | page-checkout Eye Care Birmingham/776#0 <span> "Post it to me" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/777#0` | page-checkout Eye Care Birmingham/777#0 <span> "Free" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/778#0` | page-checkout Eye Care Birmingham/778#0 <span> "Royal Mail Tracked 48. Free over £75." | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/781#0` | page-checkout Eye Care Birmingham/781#0 <span> "Collect in Birmingham" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/782#0` | page-checkout Eye Care Birmingham/782#0 <span> "Free" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/783#0` | page-checkout Eye Care Birmingham/783#0 <span> "I'll fit and adjust them to you in person." | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/808#0` | page-checkout Eye Care Birmingham/808#0 <span> "3" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/814#0` | page-checkout Eye Care Birmingham/814#0 <span> "Pay now" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/815#0` | page-checkout Eye Care Birmingham/815#0 <span> "£0" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/819#0` | page-checkout Eye Care Birmingham/819#0 <span> "Your bag" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/835#0` | page-checkout Eye Care Birmingham/835#0 <span> "Subtotal" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/836#0` | page-checkout Eye Care Birmingham/836#0 <span> "£0" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/838#0` | page-checkout Eye Care Birmingham/838#0 <span> "Delivery" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/839#0` | page-checkout Eye Care Birmingham/839#0 <span> "Free" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/841#0` | page-checkout Eye Care Birmingham/841#0 <span> "Total" | block:sgs/text | 0.25 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/842#0` | page-checkout Eye Care Birmingham/842#0 <span> "£0" | block:sgs/text | 0.25 |  |
+| `skeleton:page-done:Eye Care Birmingham/846#0` | page-done Eye Care Birmingham/846#0 <div> "✓" | block:sgs/text | 0.25 |  |
+| `skeleton:page-help:Eye Care Birmingham/650` | page-help Eye Care Birmingham/650 <span> "Are these frames genuine?" | block:sgs/text | 0.25: 8 copies of one template element |  |
+| `skeleton:page-help:Eye Care Birmingham/651` | page-help Eye Care Birmingham/651 <span> "+" | block:sgs/text | 0.25: 8 copies of one template element |  |
+| `skeleton:page-help:Eye Care Birmingham/656#0` | page-help Eye Care Birmingham/656#0 <div> "Still not answered?" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/150` | page-home Eye Care Birmingham/150 <div> "01" | block:sgs/text | 0.25: 4 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/181#0` | page-home Eye Care Birmingham/181#0 <div> "Google Reviews" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/183#0` | page-home Eye Care Birmingham/183#0 <span> "4.7" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/185#0` | page-home Eye Care Birmingham/185#0 <span> "★★★★★" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/186#0` | page-home Eye Care Birmingham/186#0 <span> "15 reviews" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/195` | page-home Eye Care Birmingham/195 <span> "A" | block:sgs/text | 0.25: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/197` | page-home Eye Care Birmingham/197 <span> "Anonymous M." | block:sgs/text | 0.25: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/198` | page-home Eye Care Birmingham/198 <span> "6 reviews" | block:sgs/text | 0.25: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/203` | page-home Eye Care Birmingham/203 <span> "2 years ago" | block:sgs/text | 0.25: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/226#0` | page-home Eye Care Birmingham/226#0 <span> "1" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/228#0` | page-home Eye Care Birmingham/228#0 <span> "2" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/230#0` | page-home Eye Care Birmingham/230#0 <span> "3" | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham/237#0` | page-home Eye Care Birmingham/237#0 <span> "The reception or the consulting room — whichever you'd rather show. No portrait needed." | block:sgs/text | 0.25 |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/21` | page-home Eye Care Birmingham>Frame Card@139/21 <span> "4.9 ( 41 )" | block:sgs/text | 0.25: 27 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/26` | page-home Eye Care Birmingham>Frame Card@139/26 <span> "£139" | block:sgs/text | 0.25: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/28` | page-home Eye Care Birmingham>Frame Card@139/28 <span> "£171" | block:sgs/text | 0.25: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-lenses:Eye Care Birmingham/559#0` | page-lenses Eye Care Birmingham/559#0 <div> "from £59" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/563#0` | page-lenses Eye Care Birmingham/563#0 <div> "from £129" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/567#0` | page-lenses Eye Care Birmingham/567#0 <div> "+£40" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/571#0` | page-lenses Eye Care Birmingham/571#0 <div> "+£30–£100" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/577#0` | page-lenses Eye Care Birmingham/577#0 <li> "UV400 protection" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/578#0` | page-lenses Eye Care Birmingham/578#0 <li> "Anti-scratch hard coat" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/579#0` | page-lenses Eye Care Birmingham/579#0 <li> "Anti-reflective back surface, so you don't catch your own eye in the lens" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/580#0` | page-lenses Eye Care Birmingham/580#0 <li> "Tint matched to the frame's original lenses" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/581#0` | page-lenses Eye Care Birmingham/581#0 <li> "Checked against your prescription by me before it's posted" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/582#0` | page-lenses Eye Care Birmingham/582#0 <li> "Two-year guarantee on the lenses" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/587#0` | page-lenses Eye Care Birmingham/587#0 <span> "1" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/588#0` | page-lenses Eye Care Birmingham/588#0 <span> "Choose a frame and tap “Add my prescription”." | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/590#0` | page-lenses Eye Care Birmingham/590#0 <span> "2" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/591#0` | page-lenses Eye Care Birmingham/591#0 <span> "Pick what they're for, how thin, what finish — all with pictures." | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/593#0` | page-lenses Eye Care Birmingham/593#0 <span> "3" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/594#0` | page-lenses Eye Care Birmingham/594#0 <span> "Send the prescription now, or after you order. I'll remind you." | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/596#0` | page-lenses Eye Care Birmingham/596#0 <span> "4" | block:sgs/text | 0.25 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/597#0` | page-lenses Eye Care Birmingham/597#0 <span> "Made and checked in Birmingham, posted in 7–10 working days — or collect and I'll fit them to you in person." | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/350#0` | page-product Eye Care Birmingham/350#0 <div> "Photography to come front · three-quarter · side · worn" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/366#0` | page-product Eye Care Birmingham/366#0 <span> "4.9 · 41 reviews" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/368#0` | page-product Eye Care Birmingham/368#0 <span> "£139" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/371#0` | page-product Eye Care Birmingham/371#0 <span> "£171" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/378#0` | page-product Eye Care Birmingham/378#0 <span> "Gold" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/383` | page-product Eye Care Birmingham/383 <span> "Gold" | block:sgs/text | 0.25: 4 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/392` | page-product Eye Care Birmingham/392 <span> "S" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/393` | page-product Eye Care Birmingham/393 <span> "55□14 130" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/396#0` | page-product Eye Care Birmingham/396#0 <span> "Add my prescription" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/397#0` | page-product Eye Care Birmingham/397#0 <span> "from +£59" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/399#0` | page-product Eye Care Birmingham/399#0 <span> "Add to bag as they are" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/400#0` | page-product Eye Care Birmingham/400#0 <span> "£139" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/403#0` | page-product Eye Care Birmingham/403#0 <strong> "Klarna" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/405#0` | page-product Eye Care Birmingham/405#0 <span> "Apple Pay · Google Pay · PayPal" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/410#0` | page-product Eye Care Birmingham/410#0 <span> "Message me on WhatsApp — I'm an optician, and I'm happy to help." | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/414` | page-product Eye Care Birmingham/414 <span> "✓" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/415` | page-product Eye Care Birmingham/415 <span> "Genuine and boxed with the brand's own case, cloth and two-year guarantee." | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/425#0` | page-product Eye Care Birmingham/425#0 <li> "Pilot shape in Metal , Gold" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/426#0` | page-product Eye Care Birmingham/426#0 <li> "Tinted lenses, category 3 , 100% UV400" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/427#0` | page-product Eye Care Birmingham/427#0 <li> "Boxed with the brand's own case, cloth and two-year manufacturer's warranty — claims handled by me, not a call centre" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/428#0` | page-product Eye Care Birmingham/428#0 <li> "Prescription lenses available in this frame — single vision or varifocal" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/497` | page-product Eye Care Birmingham/497 <span> "Will prescription lenses work in these?" | block:sgs/text | 0.25: 4 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/498` | page-product Eye Care Birmingham/498 <span> "+" | block:sgs/text | 0.25: 4 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/507#0` | page-product Eye Care Birmingham/507#0 <span> "4.9" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/508#0` | page-product Eye Care Birmingham/508#0 <span> "out of 5" | block:sgs/text | 0.25 |  |
+| `skeleton:page-product:Eye Care Birmingham/514` | page-product Eye Care Birmingham/514 <span> "5 ★" | block:sgs/text | 0.25: 5 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/517` | page-product Eye Care Birmingham/517 <span> "34" | block:sgs/text | 0.25: 5 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/525` | page-product Eye Care Birmingham/525 <figcaption> "Placeholder review" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/282` | page-shop Eye Care Birmingham/282 <span> "up to £340" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham>Frame Card@327/23` | page-shop Eye Care Birmingham>Frame Card@327/23 <span> "No reviews yet" | block:sgs/text | 0.25: 3 copies of one template element on 2 surfaces |  |
 | `skeleton:size-guide:Eye Care Birmingham/1239#0` | size-guide Eye Care Birmingham/1239#0 <span> "Which size am I?" | block:sgs/text | 0.25 |  |
 | `skeleton:size-guide:Eye Care Birmingham/1245#0` | size-guide Eye Care Birmingham/1245#0 <span> "55" | block:sgs/text | 0.25 |  |
 | `skeleton:size-guide:Eye Care Birmingham/1246#0` | size-guide Eye Care Birmingham/1246#0 <span> "▫ 18" | block:sgs/text | 0.25 |  |
@@ -253,10 +399,11 @@ Accept all: [ ]
 | `skeleton:size-guide:Eye Care Birmingham/1270#0` | size-guide Eye Care Birmingham/1270#0 <span> "Large" | block:sgs/text | 0.25 |  |
 | `skeleton:size-guide:Eye Care Birmingham/1271#0` | size-guide Eye Care Birmingham/1271#0 <span> "58mm and above" | block:sgs/text | 0.25 |  |
 
-### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (1)
+### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-home:Eye Care Birmingham/173#0` | page-home Eye Care Birmingham/173#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
 | `skeleton:size-guide:Eye Care Birmingham/1241#0` | size-guide Eye Care Birmingham/1241#0 <div> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
 
 ### Settled by rule columnHeading: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style (3)
@@ -267,11 +414,21 @@ Accept all: [ ]
 | `skeleton:footer:Eye Care Birmingham/1144#0` | footer Eye Care Birmingham/1144#0 <span> "Help" | block:sgs/heading | 1: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style |  |
 | `skeleton:footer:Eye Care Birmingham/1150#0` | footer Eye Care Birmingham/1150#0 <span> "Visit or call" | block:sgs/heading | 1: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style |  |
 
-### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (1)
+### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (5)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-home:Eye Care Birmingham/117#0` | page-home Eye Care Birmingham/117#0 <div> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-home:Eye Care Birmingham/118#0` | page-home Eye Care Birmingham/118#0 <div> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-home:Eye Care Birmingham/164=remove` | page-home Eye Care Birmingham/164=remove <span> | remove | 1: 2 copies of one template element; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+| `skeleton:page-shop:Eye Care Birmingham/318#0` | page-shop Eye Care Birmingham/318#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
 | `skeleton:size-guide:Eye Care Birmingham/1236#0` | size-guide Eye Care Birmingham/1236#0 <div> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in |  |
+
+### Settled by rule dotMarker: a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19) (1)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-product:Eye Care Birmingham/374#0` | page-product Eye Care Birmingham/374#0 <span> | remove | 1: a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19) |  |
 
 ### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (14)
 
@@ -299,18 +456,173 @@ Accept all: [ ]
 | `skeleton:footer:Eye Care Birmingham/1125#0` | footer Eye Care Birmingham/1125#0 <div> | block:sgs/site-footer-row | 1: the columns row of the footer |  |
 | `skeleton:footer:Eye Care Birmingham/1156#0` | footer Eye Care Birmingham/1156#0 <div> | block:sgs/site-footer-row | 1: the bottom row of the footer |  |
 
+### Settled by rule formControl: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) (39)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:contact-form:Eye Care Birmingham/697#0` | contact-form Eye Care Birmingham/697#0 <div> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/756#0` | page-checkout Eye Care Birmingham/756#0 <input> | block:sgs/form-field-email | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/757#0` | page-checkout Eye Care Birmingham/757#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/760#0` | page-checkout Eye Care Birmingham/760#0 <label> | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/761#0` | page-checkout Eye Care Birmingham/761#0 <input> | block:sgs/form-field-checkbox | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/762#0` | page-checkout Eye Care Birmingham/762#0 <span> "Create an account" | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/786#0` | page-checkout Eye Care Birmingham/786#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/787#0` | page-checkout Eye Care Birmingham/787#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/788#0` | page-checkout Eye Care Birmingham/788#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/789#0` | page-checkout Eye Care Birmingham/789#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/790#0` | page-checkout Eye Care Birmingham/790#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/810#0` | page-checkout Eye Care Birmingham/810#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/811#0` | page-checkout Eye Care Birmingham/811#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/812#0` | page-checkout Eye Care Birmingham/812#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact:Eye Care Birmingham/684#0` | page-contact Eye Care Birmingham/684#0 <p> "I answer these myself, usually the same day." | remove | 1: 2 copies of one template element on 2 surfaces; the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-contact:Eye Care Birmingham/686#0` | page-contact Eye Care Birmingham/686#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact:Eye Care Birmingham/687#0` | page-contact Eye Care Birmingham/687#0 <input> | block:sgs/form-field-email | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact:Eye Care Birmingham/688#0` | page-contact Eye Care Birmingham/688#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact:Eye Care Birmingham/689#0` | page-contact Eye Care Birmingham/689#0 <select> | block:sgs/form-field-select | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-contact:Eye Care Birmingham/696#0` | page-contact Eye Care Birmingham/696#0 <textarea> | block:sgs/form-field-textarea | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-shop:Eye Care Birmingham/254#0` | page-shop Eye Care Birmingham/254#0 <span> "16 frames" | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-shop:Eye Care Birmingham/257#0` | page-shop Eye Care Birmingham/257#0 <select> | block:sgs/form-field-select | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-shop:Eye Care Birmingham/302#0` | page-shop Eye Care Birmingham/302#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-shop:Eye Care Birmingham/303#0` | page-shop Eye Care Birmingham/303#0 <div> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-shop:Eye Care Birmingham/307#0` | page-shop Eye Care Birmingham/307#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-shop:Eye Care Birmingham/308#0` | page-shop Eye Care Birmingham/308#0 <div> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/867#0` | page-signin Eye Care Birmingham/867#0 <label> "Email" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/868#0` | page-signin Eye Care Birmingham/868#0 <input> | block:sgs/form-field-email | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/869#0` | page-signin Eye Care Birmingham/869#0 <label> "Password" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/870#0` | page-signin Eye Care Birmingham/870#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/872#0` | page-signin Eye Care Birmingham/872#0 <label> "Keep me signed in" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/873#0` | page-signin Eye Care Birmingham/873#0 <input> | block:sgs/form-field-checkbox | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/878#0` | page-signin Eye Care Birmingham/878#0 <label> "First name" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/879#0` | page-signin Eye Care Birmingham/879#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/880#0` | page-signin Eye Care Birmingham/880#0 <label> "Email" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/881#0` | page-signin Eye Care Birmingham/881#0 <input> | block:sgs/form-field-email | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/882#0` | page-signin Eye Care Birmingham/882#0 <label> "Password" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/883#0` | page-signin Eye Care Birmingham/883#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-signin:Eye Care Birmingham/884#0` | page-signin Eye Care Birmingham/884#0 <span> "8 characters or more" | remove | 1: 2 copies of one template element on 2 surfaces; the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
+
+### Settled by rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part (4)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:contact-form:Eye Care Birmingham/682#0` | contact-form Eye Care Birmingham/682#0 <form> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:page-signin:Eye Care Birmingham/865#0` | page-signin Eye Care Birmingham/865#0 <form> | block:sgs/form | 1: 2 copies of one template element on 2 surfaces; a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:page-signin:Eye Care Birmingham/876#0` | page-signin Eye Care Birmingham/876#0 <form> | block:sgs/form | 1: 2 copies of one template element on 2 surfaces; a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/856#0` | sign-in-and-register-forms Eye Care Birmingham/856#0 <main> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+
 ### Settled by rule headerSlots: a strip above the header's main bar is its top row (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/7#0` | header Eye Care Birmingham/7#0 <div> | block:sgs/site-header-row | 1: a strip above the header's main bar is its top row |  |
 
-### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (2)
+### Settled by rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) (7)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Eye Care Birmingham/602#0` | page-about Eye Care Birmingham/602#0 <div> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-account:Eye Care Birmingham/920#0` | page-account Eye Care Birmingham/920#0 <div> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-contact:Eye Care Birmingham/663#0` | page-contact Eye Care Birmingham/663#0 <div> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-home:Eye Care Birmingham/114#0` | page-home Eye Care Birmingham/114#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-product:Eye Care Birmingham/342#0` | page-product Eye Care Birmingham/342#0 <div> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-shop:Eye Care Birmingham/249#0` | page-shop Eye Care Birmingham/249#0 <div> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-signin:Eye Care Birmingham/858#0` | page-signin Eye Care Birmingham/858#0 <div> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+
+### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (32)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-about:Eye Care Birmingham/603#0` | page-about Eye Care Birmingham/603#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Eye Care Birmingham/610#0` | page-about Eye Care Birmingham/610#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Eye Care Birmingham/612#0` | page-about Eye Care Birmingham/612#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Eye Care Birmingham/614#0` | page-about Eye Care Birmingham/614#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Eye Care Birmingham/615#0` | page-about Eye Care Birmingham/615#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Eye Care Birmingham/618#0` | page-about Eye Care Birmingham/618#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Eye Care Birmingham/621#0` | page-about Eye Care Birmingham/621#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-about:Eye Care Birmingham/624#0` | page-about Eye Care Birmingham/624#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-account:Eye Care Birmingham/921#0` | page-account Eye Care Birmingham/921#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-contact:Eye Care Birmingham/664#0` | page-contact Eye Care Birmingham/664#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-contact:Eye Care Birmingham/669#0` | page-contact Eye Care Birmingham/669#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-contact:Eye Care Birmingham/671#0` | page-contact Eye Care Birmingham/671#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-contact:Eye Care Birmingham/682#0` | page-contact Eye Care Birmingham/682#0 <form> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-contact:Eye Care Birmingham/697#0` | page-contact Eye Care Birmingham/697#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-contact:Eye Care Birmingham/701#0` | page-contact Eye Care Birmingham/701#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-contact:Eye Care Birmingham/702#0` | page-contact Eye Care Birmingham/702#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Eye Care Birmingham/115#0` | page-home Eye Care Birmingham/115#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Eye Care Birmingham/116#0` | page-home Eye Care Birmingham/116#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-home:Eye Care Birmingham/119#0` | page-home Eye Care Birmingham/119#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/343#0` | page-product Eye Care Birmingham/343#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/348#0` | page-product Eye Care Birmingham/348#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/360#0` | page-product Eye Care Birmingham/360#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/375#0` | page-product Eye Care Birmingham/375#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/381` | page-product Eye Care Birmingham/381 <button> | unwrap | 1: 4 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/385#0` | page-product Eye Care Birmingham/385#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/391` | page-product Eye Care Birmingham/391 <button> | unwrap | 1: 3 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/394#0` | page-product Eye Care Birmingham/394#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/406#0` | page-product Eye Care Birmingham/406#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/407#0` | page-product Eye Care Birmingham/407#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/408#0` | page-product Eye Care Birmingham/408#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-product:Eye Care Birmingham/411#0` | page-product Eye Care Birmingham/411#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+| `skeleton:page-shop:Eye Care Birmingham/250#0` | page-shop Eye Care Birmingham/250#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
+
+### Settled by rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-contact:Eye Care Birmingham/679#0` | page-contact Eye Care Birmingham/679#0 <div> "Mon–Sat 9.30–17.30 Collections by arrangement" | block:sgs/business-info | 1: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it |  |
+| `skeleton:page-contact:Eye Care Birmingham/680#0` | page-contact Eye Care Birmingham/680#0 <div> "Hours" | absorbed | 1: drawn by sgs/business-info: rule hoursRows |  |
+
+### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (48)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/21#0` | header Eye Care Birmingham/21#0 <span> "Menu" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:mobile-menu:Eye Care Birmingham/1167#0` | mobile-menu Eye Care Birmingham/1167#0 <span> "EYE CARE" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-about:Eye Care Birmingham/604#0` | page-about Eye Care Birmingham/604#0 <p> "About Eye Care" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-account:Eye Care Birmingham/922#0` | page-account Eye Care Birmingham/922#0 <p> "My account" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-account:Eye Care Birmingham/944` | page-account Eye Care Birmingham/944 <span> "Lenses being made" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-checkout:Eye Care Birmingham/749#0` | page-checkout Eye Care Birmingham/749#0 <div> "or pay by card" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-checkout:Eye Care Birmingham/750#0` | page-checkout Eye Care Birmingham/750#0 <span> | absorbed | 1: drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/751#0` | page-checkout Eye Care Birmingham/751#0 <span> | absorbed | 1: drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks) |  |
+| `skeleton:page-contact:Eye Care Birmingham/665#0` | page-contact Eye Care Birmingham/665#0 <p> "Contact" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-contact:Eye Care Birmingham/672#0` | page-contact Eye Care Birmingham/672#0 <div> "Phone" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-contact:Eye Care Birmingham/675#0` | page-contact Eye Care Birmingham/675#0 <div> "Email" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-contact:Eye Care Birmingham/677#0` | page-contact Eye Care Birmingham/677#0 <div> "Clinic" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-contact:Eye Care Birmingham/731#0` | page-contact Eye Care Birmingham/731#0 <span> "Directions" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-help:Eye Care Birmingham/629#0` | page-help Eye Care Birmingham/629#0 <p> "Help" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-help:Eye Care Birmingham/633#0` | page-help Eye Care Birmingham/633#0 <div> "UK delivery" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-help:Eye Care Birmingham/636#0` | page-help Eye Care Birmingham/636#0 <div> "Collect in Birmingham" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-help:Eye Care Birmingham/639#0` | page-help Eye Care Birmingham/639#0 <div> "Returns" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/133#0` | page-home Eye Care Birmingham/133#0 <p> "Moving fastest this month" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/144#0` | page-home Eye Care Birmingham/144#0 <p> "Why buy from me" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/166` | page-home Eye Care Birmingham/166 <span> "Photo to come" | block:sgs/label | 1: 2 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/170=sgs/label` | page-home Eye Care Birmingham/170=sgs/label <span> "Pilot" | block:sgs/label | 1: 2 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/174#0` | page-home Eye Care Birmingham/174#0 <p> "From the clinic" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/202` | page-home Eye Care Birmingham/202 <span> "★★★★★" | block:sgs/label | 1: 13 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/221#0` | page-home Eye Care Birmingham/221#0 <p> "Prescription sunglasses" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham/236#0` | page-home Eye Care Birmingham/236#0 <span> "Photo of the clinic" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/17` | page-home Eye Care Birmingham>Frame Card@139/17 <span> "Polarised" | block:sgs/label | 1: 7 copies of one template element on 3 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/20` | page-home Eye Care Birmingham>Frame Card@139/20 <span> "★★★★★" | block:sgs/label | 1: 27 copies of one template element on 4 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/6` | page-home Eye Care Birmingham>Frame Card@139/6 <span> "Photo to come" | block:sgs/label | 1: 20 copies of one template element on 3 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/7` | page-home Eye Care Birmingham>Frame Card@139/7 <span> "Ray-Ban" | block:sgs/label | 1: 30 copies of one template element on 4 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/9` | page-home Eye Care Birmingham>Frame Card@139/9 <span> "Save £32" | block:sgs/label | 1: 30 copies of one template element on 4 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-lenses:Eye Care Birmingham/553#0` | page-lenses Eye Care Birmingham/553#0 <p> "Prescription lenses" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-lenses:Eye Care Birmingham/558#0` | page-lenses Eye Care Birmingham/558#0 <div> "Single vision" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-lenses:Eye Care Birmingham/562#0` | page-lenses Eye Care Birmingham/562#0 <div> "Varifocal" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-lenses:Eye Care Birmingham/566#0` | page-lenses Eye Care Birmingham/566#0 <div> "Polarised" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-lenses:Eye Care Birmingham/570#0` | page-lenses Eye Care Birmingham/570#0 <div> "Thinner lenses" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/349#0` | page-product Eye Care Birmingham/349#0 <div> "Ray-Ban" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/353#0` | page-product Eye Care Birmingham/353#0 <span> "Save £32 off RRP" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/365#0` | page-product Eye Care Birmingham/365#0 <span> "★★★★★" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/372#0` | page-product Eye Care Birmingham/372#0 <span> "You save £32" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/377#0` | page-product Eye Care Birmingham/377#0 <span> "Colour" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/387#0` | page-product Eye Care Birmingham/387#0 <span> "Size" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/509#0` | page-product Eye Care Birmingham/509#0 <div> "★★★★★" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/522` | page-product Eye Care Birmingham/522 <span> "★★★★★" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/523` | page-product Eye Care Birmingham/523 <span> "Verified · prescription lenses" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-shop:Eye Care Birmingham/251#0` | page-shop Eye Care Birmingham/251#0 <p> "Shop" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-shop:Eye Care Birmingham/280` | page-shop Eye Care Birmingham/280 <span> "Gender" | block:sgs/label | 1: 10 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-shop:Eye Care Birmingham/316#0` | page-shop Eye Care Birmingham/316#0 <span> "Polarised only" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-signin:Eye Care Birmingham/859#0` | page-signin Eye Care Birmingham/859#0 <p> "Your account" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 
 ### Settled by rule logoGrid: a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items (7)
 
@@ -346,31 +658,48 @@ Accept all: [ ]
 | `skeleton:mobile-menu:Eye Care Birmingham/1178#0` | mobile-menu Eye Care Birmingham/1178#0 <button> "Size guide" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation |  |
 | `skeleton:mobile-menu:Eye Care Birmingham/1179#0` | mobile-menu Eye Care Birmingham/1179#0 <a> "Contact" | absorbed | 1: drawn by sgs/nav-drawer-menu: rule navigation |  |
 
-### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (8)
+### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (19)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:footer:Eye Care Birmingham/1161#0` | footer Eye Care Birmingham/1161#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:footer:Eye Care Birmingham/1162#0` | footer Eye Care Birmingham/1162#0 <img> | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 | `skeleton:footer:Eye Care Birmingham/1163#0` | footer Eye Care Birmingham/1163#0 <span> "Ask me anything" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-account:Eye Care Birmingham/928=sgs/button` | page-account Eye Care Birmingham/928=sgs/button <button> | block:sgs/button | 1: 4 copies of one template element; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:page-account:Eye Care Birmingham/929=absorbed` | page-account Eye Care Birmingham/929=absorbed <span> "Subscriptions" | absorbed | 1: 4 copies of one template element; drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-contact:Eye Care Birmingham/734#0` | page-contact Eye Care Birmingham/734#0 <a> "Reviews & hours" | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:page-contact:Eye Care Birmingham/735#0` | page-contact Eye Care Birmingham/735#0 <span> "Google" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-contact:Eye Care Birmingham/736#0` | page-contact Eye Care Birmingham/736#0 <a> "@eyecare.birmingham" | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:page-contact:Eye Care Birmingham/737#0` | page-contact Eye Care Birmingham/737#0 <span> "Instagram" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-home:Eye Care Birmingham/161=sgs/button` | page-home Eye Care Birmingham/161=sgs/button <button> | block:sgs/button | 1: 4 copies of one template element; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:page-home:Eye Care Birmingham/163` | page-home Eye Care Birmingham/163 <span> | absorbed | 1: 4 copies of one template element; drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-home:Eye Care Birmingham/164=absorbed` | page-home Eye Care Birmingham/164=absorbed <span> | absorbed | 1: 4 copies of one template element; drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-home:Eye Care Birmingham/167=absorbed` | page-home Eye Care Birmingham/167=absorbed <span> | absorbed | 1: 4 copies of one template element; drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-home:Eye Care Birmingham/170=absorbed` | page-home Eye Care Birmingham/170=absorbed <span> "Wayfarer" | absorbed | 1: 4 copies of one template element; drawn by sgs/button: rule pillButton |  |
 | `skeleton:size-guide:Eye Care Birmingham/1272#0` | size-guide Eye Care Birmingham/1272#0 <a> | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:size-guide:Eye Care Birmingham/1273#0` | size-guide Eye Care Birmingham/1273#0 <span> | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 | `skeleton:size-guide:Eye Care Birmingham/1274#0` | size-guide Eye Care Birmingham/1274#0 <img> | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 | `skeleton:size-guide:Eye Care Birmingham/1275#0` | size-guide Eye Care Birmingham/1275#0 <span> "Can't find the numbers?" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 | `skeleton:size-guide:Eye Care Birmingham/1276#0` | size-guide Eye Care Birmingham/1276#0 <span> "Send me a photo of the inside of the arm and I'll read it for you." | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 
-### Settled by rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself (2)
+### Settled by rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/35#0` | header Eye Care Birmingham/35#0 <a> "0121 729 8233" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
 | `skeleton:mobile-menu:Eye Care Birmingham/1181#0` | mobile-menu Eye Care Birmingham/1181#0 <a> "0121 729 8233" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
+| `skeleton:page-contact:Eye Care Birmingham/673#0` | page-contact Eye Care Birmingham/673#0 <a> "0121 729 8233" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
+| `skeleton:page-help:Eye Care Birmingham/660#0` | page-help Eye Care Birmingham/660#0 <a> "Call" | block:sgs/button | 1: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself |  |
 
-### Settled by rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text (1)
+### Settled by rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text (5)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/40#0` | header Eye Care Birmingham/40#0 <button> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-home:Eye Care Birmingham/210#0` | page-home Eye Care Birmingham/210#0 <button> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-home:Eye Care Birmingham/213#0` | page-home Eye Care Birmingham/213#0 <button> | block:sgs/icon | 1: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/10` | page-home Eye Care Birmingham>Frame Card@139/10 <button> | block:sgs/icon | 1: 30 copies of one template element on 4 surfaces; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
+| `skeleton:page-shop:Eye Care Birmingham/281=sgs/icon` | page-shop Eye Care Birmingham/281=sgs/icon <span> | block:sgs/icon | 1: 7 copies of one template element; a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text |  |
 
 ### Settled by rule surfaceRoot: a menu surface (the panel a navigation item opens) is sgs/mega-panel (2)
 
@@ -379,11 +708,20 @@ Accept all: [ ]
 | `skeleton:mega-menu:Eye Care Birmingham/53#0` | mega-menu Eye Care Birmingham/53#0 <div> | block:sgs/mega-panel | 1: a menu surface (the panel a navigation item opens) is sgs/mega-panel |  |
 | `skeleton:mobile-menu:Eye Care Birmingham/1165#0` | mobile-menu Eye Care Birmingham/1165#0 <div> | block:sgs/nav-drawer | 1: a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body |  |
 
-### Settled by rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) (1)
+### Settled by rule typedDivider: a typed divider between items is the row's separators setting, not a block (3)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-product:Eye Care Birmingham/338#0` | page-product Eye Care Birmingham/338#0 <span> "/" | remove | 1: a typed divider between items is the row's separators setting, not a block |  |
+| `skeleton:page-product:Eye Care Birmingham/340#0` | page-product Eye Care Birmingham/340#0 <span> "/" | remove | 1: a typed divider between items is the row's separators setting, not a block |  |
+| `skeleton:page-product:Eye Care Birmingham/404#0` | page-product Eye Care Birmingham/404#0 <span> "·" | remove | 1: a typed divider between items is the row's separators setting, not a block |  |
+
+### Settled by rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) (2)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/28#0` | header Eye Care Birmingham/28#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/1` | page-home Eye Care Birmingham>Frame Card@139/1 <a> | block:sgs/container | 1: 30 copies of one template element on 4 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 
 ### Settled by rule widthWrapper: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there (2)
 
@@ -392,10 +730,11 @@ Accept all: [ ]
 | `skeleton:header:Eye Care Birmingham/8#0` | header Eye Care Birmingham/8#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
 | `skeleton:mega-menu:Eye Care Birmingham/54#0` | mega-menu Eye Care Birmingham/54#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
 
-### Confident proposals (Accept all covers these) (59)
+### Confident proposals (Accept all covers these) (375)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:contact-form:Eye Care Birmingham/698#0` | contact-form Eye Care Birmingham/698#0 <button> "Send message" | remove | 1: inside a removed element (Eye Care Birmingham/697#0) |  |
 | `skeleton:footer:Eye Care Birmingham/1124#0` | footer Eye Care Birmingham/1124#0 <footer> | block:sgs/site-footer | 1 |  |
 | `skeleton:footer:Eye Care Birmingham/1126#0` | footer Eye Care Birmingham/1126#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:footer:Eye Care Birmingham/1127#0` | footer Eye Care Birmingham/1127#0 <div> "EYE CARE" | block:sgs/responsive-logo | 0.8 |  |
@@ -436,6 +775,321 @@ Accept all: [ ]
 | `skeleton:mobile-menu:Eye Care Birmingham/1185#0` | mobile-menu Eye Care Birmingham/1185#0 <a> | block:sgs/icon | 0.9 |  |
 | `skeleton:mobile-menu:Eye Care Birmingham/1190#0` | mobile-menu Eye Care Birmingham/1190#0 <a> | block:sgs/icon | 0.9 |  |
 | `skeleton:mobile-menu:Eye Care Birmingham/1193#0` | mobile-menu Eye Care Birmingham/1193#0 <a> | block:sgs/container | 1 |  |
+| `skeleton:page-about:Eye Care Birmingham/601#0` | page-about Eye Care Birmingham/601#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/605#0` | page-about Eye Care Birmingham/605#0 <h1> "Fatima Nawaz" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/606#0` | page-about Eye Care Birmingham/606#0 <p> "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care" | block:sgs/text | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/607#0` | page-about Eye Care Birmingham/607#0 <p> "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site." | block:sgs/text | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/608#0` | page-about Eye Care Birmingham/608#0 <p> "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame." | block:sgs/text | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/609#0` | page-about Eye Care Birmingham/609#0 <p> "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will." | block:sgs/text | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/611#0` | page-about Eye Care Birmingham/611#0 <a> "Message me" | block:sgs/container | 1 |  |
+| `skeleton:page-about:Eye Care Birmingham/613#0` | page-about Eye Care Birmingham/613#0 <button> "Shop the range" | block:sgs/button | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/617#0` | page-about Eye Care Birmingham/617#0 <p> "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council." | block:sgs/text | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/620#0` | page-about Eye Care Birmingham/620#0 <p> "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum." | block:sgs/text | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/623#0` | page-about Eye Care Birmingham/623#0 <p> "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't." | block:sgs/text | 0.75 |  |
+| `skeleton:page-about:Eye Care Birmingham/626#0` | page-about Eye Care Birmingham/626#0 <p> "Additional certification in children's vision, which matters when the order is for a child." | block:sgs/text | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/919#0` | page-account Eye Care Birmingham/919#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/923#0` | page-account Eye Care Birmingham/923#0 <h1> "Your account" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/924#0` | page-account Eye Care Birmingham/924#0 <p> "Signed in as" | block:sgs/text | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/925#0` | page-account Eye Care Birmingham/925#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-account:Eye Care Birmingham/926#0` | page-account Eye Care Birmingham/926#0 <nav> | block:sgs/container | 1 |  |
+| `skeleton:page-account:Eye Care Birmingham/928=sgs/container` | page-account Eye Care Birmingham/928=sgs/container <button> | block:sgs/container | 1: 1 copies of one template element |  |
+| `skeleton:page-account:Eye Care Birmingham/931#0` | page-account Eye Care Birmingham/931#0 <button> "Sign out" | block:sgs/button | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/932#0` | page-account Eye Care Birmingham/932#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/934#0` | page-account Eye Care Birmingham/934#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/935#0` | page-account Eye Care Birmingham/935#0 <h2> "Orders" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-account:Eye Care Birmingham/937#0` | page-account Eye Care Birmingham/937#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-account:Eye Care Birmingham/939` | page-account Eye Care Birmingham/939 <button> | block:sgs/container | 1: 3 copies of one template element |  |
+| `skeleton:page-account:Eye Care Birmingham/940` | page-account Eye Care Birmingham/940 <span> | block:sgs/container | 1: 3 copies of one template element |  |
+| `skeleton:page-account:Eye Care Birmingham/945` | page-account Eye Care Birmingham/945 <span> | block:sgs/container | 1: 3 copies of one template element |  |
+| `skeleton:page-checkout:Eye Care Birmingham/739#0` | page-checkout Eye Care Birmingham/739#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/740#0` | page-checkout Eye Care Birmingham/740#0 <h1> "Checkout" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/741#0` | page-checkout Eye Care Birmingham/741#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/742#0` | page-checkout Eye Care Birmingham/742#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/743#0` | page-checkout Eye Care Birmingham/743#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/745#0` | page-checkout Eye Care Birmingham/745#0 <button> "Apple Pay" | block:sgs/button | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/746#0` | page-checkout Eye Care Birmingham/746#0 <button> "G Pay" | block:sgs/button | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/747#0` | page-checkout Eye Care Birmingham/747#0 <button> "PayPal" | block:sgs/button | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/748#0` | page-checkout Eye Care Birmingham/748#0 <button> "Klarna." | block:sgs/button | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/752#0` | page-checkout Eye Care Birmingham/752#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/753#0` | page-checkout Eye Care Birmingham/753#0 <h2> "Contact" | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/755#0` | page-checkout Eye Care Birmingham/755#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/759#0` | page-checkout Eye Care Birmingham/759#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/763#0` | page-checkout Eye Care Birmingham/763#0 <span> "Optional. Follow this order and keep your addresses and saved frames for next time." | remove | 1: inside a removed element (Eye Care Birmingham/762#0) |  |
+| `skeleton:page-checkout:Eye Care Birmingham/766#0` | page-checkout Eye Care Birmingham/766#0 <p> "Already have an account?" | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/767#0` | page-checkout Eye Care Birmingham/767#0 <button> "Sign in" | block:sgs/button | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/770#0` | page-checkout Eye Care Birmingham/770#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/771#0` | page-checkout Eye Care Birmingham/771#0 <h2> "Delivery" | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/773#0` | page-checkout Eye Care Birmingham/773#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/774#0` | page-checkout Eye Care Birmingham/774#0 <button> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/775#0` | page-checkout Eye Care Birmingham/775#0 <span> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/779#0` | page-checkout Eye Care Birmingham/779#0 <button> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/780#0` | page-checkout Eye Care Birmingham/780#0 <span> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/785#0` | page-checkout Eye Care Birmingham/785#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/806#0` | page-checkout Eye Care Birmingham/806#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/807#0` | page-checkout Eye Care Birmingham/807#0 <h2> "Payment" | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/809#0` | page-checkout Eye Care Birmingham/809#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/813#0` | page-checkout Eye Care Birmingham/813#0 <button> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/816#0` | page-checkout Eye Care Birmingham/816#0 <p> "Secure payment. Prescription details are held under UK GDPR and seen only by me." | block:sgs/text | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/817#0` | page-checkout Eye Care Birmingham/817#0 <aside> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/818#0` | page-checkout Eye Care Birmingham/818#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/820#0` | page-checkout Eye Care Birmingham/820#0 <a> "Edit" | block:sgs/button | 0.75 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/833#0` | page-checkout Eye Care Birmingham/833#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/834#0` | page-checkout Eye Care Birmingham/834#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/837#0` | page-checkout Eye Care Birmingham/837#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/840#0` | page-checkout Eye Care Birmingham/840#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout:Eye Care Birmingham/843#0` | page-checkout Eye Care Birmingham/843#0 <p> "Klarna: 3 interest-free payments of £0 . 18+, T&Cs apply." | block:sgs/text | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/662#0` | page-contact Eye Care Birmingham/662#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/666#0` | page-contact Eye Care Birmingham/666#0 <h1> "You'll be talking to me, not a help desk." | block:sgs/heading | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/667#0` | page-contact Eye Care Birmingham/667#0 <p> "Frame advice, prescription questions, order updates — WhatsApp is quickest. Messages in opening hours are usually answered within the hour." | block:sgs/text | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/668#0` | page-contact Eye Care Birmingham/668#0 <a> "WhatsApp 07960 5978" | block:sgs/container | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/670#0` | page-contact Eye Care Birmingham/670#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-contact:Eye Care Birmingham/674#0` | page-contact Eye Care Birmingham/674#0 <div> "hello@eyecarebirmingham.co.uk" | block:sgs/container | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/676#0` | page-contact Eye Care Birmingham/676#0 <div> "644 Washwood Heath Rd Birmingham B8 2HQ" | block:sgs/container | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/683#0` | page-contact Eye Care Birmingham/683#0 <h2> "Or send me a message" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-contact:Eye Care Birmingham/685#0` | page-contact Eye Care Birmingham/685#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-contact:Eye Care Birmingham/698#0` | page-contact Eye Care Birmingham/698#0 <button> "Send message" | block:sgs/button | 0.75 |  |
+| `skeleton:page-contact:Eye Care Birmingham/729#0` | page-contact Eye Care Birmingham/729#0 <span> | block:sgs/container | 1 |  |
+| `skeleton:page-contact:Eye Care Birmingham/730#0` | page-contact Eye Care Birmingham/730#0 <span> "644 Washwood Heath Rd, B8 2HQ" | block:sgs/business-info | 0.8 |  |
+| `skeleton:page-contact:Eye Care Birmingham/732#0` | page-contact Eye Care Birmingham/732#0 <p> "Sketch map — swap for an embedded Google map on the live site." | block:sgs/text | 0.75 |  |
+| `skeleton:page-done:Eye Care Birmingham/845#0` | page-done Eye Care Birmingham/845#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-done:Eye Care Birmingham/847#0` | page-done Eye Care Birmingham/847#0 <h1> "Thank you — order EC-10482." | block:sgs/heading | 0.75 |  |
+| `skeleton:page-done:Eye Care Birmingham/848#0` | page-done Eye Care Birmingham/848#0 <p> "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10." | block:sgs/text | 0.75 |  |
+| `skeleton:page-done:Eye Care Birmingham/851#0` | page-done Eye Care Birmingham/851#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-done:Eye Care Birmingham/852#0` | page-done Eye Care Birmingham/852#0 <button> "Back to the shop" | block:sgs/button | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/628#0` | page-help Eye Care Birmingham/628#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/630#0` | page-help Eye Care Birmingham/630#0 <h1> "Delivery, returns and the usual questions" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/631#0` | page-help Eye Care Birmingham/631#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help:Eye Care Birmingham/632#0` | page-help Eye Care Birmingham/632#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/634#0` | page-help Eye Care Birmingham/634#0 <p> "Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to make." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/635#0` | page-help Eye Care Birmingham/635#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/637#0` | page-help Eye Care Birmingham/637#0 <p> "Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/638#0` | page-help Eye Care Birmingham/638#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/640#0` | page-help Eye Care Birmingham/640#0 <p> "30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refundable if I got them wrong." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/641#0` | page-help Eye Care Birmingham/641#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help:Eye Care Birmingham/642#0` | page-help Eye Care Birmingham/642#0 <h2> "Questions" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/644#0` | page-help Eye Care Birmingham/644#0 <button> "Size guide" | block:sgs/button | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/645#0` | page-help Eye Care Birmingham/645#0 <a> "Contact me" | block:sgs/button | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/646#0` | page-help Eye Care Birmingham/646#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/648` | page-help Eye Care Birmingham/648 <div> | block:sgs/container | 0.75: 8 copies of one template element |  |
+| `skeleton:page-help:Eye Care Birmingham/649` | page-help Eye Care Birmingham/649 <button> | block:sgs/container | 1: 8 copies of one template element |  |
+| `skeleton:page-help:Eye Care Birmingham/653#0` | page-help Eye Care Birmingham/653#0 <p> "Yes. Everything comes through the brands' authorised UK suppliers to a GOC-registered clinic, boxed with its own case, cloth and warranty card. If a seller can't tell you where their stock comes from, be careful." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/654#0` | page-help Eye Care Birmingham/654#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help:Eye Care Birmingham/655#0` | page-help Eye Care Birmingham/655#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help:Eye Care Birmingham/659#0` | page-help Eye Care Birmingham/659#0 <button> "Contact me" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/113#0` | page-home Eye Care Birmingham/113#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/120#0` | page-home Eye Care Birmingham/120#0 <p> "40 designer brands · Birmingham" | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/121#0` | page-home Eye Care Birmingham/121#0 <h1> "The same designer shades. A good deal less." | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/122#0` | page-home Eye Care Birmingham/122#0 <p> "I'm an optician in Birmingham, buying from the same suppliers as the high street and pricing it more sensibly. If you need your prescription in them, I glaze and fit the lenses myself." | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/124#0` | page-home Eye Care Birmingham/124#0 <button> "Shop sunglasses" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/125#0` | page-home Eye Care Birmingham/125#0 <button> "Add your prescription" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/126#0` | page-home Eye Care Birmingham/126#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/129` | page-home Eye Care Birmingham/129 <a> "Ray-Ban" | block:sgs/button | 0.75: 32 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/130#0` | page-home Eye Care Birmingham/130#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/131#0` | page-home Eye Care Birmingham/131#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/132#0` | page-home Eye Care Birmingham/132#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/134#0` | page-home Eye Care Birmingham/134#0 <h2> "Best sellers" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/135#0` | page-home Eye Care Birmingham/135#0 <a> "See everything" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/136#0` | page-home Eye Care Birmingham/136#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/138` | page-home Eye Care Birmingham/138 <div> | block:sgs/container | 1: 8 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/139` | page-home Eye Care Birmingham/139 <div> | block:sgs/container | 0.75: 8 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/140#0` | page-home Eye Care Birmingham/140#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/141#0` | page-home Eye Care Birmingham/141#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/142#0` | page-home Eye Care Birmingham/142#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/143#0` | page-home Eye Care Birmingham/143#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/145#0` | page-home Eye Care Birmingham/145#0 <h2> "Four reasons, and not one of them is a discount code." | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/146#0` | page-home Eye Care Birmingham/146#0 <p> "I'm an optician who genuinely enjoys this part of the job — finding people frames that suit them. This shop exists so I can show you the whole range properly instead of scrolling a supplier's catalogue at the counter, and because I'd rather price frames fairly than squeeze the most out of every sale." | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/147#0` | page-home Eye Care Birmingham/147#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/149` | page-home Eye Care Birmingham/149 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/151` | page-home Eye Care Birmingham/151 <h3> "Below RRP, and I show you by how much" | block:sgs/heading | 0.75: 4 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/152` | page-home Eye Care Birmingham/152 <p> "The recommended retail price sits next to my price on every single frame. No codes to hunt for, no countdown timers, no permanent fake sale." | block:sgs/text | 0.75: 4 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/153#0` | page-home Eye Care Birmingham/153#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/154#0` | page-home Eye Care Birmingham/154#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/155#0` | page-home Eye Care Birmingham/155#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/156#0` | page-home Eye Care Birmingham/156#0 <p> "Not sure what suits you?" | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/157#0` | page-home Eye Care Birmingham/157#0 <h2> "Start with a shape" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/158#0` | page-home Eye Care Birmingham/158#0 <a> "All 12 styles" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/159#0` | page-home Eye Care Birmingham/159#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/161=sgs/container` | page-home Eye Care Birmingham/161=sgs/container <button> | block:sgs/container | 1: 2 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/167=sgs/container` | page-home Eye Care Birmingham/167=sgs/container <span> | block:sgs/container | 1: 2 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/171#0` | page-home Eye Care Birmingham/171#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/172#0` | page-home Eye Care Birmingham/172#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/175#0` | page-home Eye Care Birmingham/175#0 <h2> "What people say" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/176#0` | page-home Eye Care Birmingham/176#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/177#0` | page-home Eye Care Birmingham/177#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/178#0` | page-home Eye Care Birmingham/178#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/180#0` | page-home Eye Care Birmingham/180#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/182#0` | page-home Eye Care Birmingham/182#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/184#0` | page-home Eye Care Birmingham/184#0 <span> "★★★★★" | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/188#0` | page-home Eye Care Birmingham/188#0 <a> "See all reviews" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/189#0` | page-home Eye Care Birmingham/189#0 <a> "Write a review" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/190#0` | page-home Eye Care Birmingham/190#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/191#0` | page-home Eye Care Birmingham/191#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/193` | page-home Eye Care Birmingham/193 <figure> | block:sgs/container | 1: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/194` | page-home Eye Care Birmingham/194 <div> | block:sgs/container | 1: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/196` | page-home Eye Care Birmingham/196 <span> | block:sgs/container | 1: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/199` | page-home Eye Care Birmingham/199 <span> | block:sgs/container | 1: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/201` | page-home Eye Care Birmingham/201 <div> | block:sgs/container | 1: 13 copies of one template element |  |
+| `skeleton:page-home:Eye Care Birmingham/206#0` | page-home Eye Care Birmingham/206#0 <a> "Read the full review" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/207#0` | page-home Eye Care Birmingham/207#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/208#0` | page-home Eye Care Birmingham/208#0 <p> "Scroll for more — 13 of the 15 reviews left a comment." | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/216#0` | page-home Eye Care Birmingham/216#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/217#0` | page-home Eye Care Birmingham/217#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/218#0` | page-home Eye Care Birmingham/218#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/220#0` | page-home Eye Care Birmingham/220#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/222#0` | page-home Eye Care Birmingham/222#0 <h2> "Any pair here, made to your prescription." | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/223#0` | page-home Eye Care Birmingham/223#0 <p> "Three questions with pictures, a price that updates as you go, and you can send your prescription whenever suits — including after you've ordered. Single vision from £59." | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/224#0` | page-home Eye Care Birmingham/224#0 <ol> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/225#0` | page-home Eye Care Birmingham/225#0 <li> "Pick a frame, then “Add my prescription”" | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/227#0` | page-home Eye Care Birmingham/227#0 <li> "Tell me what they're for, how thin, what finish" | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/229#0` | page-home Eye Care Birmingham/229#0 <li> "Send your prescription now, or later — no rush" | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/231#0` | page-home Eye Care Birmingham/231#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/232#0` | page-home Eye Care Birmingham/232#0 <button> "How lenses work here" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/233#0` | page-home Eye Care Birmingham/233#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/234#0` | page-home Eye Care Birmingham/234#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/235#0` | page-home Eye Care Birmingham/235#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/238#0` | page-home Eye Care Birmingham/238#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/239#0` | page-home Eye Care Birmingham/239#0 <p> "You're buying from a person" | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/240#0` | page-home Eye Care Birmingham/240#0 <h2> "I'm Fatima Nawaz, and I run the clinic in Birmingham." | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/241#0` | page-home Eye Care Birmingham/241#0 <p> "Everything on this site I chose myself, and every prescription order comes across my bench before it's made. If a frame isn't going to work with your lenses, I'd rather tell you before you pay than after." | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/242#0` | page-home Eye Care Birmingham/242#0 <p> "If you're unsure about anything, just ask. Talking people through frames and lenses is what I do all day at the clinic, and I'm glad to do it here too." | block:sgs/text | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham/243#0` | page-home Eye Care Birmingham/243#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/244#0` | page-home Eye Care Birmingham/244#0 <a> "Message me on WhatsApp" | block:sgs/container | 1 |  |
+| `skeleton:page-home:Eye Care Birmingham/246#0` | page-home Eye Care Birmingham/246#0 <button> "My qualifications" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139#4/33#0` | page-home Eye Care Birmingham>Frame Card@139#4/33#0 <a> "+2" | block:sgs/button | 0.75: 3 copies of one template element on 3 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/0` | page-home Eye Care Birmingham>Frame Card@139/0 <div> | block:sgs/container | 1: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/13` | page-home Eye Care Birmingham>Frame Card@139/13 <div> | block:sgs/container | 1: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/14` | page-home Eye Care Birmingham>Frame Card@139/14 <div> | block:sgs/container | 1: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/15` | page-home Eye Care Birmingham>Frame Card@139/15 <a> "Aviator Classic" | block:sgs/button | 0.75: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/18` | page-home Eye Care Birmingham>Frame Card@139/18 <div> | block:sgs/container | 1: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/24` | page-home Eye Care Birmingham>Frame Card@139/24 <div> | block:sgs/container | 1: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/25` | page-home Eye Care Birmingham>Frame Card@139/25 <div> | block:sgs/container | 1: 30 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/31` | page-home Eye Care Birmingham>Frame Card@139/31 <button> | block:sgs/button | 0.75: 90 copies of one template element on 4 surfaces |  |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/5` | page-home Eye Care Birmingham>Frame Card@139/5 <div> | block:sgs/container | 1: 20 copies of one template element on 3 surfaces |  |
+| `skeleton:page-lenses:Eye Care Birmingham/552#0` | page-lenses Eye Care Birmingham/552#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/554#0` | page-lenses Eye Care Birmingham/554#0 <h1> "Three questions, then leave the rest to me." | block:sgs/heading | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/555#0` | page-lenses Eye Care Birmingham/555#0 <p> "Any frame on this site can be glazed to your prescription. You tell me what they're for, how thin you want the lenses and what finish; I check the order, cut the lenses and fit them myself. Send your prescription whenever suits — before or after you order." | block:sgs/text | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/556#0` | page-lenses Eye Care Birmingham/556#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/557#0` | page-lenses Eye Care Birmingham/557#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/560#0` | page-lenses Eye Care Birmingham/560#0 <p> "Distance or reading, tinted to match the frame." | block:sgs/text | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/561#0` | page-lenses Eye Care Birmingham/561#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/564#0` | page-lenses Eye Care Birmingham/564#0 <p> "Near and far in one lens, no visible line." | block:sgs/text | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/565#0` | page-lenses Eye Care Birmingham/565#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/568#0` | page-lenses Eye Care Birmingham/568#0 <p> "Kills glare off water, roads and windscreens." | block:sgs/text | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/569#0` | page-lenses Eye Care Birmingham/569#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/572#0` | page-lenses Eye Care Birmingham/572#0 <p> "I recommend one from your prescription strength." | block:sgs/text | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/573#0` | page-lenses Eye Care Birmingham/573#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/574#0` | page-lenses Eye Care Birmingham/574#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/575#0` | page-lenses Eye Care Birmingham/575#0 <h2> "In every lens, no extra charge" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/576#0` | page-lenses Eye Care Birmingham/576#0 <ul> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/583#0` | page-lenses Eye Care Birmingham/583#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/584#0` | page-lenses Eye Care Birmingham/584#0 <h2> "How it goes" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/585#0` | page-lenses Eye Care Birmingham/585#0 <ol> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/586#0` | page-lenses Eye Care Birmingham/586#0 <li> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/589#0` | page-lenses Eye Care Birmingham/589#0 <li> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/592#0` | page-lenses Eye Care Birmingham/592#0 <li> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/595#0` | page-lenses Eye Care Birmingham/595#0 <li> | block:sgs/container | 1 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/598#0` | page-lenses Eye Care Birmingham/598#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-lenses:Eye Care Birmingham/599#0` | page-lenses Eye Care Birmingham/599#0 <button> "Choose a frame" | block:sgs/button | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/335#0` | page-product Eye Care Birmingham/335#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/336#0` | page-product Eye Care Birmingham/336#0 <nav> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/337#0` | page-product Eye Care Birmingham/337#0 <a> "Home" | block:sgs/button | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/339#0` | page-product Eye Care Birmingham/339#0 <a> "Sunglasses" | block:sgs/button | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/341#0` | page-product Eye Care Birmingham/341#0 <a> "Ray-Ban" | block:sgs/button | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/344#0` | page-product Eye Care Birmingham/344#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/356` | page-product Eye Care Birmingham/356 <button> "Front" | block:sgs/button | 0.75: 4 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/361#0` | page-product Eye Care Birmingham/361#0 <a> "Ray-Ban" | block:sgs/button | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/362#0` | page-product Eye Care Birmingham/362#0 <h1> "Aviator Classic" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/363#0` | page-product Eye Care Birmingham/363#0 <p> "RB3025 · 001/58" | block:sgs/text | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/364#0` | page-product Eye Care Birmingham/364#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/367#0` | page-product Eye Care Birmingham/367#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/370#0` | page-product Eye Care Birmingham/370#0 <span> "RRP" | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/373#0` | page-product Eye Care Birmingham/373#0 <div> "In stock — dispatched next working day" | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/376#0` | page-product Eye Care Birmingham/376#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/379#0` | page-product Eye Care Birmingham/379#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/384#0` | page-product Eye Care Birmingham/384#0 <p> "Colourway shots are stand-ins until the real ones land." | block:sgs/text | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/386#0` | page-product Eye Care Birmingham/386#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/388#0` | page-product Eye Care Birmingham/388#0 <button> "Which size am I?" | block:sgs/button | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/389#0` | page-product Eye Care Birmingham/389#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/395#0` | page-product Eye Care Birmingham/395#0 <button> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/398#0` | page-product Eye Care Birmingham/398#0 <button> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/401#0` | page-product Eye Care Birmingham/401#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/402#0` | page-product Eye Care Birmingham/402#0 <span> "Or 3 payments of £46.33 with" | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/409#0` | page-product Eye Care Birmingham/409#0 <span> "Need advice?" | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/413` | page-product Eye Care Birmingham/413 <div> | block:sgs/container | 1: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/416#0` | page-product Eye Care Birmingham/416#0 <section> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/417#0` | page-product Eye Care Birmingham/417#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/420` | page-product Eye Care Birmingham/420 <button> "Description" | block:sgs/button | 0.75: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/422#0` | page-product Eye Care Birmingham/422#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/423#0` | page-product Eye Care Birmingham/423#0 <p> "The Ray-Ban Aviator Classic, in Gold / Green G-15. The pilot shape is about as universally flattering as eyewear gets — the teardrop softens a square jaw and adds length to a rounder face. This size measures 58mm across each lens, which is on the wider side. The lenses block 100% of UV as the brand supplies them, and I can swap in polarised if you would rather. Prescription lenses go in this frame without any trouble — single vision or varifocal — and I cut and fit them here." | block:sgs/text | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/424#0` | page-product Eye Care Birmingham/424#0 <ul> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/492#0` | page-product Eye Care Birmingham/492#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/493#0` | page-product Eye Care Birmingham/493#0 <h2> "Good to know" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/495` | page-product Eye Care Birmingham/495 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/496` | page-product Eye Care Birmingham/496 <button> | block:sgs/container | 1: 4 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/502#0` | page-product Eye Care Birmingham/502#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/503#0` | page-product Eye Care Birmingham/503#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/504#0` | page-product Eye Care Birmingham/504#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/505#0` | page-product Eye Care Birmingham/505#0 <h2> "Reviews" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/506#0` | page-product Eye Care Birmingham/506#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/510#0` | page-product Eye Care Birmingham/510#0 <p> "Based on 41 reviews" | block:sgs/text | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/511#0` | page-product Eye Care Birmingham/511#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/513` | page-product Eye Care Birmingham/513 <div> | block:sgs/container | 1: 5 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/515` | page-product Eye Care Birmingham/515 <span> | block:sgs/container | 0.75: 5 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/518#0` | page-product Eye Care Birmingham/518#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/520` | page-product Eye Care Birmingham/520 <figure> | block:sgs/container | 1: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/521` | page-product Eye Care Birmingham/521 <div> | block:sgs/container | 1: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/526#0` | page-product Eye Care Birmingham/526#0 <p> "Placeholder reviews, clearly marked — swap in the real ones whenever you're ready." | block:sgs/text | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/537#0` | page-product Eye Care Birmingham/537#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/538#0` | page-product Eye Care Birmingham/538#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/539#0` | page-product Eye Care Birmingham/539#0 <h2> "More from Ray-Ban" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/540#0` | page-product Eye Care Birmingham/540#0 <a> "See all Ray-Ban" | block:sgs/button | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/541#0` | page-product Eye Care Birmingham/541#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/543` | page-product Eye Care Birmingham/543 <div> | block:sgs/container | 1: 2 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/544` | page-product Eye Care Birmingham/544 <div> | block:sgs/container | 0.75: 2 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/545#0` | page-product Eye Care Birmingham/545#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/546#0` | page-product Eye Care Birmingham/546#0 <h2> "Similar shapes" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/547#0` | page-product Eye Care Birmingham/547#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-product:Eye Care Birmingham/549` | page-product Eye Care Birmingham/549 <div> | block:sgs/container | 1: 4 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/550` | page-product Eye Care Birmingham/550 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/248#0` | page-shop Eye Care Birmingham/248#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-shop:Eye Care Birmingham/252#0` | page-shop Eye Care Birmingham/252#0 <h1> "Sunglasses" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-shop:Eye Care Birmingham/253#0` | page-shop Eye Care Birmingham/253#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-shop:Eye Care Birmingham/256#0` | page-shop Eye Care Birmingham/256#0 <button> "Filter" | block:sgs/button | 0.75 |  |
+| `skeleton:page-shop:Eye Care Birmingham/269#0` | page-shop Eye Care Birmingham/269#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-shop:Eye Care Birmingham/271#0` | page-shop Eye Care Birmingham/271#0 <aside> | block:sgs/container | 1 |  |
+| `skeleton:page-shop:Eye Care Birmingham/276#0` | page-shop Eye Care Birmingham/276#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-shop:Eye Care Birmingham/278` | page-shop Eye Care Birmingham/278 <div> | block:sgs/container | 0.75: 10 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/279` | page-shop Eye Care Birmingham/279 <button> | block:sgs/container | 1: 10 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/281=sgs/container` | page-shop Eye Care Birmingham/281=sgs/container <span> | block:sgs/container | 1: 3 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/286` | page-shop Eye Care Birmingham/286 <div> | block:sgs/container | 0.75: 5 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/290` | page-shop Eye Care Birmingham/290 <button> "All" | block:sgs/button | 0.75: 3 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/294` | page-shop Eye Care Birmingham/294 <button> "Pilot" | block:sgs/button | 0.75: 12 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/300` | page-shop Eye Care Birmingham/300 <button> | block:sgs/button | 0.75: 12 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/304#0` | page-shop Eye Care Birmingham/304#0 <span> "£59" | remove | 1: inside a removed element (Eye Care Birmingham/303#0) |  |
+| `skeleton:page-shop:Eye Care Birmingham/305#0` | page-shop Eye Care Birmingham/305#0 <span> "£339" | remove | 1: inside a removed element (Eye Care Birmingham/303#0) |  |
+| `skeleton:page-shop:Eye Care Birmingham/310` | page-shop Eye Care Birmingham/310 <label> | remove | 1: 40 copies of one template element; inside a removed element (Eye Care Birmingham/308#0) |  |
+| `skeleton:page-shop:Eye Care Birmingham/311` | page-shop Eye Care Birmingham/311 <span> | remove | 1: 40 copies of one template element; inside a removed element (Eye Care Birmingham/308#0) |  |
+| `skeleton:page-shop:Eye Care Birmingham/312` | page-shop Eye Care Birmingham/312 <input> | remove | 1: 40 copies of one template element; inside a removed element (Eye Care Birmingham/308#0) |  |
+| `skeleton:page-shop:Eye Care Birmingham/313` | page-shop Eye Care Birmingham/313 <span> "Ray-Ban" | remove | 1: 40 copies of one template element; inside a removed element (Eye Care Birmingham/308#0) |  |
+| `skeleton:page-shop:Eye Care Birmingham/314` | page-shop Eye Care Birmingham/314 <span> "48" | remove | 1: 40 copies of one template element; inside a removed element (Eye Care Birmingham/308#0) |  |
+| `skeleton:page-shop:Eye Care Birmingham/315#0` | page-shop Eye Care Birmingham/315#0 <label> | block:sgs/container | 1 |  |
+| `skeleton:page-shop:Eye Care Birmingham/317#0` | page-shop Eye Care Birmingham/317#0 <span> | block:sgs/container | 0.75 |  |
+| `skeleton:page-shop:Eye Care Birmingham/323#0` | page-shop Eye Care Birmingham/323#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-shop:Eye Care Birmingham/324#0` | page-shop Eye Care Birmingham/324#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-shop:Eye Care Birmingham/326` | page-shop Eye Care Birmingham/326 <div> | block:sgs/container | 1: 16 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/327` | page-shop Eye Care Birmingham/327 <div> | block:sgs/container | 0.75: 16 copies of one template element |  |
+| `skeleton:page-shop:Eye Care Birmingham/333#0` | page-shop Eye Care Birmingham/333#0 <p> "Every pair is genuine, bought through the brands' authorised UK suppliers, and comes boxed with its own case and cloth. Prescription lenses can go in any of them." | block:sgs/text | 0.75 |  |
+| `skeleton:page-signin:Eye Care Birmingham/856#0` | page-signin Eye Care Birmingham/856#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-signin:Eye Care Birmingham/860#0` | page-signin Eye Care Birmingham/860#0 <h1> "Sign in or create an account" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/861#0` | page-signin Eye Care Birmingham/861#0 <p> "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/864#0` | page-signin Eye Care Birmingham/864#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/866#0` | page-signin Eye Care Birmingham/866#0 <h2> "Sign in" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/871#0` | page-signin Eye Care Birmingham/871#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/874#0` | page-signin Eye Care Birmingham/874#0 <button> "Forgotten your password?" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/875#0` | page-signin Eye Care Birmingham/875#0 <button> "Sign in" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/877#0` | page-signin Eye Care Birmingham/877#0 <h2> "New here?" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin:Eye Care Birmingham/885#0` | page-signin Eye Care Birmingham/885#0 <button> "Create account" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:sign-in-and-register-forms:Eye Care Birmingham/858#0` | sign-in-and-register-forms Eye Care Birmingham/858#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:size-guide:Eye Care Birmingham/1235#0` | size-guide Eye Care Birmingham/1235#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:size-guide:Eye Care Birmingham/1237#0` | size-guide Eye Care Birmingham/1237#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:size-guide:Eye Care Birmingham/1238#0` | size-guide Eye Care Birmingham/1238#0 <div> | block:sgs/container | 1 |  |
@@ -1025,11 +1679,3 @@ Accept all: [ ]
 | `inventory:surface:toggling-sc-if:Eye Care Birmingham :949:only-theirs` | toggling-sc-if Eye Care Birmingham :949 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
 | `inventory:surface:toggling-sc-if:Eye Care Birmingham :954:only-theirs` | toggling-sc-if Eye Care Birmingham :954 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
 | `inventory:surface:toggling-sc-if:WP Build Gap Map :73:only-theirs` | toggling-sc-if WP Build Gap Map :73 is listed only in Claude Design's surfaces.json | ours | only Claude Design's inventory lists it |  |
-
-## Notices (notice)
-
-Accept all: [ ]
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `notice:host:images.unsplash.com` | request to images.unsplash.com blocked (1 URL, first https://images.unsplash.com/photo-1508296695146-257a814070b4?w=900&q=80&auto=format&fit=crop) | noted | replay-miss |  |
