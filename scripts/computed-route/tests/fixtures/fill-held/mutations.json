@@ -1,13 +1,13 @@
 [
 	{
 		"file": "lib/fill-held.mjs",
-		"find": "RESOLVER_GAP.test( String( row.reason ) )",
-		"replace": "true",
+		"find": "const held = rec && target && RESOLVER_GAP.test( String( row.reason ) ) &&",
+		"replace": "const held = rec && target &&",
 		"why": "a conflict or ambiguity row would be held as if it were a missing setting"
 	},
 	{
 		"file": "lib/fill-held.mjs",
-		"find": "return undefined !== part && null !== part && same( row.property, String( part ), values[ x ] );",
+		"find": "return undefined !== part && null !== part && same( row.property, String( part ), values[ x ], contextAt( x ) );",
 		"replace": "return undefined !== part && null !== part;",
 		"why": "a corner one pixel off the written one would be held as covered"
 	},
@@ -28,12 +28,6 @@
 		"find": "const TOL = 0.5;",
 		"replace": "const TOL = 5;",
 		"why": "a value several pixels from its parent's would be held as inherited"
-	},
-	{
-		"file": "lib/fill-held.mjs",
-		"find": "return null !== ms && list.every( ( x ) => x === ms );",
-		"replace": "return null !== ms && list.some( ( x ) => x === ms );",
-		"why": "a transition list with another time in it would be held as covered"
 	},
 	{
 		"file": "lib/fill-held.mjs",
@@ -76,5 +70,23 @@
 		"find": "return same( prop, defaultAt( x ), defaultAt( WIDTH_OF[ wider ] ) )",
 		"replace": "return ( undefined === defaultAt( x ) || same( prop, defaultAt( x ), defaultAt( WIDTH_OF[ wider ] ) ) )",
 		"why": "an empty tier calibration never measured would be judged as carried down"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "widths.every( ( w ) => paintsNothing( w ) && undefined === own( w ) && same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ), contextAt( w ) ) ) ) {\n\t\t\t\treturn { reason: 'inherited', detail: `${ row.property } is inherited and this element prints no text",
+		"replace": "widths.every( ( w ) => paintsNothing( w ) && undefined === own( w ) && same( row.property, values[ w ], snaps[ w ]?.styles?.[ row.property ], contextAt( w ) ) ) ) {\n\t\t\t\treturn { reason: 'inherited', detail: `${ row.property } is inherited and this element prints no text",
+		"why": "the leaf's value is compared with its own read, a guard that cannot fail: a design value is held"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "const paintsNothing = ( w ) => '' === ( snaps[ w ]?.words ?? null ) && ! Object.keys( snaps[ w ]?.pseudo || {} ).length;",
+		"replace": "const paintsNothing = ( w ) => '' === ( snaps[ w ]?.words ?? null );",
+		"why": "an icon font's generated glyph is judged as no content"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "const paintsNothing = ( w ) => '' === ( snaps[ w ]?.words ?? null ) &&",
+		"replace": "const paintsNothing = ( w ) => true ||",
+		"why": "a leaf that prints text is held as printing none"
 	}
 ]

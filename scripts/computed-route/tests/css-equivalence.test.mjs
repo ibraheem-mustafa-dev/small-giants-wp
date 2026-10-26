@@ -159,16 +159,21 @@ test( 'MUST FAIL: a draft display the browser blockified under a flex or grid pa
 	assert.equal( ask( 'display', 'flex', { calibration: cal } ).verdict, 'gap' );
 } );
 
-test( 'MUST FAIL: a hover value that is the property\'s initial value and the block\'s measured paint is a shorthand reset, held as default', () => {
+test( 'MUST FAIL: a hover value that is the initial value is a shorthand reset only where the block measured paint AND the draft own resting value are that initial value', () => {
 	const cal = paintOf( { 'background-size': 'auto', 'background-repeat': 'repeat' } );
-	const held = ask( 'background-size', 'auto', { calibration: cal, state: 'hover' } );
+	const held = ask( 'background-size', 'auto', { calibration: cal, state: 'hover', rest: every( 'auto' ) } );
 	assert.deepEqual( [ held.verdict, held.reason ], [ 'held', 'default' ] );
 	assert.match( held.detail, /initial value/ );
-	// Negative controls: a hover value that changes the paint, an initial value the block does not paint, and a resting row.
-	assert.equal( ask( 'background-size', '100% 1px', { calibration: cal, state: 'hover' } ).verdict, 'gap' );
-	assert.equal( ask( 'background-repeat', 'repeat', { calibration: paintOf( { 'background-repeat': 'no-repeat' } ), state: 'hover' } ).verdict, 'gap' );
-	assert.equal( ask( 'background-size', 'auto', { calibration: paintOf( {} ), state: 'hover' } ).verdict, 'gap' );
-	assert.equal( ask( 'background-color', 'rgb(1, 2, 3)', { calibration: paintOf( { 'background-color': 'rgb(1, 2, 3)' } ), state: 'hover' } ).verdict, 'gap', 'not an initial value' );
+	// A draft that rests at a value of its own and resets to the initial value on hover changes the paint: a real hover change.
+	assert.equal( ask( 'background-size', 'auto', { calibration: cal, state: 'hover', rest: every( '100% 1px' ) } ).verdict, 'gap', 'the draft rests at another value' );
+	assert.equal( ask( 'background-repeat', 'repeat', { calibration: cal, state: 'hover', rest: every( 'no-repeat' ) } ).verdict, 'gap', 'a draft resting at no-repeat that resets on hover' );
+	assert.equal( ask( 'background-size', 'auto', { calibration: cal, state: 'hover', rest: { 375: 'auto', 768: 'auto', 1440: '50%' } } ).verdict, 'gap', 'a draft resting apart at one width' );
+	assert.equal( ask( 'background-size', 'auto', { calibration: cal, state: 'hover' } ).verdict, 'gap', 'the draft resting value is not known' );
+	// Negative controls: a hover value that changes the paint, an initial value the block does not paint, and a value that is not initial.
+	assert.equal( ask( 'background-size', '100% 1px', { calibration: cal, state: 'hover', rest: every( 'auto' ) } ).verdict, 'gap' );
+	assert.equal( ask( 'background-repeat', 'repeat', { calibration: paintOf( { 'background-repeat': 'no-repeat' } ), state: 'hover', rest: every( 'repeat' ) } ).verdict, 'gap' );
+	assert.equal( ask( 'background-size', 'auto', { calibration: paintOf( {} ), state: 'hover', rest: every( 'auto' ) } ).verdict, 'gap' );
+	assert.equal( ask( 'background-color', 'rgb(1, 2, 3)', { calibration: paintOf( { 'background-color': 'rgb(1, 2, 3)' } ), state: 'hover', rest: every( 'rgb(1, 2, 3)' ) } ).verdict, 'gap', 'not an initial value' );
 } );
 
 test( 'MUST FAIL: a block\'s root and an inner part that calibration measured as one box share their paint', () => {

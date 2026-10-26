@@ -79,8 +79,8 @@
 	},
 	{
 		"file": "lib/css-equivalence/index.mjs",
-		"find": "\tif ( ! state && widths.length && widths.every( ( w ) => undefined !== paintValues[ w ] && sameCanonical( canon, perWidth[ w ], paintValues[ w ] ) ) ) {",
-		"replace": "\tif ( ! state && widths.length && widths.some( ( w ) => undefined !== paintValues[ w ] ) ) {",
+		"find": "if ( ! state && widths.length && widths.every( ( w ) => undefined !== paintValues[ w ] && sameCanonical( canon, perWidth[ w ], paintValues[ w ], ctxAt( w ) ) ) ) {",
+		"replace": "if ( ! state && widths.length && widths.every( ( w ) => undefined !== paintValues[ w ] ) ) {",
 		"why": "any measured default paint holds the row, whatever its value"
 	},
 	{
@@ -100,5 +100,17 @@
 		"find": "w.length > 1 && w.every( ( l ) => l in MDN ) &&",
 		"replace": "w.length > 1 &&",
 		"why": "a draft specification's longhands (box-shadow-color) split a property no browser splits"
+	},
+	{
+		"file": "lib/css-equivalence/index.mjs",
+		"find": " && undefined !== rest[ w ] && sameCanonical( canon, rest[ w ], initial ) ) ) {",
+		"replace": " ) ) {",
+		"why": "a draft resting at a value of its own and resetting on hover is held as a shorthand reset"
+	},
+	{
+		"file": "lib/css-equivalence/index.mjs",
+		"find": "undefined !== rest[ w ] && sameCanonical( canon, rest[ w ], initial )",
+		"replace": "( undefined === rest[ w ] || sameCanonical( canon, rest[ w ], initial ) )",
+		"why": "an unknown resting value is taken as the initial value"
 	}
 ]

@@ -5,7 +5,7 @@
 //   covered    a setting written on this element paints this value at this width (judged per tier, paintedAt): a shorthand
 //              setting whose parts include the property (and whose written part equals the draft's), a setting calibration
 //              saw change the property as a side effect, or an sgsMotion state that carries the transform and the transition;
-//   inherited  a font longhand on a leaf that prints no text of the block's content (nothing it shows takes the value), or an
+//   inherited  a font longhand on a leaf that prints no text and no generated content, equal to what its parent renders, or an
 //              inherited property on an element that holds no text of its own (a container whose descendants state their
 //              own text looks), equal to what its parent renders, where the block's own stylesheet sets no value of it on
 //              that element (lib/fill-resolve-state.mjs::ownPaint, as Fill's baseline prefers it): such an element shows
@@ -230,10 +230,14 @@ export function makeSettle( st ) {
 			if ( INHERITED.includes( row.property ) && rec.children.length > 0 && widths.every( ( w ) => undefined === own( w ) && same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ), contextAt( w ) ) ) ) {
 				return { reason: 'inherited', detail: `${ row.property } is inherited and this element holds no text of its own; its parent renders the same value` };
 			}
-			// A font longhand on a leaf that prints no text of the block's content at any width it states paints nothing the block
-			// shows (a custom element's own `:host` font resets, a design-tool artefact), whatever its parent renders.
-			if ( TEXT_ONLY.test( row.property ) && 0 === rec.children.length && widths.every( ( w ) => '' === ( snaps[ w ]?.words ?? null ) && undefined === own( w ) && same( row.property, values[ w ], snaps[ w ]?.styles?.[ row.property ], contextAt( w ) ) ) ) {
-				return { reason: 'inherited', detail: `${ row.property } is inherited and this element prints no text of the block's content, so its own value paints nothing the block shows (a design tool's font reset, not a design value)` };
+			// A font longhand on a leaf that prints no text at any width it states and paints no generated content (a `::before` or
+			// `::after` with content, an icon font's glyph) shows nothing the value could change, and where its parent renders the
+			// same value the leaf only inherits it. A value that differs from the parent is a design value (font-size sets the em
+			// basis of the leaf's own sizes) and stays raised: the Fill read carries no shadow-root origin, so a design tool's reset
+			// is not told from a design value.
+			const paintsNothing = ( w ) => '' === ( snaps[ w ]?.words ?? null ) && ! Object.keys( snaps[ w ]?.pseudo || {} ).length;
+			if ( TEXT_ONLY.test( row.property ) && 0 === rec.children.length && widths.every( ( w ) => paintsNothing( w ) && undefined === own( w ) && same( row.property, values[ w ], parentValue( rec, '' === row.slot ? null : row.slot, row.property, w ), contextAt( w ) ) ) ) {
+				return { reason: 'inherited', detail: `${ row.property } is inherited and this element prints no text of the block's content and no generated content; its parent renders the same value` };
 			}
 			return null;
 		}

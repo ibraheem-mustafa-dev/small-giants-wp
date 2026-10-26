@@ -36,7 +36,8 @@ const text = ( pw ) => {
 };
 
 // input: { slot, prop, state, perWidth ({ width: value }), siblings (the element's other draft properties, { prop: {
-// width: value } }), parent ({ width: { prop: value } } of the parent element, or null), anyIndex }.
+// width: value } }), parent ({ width: { prop: value } } of the parent element, or null), rest ({ width: value }, the draft's own
+// resting value of `prop` on this element, where the caller knows it), anyIndex }.
 // ctx: { calibration, db }.
 // Returns one of
 //   { verdict: 'write', writes: [ { attr, value, merge } ], layer: 4, detail, layers }
@@ -44,7 +45,7 @@ const text = ( pw ) => {
 //   { verdict: 'gap', detail, layers, homes }
 // `layers` holds one line per layer tried; `detail` is the line of the deciding layer, or every line for a gap.
 export function consult( input, ctx ) {
-	const { slot = '', prop, state = null, perWidth = {}, siblings = {}, parent = null, anyIndex = false } = input;
+	const { slot = '', prop, state = null, perWidth = {}, siblings = {}, parent = null, rest = {}, anyIndex = false } = input;
 	const cal = ctx.calibration;
 	const widths = WIDTHS.filter( ( w ) => undefined !== perWidth[ w ] );
 	const layers = [];
@@ -68,11 +69,13 @@ export function consult( input, ctx ) {
 	if ( ! state && widths.length && widths.every( ( w ) => undefined !== paintValues[ w ] && sameCanonical( canon, perWidth[ w ], paintValues[ w ], ctxAt( w ) ) ) ) {
 		return held( `the block's calibrated default paint of this element is already ${ canon } ${ text( perWidth ) }${ via.length ? ` (read from ${ via.join( ', ' ) })` : '' }` );
 	}
-	// A state value that is the property's initial value, where the block paints that initial value at rest, is what a
-	// shorthand declaration of the state resets its other longhands to: it changes nothing the block paints.
+	// A state value that is the property's initial value, where the block paints that initial value at rest AND the draft
+	// itself rests at it (`rest`, the draft's own resting value per width), is what a shorthand declaration of the state resets
+	// its other longhands to: it changes nothing. A draft that rests at a value of its own and resets to the initial value on
+	// hover changes the paint, and a draft whose resting value is not known proves nothing.
 	const initial = initialOf( canon );
-	if ( state && null !== initial && widths.length && widths.every( ( w ) => undefined !== paintValues[ w ] && sameCanonical( canon, perWidth[ w ], initial ) && sameCanonical( canon, paintValues[ w ], initial ) ) ) {
-		return held( `${ canon } ${ text( perWidth ) } under ${ state } is the initial value a shorthand resets it to, and the block's measured resting paint is the same` );
+	if ( state && null !== initial && widths.length && widths.every( ( w ) => undefined !== paintValues[ w ] && sameCanonical( canon, perWidth[ w ], initial ) && sameCanonical( canon, paintValues[ w ], initial ) && undefined !== rest[ w ] && sameCanonical( canon, rest[ w ], initial ) ) ) {
+		return held( `${ canon } ${ text( perWidth ) } under ${ state } is the initial value a shorthand resets it to, and the block's measured resting paint and the draft's own resting value are the same` );
 	}
 	// A part of the block that is the same box as this element (the draft has one element where the block has a root and an
 	// inner part) paints it: the part's default paint is the element's.

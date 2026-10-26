@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/fill-motion-settle.mjs",
-		"find": "of timingDuplicates( unmapped ).unmapped )",
-		"replace": "of unmapped )",
+		"find": "for ( const row of dup.unmapped ) {",
+		"replace": "for ( const row of unmapped ) {",
 		"why": "the generic row is raised beside the per-property rows again"
 	},
 	{
@@ -43,14 +43,14 @@
 	},
 	{
 		"file": "lib/fill-motion-settle.mjs",
-		"find": "! longhandsOf( p ).some( ( l ) => changing.own.has( l )",
+		"find": "! longhandsOf( p ).some( ( l ) => c.own.has( l )",
 		"replace": "! longhandsOf( p ).some( ( l ) => false",
 		"why": "an extra property a state changes is settled as inert"
 	},
 	{
 		"file": "lib/fill-motion-settle.mjs",
-		"find": "if ( changing && more.length && ! less.length &&",
-		"replace": "if ( changing && more.length &&",
+		"find": "const still = ( c ) => more.length && ! less.length &&",
+		"replace": "const still = ( c ) => more.length &&",
 		"why": "a list that lacks a draft property is settled as a superset"
 	},
 	{
@@ -73,14 +73,14 @@
 	},
 	{
 		"file": "lib/fill-motion-settle.mjs",
-		"find": "|| ( INHERITED.includes( p ) && changing.up.has( l ) )",
-		"replace": "",
+		"find": "( INHERITED.includes( p ) && c.up.has( l ) )",
+		"replace": "false",
 		"why": "an inherited property an ancestor's state changes is taken as unchanged"
 	},
 	{
 		"file": "lib/fill-motion-settle.mjs",
-		"find": "( INHERITED.includes( p ) && changing.up.has( l ) )",
-		"replace": "changing.up.has( l )",
+		"find": "( INHERITED.includes( p ) && c.up.has( l ) )",
+		"replace": "c.up.has( l )",
 		"why": "an ancestor's look changes a property that is not inherited"
 	},
 	{
@@ -88,5 +88,23 @@
 		"find": "p = nodes[ p ]?.parent )",
 		"replace": "p = null )",
 		"why": "only the first ancestor is read"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "for ( const row of dup.dropped ) {",
+		"replace": "for ( const row of [] ) {",
+		"why": "the dropped generic timing rows are lost again, reported nowhere"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "changing && ! changing.ownUnknown && ! ( changing.upUnknown",
+		"replace": "changing && ! ( false && changing.upUnknown",
+		"why": "an ancestor's unreached state no longer blocks the inherited extras"
+	},
+	{
+		"file": "lib/fill-motion-settle.mjs",
+		"find": "ownUnknown: unknown( [ t.id ] )",
+		"replace": "ownUnknown: false",
+		"why": "the element's own unreached state is taken as unchanging"
 	}
 ]

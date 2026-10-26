@@ -19,11 +19,11 @@ const sameRead = ( u, a ) => ( u.node === a.node || ( u.nodes || [] ).includes( 
 // or settled, as settled rows naming the pass (`reason`): one per entry of the pass's `answered` list
 // (lib/fill-regap.mjs::answer, one per node, with the read widths it answers). A row the pass took out of `before`
 // without answering it is no settled row, so its read shows as dropped; a node the pass answered and still leaves in
-// `after` stays unwritten.
+// `after` stays unwritten. An answered entry's `settledDetail` replaces the generic detail.
 export function passSettled( before, after, reason, answered = [] ) {
 	return answered.filter( ( a ) => ! after.some( ( u ) => sameRead( u, a ) ) ).map( ( a ) => {
 		const was = before.find( ( u ) => sameRead( u, a ) );
-		return { node: a.node, block: a.block, slot: a.slot, ...( a.readSlot ? { readSlot: a.readSlot } : {} ), property: a.property, value: a.value, ...( a.state ? { state: a.state } : {} ), widths: a.widths, reason, detail: `lib/${ PASS_FILE[ reason ] } wrote or settled it${ was ? ` (was: ${ was.reason })` : '' }` };
+		return { node: a.node, block: a.block, slot: a.slot, ...( a.readSlot ? { readSlot: a.readSlot } : {} ), property: a.property, value: a.value, ...( a.state ? { state: a.state } : {} ), widths: a.widths, reason, detail: a.settledDetail ?? `lib/${ PASS_FILE[ reason ] } wrote or settled it${ was ? ` (was: ${ was.reason })` : '' }` };
 	} );
 }
 const settledCounts = ( rows ) => Object.fromEntries( SETTLED.map( ( k ) => [ k, rows.filter( ( s ) => s.reason === k ).length ] ) );

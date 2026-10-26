@@ -76,11 +76,13 @@ function hoverAt( reads, target, w ) {
 		const key = INDENT_PROPS.find( ( k ) => look.declared?.[ k ] );
 		if ( key ) {
 			const to = px( look.declared[ key ] );
-			const from = px( rest[ key ] ?? rendered[ key ] ?? rendered[ 'padding-left' ] ?? '0px' );
+			// The resting start padding: the key asked for, then its other spelling, declared before rendered.
+			const resting = [ rest, rendered ].flatMap( ( src ) => [ src[ key ], ...INDENT_PROPS.map( ( k ) => src[ k ] ) ] ).find( ( v ) => undefined !== v ) ?? '0px';
+			const from = px( resting );
 			if ( null === to || null === from ) {
-				return { gap: `the hover ${ key } at ${ w }px (${ look.declared[ key ] } from ${ rest[ key ] ?? rendered[ key ] ?? rendered[ 'padding-left' ] ?? '0px' }) is not a px length, and the hover layer's indent is the px change of the start padding` };
+				return { gap: `the hover ${ key } at ${ w }px (${ look.declared[ key ] } from ${ resting }) is not a px length, and the hover layer's indent is the px change of the start padding` };
 			}
-			from !== to && properties.push( { property: 'padding-left', from: fmt( from ), to: fmt( to ), ...timing( 'padding-left', [ 'padding' ] ) } );
+			from !== to && properties.push( { property: 'padding-left', from: fmt( from ), to: fmt( to ), ...timing( key, [ 'padding', 'padding-inline', ...INDENT_PROPS ] ) } );
 		}
 	}
 	if ( ! properties.length ) {
@@ -165,7 +167,8 @@ export function stateMotionRecords( reads, target ) {
 // carry, and the state read's records (`state`, stateMotionRecords) add only the properties no inventory hover record
 // covers. With an inventory hover record those properties join it, so the element keeps one hover layer (two hover
 // records on one element make two hover layers, which the motion schema refuses); with none, the state records are
-// the element's hover records. A state record's tiers keep only the properties they add.
+// the element's hover records. A state record's tiers keep only the properties they add, and join the inventory record's own
+// tiers (a tier holds both sets of properties).
 const propKey = ( p ) => ( 'padding-inline-start' === p ? 'padding-left' : p );
 export function withStateHover( own, state ) {
 	const hover = own.filter( ( r ) => 'hover' === r.trigger?.type );
@@ -183,8 +186,21 @@ export function withStateHover( own, state ) {
 	}
 	const into = hover[ 0 ];
 	const extra = adds.flatMap( ( r ) => r.properties );
-	const tiers = adds.find( ( r ) => r.tiers )?.tiers;
-	return own.map( ( r ) => ( r === into ? { ...r, properties: [ ...r.properties, ...extra ], ...( tiers && ! r.tiers ? { tiers } : {} ) } : r ) );
+	const flat = Object.fromEntries( Object.entries( into ).filter( ( [ k ] ) => 'tiers' !== k ) );
+	const merged = [ ...into.properties, ...extra ];
+	// A tier holds the inventory's properties there (its own tier's, else the record's) beside the state read's (its own tier's,
+	// else the record's): a state tier of null has no hover transform there, so it adds nothing.
+	const tiers = {};
+	for ( const k of new Set( [ ...Object.keys( into.tiers || {} ), ...adds.flatMap( ( r ) => Object.keys( r.tiers || {} ) ) ] ) ) {
+		const properties = [
+			...( ( k in ( into.tiers || {} ) ? into.tiers[ k ] : into )?.properties || [] ),
+			...adds.flatMap( ( r ) => ( k in ( r.tiers || {} ) ? r.tiers[ k ]?.properties || [] : r.properties ) ),
+		];
+		if ( JSON.stringify( properties ) !== JSON.stringify( merged ) ) {
+			tiers[ k ] = properties.length ? { ...flat, properties } : null;
+		}
+	}
+	return own.map( ( r ) => ( r === into ? { ...flat, properties: merged, ...( Object.keys( tiers ).length ? { tiers } : {} ) } : r ) );
 }
 
 // The hover layer's tablet and mobile overrides for a record with `tiers`: { devices, unmapped }. baseLayer is the layer

@@ -22,7 +22,8 @@
 // change no setting holds is a named `default-state` gap.
 
 import { setAttr, refOf, walk } from './tree.mjs';
-import { resolveProperty, knownPaths, notPainted, canon, PX_TOL } from './fill-prop.mjs';
+import { resolveProperty, knownPaths, notPainted, canon, PX_TOL, INHERITED } from './fill-prop.mjs';
+import { initialOf } from './css-families.mjs';
 import { sameValue } from '../../parity/lib/compare.mjs';
 import { LOOSE } from './resolve.mjs';
 import { settingStates, statesVocabulary } from './db.mjs';
@@ -167,6 +168,23 @@ function restingOf( reads, id ) {
 	return out;
 }
 
+// The draft's own resting value of `prop` on a target, per width the element is drawn at: { width: value }. Its rendered read,
+// else the value a resting rule declares, else (a property that is not inherited, so no rule means its initial value) the
+// initial value; an inherited property no rule or read states is left out (lib/css-equivalence/index.mjs::consult holds a
+// state value equal to the initial value only where the draft itself rests at it).
+function restValue( reads, id, prop ) {
+	const out = {};
+	for ( const w of READ_WIDTHS ) {
+		const snap = reads.widths?.[ w ]?.[ id ];
+		if ( ! snap || snap.missing ) {
+			continue;
+		}
+		const v = snap.styles?.[ prop ] ?? reads.declared?.[ w ]?.[ id ]?.[ prop ] ?? ( INHERITED.includes( prop ) ? undefined : initialOf( prop ) ?? undefined );
+		undefined !== v && ( out[ w ] = String( v ) );
+	}
+	return out;
+}
+
 // The target's own context per read width, as the state read has it: its position (the snapshot's, else its styles') and
 // its direction. Returns { at( width ) (canon's ctx), siblings (resolveProperty's { position, direction } per width) }.
 // The parent's display is not part of a target's read, so a value canon decides from it stays undecided.
@@ -223,7 +241,7 @@ export function holdDefaults( { node, ref, rec, target, cal, db, snapshot, reads
 				continue;
 			}
 			const gap = ! rest[ prop ] ? `the draft's resting ${ prop } was not read on this element` : stateGap( state, held );
-			plan.push( { prop, res: gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: rest[ prop ], baseline: () => undefined, slots, calibration: cal, db, snapshot, log: [], state, siblings: ctx.siblings } ) } );
+			plan.push( { prop, res: gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: rest[ prop ], baseline: () => undefined, slots, calibration: cal, db, snapshot, log: [], state, siblings: ctx.siblings, rest: restValue( reads, target.id, prop ) } ) } );
 		}
 		const pairBroken = PAIR.every( ( p ) => plan.some( ( x ) => x.prop === p ) ) && plan.some( ( x ) => PAIR.includes( x.prop ) && 'written' !== x.res.status );
 		for ( const { prop, res } of plan ) {
@@ -323,7 +341,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 				}
 				const atRest = 'open' === state && hidden && ! held.has( state );
 				const gap = atRest ? null : stateGap( state, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest ? [] : openSlots( cal, prop, slot, state ) ) ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings } );
+				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest ? [] : openSlots( cal, prop, slot, state ) ) ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );

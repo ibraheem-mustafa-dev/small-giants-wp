@@ -9,7 +9,7 @@ import { motionDb } from '../lib/motion-db.mjs';
 import { loadMotionSchema } from '../lib/motion-schema.mjs';
 import { motionWrites } from '../lib/fill-motion.mjs';
 import { fillStates, stateDrafts } from '../lib/fill-state.mjs';
-import { stateMotionRecords, stateHover, splitList } from '../lib/fill-state-motion.mjs';
+import { stateMotionRecords, stateHover, splitList, withStateHover } from '../lib/fill-state-motion.mjs';
 import { motionFixtureDb } from './fixtures/motion-fixture-db.mjs';
 
 const schema = loadMotionSchema();
@@ -188,4 +188,38 @@ test( 'MUST FAIL: an inventory hover padding with no resting value takes the ele
 test( 'a record that names its own resting padding, or an element whose resting padding is not px, is left as it is', () => {
 	assert.equal( runRecord( 'sgs/card', hoverRecord( '4px' ), padReads( '0:' ) ).v.indent, 12 );
 	assert.equal( runRecord( 'sgs/card', hoverRecord( null ), padReads( '0:', { rest: '1em' } ) ).v.indent, 16 );
+} );
+
+test( 'MUST FAIL: an inventory hover record that already has tiers is merged with the state read tiers, never replaces them', () => {
+	const rec = ( properties, tiers ) => ( { id: 'R', trigger: { type: 'hover' }, properties, ...( tiers ? { tiers } : {} ) } );
+	const tf = ( to ) => ( { property: 'transform', from: null, to } );
+	const pad = ( to ) => ( { property: 'padding-left', from: '0px', to } );
+	const own = [ rec( [ tf( 'scale(1.1)' ) ], { mobile: rec( [ tf( 'scale(1.05)' ) ] ) } ) ];
+	const state = [ rec( [ pad( '16px' ) ], { tablet: rec( [ pad( '8px' ) ] ), mobile: null } ) ];
+	const [ merged ] = withStateHover( own, state );
+	assert.deepEqual( merged.properties.map( ( p ) => p.to ), [ 'scale(1.1)', '16px' ] );
+	// The state's tablet indent is kept beside the inventory's base transform; the inventory's own mobile transform is kept and
+	// the state read's mobile (no indent there) adds nothing to it.
+	assert.deepEqual( merged.tiers.tablet.properties.map( ( p ) => p.to ), [ 'scale(1.1)', '8px' ] );
+	assert.deepEqual( merged.tiers.mobile.properties.map( ( p ) => p.to ), [ 'scale(1.05)' ] );
+	// Negative controls: no inventory tiers (the state's become the record's), and a state with no tiers leaves the inventory's.
+	const bare = withStateHover( [ rec( [ tf( 'scale(1.1)' ) ] ) ], state )[ 0 ];
+	assert.deepEqual( bare.tiers.tablet.properties.map( ( p ) => p.to ), [ 'scale(1.1)', '8px' ] );
+	assert.deepEqual( bare.tiers.mobile.properties.map( ( p ) => p.to ), [ 'scale(1.1)' ] );
+	const none = withStateHover( own, [ rec( [ pad( '16px' ) ] ) ] )[ 0 ];
+	assert.deepEqual( Object.keys( none.tiers ), [ 'mobile' ] );
+	assert.deepEqual( none.tiers.mobile.properties.map( ( p ) => p.to ), [ 'scale(1.05)', '16px' ] );
+} );
+
+test( 'MUST FAIL: a padding-inline-start hover reads the transition entry and the resting value of the key it was asked for', () => {
+	const rest = { 'padding-left': '4px', 'transition-property': 'opacity, padding-inline-start', 'transition-duration': '0.1s, 0.5s', 'transition-timing-function': 'ease, linear' };
+	const at = { styles: { 'padding-left': '30px' } };
+	const look = { states: [ 'hover' ], declared: { 'padding-inline-start': '16px' }, rendered: {}, read: 'entered' };
+	const r = { widths: { 375: { '0:': at }, 768: { '0:': at }, 1440: { '0:': at } }, declared: { 375: { '0:': rest }, 768: { '0:': rest }, 1440: { '0:': rest } }, states: { 375: { looks: { '0:': [ look ] } }, 768: { looks: { '0:': [ look ] } }, 1440: { looks: { '0:': [ look ] } } } };
+	const p = stateHover( r, { id: '0:' } ).base.properties[ 0 ];
+	assert.deepEqual( [ p.from, p.to, p.duration_ms, p.easing ], [ '4px', '16px', 500, 'linear' ] );
+	// A transition list naming the padding shorthand times the start-padding hover with that entry, not the first.
+	const short = { ...rest, 'transition-property': 'opacity, padding', 'transition-duration': '0.1s, 0.7s' };
+	const rs = { ...r, declared: { 375: { '0:': short }, 768: { '0:': short }, 1440: { '0:': short } } };
+	assert.equal( stateHover( rs, { id: '0:' } ).base.properties[ 0 ].duration_ms, 700 );
 } );
