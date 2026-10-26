@@ -46,6 +46,15 @@ test( 'the surfaces lint fails a printed post with no surface and passes once on
 	fs.rmSync( dir, { recursive: true } );
 } );
 
+test( 'MUST FAIL: a template copy printing the theme\'s own content part passes the lint; a header part still needs the header surface', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-refs-' ) );
+	fs.writeFileSync( path.join( dir, 'home.json' ), JSON.stringify( [ { name: 'core/template-part', attributes: { slug: 'header' } }, { name: 'core/template-part', attributes: { slug: 'sgs-archive-toolbar' } } ] ) );
+	const copy = { tree: 'home.json', target: { template: 'home' } };
+	assert.deepEqual( lintSurfaces( { copy }, dir, refs ), [ 'copy: core/template-part prints slug header, which no surface provides' ] );
+	assert.deepEqual( lintSurfaces( { copy, header: { tree: 'home.json', target: { postId: 9 }, provides: [ 'core/template-part:header' ] } }, dir, refs ), [] );
+	fs.rmSync( dir, { recursive: true } );
+} );
+
 test( 'a surface whose tree file is not built yet is a named problem, not a crash', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'refs-' ) );
 	assert.deepEqual( lintSurfaces( { header: { tree: 'header.tree.json', target: { postId: 1 } } }, dir, refs ), [ 'header: tree file header.tree.json does not exist' ] );

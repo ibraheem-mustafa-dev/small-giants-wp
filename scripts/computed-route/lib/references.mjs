@@ -15,6 +15,11 @@ import { walk } from './tree.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const BLOCKS_SRC = path.resolve( HERE, '../../../plugins/sgs-blocks/src/blocks' );
+const THEME_JSON = path.resolve( HERE, '../../../theme/sgs-theme/theme.json' );
+
+// The theme's own content parts (theme.json templateParts outside the header and footer areas): a template copy prints
+// them as the theme ships them (FR-48-56), so they need no surface; the header and footer are the site's own posts.
+export const themeContentParts = ( file = THEME_JSON ) => new Set( ( JSON.parse( fs.readFileSync( file, 'utf8' ) ).templateParts || [] ).filter( ( p ) => ! [ 'header', 'footer' ].includes( p.area ) ).map( ( p ) => p.name ) );
 
 // Core blocks that print another post: block name → the attribute naming what they print (null: the current post).
 export const CORE_PLACEHOLDERS = { 'core/template-part': 'slug', 'core/post-content': null, 'core/block': 'ref' };
@@ -66,9 +71,10 @@ export function referenceOf( node, refs ) {
 
 // Surfaces lint: every post a surface's tree prints through a reference has a surface of its own. A frame's post ID
 // matches a surface target; a linked block or a template part matches a surface's `provides` entry
-// ("<block>:<value>"). core/post-content prints the current post's own content (product data), never a layout.
+// ("<block>:<value>"), or is one of the theme's own content parts. core/post-content prints the current post's own content
+// (product data), never a layout.
 // surfaces: the parsed surfaces.json; buildDir: where its trees live. Returns problems (strings).
-export function lintSurfaces( surfaces, buildDir, refs = detectReferences() ) {
+export function lintSurfaces( surfaces, buildDir, refs = detectReferences(), themeParts = themeContentParts() ) {
 	const posts = new Set( Object.values( surfaces ).map( ( s ) => s.target?.postId ).filter( Boolean ).map( Number ) );
 	const provided = new Set( Object.values( surfaces ).flatMap( ( s ) => s.provides || [] ) );
 	const problems = [];
@@ -84,7 +90,7 @@ export function lintSurfaces( surfaces, buildDir, refs = detectReferences() ) {
 			if ( ! r || ( 'core' === r.kind && null === r.key ) ) {
 				return;
 			}
-			const ok = 'frame' === r.kind ? posts.has( Number( r.value ) ) : provided.has( `${ node.name }:${ r.value }` );
+			const ok = 'frame' === r.kind ? posts.has( Number( r.value ) ) : provided.has( `${ node.name }:${ r.value }` ) || ( 'core/template-part' === node.name && themeParts.has( r.value ) );
 			if ( ! ok ) {
 				problems.push( `${ name }: ${ node.name } prints ${ r.key } ${ r.value }, which no surface ${ 'frame' === r.kind ? 'targets' : 'provides' }` );
 			}
