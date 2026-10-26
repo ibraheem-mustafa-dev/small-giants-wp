@@ -63,6 +63,19 @@ test( 'MUST FAIL: Fill writes nothing on a linked sgs/form embed, nor on a block
 	assert.equal( run( { flat: [ form( { formIsLinked: false } ) ], component: 'Trade' } ).writes.length, 1, 'an unlinked form is written as before' );
 } );
 
+test( 'MUST FAIL: a read on a block inside a linked sgs/form embed ends as one settled row naming the linked form, never silence', () => {
+	const field = { name: 'sgs/form-field-text', attributes: {}, innerBlocks: [], ref: 'f' };
+	const quiet = { name: 'sgs/form-field-text', attributes: {}, innerBlocks: [], ref: 'q' };
+	const flat = [ form( { formIsLinked: true, formId: 'enquiry' }, [ field, quiet ] ), field, quiet ];
+	const reads = { widths: { 375: { '1:': { form: { tag: 'input', type: 'text' } } }, 1440: { '1:': { form: { tag: 'input', type: 'text' } }, '2:': { missing: true } } } };
+	const out = formWrites( { nodes: flat.map( ( n, i ) => rec( i, n.name ) ), flat, refOf: ( n ) => n.ref, reads, facts: FACTS, flags: FLAGS, db, component: 'Trade' } );
+	assert.equal( out.settled.length, 1, 'one row, for the node the draft read; a node that read missing has none' );
+	const [ row ] = out.settled;
+	assert.deepEqual( [ row.node, row.block, row.property, row.value, row.reason, row.widths ], [ 'f', 'sgs/form-field-text', '(linked form)', 'enquiry', 'row-held', [ 375, 1440 ] ] );
+	assert.match( row.detail, /linked form "enquiry"/ );
+	assert.deepEqual( run( { flat: [ form( { formIsLinked: false } ) ], component: 'Trade' } ).settled, [], 'an unlinked form raises no linked-form row' );
+} );
+
 test( 'MUST FAIL: formSources reads the form surface\'s own component, not the first schema\'s', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'form-sources-' ) );
 	fs.writeFileSync( path.join( dir, 'Trade.dc.html' ), '<script>x</script>' );

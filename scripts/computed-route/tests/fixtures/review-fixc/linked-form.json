@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "widths.length && out.settled.push(",
+		"replace": "false && out.settled.push(",
+		"why": "a read inside a linked form ends silent"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "&& ! reads.widths[ w ][ t.id ].missing )",
+		"replace": ")",
+		"why": "a node the draft read missing still raises a row"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "walk( [ node ], ( n ) => linked.set( n, ref.value ) );",
+		"replace": "walk( [ node ], ( n ) => linked.set( n, 'x' ) );",
+		"why": "the row does not name the linked form"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "[ 375, 768, 1440 ].filter( ( w ) => rec.targets",
+		"replace": "[ 1440 ].filter( ( w ) => rec.targets",
+		"why": "only the 1440 read counts"
+	}
+]

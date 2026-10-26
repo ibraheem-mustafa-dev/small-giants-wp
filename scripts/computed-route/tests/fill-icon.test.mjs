@@ -100,3 +100,48 @@ test( 'MUST FAIL: a block that draws an inline icon but declares no iconSource (
 	assert.ok( out.writes.some( ( w ) => 'iconSvg' === w.attr ), 'the markup is written to the block\'s own iconSvg' );
 	assert.ok( out.unmapped.some( ( u ) => 'iconSource' === u.value ), 'iconSource is a named row' );
 } );
+
+// A node the skeleton made a Site Info brand row (lib/fill-skeleton.mjs::expandSiteInfoRows): iconSource brand, its brand
+// name and a link bound to Site Info. The draft draws its own glyph for the brand, which is never the registry's path data.
+const BOUND = { iconSource: 'brand', brandName: 'whatsapp', metadata: { bindings: { linkUrl: { source: 'sgs/site-info', args: { key: 'socials.whatsapp' } } } } };
+const OWN_GLYPH = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path d="M3 3h18v18H3z M7 7h10v10H7z" fill="currentColor"/></svg>';
+
+test( 'MUST FAIL: a Site Info-bound brand row stays brand when the draft mark is that brand by its link host, even though the glyph is the draft own', () => {
+	const r = run( OWN_GLYPH, { attributes: BOUND, href: 'https://api.whatsapp.com/send?phone=447000000000' } );
+	assert.equal( val( r, 'iconSource' ), undefined, 'no write turns the bound brand into a custom mark' );
+	assert.equal( val( r, 'iconSvg' ), undefined );
+	assert.ok( r.notes.some( ( n ) => /whatsapp/.test( n ) && /Site Info/.test( n ) ), 'the glyph difference is named, never silent' );
+	const byHost = run( OWN_GLYPH, { attributes: { ...BOUND, brandName: 'facebook', metadata: { bindings: { linkUrl: { source: 'sgs/site-info', args: { key: 'socials.facebook' } } } } }, href: 'https://www.facebook.com/indusfoods' } );
+	assert.equal( val( byHost, 'iconSource' ), undefined );
+	assert.equal( val( byHost, 'iconSvg' ), undefined );
+} );
+
+test( 'MUST FAIL: a Site Info-bound brand row stays brand when the draft mark names the brand in its title or label', () => {
+	const titled = OWN_GLYPH.replace( '<path', '<title>WhatsApp</title><path' );
+	const r = run( titled, { attributes: BOUND, href: '' } );
+	assert.equal( val( r, 'iconSource' ), undefined );
+	const labelled = OWN_GLYPH.replace( '<svg ', '<svg aria-label="whatsapp" ' );
+	assert.equal( val( run( labelled, { attributes: BOUND } ), 'iconSource' ), undefined );
+	assert.equal( val( run( OWN_GLYPH, { attributes: { ...BOUND, ariaLabel: 'WhatsApp' }, href: '/' } ), 'iconSource' ), undefined, 'the aria-label Fill already wrote from the draft link names the brand (draft icon links often point at /)' );
+	assert.equal( val( run( OWN_GLYPH, { attributes: { ...BOUND, ariaLabel: 'Contact us' }, href: '/' } ), 'iconSource' ), 'custom', 'a label that is not the brand is no evidence' );
+} );
+
+test( 'MUST FAIL: a bound brand row whose iconSource an earlier write of the run turned to emoji is put back to brand, never made custom', () => {
+	const turned = { ...BOUND, iconSource: 'emoji', ariaLabel: 'WhatsApp' };
+	const r = run( OWN_GLYPH, { attributes: turned, href: '#/' } );
+	assert.equal( val( r, 'iconSource' ), 'brand' );
+	assert.equal( val( r, 'iconSvg' ), undefined );
+	assert.equal( val( run( OWN_GLYPH, { attributes: { ...turned, ariaLabel: 'Contact us' }, href: '#/' } ), 'iconSource' ), 'custom', 'a mark that is not the brand is its own mark whatever the node held' );
+} );
+
+test( 'a Site Info-bound brand row whose draft mark is another thing is the own mark of the client and its link binding stays', () => {
+	const r = run( OWN_GLYPH, { attributes: BOUND, href: 'https://example.com/contact' } );
+	assert.equal( val( r, 'iconSource' ), 'custom' );
+	assert.match( val( r, 'iconSvg' ), /<svg/ );
+	assert.equal( r.writes.some( ( w ) => 'metadata' === w.attr ), false );
+	const unbound = run( OWN_GLYPH, { attributes: { iconSource: 'brand', brandName: 'whatsapp' }, href: 'https://api.whatsapp.com/send?phone=447000000000' } );
+	assert.equal( val( unbound, 'iconSource' ), 'custom', 'a brand node that is not bound to Site Info is decided from the mark alone' );
+	const other = run( WHATSAPP.replace( '<path', '<path fill="currentColor"' ), { attributes: { ...BOUND, brandName: 'facebook' }, href: 'https://example.com' } );
+	assert.equal( val( other, 'brandName' ), undefined, 'a bound row is never re-pointed at the glyph of another brand' );
+	assert.equal( val( other, 'iconSource' ), 'custom' );
+} );

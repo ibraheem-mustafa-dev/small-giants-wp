@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-opener-refusals.mjs",
+		"find": "} else if ( shut.length ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a state that opened at only some read widths raises nothing"
+	},
+	{
+		"file": "lib/fill-opener-refusals.mjs",
+		"find": "if ( read && ! open.length ) {",
+		"replace": "if ( read && false ) {",
+		"why": "a state that opened at no width loses its whole-state row"
+	},
+	{
+		"file": "lib/fill-opener-refusals.mjs",
+		"find": "if ( noMotion.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a width the motion sampler could not open raises nothing"
+	},
+	{
+		"file": "lib/fill-opener-refusals.mjs",
+		"find": "( [ , v ] ) => false === v?.ok );",
+		"replace": "( [ , v ] ) => true );",
+		"why": "every motion width counts as refused, opened or not"
+	},
+	{
+		"file": "lib/fill-opener-refusals.mjs",
+		"find": "if ( ! opener?.state ) {",
+		"replace": "if ( false ) {",
+		"why": "an opener refused whole gains a second row"
+	}
+]
