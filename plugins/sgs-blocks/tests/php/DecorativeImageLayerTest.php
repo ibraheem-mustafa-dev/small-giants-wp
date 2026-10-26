@@ -384,6 +384,60 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertSame( $css, $out['css'] );
 	}
 
+	public function test_edge_offsets_on_both_axes_replace_the_centre_model(): void {
+		$attrs                  = $this->ring_attrs();
+		$attrs['positionTop']   = array( 'desktop' => '-110px' );
+		$attrs['positionRight'] = array( 'desktop' => '-90px' );
+		$attrs['positionX']     = array( 'desktop' => 30 );
+		$out                    = $this->render_layer( $attrs );
+
+		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{position:absolute;top:-110px;right:-90px;/', $out['css'] );
+		$this->assertStringNotContainsString( 'left:', $out['css'] );
+		$this->assertStringNotContainsString( 'top:50%', $out['css'] );
+		$this->assertStringNotContainsString( 'translate', $out['css'] );
+		$this->assertStringContainsString( 'transform:none', $out['css'] );
+	}
+
+	public function test_one_anchored_axis_keeps_the_other_axis_centred(): void {
+		$attrs                = $this->ring_attrs();
+		$attrs['positionTop'] = array( 'desktop' => '24px' );
+		$attrs['positionX']   = array( 'desktop' => 30 );
+		$attrs['rotation']    = array( 'desktop' => 15 );
+		$out                  = $this->render_layer( $attrs );
+
+		$this->assertMatchesRegularExpression( '/\{position:absolute;left:30%;top:24px;/', $out['css'] );
+		$this->assertStringContainsString( 'transform:translateX(-50%) rotate(15deg)', $out['css'] );
+	}
+
+	public function test_edge_tiers_print_in_their_device_queries_and_mute_the_centre_tiers(): void {
+		$attrs                   = $this->ring_attrs();
+		$attrs['positionBottom'] = array(
+			'desktop' => '-60px',
+			'tablet'  => '-40px',
+			'mobile'  => '-2rem',
+		);
+		$attrs['positionY']      = array(
+			'desktop' => 50,
+			'tablet'  => 20,
+		);
+		$out                     = $this->render_layer( $attrs );
+
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{bottom:-40px/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{bottom:-2rem/', $out['css'] );
+		$this->assertStringNotContainsString( 'top:20%', $out['css'], 'an anchored axis prints no centre tier' );
+		$this->assertStringContainsString( 'transform:translateX(-50%)', $out['css'] );
+	}
+
+	public function test_an_unsafe_edge_value_prints_nothing_and_leaves_the_axis_centred(): void {
+		$attrs                 = $this->ring_attrs();
+		$attrs['positionLeft'] = array( 'desktop' => '1px;}body{color:red' );
+		$out                   = $this->render_layer( $attrs );
+
+		$this->assertStringNotContainsString( 'body{', $out['css'] );
+		$this->assertStringContainsString( 'left:50%', $out['css'] );
+		$this->assertStringContainsString( 'transform:translate(-50%, -50%)', $out['css'] );
+	}
+
 	public function test_opacity_falls_back_to_fully_opaque(): void {
 		$out = $this->render_layer( array(), self::CONTENT );
 

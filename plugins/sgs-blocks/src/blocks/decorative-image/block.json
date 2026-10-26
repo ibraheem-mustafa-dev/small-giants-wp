@@ -66,7 +66,11 @@
                         "css:clip-path": "shape",
                         "css:box-shadow": "boxShadow",
                         "css:box-shadow-color": "boxShadowColour",
-                        "css:height": "height"
+                        "css:height": "height",
+                        "css:top": "positionTop",
+                        "css:right": "positionRight",
+                        "css:bottom": "positionBottom",
+                        "css:left": "positionLeft"
                     },
                     "states": {
                         "hover": {
@@ -76,7 +80,7 @@
                             }
                         }
                     },
-                    "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are percentage-based anchor coordinates for the whole floating element, not literal CSS top/bottom offsets or object-position within a box, so they are deliberately left unmapped — css:top/css:bottom stay genuine gaps rather than being force-mapped to a different semantic. No layer field is declared (this is not a composite). The old motion cluster (transition-duration/transition-timing-function) is still deliberately NOT declared here — these are JS-driven scroll-triggered parameters, not CSS transitions, and mapping them there would misrepresent the mechanism."
+                    "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are the centre model (a percentage of the section with a centring translate), not CSS offsets, so they stay unmapped; css:top/right/bottom/left map to the edge offsets positionTop/Right/Bottom/Left, which anchor their axis to its edges (includes/helpers-layer-edges.php). No layer field is declared (this is not a composite). The old motion cluster (transition-duration/transition-timing-function) is still deliberately NOT declared here — these are JS-driven scroll-triggered parameters, not CSS transitions, and mapping them there would misrepresent the mechanism."
                 }
             }
         }
@@ -133,6 +137,23 @@
 			"type": "object",
 			"default": {"desktop": 50}
 		},
+        "_comment_edges": "Edge offsets, per device: a length from the shared length control, negative values included. An axis whose edge (left or right; top or bottom) holds a value at any device is placed by its edges at every device and drops its centre percentage and its half of the centring translate; an axis with none keeps positionX/positionY. Unset prints nothing.",
+        "positionTop": {
+            "type": "object",
+            "default": {}
+        },
+        "positionRight": {
+            "type": "object",
+            "default": {}
+        },
+        "positionBottom": {
+            "type": "object",
+            "default": {}
+        },
+        "positionLeft": {
+            "type": "object",
+            "default": {}
+        },
         "width": {
 			"type": "object",
 			"default": {"desktop": 200}

@@ -22,6 +22,7 @@ import { elementCustomProperties, requiresBox } from '../../components/media/can
 import { usePreviewTier } from '../../utils';
 import LayerImagePanel from './LayerImagePanel';
 import LayerBoxPanels from './LayerBoxPanels';
+import LayerEdgePanel from './LayerEdgePanel';
 import { layerPreviewStyle, layerBoxPreview } from './layer-preview';
 
 const OVERFLOW_OPTIONS = [
@@ -44,6 +45,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		imageDecorative,
 		positionX,
 		positionY,
+		positionTop,
+		positionRight,
+		positionBottom,
+		positionLeft,
 		width,
 		widthUnit,
 		maxWidthPercent,
@@ -153,6 +158,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		{
 			positionX,
 			positionY,
+			positionTop,
+			positionRight,
+			positionBottom,
+			positionLeft,
 			width,
 			widthUnit,
 			maxWidthPercent,
@@ -175,6 +184,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	return (
 		<>
 			<LayerBoxPanels attributes={ attributes } setAttributes={ setAttributes } />
+			<LayerEdgePanel attributes={ attributes } setAttributes={ setAttributes } />
 			<InspectorControls>
 				<LayerImagePanel
 					media={ effectiveMedia }

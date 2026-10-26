@@ -136,3 +136,40 @@ describe( 'layerPreviewStyle max width cap', () => {
 		expect( at( undefined ) ).toBe( '20%' );
 	} );
 } );
+
+describe( 'layerPreviewStyle edge offsets (the twin of DecorativeImageLayerTest edge cases)', () => {
+	it( 'edges on both axes replace the centre model', () => {
+		const style = layerPreviewStyle(
+			{ positionTop: { desktop: '-110px' }, positionRight: { desktop: '-90px' }, positionX: { desktop: 30 } },
+			'desktop',
+			false
+		);
+		expect( style.top ).toBe( '-110px' );
+		expect( style.right ).toBe( '-90px' );
+		expect( style.left ).toBeUndefined();
+		expect( style.transform ).toBe( 'none' );
+	} );
+
+	it( 'one anchored axis keeps the other axis centred', () => {
+		const style = layerPreviewStyle(
+			{ positionTop: { desktop: '24px' }, positionX: { desktop: 30 }, rotation: { desktop: 15 } },
+			'desktop',
+			false
+		);
+		expect( style.left ).toBe( '30%' );
+		expect( style.top ).toBe( '24px' );
+		expect( style.transform ).toBe( 'translateX(-50%) rotate(15deg)' );
+	} );
+
+	it( 'a narrower tier inherits the wider edge and an anchored axis ignores its centre tiers', () => {
+		const attrs = { positionBottom: { desktop: '-60px', tablet: '-40px' }, positionY: { desktop: 50, tablet: 20 } };
+		expect( layerPreviewStyle( attrs, 'mobile', false ).bottom ).toBe( '-40px' );
+		expect( layerPreviewStyle( attrs, 'tablet', false ).top ).toBeUndefined();
+	} );
+
+	it( 'an unsafe edge value prints nothing and leaves the axis centred', () => {
+		const style = layerPreviewStyle( { positionLeft: { desktop: '1px;}body{color:red' } }, 'desktop', false );
+		expect( style.left ).toBe( '50%' );
+		expect( style.transform ).toBe( 'translate(-50%, -50%)' );
+	} );
+} );

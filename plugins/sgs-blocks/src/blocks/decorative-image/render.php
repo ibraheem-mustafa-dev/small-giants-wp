@@ -33,6 +33,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-motion-effect.php';
 require_once dirname( __DIR__, 3 ) . '/includes/media/atoms/box-shape.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-layer-edges.php';
 
 // ---------------------------------------------------------------------------
 // 0. Security sanitiser (contract §D) — every value that reaches the scoped
@@ -194,11 +195,24 @@ $max_width_css    = min( 100.0, max( 0.0, $sgs_css_num( $max_width_percent, 2 ) 
 $opacity_css      = $sgs_css_num( $opacity / 100, 4 );
 $z_index_css      = (int) $sgs_css_num( $z_index, 0 );
 
+// The layer's edge offsets (includes/helpers-layer-edges.php): an axis anchored to its edges prints them and drops
+// its centre percentage and its half of the centring translate.
+$sgs_di_edges = sgs_layer_edges( $attributes );
+if ( ! $sgs_di_edges['x'] && ! $sgs_di_edges['y'] ) {
+	$sgs_di_centring = 'translate(-50%, -50%)';
+} elseif ( ! $sgs_di_edges['x'] ) {
+	$sgs_di_centring = 'translateX(-50%)';
+} elseif ( ! $sgs_di_edges['y'] ) {
+	$sgs_di_centring = 'translateY(-50%)';
+} else {
+	$sgs_di_centring = '';
+}
+
 // The whole transform is rebuilt per tier: rotation shares the one
 // `transform` property with the centring translate and the flip, so a tier
 // rule must carry every part.
-$sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x ) {
-	$parts   = array( 'translate(-50%, -50%)' );
+$sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x, $sgs_di_centring ) {
+	$parts   = '' !== $sgs_di_centring ? array( $sgs_di_centring ) : array();
 	$deg_css = $sgs_css_num( $rotation_deg, 2 );
 	if ( 0.0 !== $deg_css ) {
 		$parts[] = 'rotate(' . $deg_css . 'deg)';
@@ -206,7 +220,7 @@ $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x ) {
 	if ( $flip_x ) {
 		$parts[] = 'scaleX(-1)';
 	}
-	return implode( ' ', $parts );
+	return $parts ? implode( ' ', $parts ) : 'none';
 };
 
 // Fit the content ignores the width tiers and the percentage cap; a percentage width is already a share of the
@@ -220,11 +234,10 @@ if ( 'auto' === $width_unit ) {
 }
 
 $root_decls = array_merge(
-	array(
-		'position:absolute',
-		'left:' . $pos_x_css . '%',
-		'top:' . $pos_y_css . '%',
-	),
+	array( 'position:absolute' ),
+	$sgs_di_edges['x'] ? array() : array( 'left:' . $pos_x_css . '%' ),
+	$sgs_di_edges['y'] ? array() : array( 'top:' . $pos_y_css . '%' ),
+	$sgs_di_edges['tiers']['desktop'],
 	$size_decls,
 	array(
 		'opacity:var(--sgs-di-op, ' . $opacity_css . ')',
@@ -246,10 +259,10 @@ $scoped_css[] = "{$root_sel}{" . implode( ';', $root_decls ) . ';}';
 // above, so only the two lower tiers are passed to the shared emitter (its
 // base `attr` key is deliberately absent from the synthetic array).
 $sgs_di_tier_attrs = array(
-	'positionXTablet' => $position_x_tablet,
-	'positionXMobile' => $position_x_mobile,
-	'positionYTablet' => $position_y_tablet,
-	'positionYMobile' => $position_y_mobile,
+	'positionXTablet' => $sgs_di_edges['x'] ? null : $position_x_tablet,
+	'positionXMobile' => $sgs_di_edges['x'] ? null : $position_x_mobile,
+	'positionYTablet' => $sgs_di_edges['y'] ? null : $position_y_tablet,
+	'positionYMobile' => $sgs_di_edges['y'] ? null : $position_y_mobile,
 	'widthTablet'     => $width_tablet,
 	'widthMobile'     => $width_mobile,
 	'rotationTablet'  => $rotation_tablet,
@@ -296,11 +309,11 @@ if ( '' !== $sgs_di_tier_css ) {
 	$scoped_css[] = $sgs_di_tier_css;
 }
 
-// The box's own tiers (border width and radius, height), its hover shadow and its gradient
+// The box's own tiers (edge offsets, border width and radius, height), its hover shadow and its gradient
 // ring. Tier rules print after the base rule, so a device value wins inside its query.
 foreach ( array( 'tablet', 'mobile' ) as $sgs_di_tier ) {
 	$sgs_di_max        = SGS_Breakpoints::max_for_tier( $sgs_di_tier );
-	$sgs_di_tier_decls = $sgs_di_border[ $sgs_di_tier ];
+	$sgs_di_tier_decls = array_merge( $sgs_di_edges['tiers'][ $sgs_di_tier ], $sgs_di_border[ $sgs_di_tier ] );
 	$sgs_di_tier_h     = sgs_css_length_value( $sgs_di_height[ $sgs_di_tier ] ?? '' );
 	if ( '' !== $sgs_di_tier_h ) {
 		$sgs_di_tier_decls[] = 'height:' . $sgs_di_tier_h;

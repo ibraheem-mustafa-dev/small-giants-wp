@@ -12,7 +12,8 @@
  * `packages/block-editor/src/components/spacing-sizes-control/input-controls/spacing-input-control.js`
  * (px 0-300 step 1; % and the viewport units 0-100 step 1; em and rem 0-10 step 0.1; the lower bound is 0).
  * A caller whose role needs a tighter range (a corner radius) passes `max`, in px: em/rem take it divided by 16,
- * while % and the viewport units keep core's range.
+ * while % and the viewport units keep core's range. A caller whose length may be negative (an edge offset that pushes
+ * a layer past its section's side) passes `negative`, and the slider runs from minus the ceiling to the ceiling.
  *
  * ── scale="font-size": core's real FontSizePicker ───────────────────────
  * The same control, props and ranges TypographyControls renders for a font size (presets, gear toggle, unit box,
@@ -83,11 +84,12 @@ const FONT_SIZE_UNITS = [ 'px', 'em', 'rem', 'vw', 'vh' ];
 const FONT_SIZE_PRESET_RE = /^var\(--wp--preset--font-size--([a-z0-9-]+)\)$/;
 
 /**
- * @param {string}           unit Parsed unit.
- * @param {number|undefined} max  Caller's tighter maximum, in px.
+ * @param {string}           unit       Parsed unit.
+ * @param {number|undefined} max        Caller's tighter maximum, in px.
+ * @param {boolean}          [negative] The length may be negative: the range starts at minus the ceiling.
  * @return {{min: number, max: number, step: number}} The slider range for that unit.
  */
-export function sliderRange( unit, max ) {
+export function sliderRange( unit, max, negative = false ) {
 	const core = CUSTOM_VALUE_SETTINGS[ unit ] || DEFAULT_RANGE;
 	let ceiling = core.max;
 	if ( 'number' === typeof max ) {
@@ -97,7 +99,7 @@ export function sliderRange( unit, max ) {
 			ceiling = Math.max( 1, Math.round( max / 16 ) );
 		}
 	}
-	return { min: 0, max: ceiling, step: core.step };
+	return { min: negative ? -ceiling : 0, max: ceiling, step: core.step };
 }
 
 /**
@@ -185,6 +187,7 @@ function FontSizeScale( {
  *                                                            `distance` tokens), listed after the spacing scale. Only when the
  *                                                            attribute stores a string.
  * @param {number}                [props.max]                 Tighter slider ceiling in px for a role that needs it (a corner radius).
+ * @param {boolean}               [props.negative=false]      The length may be negative (an edge offset): the slider starts at minus its ceiling.
  * @param {string}                [props.help]                Help line under the control.
  * @param {string}                [props.placeholder]         Shown in the value box while unset (an inherited tier value); the slider
  *                                                            rests at it.
@@ -203,6 +206,7 @@ export default function SgsLengthControl( {
 	presets = false,
 	tokenPresets,
 	max,
+	negative = false,
 	help,
 	placeholder,
 	hideLabelFromVision,
@@ -264,7 +268,7 @@ export default function SgsLengthControl( {
 		shown.num === undefined && resting.num !== undefined
 			? resting.unit
 			: shown.unit;
-	const range = sliderRange( unit, max );
+	const range = sliderRange( unit, max, negative );
 	const sliderValue = shown.num ?? resting.num ?? 0;
 	// The typed length, shown whole; a preset or token with no plain length leaves the box empty.
 	let boxValue = `${ shown.num }${ shown.unit }`;

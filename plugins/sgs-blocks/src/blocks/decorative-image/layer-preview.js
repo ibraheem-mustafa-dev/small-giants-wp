@@ -4,14 +4,53 @@
  * Position, size, opacity, stacking and transform are read for the previewed tier (a narrower tier inherits from the
  * wider one, as the frontend's @media overrides do). `widthUnit` follows render.php: Fit the content ("auto") is
  * max-content capped at the parent and ignores the tiers; Percentage drops the cap; Fixed keeps the pixel width with
- * the percentage cap.
+ * the percentage cap. An axis with an edge offset set is placed by its edges instead of its centre (`layerEdges`).
  */
 
 import { resolveTier } from '../../utils/responsive';
+import { cssLengthValue } from '../../utils/css-length';
 import { sgsBorderPreview } from '../../utils/border-preview';
 import { backgroundPaintPreview } from '../../utils/background-preview';
 import { composeShadow } from '../../utils/shadow-layers';
 import { css as boxShapeCss } from '../../components/media/atoms/box-shape';
+
+const EDGES = {
+	top: 'positionTop',
+	right: 'positionRight',
+	bottom: 'positionBottom',
+	left: 'positionLeft',
+};
+const TIERS = [ 'desktop', 'tablet', 'mobile' ];
+
+/**
+ * The layer's edge anchoring, the canvas twin of includes/helpers-layer-edges.php::sgs_layer_edges: an axis whose edge
+ * holds a value at any tier is anchored to its edges at every tier; `offsets` are the edges the previewed tier sets (a
+ * narrower tier inheriting from the wider one, as the frontend's @media rules do).
+ *
+ * @param {Object} attributes Block attributes (positionTop, positionRight, positionBottom, positionLeft).
+ * @param {string} tier       Previewed tier.
+ * @return {{x: boolean, y: boolean, offsets: Object}} Anchoring per axis and the React style offsets.
+ */
+export function layerEdges( attributes, tier ) {
+	const out = { x: false, y: false, offsets: {} };
+	for ( const [ property, attr ] of Object.entries( EDGES ) ) {
+		const tiers = attributes[ attr ] || {};
+		if (
+			TIERS.some( ( t ) => '' !== cssLengthValue( tiers[ t ] ?? '' ) )
+		) {
+			out[
+				'left' === property || 'right' === property ? 'x' : 'y'
+			] = true;
+		}
+		const value = cssLengthValue(
+			resolveTier( tiers, tier, '' ).value ?? ''
+		);
+		if ( '' !== value ) {
+			out.offsets[ property ] = value;
+		}
+	}
+	return out;
+}
 
 /**
  * @param {Object}  attributes Block attributes.
@@ -33,6 +72,15 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 		overflow,
 	} = attributes;
 
+	const edges = layerEdges( attributes, tier );
+	let centring = 'translate(-50%, -50%)';
+	if ( edges.x && edges.y ) {
+		centring = '';
+	} else if ( edges.x ) {
+		centring = 'translateY(-50%)';
+	} else if ( edges.y ) {
+		centring = 'translateX(-50%)';
+	}
 	const x = resolveTier( positionX, tier, 50 ).value;
 	const y = resolveTier( positionY, tier, 50 ).value;
 	const degrees = resolveTier( rotation, tier, 0 ).value;
@@ -46,25 +94,30 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 		size.width = `${ tierWidth }%`;
 	} else {
 		size.width = `${ tierWidth }px`;
-		size.maxWidth = `${ Math.min( 100, Math.max( 0, Number( maxWidthPercent ?? 20 ) || 0 ) ) }%`;
+		size.maxWidth = `${ Math.min(
+			100,
+			Math.max( 0, Number( maxWidthPercent ?? 20 ) || 0 )
+		) }%`;
 	}
 
 	return {
 		position: 'absolute',
-		left: `${ x }%`,
-		top: `${ y }%`,
+		...( edges.x ? {} : { left: `${ x }%` } ),
+		...( edges.y ? {} : { top: `${ y }%` } ),
+		...edges.offsets,
 		...size,
 		opacity: ( opacity ?? 100 ) / 100,
 		zIndex: zIndex ?? 1,
 		overflow: overflow ?? 'visible',
 		pointerEvents: 'auto',
-		transform: [
-			'translate(-50%, -50%)',
-			Number( degrees ) !== 0 && `rotate(${ degrees }deg)`,
-			flipX && 'scaleX(-1)',
-		]
-			.filter( Boolean )
-			.join( ' ' ),
+		transform:
+			[
+				centring,
+				Number( degrees ) !== 0 && `rotate(${ degrees }deg)`,
+				flipX && 'scaleX(-1)',
+			]
+				.filter( Boolean )
+				.join( ' ' ) || 'none',
 	};
 }
 
@@ -82,12 +135,18 @@ function hasBorderWidth( widthValues ) {
 		return false;
 	}
 	const tiered = BORDER_TIERS.some( ( t ) => null != widthValues[ t ] );
-	const boxes = tiered ? BORDER_TIERS.map( ( t ) => widthValues[ t ] ) : [ widthValues ];
+	const boxes = tiered
+		? BORDER_TIERS.map( ( t ) => widthValues[ t ] )
+		: [ widthValues ];
 	return boxes.some(
 		( box ) =>
 			box &&
 			'object' === typeof box &&
-			BORDER_SIDES.some( ( side ) => [ 'string', 'number' ].includes( typeof box[ side ] ) && '' !== String( box[ side ] ).trim() )
+			BORDER_SIDES.some(
+				( side ) =>
+					[ 'string', 'number' ].includes( typeof box[ side ] ) &&
+					'' !== String( box[ side ] ).trim()
+			)
 	);
 }
 
@@ -102,10 +161,31 @@ function hasBorderWidth( widthValues ) {
  * @return {boolean} True when render.php would print the layer.
  */
 export function layerPaintsBox( attributes, palette ) {
-	const { borderWidth, borderStyle, borderColourGradient, backgroundColour, backgroundColourGradient, boxShadow, boxShadowColour } = attributes;
-	const bordered = 'none' !== String( borderStyle || '' ).trim().toLowerCase() && ( hasBorderWidth( borderWidth ) || '' !== String( borderColourGradient || '' ).trim() );
+	const {
+		borderWidth,
+		borderStyle,
+		borderColourGradient,
+		backgroundColour,
+		backgroundColourGradient,
+		boxShadow,
+		boxShadowColour,
+	} = attributes;
+	const bordered =
+		'none' !==
+			String( borderStyle || '' )
+				.trim()
+				.toLowerCase() &&
+		( hasBorderWidth( borderWidth ) ||
+			'' !== String( borderColourGradient || '' ).trim() );
 	const shadow = composeShadow( boxShadow || '', boxShadowColour || '' );
-	const filled = Object.keys( backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ) ).length > 0;
+	const filled =
+		Object.keys(
+			backgroundPaintPreview(
+				backgroundColour,
+				backgroundColourGradient,
+				palette
+			)
+		).length > 0;
 	return bordered || ( '' !== shadow && 'none' !== shadow ) || filled;
 }
 
@@ -115,13 +195,18 @@ export function layerPaintsBox( attributes, palette ) {
  * unset adds nothing. A layer with no media and no content (`shapeOnly`) previews a box only when
  * `layerPaintsBox()` says render.php would draw one, so the canvas never shows a layer the page omits.
  *
- * @param {Object} attributes Block attributes.
- * @param {string} tier       Previewed tier: 'desktop' | 'tablet' | 'mobile'.
- * @param {Array}  [palette]  Theme colour palette.
+ * @param {Object}  attributes        Block attributes.
+ * @param {string}  tier              Previewed tier: 'desktop' | 'tablet' | 'mobile'.
+ * @param {Array}   [palette]         Theme colour palette.
  * @param {boolean} [shapeOnly=false] The layer holds no media and no inner blocks.
  * @return {Object} React style fragment; {} when nothing is set.
  */
-export function layerBoxPreview( attributes, tier, palette, shapeOnly = false ) {
+export function layerBoxPreview(
+	attributes,
+	tier,
+	palette,
+	shapeOnly = false
+) {
 	if ( shapeOnly && ! layerPaintsBox( attributes, palette ) ) {
 		return {};
 	}
@@ -150,7 +235,11 @@ export function layerBoxPreview( attributes, tier, palette, shapeOnly = false ) 
 			tier,
 			palette
 		),
-		...backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ),
+		...backgroundPaintPreview(
+			backgroundColour,
+			backgroundColourGradient,
+			palette
+		),
 	};
 
 	const shadow = composeShadow( boxShadow || '', boxShadowColour || '' );
@@ -159,8 +248,11 @@ export function layerBoxPreview( attributes, tier, palette, shapeOnly = false ) 
 	}
 
 	// The shape's clip-path comes from the box-shape atom's own emitter, the way the hero canvas reads it.
-	const clip = boxShapeCss( { attributes, prefix: '', blockSlug: 'sgs/decorative-image' } )
-		.find( ( decl ) => decl.startsWith( '--sgs-media-clip-path:' ) );
+	const clip = boxShapeCss( {
+		attributes,
+		prefix: '',
+		blockSlug: 'sgs/decorative-image',
+	} ).find( ( decl ) => decl.startsWith( '--sgs-media-clip-path:' ) );
 	if ( clip ) {
 		style.clipPath = clip.slice( clip.indexOf( ':' ) + 1 );
 	}

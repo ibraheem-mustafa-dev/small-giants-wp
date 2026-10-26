@@ -258,6 +258,8 @@ describe( 'SgsLengthControl core ranges per unit', () => {
 	test( 'a caller max tightens px (and rem/em by 16) but never % or the viewport units', () => {
 		expect( sliderRange( 'px', 60 ).max ).toBe( 60 );
 		expect( sliderRange( 'rem', 64 ).max ).toBe( 4 );
+		expect( sliderRange( 'px', undefined, true ) ).toEqual( { min: -300, max: 300, step: 1 } );
+		expect( sliderRange( 'rem', 64, true ) ).toEqual( { min: -4, max: 4, step: 0.1 } );
 		expect( sliderRange( '%', 60 ).max ).toBe( 100 );
 		expect( sliderRange( 'vw', 60 ).max ).toBe( 100 );
 	} );
