@@ -431,7 +431,8 @@ final class IconLabelTest extends TestCase {
 
 	public function test_stylesheet_keeps_the_target_and_paints_the_label(): void {
 		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/icon/style.css' );
-		$this->assertMatchesRegularExpression( '#\.sgs-icon__link \{[^}]*min-inline-size: 44px;[^}]*min-block-size: 44px;#s', $css );
+		// The 44px tap floor is the fallback a set icon size overrules (ruling 11, 2026-10-23).
+		$this->assertMatchesRegularExpression( '#\.sgs-icon__link \{[^}]*min-inline-size: var\(--sgs-icon-tap-min, var\(--sgs-si-tap-min, 44px\)\);[^}]*min-block-size: var\(--sgs-icon-tap-min, var\(--sgs-si-tap-min, 44px\)\);#s', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--label-below \.sgs-icon__link,\s*\.sgs-icon--label-below \.sgs-icon__inner \{\s*flex-direction: column;#', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--label-above \.sgs-icon__link,\s*\.sgs-icon--label-above \.sgs-icon__inner \{\s*flex-direction: column-reverse;#', $css );
 		$this->assertMatchesRegularExpression( '#\.sgs-icon--label-start \.sgs-icon__link,\s*\.sgs-icon--label-start \.sgs-icon__inner \{\s*flex-direction: row-reverse;#', $css );

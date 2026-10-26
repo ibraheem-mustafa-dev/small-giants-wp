@@ -44,8 +44,9 @@ final class MotionRendererTest extends TestCase {
 		$this->assertSame( 1, substr_count( $css, '@media (max-width:1023px){' . $sel . '{--sgs-mh-to-s:1.02;}}' ), $css );
 		$this->assertSame( 1, substr_count( $css, '@media (max-width:767px){' . $sel . '{--sgs-mh-to-ty:-3px;}}' ), $css );
 		$this->assertSame( 1, substr_count( $css, 'transition:' ) );
-		$this->assertStringContainsString( 'transition:--sgs-mh-s 250ms var(--wp--custom--easing--emphasised) 0ms, --sgs-mh-ty 250ms', $css );
-		$this->assertStringContainsString( 'box-shadow 250ms', $css );
+		// Movement reads the client's hover easing token first; colour and shadow run on transition.fast (decision 3, 2026-10-24).
+		$this->assertStringContainsString( 'transition:--sgs-mh-s 250ms var(--wp--custom--hover--easing, var(--wp--custom--easing--emphasised)) 0ms, --sgs-mh-ty 250ms', $css );
+		$this->assertStringContainsString( 'box-shadow var(--wp--custom--transition--fast', $css );
 		$this->assertStringNotContainsString( 'transition:all', str_replace( ' ', '', $css ) );
 		$this->assertStringNotContainsString( '--sgs-mh-rot', $css, 'only the owners present are listed' );
 		$this->assertStringNotContainsString( ' style=', $out );

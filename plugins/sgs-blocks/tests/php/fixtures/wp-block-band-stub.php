@@ -36,7 +36,8 @@ if ( ! function_exists( 'sanitize_html_class' ) ) {
 }
 
 /**
- * A block of the given name whose type declares no supports.
+ * A block of the given name whose type declares no supports and no attributes (a real block type always carries
+ * both, so the wrapper never falls back to the block registry).
  *
  * @param string $name Block name.
  * @return WP_Block
@@ -44,6 +45,9 @@ if ( ! function_exists( 'sanitize_html_class' ) ) {
 function sgs_test_band_block( string $name ): WP_Block {
 	$block             = new WP_Block();
 	$block->name       = $name;
-	$block->block_type = (object) array( 'supports' => array() );
+	$block->block_type = (object) array(
+		'supports'   => array(),
+		'attributes' => array(),
+	);
 	return $block;
 }

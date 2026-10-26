@@ -305,7 +305,8 @@ final class GoogleReviewsLogoAlwaysShownTest extends TestCase {
 		$this->assertMatchesRegularExpression( '#\n\.sgs-google-reviews \.sgs-google-reviews__write-review \{\s*color: var\( --sgs-gr-blue \);#', $css );
 		$this->assertMatchesRegularExpression( '#\n\.sgs-google-reviews \.sgs-google-reviews__review-link \{\s*color: var\( --sgs-gr-blue \);#', $css );
 		// With no colour set, the stylesheet carries Google's hover defaults (render.php emits nothing then).
-		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:hover, \.sgs-google-reviews__arrow:focus-visible \) \{([^}]*)\}#', $css, $h ) );
+		// The focus member carries the focus system's rest exclusion (`:where(:not(.sgs-focus-rests, …))`).
+		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__arrow:hover, \.sgs-google-reviews__arrow:focus-visible(?::where\(:not\([^)]*\)\))? \) \{([^}]*)\}#', $css, $h ) );
 		$this->assertStringContainsString( 'border-color: var( --sgs-gr-blue );', $h[1] );
 		$this->assertStringNotContainsString( 'background-color', $h[1] );
 		$this->assertSame( 1, preg_match( '#:where\( \.sgs-google-reviews__write-review:hover \) \{([^}]*)\}#', $css, $wh ) );

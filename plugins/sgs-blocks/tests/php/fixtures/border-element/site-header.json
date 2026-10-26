@@ -6,10 +6,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -27,10 +27,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -48,10 +48,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -68,10 +68,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -88,10 +88,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -107,10 +107,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -143,10 +143,10 @@
             "position:absolute"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -162,10 +162,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [
@@ -184,10 +184,10 @@
             "justify-content:center"
         ],
         " || .sgs-sh-UID.sgs-site-header>*": [
-            "flex:0 1 auto",
-            "min-height:auto"
+            "flex:0 1 auto"
         ],
         " || :where(.sgs-sh-UID.sgs-site-header > *)": [
+            "min-height:auto",
             "width:100%"
         ],
         "@media (prefers-reduced-motion:reduce) || .sgs-sh-UID.sgs-site-header": [

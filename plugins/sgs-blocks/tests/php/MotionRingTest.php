@@ -85,7 +85,7 @@ final class MotionRingTest extends TestCase {
 
 		$this->assertStringContainsString( '--sgs-mh-to-ring:4px;', $css );
 		$this->assertStringContainsString( '--sgs-mh-to-ring-c:#0A7EA8;', $css );
-		$this->assertMatchesRegularExpression( '/transition:[^;}]*box-shadow 250ms [^;}]*\\b0ms\\b/', $css, 'box-shadow is in the state\'s one transition list' );
+		$this->assertMatchesRegularExpression( '/transition:[^;}]*box-shadow var\\(--wp--custom--transition--fast[^;}]*\\b0ms\\b/', $css, 'box-shadow is in the state\'s one transition list, on the colour and shadow timing (decision 3)' );
 		$this->assertMatchesRegularExpression( '/data-sgs-mc="[^"]*\\bbox-shadow\\b/', $out, 'the stylesheet\'s box-shadow channel is switched on' );
 		$this->assertStringContainsString( 'data-sgs-mh="self"', $out );
 		$this->assertStringNotContainsString( 'outline', $css, 'the keyboard focus outline is never touched' );

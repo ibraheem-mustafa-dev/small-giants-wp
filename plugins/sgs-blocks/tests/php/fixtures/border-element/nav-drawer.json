@@ -17,6 +17,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -44,6 +46,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -71,6 +75,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -97,6 +103,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -123,6 +131,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -148,6 +158,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -177,6 +189,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -215,6 +229,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
@@ -243,6 +259,8 @@
             "align-items:flex-start"
         ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer .sgs-nav-drawer__close": [
+            "--sgs-nd-close-size:44px",
+            "--sgs-nd-close-tap-min:0px",
             "height:44px",
             "min-height:44px",
             "min-width:44px",
