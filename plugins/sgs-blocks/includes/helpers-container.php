@@ -200,7 +200,7 @@ if ( ! function_exists( 'sgs_intrinsic_columns_track' ) ) {
 	 * @param string|null $basis     Optional explicit CSS length (e.g. '320px') to use as
 	 *                               BASIS instead of the built-in `var(--sgs-col-basis,16rem)`
 	 *                               default. Client-configurable via `sgs/container`'s
-	 *                               `minColumnWidth`/`minColumnWidthUnit` attribute pair
+	 *                               `minColumnWidth` attribute
 	 *                               (resolved per-tier by `sgs_container_tier_min_column_width()`).
 	 *                               Null or an empty string falls back to the default unchanged —
 	 *                               `sgs/site-footer-row`, the only other caller, never passes
@@ -230,12 +230,11 @@ if ( ! function_exists( 'sgs_intrinsic_columns_track' ) ) {
 if ( ! function_exists( 'sgs_container_tier_min_column_width' ) ) {
 	/**
 	 * Resolve the effective intrinsic-columns BASIS (minimum column width) for one
-	 * device tier, from `sgs/container`'s client-configurable `minColumnWidth` /
-	 * `minColumnWidthUnit` attribute pair.
+	 * device tier, from `sgs/container`'s client-configurable `minColumnWidth`
+	 * attribute.
 	 *
 	 * `minColumnWidth` is tiered (desktop/tablet/mobile), the same shape as `gap`;
-	 * `minColumnWidthUnit` is a single flat string applied to every tier, the same
-	 * shape as `sgs/feature-grid`'s `minItemWidth`/`minItemWidthUnit` pair. Tiers
+	 * each tier holds a CSS length string carrying its own unit. Tiers
 	 * inherit upward (mobile -> tablet -> desktop) via the canonical
 	 * `sgs_resolve_tier()` cascade, matching every other responsive attribute.
 	 *
@@ -257,10 +256,9 @@ if ( ! function_exists( 'sgs_container_tier_min_column_width' ) ) {
 			return null;
 		}
 
-		$unit = $attributes['minColumnWidthUnit'] ?? 'px';
-		$unit = in_array( $unit, array( 'px', 'em', 'rem' ), true ) ? $unit : 'px';
+		$length = sgs_css_length_value( $width );
 
-		return absint( $width ) . $unit;
+		return '' === $length ? null : $length;
 	}
 }
 

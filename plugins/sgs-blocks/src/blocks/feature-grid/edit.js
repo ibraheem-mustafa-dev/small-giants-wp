@@ -22,6 +22,7 @@ import {
 	usePreviewTier,
 	wrapperPreview,
 } from '../../utils';
+import { cssLengthValue } from '../../utils/css-length';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
 const LAYOUT_MODE_OPTIONS = [
@@ -76,7 +77,6 @@ function buildGridStyle( attributes ) {
 		layoutMode,
 		columns,
 		minItemWidth,
-		minItemWidthUnit,
 		gap,
 		alignItems,
 		justifyItems,
@@ -94,9 +94,13 @@ function buildGridStyle( attributes ) {
 		: ( gapDesktop || '24px' );
 
 	if ( 'auto-flex' === layoutMode ) {
+		const minItemDesktop =
+			cssLengthValue(
+				resolveResponsiveTier( minItemWidth, 'desktop' )?.value
+			) || '240px';
 		return {
 			display: 'grid',
-			gridTemplateColumns: `repeat(auto-fill, minmax(${ minItemWidth }${ minItemWidthUnit }, 1fr))`,
+			gridTemplateColumns: `repeat(auto-fill, minmax(${ minItemDesktop }, 1fr))`,
 			gap: gapCss,
 			alignItems,
 			justifyItems,
@@ -130,7 +134,6 @@ export default function Edit( { attributes, setAttributes } ) {
 	const {
 		layoutMode,
 		minItemWidth,
-		minItemWidthUnit,
 		gap,
 		alignItems,
 		justifyItems,
@@ -167,7 +170,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			attributes.columns,
 			attributes.gridTemplateColumns,
 			minItemWidth,
-			minItemWidthUnit,
 			gap,
 		],
 	} );
@@ -268,29 +270,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 
-					{ /* SgsLengthControl adoption (Gate B, presets={false}) — split-scalar
-					   case: minItemWidth (number) + minItemWidthUnit (string) are two
-					   separate stored attrs composed into one display string, same
-					   shape as label/edit.js's composeUnit pattern. Safe: SgsLengthControl's
-					   presets=false branch forwards the raw UnitControl string unchanged
-					   to onChange, so the split-and-setAttributes logic below is
-					   untouched — see Branch 2 report. */ }
 					{ 'auto-flex' === layoutMode && (
-						<SgsLengthControl
+						<ResponsiveOverride
 							label={ __( 'Min item width', 'sgs-blocks' ) }
-							value={ `${ minItemWidth }${ minItemWidthUnit || 'px' }` }
-							units={ [
-								{ value: 'px',  label: 'px',  default: 200 },
-								{ value: 'em',  label: 'em',  default: 10 },
-								{ value: 'rem', label: 'rem', default: 10 },
-							] }
-							onChange={ ( val ) => {
-								const unit = val?.replace( /[\d.]+/, '' ) || 'px';
-								const num  = parseFloat( val ) || 120;
-								setAttributes( { minItemWidth: num, minItemWidthUnit: unit } );
-							} }
-							presets={ false }
-						/>
+							value={ minItemWidth }
+							onChange={ ( obj ) =>
+								setAttributes( { minItemWidth: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<SgsLengthControl
+									presets={ false }
+									label={ __( 'Min item width', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ ownValue || '' }
+									placeholder={
+										inherited ? effectiveValue || '' : ''
+									}
+									units={ [
+										{ value: 'px', label: 'px', default: 200 },
+										{ value: 'em', label: 'em', default: 10 },
+										{ value: 'rem', label: 'rem', default: 10 },
+									] }
+									onChange={ ( val ) => setOwnValue( val || '' ) }
+								/>
+							) }
+						</ResponsiveOverride>
 					) }
 
 					{ /*

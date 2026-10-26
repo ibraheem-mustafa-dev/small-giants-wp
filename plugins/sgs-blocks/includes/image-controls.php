@@ -11,10 +11,8 @@
  *                      an object-position percentage pair server-side)
  * - sgsObjectFit      (string — cover/contain/fill/none/scale-down, '' = no override)
  * - sgsMaxWidth       (string CSS value — e.g. "640px" or "80%")
- * - sgsHeightDesktop  (integer, 0 = auto)
- * - sgsHeightTablet   (integer, 0 = inherit from desktop)
- * - sgsHeightMobile   (integer, 0 = inherit from desktop)
- * - sgsHeightUnit     (string — px / vh / em / %)
+ * - sgsHeight         (object — one CSS length per device, e.g. {"desktop":"320px","mobile":"60vh"};
+ *                       a device with no value inherits, none at all = natural height)
  * - sgsColourTreatment (string — '' / 'white'. 'white' forces the image to pure
  *                        white via a CSS filter, e.g. a full-colour logo on a
  *                        dark footer — '' = no override.)
@@ -73,8 +71,8 @@ function inject_image_controls( string $block_content, array $block ): string {
 
 	$attrs = $block['attrs'] ?? array();
 
-	// Allowed CSS units — validated strictly to prevent injection.
-	$allowed_units = array( 'px', 'vh', 'em', '%' );
+	require_once __DIR__ . '/helpers-css-safety.php';
+	require_once __DIR__ . '/helpers-responsive.php';
 
 	// sgsObjectPosition is a FocalPointPicker {x,y} object (floats 0-1). Resolve
 	// to an "X% Y%" object-position pair server-side via the shared helper
@@ -94,13 +92,10 @@ function inject_image_controls( string $block_content, array $block ): string {
 	$object_fit          = in_array( $object_fit_raw, $allowed_object_fits, true ) ? $object_fit_raw : '';
 
 	$max_width       = sanitize_text_field( $attrs['sgsMaxWidth'] ?? '' );
-	$height_desktop  = absint( $attrs['sgsHeightDesktop'] ?? 0 );
-	$height_tablet   = absint( $attrs['sgsHeightTablet'] ?? 0 );
-	$height_mobile   = absint( $attrs['sgsHeightMobile'] ?? 0 );
-	$height_unit_raw = $attrs['sgsHeightUnit'] ?? 'px';
-	$height_unit     = in_array( $height_unit_raw, $allowed_units, true )
-		? $height_unit_raw
-		: 'px';
+	$height_tiers    = sgs_responsive_normalise_object( $attrs['sgsHeight'] ?? null );
+	$height_desktop  = sgs_css_length_value( $height_tiers['desktop'] ?? '' );
+	$height_tablet   = sgs_css_length_value( $height_tiers['tablet'] ?? '' );
+	$height_mobile   = sgs_css_length_value( $height_tiers['mobile'] ?? '' );
 
 	$allowed_colour_treatments = array( 'white' );
 	$colour_treatment_raw      = $attrs['sgsColourTreatment'] ?? '';
@@ -113,9 +108,9 @@ function inject_image_controls( string $block_content, array $block ): string {
 		'' === $object_position &&
 		'' === $object_fit &&
 		'' === $max_width &&
-		0 === $height_desktop &&
-		0 === $height_tablet &&
-		0 === $height_mobile &&
+		'' === $height_desktop &&
+		'' === $height_tablet &&
+		'' === $height_mobile &&
 		'' === $colour_treatment
 	) {
 		return $block_content;
@@ -146,16 +141,16 @@ function inject_image_controls( string $block_content, array $block ): string {
 		$css_vars[] = '--sgs-max-width:' . $max_width;
 	}
 
-	if ( $height_desktop > 0 ) {
-		$css_vars[] = '--sgs-height-desktop:' . $height_desktop . $height_unit;
+	if ( '' !== $height_desktop ) {
+		$css_vars[] = '--sgs-height-desktop:' . $height_desktop;
 	}
 
-	if ( $height_tablet > 0 ) {
-		$css_vars[] = '--sgs-height-tablet:' . $height_tablet . $height_unit;
+	if ( '' !== $height_tablet ) {
+		$css_vars[] = '--sgs-height-tablet:' . $height_tablet;
 	}
 
-	if ( $height_mobile > 0 ) {
-		$css_vars[] = '--sgs-height-mobile:' . $height_mobile . $height_unit;
+	if ( '' !== $height_mobile ) {
+		$css_vars[] = '--sgs-height-mobile:' . $height_mobile;
 	}
 
 	if ( 'white' === $colour_treatment ) {

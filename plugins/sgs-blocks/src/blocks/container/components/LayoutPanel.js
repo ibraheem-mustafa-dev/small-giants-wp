@@ -95,7 +95,7 @@ export function LayoutPanel( {
 	attributes,
 	setAttributes,
 	showLayout = true,
-	// P2-5: minColumnWidth/minColumnWidthUnit are declared ONLY on sgs/container's
+	// P2-5: minColumnWidth is declared ONLY on sgs/container's
 	// own block.json today. LayoutPanel is shared by ~30 blocks (see file header);
 	// rendering this control unconditionally would destructure an attribute most
 	// callers' schemas don't declare, which WordPress silently discards on save
@@ -130,12 +130,6 @@ export function LayoutPanel( {
 		// with a scalar default — which would mask the object.
 		gridAutoRows = '',
 	} = attributes;
-	// minColumnWidthUnit is read inline (attributes.minColumnWidthUnit) inside the
-	// enableIntrinsicColumns-gated block below, not destructured here — it is only
-	// ever declared on a caller whose own block.json opts in (see the prop
-	// docblock above), and destructuring it unconditionally at the top of a
-	// shared component used by ~30 blocks is exactly what check-undeclared-attrs
-	// flags (caught live on sgs/gallery, sgs/trust-bar).
 
 	return (
 		<>
@@ -471,19 +465,15 @@ export function LayoutPanel( {
 							{ /*
 								  `minColumnWidth` is a TIER OBJECT (P2-5) — same shape as
 								  `gridTemplateColumns` above, so it uses ResponsiveOverride.
-								  Unlike gridTemplateColumns it pairs with a single FLAT
-								  `minColumnWidthUnit` attribute (not tiered) — mirroring
-								  sgs/feature-grid's `minItemWidth`/`minItemWidthUnit` pair —
-								  because the unit rarely needs to change per breakpoint while
-								  the numeric floor does. Sets the BASIS a client-configured
+								  Each tier holds a CSS length string carrying its own unit.
+								  Sets the BASIS a client-configured
 								  auto-fit column may shrink to before one drops to the next
 								  row (`sgs_intrinsic_columns_track()`, helpers-container.php).
 								  Gated on `enableIntrinsicColumns` (see the prop docblock
 								  above) rather than rendered unconditionally, because only
 								  callers whose own block.json declares
 								  `supports.sgs.intrinsicColumns` also declare the
-								  `minColumnWidth`/`minColumnWidthUnit` attributes — currently
-								  `sgs/container` alone.
+								  `minColumnWidth` attribute — currently `sgs/container` alone.
 								*/ }
 							<ResponsiveOverride
 								label={ __(
@@ -501,24 +491,13 @@ export function LayoutPanel( {
 									inherited,
 									setOwnValue,
 								} ) => {
-									const minColumnWidthUnit =
-										attributes.minColumnWidthUnit || 'px';
 									return (
 										<SgsLengthControl
 											presets={ false }
-											value={
-												'' !== ownValue &&
-												null !== ownValue &&
-												undefined !== ownValue
-													? `${ ownValue }${ minColumnWidthUnit }`
-													: ''
-											}
+											value={ ownValue || '' }
 											placeholder={
-												inherited &&
-												'' !== effectiveValue &&
-												null !== effectiveValue &&
-												undefined !== effectiveValue
-													? `${ effectiveValue }${ minColumnWidthUnit }`
+												inherited
+													? effectiveValue || ''
 													: ''
 											}
 											units={ [
@@ -538,31 +517,9 @@ export function LayoutPanel( {
 													default: 10,
 												},
 											] }
-											onChange={ ( val ) => {
-												if ( ! val ) {
-													setOwnValue( undefined );
-													return;
-												}
-												const unit =
-													val.replace(
-														/[\d.]+/,
-														''
-													) || 'px';
-												const num = parseFloat( val );
-												setOwnValue(
-													Number.isNaN( num )
-														? undefined
-														: num
-												);
-												if (
-													unit !== minColumnWidthUnit
-												) {
-													setAttributes( {
-														minColumnWidthUnit:
-															unit,
-													} );
-												}
-											} }
+											onChange={ ( val ) =>
+												setOwnValue( val || '' )
+											}
 											help={ __(
 												'The floor a grid column may shrink to before one drops to the next row. Leave empty to use the framework default (16rem).',
 												'sgs-blocks'

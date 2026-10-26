@@ -279,22 +279,21 @@ if ( $width_explicit ) {
 // own logo. Off by default -- no `shrinkWidth` key emits nothing at all,
 // byte-identical to a header that has never heard of this attribute.
 //
-// Unit-aware (Spec 35 C5): `shrinkWidth` is a plain number, the CSS unit
-// lives in the paired `shrinkWidthUnit` attribute (px|%|em|rem, same set
-// as maxWidthUnit) -- a client sizing a shrunk logo relative to its header
-// row (%) or its own base font (em/rem) is not forced into px. The composed
-// length runs through sgs_css_length_value() (contract §D), the same
-// sanitiser every other CSS-length attribute on this block uses, not a bare
-// absint() assumption.
-$shrink_width_explicit = isset( $attributes['shrinkWidth'] ) && '' !== $attributes['shrinkWidth'];
-if ( $shrink_width_explicit ) {
-	$shrink_width_unit = isset( $attributes['shrinkWidthUnit'] ) ? sanitize_key( $attributes['shrinkWidthUnit'] ) : 'px';
-	$shrink_width_raw  = (float) $attributes['shrinkWidth'] . $shrink_width_unit;
-	$shrink_width_css  = function_exists( 'sgs_css_length_value' ) ? sgs_css_length_value( $shrink_width_raw ) : '';
-	if ( '' === $shrink_width_css ) {
-		$shrink_width_css = absint( $attributes['shrinkWidth'] ) . 'px';
-	}
-	$scoped_css[] = '.is-header-shrunk ' . $sel . ',.is-row-shrunk ' . $sel . '{--logo-width:' . $shrink_width_css . '}';
+// `shrinkWidth` holds one CSS length per device (px, %, em, rem, calc() ...),
+// each read through sgs_css_length_value() and printed by the shared
+// responsive emitter: the desktop value in the base rule, tablet and mobile in
+// media queries only where they differ.
+$shrink_width_css = sgs_emit_responsive_css(
+	'.is-header-shrunk ' . $sel . ',.is-row-shrunk ' . $sel,
+	array(
+		array(
+			'value' => $attributes['shrinkWidth'] ?? null,
+			'css'   => '--logo-width',
+		),
+	)
+);
+if ( '' !== $shrink_width_css ) {
+	$scoped_css[] = $shrink_width_css;
 	// The transition lives on the wrapper's own `width` property (which reads
 	// `--logo-width`, style.scss), not on the custom property itself -- custom
 	// properties are not natively animatable, but a `width` declaration that
@@ -384,64 +383,20 @@ $has_dark_logo_modifier = '' !== $dark_logo_url ? ' sgs-responsive-logo--has-dar
 // --- Per-tier max box (FR-36-22 basics) — caps the rendered logo box on top
 // of the `width` custom property, independently per breakpoint. Unset tiers
 // emit nothing (no cap at that tier). ---
-// ⛔ `maxWidth` is a TIER OBJECT, and feeding
-// the object straight to sgs_responsive_css_rule() would DROP IT SILENTLY — not
-// warn, not error. That helper's validity gate is
-// `$transform || is_numeric( $raw )` (helpers-responsive.php), this spec supplies
-// no `transform`, and `is_numeric()` on an array is false, so every tier would
-// fail the gate and the whole max-width cap would vanish with nothing in the
-// error log to show for it. `unit_default` does not save it — the value never
-// reaches the formatter.
-//
-// So the object is flattened back to the three keys the helper expects, keeping
-// its unit handling and @media emission unchanged. `maxHeight` is the
-// SAME tier-object shape — flattened identically
-// below, via the same $rl_max_width_num() stripper (it is unit-agnostic and
-// used for both families).
+// `maxWidth` and `maxHeight` each hold one CSS length per device; the shared
+// emitter prints desktop in the base rule and tablet and mobile in media
+// queries only where they differ.
 $rl_max_width_tiers  = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
 $rl_max_height_tiers = sgs_responsive_normalise_object( $attributes['maxHeight'] ?? null );
 
-// This block stores maxWidth as a bare NUMBER with the unit in its own
-// `maxWidthUnit` attr, and sgs_responsive_css_rule()'s validity gate is
-// `is_numeric()` — so a unit-bearing string like "64px" is REJECTED and the cap
-// silently disappears. The editor writes a bare number (parseMaxBoxValue splits
-// it), but hand-authored, cloned or fixture content can carry the unit inline.
-// Strip a trailing unit so both shapes work rather than one of them vanishing.
-$rl_max_width_num = static function ( $raw ) {
-	if ( null === $raw || '' === $raw ) {
-		return '';
-	}
-	if ( is_numeric( $raw ) ) {
-		return $raw;
-	}
-	return preg_match( '/^\s*([\d.]+)\s*[a-z%]*\s*$/i', (string) $raw, $m ) ? $m[1] : '';
-};
-
-$rl_css_attributes = array_merge(
-	$attributes,
-	array(
-		'maxWidth'        => $rl_max_width_num( $rl_max_width_tiers['desktop'] ?? '' ),
-		'maxWidthTablet'  => $rl_max_width_num( $rl_max_width_tiers['tablet'] ?? '' ),
-		'maxWidthMobile'  => $rl_max_width_num( $rl_max_width_tiers['mobile'] ?? '' ),
-		'maxHeight'       => $rl_max_width_num( $rl_max_height_tiers['desktop'] ?? '' ),
-		'maxHeightTablet' => $rl_max_width_num( $rl_max_height_tiers['tablet'] ?? '' ),
-		'maxHeightMobile' => $rl_max_width_num( $rl_max_height_tiers['mobile'] ?? '' ),
-	)
-);
-
-$scoped_css[] = sgs_responsive_css_rule(
-	$rl_css_attributes,
+$scoped_css[] = sgs_emit_responsive_css(
+	$sel,
 	array(
 		array(
-			'attr'         => 'maxWidth',
-			'css'          => 'max-width',
-			'unit_attr'    => 'maxWidthUnit',
-			'unit_default' => 'px',
-			'tablet_attr'  => 'maxWidthTablet',
-			'mobile_attr'  => 'maxWidthMobile',
+			'value' => $attributes['maxWidth'] ?? null,
+			'css'   => 'max-width',
 		),
-	),
-	$sel
+	)
 );
 
 // --- Maximum height caps the logo IMAGE (light, tablet/mobile picture sources
@@ -452,11 +407,15 @@ $scoped_css[] = sgs_responsive_css_rule(
 // largest tier that sets a cap, the tier the cap itself cascades down from, so
 // an uncapped larger tier stays width-driven. With no tier set nothing is
 // emitted and the logo stays width-driven. ---
-$rl_has_max_height = '' !== $rl_css_attributes['maxHeight']
-	|| '' !== $rl_css_attributes['maxHeightTablet']
-	|| '' !== $rl_css_attributes['maxHeightMobile'];
+$rl_max_height_valid = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $rl_max_height_tier ) {
+	$rl_max_height_valid[ $rl_max_height_tier ] = sgs_css_length_value( $rl_max_height_tiers[ $rl_max_height_tier ] ?? '' );
+}
+$rl_has_max_height = '' !== $rl_max_height_valid['desktop']
+	|| '' !== $rl_max_height_valid['tablet']
+	|| '' !== $rl_max_height_valid['mobile'];
 if ( $rl_has_max_height ) {
-	$rl_capped_at  = '' !== $rl_css_attributes['maxHeight'] ? 'desktop' : ( '' !== $rl_css_attributes['maxHeightTablet'] ? 'tablet' : 'mobile' );
+	$rl_capped_at  = '' !== $rl_max_height_valid['desktop'] ? 'desktop' : ( '' !== $rl_max_height_valid['tablet'] ? 'tablet' : 'mobile' );
 	$rl_auto_tiers = array(
 		'rlAuto'       => 'desktop' === $rl_capped_at ? 'auto' : '',
 		'rlAutoTablet' => 'tablet' === $rl_capped_at ? 'auto' : '',
@@ -474,19 +433,14 @@ if ( $rl_has_max_height ) {
 		),
 	);
 	$scoped_css[] = sgs_responsive_css_rule( $rl_auto_tiers, $rl_auto_width, $sel . ',' . $sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__svg svg' );
-	$scoped_css[] = sgs_responsive_css_rule(
-		$rl_css_attributes,
+	$scoped_css[] = sgs_emit_responsive_css(
+		$sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__dark,' . $sel . ' .sgs-responsive-logo__svg svg',
 		array(
 			array(
-				'attr'         => 'maxHeight',
-				'css'          => 'max-height',
-				'unit_attr'    => 'maxHeightUnit',
-				'unit_default' => 'px',
-				'tablet_attr'  => 'maxHeightTablet',
-				'mobile_attr'  => 'maxHeightMobile',
+				'value' => $attributes['maxHeight'] ?? null,
+				'css'   => 'max-height',
 			),
-		),
-		$sel . ' .sgs-responsive-logo__image--desktop,' . $sel . ' .sgs-responsive-logo__dark,' . $sel . ' .sgs-responsive-logo__svg svg'
+		)
 	);
 }
 

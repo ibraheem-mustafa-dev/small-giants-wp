@@ -102,10 +102,7 @@
 				"sgsObjectPosition": { "type": "object", "default": {}, "role": "layout", "css_property": "object-position", "css_element": "image" },
 				"sgsObjectFit": { "type": "string", "default": "", "enum": [ "", "cover", "contain", "fill", "none", "scale-down" ], "role": "layout", "css_property": "object-fit", "css_element": "image" },
 				"sgsMaxWidth": { "type": "string", "default": "", "role": "layout", "css_property": "max-width", "css_element": "image" },
-				"sgsHeightDesktop": { "type": "number", "default": 0, "role": "layout", "css_property": "height", "css_element": "image", "css_tier": "desktop" },
-				"sgsHeightTablet": { "type": "number", "default": 0, "role": "layout", "css_property": "height", "css_element": "image", "css_tier": "tablet" },
-				"sgsHeightMobile": { "type": "number", "default": 0, "role": "layout", "css_property": "height", "css_element": "image", "css_tier": "mobile" },
-				"sgsHeightUnit": { "type": "string", "default": "px", "enum": [ "px", "vh", "em", "%" ], "role": "layout" },
+				"sgsHeight": { "type": "object", "default": {}, "role": "layout", "css_property": "height", "css_element": "image" },
 				"sgsColourTreatment": { "type": "string", "default": "", "enum": [ "", "white" ], "role": "visual", "css_property": "filter", "css_element": "image" }
 			}
 		},

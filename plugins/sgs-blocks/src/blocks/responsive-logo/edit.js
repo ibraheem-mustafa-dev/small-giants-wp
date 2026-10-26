@@ -36,45 +36,6 @@ const MAX_BOX_UNITS = [
 ];
 
 /**
- * Compose a UnitControl display value from a numeric attr + unit string.
- *
- * @param {number|undefined} num  Numeric attribute value.
- * @param {string}           unit Unit string.
- * @return {string} Combined value, or '' when unset.
- */
-function composeMaxBoxValue( num, unit ) {
-	if ( num === undefined || num === null || '' === num ) {
-		return '';
-	}
-	return `${ num }${ unit || '' }`;
-}
-
-/**
- * Parse a UnitControl onChange value ('240px', '100%', …) into its numeric
- * and unit parts. Preserves the current unit when the field is cleared.
- *
- * @param {string} raw         Raw value from UnitControl onChange.
- * @param {string} currentUnit The currently-stored unit.
- * @return {{ num: number|undefined, unit: string }} Parsed number and unit.
- */
-function parseMaxBoxValue( raw, currentUnit ) {
-	if ( ! raw && raw !== 0 ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const str = String( raw ).trim();
-	if ( '' === str ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
-	if ( match ) {
-		const num = parseFloat( match[ 1 ] );
-		const unit = match[ 2 ] || currentUnit || 'px';
-		return { num: isNaN( num ) ? undefined : num, unit };
-	}
-	return { num: undefined, unit: currentUnit || 'px' };
-}
-
-/**
  * The site-level logo PHP resolved for this editor session (Site Info `logo`,
  * else the WordPress site logo), published by
  * `Sgs_Site_Info_Binding::publish_editor_data()` on `window.sgsBlocksData`.
@@ -229,9 +190,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		darkLogoId,
 		width,
 		shrinkWidth,
-		shrinkWidthUnit,
-		maxWidthUnit,
-		maxHeightUnit,
 		linkToHome,
 		inlineSvg,
 		alt,
@@ -247,28 +205,6 @@ export default function Edit( { attributes, setAttributes } ) {
 		backgroundColourHover,
 		backgroundColourHoverGradient,
 	} = attributes;
-
-	// `maxWidth` AND `maxHeight` are both TIER OBJECTS — ONE attr each
-	// holding {desktop,tablet,mobile}.
-	//
-	// The per-tier VALUE stays a bare NUMBER paired with the block-level
-	// `maxWidthUnit`/`maxHeightUnit` — the tier axis and the unit are separate
-	// concerns, and collapsing them here would change what render.php reads.
-
-	// setOwnTier is ResponsiveOverride's own per-tier writer — it owns which tier
-	// is active and how the object is rebuilt, so this handler only splits the
-	// raw input into number + unit and hands the number back.
-	const onMaxWidthChange = ( setOwnTier, raw ) => {
-		const { num, unit } = parseMaxBoxValue( raw, maxWidthUnit || 'px' );
-		setOwnTier( num === undefined ? '' : num );
-		setAttributes( { maxWidthUnit: unit } );
-	};
-
-	const onMaxHeightChange = ( setOwnTier, raw ) => {
-		const { num, unit } = parseMaxBoxValue( raw, maxHeightUnit || 'px' );
-		setOwnTier( num === undefined ? '' : num );
-		setAttributes( { maxHeightUnit: unit } );
-	};
 
 	// The picker persists BOTH the attachment ID and its URL, to the declared
 	// `logoId*` / `logoUrl*` attribute pairs — the shape every other SGS image
@@ -523,28 +459,39 @@ export default function Edit( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 
-					<SgsLengthControl
+					<ResponsiveOverride
 						label={ __( 'Size when header shrinks', 'sgs-blocks' ) }
-						help={ __(
-							'Only takes effect inside an SGS header or header row that has its own "shrink on scroll" setting turned on — the logo keeps its natural proportions (only width is set, height follows automatically). Leave unset to keep the logo the same size when the header shrinks.',
-							'sgs-blocks'
+						value={ shrinkWidth }
+						onChange={ ( obj ) =>
+							setAttributes( { shrinkWidth: obj } )
+						}
+					>
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __(
+									'Size when header shrinks',
+									'sgs-blocks'
+								) }
+								hideLabelFromVision
+								help={ __(
+									'Only takes effect inside an SGS header or header row that has its own "shrink on scroll" setting turned on — the logo keeps its natural proportions (only width is set, height follows automatically). Leave unset to keep the logo the same size when the header shrinks.',
+									'sgs-blocks'
+								) }
+								value={ ownValue || '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
+								units={ MAX_BOX_UNITS }
+								onChange={ ( val ) => setOwnValue( val || '' ) }
+							/>
 						) }
-						value={ composeMaxBoxValue(
-							shrinkWidth,
-							shrinkWidthUnit || 'px'
-						) }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseMaxBoxValue(
-								raw,
-								shrinkWidthUnit || 'px'
-							);
-							setAttributes( {
-								shrinkWidth: num,
-								shrinkWidthUnit: unit,
-							} );
-						} }
-						units={ MAX_BOX_UNITS }
-					/>
+					</ResponsiveOverride>
 
 					<ToggleControl
 						label={ __( 'Print SVG inline', 'sgs-blocks' ) }
@@ -637,22 +584,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								presets={ false }
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeMaxBoxValue(
-									ownValue,
-									maxWidthUnit || 'px'
-								) }
+								value={ ownValue || '' }
 								placeholder={
-									inherited
-										? composeMaxBoxValue(
-												effectiveValue,
-												maxWidthUnit || 'px'
-										  )
-										: ''
+									inherited ? effectiveValue || '' : ''
 								}
 								units={ MAX_BOX_UNITS }
-								onChange={ ( val ) =>
-									onMaxWidthChange( setOwnValue, val )
-								}
+								onChange={ ( val ) => setOwnValue( val || '' ) }
 							/>
 						) }
 					</ResponsiveOverride>
@@ -673,22 +610,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								presets={ false }
 								label={ __( 'Max height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeMaxBoxValue(
-									ownValue,
-									maxHeightUnit || 'px'
-								) }
+								value={ ownValue || '' }
 								placeholder={
-									inherited
-										? composeMaxBoxValue(
-												effectiveValue,
-												maxHeightUnit || 'px'
-										  )
-										: ''
+									inherited ? effectiveValue || '' : ''
 								}
 								units={ MAX_BOX_UNITS }
-								onChange={ ( val ) =>
-									onMaxHeightChange( setOwnValue, val )
-								}
+								onChange={ ( val ) => setOwnValue( val || '' ) }
 							/>
 						) }
 					</ResponsiveOverride>

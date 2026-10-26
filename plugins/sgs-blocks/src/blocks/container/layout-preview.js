@@ -12,8 +12,7 @@
  */
 
 import { tierValueOf } from '../../utils';
-
-const UNITS = [ 'px', 'em', 'rem' ];
+import { cssLengthValue } from '../../utils/css-length';
 
 const isBlank = ( v ) => undefined === v || null === v || '' === String( v ).trim();
 
@@ -53,8 +52,7 @@ export function containerColumnsPreview( attributes, tier, gap ) {
 		return undefined;
 	}
 	const width = tierValueOf( attributes.minColumnWidth, tier );
-	const unit = UNITS.includes( attributes.minColumnWidthUnit ) ? attributes.minColumnWidthUnit : 'px';
-	const basis = isBlank( width ) ? '' : `${ Math.abs( parseInt( width, 10 ) ) || 0 }${ unit }`;
+	const basis = cssLengthValue( width );
 	return intrinsicColumnsTrack( tierValueOf( attributes.columns, tier ), gap, basis ) || undefined;
 }
 

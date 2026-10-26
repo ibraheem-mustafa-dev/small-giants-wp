@@ -26,6 +26,7 @@ import {
 import { LogicalAlignControl, IconPicker, IconPreview, ResponsiveOverride, ResponsiveBoxControl, TypographyControls, SgsColourPanel, SgsLengthControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, textRow } from '../../components';
 import { colourVar, resolveTextColourPreviewStyle, usePreviewTier, typographyPreviewStyle,  tierBoxLonghands, resolveTier } from '../../utils';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
+import { cssLengthValue } from '../../utils/css-length';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -59,30 +60,6 @@ const THICKNESS_UNITS = [
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function composeUnit( num, unit ) {
-	if ( num === undefined || num === null || num === '' ) {
-		return '';
-	}
-	return `${ num }${ unit || '' }`;
-}
-
-function parseUnit( raw, currentUnit ) {
-	if ( ! raw && raw !== 0 ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const str = String( raw ).trim();
-	if ( '' === str ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
-	if ( match ) {
-		const num = parseFloat( match[ 1 ] );
-		const unit = match[ 2 ] || currentUnit || 'px';
-		return { num: isNaN( num ) ? undefined : num, unit };
-	}
-	return { num: undefined, unit: currentUnit || 'px' };
-}
 
 // Alignment → margin preview (mirrors render.php's alignment decl builder).
 function alignmentMargin( alignment ) {
@@ -119,9 +96,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
 		lineStyle,
 		width,
-		widthUnit,
 		thickness,
-		thicknessUnit,
 		colour,
 		opacity,
 		alignment,
@@ -149,7 +124,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	} else {
 		lineDecls.borderBottomStyle = lineStyle;
 		lineDecls.borderBottomWidth =
-			composeUnit( thicknessDesktop, thicknessUnit ) || undefined;
+			cssLengthValue( thicknessDesktop ) || undefined;
 		if ( lineGradient ) {
 			// One complete CSS gradient string since D643 — the stops already
 			// carry their own var(--wp--preset--color--x) form, so there is no
@@ -162,7 +137,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const rootPreviewStyle = {
-		width: composeUnit( widthDesktop, widthUnit ) || undefined,
+		width: cssLengthValue( widthDesktop ) || undefined,
 		...alignmentMargin( alignment ),
 		opacity:
 			'number' === typeof opacity && 100 !== opacity
@@ -274,21 +249,12 @@ export default function Edit( { attributes, setAttributes } ) {
 								presets={ false }
 								label={ __( 'Width', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeUnit( ownValue, widthUnit ) }
+								value={ ownValue || '' }
 								placeholder={
-									inherited
-										? composeUnit( effectiveValue, widthUnit )
-										: ''
+									inherited ? effectiveValue || '' : ''
 								}
 								units={ WIDTH_UNITS }
-								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit(
-										raw,
-										widthUnit
-									);
-									setOwnValue( num === undefined ? '' : num );
-									setAttributes( { widthUnit: unit } );
-								} }
+								onChange={ ( raw ) => setOwnValue( raw || '' ) }
 							/>
 						) }
 					</ResponsiveOverride>
@@ -384,8 +350,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							// `thickness` is a TIER OBJECT (Spec 35 pass 2) — reset
 							// to the declared default shape, not a bare scalar +
 							// undefined siblings that no longer exist as attrs.
-							thickness: { desktop: 1 },
-							thicknessUnit: 'px',
+							thickness: { desktop: '1px' },
 							colour: '',
 							opacity: 100,
 							lineGradient: '',
@@ -413,10 +378,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					{ /*
 					  `thickness` is a TIER OBJECT (Spec 35 pass 2) — ONE attr
 					  holding {desktop,tablet,mobile}, so it uses
-					  <ResponsiveOverride> rather than the old breakpoint-keyed
-					  attrMap. The per-tier VALUE stays a bare NUMBER paired with
-					  the block-level `thicknessUnit` (tier axis and unit are
-					  separate concerns — matches sgs/responsive-logo's maxWidth).
+					  <ResponsiveOverride>. Each tier holds a CSS length string carrying its
+					  own unit.
 					*/ }
 					<ToolsPanelItem
 						label={ __( 'Thickness', 'sgs-blocks' ) }
@@ -429,7 +392,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							)
 						}
 						onDeselect={ () =>
-							setAttributes( { thickness: { desktop: 1 } } )
+							setAttributes( { thickness: { desktop: '1px' } } )
 						}
 						isShownByDefault
 					>
@@ -445,21 +408,12 @@ export default function Edit( { attributes, setAttributes } ) {
 									presets={ false }
 									label={ __( 'Thickness', 'sgs-blocks' ) }
 									hideLabelFromVision
-									value={ composeUnit( ownValue, thicknessUnit ) }
+									value={ ownValue || '' }
 									placeholder={
-										inherited
-											? composeUnit( effectiveValue, thicknessUnit )
-											: ''
+										inherited ? effectiveValue || '' : ''
 									}
 									units={ THICKNESS_UNITS }
-									onChange={ ( raw ) => {
-										const { num, unit } = parseUnit(
-											raw,
-											thicknessUnit
-										);
-										setOwnValue( num === undefined ? '' : num );
-										setAttributes( { thicknessUnit: unit } );
-									} }
+									onChange={ ( raw ) => setOwnValue( raw || '' ) }
 								/>
 							) }
 						</ResponsiveOverride>

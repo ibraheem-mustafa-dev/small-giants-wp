@@ -208,7 +208,9 @@
 					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so a `draw` effect layer reaches the SVG's paths, where the flat `fx: draw` drew; it declares no style clusters because its look is governed by the bgSvg* controls."
 				},
 				"background": {
-					"absentIn": ["bg-css-layer"],
+					"absentIn": [
+						"bg-css-layer"
+					],
 					"absentWhy": "A tiled, sized, parallax, fixed or per-device background image paints on the root's ::before layer (SGS_Container_Wrapper::render, $sgs_bg_img_is_simple false), so no element carries the image; a layer on the root reaches the section.",
 					"surface": true,
 					"prefix": "",
@@ -294,10 +296,6 @@
 			"type": "object",
 			"default": {}
 		},
-		"minColumnWidthUnit": {
-			"type": "string",
-			"default": "px"
-		},
 		"backgroundImage": {
 			"type": "object"
 		},
@@ -309,12 +307,19 @@
 		},
 		"ground": {
 			"type": "string",
-			"enum": [ "", "section" ],
+			"enum": [
+				"",
+				"section"
+			],
 			"default": ""
 		},
 		"surfaceTone": {
 			"type": "string",
-			"enum": [ "auto", "light", "dark" ],
+			"enum": [
+				"auto",
+				"light",
+				"dark"
+			],
 			"default": "auto"
 		},
 		"backgroundSize": {
@@ -422,7 +427,11 @@
 		},
 		"overflow": {
 			"type": "string",
-			"enum": [ "visible", "hidden", "clip" ],
+			"enum": [
+				"visible",
+				"hidden",
+				"clip"
+			],
 			"default": "visible",
 			"description": "Root overflow. 'clip' crops content that sticks out without making the container a scroll container, so position:sticky inside still works; 'hidden' crops and does make it one; 'visible' (default) prints nothing, leaving the shape-divider and SVG-background modes their own hidden. The sideways-scroll row (scrollSideways) paints on the items' row, not the root."
 		},

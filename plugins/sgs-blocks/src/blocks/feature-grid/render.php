@@ -29,10 +29,16 @@ $layout_mode = isset( $attributes['layoutMode'] ) ? esc_attr( $attributes['layou
 $columns_desktop = max( 1, absint( $attributes['columns']['desktop'] ?? 4 ) );
 $columns_tablet  = max( 1, absint( $attributes['columns']['tablet'] ?? 2 ) );
 $columns_mobile  = max( 1, absint( $attributes['columns']['mobile'] ?? 1 ) );
-$min_item_width  = isset( $attributes['minItemWidth'] ) ? absint( $attributes['minItemWidth'] ) : 240;
-$min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attributes['minItemWidthUnit'], array( 'px', 'em', 'rem' ), true )
-	? $attributes['minItemWidthUnit']
-	: 'px';
+// `minItemWidth` is a length string per device; each device's own value (tablet and mobile only where set)
+// feeds the auto-fill track, read through the shared validator.
+$min_item_tiers = sgs_responsive_normalise_object( $attributes['minItemWidth'] ?? null );
+$min_item_css   = array();
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $min_item_tier ) {
+	$min_item_css[ $min_item_tier ] = sgs_css_length_value( $min_item_tiers[ $min_item_tier ] ?? '' );
+}
+if ( '' === $min_item_css['desktop'] ) {
+	$min_item_css['desktop'] = '240px';
+}
 
 // Gap is now a full CSS value string (e.g. "24px") or a bare WP spacing slug
 // (e.g. "40"). sgs_container_gap_value() handles both formats.
@@ -133,11 +139,28 @@ if ( $use_auto_flex ) {
 	 */
 	$css = ".$uid.sgs-feature-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax({$min_item_width}{$min_item_unit}, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax({$min_item_css['desktop']}, 1fr));
 	gap: $gap_css;
 	align-items: $align_items;
 	justify-items: $justify_items;
 }";
+	if ( '' !== $min_item_css['tablet'] && $min_item_css['tablet'] !== $min_item_css['desktop'] ) {
+		$css .= "
+@media (max-width: 1023px) {
+	.$uid.sgs-feature-grid {
+		grid-template-columns: repeat(auto-fill, minmax({$min_item_css['tablet']}, 1fr));
+	}
+}";
+	}
+	$min_item_mobile_from = '' !== $min_item_css['tablet'] ? $min_item_css['tablet'] : $min_item_css['desktop'];
+	if ( '' !== $min_item_css['mobile'] && $min_item_css['mobile'] !== $min_item_mobile_from ) {
+		$css .= "
+@media (max-width: 767px) {
+	.$uid.sgs-feature-grid {
+		grid-template-columns: repeat(auto-fill, minmax({$min_item_css['mobile']}, 1fr));
+	}
+}";
+	}
 } elseif ( $has_explicit_grid ) {
 	/*
 	 * Real grid with an explicit template — delegate to the shared wrapper's grid

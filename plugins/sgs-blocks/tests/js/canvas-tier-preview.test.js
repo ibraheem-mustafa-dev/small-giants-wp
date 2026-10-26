@@ -81,8 +81,7 @@ describe( 'containerWrapperPreview', () => {
 describe( 'buttonPreviewStyle', () => {
 	const attrs = {
 		widthType: { desktop: 'fit', mobile: 'full' },
-		minHeight: { desktop: 40, tablet: 3 },
-		minHeightTabletUnit: 'rem',
+		minHeight: { desktop: '40px', tablet: '3rem' },
 		iconSize: { desktop: 20, mobile: 32 },
 		contentAlign: { desktop: 'center', tablet: 'flex-start' },
 	};
@@ -115,7 +114,7 @@ describe( 'multiButtonFlexPreview', () => {
 
 describe( 'imageControlsCanvasVars', () => {
 	it( 'emits the same custom properties includes/image-controls.php injects', () => {
-		expect( imageControlsCanvasVars( { sgsObjectFit: 'contain', sgsHeightTablet: 300, sgsHeightUnit: 'vh', sgsObjectPosition: { x: 0.5, y: 0.5 } } ) ).toEqual( {
+		expect( imageControlsCanvasVars( { sgsObjectFit: 'contain', sgsHeight: { tablet: '300vh', mobile: '10;}body{' }, sgsObjectPosition: { x: 0.5, y: 0.5 } } ) ).toEqual( {
 			'--sgs-object-fit': 'contain',
 			'--sgs-height-tablet': '300vh',
 		} );

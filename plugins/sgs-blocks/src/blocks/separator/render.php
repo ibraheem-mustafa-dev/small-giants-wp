@@ -74,12 +74,6 @@ require_once dirname( __DIR__, 3 ) . '/includes/wp-icons.php';
 
 $line_style = sgs_border_style_keyword( $attributes['lineStyle'] ?? 'solid' );
 
-$width_unit_raw = $attributes['widthUnit'] ?? '%';
-$width_unit     = in_array( $width_unit_raw, array( 'px', '%' ), true ) ? $width_unit_raw : '%';
-
-$thickness_unit = sgs_css_length_value( $attributes['thicknessUnit'] ?? 'px' );
-$thickness_unit = '' !== $thickness_unit ? $thickness_unit : 'px';
-
 $colour = $attributes['colour'] ?? '';
 
 $opacity_raw = $attributes['opacity'] ?? 100;
@@ -169,35 +163,15 @@ if ( $line_decls ) {
 	$scoped_css[] = "{$line_sel}{" . implode( ';', $line_decls ) . ';}';
 }
 
-// `thickness` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — ONE attr
-// holding {desktop,tablet,mobile}. `sgs_responsive_css_rule()`'s validity gate
-// is `is_numeric( $raw )` (helpers-responsive.php), so feeding the object
-// straight through would fail every tier's check and the whole thickness rule
-// would vanish silently (same trap as sgs/responsive-logo's maxWidth,
-// 2026-08-11). Flatten back to the three scalar keys the helper expects,
-// keeping its unit handling and @media emission byte-identical.
-$thickness_tiers = sgs_responsive_normalise_object( $attributes['thickness'] ?? null );
-
-// Thickness — responsive (base/tablet/mobile) on the SAME line selector.
-$thickness_css = sgs_responsive_css_rule(
-	array_merge(
-		$attributes,
-		array(
-			'thickness'       => $thickness_tiers['desktop'] ?? '',
-			'thicknessTablet' => $thickness_tiers['tablet'] ?? '',
-			'thicknessMobile' => $thickness_tiers['mobile'] ?? '',
-		)
-	),
+// Thickness — one length string per device, printed on the SAME line selector.
+$thickness_css = sgs_emit_responsive_css(
+	$line_sel,
 	array(
 		array(
-			'attr'         => 'thickness',
-			'css'          => 'border-bottom-width',
-			'unit_default' => $thickness_unit,
-			'tablet_attr'  => 'thicknessTablet',
-			'mobile_attr'  => 'thicknessMobile',
+			'value' => $attributes['thickness'] ?? null,
+			'css'   => 'border-bottom-width',
 		),
-	),
-	$line_sel
+	)
 );
 if ( '' !== $thickness_css ) {
 	$scoped_css[] = $thickness_css;
@@ -208,29 +182,15 @@ if ( '' !== $thickness_css ) {
 // each line's own width inside a content-mode row is flex:1, set in style.css).
 // ---------------------------------------------------------------------------
 
-// `width` is a TIER OBJECT as of Spec 35 pass 2 (2026-08-11) — same flatten
-// as `thickness` above, for the same reason (helper's is_numeric() gate).
-$width_tiers = sgs_responsive_normalise_object( $attributes['width'] ?? null );
-
-$width_css = sgs_responsive_css_rule(
-	array_merge(
-		$attributes,
-		array(
-			'width'       => $width_tiers['desktop'] ?? '',
-			'widthTablet' => $width_tiers['tablet'] ?? '',
-			'widthMobile' => $width_tiers['mobile'] ?? '',
-		)
-	),
+// Width — one length string per device (px or %).
+$width_css = sgs_emit_responsive_css(
+	$root_sel,
 	array(
 		array(
-			'attr'         => 'width',
-			'css'          => 'width',
-			'unit_default' => $width_unit,
-			'tablet_attr'  => 'widthTablet',
-			'mobile_attr'  => 'widthMobile',
+			'value' => $attributes['width'] ?? null,
+			'css'   => 'width',
 		),
-	),
-	$root_sel
+	)
 );
 if ( '' !== $width_css ) {
 	$scoped_css[] = $width_css;

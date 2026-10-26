@@ -26,14 +26,10 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { getBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	RangeControl,
-	SelectControl,
-	TextControl,
-} from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { ResponsiveControl, FocalPositionField } from '../../components';
+import { ResponsiveOverride, SgsLengthControl, FocalPositionField } from '../../components';
+import { cssLengthValue } from '../../utils/css-length';
 import { focalPointToObjectPosition } from '../../utils/objectPosition';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
@@ -53,11 +49,11 @@ function supportsImageControls( blockNameOrSettings ) {
 	return !! type?.supports?.sgs?.imageControls;
 }
 
-const HEIGHT_UNIT_OPTIONS = [
-	{ label: __( 'px', 'sgs-blocks' ), value: 'px' },
-	{ label: __( 'vh', 'sgs-blocks' ), value: 'vh' },
-	{ label: __( 'em', 'sgs-blocks' ), value: 'em' },
-	{ label: __( '%', 'sgs-blocks' ), value: '%' },
+const HEIGHT_UNITS = [
+	{ value: 'px', label: 'px', default: 300 },
+	{ value: 'vh', label: 'vh', default: 50 },
+	{ value: 'em', label: 'em', default: 20 },
+	{ value: '%', label: '%', default: 100 },
 ];
 
 const OBJECT_FIT_OPTIONS = [
@@ -101,12 +97,9 @@ addFilter(
 				sgsObjectFit: { type: 'string', default: '' },
 				// CSS max-width value, e.g. "640px" or "100%".
 				sgsMaxWidth: { type: 'string', default: '' },
-				// Per-breakpoint height (0 = auto).
-				sgsHeightDesktop: { type: 'number', default: 0 },
-				sgsHeightTablet: { type: 'number', default: 0 },
-				sgsHeightMobile: { type: 'number', default: 0 },
-				// Unit applied to all three height values.
-				sgsHeightUnit: { type: 'string', default: 'px' },
+				// Height: one CSS length per device, e.g. { desktop: '320px', mobile: '60vh' }.
+				// Empty = the image's natural height.
+				sgsHeight: { type: 'object', default: {} },
 				// Colour treatment override — '' = no override, 'white' forces
 				// the image to pure white (e.g. a full-colour logo on a dark
 				// footer) via a CSS filter, never an inline style (Spec 32).
@@ -131,7 +124,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 			sgsObjectPosition,
 			sgsObjectFit,
 			sgsMaxWidth,
-			sgsHeightUnit,
+			sgsHeight,
 			sgsColourTreatment,
 		} = attributes;
 
@@ -148,23 +141,6 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 			attributes.backgroundImage ||
 			attributes.src ||
 			'';
-
-		// Responsive breakpoint -> attr key map for the height controls,
-		// mirroring the shared TypographyControls fontSizeAttrMap idiom
-		// (components/TypographyControls.js) — sgsHeight is a flat scalar trio,
-		// not a tier OBJECT, so the map picks the right sibling attr per
-		// breakpoint rather than indexing into an object.
-		const heightAttrMap = {
-			desktop: 'sgsHeightDesktop',
-			tablet: 'sgsHeightTablet',
-			mobile: 'sgsHeightMobile',
-		};
-
-		const heightHelp = {
-			desktop: __( '0 = auto (natural image height).', 'sgs-blocks' ),
-			tablet: __( '0 = inherit from desktop.', 'sgs-blocks' ),
-			mobile: __( '0 = inherit from desktop.', 'sgs-blocks' ),
-		};
 
 		const focalPointValue = {
 			x:
@@ -190,7 +166,7 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 				 * scripts/consistency/cluster-member-sets.json:
 				 *   FILL   — sgsObjectFit / sgsObjectPosition
 				 *            (css:object-fit, css:object-position)
-				 *   LAYOUT — sgsMaxWidth / sgsHeight*
+				 *   LAYOUT — sgsMaxWidth / sgsHeight
 				 *            (css:max-width, css:height)
 				 * ⛔ NOT "position": the `position` cluster holds only css:top,
 				 * css:bottom and css:z-index. object-position is a FILL member
@@ -266,47 +242,36 @@ const withImageControls = createHigherOrderComponent( ( BlockEdit ) => {
 								/>
 							) ) }
 						</ToggleGroupControl>
-						<SelectControl
-							label={ __( 'Height unit', 'sgs-blocks' ) }
-							help={ __(
-								'Applied to all three breakpoint heights below.',
-								'sgs-blocks'
-							) }
-							value={ sgsHeightUnit }
-							options={ HEIGHT_UNIT_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { sgsHeightUnit: val } )
-							}
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-						<ResponsiveControl
+						<ResponsiveOverride
 							label={ __( 'Height', 'sgs-blocks' ) }
+							value={ sgsHeight }
+							onChange={ ( obj ) =>
+								setAttributes( { sgsHeight: obj } )
+							}
 						>
-							{ ( breakpoint ) => (
-								<RangeControl
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<SgsLengthControl
+									presets={ false }
 									label={ __( 'Height', 'sgs-blocks' ) }
 									hideLabelFromVision
-									help={ heightHelp[ breakpoint ] }
-									value={
-										attributes[
-											heightAttrMap[ breakpoint ]
-										]
+									help={ __(
+										'Leave empty for the natural image height.',
+										'sgs-blocks'
+									) }
+									value={ ownValue || '' }
+									placeholder={
+										inherited ? effectiveValue || '' : ''
 									}
-									onChange={ ( val ) =>
-										setAttributes( {
-											[ heightAttrMap[ breakpoint ] ]:
-												val ?? 0,
-										} )
-									}
-									min={ 0 }
-									max={ 800 }
-									step={ 1 }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
+									units={ HEIGHT_UNITS }
+									onChange={ ( val ) => setOwnValue( val || '' ) }
 								/>
 							) }
-						</ResponsiveControl>
+						</ResponsiveOverride>
 					</PanelBody>
 				</InspectorControls>
 			</>
@@ -321,7 +286,6 @@ addFilter(
 );
 
 const OBJECT_FITS = [ 'cover', 'contain', 'fill', 'none', 'scale-down' ];
-const HEIGHT_UNITS = [ 'px', 'vh', 'em', '%' ];
 
 /**
  * The custom properties includes/image-controls.php injects for these attributes,
@@ -346,11 +310,10 @@ export function imageControlsCanvasVars( attrs ) {
 	if ( /^\d+(\.\d+)?(px|em|rem|vh|vw|ch|%|svh|svw)$/.test( attrs.sgsMaxWidth || '' ) ) {
 		vars[ '--sgs-max-width' ] = attrs.sgsMaxWidth;
 	}
-	const unit = HEIGHT_UNITS.includes( attrs.sgsHeightUnit ) ? attrs.sgsHeightUnit : 'px';
-	[ [ attrs.sgsHeightDesktop, 'desktop' ], [ attrs.sgsHeightTablet, 'tablet' ], [ attrs.sgsHeightMobile, 'mobile' ] ].forEach( ( [ raw, tier ] ) => {
-		const value = Math.abs( parseInt( raw, 10 ) ) || 0;
-		if ( value > 0 ) {
-			vars[ `--sgs-height-${ tier }` ] = `${ value }${ unit }`;
+	[ 'desktop', 'tablet', 'mobile' ].forEach( ( tier ) => {
+		const value = cssLengthValue( attrs.sgsHeight?.[ tier ] );
+		if ( value ) {
+			vars[ `--sgs-height-${ tier }` ] = value;
 		}
 	} );
 	if ( 'white' === attrs.sgsColourTreatment ) {

@@ -129,12 +129,10 @@
 			"default": "fixed-columns"
 		},
 		"minItemWidth": {
-			"type": "number",
-			"default": 240
-		},
-		"minItemWidthUnit": {
-			"type": "string",
-			"default": "px"
+			"type": "object",
+			"default": {
+				"desktop": "240px"
+			}
 		},
 		"gap": {
 			"type": "object",
