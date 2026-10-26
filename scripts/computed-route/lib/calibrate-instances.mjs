@@ -152,10 +152,21 @@ export function layoutModes( schema, current = {} ) {
 		.filter( ( m ) => m.values.length );
 }
 
+// One variant's attributes: the fixture's base attributes with the variant's laid over them, where a variant value of null
+// removes that attribute (a variant with no image is `{ decorMedia: null }`: the block then has no such setting at all, which
+// the page builder accepts, where an object setting given null is refused and the instance is lost).
+export function variantAttributes( base = {}, variant = {} ) {
+	const out = { ...( base || {} ), ...variant };
+	for ( const [ k, v ] of Object.entries( variant ) ) {
+		null === v && delete out[ k ];
+	}
+	return out;
+}
+
 // Every instance for one block. rows: the block's routed settings; enumRows: its enum settings with no css_property.
 // Returns { instances, noMarker }.
 export function planInstances( block, { rows, enumRows = [], schema, snapshot, fixture, ctx = {} } ) {
-	const variants = ( fixture.variants || [ {} ] ).map( ( v ) => ( { ...( fixture.attributes || {} ), ...v } ) );
+	const variants = ( fixture.variants || [ {} ] ).map( ( v ) => variantAttributes( fixture.attributes, v ) );
 	const instances = [];
 	const noMarker = new Set();
 	const addBase = ( vi, vattrs, base ) => {
