@@ -46,6 +46,38 @@ final class ButtonFontWeightHoverTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'display:none', $css );
 		$this->assertStringNotContainsString( 'body{', $css );
+		$this->assertDoesNotMatchRegularExpression( '/:hover[^{]*\{[^}]*font-weight/', $css, 'a value outside the weight list prints no declaration at all' );
+	}
+
+	/**
+	 * @return array<string, array{0: string, 1: bool}>
+	 */
+	public static function weights(): array {
+		return array(
+			'hundred'        => array( '100', true ),
+			'bold keyword'   => array( 'bold', true ),
+			'normal keyword' => array( 'normal', true ),
+			'nine hundred'   => array( '900', true ),
+			'off the scale'  => array( '950', false ),
+			'a word'         => array( 'heavy', false ),
+			'stripped junk'  => array( '7;0 0', false ),
+		);
+	}
+
+	/**
+	 * @dataProvider weights
+	 */
+	public function test_only_a_weight_from_the_list_prints( string $weight, bool $prints ): void {
+		$css = $this->render_block(
+			'sgs/button',
+			array(
+				'label'           => 'Go',
+				'fontWeightHover' => $weight,
+			)
+		)['css'];
+		$found = 1 === preg_match( '/:hover[^{]*\{[^}]*font-weight:' . preg_quote( $weight, '/' ) . '[;}]/', $css );
+
+		$this->assertSame( $prints, $found );
 	}
 
 	public function test_unset_prints_no_hover_weight(): void {

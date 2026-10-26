@@ -2,7 +2,8 @@
  * The Floating layer's canvas twin: layerPreviewStyle mirrors the rules render.php emits for the positioned root
  * (tests/php/DecorativeImageLayerTest.php asserts the same literals on the PHP side).
  */
-import { layerPreviewStyle, layerBoxPreview } from '../../src/blocks/decorative-image/layer-preview';
+import { layerPreviewStyle, layerBoxPreview, layerPaintsBox } from '../../src/blocks/decorative-image/layer-preview';
+import PAINTS_BOX_CASES from '../fixtures/decorative-image-paints-box.json';
 
 describe( 'layerPreviewStyle', () => {
 	it( 'Fit the content is max-content capped at the parent, whatever the tier', () => {
@@ -109,5 +110,29 @@ describe( 'layerBoxPreview shape', () => {
 		[ {}, { shape: 'none' }, { shape: 'hexagon' } ].forEach( ( attrs ) => {
 			expect( layerBoxPreview( attrs, 'desktop', [] ).clipPath ).toBeUndefined();
 		} );
+	} );
+} );
+
+describe( 'an empty layer draws exactly when render.php says', () => {
+	// The same table tests/php/DecorativeImageLayerTest.php renders the real block against.
+	it.each( PAINTS_BOX_CASES.map( ( c ) => [ c.name, c.attrs, c.paints ] ) )( '%s', ( name, attrs, paints ) => {
+		expect( layerPaintsBox( attrs ) ).toBe( paints );
+	} );
+
+	it( 'a layer with no media and no content previews no box when it would not render one', () => {
+		const heightOnly = { height: { desktop: '80px' } };
+		expect( layerBoxPreview( heightOnly, 'desktop', [], true ) ).toEqual( {} );
+		expect( layerBoxPreview( heightOnly, 'desktop', [], false ).height ).toBe( '80px' );
+		expect( layerBoxPreview( { ...heightOnly, backgroundColour: '#112233' }, 'desktop', [], true ).height ).toBe( '80px' );
+	} );
+} );
+
+describe( 'layerPreviewStyle max width cap', () => {
+	it( 'caps the percentage cap at the editor range, as render.php does', () => {
+		const at = ( maxWidthPercent ) => layerPreviewStyle( { widthUnit: 'px', maxWidthPercent }, 'desktop', false ).maxWidth;
+		expect( at( 250 ) ).toBe( '100%' );
+		expect( at( -5 ) ).toBe( '0%' );
+		expect( at( 40 ) ).toBe( '40%' );
+		expect( at( undefined ) ).toBe( '20%' );
 	} );
 } );

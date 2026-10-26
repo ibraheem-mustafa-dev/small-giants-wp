@@ -166,7 +166,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		0 < blockCount
 	);
 	// The layer's own box (border, fill, shadow, height), painted on the same element as the position.
-	const boxStyle = layerBoxPreview( attributes, previewTier, colourPalette );
+	const boxStyle = layerBoxPreview( attributes, previewTier, colourPalette, ! effectiveMedia && 0 === blockCount );
 	const widthUnitValue = widthUnit || 'px';
 	const widthLabel = '%' === widthUnitValue
 		? __( 'Width (%)', 'sgs-blocks' )

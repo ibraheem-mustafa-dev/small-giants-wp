@@ -222,6 +222,52 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertSame( '', trim( $out['html'] ) );
 	}
 
+	/**
+	 * The rule for when an empty layer draws is one table, shared with the canvas twin
+	 * (tests/js/decorative-image-layer-preview.test.js reads the same file).
+	 *
+	 * @return array<string, array{0: array<string, mixed>, 1: bool}>
+	 */
+	public static function empty_layer_cases(): array {
+		$cases = json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/fixtures/decorative-image-paints-box.json' ), true, 512, JSON_THROW_ON_ERROR );
+		$out   = array();
+		foreach ( $cases as $case ) {
+			$out[ $case['name'] ] = array( $case['attrs'], $case['paints'] );
+		}
+		return $out;
+	}
+
+	/**
+	 * @dataProvider empty_layer_cases
+	 * @param array<string, mixed> $attrs  Layer attributes (no media, no content).
+	 * @param bool                 $paints Whether the layer draws.
+	 */
+	public function test_an_empty_layer_draws_exactly_when_the_shared_table_says( array $attrs, bool $paints ): void {
+		$out = $this->render_layer( $attrs );
+
+		$this->assertSame( $paints, '' !== trim( $out['html'] ) );
+	}
+
+	public function test_tier_widths_come_from_the_shared_breakpoints_not_literals(): void {
+		$source = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/decorative-image/render.php' );
+
+		$this->assertDoesNotMatchRegularExpression( '/=>\s*(?:1023|767)/', $source, 'no tier width literal in render.php' );
+		$this->assertStringContainsString( 'SGS_Breakpoints::max_for_tier', $source );
+
+		$out = $this->render_layer(
+			array_merge( $this->ring_attrs(), array( 'borderRadius' => array( 'tablet' => array( 'topLeft' => '8px' ), 'mobile' => array( 'topLeft' => '4px' ) ) ) )
+		);
+		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::TABLET_MAX . 'px)', $out['css'] );
+		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)', $out['css'] );
+	}
+
+	public function test_max_width_percent_is_capped_at_the_editor_range(): void {
+		foreach ( array( 250 => 'max-width:100%', -5 => 'max-width:0%', 40 => 'max-width:40%' ) as $given => $expected ) {
+			$out = $this->render_layer( self::IMAGE + array( 'maxWidthPercent' => $given ) );
+			$this->assertStringContainsString( $expected, $out['css'], (string) $given );
+		}
+	}
+
 	public function test_an_empty_layer_with_only_a_fill_or_a_shadow_renders(): void {
 		$fill = $this->render_layer(
 			array(
