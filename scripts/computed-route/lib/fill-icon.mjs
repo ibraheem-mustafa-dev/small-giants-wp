@@ -7,7 +7,14 @@
 //   2. a stroke mark that is a Lucide icon drawn the way Lucide draws it (2 wide, round caps and joins) is that icon
 //      (iconSource "lucide" and its iconName);
 //   3. anything else is the client's own mark: iconSource "custom" and the sanitised markup as iconSvg, with iconFill for a
-//      filled mark. A brand icon bound to Site Info whose draft SVG is not its registry glyph is this case; its link binding stays.
+//      filled mark; a link binding the node holds stays.
+// One exception to "decided from the mark alone": a node the skeleton made a Site Info brand row (a brandName with a link
+// bound to `sgs/site-info`; its iconSource may already have been turned to another value by an earlier write of the same
+// run, so it is not part of the test) stays that brand, iconSource "brand" written back, when the draft mark is that brand by the registry: its glyph, the host
+// of the address the mark links to, or its name in the mark's title or label or in the aria-label the node already holds
+// from the draft's link (a draft's icon links often point at `/` or `#`). The draft's own drawing of the brand is
+// named in a note, never a custom override that would drop the Site Info-driven glyph; a mark that is not that brand is
+// case 3 (a bound row is never re-pointed at another brand's glyph).
 // The sanitiser is the block's own: the tags and attributes `sgs_svg_kses_allowed_tags()` keeps, read from
 // plugins/sgs-blocks/includes/helpers-svg-kses.php; a tag it would drop (script, foreignObject, style, animation) is a named
 // UNMAPPED row and is left out of the markup, never written for the page to discard.
@@ -16,6 +23,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { SaxesParser } from 'saxes';
 import { REPO } from './capabilities.mjs';
+import { brandBySlug, brandOwnsAddress } from './brand-registry.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
 export const COVERAGE_WRITES = [
@@ -209,8 +217,31 @@ function iconPosition( { svg, schema, attributes, out } ) {
 	}
 }
 
+// The brand a skeleton-made Site Info row stands for (its brandName), or null for any other node.
+const boundBrand = ( attributes ) => ( attributes.brandName && Object.values( attributes.metadata?.bindings || {} ).some( ( b ) => 'sgs/site-info' === b?.source ) ? String( attributes.brandName ) : null );
+
+// Whether the draft mark is the registry brand `slug`: the mark links to an address the brand owns, or its title, label or the node's aria-label names it.
+function markIsBrand( slug, tree, href, ariaLabel = '' ) {
+	const brand = brandBySlug( slug );
+	if ( ! brand ) {
+		return false;
+	}
+	if ( brandOwnsAddress( brand, href ) ) {
+		return true;
+	}
+	const names = [ brand.slug, brand.label ].filter( Boolean ).map( ( n ) => String( n ).toLowerCase() );
+	const titles = [];
+	const collect = ( el ) => {
+		'title' === el.name.toLowerCase() && titles.push( el.text );
+		el.children.forEach( collect );
+	};
+	collect( tree );
+	return [ tree.attrs[ 'aria-label' ], ariaLabel, ...titles ].filter( Boolean ).some( ( t ) => names.includes( String( t ).trim().toLowerCase() ) );
+}
+
 // svg: the element's read ({ markup, position }) or null. schema: the block's settings. attributes: what the node already holds.
-export function iconDecisions( { svg, schema, attributes = {}, allowed = null } ) {
+// href: the address the mark links to in the draft (or ''), the evidence a Site Info brand row is that brand.
+export function iconDecisions( { svg, schema, attributes = {}, allowed = null, href = '' } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
 	if ( ! svg?.markup || ! schema || ! ( 'iconSvg' in schema ) ) {
 		return out;
@@ -242,9 +273,14 @@ export function iconDecisions( { svg, schema, attributes = {}, allowed = null } 
 			out.writes.push( { attr, value, merge: 'replace' } );
 		}
 	};
-	const brand = brandSignatures().bySig.get( sig );
+	const bound = boundBrand( attributes );
+	const keepsBrand = bound && ( brandSignatures().bySig.get( sig ) === bound || markIsBrand( bound, tree, href, attributes.ariaLabel ) );
+	const brand = bound ? null : brandSignatures().bySig.get( sig );
 	const lucide = lucideStyle ? lucideSignatures().get( sig ) : null;
-	if ( brand ) {
+	if ( keepsBrand ) {
+		put( 'iconSource', 'brand' );
+		brandSignatures().bySlug.get( bound ) !== sig && out.notes.push( `the draft draws its own ${ bound } glyph; the icon is bound to Site Info, so it stays the ${ bound } brand icon and the registry glyph shows` );
+	} else if ( brand ) {
 		put( 'iconSource', 'brand' );
 		put( 'brandName', brand );
 	} else if ( lucide ) {

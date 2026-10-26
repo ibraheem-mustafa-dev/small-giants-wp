@@ -24,6 +24,7 @@ import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originM
 import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { stateOpener, withRoute, refusalRows } from './lib/fill-open.mjs';
+import { openerRefusals } from './lib/fill-opener-refusals.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
 import { fillStates } from './lib/fill-state.mjs';
@@ -212,8 +213,8 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...states.unmapped );
 		// A state whose surface never rendered is refused, never read as a closed surface: its gap row names the state and why.
 		const widthsOpen = Object.entries( reads.opener?.widths || {} ).filter( ( [ , v ] ) => v.ok ).map( ( [ w ] ) => Number( w ) );
-		const refused = opener ? [ ...opener.refused, ...( opener.state && ! widthsOpen.length ? [ { state: opener.state, reason: Object.values( reads.opener?.widths || {} ).find( ( v ) => v.reason )?.reason ?? 'it rendered at no width' } ] : [] ) ] : [];
-		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused }, nodes, flat, refOf } ) );
+		const readRefused = opener ? [ ...opener.refused, ...openerRefusals( { opener, readWidths: reads.opener?.widths || {} } ) ] : [];
+		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused: readRefused }, nodes, flat, refOf } ) );
 		// A logo whose width changes with the screen is written as its per-device size (lib/fill-logo-size.mjs).
 		const logos = logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped } );
 		result.writes.push( ...logos.writes );
@@ -252,6 +253,7 @@ export async function fillSurface( o ) {
 		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( o.draftDir, facts, intakeParts.rootComponent ) } );
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
+		result.settled.push( ...forms.settled );
 		result.notes.push( ...forms.notes );
 		// FR-48-60 to FR-48-62: the draft's own values of the shop parts (build/shop-parts.json) on the blocks that hold them.
 		const shop = shopPartWrites( { record: shopRecord, nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), writes: result.writes } );
@@ -270,7 +272,11 @@ export async function fillSurface( o ) {
 		// node's sgsMotion, with every target's entrance and endless animations sampled at 375, 768 and 1440 as the render
 		// check (and the source of the values the code computes at run time).
 		const jobs = nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) );
-		const { entrances: sampled, loops } = await sampleMotion( { url: readUrl, jobs, open: o.open || null, opener, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
+		const { entrances: sampled, loops, opened: motionOpened } = await sampleMotion( { url: readUrl, jobs, open: o.open || null, opener, headless: o.headless ?? true, external: !! o.external, mirror: o.mirror || {} } );
+		// A state the motion sampler could not open at a width sampled nothing there: a row naming the state and the widths.
+		const motionRefused = opener ? openerRefusals( { opener, motionWidths: motionOpened } ) : [];
+		result.unmapped.push( ...refusalRows( { opener: { ...opener, refused: motionRefused }, nodes, flat, refOf } ) );
+		const refused = [ ...readRefused, ...motionRefused ];
 		const entrances = nodes.filter( ( x ) => x.targets.length ).map( ( n ) => ( { node: refOf( flat[ n.index ] ), block: n.name, measured: sampled[ n.targets[ 0 ].id ]?.[ 1440 ] ?? null } ) );
 		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
 		result.writes.push( ...motion.writes );

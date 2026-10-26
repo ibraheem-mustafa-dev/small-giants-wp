@@ -78,7 +78,7 @@ function fillContent( st, rec, ref, cal ) {
 	const image = nestedImage( atDesktop );
 	const imageTarget = rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
 	take( mediaDecisions( { slots: imageSlots( st.db, rec.name ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: image, media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } ) );
-	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {} } ) );
+	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
 		take( mapDecisions( { schema: blockSchema( rec.name ), attributes: node.attributes || {}, embeds } ) );

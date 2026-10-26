@@ -255,3 +255,30 @@ test( 'MUST FAIL: entrance sampling sets the surface\'s state before it probes, 
 		await served.close();
 	}
 } );
+
+test( 'MUST FAIL: a state the opener reports as not open samples nothing, and its verdict is handed back so a row can name it', async () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-entrance-verdict-' ) );
+	fs.writeFileSync( path.join( dir, 'index.html' ), GATED_HTML );
+	const served = await serveDraft( dir );
+	try {
+		const jobs = [ { id: 'panel', finder: '.panel' } ];
+		// The page does show the panel (so a probe would find motion), but the opener says the state did not hold.
+		const refuses = async ( page ) => {
+			await page.evaluate( () => window.openPanel() );
+			return { ok: false, reason: 'none of the 1 sc-if ids rendered' };
+		};
+		const shut = await sampleMotion( { url: served.url, jobs, windowMs: 1500, sweep: null, opener: { state: 'open', component: 'Root', keys: {}, expect: [] }, openWith: refuses } );
+		assert.deepEqual( Object.keys( shut.entrances.panel ), [], 'nothing is sampled from a state that did not open' );
+		assert.deepEqual( Object.keys( shut.opened ).sort(), [ '1440', '375', '768' ] );
+		assert.equal( shut.opened[ 375 ].ok, false );
+		assert.match( shut.opened[ 375 ].reason, /sc-if ids/ );
+		const opens = async ( page ) => {
+			await page.evaluate( () => window.openPanel() );
+			return { ok: true, reason: null };
+		};
+		const held = await sampleMotion( { url: served.url, jobs, windowMs: 3000, sweep: null, opener: { state: 'open', component: 'Root', keys: {}, expect: [] }, openWith: opens } );
+		assert.equal( held.entrances.panel[ 1440 ]?.trigger, 'load', 'the control: a state that opened is sampled' );
+	} finally {
+		await served.close();
+	}
+} );

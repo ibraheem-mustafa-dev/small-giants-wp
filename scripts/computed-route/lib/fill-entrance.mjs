@@ -144,8 +144,9 @@ export const SWEEP = { afterMs: 1500, everyMs: 700, step: 0.7, settleMs: 2500 };
 // window, and it sweeps down the page so a scroll entrance plays too (`sweep: null` keeps the page still). A surface that
 // exists only while a draft state holds (a drawer, a mega-menu panel) passes its `opener` (lib/fill-open.mjs::stateOpener),
 // and the page's state is set through `openWith` once the page has loaded, as the read does, so the entrances sampled are
-// those of the open surface. Returns { id: raw probe result }.
-export async function sampleEntrances( { url, jobs, open = null, opener = null, openWith = openState, width = 1440, windowMs = 4500, sweep = SWEEP, headless = true, external = false, mirror = {} } ) {
+// those of the open surface. A state that did not open (the opener's verdict says `ok: false`) samples nothing, never the
+// closed page's motion; the verdict goes to `onOpen` so the caller can raise a row. Returns { id: raw probe result }.
+export async function sampleEntrances( { url, jobs, open = null, opener = null, openWith = openState, onOpen = null, width = 1440, windowMs = 4500, sweep = SWEEP, headless = true, external = false, mirror = {} } ) {
 	const { chromium } = await loadChromium();
 	const origin = new URL( url ).origin;
 	const browser = await chromium.launch( { headless, args: [ '--hide-scrollbars' ] } );
@@ -160,10 +161,11 @@ export async function sampleEntrances( { url, jobs, open = null, opener = null, 
 		if ( open ) {
 			await h.clickText( open, { wait: 50 } );
 		}
-		opener?.state && await openWith( page, opener );
+		const verdict = opener?.state ? await openWith( page, opener ) : null;
+		verdict && onOpen?.( verdict );
 		const raw = await page.evaluate( () => window.__fillProbe );
 		await settleAnimations( page, { floor: 0 } );
-		return raw;
+		return false === verdict?.ok ? {} : raw;
 	} finally {
 		await browser.close();
 	}
@@ -179,13 +181,15 @@ export async function sampleWidths( { jobs, ...opts } ) {
 
 // Entrances and loops from the same page loads: { entrances (as sampleWidths), loops: { '<job id>': { 375, 768, 1440:
 // { loops, box, marquee, smil } } } }, a job and width present in `loops` only when the element runs an endless
-// animation, is a <marquee> or holds SVG animation elements there.
+// animation, is a <marquee> or holds SVG animation elements there. `opened` is the opener's verdict at each width where
+// the state was set ({ [width]: { ok, reason, ... } }); a width whose verdict is not ok sampled nothing.
 export async function sampleMotion( { jobs, ...opts } ) {
 	const entrances = Object.fromEntries( jobs.map( ( j ) => [ j.id, {} ] ) );
 	const loops = {};
 	const found = {};
+	const opened = {};
 	for ( const width of SAMPLE_WIDTHS ) {
-		const raw = await sampleEntrances( { ...opts, jobs, width } );
+		const raw = await sampleEntrances( { ...opts, jobs, width, onOpen: ( v ) => ( opened[ width ] = v ) } );
 		for ( const j of jobs ) {
 			const r = raw[ j.id ];
 			if ( ! r ) {
@@ -202,7 +206,7 @@ export async function sampleMotion( { jobs, ...opts } ) {
 			loops[ id ] = Object.fromEntries( Object.entries( byWidth ).map( ( [ width, r ] ) => [ width, { loops: r.loops || [], box: r.box, marquee: r.marquee, smil: r.smil || [] } ] ) );
 		}
 	}
-	return { entrances, loops };
+	return { entrances, loops, opened };
 }
 
 // Sampling every frame resolves a time to about +-17ms at 60Hz, so a duration or delay is rounded to the 50ms an

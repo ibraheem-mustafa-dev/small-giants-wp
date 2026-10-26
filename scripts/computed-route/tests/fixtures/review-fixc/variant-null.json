@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/calibrate.mjs",
+		"find": "attributes: { ...( inst.attrs || fixture.attributes || {} ), className:",
+		"replace": "attributes: { ...( fixture.attributes || {} ), ...inst.attrs, className:",
+		"why": "the tree builder lays the fixture base back over a planned instance"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const base = variantAttributes( fixture.attributes, ( fixture.variants || [] )[ 0 ] || {} );",
+		"replace": "const base = { ...( fixture.attributes || {} ), ...( ( fixture.variants || [] )[ 0 ] || {} ) };",
+		"why": "the content planner spreads variant 0 raw, null included"
+	}
+]

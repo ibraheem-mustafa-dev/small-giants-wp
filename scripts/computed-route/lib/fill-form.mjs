@@ -212,14 +212,16 @@ export function componentOf( target, candidates ) {
 // facts: the fact record (or null); flags: intake's flags; db: the framework DB; source: { component: script text } for the
 // draft's conditions ({ component: script text }, see formSources); component: the surface's own component (its handoff
 // record's `dc`), whose schema is used (none named reads the first schema the record holds); refs: lib/references.mjs::detectReferences.
-// Returns { writes, unmapped, notes }.
+// Returns { writes, unmapped, notes, settled }: `settled` is one row (reason `row-held`) for each node on or inside a linked
+// reference block that the draft read, naming the linked form that holds its settings, so no read there ends silent.
 export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences() } ) {
-	const out = { writes: [], unmapped: [], notes: [] };
-	// The nodes of every linked reference block and the blocks inside it.
-	const linked = new Set();
+	const out = { writes: [], unmapped: [], notes: [], settled: [] };
+	// The nodes of every linked reference block and the blocks inside it, each with the form its reference names.
+	const linked = new Map();
 	flat.forEach( ( node ) => {
-		if ( 'linked' === referenceOf( node, refs )?.kind ) {
-			walk( [ node ], ( n ) => linked.add( n ) );
+		const ref = referenceOf( node, refs );
+		if ( 'linked' === ref?.kind ) {
+			walk( [ node ], ( n ) => linked.set( n, ref.value ) );
 		}
 	} );
 	const schema = formSchemaOf( facts, component );
@@ -232,6 +234,8 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 	for ( const rec of nodes ) {
 		const node = flat[ rec.index ];
 		if ( linked.has( node ) ) {
+			const widths = [ 375, 768, 1440 ].filter( ( w ) => rec.targets.some( ( t ) => reads.widths?.[ w ]?.[ t.id ] && ! reads.widths[ w ][ t.id ].missing ) );
+			widths.length && out.settled.push( { node: refOf( node ), block: rec.name, slot: '', property: '(linked form)', value: String( linked.get( node ) ), widths, reason: 'row-held', detail: `the form is the linked form "${ linked.get( node ) }": its fields and settings are that form's own, so nothing is written here` } );
 			continue;
 		}
 		const ref = refOf( node );

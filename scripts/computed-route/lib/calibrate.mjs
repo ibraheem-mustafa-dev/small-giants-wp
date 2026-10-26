@@ -16,11 +16,12 @@ export { elementPath } from '../../parity/lib/ref-trace.mjs';
 
 // One calibration tree for a block: every instance wrapped in an sgs/container (class cr-cal-<block>-<key>), the
 // instance itself carrying cr-ref-cal-<n> so its element paths read exactly as the walker's. The fixture gives the
-// content, inner blocks and parent chain the block needs.
+// content, inner blocks and parent chain the block needs. A planned instance's attrs already hold the fixture's base
+// with its variant laid over it, so they are used whole: laying them over the base again would restore a key the variant removed.
 export function buildTree( block, fixture, instances ) {
 	const short = block.replace( /^sgs\//, '' );
 	return instances.map( ( inst, n ) => {
-		let node = { name: block, attributes: { ...( fixture.attributes || {} ), ...inst.attrs, className: `${ CAL_PREFIX }${ n }` }, innerBlocks: structuredClone( fixture.inner || [] ) };
+		let node = { name: block, attributes: { ...( inst.attrs || fixture.attributes || {} ), className: `${ CAL_PREFIX }${ n }` }, innerBlocks: structuredClone( fixture.inner || [] ) };
 		for ( const p of [ ...( fixture.parents || [] ) ].reverse() ) {
 			node = { name: p.name, attributes: { ...( p.attributes || {} ) }, innerBlocks: [ node ] };
 		}

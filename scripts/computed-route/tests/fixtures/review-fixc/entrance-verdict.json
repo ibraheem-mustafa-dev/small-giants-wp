@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-entrance.mjs",
+		"find": "return false === verdict?.ok ? {} : raw;",
+		"replace": "return raw;",
+		"why": "a state that did not open is sampled from the closed page"
+	},
+	{
+		"file": "lib/fill-entrance.mjs",
+		"find": "verdict && onOpen?.( verdict );",
+		"replace": "void 0;",
+		"why": "the opener verdict is not handed back"
+	},
+	{
+		"file": "lib/fill-entrance.mjs",
+		"find": "onOpen: ( v ) => ( opened[ width ] = v )",
+		"replace": "onOpen: null",
+		"why": "sampleMotion keeps no verdict per width"
+	}
+]

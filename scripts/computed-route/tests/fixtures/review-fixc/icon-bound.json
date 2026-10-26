@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "|| markIsBrand( bound, tree, href, attributes.ariaLabel ) );",
+		"replace": ");",
+		"why": "a bound brand row is kept only by the exact glyph"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "if ( brandOwnsAddress( brand, href ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the link host is no evidence of the brand"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "'title' === el.name.toLowerCase() && titles.push( el.text );",
+		"replace": "void 0;",
+		"why": "the mark's title is no evidence of the brand"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "[ tree.attrs[ 'aria-label' ], ariaLabel, ...titles ]",
+		"replace": "[ ariaLabel, ...titles ]",
+		"why": "the mark's label is no evidence of the brand"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "const brand = bound ? null : brandSignatures().bySig.get( sig );",
+		"replace": "const brand = brandSignatures().bySig.get( sig );",
+		"why": "a bound row is re-pointed at another brand's glyph"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "Object.values( attributes.metadata?.bindings || {} ).some( ( b ) => 'sgs/site-info' === b?.source )",
+		"replace": "true",
+		"why": "every brand node counts as bound to Site Info"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "brandSignatures().bySlug.get( bound ) !== sig && out.notes.push(",
+		"replace": "false && out.notes.push(",
+		"why": "the draft's own glyph is kept silently"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "[ tree.attrs[ 'aria-label' ], ariaLabel, ...titles ]",
+		"replace": "[ tree.attrs[ 'aria-label' ], ...titles ]",
+		"why": "the node's own aria-label is no evidence of the brand"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "if ( keepsBrand ) {\n\t\tput( 'iconSource', 'brand' );",
+		"replace": "if ( keepsBrand ) {",
+		"why": "a bound row an earlier write turned to emoji is not put back to brand"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "const boundBrand = ( attributes ) => ( attributes.brandName && Object.values(",
+		"replace": "const boundBrand = ( attributes ) => ( 'brand' === attributes.iconSource && attributes.brandName && Object.values(",
+		"why": "a bound row is recognised only while its iconSource is still brand"
+	}
+]

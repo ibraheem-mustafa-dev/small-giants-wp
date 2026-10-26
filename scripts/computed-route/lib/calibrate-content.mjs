@@ -4,7 +4,7 @@
 // framework-database `role` instead, and read for node existence, text content and link attributes rather than for
 // computed style. The style reader is lib/calibrate-read.mjs; this is its content counterpart.
 import { WIDTHS, CAL_PREFIX } from './calibrate-props.mjs';
-import { preconditionsFor } from './calibrate-instances.mjs';
+import { preconditionsFor, variantAttributes } from './calibrate-instances.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { EDITOR_TIMEOUT_MS } from './calibrate-chunk.mjs';
 
@@ -137,7 +137,7 @@ export function structurePresenceValues( row, schema, variant, current = {} ) {
 // preconditions its element needs (lib/calibrate-instances.mjs::preconditionsFor), so a setting gated by a show
 // toggle or living under one variant still renders. Returns { instances, noMarker }.
 export function planContentInstances( block, { contentRows, variant, schema = {}, fixture = {}, ctx = {} } ) {
-	const base = { ...( fixture.attributes || {} ), ...( ( fixture.variants || [] )[ 0 ] || {} ) };
+	const base = variantAttributes( fixture.attributes, ( fixture.variants || [] )[ 0 ] || {} );
 	const instances = [];
 	const noMarker = new Set();
 	// A marker needing preconditions is read against a baseline instance carrying the same preconditions and not the
