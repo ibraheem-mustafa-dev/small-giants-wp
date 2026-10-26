@@ -12,6 +12,7 @@ import { sgsOnly } from '../lib/skeleton-classify.mjs';
 import { makeRules } from '../lib/skeleton-rules.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { skeletonProblems } from '../lib/fill-skeleton.mjs';
+import { handoverProblems } from '../lib/fill-handover.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -374,8 +375,11 @@ test( 'openStatus: a second open-status line in a cousin position joins the firs
 
 test( 'readingProgress hands the bar over as a Floating UI site setting; without the rule no such handover exists', () => {
 	const tree = section( [ E( 'div', { style: 'position:fixed;left:0;top:0;height:3px;width:100%', attrs: { 'aria-hidden': 'true' } } ), E( 'p', { words: 'Body' } ) ] );
-	assert.equal( byTag( run( tree ), 'div' ).handover?.kind, 'floating-ui' );
-	assert.notEqual( byTag( run( tree, { facts: facts( 'readingProgress' ) } ), 'div' ).handover?.kind, 'floating-ui' );
+	const bar = byTag( run( tree ), 'div' );
+	assert.equal( bar.rule, 'readingProgress' );
+	assert.match( bar.handover?.detail || '', /reading progress/i );
+	assert.deepEqual( handoverProblems( [ bar.handover ], 'the bar' ), [], 'MUST FAIL: the hand-over names a handover owner and kind Fill accepts' );
+	assert.equal( byTag( run( tree, { facts: facts( 'readingProgress' ) } ), 'div' ).handover, undefined );
 } );
 
 test( 'an emoji alone is an icon whether or not its characters are spaced', () => {
