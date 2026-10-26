@@ -155,6 +155,7 @@ const manifest = ( rows ) => buildManifest( { client: 'c', site: 's', rows, reco
 test( 'MUST FAIL: the manifest gives one template surface per served template, each made from what plays it', () => {
 	const out = manifest( INDUS );
 	assert.deepEqual( out.entries[ 'template-page' ].copy, { from: 'pages', surfaces: [ 'about', 'contact' ] } );
+	assert.deepEqual( manifest( [ ...INDUS, row( { slug: 'new-page', template: 'page' } ) ] ).entries[ 'template-page' ].copy, { from: 'pages', surfaces: [ 'about', 'contact' ] }, 'a page still waiting for its id is no surface yet, and never turns the copy into a second Fill of a page' );
 	assert.deepEqual( out.entries[ 'template-front-page' ].copy, { from: 'pages', surfaces: [ 'home' ] } );
 	assert.deepEqual( out.entries[ 'template-home' ].copy, { from: 'pages', surfaces: [ 'blog' ] } );
 	assert.deepEqual( out.entries[ 'template-single' ].copy, { from: 'fill', row: 'post:news-1' } );

@@ -204,11 +204,13 @@ const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) =
 // The post row the single-post template is shaped from: the first post row of the page map, or null with none.
 export const templateSource = ( rows ) => rows.find( ( r ) => 'post' === r.postType ) ?? null;
 
-// A page row whose page surface is Filled and built into its post (not WooCommerce's own page, whose content is kept).
-const filledPage = ( r ) => 'page' === r.postType && null != r.id && ! wooContentRole( r );
+// A page row whose page surface is Filled and built into its post once it has an id (not WooCommerce's own page, whose
+// content is kept).
+const ownPage = ( r ) => 'page' === r.postType && ! wooContentRole( r );
 
 // The template copy surfaces (FR-48-56), one per template the site serves that is not a shop row's own: { slug, key, copy,
-// row } with `copy.from` 'pages' (the shell the Filled pages in `copy.surfaces` share, so it needs no Fill of its own),
+// row } with `copy.from` 'pages' (the shell the Filled pages in `copy.surfaces` share, those of its pages with an id, so it
+// needs no Fill of its own),
 // 'fill' (read and Filled at `row`, the surface playing it: the first post for `single`, a WooCommerce page, a `template`
 // row) or 'page' (the site's own page copy's shell around the theme's own content; no draft surface plays it).
 export function templateSurfaces( rows ) {
@@ -221,8 +223,8 @@ export function templateSurfaces( rows ) {
 		}
 		if ( 'page' === how ) {
 			out.push( { slug, key: templateKey( slug ), copy: { from: 'page' }, row: null } );
-		} else if ( mine.every( filledPage ) ) {
-			out.push( { slug, key: templateKey( slug ), copy: { from: 'pages', surfaces: mine.map( surfaceKey ) }, row: mine[ 0 ] } );
+		} else if ( mine.every( ownPage ) ) {
+			out.push( { slug, key: templateKey( slug ), copy: { from: 'pages', surfaces: mine.filter( ( r ) => null != r.id ).map( surfaceKey ) }, row: mine[ 0 ] } );
 		} else {
 			const row = 'single' === slug ? templateSource( rows ) : mine[ 0 ];
 			row && out.push( { slug, key: templateKey( slug ), copy: { from: 'fill', row: rowKey( row ) }, row } );
