@@ -223,3 +223,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-26 S reseed-done (textShadowColourHover x3 checked; build 197/197)
 - 2026-10-26 S deploy-start all (text shadow hover colour and the review fixes; --motion-qa-tier full)
 - 2026-10-26 S deployed sandybrown,indus-test,mamas-test,eye-care-clone-test,eye-care-test 361f96bcf (review fixes and the text shadow hover colour), all five DONE, gate-full 13 of 13, canary motion 19 of 19; calibrations may go ahead
+- 2026-10-26 S calibration-end local-indus (read key 42e9b83198fd: 56 of 57 Indus blocks current; sgs/account refused by the loss guard, old map kept; every Phase 3 loop 1 setting reached at 375/768/1440)
