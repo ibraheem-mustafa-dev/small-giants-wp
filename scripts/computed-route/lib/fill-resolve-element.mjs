@@ -274,7 +274,9 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'equal', detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
-			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }`, ...( res.code ? { code: res.code } : {} ), ...( 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {} ) } );
+			const ran = 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {};
+			const why = Object.entries( ran.skipped || {} ).map( ( [ check, reason ] ) => `${ check }: not asked: ${ reason }` );
+			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }${ why.map( ( w ) => `; ${ w }` ).join( '' ) }`, ...( res.code ? { code: res.code } : {} ), ...ran } );
 			// A no-setting row on an element's own box goes to the part-wide pass (lib/fill-ancestor.mjs::partWideWrites), which asks the enclosing blocks.
 			'no-setting' === res.gap && ! layer && ( st.hopRows ??= [] ).push( { row: st.out.unmapped.at( -1 ), rec, target, prop, draft: { ...draft }, siblings: allDrafts } );
 		} else if ( 'written' === res.status ) {
@@ -317,12 +319,14 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 // `calibrated-slots` (the other slots the block's settings for the property paint, alternateSlots), `equivalence` (the
 // css-equivalence engine, lib/css-equivalence), and `ancestor` (a setting on an enclosing block, lib/resolve.mjs::
 // resolveViaAncestor), which the part-wide pass runs after the walk (lib/fill-ancestor.mjs::partWideWrites): it is listed
-// under `unchecked` until that pass has looked at the row and moved it to `checks`. A painted layer tries its own slot alone.
+// under `unchecked` until that pass has looked at the row and moved it to `checks`. A painted layer tries its own slot alone:
+// the two checks it skips are named under `skipped` with the reason, and stay out of `checks`.
 export function checksRan( { layer, alternates, res, eq } ) {
 	return {
 		checks: [ 'own-slot', ...( layer ? [] : [ 'calibrated-slots' ] ), ...( res.equivalence || eq ? [ 'equivalence' ] : [] ) ],
 		unchecked: [ 'ancestor' ],
 		alternates: alternates.length,
+		...( layer ? { skipped: { 'calibrated-slots': 'a painted layer is resolved on its own slot alone', ancestor: 'the part-wide pass asks for the box of an element in the tree, not a painted layer' } } : {} ),
 	};
 }
 

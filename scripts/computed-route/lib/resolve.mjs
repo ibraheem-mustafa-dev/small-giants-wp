@@ -454,14 +454,19 @@ function noSetting( input, ctx, detail ) {
 	return { gap: 'no-setting', detail: `${ detail }; ${ 'held' === eq.verdict ? `held (${ eq.reason }): ${ eq.detail }` : eq.detail }`, equivalence: eq, ...( 'held' === eq.verdict ? { code: `held:${ eq.reason }` } : {} ) };
 }
 
-const hasSlotColumn = new WeakMap();
+const slotLookups = new WeakMap();
 // The DB slot a setting is tied to (`block_attributes.canonical_slot`: the named part of the block it paints), or null.
-// A database without the column (a test fixture) ties nothing to a part.
+// A database without the column (a test fixture), or no database at all, ties nothing to a part. The lookup statement is
+// prepared once per database.
 function canonicalSlotOf( db, block, attr ) {
-	if ( ! hasSlotColumn.has( db ) ) {
-		hasSlotColumn.set( db, db.prepare( 'PRAGMA table_info(block_attributes)' ).all().some( ( c ) => 'canonical_slot' === c.name ) );
+	if ( ! db ) {
+		return null;
 	}
-	return hasSlotColumn.get( db ) ? db.prepare( 'SELECT canonical_slot FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr )?.canonical_slot ?? null : null;
+	if ( ! slotLookups.has( db ) ) {
+		const has = db.prepare( 'PRAGMA table_info(block_attributes)' ).all().some( ( c ) => 'canonical_slot' === c.name );
+		slotLookups.set( db, has ? db.prepare( 'SELECT canonical_slot FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ) : null );
+	}
+	return slotLookups.get( db )?.get( block, attr )?.canonical_slot ?? null;
 }
 
 // A tie between settings that paint one slot breaks on the DB slot (`canonical_slot`, `css_element`): a setting the DB ties

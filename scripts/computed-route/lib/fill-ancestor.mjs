@@ -79,8 +79,11 @@ export function instanceDraft( st, target, prop ) {
 	return painted( prop );
 }
 
-// Whether two per-width drafts paint the same wherever both state a value.
-const sameAsk = ( prop, a, b ) => Object.keys( a ).filter( ( w ) => w in b ).every( ( w ) => samePaint( prop, a[ w ], b[ w ] ) );
+// Whether two per-width drafts ask the same: the same widths, and the same paint at each.
+export const sameAsk = ( prop, a, b ) => {
+	const widths = Object.keys( a );
+	return widths.length === Object.keys( b ).length && widths.every( ( w ) => w in b && samePaint( prop, a[ w ], b[ w ] ) );
+};
 
 // The instances of a host's part (a child block's part whose path the host reaches by `home`): the measured ones, and the
 // children whose block calibrates that part where the skeleton gave no element for it (unmeasured, so the part's every
@@ -112,6 +115,12 @@ function sourceOf( rec, target ) {
 	return rec.targets.find( ( t ) => '' !== t.slot && json( t.finder ) === json( target.finder ) ) ?? null;
 }
 
+// Records why the hop did not look at a row: the `ancestor` check stays under `unchecked`, with the reason on the row.
+function skipped( row, why ) {
+	row.skipped = { ...( row.skipped || {} ), ancestor: why };
+	row.reason = `${ row.reason }; ancestor: not asked: ${ why }`;
+}
+
 // Records a row the hop looked at and did not answer: the `ancestor` check ran, so it leaves `unchecked`.
 function checked( row, outcome ) {
 	row.checks = [ ...new Set( [ ...( row.checks || [] ), 'ancestor' ] ) ];
@@ -128,7 +137,12 @@ export function partWideWrites( st, { hop = resolveViaAncestor } = {} ) {
 	// judges against the rendered box, after this pass) stays for that pass: neither is answered by a host write.
 	const held = makeSettle( st );
 	for ( const p of st.hopRows || [] ) {
-		if ( p.prop in SIZE_FAMILY || held( { unmapped: [ p.row ], writes: [] } ).alreadyHeld.length ) {
+		if ( p.prop in SIZE_FAMILY ) {
+			skipped( p.row, 'a size is judged against the rendered box by the dimension pass (lib/fill-dimensions.mjs), after this one' );
+			continue;
+		}
+		if ( held( { unmapped: [ p.row ], writes: [] } ).alreadyHeld.length ) {
+			skipped( p.row, 'the element already renders this value (lib/fill-held.mjs), so no host write answers it' );
 			continue;
 		}
 		const source = sourceOf( p.rec, p.target );
@@ -187,9 +201,14 @@ function tryHost( st, p, source, hostRec, home, hop, done ) {
 	const byPath = Object.fromEntries( paths.map( ( path, i ) => [ path, measured[ i ] ] ) );
 	let why = '';
 	const check = ( { paths: reached, prop } ) => {
+		const unknown = reached.find( ( r ) => ! byPath[ r ] );
+		if ( undefined !== unknown ) {
+			why = `${ hostRec.name } paints \`${ unknown }\`, which is not a measured instance of this part, so no write is safe`;
+			return null;
+		}
 		const odd = reached.map( ( r ) => byPath[ r ] ).find( ( m ) => {
 			const d = instanceDraft( st, m.target, prop );
-			return null === d || ( Object.keys( d ).length && ! sameAsk( prop, d, p.draft ) );
+			return null === d || ! sameAsk( prop, d, p.draft );
 		} );
 		why = odd ? `${ odd.ref } asks another ${ prop } value than the rest of the instances` : '';
 		return odd ? null : { key: `part-wide:${ hostRef }:${ LOOSE( home ) }` };
