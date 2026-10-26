@@ -10,7 +10,7 @@ import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { classify } from './motion-layers.mjs';
 import { effectPresetFor, tokenTypes, clientTokens, clientPalette } from './motion-tokens.mjs';
 import { writeEffect, loadEffectOffers, PANEL_LISTS } from './motion-effects.mjs';
-import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf } from './fill-behaviour.mjs';
+import { applyBehaviours, applyControls, applyGlobals, applySettings, applyStrip, behaviourIndex, hasAttrOf, heldLayer } from './fill-behaviour.mjs';
 import { accountedIds, silentRows, makeHomeOf, readingProgressHandover, motionWidths } from './fill-motion-account.mjs';
 import { elementMotion, elementEffects, snapLayer, paintLayer } from './fill-motion-element.mjs';
 import { paintTimings } from './fill-timing.mjs';
@@ -370,6 +370,12 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 				const w = finishedEffect( e, { block: n.name, target, mdb, schema, offers, ctx, id } );
 				if ( w.refused ) {
 					out.unmapped.push( { ...where, property: 'motion', value: e.record, reason: `${ e.effect }: ${ w.refused }` } );
+					continue;
+				}
+				const same = heldLayer( doc, w.target, w );
+				if ( same ) {
+					written.set( e.record, { at: w.target, layer: same, list: w.list, where } );
+					out.notes.push( { ...where, text: `${ e.record }: the same ${ e.effect } as the layer already on this element (one draft animation its code reaches more than one way), written once` } );
 					continue;
 				}
 				doc.elements[ w.target ] = { ...( doc.elements[ w.target ] || {} ), effects: [ ...list( w.target ), w.layer ] };

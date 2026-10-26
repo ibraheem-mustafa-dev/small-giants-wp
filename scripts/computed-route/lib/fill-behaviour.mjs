@@ -148,6 +148,19 @@ export function stillAtRest( reads, id ) {
 
 const layerCount = ( el, effect, hover ) => ( ( hover ? el?.hover?.effects : el?.effects ) || [] ).filter( ( l ) => l.effect === effect ).length;
 
+// A layer's content with its id left out and its keys sorted, so two layers compare by what they draw.
+const layerKey = ( v ) => ( Array.isArray( v ) ? `[${ v.map( layerKey ).join( ',' ) }]` : v && 'object' === typeof v ? `{${ Object.keys( v ).filter( ( k ) => 'id' !== k ).sort().map( ( k ) => `${ JSON.stringify( k ) }:${ layerKey( v[ k ] ) }` ).join( ',' ) }}` : JSON.stringify( v ) );
+
+// The layer already in the list a finished layer goes to (place()'s list) that draws the same effect with the same
+// content: the same motion reached by another of the draft's code paths (one animation call that a mount, a route change
+// and a drawer opening all run), which is written once. null when there is none; a layer of the same effect with other
+// values is not the same motion and is left to the motion validator.
+export function heldLayer( doc, at, w ) {
+	const el = doc.elements[ at ];
+	const layers = ( 'hover.effects' === w.list ? el?.hover?.effects : el?.effects ) || [];
+	return layers.find( ( l ) => l.effect === w.layer.effect && layerKey( l ) === layerKey( w.layer ) ) || null;
+}
+
 // Puts a finished layer into the document where writeEffect placed it.
 function place( doc, at, w ) {
 	const el = ( doc.elements[ at ] ||= {} );
@@ -198,6 +211,12 @@ export function applyBehaviours( { items, n, target, doc, pending, written, cont
 				const w = finish( e, id );
 				if ( w.refused ) {
 					refuse( r.id, `${ e.effect }: ${ w.refused }` );
+					continue;
+				}
+				const same = heldLayer( doc, w.target, w );
+				if ( same ) {
+					written.set( r.id, { at: w.target, layer: same, list: w.list, where } );
+					note( r.id, `the same ${ e.effect } as the layer already on this element (one draft animation its code reaches more than one way), written once` );
 					continue;
 				}
 				place( doc, w.target, w );

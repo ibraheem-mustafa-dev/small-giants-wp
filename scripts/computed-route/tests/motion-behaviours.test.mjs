@@ -9,6 +9,7 @@ import { openDb } from '../lib/db.mjs';
 import { motionDb } from '../lib/motion-db.mjs';
 import { loadMotionSchema } from '../lib/motion-schema.mjs';
 import { motionWrites } from '../lib/fill-motion.mjs';
+import { heldLayer } from '../lib/fill-behaviour.mjs';
 import { recogniseBehaviour, effectRows } from '../lib/motion-behaviours.mjs';
 import { motionFixtureDb } from './fixtures/motion-fixture-db.mjs';
 
@@ -207,6 +208,26 @@ test( 'MUST FAIL: rings that drift by random amounts per element store the value
 	assert.match( out.notes.map( ( n ) => n.text ).join( '\n' ), /moving scale is not held by ambient-float/ );
 	const none = run( [ node( 0, 'sgs/container', '50' ) ], [ { ...ring, trigger: { type: 'mount' } } ], {} );
 	assert.match( reasons( none.out ).join( '\n' ), /render showed no matching endless animation on this element to sample/ );
+} );
+
+test( 'MUST FAIL: one ring animation the draft\'s code reaches three ways (mount, route change, drawer opening) is one ambient float, written once', () => {
+	const drift = "dx + 'px ' + dy + 'px'";
+	const ring = ( id, trigger ) => rec( id, { element: { dc: 'Site', template_tpl_id: '50', selector: '[data-ring]' }, trigger, duration_ms: 'dur', delay_ms: '-Math.random() * dur', easing: 'ease-in-out', iterations: 'infinite', direction: 'alternate',
+		source: { file: 'Site.dc.html', function: 'bindRings', line: 1285 },
+		properties: [ { property: 'translate', from: '0 0', to: drift, formula: drift }, { property: 'scale', from: '1', to: 'sc', formula: 'sc' } ] } );
+	const records = [ ring( 'A-20', { type: 'mount' } ), ring( 'A-21', { type: 'route', state_keys: [ 'page' ] } ), ring( 'A-22', { type: 'state', state_keys: [ 'mobileOpen' ] } ) ];
+	const measured = { 1440: { loops: [ { css: false, frames: [ { translate: '0px 0px', scale: '1' }, { translate: '6.6px 2.1px', scale: '1.1' } ], duration: 12374, delay: -7101, direction: 'alternate', easing: 'ease-in-out' } ], box: { width: 340, height: 340 } } };
+	const { out, doc } = run( [ node( 0, 'sgs/container', '50' ) ], records, { loops: { '0:': measured } } );
+	assert.deepEqual( reasons( out ).filter( ( r ) => /motion|already/.test( r ) ), [], 'no refusal' );
+	assert.equal( doc.elements.root.effects.filter( ( l ) => 'ambient-float' === l.effect ).length, 1 );
+	const notes = out.notes.map( ( n ) => n.text ).join( '\n' );
+	assert.match( notes, /A-21: the same ambient-float as the layer already on this element/ );
+	assert.match( notes, /A-22: the same ambient-float/ );
+	const base = { id: 'ambient-float-1', effect: 'ambient-float', trigger: 'load', values: { axis: 'y', travel: 12, period: 4000 } };
+	const held = { elements: { root: { effects: [ base ] } } };
+	assert.equal( heldLayer( held, 'root', { list: 'effects', layer: { ...base, id: 'ambient-float-2', values: { period: 4000, travel: 12, axis: 'y' } } } ), base, 'the same values in another key order are the same layer' );
+	assert.equal( heldLayer( held, 'root', { list: 'effects', layer: { ...base, id: 'ambient-float-2', values: { ...base.values, travel: 14 } } } ), null, 'control: other values are another motion' );
+	assert.equal( heldLayer( held, 'root', { list: 'hover.effects', layer: base } ), null, 'control: another list' );
 } );
 
 test( 'a handler whose formula is neither a position times a size nor an offset times a factor is reported as a gap, not guessed; a block that does not offer the effect refuses it by name', () => {
