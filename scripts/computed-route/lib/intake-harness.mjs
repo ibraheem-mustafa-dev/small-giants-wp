@@ -318,6 +318,29 @@ async function settlePhase( page, o, label ) {
 	}
 }
 
+// Runs the clock ms in stepMs steps, a real frame after each (a forced state's or event's timers and frames). The first
+// step is always stepped, so the frame after it shows the observers what the state or event changed; after that a quiet
+// stretch (H.quietMs: no frame callback, running animation or due timer before it ends) is crossed in one clock jump with
+// no frame, as quietSkip allows, since nothing on the page can change inside it. The same virtual time passes and every
+// timer fires at the same virtual time either way; INTAKE_SKIP_QUIET=0 steps every step.
+export async function runClock( page, ms, opts = {} ) {
+	const o = harnessOptions( opts );
+	let left = ms;
+	let q = 0;
+	while ( left > 0 ) {
+		const skip = skipping( o ) ? quietSkip( q, left, o ) : 0;
+		if ( skip ) {
+			await page.clock.runFor( skip );
+			left -= skip;
+		}
+		const d = Math.min( o.stepMs, left );
+		await page.clock.runFor( d );
+		await page.evaluate( () => window.__sgsHarness.frame() );
+		left -= d;
+		q = skipping( o ) && left >= 2 * o.stepMs ? await quietMs( page ) : 0;
+	}
+}
+
 // Runs the clock until no timeout (due within capMs) and no frame callback is pending, at most capMs of virtual
 // time; intervals keep running. The timers a forced state or event started finish, so putting the state back leaves
 // nothing queued to act on the restored page (a close animation's 420ms timer). Returns the virtual ms run.

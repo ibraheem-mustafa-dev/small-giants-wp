@@ -232,7 +232,7 @@ async function resolveDraftId( row, request, limit ) {
 //   within `resolveTimeout` ms) leaves draftId null with draftIdError set.
 //   visit(pagePath, { width, stopIntervals }) renders a draft page, waits for the runtime and fonts, scrolls it through, waits for the
 //   pending ID resolutions and returns the page (with `stopIntervals` the page's setInterval never fires); close() waits for them too.
-export async function openSandbox( { folder, index, harPath = null, mode = 'replay', widths = [ 1440 ], stockHosts = [], pinnedBodies = {}, headless = true, timeout = 60000, resolveTimeout = RESOLVE_MS } ) {
+export async function openSandbox( { folder, index, harPath = null, mode = 'replay', widths = [ 1440 ], stockHosts = [], pinnedBodies = {}, headless = true, timeout = 60000, resolveTimeout = RESOLVE_MS, args = [] } ) {
 	if ( ! [ 'replay', 'discover' ].includes( mode ) ) {
 		throw new Error( `openSandbox mode must be 'replay' or 'discover', not ${ JSON.stringify( mode ) }` );
 	}
@@ -246,7 +246,7 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 	const origin = new URL( srv.url ).origin;
 	const trap = await startTrapProxy();
 	const { chromium } = await loadChromium();
-	const browser = await chromium.launch( { headless, proxy: { server: trap.server } } );
+	const browser = await chromium.launch( { headless, args, proxy: { server: trap.server } } );
 	const browserPid = await browserPidOf( browser );
 	const context = await browser.newContext( { serviceWorkers: 'block', viewport: { width: widths[ 0 ], height: 900 } } );
 	const requests = [];

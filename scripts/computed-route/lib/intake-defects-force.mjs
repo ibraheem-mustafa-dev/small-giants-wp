@@ -13,7 +13,7 @@
 // visit, never the intake.
 import { openSandbox } from './intake-sandbox.mjs';
 import { forceable } from './state-vocab.mjs';
-import { preparePage, gotoDraft, settleRest, drainTimeouts, RAW_PAGE } from './intake-harness.mjs';
+import { preparePage, gotoDraft, settleRest, drainTimeouts, runClock, RAW_PAGE } from './intake-harness.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
 import { setDraftState, snapshotDraftState, restoreDraftState, draftStateChanged, fireTrigger, listenerInit, fireListeners } from './intake-state.mjs';
 import { currentStateRoute } from './state-route.mjs';
@@ -116,6 +116,8 @@ export function bounded( obj, ms, name, doing = () => '' ) {
 	} );
 }
 
+const FAST_FRAMES = [ '--disable-gpu-vsync', '--disable-frame-rate-limit' ];
+
 // The session calls that change the page's state (the rest only read it, settle it or run its clock).
 const FORCING = [ 'setState', 'restore', 'dispatch', 'dispatchAt', 'hoverChain', 'forcePseudo', 'gestures', 'listeners', 'wiggle' ];
 
@@ -182,7 +184,7 @@ export async function forcedVisits( { file, slice, width, open, visit, log = () 
 // `page`, is bounded to `callTimeout` ms (bounded; default `timeout`), naming the session step it ran in.
 // `forcePseudoState`, `drag` and `coords` false exist only for the tests' negative controls.
 export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, callTimeout = timeout, forcePseudoState = true, drag = true, coords = true, stateRoutes = false } ) {
-	const sb = await openSandbox( { folder, index: entry, harPath, mode: 'replay', widths: [ width ], timeout } );
+	const sb = await openSandbox( { folder, index: entry, harPath, mode: 'replay', widths: [ width ], timeout, args: FAST_FRAMES } );
 	// The session step running and the last forcing step (FORCING) started: a page stuck by a forced state often fails
 	// in the settle or check after it, so a timed-out call names both.
 	let step = '';
@@ -273,13 +275,9 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 				}
 				return n;
 			},
-			// Runs the clock 400ms in 16ms steps, a real frame after each: timers and frames a forced state started.
-			async nudge() {
-				for ( let i = 0; i < 25; i++ ) {
-					await page.clock.runFor( 16 );
-					await frame();
-				}
-			},
+			// Runs the clock 400ms in 16ms steps, a real frame after each, quiet stretches jumped (intake-harness.mjs::runClock):
+			// timers and frames a forced state started.
+			nudge: () => runClock( page, 400, opts ),
 			// Forces :hover (and :focus on the element) on a rendered copy and every ancestor, as a real pointer does, for
 			// a few frames, then releases it; returns whether a copy rendered.
 			async hoverChain( row ) {
@@ -354,11 +352,13 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 			// component's logic text (`texts`: Map(comp → text)) or served as a helmet script file (`files`: Set(file)).
 			async coverage( texts, files ) {
 				const out = [];
+				// A script shorter than every component's logic text cannot hold one, so its source is never fetched.
+				const shortest = Math.min( ...[ ...texts.values() ].filter( Boolean ).map( ( t ) => t.length ) );
 				for ( const s of ( await cdp.send( 'Profiler.takePreciseCoverage' ) ).result ) {
 					if ( ! mapped.has( s.scriptId ) ) {
 						const meta = scripts.get( s.scriptId );
 						let where = [];
-						if ( meta && ! meta.url ) {
+						if ( meta && ! meta.url && ! ( meta.length < shortest ) ) {
 							const src = ( await cdp.send( 'Debugger.getScriptSource', { scriptId: s.scriptId } ).catch( unless( { scriptSource: '' } ) ) ).scriptSource;
 							where = [ ...texts ].filter( ( [ , t ] ) => t && src.includes( t ) ).map( ( [ comp, t ] ) => ( { comp, base: src.indexOf( t ) } ) );
 						} else if ( meta?.url?.startsWith( `${ sb.origin }/` ) ) {
@@ -366,6 +366,10 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 							where = files.has( f ) ? [ { comp: f, base: 0 } ] : [];
 						}
 						mapped.set( s.scriptId, where );
+					}
+					// A script holding no component's logic and no helmet file is never read, so its ranges are not built.
+					if ( ! mapped.get( s.scriptId ).length ) {
+						continue;
 					}
 					const ranges = s.functions.flatMap( ( f ) => f.ranges.map( ( r ) => [ r.startOffset, r.endOffset, r.count ] ) );
 					mapped.get( s.scriptId ).forEach( ( w ) => out.push( { comp: w.comp, ranges: ranges.map( ( [ a, b, c ] ) => [ a - w.base, b - w.base, c ] ) } ) );
