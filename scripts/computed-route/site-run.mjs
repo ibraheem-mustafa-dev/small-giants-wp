@@ -35,7 +35,7 @@ import { wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpEvalRunner } from './lib/calibration-refs.mjs';
-import { commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
+import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
@@ -137,7 +137,7 @@ export function copyTrees( { surfaces, keys, filled, buildDir } ) {
 		const from = e.copy.from;
 		if ( 'whole' === from || 'fill' === from ) {
 			if ( filled[ key ] ) {
-				out[ slug ] = 'whole' === from ? { tree: copyTree( { slug, whole: filled[ key ] } ), shell: null } : ( ( chain ) => ( { tree: copyTree( { slug, chain } ), shell: { chain, from: key } } ) )( splitShell( filled[ key ] ).chain );
+				out[ slug ] = 'whole' === from || WHOLE_TREE.includes( slug ) ? { tree: copyTree( { slug, whole: filled[ key ] } ), shell: null } : ( ( chain ) => ( { tree: copyTree( { slug, chain } ), shell: { chain, from: key } } ) )( splitShell( filled[ key ] ).chain );
 			}
 		} else if ( 'pages' === from ) {
 			const had = readShell( buildDir, slug )?.surfaces || {};

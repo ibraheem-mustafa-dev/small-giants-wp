@@ -226,3 +226,12 @@ test( 'MUST FAIL: the order confirmation is read at a test order the run makes a
 	assert.doesNotMatch( make, /processing|completed|on-hold/ );
 	assert.ok( deleteTestOrdersPhp().includes( `'meta_key' => '${ TEST_ORDER_META }'` ) );
 } );
+
+test( "MUST FAIL: a WooCommerce page's copy Filled at its page is its whole tree in the frame, with WooCommerce's piece in the region", () => {
+	const surfaces = manifest( SHOP ).entries;
+	const cart = [ { name: 'sgs/container', attributes: { tagName: 'div' }, innerBlocks: [ { name: 'sgs/heading', attributes: { content: 'Your basket' } }, { name: 'core/post-content' } ] } ];
+	const out = copyTrees( { surfaces, keys: [ 'template-cart' ], filled: { 'template-cart': cart }, buildDir: fs.mkdtempSync( path.join( os.tmpdir(), 'copies-' ) ) } );
+	assert.deepEqual( out.cart.tree, copyTree( { slug: 'cart', whole: cart } ) );
+	assert.equal( out.cart.shell, null );
+	assert.ok( find( out.cart.tree, 'sgs/heading' ), "the draft's heading beside the region stays in the copy" );
+} );
