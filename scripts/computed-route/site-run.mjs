@@ -7,8 +7,14 @@
 // holds (record `root.viaState`) takes the inventory intake saved with that state open
 // (build/intake/inventories/<intakeSurface>.json) and Fill opens the same state (lib/fill-open.mjs); any other surface is read
 // live at the tag of the record's root element, at its route. A form opens on its page (entry `draftRoute`) and its live address
-// is that page's; a `contentOnly` post surface is skipped unless `--with-content` is passed; the `single` template surface
-// (target `{ template }`) is read at the post it is shaped from (`fromPost`) and built through `wp-build-page.js --template`.
+// is that page's; a `contentOnly` post surface is skipped unless `--with-content` is passed.
+// Template copies (FR-48-56, lib/template-copies.mjs): the run is two passes, every surface's inventory, propose and Fill
+// first, then the builds and walks, because a template several pages share takes the shell all their Filled trees have.
+// Between the passes each copy's tree is written to trees/template/<slug>.json: a `copy.from: 'pages'` surface from the
+// shell its pages share (it reads no draft), a `'fill'` surface (the single-post template at its first post, a WooCommerce
+// page's template at that page, a `template` row) from its own Fill, a shop row (`'whole'`) from its whole Filled tree, and
+// a `'page'` surface (404, search, archive) from the page copy's shell. Each builds through `wp-build-page.js --template` and
+// is recorded as the site build records its own copies; a page whose template has a shell builds only what sits below it.
 //   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b] [--skip-stages inventory,walk]
 //        [--stages inventory,propose,fill,build,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
@@ -26,6 +32,10 @@ import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { wooContentRole } from './lib/site-build-plan.mjs';
+import { rowKey, treeHash } from './lib/site-build-map.mjs';
+import { templateRecordPhp } from './lib/site-build-apply.mjs';
+import { wpEvalRunner } from './lib/calibration-refs.mjs';
+import { commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
@@ -72,14 +82,69 @@ function liveBase( envFile, envKey ) {
 export function surfaceReach( { key, entry, skel, rows, withContent = false, routing = null } ) {
 	const routeName = ( r ) => String( r ?? '' ).replace( /^#?\/?/, '' );
 	const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );
-	const own = postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) );
+	// A template copy Filled on its own is read at the row playing it (`copy.row`, a row key).
+	const byRow = 'fill' === entry.copy?.from ? rows.find( ( r ) => rowKey( r ) === entry.copy.row ) : null;
+	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) ) );
 	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
 	const row = own ?? named ?? null;
 	const skip = entry.contentOnly && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null;
 	// A state-page draft ignores a route hash: its route is the state fragment Fill, the inventory read and the walker set on the loaded draft.
 	const at = ( r ) => ( 'files' === routing?.adapter ? '' : isStatePage( routing ) ? ( stateRouteHash( r ) ? `#${ stateRouteHash( r ) }` : '' ) : routeHash( r ) ?? '' );
-	const hash = entry.draftRoute ? at( entry.draftRoute ) : own && 'page' === own.postType ? ( 'home' !== own.route ? at( own.route ) : '' ) : at( skel?.route );
+	const hash = entry.draftRoute ? at( entry.draftRoute ) : own && [ 'page', 'template' ].includes( own.postType ) ? ( 'home' !== own.route ? at( own.route ) : '' ) : at( skel?.route );
 	return { row, hash, skip };
+}
+
+// The live address of a row: a page or post's permalink; a `template` row's template where WordPress shows it (the search
+// results for any query, the not-found page for an address nothing holds), or null for one shown only at a WooCommerce
+// endpoint (the order confirmation needs an order).
+export function liveAddress( row, rows ) {
+	if ( 'template' !== row?.postType ) {
+		return row ? permalinkOf( row, rows ) : '/';
+	}
+	return { search: '/?s=sgs', 404: '/sgs-no-such-page/' }[ row.template ] ?? null;
+}
+
+// The surfaces a run covers: the named ones, plus each template copy a named page's content sits in (its shell decides what
+// the page's post holds) and, with the page copy, the copies built from its shell.
+export function runKeys( surfaces, only ) {
+	const keys = Object.keys( surfaces ).filter( ( k ) => ! only || only.includes( k ) );
+	if ( ! only ) {
+		return keys;
+	}
+	const add = ( k ) => k && Object.hasOwn( surfaces, k ) && ! keys.includes( k ) && keys.push( k );
+	[ ...keys ].forEach( ( k ) => surfaces[ k ].shell && add( `template-${ surfaces[ k ].shell }` ) );
+	keys.includes( 'template-page' ) && Object.keys( surfaces ).filter( ( k ) => 'page' === surfaces[ k ].copy?.from ).forEach( add );
+	return keys;
+}
+
+// The copy trees from the pass's Filled trees (`filled`: surface key -> tree): { slug: { tree, shell } } for every
+// template surface in `keys`. A 'pages' copy takes the shell its pages share, each page's own shell from this run or as
+// the copy last recorded it; 'page' copies take the page copy's shell; `buildDir` holds the recorded shells.
+export function copyTrees( { surfaces, keys, filled, buildDir } ) {
+	const out = {};
+	const shellOf = ( slug ) => out[ slug ]?.shell ?? readShell( buildDir, slug );
+	const order = [ 'whole', 'fill', 'pages', 'page' ];
+	const mine = keys.filter( ( k ) => surfaces[ k ].copy && surfaces[ k ].target?.template ).sort( ( a, b ) => order.indexOf( surfaces[ a ].copy.from ) - order.indexOf( surfaces[ b ].copy.from ) );
+	for ( const key of mine ) {
+		const e = surfaces[ key ];
+		const slug = e.target.template;
+		const from = e.copy.from;
+		if ( 'whole' === from || 'fill' === from ) {
+			if ( filled[ key ] ) {
+				out[ slug ] = 'whole' === from ? { tree: copyTree( { slug, whole: filled[ key ] } ), shell: null } : ( ( chain ) => ( { tree: copyTree( { slug, chain } ), shell: { chain, from: key } } ) )( splitShell( filled[ key ] ).chain );
+			}
+		} else if ( 'pages' === from ) {
+			const had = readShell( buildDir, slug )?.surfaces || {};
+			const each = Object.fromEntries( e.copy.surfaces.map( ( k ) => [ k, filled[ k ] ? splitShell( filled[ k ] ).chain : had[ k ] ] ).filter( ( [ , c ] ) => c ) );
+			if ( Object.keys( each ).length ) {
+				const chain = commonChain( Object.values( each ) );
+				out[ slug ] = { tree: copyTree( { slug, chain } ), shell: { chain, surfaces: each } };
+			}
+		} else if ( 'page' === from && shellOf( 'page' ) ) {
+			out[ slug ] = { tree: copyTree( { slug, chain: shellOf( 'page' ).chain } ), shell: null };
+		}
+	}
+	return out;
 }
 
 export async function main( argv ) {
@@ -99,7 +164,7 @@ export async function main( argv ) {
 	const surfaces = readJson( path.join( build, 'surfaces.json' ) );
 	const rows = readJson( path.join( build, 'page-map.json' ) );
 	const intake = readJson( path.join( build, 'intake', 'intake.json' ) );
-	const keys = Object.keys( surfaces ).filter( ( k ) => ! only || only.includes( k ) );
+	const keys = runKeys( surfaces, only );
 	const dir = path.join( build, 'qa', 'site-run', stamp() );
 	fs.mkdirSync( dir, { recursive: true } );
 	const status = {};
@@ -119,47 +184,59 @@ export async function main( argv ) {
 	};
 	const certs = process.env.NODE_EXTRA_CA_CERTS || 'C:\\Users\\Bean\\AppData\\Roaming\\Python\\Python313\\site-packages\\certifi\\cacert.pem';
 
-	async function one( key ) {
+	// The stage runner of one surface: a stage not asked for counts as passed; a WooCommerce page's own Fill and build are
+	// skipped and its walk then stops (a failed stage stops the surface).
+	const stepper = ( key, wooPage ) => async ( stage, fn ) => {
+		if ( ! stages.includes( stage ) ) {
+			return true;
+		}
+		// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
+		// pages itself, so neither applies to the page's content; its layout is its template copy's surface.
+		if ( wooPage && [ 'fill', 'build', 'walk' ].includes( stage ) ) {
+			note( key, stage, true, 0, `skipped: WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)` );
+			return 'walk' !== stage;
+		}
+		const t = Date.now();
+		try {
+			const r = await fn();
+			note( key, stage, true, Date.now() - t, r );
+			return true;
+		} catch ( e ) {
+			note( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );
+			return false;
+		}
+	};
+	const execFor = ( key ) => async ( stage, cmd, args, env ) => {
+		const r = await run( cmd, args, { logFile: path.join( dir, `${ key }.${ stage }.log` ), env } );
+		if ( 0 !== r.code ) {
+			throw new Error( `exit ${ r.code }: ${ r.tail }` );
+		}
+		return r.tail.split( ' | ' ).pop();
+	};
+
+	// Pass 1: inventory, propose and Fill. Resolves with what pass 2 needs, or null when the surface stopped.
+	async function prepare( key ) {
 		const entry = surfaces[ key ];
+		// A copy from its pages' shell or the page copy's reads no draft: it is made between the passes.
+		if ( [ 'pages', 'page' ].includes( entry.copy?.from ) ) {
+			return { key, entry, row: null };
+		}
 		const skel = intake.skeletons?.[ entry.intakeSurface ];
 		const kind = skel?.kind;
 		const { row, hash, skip } = surfaceReach( { key, entry, skel, rows, withContent, routing: intake.routing ?? null } );
 		if ( skip ) {
-			return note( key, 'skipped', true, 0, skip );
+			note( key, 'skipped', true, 0, skip );
+			return null;
 		}
 		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
 		// WooCommerce's own cart, checkout and account pages keep WooCommerce's content (lib/site-build-plan.mjs::wooContentRole):
-		// they are walked against the draft, never Filled or built over.
-		const wooPage = wooContentRole( row );
+		// they are never Filled or built over; a template copy read at one of them is.
+		const wooPage = entry.target?.template ? null : wooContentRole( row );
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
-		const liveUrl = row ? `${ base }${ permalinkOf( row, rows ) }` : `${ base }/`;
-		const step = async ( stage, fn ) => {
-			if ( ! stages.includes( stage ) ) {
-				return true;
-			}
-			// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
-			// pages itself, so neither applies until the commerce pages are styled through their own blocks' settings.
-			if ( wooPage && [ 'fill', 'build', 'walk' ].includes( stage ) ) {
-				note( key, stage, true, 0, `skipped: WooCommerce's own ${ wooPage } page keeps WooCommerce's content` );
-				return 'walk' !== stage;
-			}
-			const t = Date.now();
-			try {
-				const r = await fn();
-				note( key, stage, true, Date.now() - t, r );
-				return true;
-			} catch ( e ) {
-				note( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );
-				return false;
-			}
-		};
-		const exec = async ( stage, cmd, args, env ) => {
-			const r = await run( cmd, args, { logFile: path.join( dir, `${ key }.${ stage }.log` ), env } );
-			if ( 0 !== r.code ) {
-				throw new Error( `exit ${ r.code }: ${ r.tail }` );
-			}
-			return r.tail.split( ' | ' ).pop();
-		};
+		const address = liveAddress( row, rows );
+		const liveUrl = `${ base }${ address ?? '/' }`;
+		const step = stepper( key, wooPage );
+		const exec = execFor( key );
 		if ( ! entry.intakeSurface || ! skel ) {
 			return note( key, 'inventory', false, 0, 'no intake surface: no handoff record matched' );
 		}
@@ -222,17 +299,54 @@ export async function main( argv ) {
 				fs.writeFileSync( path.join( parity, path.basename( f ) ), fs.readFileSync( src, 'utf8' ).replace( '"../../../divergences.json"', '"../divergences.json"' ) );
 			}
 		}
-		const tree = path.relative( REPO, path.join( out, 'filled.tree.json' ) );
-		// The single-post template builds as the site's own template copy (FR-48-56), every other surface into its post.
-		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, ...( entry.target.template ? [ '--template', entry.target.template ] : [ '--post-id', String( entry.target.postId ) ] ) ];
+		const filledFile = path.join( out, 'filled.tree.json' );
+		return { key, entry, row, wooPage, step, exec, out, walkUrl, address, filled: fs.existsSync( filledFile ) ? readJson( filledFile ) : null };
+	}
+
+	// Pass 2: the build (one at a time: builds write the site's database) and the walk. A template copy builds the tree made
+	// between the passes and is recorded as the site build's own; a page under a template with a shell builds what sits
+	// below that shell; every other surface builds its Filled tree.
+	async function finish( ctx ) {
+		const { key, entry } = ctx;
+		const step = ctx.step || stepper( key, null );
+		const exec = ctx.exec || execFor( key );
+		const slug = entry.target?.template;
+		let tree;
+		if ( slug ) {
+			if ( ! copies[ slug ] ) {
+				return note( key, 'build', false, 0, `no ${ slug } copy was made: ${ { pages: 'none of its pages has a Filled tree', page: 'the page copy has no recorded shell', fill: 'its Fill wrote no tree', whole: 'its Fill wrote no tree' }[ entry.copy?.from ] || 'it names no copy source' }` );
+			}
+			tree = path.relative( REPO, copyFile( build, slug ) );
+		} else if ( ! ctx.filled ) {
+			tree = path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) );
+		} else if ( entry.shell ) {
+			const chain = copies[ entry.shell ]?.shell?.chain ?? readShell( build, entry.shell )?.chain ?? [];
+			try {
+				const file = path.join( ctx.out, 'content.tree.json' );
+				fs.writeFileSync( file, `${ JSON.stringify( contentUnder( ctx.filled, chain ), null, 2 ) }\n` );
+				tree = path.relative( REPO, file );
+			} catch ( e ) {
+				return note( key, 'build', false, 0, `${ e.message }: its post would repeat the ${ entry.shell } copy's shell; run the copy's surface (template-${ entry.shell }) with this page` );
+			}
+		} else {
+			tree = path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) );
+		}
+		const builder = [ 'scripts/wp-build-page.js', '--env-file', entry.envFile, '--env-key', entry.envKey, '--tree', tree, ...( slug ? [ '--template', slug ] : [ '--post-id', String( entry.target.postId ) ] ) ];
 		if ( ! await step( 'build', () => exclusive( async () => {
 			await exec( 'dry', 'node', [ ...builder, '--dry-run' ] );
-			return exec( 'build', 'node', builder );
+			const said = await exec( 'build', 'node', builder );
+			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
+			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
+			return said;
 		} ) ) ) {
 			return;
 		}
+		if ( [ 'pages', 'page' ].includes( entry.copy?.from ) || ( slug && entry.copy && null === ctx.address ) ) {
+			return note( key, 'walk', true, 0, 'pages' === entry.copy?.from ? `skipped: walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'skipped: no draft surface plays it' : `skipped: the ${ slug } template shows only at a WooCommerce endpoint` );
+		}
+		const parity = path.join( build, 'qa', 'parity' );
 		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
-			'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
+			'--out', path.join( parity, 'out', key ), '--widths', widths, '--headless', '--no-review' ], { SGS_DRAFT_URL: ctx.walkUrl, NODE_EXTRA_CA_CERTS: certs } ).catch( ( e ) => {
 			// The walker exits 1 for open differences; the report is what counts.
 			if ( fs.existsSync( path.join( parity, 'out', key, 'report.json' ) ) ) {
 				return `report written (${ String( e.message ).slice( 0, 200 ) })`;
@@ -241,21 +355,42 @@ export async function main( argv ) {
 		} ) );
 	}
 
+	// The site's wp-cli for recording template copies (a local mirror's runs in WSL, calibration-targets.json `pluginDir`).
+	const targetsFile = path.join( REPO, 'scripts', 'computed-route', 'calibration-targets.json' );
+	const runPhp = wpEvalRunner( ( fs.existsSync( targetsFile ) ? readJson( targetsFile )[ site ] : null ) || {}, site, REPO );
+	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );
+
+	const pool = async ( list, fn ) => {
+		const pending = [ ...list ];
+		const results = [];
+		await Promise.all( Array.from( { length: jobs }, async () => {
+			while ( pending.length ) {
+				const item = pending.shift();
+				const key = item?.key ?? item;
+				try {
+					results.push( await fn( item ) );
+				} catch ( e ) {
+					note( key, 'run', false, 0, String( e.message || e ).slice( 0, 400 ) );
+				}
+			}
+		} ) );
+		return results;
+	};
+	const ready = ( await pool( keys, prepare ) ).filter( Boolean );
+	// Between the passes: every template copy's tree, from this run's Filled trees and the shells recorded before.
+	const filled = Object.fromEntries( ready.filter( ( c ) => c.filled ).map( ( c ) => [ c.key, c.filled ] ) );
+	const copies = copyTrees( { surfaces, keys, filled, buildDir: build } );
+	for ( const [ slug, c ] of Object.entries( copies ) ) {
+		writeCopy( build, slug, c.tree, c.shell );
+		console.log( `copy ${ slug }: ${ path.relative( REPO, copyFile( build, slug ) ) }${ c.shell ? ` (shell of ${ c.shell.chain.length } wrapper${ 1 === c.shell.chain.length ? '' : 's' })` : '' }` );
+	}
 	// One logged-in browser for every build of the run (lib/wp-run-session.mjs): each wp-build-page.js child attaches through
 	// SGS_CDP_URL instead of launching and logging in on its own.
 	const withEnv = keys.map( ( k ) => surfaces[ k ] ).find( ( e ) => e?.envFile && e?.envKey );
 	const session = stages.includes( 'build' ) && withEnv ? await openRunSession( site, readEnv( withEnv.envFile, withEnv.envKey ) ) : null;
-	const pending = [ ...keys ];
-	await Promise.all( Array.from( { length: jobs }, async () => {
-		while ( pending.length ) {
-			const key = pending.shift();
-			try {
-				await one( key );
-			} catch ( e ) {
-				note( key, 'run', false, 0, String( e.message || e ).slice( 0, 400 ) );
-			}
-		}
-	} ) );
+	// The template copies build first, so a page never shows its content-only post inside the theme's generic template.
+	const rank = ( c ) => ( c.entry.target?.template ? 0 : 1 );
+	await pool( ready.sort( ( a, b ) => rank( a ) - rank( b ) ), finish );
 	await Promise.all( [ ...servers.values() ].map( async ( x ) => ( await x ).close() ) );
 	session && await session.close();
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
