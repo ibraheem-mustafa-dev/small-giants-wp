@@ -462,10 +462,10 @@ if ( 'underline' === $text_decoration_hover ) {
 	$hover_rules[] = 'text-decoration:underline';
 }
 
-// Hover weight: one of the editor's weights (100 to 900) or a weight keyword; anything else prints nothing.
+// Hover weight: a weight sgs_font_weight_value() allows; anything else prints nothing.
 // Empty keeps the resting weight on hover and focus.
-$font_weight_hover = strtolower( trim( (string) ( $attributes['fontWeightHover'] ?? '' ) ) );
-if ( 1 === preg_match( '/^(?:[1-9]00|normal|bold|lighter|bolder)$/', $font_weight_hover ) ) {
+$font_weight_hover = sgs_font_weight_value( $attributes['fontWeightHover'] ?? '' );
+if ( '' !== $font_weight_hover ) {
 	$hover_rules[] = 'font-weight:' . $font_weight_hover;
 }
 

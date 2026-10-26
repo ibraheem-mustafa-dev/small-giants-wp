@@ -221,6 +221,34 @@ if ( ! function_exists( 'sgs_css_length_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_font_weight_value' ) ) {
+	/**
+	 * A font weight, safe to print after `font-weight:`.
+	 *
+	 * The allowlist is the weights the editor offers (100 to 900 in hundreds,
+	 * TypographyControls.js) and every client draft uses, plus the keywords
+	 * normal, bold, lighter and bolder. Anything else returns '' so the caller
+	 * prints nothing, never a stripped remainder ("7;0 0" is not 700).
+	 * Gate: scripts/check-font-weight-allowlist.py.
+	 *
+	 * @param mixed $value Stored weight (a string or a number).
+	 * @return string The weight, lower-cased, or '' when it is not a weight.
+	 */
+	function sgs_font_weight_value( $value ): string {
+		if ( ! is_scalar( $value ) ) {
+			return '';
+		}
+		$weight = strtolower( trim( (string) $value ) );
+		if ( in_array( $weight, array( 'normal', 'bold', 'lighter', 'bolder' ), true ) ) {
+			return $weight;
+		}
+		if ( 1 === preg_match( '/^[1-9]00$/', $weight ) ) {
+			return $weight;
+		}
+		return '';
+	}
+}
+
 if ( ! function_exists( 'sgs_css_single_length_value' ) ) {
 	/**
 	 * A SINGLE CSS length, safe to place inside `max()` and `blur()`.

@@ -138,8 +138,8 @@ if ( ! function_exists( 'sgs_nav_shared_typography_hover_rule' ) ) {
 			$decls[] = 'text-transform:' . $transform;
 		}
 
-		$weight = preg_replace( '/[^a-z0-9]/i', '', (string) ( $attributes[ $prefix . 'FontWeightHover' ] ?? '' ) );
-		if ( '' !== (string) $weight ) {
+		$weight = sgs_font_weight_value( $attributes[ $prefix . 'FontWeightHover' ] ?? '' );
+		if ( '' !== $weight ) {
 			$decls[] = 'font-weight:' . $weight;
 		}
 

@@ -87,7 +87,7 @@ $first_letter_colour = $attributes['firstLetterColour'] ?? '';
 $first_letter_colour_gradient = $attributes['firstLetterColourGradient'] ?? '';
 $first_letter_font_size       = isset( $attributes['firstLetterFontSize'] ) ? $attributes['firstLetterFontSize'] : null;
 $first_letter_font_size_unit  = $attributes['firstLetterFontSizeUnit'] ?? 'em';
-$first_letter_font_weight     = $attributes['firstLetterFontWeight'] ?? '';
+$first_letter_font_weight     = sgs_font_weight_value( $attributes['firstLetterFontWeight'] ?? '' );
 
 // --- New peer-parity attrs ---
 
@@ -502,7 +502,7 @@ if ( $drop_cap ) {
 		'margin-top:0.05em',
 	);
 	if ( $first_letter_font_weight ) {
-		$fl_decls[] = 'font-weight:' . esc_attr( $first_letter_font_weight );
+		$fl_decls[] = 'font-weight:' . $first_letter_font_weight;
 	}
 	// D636 — sibling gradient attribute wins when set+valid.
 	$first_letter_colour_effective = sgs_resolve_text_colour_or_gradient( $first_letter_colour, $first_letter_colour_gradient );

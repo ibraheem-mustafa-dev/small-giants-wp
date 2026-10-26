@@ -378,8 +378,9 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 			// on button/form/label/tabs/audio style.css).
 			$base_decls[] = 'font-family:inherit;';
 		}
-		if ( ! empty( $attributes[ $k_weight ] ) ) {
-			$base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string) $attributes[ $k_weight ] ) . ';';
+		$weight = sgs_font_weight_value( $attributes[ $k_weight ] ?? '' );
+		if ( '' !== $weight ) {
+			$base_decls[] = 'font-weight:' . $weight . ';';
 		}
 		if ( ! empty( $attributes[ $k_style ] ) && in_array( $attributes[ $k_style ], array( 'normal', 'italic' ), true ) ) {
 			$base_decls[] = 'font-style:' . $attributes[ $k_style ] . ';';

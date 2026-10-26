@@ -1969,5 +1969,14 @@
     "added_commit": null,
     "budget_ms": 1500,
     "order": 225
+  },
+  {
+    "id": "check-font-weight-allowlist",
+    "cmd": "python scripts/check-font-weight-allowlist.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 300,
+    "order": 226
   }
 ]

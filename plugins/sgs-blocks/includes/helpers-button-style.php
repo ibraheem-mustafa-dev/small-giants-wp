@@ -233,8 +233,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		} elseif ( null !== $border_radius ) {
 			$base_decls[] = 'border-radius:' . $border_radius . 'px;';
 		}
+		$font_weight = sgs_font_weight_value( $font_weight );
 		if ( '' !== $font_weight ) {
-			$base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_weight ) . ';';
+			$base_decls[] = 'font-weight:' . $font_weight . ';';
 		}
 		if ( null !== $font_size ) {
 			$base_decls[] = 'font-size:' . $font_size . 'px;';

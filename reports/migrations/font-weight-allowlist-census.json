@@ -1,0 +1,113 @@
+{
+ "total": 18,
+ "rows": [
+  {
+   "file": "includes/helpers-button-style.php",
+   "line": 237,
+   "class": "strip",
+   "source": "$base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', $font_weight ) . ';';"
+  },
+  {
+   "file": "includes/helpers-typography.php",
+   "line": 382,
+   "class": "strip",
+   "source": "$base_decls[] = 'font-weight:' . preg_replace( '/[^a-z0-9]/i', '', (string) $attributes[ $k_weight ] ) . ';';"
+  },
+  {
+   "file": "includes/nav-menu-css.php",
+   "line": 439,
+   "class": "int",
+   "source": ". $uid_sel . ' .' . $bem_root . '__sublink[aria-current=\"page\"]{font-weight:' . $item_weight_current . ';}';"
+  },
+  {
+   "file": "includes/nav-menu-css.php",
+   "line": 536,
+   "class": "int",
+   "source": "$css .= sgs_hover_state_rules( $link_hover_sel, 'font-weight:' . $highlight_hover_weight, ':focus-visible' );"
+  },
+  {
+   "file": "includes/nav-menu-css.php",
+   "line": 624,
+   "class": "int",
+   "source": "$sgs_nm_ancestor_current_decls[] = 'font-weight:' . $item_weight_current;"
+  },
+  {
+   "file": "includes/nav-menu-item-border-featured-css.php",
+   "line": 274,
+   "class": "int",
+   "source": ". ';font-weight:' . esc_attr( (string) $featured_weight )"
+  },
+  {
+   "file": "includes/nav-menu-item-border-featured-css.php",
+   "line": 279,
+   "class": "int",
+   "source": "$css .= $featured_sel . '{' . $featured_colour_decl . ';font-weight:' . esc_attr( (string) $featured_weight ) . ';}';"
+  },
+  {
+   "file": "includes/nav-menu-item-border-featured-css.php",
+   "line": 295,
+   "class": "int",
+   "source": "$sgs_nm_featured_vars = '--sgs-nm-featured-weight:' . (int) $featured_weight . ';';"
+  },
+  {
+   "file": "includes/nav-menu-item-border-featured-css.php",
+   "line": 367,
+   "class": "int",
+   "source": "$css .= sgs_hover_state_rules( $featured_sel, 'font-weight:' . esc_attr( (string) $featured_weight_hover ), ':focus-visible' );"
+  },
+  {
+   "file": "src/blocks/accordion-item/render.php",
+   "line": 143,
+   "class": "allowlisted",
+   "source": "$responsive_css .= $root_sel . ' .sgs-accordion-item__header{font-weight:' . $header_font_weight . '}';"
+  },
+  {
+   "file": "src/blocks/accordion-item/render.php",
+   "line": 152,
+   "class": "allowlisted",
+   "source": ". '{font-weight:' . $header_font_weight_open . '}';"
+  },
+  {
+   "file": "src/blocks/business-info/options.php",
+   "line": 174,
+   "class": "allowlisted",
+   "source": "$decls[]   = 'font-weight:' . $weight;"
+  },
+  {
+   "file": "src/blocks/button/render.php",
+   "line": 469,
+   "class": "allowlisted",
+   "source": "$hover_rules[] = 'font-weight:' . $font_weight_hover;"
+  },
+  {
+   "file": "src/blocks/icon-list/render.php",
+   "line": 648,
+   "class": "allowlisted",
+   "source": "$sgs_ilist_num_decls[] = 'font-weight:' . $sgs_ilist_num_weight;"
+  },
+  {
+   "file": "src/blocks/multi-button/render.php",
+   "line": 338,
+   "class": "int",
+   "source": "$mb_child_defaults[] = '--sgs-mb-btn-font-weight-default:' . absint( $attributes['childBtnFontWeight'] );"
+  },
+  {
+   "file": "src/blocks/nav-bar-menu/render.php",
+   "line": 143,
+   "class": "strip",
+   "source": "$decls[] = 'font-weight:' . $weight;"
+  },
+  {
+   "file": "src/blocks/nav-drawer-menu/render.php",
+   "line": 145,
+   "class": "strip",
+   "source": "$decls[] = 'font-weight:' . $weight;"
+  },
+  {
+   "file": "src/blocks/text/render.php",
+   "line": 505,
+   "class": "escaped",
+   "source": "$fl_decls[] = 'font-weight:' . esc_attr( $first_letter_font_weight );"
+  }
+ ]
+}
