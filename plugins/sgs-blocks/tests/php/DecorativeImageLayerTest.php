@@ -60,8 +60,8 @@ final class DecorativeImageLayerTest extends TestCase {
 	public function test_content_only_renders_a_layer_div_with_the_content_and_no_hiding(): void {
 		$out = $this->render_layer(
 			array(
-				'rotation'  => array( 'desktop' => 12 ),
-				'widthUnit' => 'auto',
+				'rotation' => array( 'desktop' => 12 ),
+				'width'    => array( 'desktop' => 'max-content' ),
 			),
 			self::CONTENT
 		);
@@ -105,7 +105,7 @@ final class DecorativeImageLayerTest extends TestCase {
 	}
 
 	public function test_nothing_at_all_renders_nothing(): void {
-		$out = $this->render_layer( array( 'widthUnit' => 'auto' ) );
+		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content' ) ) );
 
 		$this->assertSame( '', trim( $out['html'] ) );
 	}
@@ -119,44 +119,49 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertStringContainsString( 'aria-hidden="true"', $out['html'] );
 	}
 
-	public function test_fit_the_content_width_is_max_content_and_ignores_tiers(): void {
-		$out = $this->render_layer(
-			array(
-				'widthUnit' => 'auto',
-				'width'     => array(
-					'desktop' => 300,
-					'tablet'  => 180,
-				),
-			),
-			self::CONTENT
-		);
+	public function test_fit_the_content_is_max_content_capped_at_the_parent(): void {
+		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content' ) ), self::CONTENT );
 
 		$this->assertStringContainsString( 'width:max-content;max-width:100%', $out['css'] );
-		$this->assertStringNotContainsString( 'width:300px', $out['css'] );
-		$this->assertStringNotContainsString( 'width:180', $out['css'] );
+		$this->assertStringNotContainsString( '@media(max-width:1023px){.sgs-di', $out['css'], 'nothing to change on narrower devices' );
 	}
 
-	public function test_percentage_width_uses_the_unit_at_every_tier(): void {
+	public function test_fit_the_content_on_desktop_and_a_fixed_width_on_mobile_lifts_the_cap_there(): void {
+		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content', 'mobile' => '300px' ) ), self::CONTENT );
+
+		$this->assertStringContainsString( 'width:max-content;max-width:100%', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:300px;max-width:none;/', $out['css'] );
+	}
+
+	public function test_a_length_width_takes_its_unit_at_every_device(): void {
 		$out = $this->render_layer(
 			array(
-				'widthUnit' => '%',
-				'width'     => array(
-					'desktop' => 60,
-					'tablet'  => 40,
+				'width' => array(
+					'desktop' => '60%',
+					'tablet'  => '40%',
+					'mobile'  => '18rem',
 				),
 			),
 			self::CONTENT
 		);
 
 		$this->assertMatchesRegularExpression( '/\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*width:60%;/', $out['css'] );
-		$this->assertMatchesRegularExpression( '/@media \(max-width:1023px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*width:40%;/', $out['css'] );
-		$this->assertStringNotContainsString( 'width:60px', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:1023px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:40%;/', $out['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{width:18rem;/', $out['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/[;{]max-width:/', $out['css'], 'no cap the client did not set' );
+	}
+
+	public function test_an_unset_width_is_the_200px_default_and_an_unsafe_one_falls_back_to_it(): void {
+		$this->assertStringContainsString( 'width:200px', $this->render_layer( array(), self::CONTENT )['css'] );
+		$bad = $this->render_layer( array( 'width' => array( 'desktop' => '1px;}body{color:red' ) ), self::CONTENT )['css'];
+		$this->assertStringNotContainsString( 'body{', $bad );
+		$this->assertStringContainsString( 'width:200px', $bad );
 	}
 
 	public function test_fixed_width_stays_in_pixels_with_no_cap_unless_a_max_width_is_set(): void {
 		$capped = $this->render_layer(
 			self::IMAGE + array(
-				'width'    => array( 'desktop' => 240 ),
+				'width'    => array( 'desktop' => '240px' ),
 				'maxWidth' => array(
 					'desktop' => '30%',
 					'mobile'  => '12rem',
@@ -166,13 +171,13 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/\.sgs-decorative-image\{[^}]*width:240px;max-width:30%;/', $capped['css'] );
 		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*max-width:12rem/', $capped['css'] );
 
-		$free = $this->render_layer( self::IMAGE + array( 'width' => array( 'desktop' => 240 ) ) );
+		$free = $this->render_layer( self::IMAGE + array( 'width' => array( 'desktop' => '240px' ) ) );
 		$this->assertStringContainsString( 'width:240px', $free['css'] );
 		$this->assertDoesNotMatchRegularExpression( '/[;{]max-width:/', $free['css'], 'no cap the client did not set' );
 	}
 
 	public function test_a_max_width_replaces_fit_the_contents_parent_cap(): void {
-		$out = $this->render_layer( array( 'widthUnit' => 'auto', 'maxWidth' => array( 'desktop' => '320px' ) ), self::CONTENT );
+		$out = $this->render_layer( array( 'width' => array( 'desktop' => 'max-content' ), 'maxWidth' => array( 'desktop' => '320px' ) ), self::CONTENT );
 		$this->assertStringContainsString( 'width:max-content;max-width:320px', $out['css'] );
 	}
 
@@ -184,7 +189,7 @@ final class DecorativeImageLayerTest extends TestCase {
 	 */
 	private function ring_attrs(): array {
 		return array(
-			'width'           => array( 'desktop' => 340 ),
+			'width'           => array( 'desktop' => '340px' ),
 			'height'          => array( 'desktop' => '340px' ),
 			'borderWidth'     => array(
 				'top'    => '2px',

@@ -85,7 +85,6 @@ $rotation_obj        = sgs_responsive_normalise_object( $attributes['rotation'] 
 $position_x          = $position_x_obj['desktop'] ?? 50;
 $position_y          = $position_y_obj['desktop'] ?? 50;
 $width_obj           = sgs_responsive_normalise_object( $attributes['width'] ?? null );
-$width               = $width_obj['desktop'] ?? 200;
 $sgs_di_max_width    = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
 $rotation            = $rotation_obj['desktop'] ?? 0;
 $opacity             = $attributes['opacity'] ?? 100;
@@ -105,13 +104,11 @@ $overflow            = in_array( $overflow_raw, $allowed_overflows, true ) ? $ov
 // siblings are no longer declared by block.json (folded into the object).
 $position_x_tablet   = $position_x_obj['tablet'] ?? null;
 $position_y_tablet   = $position_y_obj['tablet'] ?? null;
-$width_tablet        = $width_obj['tablet'] ?? null;
 $rotation_tablet     = $rotation_obj['tablet'] ?? null;
 $hide_on_tablet      = $attributes['hideOnTablet'] ?? false;
 
 $position_x_mobile   = $position_x_obj['mobile'] ?? null;
 $position_y_mobile   = $position_y_obj['mobile'] ?? null;
-$width_mobile        = $width_obj['mobile'] ?? null;
 $rotation_mobile     = $rotation_obj['mobile'] ?? null;
 $hide_on_mobile      = $attributes['hideOnMobile'] ?? false;
 
@@ -175,10 +172,6 @@ if ( $sgs_di_shape_only && ! $sgs_di_paints_box ) {
 	return;
 }
 
-// One width unit for every tier: px (fixed), % (of the section) or auto (fit the content).
-$width_unit_raw = $attributes['widthUnit'] ?? 'px';
-$width_unit     = in_array( $width_unit_raw, array( 'px', '%', 'auto' ), true ) ? $width_unit_raw : 'px';
-
 // ---------------------------------------------------------------------------
 // Scoped CSS assembly (contract §A). uid is a CLASS — this block declares
 // `supports.anchor`, so the scope token must never be an id (Spec 32 FR-32-4).
@@ -190,8 +183,6 @@ $width_unit     = in_array( $width_unit_raw, array( 'px', '%', 'auto' ), true ) 
 // zero inline property declarations even after JS runs).
 $pos_x_css        = $sgs_css_num( $position_x, 2 );
 $pos_y_css        = $sgs_css_num( $position_y, 2 );
-$width_css        = $sgs_css_num( $width, 2 );
-$max_width_css    = sgs_css_length_value( $sgs_di_max_width['desktop'] ?? '' );
 $opacity_css      = $sgs_css_num( $opacity / 100, 4 );
 $z_index_css      = (int) $sgs_css_num( $z_index, 0 );
 
@@ -223,16 +214,35 @@ $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x, $sgs
 	return $parts ? implode( ' ', $parts ) : 'none';
 };
 
-// Fit the content ignores the width tiers and is capped at the parent unless a max width is set; a max width set
-// for a device applies in every width mode.
-if ( 'auto' === $width_unit ) {
-	$size_decls = array( 'width:max-content', 'max-width:' . ( '' !== $max_width_css ? $max_width_css : '100%' ) );
-} else {
-	$size_decls = array( 'width:' . $width_css . ( '%' === $width_unit ? '%' : 'px' ) );
-	if ( '' !== $max_width_css ) {
-		$size_decls[] = 'max-width:' . $max_width_css;
+// Width and max width per device, each a length from the shared control (a narrower device inherits the wider
+// one's value, as the media queries do). A device whose width fits the content (`max-content`) is capped at the
+// parent unless a max width is set for it; a device whose width is fixed has no cap unless one is set. The desktop
+// declarations join the root rule; a narrower device prints its width when set and its max width when it differs.
+$sgs_di_size    = array();
+$sgs_di_w_eff   = '200px';
+$sgs_di_mw_set  = '';
+$sgs_di_cap_was = 'none';
+foreach ( array( 'desktop', 'tablet', 'mobile' ) as $sgs_di_tier ) {
+	$sgs_di_decls = array();
+	$sgs_di_w     = sgs_css_length_value( $width_obj[ $sgs_di_tier ] ?? '' );
+	if ( '' !== $sgs_di_w ) {
+		$sgs_di_w_eff = $sgs_di_w;
 	}
+	if ( '' !== $sgs_di_w || 'desktop' === $sgs_di_tier ) {
+		$sgs_di_decls[] = 'width:' . $sgs_di_w_eff;
+	}
+	$sgs_di_mw = sgs_css_length_value( $sgs_di_max_width[ $sgs_di_tier ] ?? '' );
+	if ( '' !== $sgs_di_mw ) {
+		$sgs_di_mw_set = $sgs_di_mw;
+	}
+	$sgs_di_cap = '' !== $sgs_di_mw_set ? $sgs_di_mw_set : ( 'max-content' === $sgs_di_w_eff ? '100%' : 'none' );
+	if ( $sgs_di_cap !== $sgs_di_cap_was ) {
+		$sgs_di_decls[] = 'max-width:' . $sgs_di_cap;
+	}
+	$sgs_di_cap_was               = $sgs_di_cap;
+	$sgs_di_size[ $sgs_di_tier ] = $sgs_di_decls;
 }
+$size_decls = $sgs_di_size['desktop'];
 
 $root_decls = array_merge(
 	array( 'position:absolute' ),
@@ -264,17 +274,8 @@ $sgs_di_tier_attrs = array(
 	'positionXMobile' => $sgs_di_edges['x'] ? null : $position_x_mobile,
 	'positionYTablet' => $sgs_di_edges['y'] ? null : $position_y_tablet,
 	'positionYMobile' => $sgs_di_edges['y'] ? null : $position_y_mobile,
-	'widthTablet'     => $width_tablet,
-	'widthMobile'     => $width_mobile,
 	'rotationTablet'  => $rotation_tablet,
 	'rotationMobile'  => $rotation_mobile,
-);
-$sgs_di_width_spec = array(
-	'attr'         => 'widthDesktop',
-	'css'          => 'width',
-	'unit_default' => '%' === $width_unit ? '%' : 'px',
-	'tablet_attr'  => 'widthTablet',
-	'mobile_attr'  => 'widthMobile',
 );
 $sgs_di_tier_css   = sgs_responsive_css_rule(
 	$sgs_di_tier_attrs,
@@ -293,7 +294,6 @@ $sgs_di_tier_css   = sgs_responsive_css_rule(
 			'tablet_attr'  => 'positionYTablet',
 			'mobile_attr'  => 'positionYMobile',
 		),
-		'auto' === $width_unit ? array() : $sgs_di_width_spec,
 		array(
 			'attr'        => 'rotationDesktop',
 			'css'         => 'transform',
@@ -310,18 +310,14 @@ if ( '' !== $sgs_di_tier_css ) {
 	$scoped_css[] = $sgs_di_tier_css;
 }
 
-// The box's own tiers (edge offsets, border width and radius, height, max width), its hover shadow and its gradient
+// The box's own tiers (edge offsets, width and max width, border width and radius, height), its hover shadow and its gradient
 // ring. Tier rules print after the base rule, so a device value wins inside its query.
 foreach ( array( 'tablet', 'mobile' ) as $sgs_di_tier ) {
 	$sgs_di_max        = SGS_Breakpoints::max_for_tier( $sgs_di_tier );
-	$sgs_di_tier_decls = array_merge( $sgs_di_edges['tiers'][ $sgs_di_tier ], $sgs_di_border[ $sgs_di_tier ] );
+	$sgs_di_tier_decls = array_merge( $sgs_di_edges['tiers'][ $sgs_di_tier ], $sgs_di_size[ $sgs_di_tier ], $sgs_di_border[ $sgs_di_tier ] );
 	$sgs_di_tier_h     = sgs_css_length_value( $sgs_di_height[ $sgs_di_tier ] ?? '' );
 	if ( '' !== $sgs_di_tier_h ) {
 		$sgs_di_tier_decls[] = 'height:' . $sgs_di_tier_h;
-	}
-	$sgs_di_tier_mw = sgs_css_length_value( $sgs_di_max_width[ $sgs_di_tier ] ?? '' );
-	if ( '' !== $sgs_di_tier_mw ) {
-		$sgs_di_tier_decls[] = 'max-width:' . $sgs_di_tier_mw;
 	}
 	if ( $sgs_di_tier_decls ) {
 		$scoped_css[] = '@media(max-width:' . $sgs_di_max . 'px){' . $root_sel . '{' . implode( ';', $sgs_di_tier_decls ) . ';}}';

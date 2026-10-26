@@ -2,9 +2,10 @@
  * Floating layer — canvas twin of the positioned root rule render.php emits.
  *
  * Position, size, opacity, stacking and transform are read for the previewed tier (a narrower tier inherits from the
- * wider one, as the frontend's @media overrides do). `widthUnit` follows render.php: Fit the content ("auto") is
- * max-content capped at the parent (or at the max width) and ignores the tiers; Percentage and Fixed take the max width
- * for the previewed tier when one is set, none otherwise. An axis with an edge offset set is placed by its edges instead of its centre (`layerEdges`).
+ * wider one, as the frontend's @media overrides do). Width and max width are lengths per tier, as render.php reads
+ * them: a width of max-content (Fit the content) is capped at the parent unless a max width is set; any other width
+ * has no cap unless one is set. An axis with an edge offset set is placed by its edges instead of its centre
+ * (`layerEdges`).
  */
 
 import { resolveTier } from '../../utils/responsive';
@@ -53,17 +54,17 @@ export function layerEdges( attributes, tier ) {
 }
 
 /**
- * @param {Object}  attributes Block attributes.
- * @param {string}  tier       Previewed tier: 'desktop' | 'tablet' | 'mobile'.
- * @param {boolean} hasContent Whether the layer holds inner blocks; the canvas layer is always interactive so the empty layer's appender stays clickable.
+ * The canvas layer always takes pointer events, so an empty layer's block appender stays clickable.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Previewed tier: 'desktop' | 'tablet' | 'mobile'.
  * @return {Object} React style object for the positioned element.
  */
-export function layerPreviewStyle( attributes, tier, hasContent ) {
+export function layerPreviewStyle( attributes, tier ) {
 	const {
 		positionX,
 		positionY,
 		width,
-		widthUnit,
 		maxWidth,
 		rotation,
 		opacity,
@@ -84,19 +85,13 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 	const x = resolveTier( positionX, tier, 50 ).value;
 	const y = resolveTier( positionY, tier, 50 ).value;
 	const degrees = resolveTier( rotation, tier, 0 ).value;
-	const tierWidth = resolveTier( width, tier, 200 ).value;
-
-	const cap = cssLengthValue( resolveTier( maxWidth, tier, '' ).value ?? '' );
-	const size = {};
-	if ( 'auto' === widthUnit ) {
-		size.width = 'max-content';
-		size.maxWidth = cap || '100%';
-	} else {
-		size.width = `${ tierWidth }${ '%' === widthUnit ? '%' : 'px' }`;
-		if ( cap ) {
-			size.maxWidth = cap;
-		}
-	}
+	const tierWidth =
+		cssLengthValue( resolveTier( width, tier, '' ).value ?? '' ) || '200px';
+	const setCap = cssLengthValue(
+		resolveTier( maxWidth, tier, '' ).value ?? ''
+	);
+	const cap = setCap || ( 'max-content' === tierWidth ? '100%' : '' );
+	const size = { width: tierWidth, ...( cap ? { maxWidth: cap } : {} ) };
 
 	return {
 		position: 'absolute',
@@ -132,7 +127,9 @@ function hasBorderWidth( widthValues ) {
 	if ( ! widthValues || 'object' !== typeof widthValues ) {
 		return false;
 	}
-	const tiered = BORDER_TIERS.some( ( t ) => null != widthValues[ t ] );
+	const tiered = BORDER_TIERS.some(
+		( t ) => undefined !== widthValues[ t ] && null !== widthValues[ t ]
+	);
 	const boxes = tiered
 		? BORDER_TIERS.map( ( t ) => widthValues[ t ] )
 		: [ widthValues ];

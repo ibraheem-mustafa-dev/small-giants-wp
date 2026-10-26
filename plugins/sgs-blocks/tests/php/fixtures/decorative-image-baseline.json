@@ -21,16 +21,16 @@
     "tablet": 5
    },
    "width": {
-    "desktop": 240,
-    "mobile": 120
+    "desktop": "240px",
+    "mobile": "120px"
    },
    "maxWidth": {
     "desktop": "30%"
    }
   },
   "content": "",
-  "html": "<style>.sgs-di-e7414d25.sgs-decorative-image{position:absolute;left:50%;top:50%;width:240px;max-width:30%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}@media (max-width:1023px){.sgs-di-e7414d25.sgs-decorative-image{transform:translate(-50%, -50%) rotate(5deg);}}@media (max-width:767px){.sgs-di-e7414d25.sgs-decorative-image{width:120px;}}@media(max-width:767px){.sgs-di-e7414d25.sgs-decorative-image--desktop{display:none}}@media(min-width:768px){.sgs-di-e7414d25.sgs-decorative-image--mobile{display:none}}@media(min-width:768px) and (max-width:1023px){.sgs-di-e7414d25.sgs-decorative-image--desktop{display:none}}@media(max-width:767px){.sgs-di-e7414d25.sgs-decorative-image--tablet{display:none}}@media(min-width:1024px){.sgs-di-e7414d25.sgs-decorative-image--tablet{display:none}}</style><img src=\"https://example.test/uploads/photo.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-e7414d25 sgs-decorative-image--desktop\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" /><img src=\"https://example.test/t.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-e7414d25 sgs-decorative-image--tablet\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" /><img src=\"https://example.test/m.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-e7414d25 sgs-decorative-image--mobile\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" />",
-  "css": ".sgs-di-e7414d25.sgs-decorative-image{position:absolute;left:50%;top:50%;width:240px;max-width:30%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}@media (max-width:1023px){.sgs-di-e7414d25.sgs-decorative-image{transform:translate(-50%, -50%) rotate(5deg);}}@media (max-width:767px){.sgs-di-e7414d25.sgs-decorative-image{width:120px;}}@media(max-width:767px){.sgs-di-e7414d25.sgs-decorative-image--desktop{display:none}}@media(min-width:768px){.sgs-di-e7414d25.sgs-decorative-image--mobile{display:none}}@media(min-width:768px) and (max-width:1023px){.sgs-di-e7414d25.sgs-decorative-image--desktop{display:none}}@media(max-width:767px){.sgs-di-e7414d25.sgs-decorative-image--tablet{display:none}}@media(min-width:1024px){.sgs-di-e7414d25.sgs-decorative-image--tablet{display:none}}"
+  "html": "<style>.sgs-di-0c63217a.sgs-decorative-image{position:absolute;left:50%;top:50%;width:240px;max-width:30%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}@media (max-width:1023px){.sgs-di-0c63217a.sgs-decorative-image{transform:translate(-50%, -50%) rotate(5deg);}}@media(max-width:767px){.sgs-di-0c63217a.sgs-decorative-image{width:120px;}}@media(max-width:767px){.sgs-di-0c63217a.sgs-decorative-image--desktop{display:none}}@media(min-width:768px){.sgs-di-0c63217a.sgs-decorative-image--mobile{display:none}}@media(min-width:768px) and (max-width:1023px){.sgs-di-0c63217a.sgs-decorative-image--desktop{display:none}}@media(max-width:767px){.sgs-di-0c63217a.sgs-decorative-image--tablet{display:none}}@media(min-width:1024px){.sgs-di-0c63217a.sgs-decorative-image--tablet{display:none}}</style><img src=\"https://example.test/uploads/photo.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-0c63217a sgs-decorative-image--desktop\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" /><img src=\"https://example.test/t.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-0c63217a sgs-decorative-image--tablet\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" /><img src=\"https://example.test/m.jpg\" alt=\"\" loading=\"lazy\" decoding=\"async\" class=\"sgs-decorative-image sgs-media-el sgs-di-0c63217a sgs-decorative-image--mobile\" alt=\"\" aria-hidden=\"true\" role=\"presentation\" data-fade-on-scroll=\"true\" data-hide-mobile=\"true\" />",
+  "css": ".sgs-di-0c63217a.sgs-decorative-image{position:absolute;left:50%;top:50%;width:240px;max-width:30%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}@media (max-width:1023px){.sgs-di-0c63217a.sgs-decorative-image{transform:translate(-50%, -50%) rotate(5deg);}}@media(max-width:767px){.sgs-di-0c63217a.sgs-decorative-image{width:120px;}}@media(max-width:767px){.sgs-di-0c63217a.sgs-decorative-image--desktop{display:none}}@media(min-width:768px){.sgs-di-0c63217a.sgs-decorative-image--mobile{display:none}}@media(min-width:768px) and (max-width:1023px){.sgs-di-0c63217a.sgs-decorative-image--desktop{display:none}}@media(max-width:767px){.sgs-di-0c63217a.sgs-decorative-image--tablet{display:none}}@media(min-width:1024px){.sgs-di-0c63217a.sgs-decorative-image--tablet{display:none}}"
  },
  "image_overlay_wrapper": {
   "attrs": {
@@ -69,11 +69,13 @@
    "rotation": {
     "desktop": 12
    },
-   "widthUnit": "auto"
+   "width": {
+    "desktop": "max-content"
+   }
   },
   "content": "<p class=sgs-test-copy>Baked</p>",
-  "html": "<style>.sgs-di-c39af5df.sgs-decorative-image{position:absolute;left:50%;top:50%;width:max-content;max-width:100%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}</style><div class=\"sgs-decorative-image sgs-decorative-image--layer sgs-di-c39af5df\"><div class=\"sgs-decorative-image__content\"><p class=sgs-test-copy>Baked</p></div></div>",
-  "css": ".sgs-di-c39af5df.sgs-decorative-image{position:absolute;left:50%;top:50%;width:max-content;max-width:100%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}"
+  "html": "<style>.sgs-di-3aa7e682.sgs-decorative-image{position:absolute;left:50%;top:50%;width:max-content;max-width:100%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}</style><div class=\"sgs-decorative-image sgs-decorative-image--layer sgs-di-3aa7e682\"><div class=\"sgs-decorative-image__content\"><p class=sgs-test-copy>Baked</p></div></div>",
+  "css": ".sgs-di-3aa7e682.sgs-decorative-image{position:absolute;left:50%;top:50%;width:max-content;max-width:100%;opacity:var(--sgs-di-op, 1);z-index:1;transform:translate(-50%, -50%) rotate(12deg);overflow:visible;}"
  },
  "video": {
   "attrs": {

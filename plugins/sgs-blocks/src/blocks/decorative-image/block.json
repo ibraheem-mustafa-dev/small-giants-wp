@@ -31,7 +31,7 @@
         },
         "sgs": {
             "motion": true,
-            "_comment_mediaElements": "Adopts object-fit, focal-point and overlay only, unprefixed (one media slot). box-shape is NOT adopted as an atom: its Width, WidthUnit, Height and border bases are this block's own width, widthUnit, height and border attributes, so the atom would put --sgs-media-width and a second border on the inner image of every wrapper layer and add second Width, Height and border rows. The layer takes the atom's SHAPE only: the block-private `shape` attribute uses the atom's vocabulary and clip-path map (box-shape.js::validateShape, sgs_media_atom_box_shape_clip_paths) and clips the layer root. The layer paints its own box (border, radius, fill, shadow, height) on its root through the block-private attributes below, built from the shared border, shadow and fill assemblers (sgs_border_element_decls, sgs_shadow_decls, sgs_background_paint_decl), the way sgs/before-after does for its frame.",
+            "_comment_mediaElements": "Adopts object-fit, focal-point and overlay only, unprefixed (one media slot). box-shape is NOT adopted as an atom: its Width, WidthUnit, Height and border bases are this block's own width, height and border attributes, so the atom would put --sgs-media-width and a second border on the inner image of every wrapper layer and add second Width, Height and border rows. The layer takes the atom's SHAPE only: the block-private `shape` attribute uses the atom's vocabulary and clip-path map (box-shape.js::validateShape, sgs_media_atom_box_shape_clip_paths) and clips the layer root. The layer paints its own box (border, radius, fill, shadow, height) on its root through the block-private attributes below, built from the shared border, shadow and fill assemblers (sgs_border_element_decls, sgs_shadow_decls, sgs_background_paint_decl), the way sgs/before-after does for its frame.",
             "mediaElements": [
                 { "prefix": "", "context": "element", "atoms": [ "object-fit", "focal-point", "overlay" ] }
             ],
@@ -86,12 +86,6 @@
         }
     },
     "attributes": {
-        "_comment_widthUnit": "One unit for every tier of `width`: px (fixed), % (of the section) or auto (fit the content: width:max-content capped at the parent, tiers ignored).",
-        "widthUnit": {
-            "type": "string",
-            "enum": [ "px", "%", "auto" ],
-            "default": "px"
-        },
         "_comment_decorMedia": "Migrated 2026-05-05 — legacy imageId/imageUrl/imageAlt retained for deprecation. New instances should use decorMedia (unified image-or-video slot).",
         "decorMedia": {
             "type": "object",
@@ -154,9 +148,10 @@
             "type": "object",
             "default": {}
         },
+        "_comment_width": "Width per device: a length from the shared length control (px, %, em, rem, vw) or max-content (Fit the content: the layer sizes to its content, capped at the parent unless maxWidth is set). A narrower device inherits the wider one's value.",
         "width": {
 			"type": "object",
-			"default": {"desktop": 200}
+			"default": {"desktop": "200px"}
 		},
         "_comment_maxWidth": "The layer's widest size per device: any length the shared length control stores (px, %, em, rem, vw) or none. Unset prints no cap (CSS's own initial value), so a fixed width holds at every device unless the client limits it; Fit the content keeps its max-width:100% until a value is set.",
         "maxWidth": {
@@ -261,7 +256,7 @@
         "attributes": {
             "positionX": { "desktop": 80 },
             "positionY": { "desktop": 20 },
-            "width": { "desktop": 200 },
+            "width": { "desktop": "200px" },
             "rotation": { "desktop": 15 },
             "opacity": 100
         }

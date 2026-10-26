@@ -6,10 +6,9 @@ import { layerPreviewStyle, layerBoxPreview, layerPaintsBox } from '../../src/bl
 import PAINTS_BOX_CASES from '../fixtures/decorative-image-paints-box.json';
 
 describe( 'layerPreviewStyle', () => {
-	it( 'Fit the content is max-content capped at the parent, whatever the tier', () => {
+	it( 'Fit the content is max-content capped at the parent, inherited by a narrower tier', () => {
 		const attrs = {
-			widthUnit: 'auto',
-			width: { desktop: 300, tablet: 180 },
+			width: { desktop: 'max-content' },
 			rotation: { desktop: 12 },
 		};
 		const style = layerPreviewStyle( attrs, 'tablet', true );
@@ -18,10 +17,9 @@ describe( 'layerPreviewStyle', () => {
 		expect( style.transform ).toBe( 'translate(-50%, -50%) rotate(12deg)' );
 	} );
 
-	it( 'Percentage uses the previewed tier and has no cap unless a max width is set', () => {
+	it( 'A length width uses the previewed tier, any unit, with no cap unless a max width is set', () => {
 		const attrs = {
-			widthUnit: '%',
-			width: { desktop: 60, tablet: 40 },
+			width: { desktop: '60%', tablet: '40%' },
 		};
 		expect( layerPreviewStyle( attrs, 'desktop', true ).width ).toBe( '60%' );
 		expect( layerPreviewStyle( attrs, 'tablet', true ).width ).toBe( '40%' );
@@ -30,12 +28,16 @@ describe( 'layerPreviewStyle', () => {
 	} );
 
 	it( 'Fixed stays in pixels; a max width applies per previewed tier, any unit, none by default', () => {
-		const attrs = { width: { desktop: 240 }, maxWidth: { desktop: '30%', mobile: '12rem' } };
+		const attrs = { width: { desktop: '240px' }, maxWidth: { desktop: '30%', mobile: '12rem' } };
 		expect( layerPreviewStyle( attrs, 'desktop', false ) ).toMatchObject( { width: '240px', maxWidth: '30%' } );
 		expect( layerPreviewStyle( attrs, 'tablet', false ).maxWidth ).toBe( '30%' );
 		expect( layerPreviewStyle( attrs, 'mobile', false ).maxWidth ).toBe( '12rem' );
-		expect( layerPreviewStyle( { width: { desktop: 240 } }, 'desktop', false ).maxWidth ).toBeUndefined();
-		expect( layerPreviewStyle( { widthUnit: 'auto', maxWidth: { desktop: '320px' } }, 'desktop', true ).maxWidth ).toBe( '320px' );
+		expect( layerPreviewStyle( { width: { desktop: '240px' } }, 'desktop', false ).maxWidth ).toBeUndefined();
+		expect( layerPreviewStyle( { width: { desktop: 'max-content' }, maxWidth: { desktop: '320px' } }, 'desktop', true ).maxWidth ).toBe( '320px' );
+		const switched = layerPreviewStyle( { width: { desktop: 'max-content', mobile: '300px' } }, 'mobile', true );
+		expect( switched.width ).toBe( '300px' );
+		expect( switched.maxWidth ).toBeUndefined();
+		expect( layerPreviewStyle( {}, 'desktop', true ).width ).toBe( '200px' );
 	} );
 
 	it( 'the canvas layer always takes pointer events so an empty layer keeps a clickable appender', () => {

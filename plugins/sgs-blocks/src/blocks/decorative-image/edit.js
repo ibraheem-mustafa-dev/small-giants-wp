@@ -14,18 +14,25 @@ import {
 	SelectControl,
 	TextControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, SgsLengthControl } from '../../components';
+import {
+	ResponsiveControl,
+	ResponsiveOverride,
+	SgsLengthControl,
+} from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePanelLayout';
-import { elementCustomProperties, requiresBox } from '../../components/media/canvasStyle';
+import {
+	elementCustomProperties,
+	requiresBox,
+} from '../../components/media/canvasStyle';
 import { usePreviewTier } from '../../utils';
 import LayerImagePanel from './LayerImagePanel';
 import LayerBoxPanels from './LayerBoxPanels';
 import LayerEdgePanel from './LayerEdgePanel';
 import { layerPreviewStyle, layerBoxPreview } from './layer-preview';
 
-const MAX_WIDTH_UNITS = [
+const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
 	{ value: '%', label: '%' },
 	{ value: 'em', label: 'em' },
@@ -36,12 +43,6 @@ const MAX_WIDTH_UNITS = [
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
 	{ label: __( 'Hidden', 'sgs-blocks' ), value: 'hidden' },
-];
-
-const WIDTH_TYPE_OPTIONS = [
-	{ label: __( 'Fixed (px)', 'sgs-blocks' ), value: 'px' },
-	{ label: __( 'Percentage of the section (%)', 'sgs-blocks' ), value: '%' },
-	{ label: __( 'Fit the content', 'sgs-blocks' ), value: 'auto' },
 ];
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
@@ -58,7 +59,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		positionBottom,
 		positionLeft,
 		width,
-		widthUnit,
 		maxWidth,
 		rotation,
 		opacity,
@@ -79,7 +79,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	);
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-decorative-image__content' },
-		{ renderAppender: blockCount ? undefined : InnerBlocks.ButtonBlockAppender }
+		{
+			renderAppender: blockCount
+				? undefined
+				: InnerBlocks.ButtonBlockAppender,
+		}
 	);
 
 	// Hydrate from new decorMedia first; fall back to legacy imageUrl for
@@ -171,7 +175,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			positionBottom,
 			positionLeft,
 			width,
-			widthUnit,
 			maxWidth,
 			rotation,
 			opacity,
@@ -179,20 +182,30 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			flipX,
 			overflow,
 		},
-		previewTier,
-		0 < blockCount
+		previewTier
 	);
 	// The layer's own box (border, fill, shadow, height), painted on the same element as the position.
-	const boxStyle = layerBoxPreview( attributes, previewTier, colourPalette, ! effectiveMedia && 0 === blockCount );
-	const widthUnitValue = widthUnit || 'px';
-	const widthLabel = '%' === widthUnitValue
-		? __( 'Width (%)', 'sgs-blocks' )
-		: __( 'Width (px)', 'sgs-blocks' );
+	const boxStyle = layerBoxPreview(
+		attributes,
+		previewTier,
+		colourPalette,
+		! effectiveMedia && 0 === blockCount
+	);
+	// Fit the content is the width box's one preset; it sizes the layer to what it holds.
+	const widthPresets = [
+		{ label: __( 'Fit the content', 'sgs-blocks' ), value: 'max-content' },
+	];
 
 	return (
 		<>
-			<LayerBoxPanels attributes={ attributes } setAttributes={ setAttributes } />
-			<LayerEdgePanel attributes={ attributes } setAttributes={ setAttributes } />
+			<LayerBoxPanels
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<LayerEdgePanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
 			<InspectorControls>
 				<LayerImagePanel
 					media={ effectiveMedia }
@@ -204,7 +217,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				     defaulting ON/decorative. Text and blocks inside the layer are always
 				     read out. Mirrors sgs/media's imageDecorative control. */ }
 				{ effectiveMedia && 'image' === effectiveMedia.type && (
-					<PanelBody title={ __( 'Accessibility', 'sgs-blocks' ) } initialOpen={ false }>
+					<PanelBody
+						title={ __( 'Accessibility', 'sgs-blocks' ) }
+						initialOpen={ false }
+					>
 						<ToggleControl
 							label={ __( 'Decorative image', 'sgs-blocks' ) }
 							help={ __(
@@ -212,14 +228,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								'sgs-blocks'
 							) }
 							checked={ imageDecorative ?? true }
-							onChange={ ( val ) => setAttributes( { imageDecorative: val } ) }
+							onChange={ ( val ) =>
+								setAttributes( { imageDecorative: val } )
+							}
 							__nextHasNoMarginBottom
 						/>
 						{ ! ( imageDecorative ?? true ) && (
 							<TextControl
 								label={ __( 'Alt text', 'sgs-blocks' ) }
 								value={ imageAlt || '' }
-								onChange={ ( val ) => setAttributes( { imageAlt: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { imageAlt: val } )
+								}
 								__nextHasNoMarginBottom
 								__next40pxDefaultSize
 							/>
@@ -238,12 +258,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				{ effectiveMedia && 'image' === effectiveMedia.type && (
 					<PanelBody title={ __( 'Art direction', 'sgs-blocks' ) }>
 						<ResponsiveControl
-							label={ __( 'Image for this screen size', 'sgs-blocks' ) }
+							label={ __(
+								'Image for this screen size',
+								'sgs-blocks'
+							) }
 						>
 							{ ( bp ) => {
 								if ( 'desktop' === bp ) {
 									return (
-										<p style={ { margin: 0, fontStyle: 'italic' } }>
+										<p
+											style={ {
+												margin: 0,
+												fontStyle: 'italic',
+											} }
+										>
 											{ __(
 												'The image chosen for this block is used on desktop. Switch to tablet or mobile to set a different crop.',
 												'sgs-blocks'
@@ -252,9 +280,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									);
 								}
 								const idKey =
-									'tablet' === bp ? 'imageIdTablet' : 'imageIdMobile';
+									'tablet' === bp
+										? 'imageIdTablet'
+										: 'imageIdMobile';
 								const urlKey =
-									'tablet' === bp ? 'imageUrlTablet' : 'imageUrlMobile';
+									'tablet' === bp
+										? 'imageUrlTablet'
+										: 'imageUrlMobile';
 								const tierUrlValue = attributes[ urlKey ]
 									? {
 											url: attributes[ urlKey ],
@@ -270,8 +302,12 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										allowedTypes={ [ 'image' ] }
 										onChange={ ( media ) =>
 											setAttributes( {
-												[ idKey ]: media ? media.id : undefined,
-												[ urlKey ]: media ? media.url : '',
+												[ idKey ]: media
+													? media.id
+													: undefined,
+												[ urlKey ]: media
+													? media.url
+													: '',
 											} )
 										}
 										onRemove={ () =>
@@ -280,7 +316,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 												[ urlKey ]: '',
 											} )
 										}
-										label={ __( 'Set image', 'sgs-blocks' ) }
+										label={ __(
+											'Set image',
+											'sgs-blocks'
+										) }
 										instructionsImage={ __(
 											'Optional. Leave empty to reuse the desktop image at this width.',
 											'sgs-blocks'
@@ -304,48 +343,80 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<DecorativeImagePanelLayout
 						attributes={ attributes }
 						setAttributes={ setAttributes }
-						mediaType={ 'video' === effectiveMedia.type ? 'video' : 'image' }
-						previewUrl={ 'video' === effectiveMedia.type ? '' : effectiveMedia.url }
+						mediaType={
+							'video' === effectiveMedia.type ? 'video' : 'image'
+						}
+						previewUrl={
+							'video' === effectiveMedia.type
+								? ''
+								: effectiveMedia.url
+						}
 					/>
 				) }
 
-				{ /* Position X / Y and Width are tier-aware ResponsiveOverride controls
-				     in the "Responsive Overrides" panel below, which cover
-				     desktop/tablet/mobile for those object attrs. A second control
-				     writing the same attr would conflict (one writes a plain number,
-				     the other a {desktop,tablet,mobile} object), so there is one
-				     writer per attribute. */ }
+				{ /* Width and max width are per-device lengths in this panel; Position
+				     X / Y and Rotation are per-device in "Responsive Overrides" below.
+				     Each attribute has one writer. */ }
 				<PanelBody
 					title={ __( 'Size', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<SelectControl
-						label={ __( 'Width type', 'sgs-blocks' ) }
-						help={ __(
-							'Fit the content suits a label or a badge; fixed or percentage suits a photo.',
-							'sgs-blocks'
+					<ResponsiveOverride
+						label={ __( 'Width', 'sgs-blocks' ) }
+						value={ width }
+						onChange={ ( obj ) => setAttributes( { width: obj } ) }
+					>
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
+							<SgsLengthControl
+								presets={ false }
+								tokenPresets={ widthPresets }
+								label={ __( 'Width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								units={ LENGTH_UNITS }
+								help={ __(
+									'Fit the content suits a label or a badge; a length suits a photo or a ring.',
+									'sgs-blocks'
+								) }
+							/>
 						) }
-						value={ widthUnitValue }
-						options={ WIDTH_TYPE_OPTIONS }
-						onChange={ ( val ) => setAttributes( { widthUnit: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					</ResponsiveOverride>
 					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
 						value={ maxWidth }
-						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidth: obj } )
+						}
 					>
-						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
 							<SgsLengthControl
 								presets={ false }
 								label={ __( 'Max width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								value={ ownValue || '' }
-								placeholder={ inherited ? effectiveValue || '' : '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
 								onChange={ ( v ) => setOwnValue( v || '' ) }
-								units={ MAX_WIDTH_UNITS }
-								help={ __( 'The widest the layer gets on this device, in any unit. Leave empty for no limit.', 'sgs-blocks' ) }
+								units={ LENGTH_UNITS }
+								help={ __(
+									'The widest the layer gets on this device, in any unit. Leave empty for no limit.',
+									'sgs-blocks'
+								) }
 							/>
 						) }
 					</ResponsiveOverride>
@@ -368,7 +439,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					<RangeControl
 						label={ __( 'Opacity (%)', 'sgs-blocks' ) }
 						value={ opacity }
-						onChange={ ( val ) => setAttributes( { opacity: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { opacity: val } )
+						}
 						min={ 0 }
 						max={ 100 }
 						step={ 5 }
@@ -377,7 +450,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					/>
 					<RangeControl
 						label={ __( 'Z-Index', 'sgs-blocks' ) }
-						help={ __( 'Stacking order (above background, below content)', 'sgs-blocks' ) }
+						help={ __(
+							'Stacking order (above background, below content)',
+							'sgs-blocks'
+						) }
 						value={ zIndex }
 						onChange={ ( val ) => setAttributes( { zIndex: val } ) }
 						min={ -1 }
@@ -394,17 +470,27 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				>
 					<ToggleControl
 						label={ __( 'Fade on scroll', 'sgs-blocks' ) }
-						help={ __( 'Opacity fades to 0 as image scrolls past the top of the viewport. Disabled when "Reduce motion" is on.', 'sgs-blocks' ) }
+						help={ __(
+							'Opacity fades to 0 as image scrolls past the top of the viewport. Disabled when "Reduce motion" is on.',
+							'sgs-blocks'
+						) }
 						checked={ fadeOnScroll }
-						onChange={ ( val ) => setAttributes( { fadeOnScroll: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { fadeOnScroll: val } )
+						}
 						__nextHasNoMarginBottom
 					/>
 					<SelectControl
 						label={ __( 'Overflow', 'sgs-blocks' ) }
-						help={ __( 'Whether image can extend beyond parent boundaries', 'sgs-blocks' ) }
+						help={ __(
+							'Whether image can extend beyond parent boundaries',
+							'sgs-blocks'
+						) }
 						value={ overflow }
 						options={ OVERFLOW_OPTIONS }
-						onChange={ ( val ) => setAttributes( { overflow: val } ) }
+						onChange={ ( val ) =>
+							setAttributes( { overflow: val } )
+						}
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
@@ -423,7 +509,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								hideOnMobile: false,
 								positionX: { desktop: 50 },
 								positionY: { desktop: 50 },
-								width: { desktop: 200 },
 								rotation: { desktop: 0 },
 							} )
 						}
@@ -431,26 +516,34 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Hide on tablet', 'sgs-blocks' ) }
 							hasValue={ () => hideOnTablet !== false }
-							onDeselect={ () => setAttributes( { hideOnTablet: false } ) }
+							onDeselect={ () =>
+								setAttributes( { hideOnTablet: false } )
+							}
 							isShownByDefault
 						>
 							<ToggleControl
 								label={ __( 'Hide on tablet', 'sgs-blocks' ) }
 								checked={ hideOnTablet }
-								onChange={ ( val ) => setAttributes( { hideOnTablet: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { hideOnTablet: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Hide on mobile', 'sgs-blocks' ) }
 							hasValue={ () => hideOnMobile !== false }
-							onDeselect={ () => setAttributes( { hideOnMobile: false } ) }
+							onDeselect={ () =>
+								setAttributes( { hideOnMobile: false } )
+							}
 							isShownByDefault
 						>
 							<ToggleControl
 								label={ __( 'Hide on mobile', 'sgs-blocks' ) }
 								checked={ hideOnMobile }
-								onChange={ ( val ) => setAttributes( { hideOnMobile: val } ) }
+								onChange={ ( val ) =>
+									setAttributes( { hideOnMobile: val } )
+								}
 								__nextHasNoMarginBottom
 							/>
 						</ToolsPanelItem>
@@ -458,7 +551,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Position X (%)', 'sgs-blocks' ) }
 							hasValue={ () =>
-								JSON.stringify( positionX ) !== JSON.stringify( { desktop: 50 } )
+								JSON.stringify( positionX ) !==
+								JSON.stringify( { desktop: 50 } )
 							}
 							onDeselect={ () =>
 								setAttributes( { positionX: { desktop: 50 } } )
@@ -472,12 +566,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<ResponsiveOverride
 								label={ __( 'Position X (%)', 'sgs-blocks' ) }
 								value={ positionX }
-								onChange={ ( obj ) => setAttributes( { positionX: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { positionX: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
 									<RangeControl
-										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-										value={ ownValue || effectiveValue || 50 }
+										help={
+											inherited
+												? __(
+														'Leave empty to use desktop value',
+														'sgs-blocks'
+												  )
+												: undefined
+										}
+										value={
+											ownValue || effectiveValue || 50
+										}
 										onChange={ ( v ) => setOwnValue( v ) }
 										min={ 0 }
 										max={ 100 }
@@ -493,7 +603,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						<ToolsPanelItem
 							label={ __( 'Position Y (%)', 'sgs-blocks' ) }
 							hasValue={ () =>
-								JSON.stringify( positionY ) !== JSON.stringify( { desktop: 50 } )
+								JSON.stringify( positionY ) !==
+								JSON.stringify( { desktop: 50 } )
 							}
 							onDeselect={ () =>
 								setAttributes( { positionY: { desktop: 50 } } )
@@ -504,12 +615,28 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							<ResponsiveOverride
 								label={ __( 'Position Y (%)', 'sgs-blocks' ) }
 								value={ positionY }
-								onChange={ ( obj ) => setAttributes( { positionY: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { positionY: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
 									<RangeControl
-										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-										value={ ownValue || effectiveValue || 50 }
+										help={
+											inherited
+												? __(
+														'Leave empty to use desktop value',
+														'sgs-blocks'
+												  )
+												: undefined
+										}
+										value={
+											ownValue || effectiveValue || 50
+										}
 										onChange={ ( v ) => setOwnValue( v ) }
 										min={ 0 }
 										max={ 100 }
@@ -522,44 +649,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							</ResponsiveOverride>
 						</ToolsPanelItem>
 
-						{ 'auto' !== widthUnitValue && (
-							<ToolsPanelItem
-								label={ widthLabel }
-								hasValue={ () =>
-									JSON.stringify( width ) !== JSON.stringify( { desktop: 200 } )
-								}
-								onDeselect={ () =>
-									setAttributes( { width: { desktop: 200 } } )
-								}
-							>
-								{ /* `width` is a TIER OBJECT — same shape as `positionX`/
-								     `positionY`/`rotation` above. */ }
-								<ResponsiveOverride
-									label={ widthLabel }
-									value={ width }
-									onChange={ ( obj ) => setAttributes( { width: obj } ) }
-								>
-									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-										<RangeControl
-											help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-											value={ ownValue ?? effectiveValue ?? 200 }
-											onChange={ ( v ) => setOwnValue( v ) }
-											min={ '%' === widthUnitValue ? 5 : 50 }
-											max={ '%' === widthUnitValue ? 100 : 800 }
-											step={ '%' === widthUnitValue ? 5 : 10 }
-											allowReset={ inherited }
-											__nextHasNoMarginBottom
-											__next40pxDefaultSize
-										/>
-									) }
-								</ResponsiveOverride>
-							</ToolsPanelItem>
-						) }
-
 						<ToolsPanelItem
 							label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
 							hasValue={ () =>
-								JSON.stringify( rotation ) !== JSON.stringify( { desktop: 0 } )
+								JSON.stringify( rotation ) !==
+								JSON.stringify( { desktop: 0 } )
 							}
 							onDeselect={ () =>
 								setAttributes( { rotation: { desktop: 0 } } )
@@ -568,14 +662,33 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							{ /* `rotation` is a TIER OBJECT — same shape as `positionX`/
 							     `positionY` above. */ }
 							<ResponsiveOverride
-								label={ __( 'Rotation (degrees)', 'sgs-blocks' ) }
+								label={ __(
+									'Rotation (degrees)',
+									'sgs-blocks'
+								) }
 								value={ rotation }
-								onChange={ ( obj ) => setAttributes( { rotation: obj } ) }
+								onChange={ ( obj ) =>
+									setAttributes( { rotation: obj } )
+								}
 							>
-								{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
 									<RangeControl
-										help={ inherited ? __( 'Leave empty to use desktop value', 'sgs-blocks' ) : undefined }
-										value={ ownValue || effectiveValue || 0 }
+										help={
+											inherited
+												? __(
+														'Leave empty to use desktop value',
+														'sgs-blocks'
+												  )
+												: undefined
+										}
+										value={
+											ownValue || effectiveValue || 0
+										}
 										onChange={ ( v ) => setOwnValue( v ) }
 										min={ -180 }
 										max={ 180 }
@@ -615,35 +728,46 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							className={ [
 								'sgs-decorative-image-editor__layer',
 								'sgs-decorative-image--layer',
-								effectiveMedia ? 'sgs-decorative-image--over-image' : '',
+								effectiveMedia
+									? 'sgs-decorative-image--over-image'
+									: '',
 								mediaWantsBox ? 'sgs-media-box' : '',
 							]
 								.filter( Boolean )
 								.join( ' ' ) }
-							style={ { ...layerStyle, ...boxStyle, ...mediaBoxStyle } }
+							style={ {
+								...layerStyle,
+								...boxStyle,
+								...mediaBoxStyle,
+							} }
 						>
-							{ effectiveMedia && 'video' === effectiveMedia.type && (
-								<video
-									src={ effectiveMedia.url }
-									autoPlay
-									muted
-									loop
-									playsInline
-									className="sgs-decorative-image__media sgs-media-el"
-									style={ mediaElementStyle }
-								/>
-							) }
-							{ effectiveMedia && 'video' !== effectiveMedia.type && (
-								<img
-									src={ effectiveMedia.url }
-									alt={
-										effectiveMedia.alt ||
-										__( 'Decorative image preview', 'sgs-blocks' )
-									}
-									className="sgs-decorative-image__media sgs-media-el"
-									style={ mediaElementStyle }
-								/>
-							) }
+							{ effectiveMedia &&
+								'video' === effectiveMedia.type && (
+									<video
+										src={ effectiveMedia.url }
+										autoPlay
+										muted
+										loop
+										playsInline
+										className="sgs-decorative-image__media sgs-media-el"
+										style={ mediaElementStyle }
+									/>
+								) }
+							{ effectiveMedia &&
+								'video' !== effectiveMedia.type && (
+									<img
+										src={ effectiveMedia.url }
+										alt={
+											effectiveMedia.alt ||
+											__(
+												'Decorative image preview',
+												'sgs-blocks'
+											)
+										}
+										className="sgs-decorative-image__media sgs-media-el"
+										style={ mediaElementStyle }
+									/>
+								) }
 							<div { ...innerBlocksProps } />
 						</div>
 					</div>
