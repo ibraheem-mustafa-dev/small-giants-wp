@@ -214,7 +214,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		if ( pick ) {
 			builders.set( slug, pick );
 		} else if ( ! ( state.templateHashes || {} )[ slug ] && ( state.customTemplates || [] ).includes( slug ) ) {
-			uncopied.push( { slug, why: 'the site holds a copy that neither the site build nor the site run made (Site Editor > Templates); the site run replaces it with the draft's copy' } );
+			uncopied.push( { slug, why: 'the site holds a copy that neither the site build nor the site run made (Site Editor > Templates); the site run replaces it with the draft\'s copy' } );
 		} else if ( ! ( state.templateHashes || {} )[ slug ] ) {
 			const from = owner ? rowKey( owner ) : 'page' === how ? "the site's own page copy" : null;
 			uncopied.push( { slug, why: from ? `no tree yet (sites/<client>/build/trees/template/${ slug }.json): the site run builds it from ${ from }` : 'no draft surface plays it and no page-map row names it' } );
