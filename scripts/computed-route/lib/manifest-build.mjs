@@ -1,15 +1,20 @@
 // The surfaces manifest builder (Spec 48 section 2): one sites/<client>/build/surfaces.json entry per confirmed
-// page-map row that has a post id, and one per shop row (`shop`, `product`, `product_cat`), whose target is the template
-// its tree builds (FR-48-56), not a post. Pure functions over parsed files; manifest.mjs reads and writes them.
-import { builtTemplate } from './site-build-map.mjs';
+// page-map row that has a post id, one per shop row (`shop`, `product`, `product_cat`), whose target is the template
+// its tree builds (FR-48-56), not a post, and one `template-<slug>` entry per other template the site serves (its own
+// copy, lib/template-copies.mjs). Pure functions over parsed files; manifest.mjs reads and writes them.
+import { builtTemplate, rowKey } from './site-build-map.mjs';
+import { WHOLE_TREE, copySource, rowsOf, servedTemplates } from './template-copies.mjs';
+import { wooContentRole } from './site-build-plan.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
 export const PREFIXES = { sgs_mega_menu: 'mega-', sgs_drawer: 'drawer-', sgs_modal: 'modal-', sgs_form: 'form-', sgs_choice_flow: 'flow-' };
 // Post type -> handoff record kind.
 // A shop row's handoff record is its route's page record.
-export const KINDS = { sgs_header: 'header', sgs_footer: 'footer', sgs_drawer: 'drawer', sgs_mega_menu: 'menu', sgs_modal: 'modal', sgs_form: 'form', page: 'page', shop: 'page', product: 'page', product_cat: 'page', post: 'page' };
+export const KINDS = { sgs_header: 'header', sgs_footer: 'footer', sgs_drawer: 'drawer', sgs_mega_menu: 'menu', sgs_modal: 'modal', sgs_form: 'form', page: 'page', shop: 'page', product: 'page', product_cat: 'page', post: 'page', template: 'page' };
 // A draft post's route is its page record's `page_key`, so every post row matches like a page row. The posts share one theme
 // template, the site's own copy of this one (FR-48-56), shaped from the first post row; each post row is content-only.
 export const POST_TEMPLATE = 'single';
+// The manifest key of a template copy's surface.
+export const templateKey = ( slug ) => `template-${ slug }`;
 // Post type -> the template parts or form a surface provides.
 const PROVIDES = { sgs_header: () => [ 'core/template-part:header' ], sgs_footer: () => [ 'core/template-part:footer' ], sgs_form: ( row ) => [ `sgs/form:${ row.slug }` ] };
 
@@ -199,6 +204,33 @@ const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) =
 // The post row the single-post template is shaped from: the first post row of the page map, or null with none.
 export const templateSource = ( rows ) => rows.find( ( r ) => 'post' === r.postType ) ?? null;
 
+// A page row whose page surface is Filled and built into its post (not WooCommerce's own page, whose content is kept).
+const filledPage = ( r ) => 'page' === r.postType && null != r.id && ! wooContentRole( r );
+
+// The template copy surfaces (FR-48-56), one per template the site serves that is not a shop row's own: { slug, key, copy,
+// row } with `copy.from` 'pages' (the shell the Filled pages in `copy.surfaces` share, so it needs no Fill of its own),
+// 'fill' (read and Filled at `row`, the surface playing it: the first post for `single`, a WooCommerce page, a `template`
+// row) or 'page' (the site's own page copy's shell around the theme's own content; no draft surface plays it).
+export function templateSurfaces( rows ) {
+	const out = [];
+	for ( const slug of servedTemplates( rows ) ) {
+		const how = copySource( rows, slug );
+		const mine = rowsOf( rows, slug );
+		if ( ! how || ( WHOLE_TREE.includes( slug ) && mine.some( builtTemplate ) ) ) {
+			continue;
+		}
+		if ( 'page' === how ) {
+			out.push( { slug, key: templateKey( slug ), copy: { from: 'page' }, row: null } );
+		} else if ( mine.every( filledPage ) ) {
+			out.push( { slug, key: templateKey( slug ), copy: { from: 'pages', surfaces: mine.map( surfaceKey ) }, row: mine[ 0 ] } );
+		} else {
+			const row = 'single' === slug ? templateSource( rows ) : mine[ 0 ];
+			row && out.push( { slug, key: templateKey( slug ), copy: { from: 'fill', row: rowKey( row ) }, row } );
+		}
+	}
+	return out;
+}
+
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFiles` the export's entry drafts
 // (`entryFile` for an export with one); each surface takes the draft draftFor names.
 // `only` limits the run to those keys. `facts` is the client's fact record (`state[<dc>]` gives statesOf its context). Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake, noFacts }; throws when two rows give one key.
@@ -211,24 +243,37 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	const entries = {};
 	const owner = new Map();
 	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], matched: {} };
-	const source = templateSource( rows );
-	const mapKeys = new Set( [ ...rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ), ...( source ? [ POST_TEMPLATE ] : [] ) ] );
+	const copies = templateSurfaces( rows );
+	const shellOf = new Map( copies.filter( ( c ) => 'pages' === c.copy.from ).flatMap( ( c ) => c.copy.surfaces.map( ( k ) => [ k, c.slug ] ) ) );
+	const mapKeys = new Set( [ ...rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ), ...copies.map( ( c ) => c.key ) ] );
 	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );
-	// The single-post template is a surface of its own beside the post rows: a page-map row giving its key is a clash.
+	// A template copy is a surface of its own beside the rows: a page-map row giving its key is a clash.
 	const claim = ( key, what ) => {
 		if ( owner.has( key ) ) {
 			throw new Error( `page-map rows ${ owner.get( key ) } and ${ what } both give the key ${ key }` );
 		}
 		owner.set( key, what );
 	};
-	source && claim( POST_TEMPLATE, `the ${ POST_TEMPLATE } template (from ${ source.postType }:${ source.slug })` );
-	for ( const row of [ ...rows, ...( source ? [ { ...source, templateOf: source } ] : [] ) ] ) {
+	copies.forEach( ( c ) => claim( c.key, `the ${ c.slug } template${ c.row ? ` (from ${ rowKey( c.row ) })` : '' }` ) );
+	// A template copy that needs no Fill of its own (from the Filled pages' shell, or the page copy's) reads no draft.
+	for ( const c of copies.filter( ( x ) => 'fill' !== x.copy.from ) ) {
+		if ( only && ! only.includes( c.key ) ) {
+			continue;
+		}
+		const entry = { tree: `trees/template/${ c.slug }.json`, envFile: target.envFile, envKey: target.envKey, site, target: { template: c.slug }, canvas: true, copy: c.copy, states: { resting: null } };
+		const have = Object.hasOwn( existing, c.key ) ? existing[ c.key ] : null;
+		const added = have ? Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) ) : [];
+		added.length && ( out.added[ c.key ] = added );
+		entries[ c.key ] = have ? { ...entry, ...have, copy: c.copy } : entry;
+	}
+	const filled = copies.filter( ( c ) => 'fill' === c.copy.from );
+	for ( const row of [ ...rows, ...filled.map( ( c ) => ( { ...c.row, templateOf: c } ) ) ] ) {
 		const isTemplate = !! row.templateOf;
 		if ( ! isTemplate && null == row.id && ! builtTemplate( row ) ) {
 			out.skipped.push( { row: `${ row.postType }:${ row.slug }`, reason: 'no id' } );
 			continue;
 		}
-		const key = isTemplate ? POST_TEMPLATE : surfaceKey( row );
+		const key = isTemplate ? row.templateOf.key : surfaceKey( row );
 		isTemplate || claim( key, `${ row.postType }:${ row.slug }` );
 		if ( only && ! only.includes( key ) ) {
 			continue;
@@ -260,13 +305,14 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		const intakeSurface = intakeSurfaceOf( match.record, intake );
 		null === intakeSurface && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
 		const entry = {
-			tree: `trees/${ row.postType }/${ row.slug }.json`,
+			tree: isTemplate ? `trees/template/${ row.templateOf.slug }.json` : `trees/${ row.postType }/${ row.slug }.json`,
 			...( intakeSurface ? { intakeSurface } : {} ),
 			envFile: target.envFile,
 			envKey: target.envKey,
 			site,
-			target: isTemplate ? { template: POST_TEMPLATE } : builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id },
-			...( 'page' === row.postType ? {} : { canvas: true } ),
+			target: isTemplate ? { template: row.templateOf.slug } : builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id },
+			...( 'page' === row.postType && ! isTemplate ? {} : { canvas: true } ),
+			...( isTemplate ? { copy: row.templateOf.copy } : builtTemplate( row ) ? { copy: { from: 'whole' } } : shellOf.has( key ) ? { shell: shellOf.get( key ) } : {} ),
 			walker: `qa/parity/${ key }.fill-base.mjs`,
 			walkerFull: `qa/parity/${ key }.fill.mjs`,
 			draftDir: `sites/${ client }/handoff`,
@@ -274,7 +320,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			// A form or a post is read on its page's route; the record's `route` is that page.
 			...( ( 'form' === KINDS[ row.postType ] || 'post' === row.postType ) && match.record?.route ? { draftRoute: match.record.route } : {} ),
 			states,
-			...( isTemplate ? { fromPost: surfaceKey( row ) } : 'post' === row.postType ? { contentOnly: true } : {} ),
+			...( isTemplate && 'post' === row.postType ? { fromPost: surfaceKey( row ) } : ! isTemplate && 'post' === row.postType ? { contentOnly: true } : {} ),
 			...( PROVIDES[ row.postType ] ? { provides: PROVIDES[ row.postType ]( row ) } : {} ),
 		};
 		if ( ! handSet ) {

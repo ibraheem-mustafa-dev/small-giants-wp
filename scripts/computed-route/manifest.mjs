@@ -6,7 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { buildManifest, POST_TEMPLATE, surfaceKey, templateSource } from './lib/manifest-build.mjs';
+import { buildManifest, surfaceKey, templateSurfaces } from './lib/manifest-build.mjs';
 import { openDb } from './lib/db.mjs';
 import { builtTemplate, readPageMap } from './lib/site-build-map.mjs';
 import { stateRows } from './lib/state-vocab.mjs';
@@ -68,7 +68,7 @@ try {
 	const rows = readPageMap( path.join( dir, 'build', 'page-map.json' ) );
 	const only = given[ '--only' ] ? given[ '--only' ].split( ',' ).filter( Boolean ) : null;
 	if ( only ) {
-		const valid = [ ...rows.filter( ( r ) => null != r.id || builtTemplate( r ) ).map( surfaceKey ), ...( templateSource( rows ) ? [ POST_TEMPLATE ] : [] ) ];
+		const valid = [ ...rows.filter( ( r ) => null != r.id || builtTemplate( r ) ).map( surfaceKey ), ...templateSurfaces( rows ).map( ( c ) => c.key ) ];
 		const unknown = only.filter( ( k ) => ! valid.includes( k ) );
 		unknown.length && usage( `--only names ${ unknown.join( ', ' ) }, which no page-map row with an id generates; valid keys: ${ valid.join( ', ' ) }` );
 	}
@@ -96,7 +96,13 @@ try {
 	result.dropped.forEach( ( d ) => console.log( `states-dropped ${ d.key }: ${ d.name }` ) );
 	result.noFacts.forEach( ( u ) => console.log( `states-no-facts ${ u.key }: ${ u.why }; the key names R, item and bp decided [${ u.names.join( ' | ' ) }]` ) );
 	result.noIntake.forEach( ( u ) => console.log( `no-intake-surface ${ u.key }: ${ u.why }` ) );
-	result.stale.forEach( ( k ) => console.log( `stale ${ k }: in surfaces.json but not in the page map (kept)` ) );
+	// A stale entry building a template that a template copy surface now builds is that surface's earlier key: replaced.
+	const replaced = result.stale.filter( ( k ) => keep[ k ]?.target?.template && Object.entries( result.entries ).some( ( [ n, e ] ) => n !== k && e.target?.template === keep[ k ].target.template ) );
+	replaced.forEach( ( k ) => {
+		console.log( `replaced ${ k }: its ${ keep[ k ].target.template } template is built by ${ Object.keys( result.entries ).find( ( n ) => result.entries[ n ].target?.template === keep[ k ].target.template ) }` );
+		delete keep[ k ];
+	} );
+	result.stale.filter( ( k ) => ! replaced.includes( k ) ).forEach( ( k ) => console.log( `stale ${ k }: in surfaces.json but not in the page map (kept)` ) );
 	result.skipped.forEach( ( s ) => console.log( `skipped ${ s.row }: ${ s.reason }` ) );
 	result.disagree.forEach( ( d ) => console.log( `states-disagree ${ d.key }: handoff [${ d.handoff.join( ' | ' ) }] intake [${ d.intake.join( ' | ' ) }]` ) );
 	result.unresolved.forEach( ( u ) => console.log( `${ u.reason } ${ u.key }: ${ u.why }` ) );

@@ -13,10 +13,12 @@ const vocab = [ { state: 'open', kind: 'class', token: '--open' }, { state: 'cur
 const target = { envFile: '.claude/secrets/x.env', envKey: 'X' };
 const run = ( rows, records = [], extra = {} ) => buildManifest( { client: 'acme', site: 'x-test', rows, records, target, entryFile: 'Site.dc.html', vocab, ...extra } );
 const row = ( postType, slug, id = 1, extra = {} ) => ( { postType, slug, title: slug, id, route: 'page' === postType ? slug : undefined, ...extra } );
+// The entries the rows give, without the template copy surfaces every site has (template-page, template-404, ...).
+const rowEntries = ( out ) => Object.fromEntries( Object.entries( out.entries ).filter( ( [ k ] ) => ! k.startsWith( 'template-' ) ) );
 const rec = ( id, kind, name, states = [ { name: 'default', state_keys: {} } ], extra = {} ) => ( { id, kind, name, states, ...extra } );
 
 test( 'a mega menu and a page with one slug give distinct keys', () => {
-	const { entries } = run( [ row( 'sgs_mega_menu', 'about', 2 ), row( 'page', 'about', 3 ) ] );
+	const entries = rowEntries( run( [ row( 'sgs_mega_menu', 'about', 2 ), row( 'page', 'about', 3 ) ] ) );
 	assert.deepEqual( Object.keys( entries ).sort(), [ 'about', 'mega-about' ] );
 	assert.equal( surfaceKey( row( 'sgs_drawer', 'drawer-main' ) ), 'drawer-main' );
 	assert.equal( surfaceKey( row( 'sgs_header', 'header' ) ), 'header' );
@@ -79,7 +81,7 @@ test( 'fixed fields: tree, target, walkers, draft, provides', () => {
 
 test( 'a row with a null or missing id is skipped and listed', () => {
 	const out = run( [ row( 'page', 'a', null ), { postType: 'page', slug: 'b', title: 'b', route: 'b' }, row( 'page', 'c', 3 ) ] );
-	assert.deepEqual( Object.keys( out.entries ), [ 'c' ] );
+	assert.deepEqual( Object.keys( rowEntries( out ) ), [ 'c' ] );
 	assert.equal( out.skipped.length, 2 );
 } );
 
@@ -181,7 +183,7 @@ test( 'an accordion keeps its expanded states only; a state whose key slugs to n
 test( 'prototype-named slugs and states are plain data, not duplicates or existing entries', () => {
 	const records = [ rec( 'S-1', 'header', 'H', [ { name: 'constructor' }, { name: 'toString' } ] ) ];
 	const out = run( [ row( 'page', 'constructor', 1 ), row( 'page', 'valueof', 2 ), row( 'sgs_header', 'header', 3 ) ], records );
-	assert.deepEqual( Object.keys( out.entries ), [ 'constructor', 'valueof', 'header' ] );
+	assert.deepEqual( Object.keys( rowEntries( out ) ), [ 'constructor', 'valueof', 'header' ] );
 	assert.deepEqual( out.added, {} );
 	assert.deepEqual( Object.keys( out.entries.header.states ), [ 'constructor', 'tostring' ] );
 } );
@@ -375,7 +377,7 @@ test( 'MUST FAIL: a form surface is read on its page route and provides its form
 	const out = run( formRows, formRecords );
 	assert.equal( out.unmatched.length, 0 );
 	assert.equal( out.unresolved.length, 0 );
-	assert.deepEqual( Object.fromEntries( Object.entries( out.entries ).map( ( [ k, e ] ) => [ k, e.draftRoute ] ) ), { 'form-enquiry': '/contact', 'form-careers': '/careers', 'form-catalogue': '/catalogue', 'form-trade-application': '/apply' } );
+	assert.deepEqual( Object.fromEntries( Object.entries( rowEntries( out ) ).map( ( [ k, e ] ) => [ k, e.draftRoute ] ) ), { 'form-enquiry': '/contact', 'form-careers': '/careers', 'form-catalogue': '/catalogue', 'form-trade-application': '/apply' } );
 	assert.deepEqual( out.entries[ 'form-enquiry' ].provides, [ 'sgs/form:enquiry' ] );
 	assert.deepEqual( out.entries[ 'form-enquiry' ].draftIndex, 'Site.dc.html' );
 	assert.deepEqual( Object.entries( out.matched ).map( ( [ k, id ] ) => `${ k }=${ id }` ), [ 'form-enquiry=S-59', 'form-careers=S-48', 'form-catalogue=S-50', 'form-trade-application=S-52' ] );
@@ -387,26 +389,27 @@ const postRecords = [ rec( 'S-39', 'page', 'First', undefined, { page_key: 'post
 
 test( 'MUST FAIL: the post rows give one single-template surface shaped from the first draft post, and each post row is content-only', () => {
 	const out = run( postRows, postRecords );
-	assert.deepEqual( Object.keys( out.entries ), [ 'first-post', 'second-post', 'single' ] );
-	const t = out.entries.single;
+	assert.deepEqual( Object.keys( out.entries ), [ 'template-archive', 'template-search', 'template-404', 'first-post', 'second-post', 'template-single' ] );
+	const t = out.entries[ 'template-single' ];
 	assert.deepEqual( t.target, { template: 'single' } );
 	assert.equal( t.canvas, true );
 	assert.equal( t.fromPost, 'first-post' );
-	assert.equal( t.tree, out.entries[ 'first-post' ].tree );
-	assert.equal( t.walker, 'qa/parity/single.fill-base.mjs' );
+	assert.deepEqual( t.copy, { from: 'fill', row: 'post:first-post' } );
+	assert.equal( t.tree, 'trees/template/single.json' );
+	assert.equal( t.walker, 'qa/parity/template-single.fill-base.mjs' );
 	assert.equal( t.draftRoute, '/post-post-1' );
-	assert.equal( out.matched.single, 'S-39' );
+	assert.equal( out.matched[ 'template-single' ], 'S-39' );
 	assert.deepEqual( postRows.map( ( r ) => out.entries[ r.slug ].contentOnly ), [ true, true ] );
 	assert.deepEqual( out.entries[ 'first-post' ].target, { postId: 137 } );
 	assert.equal( 'contentOnly' in t, false );
 	assert.equal( out.unmatched.length, 0 );
 } );
 
-test( 'MUST FAIL: no post row gives no template surface; a page with the key single is a hard error; --only single builds only the template', () => {
-	assert.equal( 'single' in run( [ row( 'page', 'home', 1 ) ], [] ).entries, false );
-	assert.throws( () => run( [ ...postRows, row( 'page', 'single', 5 ) ], postRecords ), /both give the key single/ );
-	const only = run( postRows, postRecords, { only: [ 'single' ] } );
-	assert.deepEqual( Object.keys( only.entries ), [ 'single' ] );
+test( 'MUST FAIL: no post row gives no single template surface; a page with a template surface\'s key is a hard error; --only builds only the named template', () => {
+	assert.equal( 'template-single' in run( [ row( 'page', 'home', 1 ) ], [] ).entries, false );
+	assert.throws( () => run( [ ...postRows, row( 'page', 'template-single', 5 ) ], postRecords ), /both give the key template-single/ );
+	const only = run( postRows, postRecords, { only: [ 'template-single' ] } );
+	assert.deepEqual( Object.keys( only.entries ), [ 'template-single' ] );
 	assert.equal( only.stale.length, 0 );
 } );
 
@@ -607,7 +610,7 @@ test( 'a shop, product or product_cat row is a surface whose target is its templ
 		row( 'product_cat', 'frames', null, { route: 'frames' } ),
 		row( 'page', 'about', null ),
 	], [ rec( 'S-1', 'page', 'Shop', undefined, { page_key: 'shop' } ) ] );
-	assert.deepEqual( Object.entries( out.entries ).map( ( [ k, e ] ) => [ k, e.target ] ), [ [ 'shop', { template: 'archive-product' } ], [ 'product', { template: 'single-product' } ], [ 'frames', { template: 'archive-product' } ] ] );
+	assert.deepEqual( Object.entries( rowEntries( out ) ).map( ( [ k, e ] ) => [ k, e.target ] ), [ [ 'shop', { template: 'archive-product' } ], [ 'product', { template: 'single-product' } ], [ 'frames', { template: 'archive-product' } ] ] );
 	assert.equal( out.entries.shop.canvas, true );
 	assert.equal( out.entries.shop.tree, 'trees/shop/shop.json' );
 	assert.deepEqual( out.skipped, [ { row: 'page:about', reason: 'no id' } ] );
