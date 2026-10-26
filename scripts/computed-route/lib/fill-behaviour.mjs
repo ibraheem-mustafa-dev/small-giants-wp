@@ -148,27 +148,50 @@ export function stillAtRest( reads, id ) {
 
 const layerCount = ( el, effect, hover ) => ( ( hover ? el?.hover?.effects : el?.effects ) || [] ).filter( ( l ) => l.effect === effect ).length;
 
-// A layer's content with its id left out and its keys sorted, so two layers compare by what they draw.
-const layerKey = ( v ) => ( Array.isArray( v ) ? `[${ v.map( layerKey ).join( ',' ) }]` : v && 'object' === typeof v ? `{${ Object.keys( v ).filter( ( k ) => 'id' !== k ).sort().map( ( k ) => `${ JSON.stringify( k ) }:${ layerKey( v[ k ] ) }` ).join( ',' ) }}` : JSON.stringify( v ) );
-
-// The layer already in the list a finished layer goes to (place()'s list) that draws the same effect with the same
-// content: the same motion reached by another of the draft's code paths (one animation call that a mount, a route change
-// and a drawer opening all run), which is written once. null when there is none; a layer of the same effect with other
-// values is not the same motion and is left to the motion validator.
-export function heldLayer( doc, at, w ) {
-	const el = doc.elements[ at ];
-	const layers = ( 'hover.effects' === w.list ? el?.hover?.effects : el?.effects ) || [];
-	return layers.find( ( l ) => l.effect === w.layer.effect && layerKey( l ) === layerKey( w.layer ) ) || null;
+// The fields of a layer that differ from another layer's (its id aside), as dotted paths.
+function layerDiff( a, b, path = '' ) {
+	const keys = new Set( [ ...Object.keys( a || {} ), ...Object.keys( b || {} ) ] );
+	const out = [];
+	for ( const k of keys ) {
+		if ( '' === path && 'id' === k ) {
+			continue;
+		}
+		const [ x, y ] = [ a?.[ k ], b?.[ k ] ];
+		if ( x && y && 'object' === typeof x && 'object' === typeof y && ! Array.isArray( x ) ) {
+			out.push( ...layerDiff( x, y, `${ path }${ k }.` ) );
+		} else if ( JSON.stringify( x ) !== JSON.stringify( y ) ) {
+			out.push( `${ path }${ k }` );
+		}
+	}
+	return out;
 }
 
-// Puts a finished layer into the document where writeEffect placed it.
-function place( doc, at, w ) {
+// Puts a finished layer into the document where writeEffect placed it. An element's effect list holds each effect once
+// (the motion schema's unique-effect limit), so a layer whose effect the list already holds is not added: the layer
+// already there stands, and the return names it with the fields where the second layer differs ({ placed: false,
+// layer, differs }); otherwise { placed: true, layer }.
+export function place( doc, at, w ) {
 	const el = ( doc.elements[ at ] ||= {} );
-	if ( 'hover.effects' === w.list ) {
-		el.hover = { ...( el.hover || {} ), effects: [ ...( el.hover?.effects || [] ), w.layer ] };
-	} else {
-		el.effects = [ ...( el.effects || [] ), w.layer ];
+	const hover = 'hover.effects' === w.list;
+	const list = ( hover ? el.hover?.effects : el.effects ) || [];
+	const there = list.find( ( l ) => l.effect === w.layer.effect );
+	if ( there ) {
+		return { placed: false, layer: there, differs: layerDiff( there, w.layer ) };
 	}
+	if ( hover ) {
+		el.hover = { ...( el.hover || {} ), effects: [ ...list, w.layer ] };
+	} else {
+		el.effects = [ ...list, w.layer ];
+	}
+	return { placed: true, layer: w.layer };
+}
+
+// The row or note for a layer place() did not add: the same values are one layer shared by both records; different
+// values are a named row, because the element holds the effect once and the first record's values stand.
+export function sharedLayerRow( id, effect, p ) {
+	return p.differs.length
+		? { kind: 'unmapped', reason: `${ effect } is already on this element (layer ${ p.layer.id }), which holds it once; this record's ${ p.differs.join( ', ' ) } differ and are not written` }
+		: { kind: 'note', text: `${ effect } is already on this element with the same values (layer ${ p.layer.id }); this record shares it` };
 }
 
 // One node target's behaviours. `items`: [ { r, b } ]; `finish( effect, id )` writes and checks one effect (writeEffect,
@@ -213,15 +236,14 @@ export function applyBehaviours( { items, n, target, doc, pending, written, cont
 					refuse( r.id, `${ e.effect }: ${ w.refused }` );
 					continue;
 				}
-				const same = heldLayer( doc, w.target, w );
-				if ( same ) {
-					written.set( r.id, { at: w.target, layer: same, list: w.list, where } );
-					note( r.id, `the same ${ e.effect } as the layer already on this element (one draft animation its code reaches more than one way), written once` );
+				const p = place( doc, w.target, w );
+				pending.push( w.target );
+				written.set( r.id, { at: w.target, layer: p.layer, list: w.list, where } );
+				if ( ! p.placed ) {
+					const row = sharedLayerRow( r.id, e.effect, p );
+					'note' === row.kind ? note( r.id, row.text ) : refuse( r.id, row.reason );
 					continue;
 				}
-				place( doc, w.target, w );
-				pending.push( w.target );
-				written.set( r.id, { at: w.target, layer: w.layer, list: w.list, where } );
 				note( r.id, `${ e.effect } is written from the draft's script${ w.dropped.length ? `; no ${ e.effect } field for ${ w.dropped.join( ', ' ) }` : '' }` );
 			}
 			if ( b.hoverState ) {
