@@ -1778,7 +1778,7 @@ Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-
       "properties": { "menu": { "type": "string" }, "position": { "type": "integer" },
         "parentItem": { "type": ["string", "null"] } } } },
     "postType": { "enum": ["page", "post", "product", "product_cat", "shop", "sgs_header", "sgs_footer", "sgs_drawer",
-      "sgs_modal", "sgs_mega_menu", "sgs_form", "sgs_choice_flow", "wp_block"] },
+      "sgs_modal", "sgs_mega_menu", "sgs_form", "sgs_choice_flow", "template", "wp_block"] },
     "collection": { "enum": ["static", "live"] },
     "flags": { "type": "array", "items": { "enum": ["placeholder", "stock", "prototype-only"] } },
     "parts": { "type": "array", "items": { "type": "object", "required": ["kind", "label", "owner", "draftId"],
