@@ -32,6 +32,21 @@
 				"block": "sgs/media",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			},
+			"Home>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Home>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Home>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-shop-dc-html": {
@@ -44,6 +59,21 @@
 				"block": "sgs/media",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			},
+			"Shop>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Shop>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Shop>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-gifts-dc-html": {
@@ -56,6 +86,21 @@
 				"block": "sgs/media",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			},
+			"Gifts>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Gifts>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Gifts>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-basket-dc-html": {
@@ -83,6 +128,21 @@
 				"block": "sgs/container",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Basket>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Basket>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Basket>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-contact-dc-html": {
@@ -90,6 +150,21 @@
 				"block": "sgs/container",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Contact>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Contact>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Contact>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-help-dc-html": {
@@ -97,6 +172,21 @@
 				"block": "sgs/container",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Help>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Help>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Help>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-signin-dc-html": {
@@ -104,6 +194,21 @@
 				"block": "sgs/container",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"SignIn>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"SignIn>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"SignIn>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-account-dc-html": {
@@ -111,6 +216,21 @@
 				"block": "sgs/container",
 				"signature": "div|",
 				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Account>SiteHeader@7#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Account>SiteHeader@7#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Account>SiteHeader@7#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
 			}
 		},
 		"page-checkout-dc-html": {
@@ -135,6 +255,33 @@
 				"block": "sgs/separator",
 				"signature": "span|",
 				"reason": "Bean marked block:sgs/separator in the intake review on 2026-10-26"
+			}
+		},
+		"page-product-dc-html-id-zookies": {
+			"Product>SiteHeader@6#0/18#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Product>SiteHeader@6#0/19#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Product>SiteHeader@6#0/20#0": {
+				"remove": true,
+				"signature": "span|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Product>SiteFooter@146#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Product/148#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
 			}
 		}
 	}
