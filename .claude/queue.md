@@ -220,3 +220,5 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-26 S calibration-start local-indus (read key 42e9b83198fd from p3-calread: font-variant-numeric, clip-path, text-shadow marker, overflow and other shorthands through their longhands, text-stroke, grid-auto-rows, align-content, scrollbar-color, line-clamp; all 57 Indus blocks re-measure on the mirror; cache backed up first)
 - 2026-10-26 S deploy-start all (97fc323a6: the review fixes - text shadow layers kept, hover weight allowlisted, the layer's breakpoints from SGS_Breakpoints and one empty-layer draw rule, maxWidthPercent capped; --motion-qa-tier full)
 - 2026-10-26 S reseed-start (textShadowColourHover on sgs/text, sgs/heading, sgs/label; no build or deploy running)
+- 2026-10-26 S reseed-done (textShadowColourHover x3 checked; build 197/197)
+- 2026-10-26 S deploy-start all (text shadow hover colour and the review fixes; --motion-qa-tier full)
