@@ -183,11 +183,12 @@ export function refGate( blocks, fixtures, refs, exists, site ) {
 	return { ready, blocked };
 }
 
-// How to run `wp` on a target: a WSL mirror (its pluginDir names the distro and root) or a hosted site over SSH.
+// How to run `wp` on a target: a WSL mirror (its pluginDir names the distro and root) or a hosted site over SSH, as the
+// user Claude on both, so a command that needs a capability (setting the active header) passes on a mirror too.
 export function wpCommand( target, site, repo ) {
 	const wsl = String( target.pluginDir || '' ).match( /^\/\/wsl\.localhost\/([^/]+)(\/.+)\/wp-content\/plugins\/sgs-blocks\/?$/ );
 	if ( wsl ) {
-		return ( args, input ) => execFileSync( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args ], { encoding: 'utf8', timeout: 120000, input } );
+		return ( args, input ) => execFileSync( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input } );
 	}
 	const root = hostedRoot( site, repo );
 	const quote = ( a ) => `'${ String( a ).replace( /'/g, `'\\''` ) }'`;
