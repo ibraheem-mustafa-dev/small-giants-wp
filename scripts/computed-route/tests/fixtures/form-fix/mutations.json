@@ -1,0 +1,11 @@
+[
+ { "file": "lib/fill-form.mjs", "find": "formSchemaOf( facts, component );\n\tconst params", "replace": "formSchemaOf( facts );\n\tconst params", "why": "a form surface reads the first schema in the record again" },
+ { "file": "lib/fill-form.mjs", "find": "formSchemaOf( facts, component );\n\tconst out = {};", "replace": "formSchemaOf( facts );\n\tconst out = {};", "why": "the sources of the first schema's script are read for every form" },
+ { "file": "lib/fill-form.mjs", "find": "if ( linked.has( node ) ) {", "replace": "if ( false ) {", "why": "a linked embed is written" },
+ { "file": "lib/fill-form.mjs", "find": "walk( [ node ], ( n ) => linked.add( n ) );", "replace": "linked.add( node );", "why": "a block inside a linked embed is written" },
+ { "file": "lib/fill-form.mjs", "find": "'linked' === referenceOf( node, refs )?.kind", "replace": "false", "why": "no embed is read as linked" },
+ { "file": "lib/fill-report.mjs", "find": "...( u.checks ? { checks: u.checks } : {} ), ", "replace": "", "why": "the checks the resolver ran are dropped" },
+ { "file": "lib/fill-report.mjs", "find": "...( u.unchecked ? { unchecked: u.unchecked } : {} )", "replace": "", "why": "the unchecked list is dropped" },
+ { "file": "lib/intake-skeletons.mjs", "find": "formLinks: formLinks(), refs, db: theDb", "replace": "db: theDb", "why": "intake's propose call passes no form links" },
+ { "file": "lib/intake-skeletons.mjs", "find": "formLinksFor( { repo, client, refs } )", "replace": "[]", "why": "the links are empty" }
+]

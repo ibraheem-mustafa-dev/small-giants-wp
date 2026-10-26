@@ -12,12 +12,16 @@
 //   shows for an empty or too-long field (lib/fill-form-schema.mjs::requiredCopyOf; a field the draft gives no copy writes nothing), `valueFromParam` where a link of the draft carries the control's name
 //   as a query parameter, and `conditionalField` / `conditionalOperator` / `conditionalValue` from the draft's `show` test.
 // A form, its steps and its review step get theirs on the nodes the skeleton names as those blocks: `savedProgress`, each
-// step's `label` and the review's `intro` and Edit label. A button is `isSubmit` when the draft's is `type="submit"`.
+// step's `label` and the review's `intro` and Edit label, from the schema of the surface's own component. A button is
+// `isSubmit` when the draft's is `type="submit"`. A linked reference block (a page's `sgs/form` with `formIsLinked`) renders the
+// saved post's blocks and ignores its own settings, so nothing on it or inside it is written.
 import fs from 'node:fs';
 import path from 'node:path';
 import { setAttr } from './tree.mjs';
 import { formSchemaOf, schemaFieldOf, schemaChipsOf, conditionsFromSource, linkParams, savesProgress, requiredCopyOf, copyFor } from './fill-form-schema.mjs';
 import { parseTplKey } from './fill-skeleton.mjs';
+import { detectReferences, referenceOf } from './references.mjs';
+import { walk } from './tree.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-role:checkbox',
@@ -206,10 +210,19 @@ export function componentOf( target, candidates ) {
 
 // Fill's form pass. nodes/flat/refOf: the skeleton nodes, their tree nodes and the ref function; reads: readDraft's result;
 // facts: the fact record (or null); flags: intake's flags; db: the framework DB; source: { component: script text } for the
-// draft's conditions ({ component: script text }, see formSources). Returns { writes, unmapped, notes }.
-export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback } ) {
+// draft's conditions ({ component: script text }, see formSources); component: the surface's own component (its handoff
+// record's `dc`), whose schema is used (none named reads the first schema the record holds); refs: lib/references.mjs::detectReferences.
+// Returns { writes, unmapped, notes }.
+export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences() } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
-	const schema = formSchemaOf( facts );
+	// The nodes of every linked reference block and the blocks inside it.
+	const linked = new Set();
+	flat.forEach( ( node ) => {
+		if ( 'linked' === referenceOf( node, refs )?.kind ) {
+			walk( [ node ], ( n ) => linked.add( n ) );
+		}
+	} );
+	const schema = formSchemaOf( facts, component );
 	const params = linkParams( facts );
 	const conditions = schema ? conditionsFromSource( sources[ schema.component ] ) : {};
 	const copies = Object.fromEntries( Object.entries( sources ).map( ( [ c, src ] ) => [ c, requiredCopyOf( src ) ] ) );
@@ -218,6 +231,9 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 	let stepNo = 0;
 	for ( const rec of nodes ) {
 		const node = flat[ rec.index ];
+		if ( linked.has( node ) ) {
+			continue;
+		}
 		const ref = refOf( node );
 		const target = rec.targets.find( ( t ) => '' === t.slot );
 		const el = target ? reads.widths?.[ 1440 ]?.[ target.id ]?.form : null;
@@ -249,9 +265,10 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 }
 
 // The scripts of the draft's components that hold a form schema or required-field copy: { component: text } read from
-// `<folder>/<component>.dc.html`.
-export function formSources( folder, facts ) {
-	const schema = formSchemaOf( facts );
+// `<folder>/<component>.dc.html`. component: the surface's own component, whose schema's script is read (none named reads
+// the first schema's).
+export function formSources( folder, facts, component = null ) {
+	const schema = formSchemaOf( facts, component );
 	const out = {};
 	if ( ! folder || ! fs.existsSync( folder ) ) {
 		return out;

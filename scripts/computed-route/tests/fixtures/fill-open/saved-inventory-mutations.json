@@ -1,0 +1,8 @@
+[
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "key: served( e.key ), ", "replace": "key: e.key, ", "why": "an element key stays in intake's key space and no finder resolves" },
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "...( e.parentKey && keys.has( e.parentKey ) ? { parentKey: served( e.parentKey ) } : { parentKey: null } ), template: own( e )", "replace": "template: own( e )", "why": "parent keys are left in intake's space" },
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "rootKey: served( inv.checks.rootKey )", "replace": "rootKey: inv.checks.rootKey", "why": "the root key is not translated" },
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "String( key ).startsWith( `${ rootComponent }>` )", "replace": "false", "why": "an imported host's chain keeps the component name" },
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "template: own( e )", "replace": "template: e.template", "why": "the host name is not translated" },
+ { "file": "lib/skeleton-saved-inventory.mjs", "find": "{ parentKey: null } ), template", "replace": "{ parentKey: served( e.parentKey ) } ), template", "why": "the saved top element keeps a parent that is not in the inventory" }
+]

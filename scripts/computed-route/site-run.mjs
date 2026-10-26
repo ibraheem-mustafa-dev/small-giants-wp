@@ -22,7 +22,7 @@ import { readInventory } from './lib/skeleton-inventory.mjs';
 import { permalinkOf } from './lib/fill-route.mjs';
 import { skeletonPaths, inventoryStrips, proposeSurface } from './skeleton.mjs';
 import { routeHash, withRoute } from './lib/fill-open.mjs';
-import { servedKey, SERVED_ROOT } from './lib/key-space.mjs';
+import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
@@ -43,16 +43,6 @@ function run( cmd, args, { logFile, env = {}, cwd = REPO } ) {
 			resolve( { code, tail: lines.slice( -4 ).join( ' | ' ).slice( 0, 600 ) } );
 		} );
 	} );
-}
-
-// An inventory intake saved, in the served draft's key space: intake names the entry draft's root host after its component
-// (`<component>/<n>#<copy>`, an import's `<component>><Child>@...`), the served runtime names it `Root`, and Fill's finders resolve in the served space only.
-export function servedInventory( inv, rootComponent ) {
-	// A key of an imported component's element starts its chain with the entry component, which is `Root` when served.
-	const served = ( key ) => servedKey( rootComponent && String( key ).startsWith( `${ rootComponent }>` ) ? `${ SERVED_ROOT }${ String( key ).slice( rootComponent.length ) }` : key, rootComponent );
-	const own = ( e ) => ( e.template === rootComponent ? SERVED_ROOT : e.template );
-	const checks = inv.checks ? { ...inv.checks, ...( inv.checks.rootName === rootComponent ? { rootName: SERVED_ROOT } : {} ), ...( inv.checks.rootKey ? { rootKey: served( inv.checks.rootKey ) } : {} ) } : inv.checks;
-	return { ...inv, checks, elements: inv.elements.map( ( e ) => ( { ...e, key: served( e.key ), ...( e.parentKey ? { parentKey: served( e.parentKey ) } : {} ), template: own( e ) } ) ) };
 }
 
 // A mutex: tasks passed to `exclusive` run one after another.
@@ -153,19 +143,21 @@ export async function main( argv ) {
 		}
 		const p = skeletonPaths( { client, surface: key } );
 		const saved = path.join( build, 'intake', 'inventories', `${ entry.intakeSurface }.json` );
+		// A state-driven surface and a form (read on its page, with no root selector of its own) take the inventory intake saved.
 		const stateOnly = !! skel.root?.viaState;
-		const root = stateOnly ? null : skel.root?.tag;
-		if ( ! root && ! ( stateOnly && fs.existsSync( saved ) ) && ! fs.existsSync( p.inventory ) ) {
-			return note( key, 'inventory', false, 0, stateOnly ? `no saved intake inventory for the state-driven ${ kind } surface (${ path.relative( REPO, saved ) })` : `the intake record names no root element for a ${ kind } surface` );
+		const fromSaved = stateOnly || 'form' === kind;
+		const root = fromSaved ? null : skel.root?.tag;
+		if ( ! root && ! ( fromSaved && fs.existsSync( saved ) ) && ! fs.existsSync( p.inventory ) ) {
+			return note( key, 'inventory', false, 0, fromSaved ? `no saved intake inventory for the ${ stateOnly ? 'state-driven ' : '' }${ kind } surface (${ path.relative( REPO, saved ) })` : `the intake record names no root element for a ${ kind } surface` );
 		}
 		if ( ! await step( 'inventory', async () => {
-			if ( stateOnly ) {
+			if ( fromSaved ) {
 				const entryDraft = ( intake.inventory?.animations?.drafts || [] ).find( ( d ) => d.file === path.basename( first.draftIndex ) ) || intake.inventory?.animations?.drafts?.[ 0 ];
-				const inv = servedInventory( readJson( saved ), entryDraft?.dc ?? null );
+				const inv = stateOnly ? servedInventoryOf( readJson( saved ), entryDraft?.dc ?? null ) : savedInventoryOf( { repo: REPO, client, surface: key, surfaces, intake } );
 				fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 				fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
 ` );
-				return `${ inv.elements.length } elements (intake's inventory with the state open, in the served key space)`;
+				return `${ inv.elements.length } elements (intake's inventory${ stateOnly ? ' with the state open' : '' }, in the served key space)`;
 			}
 			const inv = await readInventory( { url: draftUrl, root, shotsDir: p.shots, strips: inventoryStrips( { client, surface: key } ) } );
 			fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
