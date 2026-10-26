@@ -51,7 +51,8 @@ export function wpBuildPage( repo, site ) {
 // was built from (when `hash` is given) and the hash of the content the site saved, so the next site build sees the copy
 // as its own and a later difference as a person's edit. The site run records each copy it builds through this.
 export function templateRecordPhp( slug, hash = null ) {
-	if ( ! /^[a-z0-9-]+$/.test( slug ) || ( null !== hash && ! /^[a-f0-9]{64}$/.test( hash ) ) ) {
+	// A template slug may hold an underscore (WooCommerce's taxonomy-product_attribute); nothing that can leave the PHP string.
+	if ( ! /^[a-z0-9_-]+$/.test( slug ) || ( null !== hash && ! /^[a-f0-9]{64}$/.test( hash ) ) ) {
 		throw new Error( `template slug "${ slug }" or hash "${ hash }" is not plain` );
 	}
 	return `<?php

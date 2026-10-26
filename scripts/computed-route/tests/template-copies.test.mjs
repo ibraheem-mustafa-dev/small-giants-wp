@@ -211,6 +211,11 @@ test( 'the site run records a copy as the site build does: the tree hash and the
 	assert.throws( () => templateRecordPhp( "page'; drop", null ), /not plain/ );
 } );
 
+// Real case: Eye Care's site run (2026-10-26) built the taxonomy-product_attribute copy and then refused to record it.
+test( 'MUST FAIL: a WooCommerce template slug with an underscore is recorded', () => {
+	assert.match( templateRecordPhp( 'taxonomy-product_attribute', 'b'.repeat( 64 ) ), /'\/\/taxonomy-product_attribute'/ );
+} );
+
 test( 'MUST FAIL: the order confirmation is read at a test order the run makes and deletes; it is pending, so no email goes out', () => {
 	const surfaces = manifest( SHOP ).entries;
 	assert.equal( needsTestOrder( surfaces, [ 'template-order-confirmation' ] ), true );
