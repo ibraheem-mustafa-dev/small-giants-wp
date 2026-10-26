@@ -4,6 +4,9 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'module';
+
+const { slottedContainers } = createRequire( import.meta.url )( '../../lib/surface-tree-shape.js' );
 
 // The layout surfaces whose trees bind a menu, built after the menus; the active pointer each one takes (part 7).
 export const LAYOUT_TYPES = { sgs_header: 'header', sgs_drawer: 'drawer', sgs_footer: 'footer' };
@@ -114,8 +117,17 @@ export function menuSurfaceKind( name, surfaces = {} ) {
 // The one-block placeholder tree a row gets until it has a stage 3 tree. A header binds its menu in a bar (whose
 // burger opens the active drawer), a drawer binds its menu (boundMenu) inside the drawer dialog; every other row is
 // its title. `menuIds` holds an entry (0 until made) for every menu the page map names.
+// A header or footer post's template locks one slotted root (`sgs/site-header`, `sgs/site-footer`) holding its rows
+// (scripts/lib/surface-tree-shape.js, read from each container's edit.js TEMPLATE), so its placeholder is that root with
+// its rows; the header's menu bar sits in its middle row.
 export function placeholderTree( row, menuIds = {} ) {
 	const kind = LAYOUT_TYPES[ row.postType ];
+	const root = `sgs/site-${ kind }`;
+	const rows = ( 'header' === kind || 'footer' === kind ) ? slottedContainers().get( root ) : null;
+	if ( rows ) {
+		const bar = { name: 'sgs/nav-bar-menu', attributes: { ref: menuIds.header || 0 } };
+		return [ { name: root, innerBlocks: rows.map( ( r ) => ( { name: r.name, attributes: { rowSlot: r.rowSlot }, innerBlocks: 'header' === kind && 'middle' === r.rowSlot ? [ bar ] : [] } ) ) } ];
+	}
 	if ( 'header' === kind ) {
 		return [ { name: 'sgs/nav-bar-menu', attributes: { ref: menuIds.header || 0 } } ];
 	}
