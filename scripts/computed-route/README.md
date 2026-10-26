@@ -192,7 +192,7 @@ Measures a rendered design draft and writes block settings through the framework
 | `lib/calibrate-read.mjs` | The in-page reader and the per-width read under each state trigger. |
 | `lib/calibrate-open.mjs` | The Open state of a calibration instance: an already-open toggle or `details[open]` is read as it is; otherwise the instance's first closed toggle whose panel sits inside it, or its first closed `<details>`, is opened, forced open when its handler cannot, and closed again after the read. |
 | `lib/calibrate-chunk.mjs` | How calibration builds a block's page in pieces: the child process's heap, the fixture's own chunk size, and halving a chunk whose build timed out. |
-| `lib/calibration-lock.mjs` | One calibration per calibration page: a per-site lock in the machine's temp folder that `calibrate.mjs` takes before building. |
+| `lib/calibration-lock.mjs` | One calibration per calibration page: a per-site lock in the machine's temp folder that `calibrate.mjs` takes before building; and one measurement of a block's library-wide slot map at a time: a per-block lock beside the slot map (`cache/<block>.slotmap.lock`) that `calibrate.mjs` takes for each block whose slot map is due. |
 | `lib/stage0.mjs` | Stage 0 library: the fixed block set, per-block slot-map state against the deployed hash and the current `READ_KEY`, the baseline and its validation, the orchestrator `runStage0` with injected effects. |
 | `lib/calibrate-container.mjs` | What a block's source says before any browser opens: whether its tiers follow its container's width (an `@container` rule in the built CSS, or a render passing `container_queries`/`container` true), and whether its render returns early on this site. |
 | `lib/calibrate-content.mjs` | The content side of calibration: which elements a setting makes appear or disappear, whose text it prints and which it makes a link — the settings that paint no CSS property, queried by framework-database `role` because `attrsFor` never returns them. |
@@ -965,8 +965,9 @@ Re-exports `MARKER_DURATION_MS` and `MARKER_EASING` from `lib/calibrate-markers.
 
 ### `lib/calibration-lock.mjs`
 - `acquireCalibrationLock(site, { blocks, dir, pid, isAlive, now })` → `{ file, release }`, or throws R-47-11 naming the run that holds the site's lock (pid, blocks, start). The file is created atomically (`wx`); a lock whose owner process is gone is taken over; a lock file still being written counts as held for 60 s. `release` removes it only while this process owns it.
-- `calibrationLockPath(site, dir)`, `processAlive(pid)`.
-- Why: two calibrations on one site build onto its one calibration page with the same `cr-ref-cal-<n>` classes, so each reads the other's blocks (2026-10-07, a mega-group run measured a nav-bar-menu root). Tests: `tests/calibration-lock.test.mjs`.
+- `acquireSlotMapLock(block, { dir, site, pid, isAlive, now })` → `{ file, release }`, or throws R-47-11 naming the run (pid, site, start) measuring the block's slot map; the same idiom as the site lock (atomic create, a dead owner taken over, 60 s for a file still being written, release only by its owner). `calibrate.mjs` takes it in the cache folder for every block whose slot map is due: a held block is that block's error and the run calibrates the rest; every lock is released at the end and on exit.
+- `calibrationLockPath(site, dir)`, `slotMapLockPath(block, dir)` (beside `lib/cache.mjs::slotMapFile`), `processAlive(pid)`.
+- Why: two calibrations on one site build onto its one calibration page with the same `cr-ref-cal-<n>` classes, so each reads the other's blocks (2026-10-07, a mega-group run measured a nav-bar-menu root); and runs on two local mirrors both re-measured the shared slot map `cache/<block>.json`. Tests: `tests/calibration-lock.test.mjs`.
 
 ### `lib/calibrate-chunk.mjs`
 - `NODE_HEAP_FLAG`, `MIN_CHUNK`: the heap flag the build child is spawned with, and the smallest chunk halving will go to.

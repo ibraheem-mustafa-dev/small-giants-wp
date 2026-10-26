@@ -29,7 +29,7 @@ import { openDb, attrsFor, enumSettings, variantInfo } from './lib/db.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { assertWritable, assertQuiet, writeTree } from './lib/tree.mjs';
-import { acquireCalibrationLock } from './lib/calibration-lock.mjs';
+import { acquireCalibrationLock, acquireSlotMapLock } from './lib/calibration-lock.mjs';
 import { slotMapSkip, paintSkip, dueOutputs, splitCalibration, writeSlotMap, writePaint, readSlotMap, slotMapWriteDecision, parseAllowLoss, refusedFile } from './lib/cache.mjs';
 import { md5, localBlockHash, remoteBlockHash } from './lib/deploy-hash.mjs';
 import { CHILD_TIMEOUT_MS, EDITOR_TIMEOUT_MS, NODE_HEAP_FLAG, needsBiggerHeap, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout } from './lib/calibrate-chunk.mjs';
@@ -355,12 +355,27 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const lock = acquireCalibrationLock( site, { blocks } );
 	process.on( 'exit', lock.release );
 	fs.mkdirSync( CACHE, { recursive: true } );
+	// One measurement of a block's slot map at a time across every site (lib/calibration-lock.mjs::acquireSlotMapLock): a
+	// block whose slot map another run is measuring is that block's error, and the rest of the run continues.
+	const slotLocks = [];
+	const held = [];
+	for ( const b of blocks.filter( ( x ) => due[ x ].slotMap ) ) {
+		try {
+			slotLocks.push( acquireSlotMapLock( b, { dir: CACHE, site } ) );
+		} catch ( e ) {
+			held.push( { block: b, error: e.message } );
+		}
+	}
+	const releaseSlotLocks = () => slotLocks.forEach( ( l ) => l.release() );
+	process.on( 'exit', releaseSlotLocks );
+	held.forEach( ( r ) => console.log( JSON.stringify( r ) ) );
+	const measured = blocks.filter( ( b ) => ! held.some( ( r ) => r.block === b ) );
 	const env = readEnv( target.envFile, target.envKey );
 	const shared = await openBrowser( site, env );
 	const ctx = { site, target, env, shared, fixtures: gate.ready, snapshot: loadSnapshot( snapFile ), rawSnapshot: JSON.parse( fs.readFileSync( snapFile, 'utf8' ) ), db: openDb(), rejectedOut: [], image: target.image || null };
-	const results = [ ...gate.blocked ];
+	const results = [ ...gate.blocked, ...held ];
 	try {
-		for ( const b of blocks ) {
+		for ( const b of measured ) {
 			// One block's failure (a page that never renders its instance, a host time-out) is that block's error; the
 			// rest of the run continues.
 			try {
@@ -376,6 +391,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const r = await build( target, empty, [ '--post-id', String( target.postId ) ] );
 		console.log( r.json?.ok ? 'calibration page emptied' : `[WARN] calibration page not emptied: ${ r.err.slice( -300 ) }` );
 		await shared.close();
+		releaseSlotLocks();
 		lock.release();
 	}
 	process.exit( results.some( ( r ) => r.error ) ? 1 : 0 );
