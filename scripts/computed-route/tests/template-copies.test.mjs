@@ -136,6 +136,8 @@ test( 'MUST FAIL: site build builds a run\'s copy file once, derives 404/search/
 	const again = planBuild( { rows: fresh( INDUS ), state: state( { templateHashes: Object.fromEntries( built.map( ( a ) => [ a.template, a.hash ] ) ), customTemplates: built.map( ( a ) => a.template ) } ), repo: repoWith( files ), client: 'c' } );
 	assert.deepEqual( again.actions.filter( ( a ) => 'template' === a.type ), [], 'a second run rebuilds nothing' );
 	assert.deepEqual( planBuild( { rows: fresh( INDUS ), state: state(), repo: repoWith(), client: 'c' } ).uncopied.map( ( u ) => u.slug ), [ 'front-page', 'home', 'page', 'single', 'archive', 'search', '404' ] );
+	const foreign = planBuild( { rows: fresh( INDUS ), state: state( { customTemplates: [ 'single' ] } ), repo: repoWith(), client: 'c' } ).uncopied.find( ( u ) => 'single' === u.slug );
+	assert.match( foreign.why, /a copy that neither the site build nor the site run made/, 'an unrecorded copy is named, never counted as the site\'s own' );
 } );
 
 test( 'a template row and an account row make no post and no page template; WooCommerce\'s pages keep their content', () => {

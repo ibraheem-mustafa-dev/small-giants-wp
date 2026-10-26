@@ -1,6 +1,6 @@
 // The site build (Spec 48 FR-48-55): every row of the confirmed sites/<client>/build/page-map.json made on one site
 // once, with its menus, front and posts page, permalinks and active header, drawer and footer.
-//   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--templates-only] [--repo <root>]
 //   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
@@ -44,6 +44,8 @@ if ( promote ) {
 }
 const mapFile = path.join( repo, 'sites', client, 'build', 'page-map.json' );
 const apply = args.includes( '--apply' );
+// --templates-only plans and runs the template copies alone (FR-48-56), leaving every post, menu and option as it is.
+const templatesOnly = args.includes( '--templates-only' );
 
 const print = ( plan ) => {
 	plan.notes.forEach( ( n ) => console.log( `note: ${ n }` ) );
@@ -83,7 +85,8 @@ try {
 			p.problems.forEach( ( m ) => console.error( `STOP ${ m }` ) );
 			throw new Error( `${ p.problems.length } problem(s); nothing was written` );
 		}
-		return withSiteOptions( p, { repo, client, runPhp } );
+		const all = withSiteOptions( p, { repo, client, runPhp } );
+		return templatesOnly ? { ...all, actions: all.actions.filter( ( a ) => 'template' === a.type ), options: all.options.filter( ( o ) => o.name.startsWith( 'sgs_site_build_templates[' ) ) } : all;
 	};
 	const first = plan();
 	print( first );
