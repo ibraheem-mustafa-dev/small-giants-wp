@@ -1,0 +1,117 @@
+{
+  "cr-ref-mega-brands-0": {
+    "tpl": "Root/95#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "125e8249",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 131
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-mega-brands-1": {
+    "tpl": "Root/96#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "465cdfa2",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 132
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-mega-brands-2": {
+    "tpl": "Root/97#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "64b4dbbe",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "2df57005",
+      "line": 133
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-mega-brands-3": {
+    "tpl": "Root/98#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "dac6219f",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 134
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-mega-brands-4": {
+    "tpl": "Root/102#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "513bd17d",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 142
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-mega-brands-5": {
+    "tpl": "Root/103#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "bc7bdf74",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "a51ff89b",
+      "line": 143
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-mega-brands-6": {
+    "tpl": "Root/104#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "4f792630",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "72ca455c",
+      "line": 144
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-mega-brands-7": {
+    "tpl": "Root/105#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scp5",
+      "styleHash": "b1894d56",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "795bc921",
+      "line": 145
+    },
+    "draft": "0fe5aee1c396a997"
+  }
+}

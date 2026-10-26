@@ -1,0 +1,2821 @@
+{
+	"generated": "2026-10-26T07:54:45.831Z",
+	"inventory": "2026-10-26T07:54:45.639Z",
+	"source": "http://127.0.0.1:60747/#/post-post-1",
+	"surface": "page-post-post-1",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 96,
+		"parts": 0,
+		"rows": 96,
+		"skeletonNodes": 49,
+		"expandedNodes": 49,
+		"low": 2,
+		"removed": 47,
+		"unresolved": 0,
+		"byRule": {
+			"hero": 1,
+			"decorationLayer": 2,
+			"decorativeShape": 3,
+			"heroInner": 6,
+			"label": 7,
+			"dotMarker": 2,
+			"solitaryIcon": 1,
+			"siteInfoLink": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/201#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_201_0@375.png",
+				"1440": "shots/Root_201_0@1440.png"
+			},
+			"snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/316#0",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/hero",
+			"action": null,
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)",
+			"source": "rule hero",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hero",
+			"handover": {
+				"owner": "content-page",
+				"kind": "presence",
+				"detail": "the hero image: choose it in the hero's split media setting"
+			},
+			"candidates": [
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_316_0@375.png",
+				"1440": "shots/Root_316_0@1440.png"
+			},
+			"snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+			"attributes": {
+				"variant": "split"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/318#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_318_0@375.png",
+				"1440": "shots/Root_318_0@1440.png"
+			},
+			"snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root/319#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorativeShape",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_319_0@375.png",
+				"1440": "shots/Root_319_0@1440.png"
+			},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 4,
+			"key": "Root/322#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_322_0@375.png",
+				"1440": "shots/Root_322_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/323#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/breadcrumbs",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/breadcrumbs",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_323_0@375.png",
+				"1440": "shots/Root_323_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root/324#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Home",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_324_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root/325#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "/",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_325_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"325\">/</span>",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/326#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Blog",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": "decision for Root/326#0 was made for \"a|About\" and the element is now \"a|Blog\"",
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_326_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+			"attributes": {
+				"label": "Blog",
+				"url": "#/blog"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/327#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "/",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_327_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"327\">/</span>",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/328#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Article",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": "decision for Root/328#0 was made for \"span|About Us\" and the element is now \"span|Article\"",
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_328_0@1440.png"
+			},
+			"snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+			"attributes": {
+				"text": "Article"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/329#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_329_0@375.png",
+				"1440": "shots/Root_329_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/330#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_330_0@375.png",
+				"1440": "shots/Root_330_0@1440.png"
+			},
+			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/331#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Blog · Seasonal",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_331_0@1440.png"
+			},
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/332#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/331#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_332_0@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root/333#0",
+			"tag": "h1",
+			"depth": 5,
+			"words": "Supporting the trade through Ramadan",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_333_0@375.png",
+				"1440": "shots/Root_333_0@1440.png"
+			},
+			"snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+			"attributes": {
+				"content": "Supporting the trade through Ramadan"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/334#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_334_0@375.png",
+				"1440": "shots/Root_334_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+			"attributes": {
+				"text": "How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year."
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/340#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_340_0@375.png",
+				"1440": "shots/Root_340_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"340\"> <div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </di",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/341#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_341_0@375.png",
+				"1440": "shots/Root_341_0@1440.png"
+			},
+			"snippet": "<div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root/342#0",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"into": "Root/316#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_342_0@375.png",
+				"1440": "shots/Root_342_0@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 20,
+			"key": "Root/344#0",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_344_0@375.png",
+				"1440": "shots/Root_344_0@1440.png"
+			},
+			"snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/345#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_345_0@375.png",
+				"1440": "shots/Root_345_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/617#0",
+			"tag": "article",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 9 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_617_0@375.png",
+				"1440": "shots/Root_617_0@1440.png"
+			},
+			"snippet": "<article style=\"max-width:740px;margin:0 auto;\" data-dc-tpl=\"617\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-bottom:22px;border-bottom:1px solid rgba(30,42,60,.12);font-size:15px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"618\"> <span style=\"font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#0A7EA8;color:#FFFFFF;padding:",
+			"attributes": {
+				"tagName": "article"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/618#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_618_0@375.png",
+				"1440": "shots/Root_618_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-bottom:22px;border-bottom:1px solid rgba(30,42,60,.12);font-size:15px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"618\"> <span style=\"font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#0A7EA8;color:#FFFFFF;padding:5px 10px;border-radius:3px;\" data-dc-tpl=\"619\">{{ b.cat }}</span> <",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/619#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Seasonal",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_619_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#0A7EA8;color:#FFFFFF;padding:5px 10px;border-radius:3px;\" data-dc-tpl=\"619\">{{ b.cat }}</span>",
+			"attributes": {
+				"text": "Seasonal"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/620#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Feb 2026",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: The post date in the article meta row; sgs/text is the only candidate."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_620_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"620\">{{ b.date }}</span>",
+			"attributes": {
+				"text": "Feb 2026"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/621#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+			"source": "rule dotMarker",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "dotMarker",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_621_0@1440.png"
+			},
+			"snippet": "<span style=\"width:4px;height:4px;border-radius:50%;background:#A3ADB7;\" data-dc-tpl=\"621\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root/622#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "2 min read",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: The reading time in the article meta row; sgs/text is the only candidate."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_622_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"622\">{{ b.readTime }}</span>",
+			"attributes": {
+				"text": "2 min read"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/623#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+			"source": "rule dotMarker",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "dotMarker",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_623_0@1440.png"
+			},
+			"snippet": "<span style=\"width:4px;height:4px;border-radius:50%;background:#A3ADB7;\" data-dc-tpl=\"623\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 29,
+			"key": "Root/624#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "By the Indus Foods team",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: The byline in the article meta row; sgs/text is the only candidate."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_624_0@375.png",
+				"1440": "shots/Root_624_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"624\">By the Indus Foods team</span>",
+			"attributes": {
+				"text": "By the Indus Foods team"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root/627#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "Ramadan is one of the busiest periods of the year for our customers. Restaurants extend their hours, caterers take on community iftars and retailers see demand for staples rise sharply.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_627_0@375.png",
+				"1440": "shots/Root_627_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:clamp(20px,1.9vw,23px);line-height:1.55;color:#2C3E50;font-weight:500;margin:32px 0 0;text-wrap:pretty;\" data-dc-tpl=\"627\">{{ c.text }}</p>",
+			"attributes": {
+				"text": "Ramadan is one of the busiest periods of the year for our customers. Restaurants extend their hours, caterers take on community iftars and retailers see demand for staples rise sharply."
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/631#0",
+			"tag": "h2",
+			"depth": 4,
+			"words": "Planning starts months ahead",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_631_0@375.png",
+				"1440": "shots/Root_631_0@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,27px);line-height:1.25;letter-spacing:-.01em;color:#2C3E50;margin:44px 0 0;text-wrap:balance;\" data-dc-tpl=\"631\">{{ c.text }}</h2>",
+			"attributes": {
+				"content": "Planning starts months ahead"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/629#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "We begin building stock of rice, flour, oils, dates and spices well before the month begins, so customers can order at normal lead times when demand peaks.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_629_0@375.png",
+				"1440": "shots/Root_629_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:18px;line-height:1.75;color:#3A4553;margin:22px 0 0;text-wrap:pretty;\" data-dc-tpl=\"629\">{{ c.text }}</p>",
+			"attributes": {
+				"text": "We begin building stock of rice, flour, oils, dates and spices well before the month begins, so customers can order at normal lead times when demand peaks."
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/629#1",
+			"tag": "p",
+			"depth": 4,
+			"words": "Account managers review last year’s volumes with each customer and agree a plan for the weeks leading up to Ramadan and Eid.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_629_1@375.png",
+				"1440": "shots/Root_629_1@1440.png"
+			},
+			"snippet": "<p style=\"font-size:18px;line-height:1.75;color:#3A4553;margin:22px 0 0;text-wrap:pretty;\" data-dc-tpl=\"629\">{{ c.text }}</p>",
+			"attributes": {
+				"text": "Account managers review last year’s volumes with each customer and agree a plan for the weeks leading up to Ramadan and Eid."
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/633#0",
+			"tag": "blockquote",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/quote",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/quote",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean marked block:sgs/quote in the intake review on 2026-10-19"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_633_0@375.png",
+				"1440": "shots/Root_633_0@1440.png"
+			},
+			"snippet": "<blockquote style=\"margin:40px 0 0;padding:28px 0;border-top:2px solid #D8CA50;border-bottom:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"633\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:800;font-size:56px;line-height:.6;height:24px;color:#0A7EA8;\" data-dc-tpl=\"634\">“</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(",
+			"attributes": {}
+		},
+		{
+			"order": 35,
+			"key": "Root/634#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "“",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_634_0@375.png",
+				"1440": "shots/Root_634_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:800;font-size:56px;line-height:.6;height:24px;color:#0A7EA8;\" data-dc-tpl=\"634\">“</span>",
+			"attributes": {}
+		},
+		{
+			"order": 36,
+			"key": "Root/635#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "The aim is simple: nobody should run short in the busiest weeks of their year.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean accepted the finaliser's pick in the intake review on 2026-10-19: The pull-quote words inside a blockquote; sgs/text is the only candidate, though the blockquote parent fits sgs/quote."
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_635_0@375.png",
+				"1440": "shots/Root_635_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(21px,2.1vw,26px);line-height:1.4;color:#2C3E50;text-wrap:pretty;\" data-dc-tpl=\"635\">{{ c.text }}</span>",
+			"attributes": {
+				"text": "The aim is simple: nobody should run short in the busiest weeks of their year."
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root/631#1",
+			"tag": "h2",
+			"depth": 4,
+			"words": "Ordering early",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_631_1@375.png",
+				"1440": "shots/Root_631_1@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,27px);line-height:1.25;letter-spacing:-.01em;color:#2C3E50;margin:44px 0 0;text-wrap:balance;\" data-dc-tpl=\"631\">{{ c.text }}</h2>",
+			"attributes": {
+				"content": "Ordering early"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root/629#2",
+			"tag": "p",
+			"depth": 4,
+			"words": "If you’d like to plan your Ramadan orders, speak to your account manager or call our sales team on 0121 771 4330.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_629_2@375.png",
+				"1440": "shots/Root_629_2@1440.png"
+			},
+			"snippet": "<p style=\"font-size:18px;line-height:1.75;color:#3A4553;margin:22px 0 0;text-wrap:pretty;\" data-dc-tpl=\"629\">{{ c.text }}</p>",
+			"attributes": {
+				"text": "If you’d like to plan your Ramadan orders, speak to your account manager or call our sales team on 0121 771 4330."
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/636#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_636_0@375.png",
+				"1440": "shots/Root_636_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;margin-top:48px;padding-top:24px;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"636\"> <a href=\"#/blog\" style=\"display:inline-flex;align-items:center;gap:10px;color:#1E2A3C;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:4px;transition:color .2s,gap .2s;\" style-hov",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 40,
+			"key": "Root/637#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "All articles",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_637_0@1440.png"
+			},
+			"snippet": "<a href=\"#/blog\" style=\"display:inline-flex;align-items:center;gap:10px;color:#1E2A3C;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:4px;transition:color .2s,gap .2s;\" style-hover=\"color:#0A7EA8;gap:14px\" data-dc-tpl=\"637\"><span style=\"display:flex;transform:rotate(180deg);\" data-dc-tpl=\"638\">{{ arrowIcon }}</span> All articles</a>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 41,
+			"key": "Root/638#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_638_0@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;transform:rotate(180deg);\" data-dc-tpl=\"638\">{{ arrowIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 42,
+			"key": "Root/639#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Ask our team",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_639_0@375.png",
+				"1440": "shots/Root_639_0@1440.png"
+			},
+			"snippet": "<a href=\"#/contact\" style=\"display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;font-weight:700;font-size:16px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#FFFFFF\" d",
+			"attributes": {
+				"label": "Ask our team",
+				"url": "#/contact"
+			}
+		},
+		{
+			"order": 43,
+			"key": "Root/344#1",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_344_1@375.png",
+				"1440": "shots/Root_344_1@1440.png"
+			},
+			"snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 44,
+			"key": "Root/345#1",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_345_1@375.png",
+				"1440": "shots/Root_345_1@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root/347#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_347_0@375.png",
+				"1440": "shots/Root_347_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-si",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root/348#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_348_0@375.png",
+				"1440": "shots/Root_348_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2p",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 47,
+			"key": "Root/350#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Keep reading",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_350_0@375.png",
+				"1440": "shots/Root_350_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>{{ b.eyebrow }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 48,
+			"key": "Root/351#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/350#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_351_0@1440.png"
+			},
+			"snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 49,
+			"key": "Root/352#0",
+			"tag": "h2",
+			"depth": 5,
+			"words": "More from the blog.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_352_0@375.png",
+				"1440": "shots/Root_352_0@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"352\">{{ b.title }}</h2>",
+			"attributes": {
+				"content": "More from the blog."
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root/356#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "All articles",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_356_0@375.png",
+				"1440": "shots/Root_356_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ b.headLink.href }}\" style=\"display:inline-flex;align-items:center;gap:8px;color:#1E2A3C;font-weight:700;font-size:15px;border-bottom:2px solid var(--acc,#D8CA50);padding-bottom:4px;transition:color .2s,gap .2s;\" style-hover=\"color:#0A7EA8;gap:12px\" data-dc-tpl=\"356\">{{ b.headLink.label }} {{ arrowIcon }}</a>",
+			"attributes": {
+				"label": "All articles",
+				"url": "#/blog"
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root/604#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/post-grid",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/post-grid",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean marked block:sgs/post-grid in the intake review on 2026-10-19"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_604_0@375.png",
+				"1440": "shots/Root_604_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;\" data-dc-tpl=\"604\"> <sc-for list=\"{{ b.posts }}\" as=\"p\" hint-placeholder-count=\"6\" data-dc-tpl=\"605\"> <a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezi",
+			"attributes": {
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root/606#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_606_0@375.png",
+				"1440": "shots/Root_606_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);color:#1E2A3C\" data-dc-tpl=\"606\"> <div style=\"height:210px;background:#EA",
+			"attributes": {}
+		},
+		{
+			"order": 53,
+			"key": "Root/607#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_607_0@375.png",
+				"1440": "shots/Root_607_0@1440.png"
+			},
+			"snippet": "<div style=\"height:210px;background:#EAF4F7;\" data-dc-tpl=\"607\"> <image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 54,
+			"key": "Root/608#0",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_608_0@375.png",
+				"1440": "shots/Root_608_0@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 55,
+			"key": "Root/609#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_609_0@375.png",
+				"1440": "shots/Root_609_0@1440.png"
+			},
+			"snippet": "<div style=\"padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;\" data-dc-tpl=\"609\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> ",
+			"attributes": {}
+		},
+		{
+			"order": 56,
+			"key": "Root/610#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_610_0@375.png",
+				"1440": "shots/Root_610_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> <span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em",
+			"attributes": {}
+		},
+		{
+			"order": 57,
+			"key": "Root/611#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Products",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_611_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 58,
+			"key": "Root/612#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Jan 2026",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_612_0@375.png",
+				"1440": "shots/Root_612_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em;font-weight:700;\" data-dc-tpl=\"612\">{{ p.date }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 59,
+			"key": "Root/613#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "Falak rice: exclusive UK distribution",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_613_0@375.png",
+				"1440": "shots/Root_613_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;color:inherit;letter-spacing:-.02em;line-height:1.25;margin-top:16px;\" data-dc-tpl=\"613\">{{ p.title }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 60,
+			"key": "Root/614#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "Why the popular Pakistani rice brand chose Indus Foods as its UK distribution partner.",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_614_0@375.png",
+				"1440": "shots/Root_614_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;margin-top:8px;flex:1;\" data-dc-tpl=\"614\">{{ p.excerpt }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 61,
+			"key": "Root/615#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Read article",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_615_0@375.png",
+				"1440": "shots/Root_615_0@1440.png"
+			},
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:14.5px;color:#0A7EA8;\" data-dc-tpl=\"615\">Read article {{ arrowIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 62,
+			"key": "Root/606#1",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_606_1@375.png",
+				"1440": "shots/Root_606_1@1440.png"
+			},
+			"snippet": "<a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);color:#1E2A3C\" data-dc-tpl=\"606\"> <div style=\"height:210px;background:#EA",
+			"attributes": {}
+		},
+		{
+			"order": 63,
+			"key": "Root/607#1",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_607_1@375.png",
+				"1440": "shots/Root_607_1@1440.png"
+			},
+			"snippet": "<div style=\"height:210px;background:#EAF4F7;\" data-dc-tpl=\"607\"> <image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 64,
+			"key": "Root/608#1",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_608_1@375.png",
+				"1440": "shots/Root_608_1@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 65,
+			"key": "Root/609#1",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_609_1@375.png",
+				"1440": "shots/Root_609_1@1440.png"
+			},
+			"snippet": "<div style=\"padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;\" data-dc-tpl=\"609\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> ",
+			"attributes": {}
+		},
+		{
+			"order": 66,
+			"key": "Root/610#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_610_1@375.png",
+				"1440": "shots/Root_610_1@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> <span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em",
+			"attributes": {}
+		},
+		{
+			"order": 67,
+			"key": "Root/611#1",
+			"tag": "span",
+			"depth": 7,
+			"words": "Company news",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_611_1@1440.png"
+			},
+			"snippet": "<span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 68,
+			"key": "Root/612#1",
+			"tag": "span",
+			"depth": 7,
+			"words": "Dec 2025",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_612_1@375.png",
+				"1440": "shots/Root_612_1@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em;font-weight:700;\" data-dc-tpl=\"612\">{{ p.date }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 69,
+			"key": "Root/613#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "Inside our Birmingham packing line",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_613_1@375.png",
+				"1440": "shots/Root_613_1@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;color:inherit;letter-spacing:-.02em;line-height:1.25;margin-top:16px;\" data-dc-tpl=\"613\">{{ p.title }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 70,
+			"key": "Root/614#1",
+			"tag": "div",
+			"depth": 6,
+			"words": "The processing and packaging line we set up in the 1970s still packs our own-brand ranges today.",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_614_1@375.png",
+				"1440": "shots/Root_614_1@1440.png"
+			},
+			"snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;margin-top:8px;flex:1;\" data-dc-tpl=\"614\">{{ p.excerpt }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 71,
+			"key": "Root/615#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "Read article",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_615_1@375.png",
+				"1440": "shots/Root_615_1@1440.png"
+			},
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:14.5px;color:#0A7EA8;\" data-dc-tpl=\"615\">Read article {{ arrowIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 72,
+			"key": "Root/606#2",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_606_2@375.png",
+				"1440": "shots/Root_606_2@1440.png"
+			},
+			"snippet": "<a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);color:#1E2A3C\" data-dc-tpl=\"606\"> <div style=\"height:210px;background:#EA",
+			"attributes": {}
+		},
+		{
+			"order": 73,
+			"key": "Root/607#2",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_607_2@375.png",
+				"1440": "shots/Root_607_2@1440.png"
+			},
+			"snippet": "<div style=\"height:210px;background:#EAF4F7;\" data-dc-tpl=\"607\"> <image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 74,
+			"key": "Root/608#2",
+			"tag": "image-slot",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_608_2@375.png",
+				"1440": "shots/Root_608_2@1440.png"
+			},
+			"snippet": "<image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 75,
+			"key": "Root/609#2",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_609_2@375.png",
+				"1440": "shots/Root_609_2@1440.png"
+			},
+			"snippet": "<div style=\"padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;\" data-dc-tpl=\"609\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> ",
+			"attributes": {}
+		},
+		{
+			"order": 76,
+			"key": "Root/610#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_610_2@375.png",
+				"1440": "shots/Root_610_2@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> <span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em",
+			"attributes": {}
+		},
+		{
+			"order": 77,
+			"key": "Root/611#2",
+			"tag": "span",
+			"depth": 7,
+			"words": "Company news",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_611_2@1440.png"
+			},
+			"snippet": "<span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 78,
+			"key": "Root/612#2",
+			"tag": "span",
+			"depth": 7,
+			"words": "Nov 2025",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_612_2@375.png",
+				"1440": "shots/Root_612_2@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em;font-weight:700;\" data-dc-tpl=\"612\">{{ p.date }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 79,
+			"key": "Root/613#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "Sixty years in the Balti Triangle",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_613_2@375.png",
+				"1440": "shots/Root_613_2@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;color:inherit;letter-spacing:-.02em;line-height:1.25;margin-top:16px;\" data-dc-tpl=\"613\">{{ p.title }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 80,
+			"key": "Root/614#2",
+			"tag": "div",
+			"depth": 6,
+			"words": "From a halal butcher on Ladypool Road to a national wholesaler: a short history of Indus Foods.",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_614_2@375.png",
+				"1440": "shots/Root_614_2@1440.png"
+			},
+			"snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;margin-top:8px;flex:1;\" data-dc-tpl=\"614\">{{ p.excerpt }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 81,
+			"key": "Root/615#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "Read article",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/606#2)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_615_2@375.png",
+				"1440": "shots/Root_615_2@1440.png"
+			},
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:14.5px;color:#0A7EA8;\" data-dc-tpl=\"615\">Read article {{ arrowIcon }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 82,
+			"key": "Root/344#2",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_344_2@375.png",
+				"1440": "shots/Root_344_2@1440.png"
+			},
+			"snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 83,
+			"key": "Root/345#2",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_345_2@375.png",
+				"1440": "shots/Root_345_2@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 84,
+			"key": "Root/515#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_515_0@375.png",
+				"1440": "shots/Root_515_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(135deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);color:#FFFFFF;padding:{{ R.ctaPad }};display:grid;grid-template-columns:{{ R.ctaCols }};gap:30px;align-items:center;\" data-dc-tpl=\"515\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 85,
+			"key": "Root/516#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorativeShape",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_516_0@375.png",
+				"1440": "shots/Root_516_0@1440.png"
+			},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 86,
+			"key": "Root/517#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorativeShape",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_517_0@375.png",
+				"1440": "shots/Root_517_0@1440.png"
+			},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 87,
+			"key": "Root/518#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_518_0@375.png",
+				"1440": "shots/Root_518_0@1440.png"
+			},
+			"snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"518\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 88,
+			"key": "Root/519#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_519_0@375.png",
+				"1440": "shots/Root_519_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"519\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 89,
+			"key": "Root/520#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Trade accounts",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_520_0@375.png",
+				"1440": "shots/Root_520_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText }}</div>",
+			"attributes": {}
+		},
+		{
+			"order": 90,
+			"key": "Root/521#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/520#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_521_0@1440.png"
+			},
+			"snippet": "<span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 91,
+			"key": "Root/522#0",
+			"tag": "h2",
+			"depth": 5,
+			"words": "Open a trade account today.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_522_0@375.png",
+				"1440": "shots/Root_522_0@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,48px);line-height:1.06;letter-spacing:-.015em;margin:0;text-wrap:balance;\" data-dc-tpl=\"522\">{{ b.title }}</h2>",
+			"attributes": {
+				"content": "Open a trade account today."
+			}
+		},
+		{
+			"order": 92,
+			"key": "Root/523#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "Wholesale pricing, a named account manager and delivery across the UK and Europe.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_523_0@375.png",
+				"1440": "shots/Root_523_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:17px;color:#E3EFF4;line-height:1.6;margin:16px 0 0;max-width:560px;text-wrap:pretty;\" data-dc-tpl=\"523\">{{ b.body }}</p>",
+			"attributes": {
+				"text": "Wholesale pricing, a named account manager and delivery across the UK and Europe."
+			}
+		},
+		{
+			"order": 93,
+			"key": "Root/524#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_524_0@375.png",
+				"1440": "shots/Root_524_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;justify-content:{{ R.ctaJustify }};\" data-dc-tpl=\"524\"> <a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transiti",
+			"attributes": {
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 94,
+			"key": "Root/525#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Become a Trade Customer",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_525_0@375.png",
+				"1440": "shots/Root_525_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
+			"attributes": {
+				"label": "Become a Trade Customer",
+				"url": "#/apply"
+			}
+		},
+		{
+			"order": 95,
+			"key": "Root/526#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "Call 0121 771 4330",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_526_0@375.png",
+				"1440": "shots/Root_526_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ b.secondary.href }}\" style=\"white-space:nowrap;color:#FFFFFF;font-weight:700;font-size:15.5px;border-bottom:2px solid #D8CA50;padding-bottom:4px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"526\">{{ b.secondary.label }}</a>",
+			"attributes": {
+				"label": "Call 0121 771 4330",
+				"url": "tel:01217714330",
+				"linkSource": "phone"
+			}
+		}
+	]
+}

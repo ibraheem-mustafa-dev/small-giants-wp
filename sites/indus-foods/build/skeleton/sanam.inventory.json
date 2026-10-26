@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-25T09:50:11.675Z",
-  "source": "http://127.0.0.1:53375/#/brand-sanam",
+  "generated": "2026-10-26T06:58:55.462Z",
+  "source": "http://127.0.0.1:60747/#/brand-sanam",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -518,22 +518,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
       "box": {
         "375": {
-          "x": 31,
-          "y": 693.1,
-          "w": 481.3,
-          "h": 481.3
+          "x": 20.1,
+          "y": 684.6,
+          "w": 484.6,
+          "h": 484.6
         },
         "768": {
-          "x": 395.3,
-          "y": 837.6,
-          "w": 511.4,
-          "h": 511.4
+          "x": 424.1,
+          "y": 866.1,
+          "w": 475.8,
+          "h": 475.8
         },
         "1440": {
-          "x": 1090.5,
-          "y": 444.3,
-          "w": 483.2,
-          "h": 483.2
+          "x": 1094.6,
+          "y": 423.1,
+          "w": 484,
+          "h": 484
         }
       },
       "visible": {
@@ -7357,22 +7357,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
       "box": {
         "375": {
-          "x": 95.5,
-          "y": 2898.8,
-          "w": 354.2,
-          "h": 354.2
+          "x": 93.6,
+          "y": 2901.9,
+          "w": 369.2,
+          "h": 369.2
         },
         "768": {
-          "x": 467.7,
-          "y": 2336.1,
-          "w": 365.7,
-          "h": 365.7
+          "x": 485.1,
+          "y": 2340.5,
+          "w": 365.2,
+          "h": 365.2
         },
         "1440": {
-          "x": 1070.9,
-          "y": 1871.1,
-          "w": 368.3,
-          "h": 368.3
+          "x": 1089.1,
+          "y": 1893,
+          "w": 369.8,
+          "h": 369.8
         }
       },
       "visible": {
@@ -7425,22 +7425,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
       "box": {
         "375": {
-          "x": 152.5,
-          "y": 2955.5,
-          "w": 161.1,
-          "h": 161.1
+          "x": 159,
+          "y": 2970.5,
+          "w": 155.1,
+          "h": 155.1
         },
         "768": {
-          "x": 546.6,
-          "y": 2421.2,
-          "w": 150.7,
-          "h": 150.7
+          "x": 540.3,
+          "y": 2411.5,
+          "w": 159.1,
+          "h": 159.1
         },
         "1440": {
-          "x": 1157.6,
-          "y": 1947.9,
-          "w": 161.5,
-          "h": 161.5
+          "x": 1149.7,
+          "y": 1968.2,
+          "w": 156.7,
+          "h": 156.7
         }
       },
       "visible": {

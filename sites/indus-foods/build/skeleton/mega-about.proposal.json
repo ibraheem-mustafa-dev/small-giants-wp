@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-25T09:30:46.650Z",
+	"generated": "2026-10-26T05:45:20.484Z",
 	"inventory": "2026-10-23T19:43:20.373Z",
 	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "about-mega-menu",
@@ -44,7 +44,7 @@
 	"rows": [
 		{
 			"order": 0,
-			"key": "Indus Foods Website v2/67#0",
+			"key": "Root/67#0",
 			"tag": "div",
 			"depth": 0,
 			"words": "",
@@ -79,7 +79,7 @@
 		},
 		{
 			"order": 1,
-			"key": "Indus Foods Website v2/68#0",
+			"key": "Root/68#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
@@ -114,7 +114,7 @@
 		},
 		{
 			"order": 2,
-			"key": "Indus Foods Website v2/70#0",
+			"key": "Root/70#0",
 			"tag": "a",
 			"depth": 2,
 			"words": "",
@@ -153,7 +153,7 @@
 		},
 		{
 			"order": 3,
-			"key": "Indus Foods Website v2/71#0",
+			"key": "Root/71#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "01",
@@ -190,7 +190,7 @@
 		},
 		{
 			"order": 4,
-			"key": "Indus Foods Website v2/72#0",
+			"key": "Root/72#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "",
@@ -228,7 +228,7 @@
 		},
 		{
 			"order": 5,
-			"key": "Indus Foods Website v2/73#0",
+			"key": "Root/73#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "Our Story",
@@ -265,7 +265,7 @@
 		},
 		{
 			"order": 6,
-			"key": "Indus Foods Website v2/74#0",
+			"key": "Root/74#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "Six decades of family heritage",
@@ -302,7 +302,7 @@
 		},
 		{
 			"order": 7,
-			"key": "Indus Foods Website v2/70#1",
+			"key": "Root/70#1",
 			"tag": "a",
 			"depth": 2,
 			"words": "",
@@ -341,7 +341,7 @@
 		},
 		{
 			"order": 8,
-			"key": "Indus Foods Website v2/71#1",
+			"key": "Root/71#1",
 			"tag": "span",
 			"depth": 3,
 			"words": "02",
@@ -378,7 +378,7 @@
 		},
 		{
 			"order": 9,
-			"key": "Indus Foods Website v2/72#1",
+			"key": "Root/72#1",
 			"tag": "span",
 			"depth": 3,
 			"words": "",
@@ -416,7 +416,7 @@
 		},
 		{
 			"order": 10,
-			"key": "Indus Foods Website v2/73#1",
+			"key": "Root/73#1",
 			"tag": "span",
 			"depth": 4,
 			"words": "Certifications",
@@ -453,7 +453,7 @@
 		},
 		{
 			"order": 11,
-			"key": "Indus Foods Website v2/74#1",
+			"key": "Root/74#1",
 			"tag": "span",
 			"depth": 4,
 			"words": "BRC & Halal certified",
@@ -490,7 +490,7 @@
 		},
 		{
 			"order": 12,
-			"key": "Indus Foods Website v2/70#2",
+			"key": "Root/70#2",
 			"tag": "a",
 			"depth": 2,
 			"words": "",
@@ -529,7 +529,7 @@
 		},
 		{
 			"order": 13,
-			"key": "Indus Foods Website v2/71#2",
+			"key": "Root/71#2",
 			"tag": "span",
 			"depth": 3,
 			"words": "03",
@@ -566,7 +566,7 @@
 		},
 		{
 			"order": 14,
-			"key": "Indus Foods Website v2/72#2",
+			"key": "Root/72#2",
 			"tag": "span",
 			"depth": 3,
 			"words": "",
@@ -604,7 +604,7 @@
 		},
 		{
 			"order": 15,
-			"key": "Indus Foods Website v2/73#2",
+			"key": "Root/73#2",
 			"tag": "span",
 			"depth": 4,
 			"words": "Community & Charity",
@@ -641,7 +641,7 @@
 		},
 		{
 			"order": 16,
-			"key": "Indus Foods Website v2/74#2",
+			"key": "Root/74#2",
 			"tag": "span",
 			"depth": 4,
 			"words": "Giving back in Birmingham",
@@ -678,7 +678,7 @@
 		},
 		{
 			"order": 17,
-			"key": "Indus Foods Website v2/70#3",
+			"key": "Root/70#3",
 			"tag": "a",
 			"depth": 2,
 			"words": "",
@@ -717,7 +717,7 @@
 		},
 		{
 			"order": 18,
-			"key": "Indus Foods Website v2/71#3",
+			"key": "Root/71#3",
 			"tag": "span",
 			"depth": 3,
 			"words": "04",
@@ -754,7 +754,7 @@
 		},
 		{
 			"order": 19,
-			"key": "Indus Foods Website v2/72#3",
+			"key": "Root/72#3",
 			"tag": "span",
 			"depth": 3,
 			"words": "",
@@ -792,7 +792,7 @@
 		},
 		{
 			"order": 20,
-			"key": "Indus Foods Website v2/73#3",
+			"key": "Root/73#3",
 			"tag": "span",
 			"depth": 4,
 			"words": "Sustainability",
@@ -829,7 +829,7 @@
 		},
 		{
 			"order": 21,
-			"key": "Indus Foods Website v2/74#3",
+			"key": "Root/74#3",
 			"tag": "span",
 			"depth": 4,
 			"words": "Responsible sourcing",
@@ -866,7 +866,7 @@
 		},
 		{
 			"order": 22,
-			"key": "Indus Foods Website v2/70#4",
+			"key": "Root/70#4",
 			"tag": "a",
 			"depth": 2,
 			"words": "",
@@ -905,7 +905,7 @@
 		},
 		{
 			"order": 23,
-			"key": "Indus Foods Website v2/71#4",
+			"key": "Root/71#4",
 			"tag": "span",
 			"depth": 3,
 			"words": "05",
@@ -942,7 +942,7 @@
 		},
 		{
 			"order": 24,
-			"key": "Indus Foods Website v2/72#4",
+			"key": "Root/72#4",
 			"tag": "span",
 			"depth": 3,
 			"words": "",
@@ -980,7 +980,7 @@
 		},
 		{
 			"order": 25,
-			"key": "Indus Foods Website v2/73#4",
+			"key": "Root/73#4",
 			"tag": "span",
 			"depth": 4,
 			"words": "Careers",
@@ -1017,7 +1017,7 @@
 		},
 		{
 			"order": 26,
-			"key": "Indus Foods Website v2/74#4",
+			"key": "Root/74#4",
 			"tag": "span",
 			"depth": 4,
 			"words": "Join our growing team",
@@ -1054,7 +1054,7 @@
 		},
 		{
 			"order": 27,
-			"key": "Indus Foods Website v2/70#5",
+			"key": "Root/70#5",
 			"tag": "a",
 			"depth": 2,
 			"words": "",
@@ -1093,7 +1093,7 @@
 		},
 		{
 			"order": 28,
-			"key": "Indus Foods Website v2/71#5",
+			"key": "Root/71#5",
 			"tag": "span",
 			"depth": 3,
 			"words": "06",
@@ -1130,7 +1130,7 @@
 		},
 		{
 			"order": 29,
-			"key": "Indus Foods Website v2/72#5",
+			"key": "Root/72#5",
 			"tag": "span",
 			"depth": 3,
 			"words": "",
@@ -1168,7 +1168,7 @@
 		},
 		{
 			"order": 30,
-			"key": "Indus Foods Website v2/73#5",
+			"key": "Root/73#5",
 			"tag": "span",
 			"depth": 4,
 			"words": "News & Blog",
@@ -1205,7 +1205,7 @@
 		},
 		{
 			"order": 31,
-			"key": "Indus Foods Website v2/74#5",
+			"key": "Root/74#5",
 			"tag": "span",
 			"depth": 4,
 			"words": "Updates, recipes and trade news",
@@ -1242,7 +1242,7 @@
 		},
 		{
 			"order": 32,
-			"key": "Indus Foods Website v2/76#0",
+			"key": "Root/76#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
@@ -1277,7 +1277,7 @@
 		},
 		{
 			"order": 33,
-			"key": "Indus Foods Website v2/77#0",
+			"key": "Root/77#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -1315,7 +1315,7 @@
 		},
 		{
 			"order": 34,
-			"key": "Indus Foods Website v2/78#0",
+			"key": "Root/78#0",
 			"tag": "image-slot",
 			"depth": 3,
 			"words": "",
@@ -1350,7 +1350,7 @@
 		},
 		{
 			"order": 35,
-			"key": "Indus Foods Website v2/79#0",
+			"key": "Root/79#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -1388,7 +1388,7 @@
 		},
 		{
 			"order": 36,
-			"key": "Indus Foods Website v2/80#0",
+			"key": "Root/80#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Since 1962",
@@ -1425,7 +1425,7 @@
 		},
 		{
 			"order": 37,
-			"key": "Indus Foods Website v2/81#0",
+			"key": "Root/81#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "Six decades of heritage",
@@ -1462,7 +1462,7 @@
 		},
 		{
 			"order": 38,
-			"key": "Indus Foods Website v2/82#0",
+			"key": "Root/82#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers.",
@@ -1499,7 +1499,7 @@
 		},
 		{
 			"order": 39,
-			"key": "Indus Foods Website v2/83#0",
+			"key": "Root/83#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Read our story",

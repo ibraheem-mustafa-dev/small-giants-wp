@@ -461,7 +461,7 @@
 										"draftFingerprint": {
 											"tag": "div",
 											"cls": "",
-											"styleHash": "eb8ff691",
+											"styleHash": "94bba882",
 											"parentTags": [
 												"footer",
 												"div",
@@ -536,7 +536,7 @@
 										"draftFingerprint": {
 											"tag": "div",
 											"cls": "",
-											"styleHash": "94bba882",
+											"styleHash": "eb8ff691",
 											"parentTags": [
 												"footer",
 												"div",
@@ -552,9 +552,9 @@
 								]
 							},
 							{
-								"name": "sgs/text",
+								"name": "sgs/business-info",
 								"attributes": {
-									"text": "Opens tomorrow at 9:30am"
+									"displayType": "open-status"
 								},
 								"draftRef": {
 									"tpl": "Root/680#0"
@@ -569,7 +569,7 @@
 										"div",
 										"div"
 									],
-									"textHash": "1a48063a",
+									"textHash": "2210ee1b",
 									"line": 962
 								},
 								"innerBlocks": []

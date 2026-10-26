@@ -1,0 +1,2170 @@
+{
+  "generated": "2026-10-23T19:44:14.789Z",
+  "source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+  "root": "[data-sgs-skeleton-root=\"sectors-mega-menu\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/85#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Food Service"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Quality ingredients for venues, caterers & events across the"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Explore Food Service"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Manufacturing"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "High-quality, healthy & delicious food products at scale."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Explore Manufacturing"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Retail"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Retail-ready packaging for independent & national retailers."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Explore Retail"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Wholesale"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Reliable stock levels & fast delivery across the whole of th"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Explore Wholesale"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 29,
+      "768": 29,
+      "1440": 29
+    },
+    "tagAgree": 29,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/85#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 85,
+      "attrs": {
+        "style": "padding: 28px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; background: linear-gradient(120deg, rgb(235, 221, 120) 0%, rgb(231, 215, 104) 24%, rgb(216, 202, 80) 46%, rgb(46, 173, 226) 76%, rgb(10, 126, 168) 100%);"
+      },
+      "words": "",
+      "allText": "Food Service Quality ingredients for venues, caterers & events across the UK. Explore Food Service Manufacturing High-qu",
+      "srcLine": 114,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;background:linear-gradient(120deg,#EBDD78 0%,#E7D768 24%,#D8CA50 46%,#2EADE2 76%,#0A7EA8 100%);\" data-dc-tpl=\"85\"> <sc-for list=\"{{ activePanel.cards }}\" as=\"card\" hint-placeholder-count=\"4\" data-dc-tpl=\"86\"> <a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-s",
+      "box": {
+        "375": {
+          "x": 181,
+          "y": 146,
+          "w": 1078,
+          "h": 357.7
+        },
+        "768": {
+          "x": 181,
+          "y": 146,
+          "w": 1078,
+          "h": 357.7
+        },
+        "1440": {
+          "x": 181,
+          "y": 146,
+          "w": 1078,
+          "h": 357.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#0",
+      "parentKey": "Root/85#0",
+      "depth": 1,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "href": "#/food-service",
+        "class": "scp6",
+        "style": "border-radius: 18px; padding: 18px; border: 2px solid rgb(231, 215, 104); box-shadow: rgba(20, 30, 45, 0.55) 0px 14px 30px -18px; background: linear-gradient(rgb(231, 215, 102) 0%, rgb(216, 202, 80) 100%); color: rgb(44, 62, 80); display: flex; flex-direction: column; transition: transform 0.25s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.3s; min-height: 270px;"
+      },
+      "words": "",
+      "allText": "Food Service Quality ingredients for venues, caterers & events across the UK. Explore Food Service",
+      "srcLine": 116,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+      "box": {
+        "375": {
+          "x": 209,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "768": {
+          "x": 209,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "1440": {
+          "x": 209,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#0",
+      "parentKey": "Root/87#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "border-radius: 12px; overflow: hidden; height: 110px; background: rgba(255, 255, 255, 0.3);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 117,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 229,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 229,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 229,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/89#0",
+      "parentKey": "Root/88#0",
+      "depth": 3,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 89,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 118,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 229,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 229,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 229,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/90#0",
+      "parentKey": "Root/87#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 90,
+      "attrs": {
+        "style": "margin-top: 16px; flex: 1 1 0%; display: flex; flex-direction: column;"
+      },
+      "words": "",
+      "allText": "Food Service Quality ingredients for venues, caterers & events across the UK. Explore Food Service",
+      "srcLine": 120,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+      "box": {
+        "375": {
+          "x": 229,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "768": {
+          "x": 229,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "1440": {
+          "x": 229,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/91#0",
+      "parentKey": "Root/90#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 91,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 19px; letter-spacing: -0.01em;"
+      },
+      "words": "Food Service",
+      "allText": "Food Service",
+      "srcLine": 121,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.label }}",
+      "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+      "box": {
+        "375": {
+          "x": 229,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "768": {
+          "x": 229,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 229,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/92#0",
+      "parentKey": "Root/90#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 92,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(44, 62, 80); line-height: 1.4; margin-top: 6px; flex: 1 1 0%;"
+      },
+      "words": "Quality ingredients for venues, caterers & events across the UK.",
+      "allText": "Quality ingredients for venues, caterers & events across the UK.",
+      "srcLine": 122,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 229,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "768": {
+          "x": 229,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "1440": {
+          "x": 229,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/93#0",
+      "parentKey": "Root/90#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 93,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Explore Food Service",
+      "allText": "Explore Food Service",
+      "srcLine": 123,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
+      "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+      "box": {
+        "375": {
+          "x": 229,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "768": {
+          "x": 229,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 229,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#1",
+      "parentKey": "Root/85#0",
+      "depth": 1,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "href": "#/manufacturing",
+        "class": "scp6",
+        "style": "border-radius: 18px; padding: 18px; border: 2px solid rgb(231, 215, 104); box-shadow: rgba(20, 30, 45, 0.55) 0px 14px 30px -18px; background: linear-gradient(to left bottom, rgb(46, 173, 226) 0%, rgb(216, 202, 80) 100%); color: rgb(44, 62, 80); display: flex; flex-direction: column; transition: transform 0.25s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.3s; min-height: 270px;"
+      },
+      "words": "",
+      "allText": "Manufacturing High-quality, healthy & delicious food products at scale. Explore Manufacturing",
+      "srcLine": 116,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+      "box": {
+        "375": {
+          "x": 468,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "768": {
+          "x": 468,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "1440": {
+          "x": 468,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#1",
+      "parentKey": "Root/87#1",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "border-radius: 12px; overflow: hidden; height: 110px; background: rgba(255, 255, 255, 0.3);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 117,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 488,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 488,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 488,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/89#1",
+      "parentKey": "Root/88#1",
+      "depth": 3,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 89,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 118,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 488,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 488,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 488,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/90#1",
+      "parentKey": "Root/87#1",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 90,
+      "attrs": {
+        "style": "margin-top: 16px; flex: 1 1 0%; display: flex; flex-direction: column;"
+      },
+      "words": "",
+      "allText": "Manufacturing High-quality, healthy & delicious food products at scale. Explore Manufacturing",
+      "srcLine": 120,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+      "box": {
+        "375": {
+          "x": 488,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "768": {
+          "x": 488,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "1440": {
+          "x": 488,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/91#1",
+      "parentKey": "Root/90#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 91,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 19px; letter-spacing: -0.01em;"
+      },
+      "words": "Manufacturing",
+      "allText": "Manufacturing",
+      "srcLine": 121,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.label }}",
+      "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+      "box": {
+        "375": {
+          "x": 488,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "768": {
+          "x": 488,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 488,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/92#1",
+      "parentKey": "Root/90#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 92,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(44, 62, 80); line-height: 1.4; margin-top: 6px; flex: 1 1 0%;"
+      },
+      "words": "High-quality, healthy & delicious food products at scale.",
+      "allText": "High-quality, healthy & delicious food products at scale.",
+      "srcLine": 122,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 488,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "768": {
+          "x": 488,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "1440": {
+          "x": 488,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/93#1",
+      "parentKey": "Root/90#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 93,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Explore Manufacturing",
+      "allText": "Explore Manufacturing",
+      "srcLine": 123,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
+      "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+      "box": {
+        "375": {
+          "x": 488,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "768": {
+          "x": 488,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 488,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#2",
+      "parentKey": "Root/85#0",
+      "depth": 1,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "href": "#/retail",
+        "class": "scp6",
+        "style": "border-radius: 18px; padding: 18px; border: 2px solid rgb(231, 215, 104); box-shadow: rgba(20, 30, 45, 0.55) 0px 14px 30px -18px; background: linear-gradient(to right bottom, rgb(46, 173, 226) 0%, rgb(10, 126, 168) 100%); color: rgb(255, 255, 255); display: flex; flex-direction: column; transition: transform 0.25s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.3s; min-height: 270px;"
+      },
+      "words": "",
+      "allText": "Retail Retail-ready packaging for independent & national retailers. Explore Retail",
+      "srcLine": 116,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+      "box": {
+        "375": {
+          "x": 727,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "768": {
+          "x": 727,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "1440": {
+          "x": 727,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#2",
+      "parentKey": "Root/87#2",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "border-radius: 12px; overflow: hidden; height: 110px; background: rgba(255, 255, 255, 0.2);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 117,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 747,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 747,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 747,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/89#2",
+      "parentKey": "Root/88#2",
+      "depth": 3,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 89,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 118,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 747,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 747,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 747,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/90#2",
+      "parentKey": "Root/87#2",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 90,
+      "attrs": {
+        "style": "margin-top: 16px; flex: 1 1 0%; display: flex; flex-direction: column;"
+      },
+      "words": "",
+      "allText": "Retail Retail-ready packaging for independent & national retailers. Explore Retail",
+      "srcLine": 120,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+      "box": {
+        "375": {
+          "x": 747,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "768": {
+          "x": 747,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "1440": {
+          "x": 747,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/91#2",
+      "parentKey": "Root/90#2",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 91,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 19px; letter-spacing: -0.01em;"
+      },
+      "words": "Retail",
+      "allText": "Retail",
+      "srcLine": 121,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.label }}",
+      "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+      "box": {
+        "375": {
+          "x": 747,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "768": {
+          "x": 747,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 747,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/92#2",
+      "parentKey": "Root/90#2",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 92,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(255, 255, 255); line-height: 1.4; margin-top: 6px; flex: 1 1 0%;"
+      },
+      "words": "Retail-ready packaging for independent & national retailers.",
+      "allText": "Retail-ready packaging for independent & national retailers.",
+      "srcLine": 122,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 747,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "768": {
+          "x": 747,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "1440": {
+          "x": 747,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/93#2",
+      "parentKey": "Root/90#2",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 93,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Explore Retail",
+      "allText": "Explore Retail",
+      "srcLine": 123,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
+      "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+      "box": {
+        "375": {
+          "x": 747,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "768": {
+          "x": 747,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 747,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#3",
+      "parentKey": "Root/85#0",
+      "depth": 1,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "href": "#/wholesale",
+        "class": "scp6",
+        "style": "border-radius: 18px; padding: 18px; border: 2px solid rgb(231, 215, 104); box-shadow: rgba(20, 30, 45, 0.55) 0px 14px 30px -18px; background: linear-gradient(to left bottom, rgb(216, 202, 80) 0%, rgb(10, 126, 168) 100%); color: rgb(255, 255, 255); display: flex; flex-direction: column; transition: transform 0.25s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.3s; min-height: 270px;"
+      },
+      "words": "",
+      "allText": "Wholesale Reliable stock levels & fast delivery across the whole of the UK. Explore Wholesale",
+      "srcLine": 116,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+      "box": {
+        "375": {
+          "x": 986,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "768": {
+          "x": 986,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        },
+        "1440": {
+          "x": 986,
+          "y": 174,
+          "w": 245,
+          "h": 301.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#3",
+      "parentKey": "Root/87#3",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "border-radius: 12px; overflow: hidden; height: 110px; background: rgba(255, 255, 255, 0.2);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 117,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 1006,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 1006,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 1006,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/89#3",
+      "parentKey": "Root/88#3",
+      "depth": 3,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 89,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 118,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 1006,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "768": {
+          "x": 1006,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        },
+        "1440": {
+          "x": 1006,
+          "y": 194,
+          "w": 205,
+          "h": 110
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/90#3",
+      "parentKey": "Root/87#3",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 90,
+      "attrs": {
+        "style": "margin-top: 16px; flex: 1 1 0%; display: flex; flex-direction: column;"
+      },
+      "words": "",
+      "allText": "Wholesale Reliable stock levels & fast delivery across the whole of the UK. Explore Wholesale",
+      "srcLine": 120,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+      "box": {
+        "375": {
+          "x": 1006,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "768": {
+          "x": 1006,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        },
+        "1440": {
+          "x": 1006,
+          "y": 320,
+          "w": 205,
+          "h": 135.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/91#3",
+      "parentKey": "Root/90#3",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 91,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 19px; letter-spacing: -0.01em;"
+      },
+      "words": "Wholesale",
+      "allText": "Wholesale",
+      "srcLine": 121,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.label }}",
+      "snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+      "box": {
+        "375": {
+          "x": 1006,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "768": {
+          "x": 1006,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        },
+        "1440": {
+          "x": 1006,
+          "y": 320,
+          "w": 205,
+          "h": 29.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/92#3",
+      "parentKey": "Root/90#3",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 92,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(255, 255, 255); line-height: 1.4; margin-top: 6px; flex: 1 1 0%;"
+      },
+      "words": "Reliable stock levels & fast delivery across the whole of the UK.",
+      "allText": "Reliable stock levels & fast delivery across the whole of the UK.",
+      "srcLine": 122,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 1006,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "768": {
+          "x": 1006,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        },
+        "1440": {
+          "x": 1006,
+          "y": 355.4,
+          "w": 205,
+          "h": 63
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/93#3",
+      "parentKey": "Root/90#3",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 93,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-weight: 700; font-size: 15px;"
+      },
+      "words": "Explore Wholesale",
+      "allText": "Explore Wholesale",
+      "srcLine": 123,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSectorsCards }}",
+          "tpl": "84"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.cards }}",
+          "as": "card",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ card.cta }} {{ arrowIcon }}",
+      "snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+      "box": {
+        "375": {
+          "x": 1006,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "768": {
+          "x": 1006,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 1006,
+          "y": 432.4,
+          "w": 205,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    }
+  ],
+  "sources": {
+    "files": {
+      "EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
+      "Indus Foods Website v2.dc.html": "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf",
+      "README.md": "797285a24cb6ef737fd35855d7ec021465b6d37ecdcc3fecfcf9fd611bfeda7f",
+      "TradeApplication.dc.html": "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77",
+      "animations.json": "65dcc2c37383dfe5c9e0cdc40b54d1ec16248c0c71ce804e511149f5e88e1f1c",
+      "assets/about-hero-desktop.svg": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca",
+      "assets/about-hero-mobile.svg": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c",
+      "assets/about-hero-tablet.svg": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53",
+      "assets/logo-horizontal-anim.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-horizontal.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-square-anim.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/logo-square.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
+      "image-slot.js": "d797f41b7d66c445a7ddddc1f7d2871dfc0e996eee2b7a3dbab4c7a7d6c5d234",
+      "indus-logo.js": "23b8e7b64deb9dfdeee0e2d2a7afc922eb8e4beeb81f7e3f0a3d9bc68bc9c7f4",
+      "support.js": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+      "surfaces.json": "c63b959982e692809a0f34ec716ad74296c3a5e1b71f57a90d65922a11a6cc18",
+      "tokens/colors.css": "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035",
+      "tokens/spacing.css": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb",
+      "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
+    },
+    "route": {
+      "commit": "916eba5911241c1499a107fb7a3da66ba0a20f4e"
+    }
+  }
+}

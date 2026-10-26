@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-25T10:25:37.274Z",
-	"inventory": "2026-10-25T08:58:55.582Z",
-	"source": "http://127.0.0.1:53375/",
+	"generated": "2026-10-26T08:10:59.278Z",
+	"inventory": "2026-10-26T08:10:58.816Z",
+	"source": "http://127.0.0.1:50362/",
 	"surface": "footer",
 	"siteName": null,
 	"surfaceParts": [],
@@ -33,7 +33,7 @@
 		"rows": 83,
 		"skeletonNodes": 47,
 		"expandedNodes": 51,
-		"low": 1,
+		"low": 0,
 		"removed": 31,
 		"unresolved": 0,
 		"byRule": {
@@ -43,6 +43,7 @@
 			"solitaryIcon": 3,
 			"label": 5,
 			"hoursRows": 12,
+			"openStatus": 1,
 			"homeLink": 1,
 			"logoElement": 1,
 			"drawsChildren": 10,
@@ -1118,22 +1119,22 @@
 			"key": "Root/680#0",
 			"tag": "span",
 			"depth": 4,
-			"words": "Opens tomorrow at 9:30am",
-			"block": "sgs/text",
+			"words": "Opens at 9:30am",
+			"block": "sgs/business-info",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
+			"source": "rule openStatus",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "openStatus",
 			"candidates": [
 				{
-					"block": "sgs/text",
-					"score": 0.25,
+					"block": "sgs/business-info",
+					"score": 1,
 					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"rule openStatus: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours"
 					]
 				}
 			],
@@ -1143,7 +1144,7 @@
 			},
 			"snippet": "<span style=\"font-size:15px;color:#C9D4DE;\" data-dc-tpl=\"680\">{{ hoursNow.sub }}</span>",
 			"attributes": {
-				"text": "Opens tomorrow at 9:30am"
+				"displayType": "open-status"
 			}
 		},
 		{

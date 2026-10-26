@@ -1,0 +1,9 @@
+{
+  "footer": {
+    "build": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "exit 1: [FAIL] cannot read tree: ENOENT: no such file or directory, open 'C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\footer\\2026-10-26T08-04-42\\filled.tree.json'"
+    }
+  }
+}

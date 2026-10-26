@@ -1,0 +1,2570 @@
+{
+  "generated": "2026-10-23T19:45:59.020Z",
+  "source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+  "root": "[data-sgs-skeleton-root=\"trade-mega-menu\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/67#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "01"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Apply for Trade Account"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Get wholesale pricing"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "02"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Request Catalogue"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Our full product range"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "03"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Delivery & Logistics"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "UK & Europe from Birmingham"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "04"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "FAQs"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Common questions answered"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "05"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Terms & Conditions"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade account terms"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade partners"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade with Indus Foods"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Reliable stock, a named account manager and nationwide deliv"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Apply now"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 35,
+      "768": 35,
+      "1440": 35
+    },
+    "tagAgree": 35,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/67#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 67,
+      "attrs": {
+        "style": "display: flex;"
+      },
+      "words": "",
+      "allText": "01 Apply for Trade Account Get wholesale pricing 02 Request Catalogue Our full product range 03 Delivery & Logistics UK ",
+      "srcLine": 85,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;\" data-dc-tpl=\"67\"> <div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09",
+      "box": {
+        "375": {
+          "x": 411,
+          "y": 146,
+          "w": 618,
+          "h": 445.7
+        },
+        "768": {
+          "x": 411,
+          "y": 146,
+          "w": 618,
+          "h": 445.7
+        },
+        "1440": {
+          "x": 411,
+          "y": 146,
+          "w": 618,
+          "h": 445.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/68#0",
+      "parentKey": "Root/67#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 68,
+      "attrs": {
+        "style": "flex: 1 1 0%; min-width: 0px; padding: 24px 22px 10px 26px; display: flex; flex-direction: column;"
+      },
+      "words": "",
+      "allText": "01 Apply for Trade Account Get wholesale pricing 02 Request Catalogue Our full product range 03 Delivery & Logistics UK ",
+      "srcLine": 86,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ",
+      "box": {
+        "375": {
+          "x": 411,
+          "y": 146,
+          "w": 318,
+          "h": 445.7
+        },
+        "768": {
+          "x": 411,
+          "y": 146,
+          "w": 318,
+          "h": 445.7
+        },
+        "1440": {
+          "x": 411,
+          "y": 146,
+          "w": 318,
+          "h": 445.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/70#0",
+      "parentKey": "Root/68#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 70,
+      "attrs": {
+        "href": "#/apply",
+        "class": "scp4",
+        "style": "display: flex; align-items: baseline; gap: 16px; padding: 16px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.09); color: rgb(30, 42, 60); transition: padding-left 0.22s ease-out;"
+      },
+      "words": "",
+      "allText": "01 Apply for Trade Account Get wholesale pricing",
+      "srcLine": 88,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+      "box": {
+        "375": {
+          "x": 437,
+          "y": 170,
+          "w": 270,
+          "h": 82.3
+        },
+        "768": {
+          "x": 437,
+          "y": 170,
+          "w": 270,
+          "h": 82.3
+        },
+        "1440": {
+          "x": 437,
+          "y": 170,
+          "w": 270,
+          "h": 82.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/71#0",
+      "parentKey": "Root/70#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 71,
+      "attrs": {
+        "style": "flex-shrink: 0; font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); width: 18px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "01",
+      "allText": "01",
+      "srcLine": 89,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.num }}",
+      "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+      "box": {
+        "375": {
+          "x": 443,
+          "y": 190,
+          "w": 18,
+          "h": 20.1
+        },
+        "768": {
+          "x": 443,
+          "y": 190,
+          "w": 18,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 443,
+          "y": 190,
+          "w": 18,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/72#0",
+      "parentKey": "Root/70#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 72,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Apply for Trade Account Get wholesale pricing",
+      "srcLine": 90,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 186,
+          "w": 173.6,
+          "h": 49.3
+        },
+        "768": {
+          "x": 477,
+          "y": 186,
+          "w": 173.6,
+          "h": 49.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 186,
+          "w": 173.6,
+          "h": 49.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/73#0",
+      "parentKey": "Root/72#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 73,
+      "attrs": {
+        "style": "display: block; font-weight: 700; font-size: 17px; letter-spacing: -0.01em;"
+      },
+      "words": "Apply for Trade Account",
+      "allText": "Apply for Trade Account",
+      "srcLine": 91,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.label }}",
+      "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 186,
+          "w": 173.6,
+          "h": 26.3
+        },
+        "768": {
+          "x": 477,
+          "y": 186,
+          "w": 173.6,
+          "h": 26.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 186,
+          "w": 173.6,
+          "h": 26.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/74#0",
+      "parentKey": "Root/72#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 74,
+      "attrs": {
+        "style": "display: block; font-size: 15px; color: rgb(104, 114, 124); line-height: 1.4; margin-top: 2px;"
+      },
+      "words": "Get wholesale pricing",
+      "allText": "Get wholesale pricing",
+      "srcLine": 92,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.desc }}",
+      "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 214.3,
+          "w": 173.6,
+          "h": 21
+        },
+        "768": {
+          "x": 477,
+          "y": 214.3,
+          "w": 173.6,
+          "h": 21
+        },
+        "1440": {
+          "x": 477,
+          "y": 214.3,
+          "w": 173.6,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/70#1",
+      "parentKey": "Root/68#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 70,
+      "attrs": {
+        "href": "#/catalogue",
+        "class": "scp4",
+        "style": "display: flex; align-items: baseline; gap: 16px; padding: 16px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.09); color: rgb(30, 42, 60); transition: padding-left 0.22s ease-out;"
+      },
+      "words": "",
+      "allText": "02 Request Catalogue Our full product range",
+      "srcLine": 88,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+      "box": {
+        "375": {
+          "x": 437,
+          "y": 252.3,
+          "w": 270,
+          "h": 82.3
+        },
+        "768": {
+          "x": 437,
+          "y": 252.3,
+          "w": 270,
+          "h": 82.3
+        },
+        "1440": {
+          "x": 437,
+          "y": 252.3,
+          "w": 270,
+          "h": 82.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/71#1",
+      "parentKey": "Root/70#1",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 71,
+      "attrs": {
+        "style": "flex-shrink: 0; font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); width: 18px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "02",
+      "allText": "02",
+      "srcLine": 89,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.num }}",
+      "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+      "box": {
+        "375": {
+          "x": 443,
+          "y": 272.3,
+          "w": 18,
+          "h": 20.1
+        },
+        "768": {
+          "x": 443,
+          "y": 272.3,
+          "w": 18,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 443,
+          "y": 272.3,
+          "w": 18,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/72#1",
+      "parentKey": "Root/70#1",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 72,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Request Catalogue Our full product range",
+      "srcLine": 90,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 268.3,
+          "w": 137.7,
+          "h": 49.3
+        },
+        "768": {
+          "x": 477,
+          "y": 268.3,
+          "w": 137.7,
+          "h": 49.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 268.3,
+          "w": 137.7,
+          "h": 49.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/73#1",
+      "parentKey": "Root/72#1",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 73,
+      "attrs": {
+        "style": "display: block; font-weight: 700; font-size: 17px; letter-spacing: -0.01em;"
+      },
+      "words": "Request Catalogue",
+      "allText": "Request Catalogue",
+      "srcLine": 91,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.label }}",
+      "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 268.3,
+          "w": 137.7,
+          "h": 26.3
+        },
+        "768": {
+          "x": 477,
+          "y": 268.3,
+          "w": 137.7,
+          "h": 26.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 268.3,
+          "w": 137.7,
+          "h": 26.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/74#1",
+      "parentKey": "Root/72#1",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 74,
+      "attrs": {
+        "style": "display: block; font-size: 15px; color: rgb(104, 114, 124); line-height: 1.4; margin-top: 2px;"
+      },
+      "words": "Our full product range",
+      "allText": "Our full product range",
+      "srcLine": 92,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.desc }}",
+      "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 296.7,
+          "w": 137.7,
+          "h": 21
+        },
+        "768": {
+          "x": 477,
+          "y": 296.7,
+          "w": 137.7,
+          "h": 21
+        },
+        "1440": {
+          "x": 477,
+          "y": 296.7,
+          "w": 137.7,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/70#2",
+      "parentKey": "Root/68#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 70,
+      "attrs": {
+        "href": "#/delivery",
+        "class": "scp4",
+        "style": "display: flex; align-items: baseline; gap: 16px; padding: 16px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.09); color: rgb(30, 42, 60); transition: padding-left 0.22s ease-out;"
+      },
+      "words": "",
+      "allText": "03 Delivery & Logistics UK & Europe from Birmingham",
+      "srcLine": 88,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+      "box": {
+        "375": {
+          "x": 437,
+          "y": 334.7,
+          "w": 270,
+          "h": 82.3
+        },
+        "768": {
+          "x": 437,
+          "y": 334.7,
+          "w": 270,
+          "h": 82.3
+        },
+        "1440": {
+          "x": 437,
+          "y": 334.7,
+          "w": 270,
+          "h": 82.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/71#2",
+      "parentKey": "Root/70#2",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 71,
+      "attrs": {
+        "style": "flex-shrink: 0; font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); width: 18px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "03",
+      "allText": "03",
+      "srcLine": 89,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.num }}",
+      "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+      "box": {
+        "375": {
+          "x": 443,
+          "y": 354.7,
+          "w": 18,
+          "h": 20.1
+        },
+        "768": {
+          "x": 443,
+          "y": 354.7,
+          "w": 18,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 443,
+          "y": 354.7,
+          "w": 18,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/72#2",
+      "parentKey": "Root/70#2",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 72,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Delivery & Logistics UK & Europe from Birmingham",
+      "srcLine": 90,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 350.7,
+          "w": 192.3,
+          "h": 49.3
+        },
+        "768": {
+          "x": 477,
+          "y": 350.7,
+          "w": 192.3,
+          "h": 49.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 350.7,
+          "w": 192.3,
+          "h": 49.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/73#2",
+      "parentKey": "Root/72#2",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 73,
+      "attrs": {
+        "style": "display: block; font-weight: 700; font-size: 17px; letter-spacing: -0.01em;"
+      },
+      "words": "Delivery & Logistics",
+      "allText": "Delivery & Logistics",
+      "srcLine": 91,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.label }}",
+      "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 350.7,
+          "w": 192.3,
+          "h": 26.3
+        },
+        "768": {
+          "x": 477,
+          "y": 350.7,
+          "w": 192.3,
+          "h": 26.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 350.7,
+          "w": 192.3,
+          "h": 26.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/74#2",
+      "parentKey": "Root/72#2",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 74,
+      "attrs": {
+        "style": "display: block; font-size: 15px; color: rgb(104, 114, 124); line-height: 1.4; margin-top: 2px;"
+      },
+      "words": "UK & Europe from Birmingham",
+      "allText": "UK & Europe from Birmingham",
+      "srcLine": 92,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.desc }}",
+      "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 379,
+          "w": 192.3,
+          "h": 21
+        },
+        "768": {
+          "x": 477,
+          "y": 379,
+          "w": 192.3,
+          "h": 21
+        },
+        "1440": {
+          "x": 477,
+          "y": 379,
+          "w": 192.3,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/70#3",
+      "parentKey": "Root/68#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 70,
+      "attrs": {
+        "href": "#/faqs",
+        "class": "scp4",
+        "style": "display: flex; align-items: baseline; gap: 16px; padding: 16px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.09); color: rgb(30, 42, 60); transition: padding-left 0.22s ease-out;"
+      },
+      "words": "",
+      "allText": "04 FAQs Common questions answered",
+      "srcLine": 88,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+      "box": {
+        "375": {
+          "x": 437,
+          "y": 417,
+          "w": 270,
+          "h": 82.3
+        },
+        "768": {
+          "x": 437,
+          "y": 417,
+          "w": 270,
+          "h": 82.3
+        },
+        "1440": {
+          "x": 437,
+          "y": 417,
+          "w": 270,
+          "h": 82.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/71#3",
+      "parentKey": "Root/70#3",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 71,
+      "attrs": {
+        "style": "flex-shrink: 0; font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); width: 18px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "04",
+      "allText": "04",
+      "srcLine": 89,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.num }}",
+      "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+      "box": {
+        "375": {
+          "x": 443,
+          "y": 437,
+          "w": 18,
+          "h": 20.1
+        },
+        "768": {
+          "x": 443,
+          "y": 437,
+          "w": 18,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 443,
+          "y": 437,
+          "w": 18,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/72#3",
+      "parentKey": "Root/70#3",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 72,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "FAQs Common questions answered",
+      "srcLine": 90,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 433,
+          "w": 186.3,
+          "h": 49.3
+        },
+        "768": {
+          "x": 477,
+          "y": 433,
+          "w": 186.3,
+          "h": 49.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 433,
+          "w": 186.3,
+          "h": 49.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/73#3",
+      "parentKey": "Root/72#3",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 73,
+      "attrs": {
+        "style": "display: block; font-weight: 700; font-size: 17px; letter-spacing: -0.01em;"
+      },
+      "words": "FAQs",
+      "allText": "FAQs",
+      "srcLine": 91,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.label }}",
+      "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 433,
+          "w": 186.3,
+          "h": 26.3
+        },
+        "768": {
+          "x": 477,
+          "y": 433,
+          "w": 186.3,
+          "h": 26.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 433,
+          "w": 186.3,
+          "h": 26.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/74#3",
+      "parentKey": "Root/72#3",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 74,
+      "attrs": {
+        "style": "display: block; font-size: 15px; color: rgb(104, 114, 124); line-height: 1.4; margin-top: 2px;"
+      },
+      "words": "Common questions answered",
+      "allText": "Common questions answered",
+      "srcLine": 92,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.desc }}",
+      "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 461.4,
+          "w": 186.3,
+          "h": 21
+        },
+        "768": {
+          "x": 477,
+          "y": 461.4,
+          "w": 186.3,
+          "h": 21
+        },
+        "1440": {
+          "x": 477,
+          "y": 461.4,
+          "w": 186.3,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/70#4",
+      "parentKey": "Root/68#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 70,
+      "attrs": {
+        "href": "#/terms",
+        "class": "scp4",
+        "style": "display: flex; align-items: baseline; gap: 16px; padding: 16px 6px; border-bottom: 1px solid rgba(30, 42, 60, 0.09); color: rgb(30, 42, 60); transition: padding-left 0.22s ease-out;"
+      },
+      "words": "",
+      "allText": "05 Terms & Conditions Trade account terms",
+      "srcLine": 88,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+      "box": {
+        "375": {
+          "x": 437,
+          "y": 499.4,
+          "w": 270,
+          "h": 82.3
+        },
+        "768": {
+          "x": 437,
+          "y": 499.4,
+          "w": 270,
+          "h": 82.3
+        },
+        "1440": {
+          "x": 437,
+          "y": 499.4,
+          "w": 270,
+          "h": 82.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/71#4",
+      "parentKey": "Root/70#4",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 71,
+      "attrs": {
+        "style": "flex-shrink: 0; font-weight: 700; font-size: 13px; color: rgb(10, 126, 168); width: 18px; font-variant-numeric: tabular-nums;"
+      },
+      "words": "05",
+      "allText": "05",
+      "srcLine": 89,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.num }}",
+      "snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+      "box": {
+        "375": {
+          "x": 443,
+          "y": 519.4,
+          "w": 18,
+          "h": 20.1
+        },
+        "768": {
+          "x": 443,
+          "y": 519.4,
+          "w": 18,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 443,
+          "y": 519.4,
+          "w": 18,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/72#4",
+      "parentKey": "Root/70#4",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 72,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Terms & Conditions Trade account terms",
+      "srcLine": 90,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 515.4,
+          "w": 142.3,
+          "h": 49.3
+        },
+        "768": {
+          "x": 477,
+          "y": 515.4,
+          "w": 142.3,
+          "h": 49.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 515.4,
+          "w": 142.3,
+          "h": 49.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/73#4",
+      "parentKey": "Root/72#4",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 73,
+      "attrs": {
+        "style": "display: block; font-weight: 700; font-size: 17px; letter-spacing: -0.01em;"
+      },
+      "words": "Terms & Conditions",
+      "allText": "Terms & Conditions",
+      "srcLine": 91,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.label }}",
+      "snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 515.4,
+          "w": 142.3,
+          "h": 26.3
+        },
+        "768": {
+          "x": 477,
+          "y": 515.4,
+          "w": 142.3,
+          "h": 26.3
+        },
+        "1440": {
+          "x": 477,
+          "y": 515.4,
+          "w": 142.3,
+          "h": 26.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/74#4",
+      "parentKey": "Root/72#4",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 74,
+      "attrs": {
+        "style": "display: block; font-size: 15px; color: rgb(104, 114, 124); line-height: 1.4; margin-top: 2px;"
+      },
+      "words": "Trade account terms",
+      "allText": "Trade account terms",
+      "srcLine": 92,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.links }}",
+          "as": "link",
+          "tpl": "69"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ link.desc }}",
+      "snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+      "box": {
+        "375": {
+          "x": 477,
+          "y": 543.7,
+          "w": 142.3,
+          "h": 21
+        },
+        "768": {
+          "x": 477,
+          "y": 543.7,
+          "w": 142.3,
+          "h": 21
+        },
+        "1440": {
+          "x": 477,
+          "y": 543.7,
+          "w": 142.3,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/76#0",
+      "parentKey": "Root/67#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 76,
+      "attrs": {
+        "style": "width: 300px; flex-shrink: 0; padding: 24px; background: rgb(10, 126, 168);"
+      },
+      "words": "",
+      "allText": "Trade partners Trade with Indus Foods Reliable stock, a named account manager and nationwide delivery. Apply now",
+      "srcLine": 98,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"width:300px;flex-shrink:0;padding:24px;background:{{ activePanel.feature.bg }};\" data-dc-tpl=\"76\"> <div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div> <div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span ",
+      "box": {
+        "375": {
+          "x": 729,
+          "y": 146,
+          "w": 300,
+          "h": 445.7
+        },
+        "768": {
+          "x": 729,
+          "y": 146,
+          "w": 300,
+          "h": 445.7
+        },
+        "1440": {
+          "x": 729,
+          "y": 146,
+          "w": 300,
+          "h": 445.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/77#0",
+      "parentKey": "Root/76#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 77,
+      "attrs": {
+        "style": "overflow: hidden; height: 130px; border: 2px solid rgb(231, 215, 104);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 99,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 753,
+          "y": 170,
+          "w": 252,
+          "h": 130
+        },
+        "768": {
+          "x": 753,
+          "y": 170,
+          "w": 252,
+          "h": 130
+        },
+        "1440": {
+          "x": 753,
+          "y": 170,
+          "w": 252,
+          "h": 130
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/78#0",
+      "parentKey": "Root/77#0",
+      "depth": 3,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 78,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 100,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 755,
+          "y": 172,
+          "w": 248,
+          "h": 126
+        },
+        "768": {
+          "x": 755,
+          "y": 172,
+          "w": 248,
+          "h": 126
+        },
+        "1440": {
+          "x": 755,
+          "y": 172,
+          "w": 248,
+          "h": 126
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/79#0",
+      "parentKey": "Root/76#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 79,
+      "attrs": {
+        "style": "margin-top: 18px;"
+      },
+      "words": "",
+      "allText": "Trade partners Trade with Indus Foods Reliable stock, a named account manager and nationwide delivery. Apply now",
+      "srcLine": 102,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span> <div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" d",
+      "box": {
+        "375": {
+          "x": 753,
+          "y": 318,
+          "w": 252,
+          "h": 169.3
+        },
+        "768": {
+          "x": 753,
+          "y": 318,
+          "w": 252,
+          "h": 169.3
+        },
+        "1440": {
+          "x": 753,
+          "y": 318,
+          "w": 252,
+          "h": 169.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/80#0",
+      "parentKey": "Root/79#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 80,
+      "attrs": {
+        "style": "display: inline-block; background: rgb(216, 202, 80); color: rgb(30, 42, 60); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 5px 10px; border-radius: 3px; margin-bottom: 12px;"
+      },
+      "words": "Trade partners",
+      "allText": "Trade partners",
+      "srcLine": 103,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ activePanel.feature.tag }}",
+      "snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span>",
+      "box": {
+        "375": {
+          "x": 753,
+          "y": 321,
+          "w": 119.9,
+          "h": 28.6
+        },
+        "768": {
+          "x": 753,
+          "y": 321,
+          "w": 119.9,
+          "h": 28.6
+        },
+        "1440": {
+          "x": 753,
+          "y": 321,
+          "w": 119.9,
+          "h": 28.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/81#0",
+      "parentKey": "Root/79#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 81,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 22px; letter-spacing: -0.02em; line-height: 1.2; color: rgb(255, 255, 255);"
+      },
+      "words": "Trade with Indus Foods",
+      "allText": "Trade with Indus Foods",
+      "srcLine": 104,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ activePanel.feature.title }}",
+      "snippet": "<div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" data-dc-tpl=\"81\">{{ activePanel.feature.title }}</div>",
+      "box": {
+        "375": {
+          "x": 753,
+          "y": 361.6,
+          "w": 252,
+          "h": 26.4
+        },
+        "768": {
+          "x": 753,
+          "y": 361.6,
+          "w": 252,
+          "h": 26.4
+        },
+        "1440": {
+          "x": 753,
+          "y": 361.6,
+          "w": 252,
+          "h": 26.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/82#0",
+      "parentKey": "Root/79#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 82,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(227, 239, 244); line-height: 1.45; margin-top: 8px;"
+      },
+      "words": "Reliable stock, a named account manager and nationwide delivery.",
+      "allText": "Reliable stock, a named account manager and nationwide delivery.",
+      "srcLine": 105,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ activePanel.feature.desc }}",
+      "snippet": "<div style=\"font-size:15px;color:#E3EFF4;line-height:1.45;margin-top:8px;\" data-dc-tpl=\"82\">{{ activePanel.feature.desc }}</div>",
+      "box": {
+        "375": {
+          "x": 753,
+          "y": 396,
+          "w": 252,
+          "h": 43.5
+        },
+        "768": {
+          "x": 753,
+          "y": 396,
+          "w": 252,
+          "h": 43.5
+        },
+        "1440": {
+          "x": 753,
+          "y": 396,
+          "w": 252,
+          "h": 43.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/83#0",
+      "parentKey": "Root/79#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 83,
+      "attrs": {
+        "href": "#/apply",
+        "class": "scp5",
+        "style": "display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; color: rgb(255, 255, 255); font-weight: 700; font-size: 16px; border-bottom: 2px solid rgb(216, 202, 80); padding-bottom: 3px;"
+      },
+      "words": "Apply now",
+      "allText": "Apply now",
+      "srcLine": 106,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isSimple }}",
+          "tpl": "66"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ activePanel.hasFeature }}",
+          "tpl": "75"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ activePanel.feature.cta }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ activePanel.feature.href }}\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"83\">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>",
+      "box": {
+        "375": {
+          "x": 753,
+          "y": 457.5,
+          "w": 95.9,
+          "h": 29.8
+        },
+        "768": {
+          "x": 753,
+          "y": 457.5,
+          "w": 95.9,
+          "h": 29.8
+        },
+        "1440": {
+          "x": 753,
+          "y": 457.5,
+          "w": 95.9,
+          "h": 29.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    }
+  ],
+  "sources": {
+    "files": {
+      "EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
+      "Indus Foods Website v2.dc.html": "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf",
+      "README.md": "797285a24cb6ef737fd35855d7ec021465b6d37ecdcc3fecfcf9fd611bfeda7f",
+      "TradeApplication.dc.html": "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77",
+      "animations.json": "65dcc2c37383dfe5c9e0cdc40b54d1ec16248c0c71ce804e511149f5e88e1f1c",
+      "assets/about-hero-desktop.svg": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca",
+      "assets/about-hero-mobile.svg": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c",
+      "assets/about-hero-tablet.svg": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53",
+      "assets/logo-horizontal-anim.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-horizontal.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-square-anim.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/logo-square.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
+      "image-slot.js": "d797f41b7d66c445a7ddddc1f7d2871dfc0e996eee2b7a3dbab4c7a7d6c5d234",
+      "indus-logo.js": "23b8e7b64deb9dfdeee0e2d2a7afc922eb8e4beeb81f7e3f0a3d9bc68bc9c7f4",
+      "support.js": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+      "surfaces.json": "c63b959982e692809a0f34ec716ad74296c3a5e1b71f57a90d65922a11a6cc18",
+      "tokens/colors.css": "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035",
+      "tokens/spacing.css": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb",
+      "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
+    },
+    "route": {
+      "commit": "916eba5911241c1499a107fb7a3da66ba0a20f4e"
+    }
+  }
+}

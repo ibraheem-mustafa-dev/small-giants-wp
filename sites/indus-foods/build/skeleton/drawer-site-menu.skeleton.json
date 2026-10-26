@@ -1,0 +1,349 @@
+[
+	{
+		"name": "sgs/nav-drawer",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/108#0"
+		},
+		"draftFingerprint": {
+			"tag": "div",
+			"cls": "",
+			"styleHash": "6b759d66",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 157
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/decorative-image",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/109#0"
+				},
+				"draftFingerprint": {
+					"tag": "span",
+					"cls": "",
+					"styleHash": "e602dcde",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 158
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/decorative-image",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/110#0"
+				},
+				"draftFingerprint": {
+					"tag": "span",
+					"cls": "",
+					"styleHash": "b56769bc",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 159
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root/112#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "f920f804",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 161
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/responsive-logo",
+						"attributes": {
+							"logoId": 81
+						},
+						"draftRef": {
+							"tpl": "Root/114#0"
+						},
+						"draftFingerprint": {
+							"tag": "indus-logo",
+							"cls": "",
+							"styleHash": "8adea707",
+							"parentTags": [
+								"div",
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 162
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "site-info",
+								"kind": "presence",
+								"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+							},
+							{
+								"owner": "site-info",
+								"kind": "presence",
+								"detail": "the logo image: choose the site logo in the editor"
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/115#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "23a67d8c",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 163
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/social-icons",
+								"attributes": {},
+								"draftRef": "div[data-dc-tpl=\"108\"] [data-dc-tpl=\"115\"]",
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp8",
+									"styleHash": "b5511f7a",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 164
+								},
+								"innerBlocks": [],
+								"siteInfoRow": [
+									"phone",
+									"email"
+								],
+								"childRefs": {
+									"phone": "[data-dc-tpl=\"116\"]",
+									"email": "[data-dc-tpl=\"117\"]"
+								},
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the drawer's top row shows this icon group: set sgs/nav-drawer chromeSlotType to icons and keep the group the first block of the drawer body (includes/nav-drawer-chrome-icons.php lifts it into the top row)"
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/118#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "scp9",
+									"styleHash": "6b3f799d",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 166
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div"
+				},
+				"draftRef": {
+					"tpl": "Root/121#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "f62c8ac8",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 172
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/nav-drawer-menu",
+						"attributes": {
+							"ref": 5
+						},
+						"draftRef": {
+							"tpl": "Root/122#0"
+						},
+						"draftFingerprint": {
+							"tag": "nav",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 173
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/178#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "781cd4d7",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 255
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/label",
+								"attributes": {
+									"text": "Follow us"
+								},
+								"draftRef": {
+									"tpl": "Root/179#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "87524caa",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "c4f6e6d2",
+									"line": 256
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/social-icons",
+								"attributes": {},
+								"draftRef": "div[data-dc-tpl=\"108\"] [data-dc-tpl=\"180\"]",
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "e88c8477",
+									"parentTags": [
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 257
+								},
+								"innerBlocks": [],
+								"siteInfoRow": [
+									"linkedin",
+									"facebook",
+									"google",
+									"instagram"
+								],
+								"childRefs": {
+									"linkedin": "[data-dc-tpl=\"181\"]",
+									"facebook": "[data-dc-tpl=\"184\"]",
+									"google": "[data-dc-tpl=\"187\"]",
+									"instagram": "[data-dc-tpl=\"193\"]"
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div"
+				},
+				"draftRef": {
+					"tpl": "Root/196#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "76e27cd8",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 260
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Become A Trade Customer"
+						},
+						"draftRef": {
+							"tpl": "Root/197#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scpg",
+							"styleHash": "6238ea6c",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 261
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		]
+	}
+]

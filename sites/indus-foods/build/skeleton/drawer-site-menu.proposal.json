@@ -1,0 +1,2021 @@
+{
+	"generated": "2026-10-26T05:41:08.051Z",
+	"inventory": "2026-10-23T19:46:47.754Z",
+	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"surface": "mobile-tablet-drawer",
+	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-10",
+			"kind": "accordion",
+			"name": "Drawer accordion: About",
+			"openedBy": "Tap the About row (toggleAcc(1))",
+			"roots": [
+				"Indus Foods Website v2/134"
+			]
+		},
+		{
+			"id": "S-11",
+			"kind": "accordion",
+			"name": "Drawer accordion: Sectors",
+			"openedBy": "Tap the Sectors row (toggleAcc(2))",
+			"roots": [
+				"Indus Foods Website v2/134"
+			]
+		},
+		{
+			"id": "S-12",
+			"kind": "accordion",
+			"name": "Drawer accordion: Brands",
+			"openedBy": "Tap the Brands row (toggleAcc(3))",
+			"roots": [
+				"Indus Foods Website v2/134"
+			]
+		},
+		{
+			"id": "S-13",
+			"kind": "accordion",
+			"name": "Drawer accordion: Trade",
+			"openedBy": "Tap the Trade row (toggleAcc(4))",
+			"roots": [
+				"Indus Foods Website v2/134"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"builtPost": {
+		"site": "sandybrown",
+		"postType": "sgs_drawer",
+		"postId": 4456,
+		"title": "[QA] Indus mobile drawer"
+	},
+	"counts": {
+		"inventoryElements": 225,
+		"parts": 164,
+		"rows": 61,
+		"skeletonNodes": 15,
+		"expandedNodes": 21,
+		"low": 0,
+		"removed": 46,
+		"unresolved": 0,
+		"byRule": {
+			"clientBuiltSurface": 61
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/108#0",
+			"tag": "div",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/nav-drawer",
+			"action": null,
+			"reason": "a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body",
+			"source": "rule surfaceRoot",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/nav-drawer",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule surfaceRoot: a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div ref=\"{{ setDrawerEl }}\" role=\"dialog\" aria-label=\"Site menu\" style=\"position:fixed;top:0;right:0;bottom:0;width:{{ R.drawerW }};z-index:300;background:linear-gradient(165deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);display:flex;flex-direction:column;overflow:hidden;box-shadow:-30px 0 60px -30px rgba(0,0,0,.45);\" data-dc-tpl=\"108\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;rig",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/109#0",
+			"tag": "span",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-150px;bottom:90px;width:380px;height:380px;border-radius:50%;border:2px solid rgba(231,215,104,.4);pointer-events:none;\" data-dc-tpl=\"109\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/110#0",
+			"tag": "span",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;left:-110px;top:190px;width:240px;height:240px;border-radius:50%;border:1.5px solid rgba(255,255,255,.14);pointer-events:none;\" data-dc-tpl=\"110\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/111#0",
+			"tag": "span",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span aria-hidden=\"true\" style=\"position:absolute;inset:0;background:radial-gradient(80% 50% at 100% 0%,rgba(255,255,255,.16),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"111\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/112#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;height:76px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;\" data-dc-tpl=\"112\"> <a href=\"#/\" style=\"background:#FFFFFF;border-radius:14px;padding:8px 10px;display:inline-flex;min-width:0;box-shadow:0 8px 20px -12px rgba(0,0,0,.5);\" data-dc-tpl=\"113\"><indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/113#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself",
+			"source": "rule homeLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#/\" style=\"background:#FFFFFF;border-radius:14px;padding:8px 10px;display:inline-flex;min-width:0;box-shadow:0 8px 20px -12px rgba(0,0,0,.5);\" data-dc-tpl=\"113\"><indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.drawerLogoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"114\"></indus-logo></a>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/114#0",
+			"tag": "indus-logo",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": "a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo",
+			"source": "rule logoElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"handover": {
+				"owner": "site-info",
+				"kind": "presence",
+				"detail": "the logo image: choose the site logo in the editor"
+			},
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule logoElement: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<indus-logo variant=\"horizontal\" aria-label=\"Indus Foods Ltd\" style=\"display:block;height:{{ R.drawerLogoH }};aspect-ratio:3741 / 848;\" data-dc-tpl=\"114\"></indus-logo>",
+			"attributes": {
+				"logoId": 81
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/indus-foods/handoff/assets/logo-horizontal-anim.svg"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/115#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:8px;flex-shrink:0;\" data-dc-tpl=\"115\"> <a href=\"tel:01217714330\" aria-label=\"Call 0121 771 4330\" style=\"width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/116#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/social-icons",
+			"action": null,
+			"reason": "a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21)",
+			"source": "rule drawerIconRun",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/social-icons",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule drawerIconRun: a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"tel:01217714330\" aria-label=\"Call 0121 771 4330\" style=\"width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,color .25s,box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) ",
+			"attributes": {},
+			"unit": "icons",
+			"slot": {
+				"block": "sgs/nav-drawer",
+				"attribute": "chromeSlotType",
+				"value": "icons"
+			},
+			"rowNote": "icons generated by Fill from siteInfoRow [\"phone\",\"email\"]; chromeSlotType icons on sgs/nav-drawer",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/117#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "part of the drawer's top-row icon group: sgs/social-icons draws it from Site Info",
+			"source": "rule drawerIconRun",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/116#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"mailto:amir@indusfoodsltd.com\" aria-label=\"Email amir@indusfoodsltd.com\" style=\"width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .25s,border-color .25s,color .25s,box-shadow .25s;\" style-hover=\"transform:scale",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/118#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ closeMobile }}\" aria-label=\"Close menu\" style=\"position:relative;width:46px;height:46px;border-radius:50%;border:0;background:#E7D768;color:#2C3E50;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 20px -10px rgba(0,0,0,.55);transition:transform .5s cubic-bezier(.34,1.56,.64,1),background .25s;\" style-hover=\"transfor",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/119#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;width:18px;height:2.5px;border-radius:2px;background:currentColor;transform:rotate(45deg);\" data-dc-tpl=\"119\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/120#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;width:18px;height:2.5px;border-radius:2px;background:currentColor;transform:rotate(-45deg);\" data-dc-tpl=\"120\"></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/121#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div ref=\"{{ setMobEl }}\" data-drawer-scroll=\"\" style=\"position:relative;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 20px 28px;scrollbar-width:thin;scrollbar-color:rgba(231,215,104,.75) transparent;\" data-dc-tpl=\"121\"> <nav aria-label=\"Main\" data-dc-tpl=\"122\"> <sc-for list=\"{{ items }}\" as=\"item\" hint-placeholder-count=\"6\" data-dc-tpl=\"123\"> <div data-manim=\"\" style",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/122#0",
+			"tag": "nav",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/nav-drawer-menu",
+			"action": null,
+			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu",
+			"source": "rule navigation",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/nav-drawer-menu",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<nav aria-label=\"Main\" data-dc-tpl=\"122\"> <sc-for list=\"{{ items }}\" as=\"item\" hint-placeholder-count=\"6\" data-dc-tpl=\"123\"> <div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-i",
+			"attributes": {
+				"ref": 5
+			},
+			"carried": {
+				"ref": "menu-map.json: the drawer menu"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/124#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/125#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/126#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "01",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/127#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Home",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/128#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/124#1",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [
+				"Root/133#0"
+			],
+			"screenshots": {},
+			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/125#1",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/126#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "02",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/127#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "About",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/128#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/130#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/124#2",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [
+				"Root/133#1"
+			],
+			"screenshots": {},
+			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/125#2",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/126#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "03",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root/127#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "Sectors",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root/128#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/130#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/124#3",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [
+				"Root/133#2"
+			],
+			"screenshots": {},
+			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/125#3",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/126#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "04",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 35,
+			"key": "Root/127#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "Brands",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root/128#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root/130#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root/124#4",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [
+				"Root/133#3"
+			],
+			"screenshots": {},
+			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/125#4",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 40,
+			"key": "Root/126#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "05",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 41,
+			"key": "Root/127#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "Trade",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 42,
+			"key": "Root/128#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 43,
+			"key": "Root/130#3",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;transform:rotate({{ item.accCaret }}deg);transition:transform .45s cubic-bezier(.34,1.56,.64,1);\" data-dc-tpl=\"130\">{{ caretLg }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 44,
+			"key": "Root/124#5",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-manim=\"\" style=\"border-bottom:1px solid rgba(255,255,255,.16);\" data-dc-tpl=\"124\"> <button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-d",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root/125#5",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ item.onAcc }}\" aria-expanded=\"{{ item.accOpen }}\" style=\"width:100%;background:transparent;border:0;cursor:pointer;padding:16px 2px;display:flex;align-items:center;gap:16px;text-align:left;color:{{ item.mobColor }};transition:color .25s;\" style-hover=\"--cr:6px;--lx:5px\" data-dc-tpl=\"125\"> <span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;fon",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root/126#5",
+			"tag": "span",
+			"depth": 5,
+			"words": "06",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;min-width:24px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#E7D768;\" data-dc-tpl=\"126\">{{ item.num }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 47,
+			"key": "Root/127#5",
+			"tag": "span",
+			"depth": 5,
+			"words": "Contact",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex:1;min-width:0;font-family:'Montserrat',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.015em;line-height:1.2;transform:translateX(var(--lx,0px));transition:transform .35s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"127\">{{ item.label }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 48,
+			"key": "Root/128#5",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/122#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1.5px solid {{ item.accRing }};background:{{ item.accBtnBg }};color:{{ item.accBtnFg }};display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 var(--cr,0px) rgba(231,215,104,.22);transition:background .3s,border-color .3s,color .3s,box-shadow .3s;\" data-dc-tpl=\"128\"> <sc-if value=\"{{ item.hasPanel }}\" hint-",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root/178#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-manim=\"\" style=\"margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;\" data-dc-tpl=\"178\"> <span style=\"font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E7D768;\" data-dc-tpl=\"179\">Follow us</span> <div style=\"display:flex;gap:10px;\" data-dc-tpl=\"180\"><a href=\"#/\" aria-label=\"LinkedIn\" st",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root/179#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Follow us",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Geist Mono',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E7D768;\" data-dc-tpl=\"179\">Follow us</span>",
+			"attributes": {
+				"text": "Follow us"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root/180#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/social-icons",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.74,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/social-icons",
+					"score": 1,
+					"share": 0.741,
+					"evidence": [
+						"block_composition: sgs/social-icons is a content-block accepting exactly [\"sgs/icon\"]; all 4 children propose sgs/icon",
+						"a row of 4 sgs/icon",
+						"block_capabilities: sgs/social-icons lists facebook, instagram"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.259,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;gap:10px;\" data-dc-tpl=\"180\"><a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:42px;height:42px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px",
+			"attributes": {},
+			"rowNote": "icons generated by Fill from siteInfoRow [\"linkedin\",\"facebook\",\"google\",\"instagram\"]",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root/181#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/180#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"LinkedIn\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/182#0"
+			],
+			"screenshots": {},
+			"snippet": "<a href=\"#/\" aria-label=\"LinkedIn\" style=\"width:42px;height:42px;border-radius:50%;background:#0A66C2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"181\"",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "linkedin",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.linkedin"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/180#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 53,
+			"key": "Root/184#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/180#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Facebook\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/185#0"
+			],
+			"screenshots": {},
+			"snippet": "<a href=\"#/\" aria-label=\"Facebook\" style=\"width:42px;height:42px;border-radius:50%;background:#1877F2;color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.45);color:#FFFFFF\" data-dc-tpl=\"184\"",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "facebook",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.facebook"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/180#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 54,
+			"key": "Root/187#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/180#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Google\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/188#0"
+			],
+			"screenshots": {},
+			"snippet": "<a href=\"#/\" aria-label=\"Google\" style=\"width:42px;height:42px;border-radius:50%;background:#FFFFFF;color:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);box-shadow:0 10px 20px -6px rgba(0,0,0,.4",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "google",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.google"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/180#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 55,
+			"key": "Root/193#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": "absorbed",
+			"reason": "drawn by sgs/social-icons: Fill generates its icons from the Site Info row",
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/180#0",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry label \"Instagram\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/194#0"
+			],
+			"screenshots": {},
+			"snippet": "<a href=\"#/\" aria-label=\"Instagram\" style=\"width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 30% 107%,#FDF497 0%,#FD5949 45%,#D6249F 60%,#285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;\" style-hover=\"transform:scale(1.15) translateY(-3px) rotate(-8deg);",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "instagram",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.instagram"
+							}
+						}
+					}
+				}
+			},
+			"generatedBy": "Root/180#0",
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 56,
+			"key": "Root/196#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-drawer-foot=\"\" style=\"position:relative;flex-shrink:0;padding:14px 20px calc(16px + env(safe-area-inset-bottom));background:rgba(5,60,84,.5);border-top:1px solid rgba(255,255,255,.14);\" data-dc-tpl=\"196\"> <a href=\"#/apply\" data-mag=\"\" style=\"height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 7px 0 24px;border-radius:999px;background:#E7D768;color",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 57,
+			"key": "Root/197#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 7px 0 24px;border-radius:999px;background:#E7D768;color:#2C3E50;font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.005em;box-shadow:0 12px 24px -14px rgba(0,0,0,.6);transition:background .25s,transform .35s cubic-bezier(.34,1.56,.64,1),b",
+			"attributes": {
+				"label": "Become A Trade Customer"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 58,
+			"key": "Root/198#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Become A Trade Customer",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/197#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"198\">Become A Trade Customer</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 59,
+			"key": "Root/199#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/197#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#2C3E50;color:#E7D768;display:flex;align-items:center;justify-content:center;\" data-dc-tpl=\"199\"><span style=\"display:flex;transform:translateX(var(--ax,0px));transition:transform .3s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"200\">{{ arrowIcon }}</span></span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		},
+		{
+			"order": 60,
+			"key": "Root/200#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/197#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;transform:translateX(var(--ax,0px));transition:transform .3s cubic-bezier(.16,.84,.32,1);\" data-dc-tpl=\"200\">{{ arrowIcon }}</span>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_drawer",
+				"postId": 4456,
+				"title": "[QA] Indus mobile drawer"
+			}
+		}
+	]
+}

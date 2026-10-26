@@ -1,0 +1,1142 @@
+{
+	"generated": "2026-10-26T05:53:23.939Z",
+	"inventory": "2026-10-23T19:45:59.020Z",
+	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"surface": "trade-mega-menu",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 35,
+		"parts": 0,
+		"rows": 35,
+		"skeletonNodes": 35,
+		"expandedNodes": 35,
+		"low": 12,
+		"removed": 0,
+		"unresolved": 0,
+		"byRule": {
+			"surfaceRoot": 1,
+			"megaGroup": 1,
+			"wholeCardLink": 5,
+			"cardHeading": 5,
+			"megaAside": 1,
+			"mediaElement": 1,
+			"label": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/67#0",
+			"tag": "div",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/mega-panel",
+			"action": null,
+			"reason": "a menu surface (the panel a navigation item opens) is sgs/mega-panel",
+			"source": "rule surfaceRoot",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "surfaceRoot",
+			"candidates": [
+				{
+					"block": "sgs/mega-panel",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule surfaceRoot: a menu surface (the panel a navigation item opens) is sgs/mega-panel"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;\" data-dc-tpl=\"67\"> <div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root/68#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/mega-group",
+			"action": null,
+			"reason": "a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21)",
+			"source": "rule megaGroup",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "megaGroup",
+			"candidates": [
+				{
+					"block": "sgs/mega-group",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule megaGroup: a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"flex:1;min-width:0;padding:24px 22px 10px 26px;display:flex;flex-direction:column;\" data-dc-tpl=\"68\"> <sc-for list=\"{{ activePanel.links }}\" as=\"link\" hint-placeholder-count=\"4\" data-dc-tpl=\"69\"> <a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/70#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/apply"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/71#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "01",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "01"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/72#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/73#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Apply for Trade Account",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Apply for Trade Account"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/74#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Get wholesale pricing",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Get wholesale pricing"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/70#1",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/catalogue"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/71#1",
+			"tag": "span",
+			"depth": 3,
+			"words": "02",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "02"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/72#1",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/73#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "Request Catalogue",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Request Catalogue"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/74#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "Our full product range",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Our full product range"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/70#2",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/delivery"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/71#2",
+			"tag": "span",
+			"depth": 3,
+			"words": "03",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "03"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/72#2",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/73#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "Delivery & Logistics",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Delivery & Logistics"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/74#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "UK & Europe from Birmingham",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "UK & Europe from Birmingham"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/70#3",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/faqs"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/71#3",
+			"tag": "span",
+			"depth": 3,
+			"words": "04",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "04"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/72#3",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/73#3",
+			"tag": "span",
+			"depth": 4,
+			"words": "FAQs",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "FAQs"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/74#3",
+			"tag": "span",
+			"depth": 4,
+			"words": "Common questions answered",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Common questions answered"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/70#4",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ link.href }}\" style=\"display:flex;align-items:baseline;gap:16px;padding:16px 6px;border-bottom:1px solid rgba(30,42,60,.09);color:#1E2A3C;transition:padding-left .22s ease-out;\" style-hover=\"padding-left:12px;color:#1E2A3C\" data-dc-tpl=\"70\"> <span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"7",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "#/terms"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/71#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "05",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;font-weight:700;font-size:13px;color:#0A7EA8;width:18px;font-variant-numeric:tabular-nums;\" data-dc-tpl=\"71\">{{ link.num }}</span>",
+			"attributes": {
+				"text": "05"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/72#4",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"min-width:0;\" data-dc-tpl=\"72\"> <span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span> <span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span> </span>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/73#4",
+			"tag": "span",
+			"depth": 4,
+			"words": "Terms & Conditions",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-weight:700;font-size:17px;letter-spacing:-.01em;\" data-dc-tpl=\"73\">{{ link.label }}</span>",
+			"attributes": {
+				"content": "Terms & Conditions"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/74#4",
+			"tag": "span",
+			"depth": 4,
+			"words": "Trade account terms",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:block;font-size:15px;color:#68727C;line-height:1.4;margin-top:2px;\" data-dc-tpl=\"74\">{{ link.desc }}</span>",
+			"attributes": {
+				"text": "Trade account terms"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/76#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/mega-aside",
+			"action": null,
+			"reason": "a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21)",
+			"source": "rule megaAside",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "megaAside",
+			"candidates": [
+				{
+					"block": "sgs/mega-aside",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule megaAside: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"width:300px;flex-shrink:0;padding:24px;background:{{ activePanel.feature.bg }};\" data-dc-tpl=\"76\"> <div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div> <div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span ",
+			"attributes": {}
+		},
+		{
+			"order": 28,
+			"key": "Root/77#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"overflow:hidden;height:130px;border:2px solid #E7D768;\" data-dc-tpl=\"77\"> <image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root/78#0",
+			"tag": "image-slot",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "mediaElement",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ activePanel.feature.imgId }}\" shape=\"rect\" placeholder=\"{{ activePanel.feature.imgLabel }}\" data-dc-tpl=\"78\"></image-slot>",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "Root/79#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:18px;\" data-dc-tpl=\"79\"> <span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span> <div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" d",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/80#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Trade partners",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;\" data-dc-tpl=\"80\">{{ activePanel.feature.tag }}</span>",
+			"attributes": {
+				"text": "Trade partners"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/81#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Trade with Indus Foods",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-weight:700;font-size:22px;letter-spacing:-.02em;line-height:1.2;color:#FFFFFF;\" data-dc-tpl=\"81\">{{ activePanel.feature.title }}</div>",
+			"attributes": {
+				"text": "Trade with Indus Foods"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/82#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Reliable stock, a named account manager and nationwide delivery.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:15px;color:#E3EFF4;line-height:1.45;margin-top:8px;\" data-dc-tpl=\"82\">{{ activePanel.feature.desc }}</div>",
+			"attributes": {
+				"text": "Reliable stock, a named account manager and nationwide delivery."
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/83#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Apply now",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"{{ activePanel.feature.href }}\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"83\">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>",
+			"attributes": {
+				"label": "Apply now",
+				"url": "#/apply"
+			}
+		}
+	]
+}

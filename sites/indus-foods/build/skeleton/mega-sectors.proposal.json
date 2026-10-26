@@ -1,0 +1,1136 @@
+{
+	"generated": "2026-10-26T05:49:41.486Z",
+	"inventory": "2026-10-23T19:44:14.789Z",
+	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"surface": "sectors-mega-menu",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"builtPost": {
+		"site": "sandybrown",
+		"postType": "sgs_mega_menu",
+		"postId": 4443,
+		"title": "[QA] Indus mega: Sectors"
+	},
+	"counts": {
+		"inventoryElements": 29,
+		"parts": 0,
+		"rows": 29,
+		"skeletonNodes": 29,
+		"expandedNodes": 29,
+		"low": 0,
+		"removed": 0,
+		"unresolved": 0,
+		"byRule": {
+			"clientBuiltSurface": 29
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/85#0",
+			"tag": "div",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21)",
+			"source": "rule megaGridContainer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule megaGridContainer: a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"padding:28px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;background:linear-gradient(120deg,#EBDD78 0%,#E7D768 24%,#D8CA50 46%,#2EADE2 76%,#0A7EA8 100%);\" data-dc-tpl=\"85\"> <sc-for list=\"{{ activePanel.cards }}\" as=\"card\" hint-placeholder-count=\"4\" data-dc-tpl=\"86\"> <a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-s",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/87#0",
+			"tag": "a",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/88#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/89#0",
+			"tag": "image-slot",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/90#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/91#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Food Service",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+			"attributes": {
+				"content": "Food Service"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/92#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Quality ingredients for venues, caterers & events across the UK.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+			"attributes": {
+				"text": "Quality ingredients for venues, caterers & events across the UK."
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/93#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Explore Food Service",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)",
+			"source": "rule cardAction",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+			"attributes": {
+				"label": "Explore Food Service",
+				"url": "#/food-service"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/87#1",
+			"tag": "a",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/88#1",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/89#1",
+			"tag": "image-slot",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/90#1",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/91#1",
+			"tag": "div",
+			"depth": 3,
+			"words": "Manufacturing",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+			"attributes": {
+				"content": "Manufacturing"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/92#1",
+			"tag": "div",
+			"depth": 3,
+			"words": "High-quality, healthy & delicious food products at scale.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+			"attributes": {
+				"text": "High-quality, healthy & delicious food products at scale."
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/93#1",
+			"tag": "div",
+			"depth": 3,
+			"words": "Explore Manufacturing",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)",
+			"source": "rule cardAction",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+			"attributes": {
+				"label": "Explore Manufacturing",
+				"url": "#/manufacturing"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/87#2",
+			"tag": "a",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/88#2",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/89#2",
+			"tag": "image-slot",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/90#2",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/91#2",
+			"tag": "div",
+			"depth": 3,
+			"words": "Retail",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+			"attributes": {
+				"content": "Retail"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/92#2",
+			"tag": "div",
+			"depth": 3,
+			"words": "Retail-ready packaging for independent & national retailers.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+			"attributes": {
+				"text": "Retail-ready packaging for independent & national retailers."
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/93#2",
+			"tag": "div",
+			"depth": 3,
+			"words": "Explore Retail",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)",
+			"source": "rule cardAction",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+			"attributes": {
+				"label": "Explore Retail",
+				"url": "#/retail"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/87#3",
+			"tag": "a",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ card.href }}\" style=\"border-radius:18px;padding:18px;border:2px solid #E7D768;box-shadow:0 14px 30px -18px rgba(20,30,45,.55);background:{{ card.bg }};color:{{ card.textColor }};display:flex;flex-direction:column;transition:transform .25s cubic-bezier(.16,.84,.32,1),box-shadow .3s;min-height:270px;\" style-hover=\"transform:translateY(-6px);box-shadow:0 20px 40px -18px rgba(",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/88#3",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"border-radius:12px;overflow:hidden;height:110px;background:{{ card.imgBg }};\" data-dc-tpl=\"88\"> <image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot> </div>",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/89#3",
+			"tag": "image-slot",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": "a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media",
+			"source": "rule mediaElement",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule mediaElement: a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ card.imgId }}\" shape=\"rect\" placeholder=\"{{ card.imgLabel }}\" data-dc-tpl=\"89\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/90#3",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:16px;flex:1;display:flex;flex-direction:column;\" data-dc-tpl=\"90\"> <div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div> <div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div> <div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/91#3",
+			"tag": "div",
+			"depth": 3,
+			"words": "Wholesale",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-weight:700;font-size:19px;letter-spacing:-.01em;\" data-dc-tpl=\"91\">{{ card.label }}</div>",
+			"attributes": {
+				"content": "Wholesale"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/92#3",
+			"tag": "div",
+			"depth": 3,
+			"words": "Reliable stock levels & fast delivery across the whole of the UK.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:15px;color:{{ card.descColor }};line-height:1.4;margin-top:6px;flex:1;\" data-dc-tpl=\"92\">{{ card.desc }}</div>",
+			"attributes": {
+				"text": "Reliable stock levels & fast delivery across the whole of the UK."
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/93#3",
+			"tag": "div",
+			"depth": 3,
+			"words": "Explore Wholesale",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)",
+			"source": "rule cardAction",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
+			"attributes": {
+				"label": "Explore Wholesale",
+				"url": "#/wholesale"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4443,
+				"title": "[QA] Indus mega: Sectors"
+			}
+		}
+	]
+}

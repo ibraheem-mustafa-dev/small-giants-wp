@@ -1,3381 +1,3381 @@
 {
-	"generated": "2026-10-23T19:47:29.524Z",
-	"source": "http://127.0.0.1:56228/Indus%20Foods%20Website%20v2.dc.html#/catalogue",
-	"root": "[data-sgs-skeleton-root=\"inline-form-catalogue\"]",
-	"keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
-	"checks": {
-		"rootName": "Root",
-		"rootKey": "Root/550#0",
-		"unstamped": [
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Where should we send it?"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "We’ll send the latest edition to you."
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Name"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Business name"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Email"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Phone"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Sector"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Please select"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Food Service"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Manufacturing"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Retail"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Wholesale"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Other"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Format"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Please select"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Digital (PDF)"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Printed copy"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Postal address (printed copies)"
-			},
-			{
-				"tag": "span",
-				"cls": "sc-interp",
-				"text": "Request catalogue"
-			},
-			{
-				"tag": "svg",
-				"cls": "",
-				"text": ""
-			},
-			{
-				"tag": "line",
-				"cls": "",
-				"text": ""
-			},
-			{
-				"tag": "polyline",
-				"cls": "",
-				"text": ""
-			}
-		],
-		"duplicateKeys": 0,
-		"perWidthCounts": {
-			"375": 42,
-			"768": 42,
-			"1440": 42
-		},
-		"tagAgree": 42,
-		"tagDisagree": [],
-		"keysMissingAt": {
-			"375": [],
-			"768": [],
-			"1440": []
-		},
-		"screenshotSkips": [
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#0",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#1",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#2",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#3",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#4",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#5",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#6",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#7",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 1440,
-				"key": "Indus Foods Website v2/564#8",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#0",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#1",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#2",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#3",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#4",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#5",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#6",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#7",
-				"why": "not rendered (no layout box)"
-			},
-			{
-				"w": 375,
-				"key": "Indus Foods Website v2/564#8",
-				"why": "not rendered (no layout box)"
-			}
-		]
-	},
-	"elements": [
-		{
-			"key": "Root/550#0",
-			"parentKey": null,
-			"depth": 0,
-			"tag": "form",
-			"template": "Root",
-			"tpl": 550,
-			"attrs": {},
-			"words": "",
-			"allText": "Where should we send it? We’ll send the latest edition to you. Name * Business name * Email * Phone Sector * Please sele",
-			"srcLine": 789,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				}
-			],
-			"srcTag": "form",
-			"srcOwnText": "",
-			"snippet": "<form sc-camel-on-submit=\"{{ b.onSubmit }}\" data-dc-tpl=\"550\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p> <div style=\"display:grid;grid-template-columns:{{ R.fo",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2337.8,
-					"w": 285,
-					"h": 1021.4
-				},
-				"768": {
-					"x": 73,
-					"y": 1539.4,
-					"w": 622,
-					"h": 673.5
-				},
-				"1440": {
-					"x": 141,
-					"y": 1367.2,
-					"w": 713.6,
-					"h": 682.8
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/551#0",
-			"parentKey": "Root/550#0",
-			"depth": 1,
-			"tag": "h3",
-			"template": "Root",
-			"tpl": 551,
-			"attrs": {
-				"style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(24px, 2.4vw, 30px); letter-spacing: -0.025em; margin: 0px;"
-			},
-			"words": "Where should we send it?",
-			"allText": "Where should we send it?",
-			"srcLine": 790,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				}
-			],
-			"srcTag": "h3",
-			"srcOwnText": "{{ b.formTitle }}",
-			"snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2337.8,
-					"w": 285,
-					"h": 74.4
-				},
-				"768": {
-					"x": 73,
-					"y": 1539.4,
-					"w": 622,
-					"h": 37.2
-				},
-				"1440": {
-					"x": 141,
-					"y": 1367.2,
-					"w": 713.6,
-					"h": 46.5
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/552#0",
-			"parentKey": "Root/550#0",
-			"depth": 1,
-			"tag": "p",
-			"template": "Root",
-			"tpl": 552,
-			"attrs": {
-				"style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.6; margin: 8px 0px 0px;"
-			},
-			"words": "We’ll send the latest edition to you.",
-			"allText": "We’ll send the latest edition to you.",
-			"srcLine": 791,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				}
-			],
-			"srcTag": "p",
-			"srcOwnText": "{{ b.formIntro }}",
-			"snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2420.2,
-					"w": 285,
-					"h": 25.6
-				},
-				"768": {
-					"x": 73,
-					"y": 1584.5,
-					"w": 622,
-					"h": 25.6
-				},
-				"1440": {
-					"x": 141,
-					"y": 1421.7,
-					"w": 713.6,
-					"h": 25.6
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/553#0",
-			"parentKey": "Root/550#0",
-			"depth": 1,
-			"tag": "div",
-			"template": "Root",
-			"tpl": 553,
-			"attrs": {
-				"style": "display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 18px; margin-top: 28px;"
-			},
-			"words": "",
-			"allText": "Name * Business name * Email * Phone Sector * Please selectFood ServiceManufacturingRetailWholesaleOther Format * Please",
-			"srcLine": 792,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				}
-			],
-			"srcTag": "div",
-			"srcOwnText": "",
-			"snippet": "<div style=\"display:grid;grid-template-columns:{{ R.formCols }};gap:18px;margin-top:28px;\" data-dc-tpl=\"553\"> <sc-for list=\"{{ b.fields }}\" as=\"fd\" hint-placeholder-count=\"6\" data-dc-tpl=\"554\"> <label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if val",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2473.8,
-					"w": 285,
-					"h": 741.5
-				},
-				"768": {
-					"x": 73,
-					"y": 1638.1,
-					"w": 622,
-					"h": 451.7
-				},
-				"1440": {
-					"x": 141,
-					"y": 1475.3,
-					"w": 713.6,
-					"h": 451.7
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "grid",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/555#0",
-			"parentKey": "Root/553#0",
-			"depth": 2,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 555,
-			"attrs": {
-				"style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
-			},
-			"words": "",
-			"allText": "Name *",
-			"srcLine": 794,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "",
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2473.8,
-					"w": 285,
-					"h": 77.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1638.1,
-					"w": 302,
-					"h": 77.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1475.3,
-					"w": 347.8,
-					"h": 77.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "column",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/556#0",
-			"parentKey": "Root/555#0",
-			"depth": 3,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 556,
-			"attrs": {
-				"style": "font-size: 13.5px; font-weight: 700;"
-			},
-			"words": "Name",
-			"allText": "Name *",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "{{ fd.label }}",
-			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2473.8,
-					"w": 285,
-					"h": 20.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1638.1,
-					"w": 302,
-					"h": 20.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1475.3,
-					"w": 347.8,
-					"h": 20.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/558#0",
-			"parentKey": "Root/556#0",
-			"depth": 4,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 558,
-			"attrs": {
-				"style": "color: rgb(10, 126, 168);"
-			},
-			"words": "*",
-			"allText": "*",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.req }}",
-					"tpl": "557"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "*",
-			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
-			"box": {
-				"375": {
-					"x": 79.7,
-					"y": 2473.8,
-					"w": 8.9,
-					"h": 19
-				},
-				"768": {
-					"x": 107.7,
-					"y": 1638.1,
-					"w": 8.9,
-					"h": 19
-				},
-				"1440": {
-					"x": 175.7,
-					"y": 1475.3,
-					"w": 8.9,
-					"h": 19
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "inline",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": false,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/560#0",
-			"parentKey": "Root/555#0",
-			"depth": 3,
-			"tag": "input",
-			"template": "Root",
-			"tpl": 560,
-			"attrs": {
-				"type": "text",
-				"class": "scp18",
-				"style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
-			},
-			"words": "",
-			"allText": "",
-			"srcLine": 797,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isInput }}",
-					"tpl": "559"
-				}
-			],
-			"srcTag": "input",
-			"srcOwnText": "",
-			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2502.7,
-					"w": 285,
-					"h": 49
-				},
-				"768": {
-					"x": 73,
-					"y": 1667.1,
-					"w": 302,
-					"h": 49
-				},
-				"1440": {
-					"x": 141,
-					"y": 1504.2,
-					"w": 347.8,
-					"h": 49
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/555#1",
-			"parentKey": "Root/553#0",
-			"depth": 2,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 555,
-			"attrs": {
-				"style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
-			},
-			"words": "",
-			"allText": "Business name *",
-			"srcLine": 794,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "",
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2569.7,
-					"w": 285,
-					"h": 77.9
-				},
-				"768": {
-					"x": 393,
-					"y": 1638.1,
-					"w": 302,
-					"h": 77.9
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1475.3,
-					"w": 347.8,
-					"h": 77.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "column",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/556#1",
-			"parentKey": "Root/555#1",
-			"depth": 3,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 556,
-			"attrs": {
-				"style": "font-size: 13.5px; font-weight: 700;"
-			},
-			"words": "Business name",
-			"allText": "Business name *",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "{{ fd.label }}",
-			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2569.7,
-					"w": 285,
-					"h": 20.9
-				},
-				"768": {
-					"x": 393,
-					"y": 1638.1,
-					"w": 302,
-					"h": 20.9
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1475.3,
-					"w": 347.8,
-					"h": 20.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/558#1",
-			"parentKey": "Root/556#1",
-			"depth": 4,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 558,
-			"attrs": {
-				"style": "color: rgb(10, 126, 168);"
-			},
-			"words": "*",
-			"allText": "*",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.req }}",
-					"tpl": "557"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "*",
-			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
-			"box": {
-				"375": {
-					"x": 133.3,
-					"y": 2569.7,
-					"w": 8.9,
-					"h": 19
-				},
-				"768": {
-					"x": 481.3,
-					"y": 1638.1,
-					"w": 8.9,
-					"h": 19
-				},
-				"1440": {
-					"x": 595.2,
-					"y": 1475.3,
-					"w": 8.9,
-					"h": 19
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "inline",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": false,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/560#1",
-			"parentKey": "Root/555#1",
-			"depth": 3,
-			"tag": "input",
-			"template": "Root",
-			"tpl": 560,
-			"attrs": {
-				"type": "text",
-				"class": "scp18",
-				"style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
-			},
-			"words": "",
-			"allText": "",
-			"srcLine": 797,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isInput }}",
-					"tpl": "559"
-				}
-			],
-			"srcTag": "input",
-			"srcOwnText": "",
-			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2598.6,
-					"w": 285,
-					"h": 49
-				},
-				"768": {
-					"x": 393,
-					"y": 1667.1,
-					"w": 302,
-					"h": 49
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1504.2,
-					"w": 347.8,
-					"h": 49
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/555#2",
-			"parentKey": "Root/553#0",
-			"depth": 2,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 555,
-			"attrs": {
-				"style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
-			},
-			"words": "",
-			"allText": "Email *",
-			"srcLine": 794,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "",
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2665.6,
-					"w": 285,
-					"h": 77.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1734.1,
-					"w": 302,
-					"h": 77.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1571.2,
-					"w": 347.8,
-					"h": 77.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "column",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/556#2",
-			"parentKey": "Root/555#2",
-			"depth": 3,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 556,
-			"attrs": {
-				"style": "font-size: 13.5px; font-weight: 700;"
-			},
-			"words": "Email",
-			"allText": "Email *",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "{{ fd.label }}",
-			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2665.6,
-					"w": 285,
-					"h": 20.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1734.1,
-					"w": 302,
-					"h": 20.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1571.2,
-					"w": 347.8,
-					"h": 20.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/558#2",
-			"parentKey": "Root/556#2",
-			"depth": 4,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 558,
-			"attrs": {
-				"style": "color: rgb(10, 126, 168);"
-			},
-			"words": "*",
-			"allText": "*",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.req }}",
-					"tpl": "557"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "*",
-			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
-			"box": {
-				"375": {
-					"x": 78.7,
-					"y": 2665.6,
-					"w": 8.9,
-					"h": 19
-				},
-				"768": {
-					"x": 106.7,
-					"y": 1734.1,
-					"w": 8.9,
-					"h": 19
-				},
-				"1440": {
-					"x": 174.7,
-					"y": 1571.2,
-					"w": 8.9,
-					"h": 19
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "inline",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": false,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/560#2",
-			"parentKey": "Root/555#2",
-			"depth": 3,
-			"tag": "input",
-			"template": "Root",
-			"tpl": 560,
-			"attrs": {
-				"type": "email",
-				"class": "scp18",
-				"style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
-			},
-			"words": "",
-			"allText": "",
-			"srcLine": 797,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isInput }}",
-					"tpl": "559"
-				}
-			],
-			"srcTag": "input",
-			"srcOwnText": "",
-			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2694.5,
-					"w": 285,
-					"h": 49
-				},
-				"768": {
-					"x": 73,
-					"y": 1763,
-					"w": 302,
-					"h": 49
-				},
-				"1440": {
-					"x": 141,
-					"y": 1600.1,
-					"w": 347.8,
-					"h": 49
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/555#3",
-			"parentKey": "Root/553#0",
-			"depth": 2,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 555,
-			"attrs": {
-				"style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
-			},
-			"words": "",
-			"allText": "Phone",
-			"srcLine": 794,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "",
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2761.5,
-					"w": 285,
-					"h": 77.9
-				},
-				"768": {
-					"x": 393,
-					"y": 1734.1,
-					"w": 302,
-					"h": 77.9
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1571.2,
-					"w": 347.8,
-					"h": 77.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "column",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/556#3",
-			"parentKey": "Root/555#3",
-			"depth": 3,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 556,
-			"attrs": {
-				"style": "font-size: 13.5px; font-weight: 700;"
-			},
-			"words": "Phone",
-			"allText": "Phone",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "{{ fd.label }}",
-			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2761.5,
-					"w": 285,
-					"h": 20.9
-				},
-				"768": {
-					"x": 393,
-					"y": 1734.1,
-					"w": 302,
-					"h": 20.9
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1571.2,
-					"w": 347.8,
-					"h": 20.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/560#3",
-			"parentKey": "Root/555#3",
-			"depth": 3,
-			"tag": "input",
-			"template": "Root",
-			"tpl": 560,
-			"attrs": {
-				"type": "tel",
-				"class": "scp18",
-				"style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
-			},
-			"words": "",
-			"allText": "",
-			"srcLine": 797,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isInput }}",
-					"tpl": "559"
-				}
-			],
-			"srcTag": "input",
-			"srcOwnText": "",
-			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2790.5,
-					"w": 285,
-					"h": 49
-				},
-				"768": {
-					"x": 393,
-					"y": 1763,
-					"w": 302,
-					"h": 49
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1600.1,
-					"w": 347.8,
-					"h": 49
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/555#4",
-			"parentKey": "Root/553#0",
-			"depth": 2,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 555,
-			"attrs": {
-				"style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
-			},
-			"words": "",
-			"allText": "Sector * Please selectFood ServiceManufacturingRetailWholesaleOther",
-			"srcLine": 794,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "",
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2857.5,
-					"w": 285,
-					"h": 79.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1830,
-					"w": 302,
-					"h": 79.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1667.1,
-					"w": 347.8,
-					"h": 79.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "column",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/556#4",
-			"parentKey": "Root/555#4",
-			"depth": 3,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 556,
-			"attrs": {
-				"style": "font-size: 13.5px; font-weight: 700;"
-			},
-			"words": "Sector",
-			"allText": "Sector *",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "{{ fd.label }}",
-			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2857.5,
-					"w": 285,
-					"h": 20.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1830,
-					"w": 302,
-					"h": 20.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1667.1,
-					"w": 347.8,
-					"h": 20.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/558#3",
-			"parentKey": "Root/556#4",
-			"depth": 4,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 558,
-			"attrs": {
-				"style": "color: rgb(10, 126, 168);"
-			},
-			"words": "*",
-			"allText": "*",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.req }}",
-					"tpl": "557"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "*",
-			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
-			"box": {
-				"375": {
-					"x": 83.5,
-					"y": 2857.5,
-					"w": 8.9,
-					"h": 19
-				},
-				"768": {
-					"x": 111.5,
-					"y": 1830,
-					"w": 8.9,
-					"h": 19
-				},
-				"1440": {
-					"x": 179.5,
-					"y": 1667.1,
-					"w": 8.9,
-					"h": 19
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "inline",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": false,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/562#0",
-			"parentKey": "Root/555#4",
-			"depth": 3,
-			"tag": "select",
-			"template": "Root",
-			"tpl": 562,
-			"attrs": {
-				"class": "scp19",
-				"style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
-			},
-			"words": "",
-			"allText": "Please selectFood ServiceManufacturingRetailWholesaleOther",
-			"srcLine": 800,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				}
-			],
-			"srcTag": "sc-raw-select",
-			"srcOwnText": "",
-			"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2886.4,
-					"w": 285,
-					"h": 51
-				},
-				"768": {
-					"x": 73,
-					"y": 1858.9,
-					"w": 302,
-					"h": 51
-				},
-				"1440": {
-					"x": 141,
-					"y": 1696,
-					"w": 347.8,
-					"h": 51
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#0",
-			"parentKey": "Root/562#0",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Please select",
-			"allText": "Please select",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#1",
-			"parentKey": "Root/562#0",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Food Service",
-			"allText": "Food Service",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#2",
-			"parentKey": "Root/562#0",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Manufacturing",
-			"allText": "Manufacturing",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#3",
-			"parentKey": "Root/562#0",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Retail",
-			"allText": "Retail",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#4",
-			"parentKey": "Root/562#0",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Wholesale",
-			"allText": "Wholesale",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#5",
-			"parentKey": "Root/562#0",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Other",
-			"allText": "Other",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/555#5",
-			"parentKey": "Root/553#0",
-			"depth": 2,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 555,
-			"attrs": {
-				"style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
-			},
-			"words": "",
-			"allText": "Format * Please selectDigital (PDF)Printed copy",
-			"srcLine": 794,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "",
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2955.4,
-					"w": 285,
-					"h": 79.9
-				},
-				"768": {
-					"x": 393,
-					"y": 1830,
-					"w": 302,
-					"h": 79.9
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1667.1,
-					"w": 347.8,
-					"h": 79.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "column",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/556#5",
-			"parentKey": "Root/555#5",
-			"depth": 3,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 556,
-			"attrs": {
-				"style": "font-size: 13.5px; font-weight: 700;"
-			},
-			"words": "Format",
-			"allText": "Format *",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "{{ fd.label }}",
-			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2955.4,
-					"w": 285,
-					"h": 20.9
-				},
-				"768": {
-					"x": 393,
-					"y": 1830,
-					"w": 302,
-					"h": 20.9
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1667.1,
-					"w": 347.8,
-					"h": 20.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/558#4",
-			"parentKey": "Root/556#5",
-			"depth": 4,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 558,
-			"attrs": {
-				"style": "color: rgb(10, 126, 168);"
-			},
-			"words": "*",
-			"allText": "*",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.req }}",
-					"tpl": "557"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "*",
-			"snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
-			"box": {
-				"375": {
-					"x": 88.3,
-					"y": 2955.4,
-					"w": 8.9,
-					"h": 19
-				},
-				"768": {
-					"x": 436.3,
-					"y": 1830,
-					"w": 8.9,
-					"h": 19
-				},
-				"1440": {
-					"x": 550.1,
-					"y": 1667.1,
-					"w": 8.9,
-					"h": 19
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "inline",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": false,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/562#1",
-			"parentKey": "Root/555#5",
-			"depth": 3,
-			"tag": "select",
-			"template": "Root",
-			"tpl": 562,
-			"attrs": {
-				"class": "scp19",
-				"style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
-			},
-			"words": "",
-			"allText": "Please selectDigital (PDF)Printed copy",
-			"srcLine": 800,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				}
-			],
-			"srcTag": "sc-raw-select",
-			"srcOwnText": "",
-			"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 2984.3,
-					"w": 285,
-					"h": 51
-				},
-				"768": {
-					"x": 393,
-					"y": 1858.9,
-					"w": 302,
-					"h": 51
-				},
-				"1440": {
-					"x": 506.8,
-					"y": 1696,
-					"w": 347.8,
-					"h": 51
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#6",
-			"parentKey": "Root/562#1",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Please select",
-			"allText": "Please select",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#7",
-			"parentKey": "Root/562#1",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Digital (PDF)",
-			"allText": "Digital (PDF)",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/564#8",
-			"parentKey": "Root/562#1",
-			"depth": 4,
-			"tag": "option",
-			"template": "Root",
-			"tpl": 564,
-			"attrs": {},
-			"words": "Printed copy",
-			"allText": "Printed copy",
-			"srcLine": 801,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isSelect }}",
-					"tpl": "561"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ fd.options }}",
-					"as": "o",
-					"tpl": "563"
-				}
-			],
-			"srcTag": "option",
-			"srcOwnText": "{{ o.l }}",
-			"snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
-			"box": {
-				"375": null,
-				"768": null,
-				"1440": null
-			},
-			"visible": {
-				"375": false,
-				"768": false,
-				"1440": false
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": null,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/555#6",
-			"parentKey": "Root/553#0",
-			"depth": 2,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 555,
-			"attrs": {
-				"style": "display: flex; flex-direction: column; gap: 8px; grid-column: 1 / -1; min-width: 0px;"
-			},
-			"words": "",
-			"allText": "Postal address (printed copies)",
-			"srcLine": 794,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "",
-			"snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 3053.3,
-					"w": 285,
-					"h": 161.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1927.9,
-					"w": 622,
-					"h": 161.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1765,
-					"w": 713.6,
-					"h": 161.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "column",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/556#6",
-			"parentKey": "Root/555#6",
-			"depth": 3,
-			"tag": "span",
-			"template": "Root",
-			"tpl": 556,
-			"attrs": {
-				"style": "font-size: 13.5px; font-weight: 700;"
-			},
-			"words": "Postal address (printed copies)",
-			"allText": "Postal address (printed copies)",
-			"srcLine": 795,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				}
-			],
-			"srcTag": "span",
-			"srcOwnText": "{{ fd.label }}",
-			"snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 3053.3,
-					"w": 285,
-					"h": 20.9
-				},
-				"768": {
-					"x": 73,
-					"y": 1927.9,
-					"w": 622,
-					"h": 20.9
-				},
-				"1440": {
-					"x": 141,
-					"y": 1765,
-					"w": 713.6,
-					"h": 20.9
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/566#0",
-			"parentKey": "Root/555#6",
-			"depth": 3,
-			"tag": "textarea",
-			"template": "Root",
-			"tpl": 566,
-			"attrs": {
-				"class": "scp18",
-				"style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; resize: vertical; transition: border-color 0.2s, box-shadow 0.2s;"
-			},
-			"words": "",
-			"allText": "",
-			"srcLine": 805,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				},
-				{
-					"kind": "sc-for",
-					"list": "{{ b.fields }}",
-					"as": "fd",
-					"tpl": "554"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ fd.isArea }}",
-					"tpl": "565"
-				}
-			],
-			"srcTag": "textarea",
-			"srcOwnText": "",
-			"snippet": "<textarea rows=\"5\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;resize:vertical;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"566\"></tex",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 3082.2,
-					"w": 285,
-					"h": 133
-				},
-				"768": {
-					"x": 73,
-					"y": 1956.8,
-					"w": 622,
-					"h": 133
-				},
-				"1440": {
-					"x": 141,
-					"y": 1794,
-					"w": 713.6,
-					"h": 133
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/569#0",
-			"parentKey": "Root/550#0",
-			"depth": 1,
-			"tag": "label",
-			"template": "Root",
-			"tpl": 569,
-			"attrs": {
-				"style": "display: flex; gap: 12px; align-items: flex-start; margin-top: 22px; font-size: 14px; color: rgb(74, 85, 99); line-height: 1.5; cursor: pointer;"
-			},
-			"words": "I agree to Indus Foods contacting me about this enquiry.",
-			"allText": "I agree to Indus Foods contacting me about this enquiry.",
-			"srcLine": 813,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				}
-			],
-			"srcTag": "label",
-			"srcOwnText": "I agree to Indus Foods contacting me about this enquiry.",
-			"snippet": "<label style=\"display:flex;gap:12px;align-items:flex-start;margin-top:22px;font-size:14px;color:#4A5563;line-height:1.5;cursor:pointer;\" data-dc-tpl=\"569\"> <input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\"> I agree to Indus Foods contacting me about this enquiry. </label>",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 3237.2,
-					"w": 285,
-					"h": 42
-				},
-				"768": {
-					"x": 73,
-					"y": 2111.8,
-					"w": 622,
-					"h": 21
-				},
-				"1440": {
-					"x": 141,
-					"y": 1949,
-					"w": 713.6,
-					"h": 21
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/570#0",
-			"parentKey": "Root/569#0",
-			"depth": 2,
-			"tag": "input",
-			"template": "Root",
-			"tpl": 570,
-			"attrs": {
-				"type": "checkbox",
-				"style": "width: 18px; height: 18px; margin: 1px 0px 0px; accent-color: rgb(10, 126, 168); flex-shrink: 0;"
-			},
-			"words": "",
-			"allText": "",
-			"srcLine": 814,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				}
-			],
-			"srcTag": "input",
-			"srcOwnText": "",
-			"snippet": "<input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\">",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 3238.2,
-					"w": 18,
-					"h": 18
-				},
-				"768": {
-					"x": 73,
-					"y": 2112.8,
-					"w": 18,
-					"h": 18
-				},
-				"1440": {
-					"x": 141,
-					"y": 1950,
-					"w": 18,
-					"h": 18
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "block",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": false,
-			"screenshots": {}
-		},
-		{
-			"key": "Root/571#0",
-			"parentKey": "Root/550#0",
-			"depth": 1,
-			"tag": "button",
-			"template": "Root",
-			"tpl": 571,
-			"attrs": {
-				"type": "submit",
-				"style": "margin-top: 26px; color: rgb(255, 255, 255); background: rgb(10, 126, 168); font-weight: 700; padding: 16px 26px; border-radius: 999px; font-size: 16px; display: inline-flex; align-items: center; gap: 10px; border: 0px; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s; box-shadow: rgba(10, 126, 168, 0.5) 0px 4px 14px -6px;"
-			},
-			"words": "Request catalogue",
-			"allText": "Request catalogue",
-			"srcLine": 817,
-			"membership": [
-				{
-					"kind": "sc-for",
-					"list": "{{ blocks }}",
-					"as": "b",
-					"tpl": "343"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.isForm }}",
-					"tpl": "540"
-				},
-				{
-					"kind": "sc-if",
-					"value": "{{ b.notDone }}",
-					"tpl": "549"
-				}
-			],
-			"srcTag": "button",
-			"srcOwnText": "{{ b.submit }} {{ arrowIcon }}",
-			"snippet": "<button type=\"submit\" sc-camel-on-mouse-enter=\"{{ btnEnter }}\" sc-camel-on-mouse-leave=\"{{ btnLeave }}\" data-mag=\"\" style=\"margin-top:26px;color:#FFFFFF;background:#0A7EA8;font-weight:700;padding:16px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;transition:transform .2s,box-shadow .3s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);",
-			"box": {
-				"375": {
-					"x": 45,
-					"y": 3305.2,
-					"w": 206.7,
-					"h": 54
-				},
-				"768": {
-					"x": 73,
-					"y": 2158.8,
-					"w": 206.7,
-					"h": 54
-				},
-				"1440": {
-					"x": 141,
-					"y": 1996,
-					"w": 206.7,
-					"h": 54
-				}
-			},
-			"visible": {
-				"375": true,
-				"768": true,
-				"1440": true
-			},
-			"display": "inline-flex",
-			"position": {
-				"375": "static",
-				"768": "static",
-				"1440": "static"
-			},
-			"flexDirection": "row",
-			"layoutChanged375": true,
-			"screenshots": {}
-		}
-	],
-	"sources": {
-		"files": {
-			"EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
-			"Indus Foods Website v2.dc.html": "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf",
-			"README.md": "797285a24cb6ef737fd35855d7ec021465b6d37ecdcc3fecfcf9fd611bfeda7f",
-			"TradeApplication.dc.html": "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77",
-			"animations.json": "65dcc2c37383dfe5c9e0cdc40b54d1ec16248c0c71ce804e511149f5e88e1f1c",
-			"assets/about-hero-desktop.svg": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca",
-			"assets/about-hero-mobile.svg": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c",
-			"assets/about-hero-tablet.svg": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53",
-			"assets/logo-horizontal-anim.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
-			"assets/logo-horizontal.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
-			"assets/logo-square-anim.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
-			"assets/logo-square.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
-			"assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
-			"image-slot.js": "d797f41b7d66c445a7ddddc1f7d2871dfc0e996eee2b7a3dbab4c7a7d6c5d234",
-			"indus-logo.js": "23b8e7b64deb9dfdeee0e2d2a7afc922eb8e4beeb81f7e3f0a3d9bc68bc9c7f4",
-			"support.js": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
-			"surfaces.json": "c63b959982e692809a0f34ec716ad74296c3a5e1b71f57a90d65922a11a6cc18",
-			"tokens/colors.css": "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035",
-			"tokens/spacing.css": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb",
-			"tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
-		},
-		"route": {
-			"commit": "916eba5911241c1499a107fb7a3da66ba0a20f4e"
-		}
-	}
+  "generated": "2026-10-23T19:47:29.524Z",
+  "source": "http://127.0.0.1:56228/Indus%20Foods%20Website%20v2.dc.html#/catalogue",
+  "root": "[data-sgs-skeleton-root=\"inline-form-catalogue\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/550#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Where should we send it?"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "We’ll send the latest edition to you."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Name"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Business name"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Email"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Phone"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Sector"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Please select"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Food Service"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Manufacturing"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Retail"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Wholesale"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Other"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Format"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Please select"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Digital (PDF)"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Printed copy"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Postal address (printed copies)"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Request catalogue"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 42,
+      "768": 42,
+      "1440": 42
+    },
+    "tagAgree": 42,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": [
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#0",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#1",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#2",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#3",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#4",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#5",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#6",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#7",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 1440,
+        "key": "Indus Foods Website v2/564#8",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#0",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#1",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#2",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#3",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#4",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#5",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#6",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#7",
+        "why": "not rendered (no layout box)"
+      },
+      {
+        "w": 375,
+        "key": "Indus Foods Website v2/564#8",
+        "why": "not rendered (no layout box)"
+      }
+    ]
+  },
+  "elements": [
+    {
+      "key": "Root/550#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "form",
+      "template": "Root",
+      "tpl": 550,
+      "attrs": {},
+      "words": "",
+      "allText": "Where should we send it? We’ll send the latest edition to you. Name * Business name * Email * Phone Sector * Please sele",
+      "srcLine": 789,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        }
+      ],
+      "srcTag": "form",
+      "srcOwnText": "",
+      "snippet": "<form sc-camel-on-submit=\"{{ b.onSubmit }}\" data-dc-tpl=\"550\"> <h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3> <p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p> <div style=\"display:grid;grid-template-columns:{{ R.fo",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2337.8,
+          "w": 285,
+          "h": 1021.4
+        },
+        "768": {
+          "x": 73,
+          "y": 1539.4,
+          "w": 622,
+          "h": 673.5
+        },
+        "1440": {
+          "x": 141,
+          "y": 1367.2,
+          "w": 713.6,
+          "h": 682.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/551#0",
+      "parentKey": "Root/550#0",
+      "depth": 1,
+      "tag": "h3",
+      "template": "Root",
+      "tpl": 551,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(24px, 2.4vw, 30px); letter-spacing: -0.025em; margin: 0px;"
+      },
+      "words": "Where should we send it?",
+      "allText": "Where should we send it?",
+      "srcLine": 790,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        }
+      ],
+      "srcTag": "h3",
+      "srcOwnText": "{{ b.formTitle }}",
+      "snippet": "<h3 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(24px,2.4vw,30px);letter-spacing:-.025em;margin:0;\" data-dc-tpl=\"551\">{{ b.formTitle }}</h3>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2337.8,
+          "w": 285,
+          "h": 74.4
+        },
+        "768": {
+          "x": 73,
+          "y": 1539.4,
+          "w": 622,
+          "h": 37.2
+        },
+        "1440": {
+          "x": 141,
+          "y": 1367.2,
+          "w": 713.6,
+          "h": 46.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/552#0",
+      "parentKey": "Root/550#0",
+      "depth": 1,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 552,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(74, 85, 99); line-height: 1.6; margin: 8px 0px 0px;"
+      },
+      "words": "We’ll send the latest edition to you.",
+      "allText": "We’ll send the latest edition to you.",
+      "srcLine": 791,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ b.formIntro }}",
+      "snippet": "<p style=\"font-size:16px;color:#4A5563;line-height:1.6;margin:8px 0 0;\" data-dc-tpl=\"552\">{{ b.formIntro }}</p>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2420.2,
+          "w": 285,
+          "h": 25.6
+        },
+        "768": {
+          "x": 73,
+          "y": 1584.5,
+          "w": 622,
+          "h": 25.6
+        },
+        "1440": {
+          "x": 141,
+          "y": 1421.7,
+          "w": 713.6,
+          "h": 25.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/553#0",
+      "parentKey": "Root/550#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 553,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 18px; margin-top: 28px;"
+      },
+      "words": "",
+      "allText": "Name * Business name * Email * Phone Sector * Please selectFood ServiceManufacturingRetailWholesaleOther Format * Please",
+      "srcLine": 792,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ R.formCols }};gap:18px;margin-top:28px;\" data-dc-tpl=\"553\"> <sc-for list=\"{{ b.fields }}\" as=\"fd\" hint-placeholder-count=\"6\" data-dc-tpl=\"554\"> <label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if val",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2473.8,
+          "w": 285,
+          "h": 741.5
+        },
+        "768": {
+          "x": 73,
+          "y": 1638.1,
+          "w": 622,
+          "h": 451.7
+        },
+        "1440": {
+          "x": 141,
+          "y": 1475.3,
+          "w": 713.6,
+          "h": 451.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/555#0",
+      "parentKey": "Root/553#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 555,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Name *",
+      "srcLine": 794,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2473.8,
+          "w": 285,
+          "h": 77.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1638.1,
+          "w": 302,
+          "h": 77.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1475.3,
+          "w": 347.8,
+          "h": 77.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/556#0",
+      "parentKey": "Root/555#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 556,
+      "attrs": {
+        "style": "font-size: 13.5px; font-weight: 700;"
+      },
+      "words": "Name",
+      "allText": "Name *",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ fd.label }}",
+      "snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2473.8,
+          "w": 285,
+          "h": 20.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1638.1,
+          "w": 302,
+          "h": 20.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1475.3,
+          "w": 347.8,
+          "h": 20.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/558#0",
+      "parentKey": "Root/556#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 558,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168);"
+      },
+      "words": "*",
+      "allText": "*",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.req }}",
+          "tpl": "557"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "*",
+      "snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+      "box": {
+        "375": {
+          "x": 79.7,
+          "y": 2473.8,
+          "w": 8.9,
+          "h": 19
+        },
+        "768": {
+          "x": 107.7,
+          "y": 1638.1,
+          "w": 8.9,
+          "h": 19
+        },
+        "1440": {
+          "x": 175.7,
+          "y": 1475.3,
+          "w": 8.9,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/560#0",
+      "parentKey": "Root/555#0",
+      "depth": 3,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 560,
+      "attrs": {
+        "type": "text",
+        "class": "scp18",
+        "style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 797,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isInput }}",
+          "tpl": "559"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2502.7,
+          "w": 285,
+          "h": 49
+        },
+        "768": {
+          "x": 73,
+          "y": 1667.1,
+          "w": 302,
+          "h": 49
+        },
+        "1440": {
+          "x": 141,
+          "y": 1504.2,
+          "w": 347.8,
+          "h": 49
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/555#1",
+      "parentKey": "Root/553#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 555,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Business name *",
+      "srcLine": 794,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2569.7,
+          "w": 285,
+          "h": 77.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1638.1,
+          "w": 302,
+          "h": 77.9
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1475.3,
+          "w": 347.8,
+          "h": 77.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/556#1",
+      "parentKey": "Root/555#1",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 556,
+      "attrs": {
+        "style": "font-size: 13.5px; font-weight: 700;"
+      },
+      "words": "Business name",
+      "allText": "Business name *",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ fd.label }}",
+      "snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2569.7,
+          "w": 285,
+          "h": 20.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1638.1,
+          "w": 302,
+          "h": 20.9
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1475.3,
+          "w": 347.8,
+          "h": 20.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/558#1",
+      "parentKey": "Root/556#1",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 558,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168);"
+      },
+      "words": "*",
+      "allText": "*",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.req }}",
+          "tpl": "557"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "*",
+      "snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+      "box": {
+        "375": {
+          "x": 133.3,
+          "y": 2569.7,
+          "w": 8.9,
+          "h": 19
+        },
+        "768": {
+          "x": 481.3,
+          "y": 1638.1,
+          "w": 8.9,
+          "h": 19
+        },
+        "1440": {
+          "x": 595.2,
+          "y": 1475.3,
+          "w": 8.9,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/560#1",
+      "parentKey": "Root/555#1",
+      "depth": 3,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 560,
+      "attrs": {
+        "type": "text",
+        "class": "scp18",
+        "style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 797,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isInput }}",
+          "tpl": "559"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2598.6,
+          "w": 285,
+          "h": 49
+        },
+        "768": {
+          "x": 393,
+          "y": 1667.1,
+          "w": 302,
+          "h": 49
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1504.2,
+          "w": 347.8,
+          "h": 49
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/555#2",
+      "parentKey": "Root/553#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 555,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Email *",
+      "srcLine": 794,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2665.6,
+          "w": 285,
+          "h": 77.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1734.1,
+          "w": 302,
+          "h": 77.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1571.2,
+          "w": 347.8,
+          "h": 77.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/556#2",
+      "parentKey": "Root/555#2",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 556,
+      "attrs": {
+        "style": "font-size: 13.5px; font-weight: 700;"
+      },
+      "words": "Email",
+      "allText": "Email *",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ fd.label }}",
+      "snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2665.6,
+          "w": 285,
+          "h": 20.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1734.1,
+          "w": 302,
+          "h": 20.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1571.2,
+          "w": 347.8,
+          "h": 20.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/558#2",
+      "parentKey": "Root/556#2",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 558,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168);"
+      },
+      "words": "*",
+      "allText": "*",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.req }}",
+          "tpl": "557"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "*",
+      "snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+      "box": {
+        "375": {
+          "x": 78.7,
+          "y": 2665.6,
+          "w": 8.9,
+          "h": 19
+        },
+        "768": {
+          "x": 106.7,
+          "y": 1734.1,
+          "w": 8.9,
+          "h": 19
+        },
+        "1440": {
+          "x": 174.7,
+          "y": 1571.2,
+          "w": 8.9,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/560#2",
+      "parentKey": "Root/555#2",
+      "depth": 3,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 560,
+      "attrs": {
+        "type": "email",
+        "class": "scp18",
+        "style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 797,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isInput }}",
+          "tpl": "559"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2694.5,
+          "w": 285,
+          "h": 49
+        },
+        "768": {
+          "x": 73,
+          "y": 1763,
+          "w": 302,
+          "h": 49
+        },
+        "1440": {
+          "x": 141,
+          "y": 1600.1,
+          "w": 347.8,
+          "h": 49
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/555#3",
+      "parentKey": "Root/553#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 555,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Phone",
+      "srcLine": 794,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2761.5,
+          "w": 285,
+          "h": 77.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1734.1,
+          "w": 302,
+          "h": 77.9
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1571.2,
+          "w": 347.8,
+          "h": 77.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/556#3",
+      "parentKey": "Root/555#3",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 556,
+      "attrs": {
+        "style": "font-size: 13.5px; font-weight: 700;"
+      },
+      "words": "Phone",
+      "allText": "Phone",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ fd.label }}",
+      "snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2761.5,
+          "w": 285,
+          "h": 20.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1734.1,
+          "w": 302,
+          "h": 20.9
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1571.2,
+          "w": 347.8,
+          "h": 20.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/560#3",
+      "parentKey": "Root/555#3",
+      "depth": 3,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 560,
+      "attrs": {
+        "type": "tel",
+        "class": "scp18",
+        "style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 797,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isInput }}",
+          "tpl": "559"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2790.5,
+          "w": 285,
+          "h": 49
+        },
+        "768": {
+          "x": 393,
+          "y": 1763,
+          "w": 302,
+          "h": 49
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1600.1,
+          "w": 347.8,
+          "h": 49
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/555#4",
+      "parentKey": "Root/553#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 555,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Sector * Please selectFood ServiceManufacturingRetailWholesaleOther",
+      "srcLine": 794,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2857.5,
+          "w": 285,
+          "h": 79.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1830,
+          "w": 302,
+          "h": 79.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1667.1,
+          "w": 347.8,
+          "h": 79.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/556#4",
+      "parentKey": "Root/555#4",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 556,
+      "attrs": {
+        "style": "font-size: 13.5px; font-weight: 700;"
+      },
+      "words": "Sector",
+      "allText": "Sector *",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ fd.label }}",
+      "snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2857.5,
+          "w": 285,
+          "h": 20.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1830,
+          "w": 302,
+          "h": 20.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1667.1,
+          "w": 347.8,
+          "h": 20.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/558#3",
+      "parentKey": "Root/556#4",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 558,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168);"
+      },
+      "words": "*",
+      "allText": "*",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.req }}",
+          "tpl": "557"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "*",
+      "snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+      "box": {
+        "375": {
+          "x": 83.5,
+          "y": 2857.5,
+          "w": 8.9,
+          "h": 19
+        },
+        "768": {
+          "x": 111.5,
+          "y": 1830,
+          "w": 8.9,
+          "h": 19
+        },
+        "1440": {
+          "x": 179.5,
+          "y": 1667.1,
+          "w": 8.9,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/562#0",
+      "parentKey": "Root/555#4",
+      "depth": 3,
+      "tag": "select",
+      "template": "Root",
+      "tpl": 562,
+      "attrs": {
+        "class": "scp19",
+        "style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
+      },
+      "words": "",
+      "allText": "Please selectFood ServiceManufacturingRetailWholesaleOther",
+      "srcLine": 800,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        }
+      ],
+      "srcTag": "sc-raw-select",
+      "srcOwnText": "",
+      "snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2886.4,
+          "w": 285,
+          "h": 51
+        },
+        "768": {
+          "x": 73,
+          "y": 1858.9,
+          "w": 302,
+          "h": 51
+        },
+        "1440": {
+          "x": 141,
+          "y": 1696,
+          "w": 347.8,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#0",
+      "parentKey": "Root/562#0",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Please select",
+      "allText": "Please select",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#1",
+      "parentKey": "Root/562#0",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Food Service",
+      "allText": "Food Service",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#2",
+      "parentKey": "Root/562#0",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Manufacturing",
+      "allText": "Manufacturing",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#3",
+      "parentKey": "Root/562#0",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Retail",
+      "allText": "Retail",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#4",
+      "parentKey": "Root/562#0",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Wholesale",
+      "allText": "Wholesale",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#5",
+      "parentKey": "Root/562#0",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Other",
+      "allText": "Other",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/555#5",
+      "parentKey": "Root/553#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 555,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 8px; grid-column: auto; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Format * Please selectDigital (PDF)Printed copy",
+      "srcLine": 794,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2955.4,
+          "w": 285,
+          "h": 79.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1830,
+          "w": 302,
+          "h": 79.9
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1667.1,
+          "w": 347.8,
+          "h": 79.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/556#5",
+      "parentKey": "Root/555#5",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 556,
+      "attrs": {
+        "style": "font-size: 13.5px; font-weight: 700;"
+      },
+      "words": "Format",
+      "allText": "Format *",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ fd.label }}",
+      "snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2955.4,
+          "w": 285,
+          "h": 20.9
+        },
+        "768": {
+          "x": 393,
+          "y": 1830,
+          "w": 302,
+          "h": 20.9
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1667.1,
+          "w": 347.8,
+          "h": 20.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/558#4",
+      "parentKey": "Root/556#5",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 558,
+      "attrs": {
+        "style": "color: rgb(10, 126, 168);"
+      },
+      "words": "*",
+      "allText": "*",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.req }}",
+          "tpl": "557"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "*",
+      "snippet": "<span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span>",
+      "box": {
+        "375": {
+          "x": 88.3,
+          "y": 2955.4,
+          "w": 8.9,
+          "h": 19
+        },
+        "768": {
+          "x": 436.3,
+          "y": 1830,
+          "w": 8.9,
+          "h": 19
+        },
+        "1440": {
+          "x": 550.1,
+          "y": 1667.1,
+          "w": 8.9,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/562#1",
+      "parentKey": "Root/555#5",
+      "depth": 3,
+      "tag": "select",
+      "template": "Root",
+      "tpl": 562,
+      "attrs": {
+        "class": "scp19",
+        "style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; transition: border-color 0.2s, box-shadow 0.2s;"
+      },
+      "words": "",
+      "allText": "Please selectDigital (PDF)Printed copy",
+      "srcLine": 800,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        }
+      ],
+      "srcTag": "sc-raw-select",
+      "srcOwnText": "",
+      "snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 2984.3,
+          "w": 285,
+          "h": 51
+        },
+        "768": {
+          "x": 393,
+          "y": 1858.9,
+          "w": 302,
+          "h": 51
+        },
+        "1440": {
+          "x": 506.8,
+          "y": 1696,
+          "w": 347.8,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#6",
+      "parentKey": "Root/562#1",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Please select",
+      "allText": "Please select",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#7",
+      "parentKey": "Root/562#1",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Digital (PDF)",
+      "allText": "Digital (PDF)",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/564#8",
+      "parentKey": "Root/562#1",
+      "depth": 4,
+      "tag": "option",
+      "template": "Root",
+      "tpl": 564,
+      "attrs": {},
+      "words": "Printed copy",
+      "allText": "Printed copy",
+      "srcLine": 801,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isSelect }}",
+          "tpl": "561"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ fd.options }}",
+          "as": "o",
+          "tpl": "563"
+        }
+      ],
+      "srcTag": "option",
+      "srcOwnText": "{{ o.l }}",
+      "snippet": "<option value=\"{{ o.v }}\" data-dc-tpl=\"564\">{{ o.l }}</option>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": null
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/555#6",
+      "parentKey": "Root/553#0",
+      "depth": 2,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 555,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 8px; grid-column: 1 / -1; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Postal address (printed copies)",
+      "srcLine": 794,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:8px;grid-column:{{ fd.span }};min-width:0;\" data-dc-tpl=\"555\"> <span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span> <sc-if value=\"{{ fd.isInput }}\" hint-placeholder-va",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 3053.3,
+          "w": 285,
+          "h": 161.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1927.9,
+          "w": 622,
+          "h": 161.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1765,
+          "w": 713.6,
+          "h": 161.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/556#6",
+      "parentKey": "Root/555#6",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 556,
+      "attrs": {
+        "style": "font-size: 13.5px; font-weight: 700;"
+      },
+      "words": "Postal address (printed copies)",
+      "allText": "Postal address (printed copies)",
+      "srcLine": 795,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ fd.label }}",
+      "snippet": "<span style=\"font-size:13.5px;font-weight:700;\" data-dc-tpl=\"556\">{{ fd.label }}<sc-if value=\"{{ fd.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"557\"><span style=\"color:#0A7EA8;\" data-dc-tpl=\"558\"> *</span></sc-if></span>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 3053.3,
+          "w": 285,
+          "h": 20.9
+        },
+        "768": {
+          "x": 73,
+          "y": 1927.9,
+          "w": 622,
+          "h": 20.9
+        },
+        "1440": {
+          "x": 141,
+          "y": 1765,
+          "w": 713.6,
+          "h": 20.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/566#0",
+      "parentKey": "Root/555#6",
+      "depth": 3,
+      "tag": "textarea",
+      "template": "Root",
+      "tpl": 566,
+      "attrs": {
+        "class": "scp18",
+        "style": "width: 100%; font-size: 15px; padding: 13px 14px; border: 1px solid rgba(30, 42, 60, 0.2); border-radius: 10px; background: rgb(251, 252, 253); color: rgb(30, 42, 60); outline: none; resize: vertical; transition: border-color 0.2s, box-shadow 0.2s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 805,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.fields }}",
+          "as": "fd",
+          "tpl": "554"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ fd.isArea }}",
+          "tpl": "565"
+        }
+      ],
+      "srcTag": "textarea",
+      "srcOwnText": "",
+      "snippet": "<textarea rows=\"5\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;resize:vertical;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"566\"></tex",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 3082.2,
+          "w": 285,
+          "h": 133
+        },
+        "768": {
+          "x": 73,
+          "y": 1956.8,
+          "w": 622,
+          "h": 133
+        },
+        "1440": {
+          "x": 141,
+          "y": 1794,
+          "w": 713.6,
+          "h": 133
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/569#0",
+      "parentKey": "Root/550#0",
+      "depth": 1,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 569,
+      "attrs": {
+        "style": "display: flex; gap: 12px; align-items: flex-start; margin-top: 22px; font-size: 14px; color: rgb(74, 85, 99); line-height: 1.5; cursor: pointer;"
+      },
+      "words": "I agree to Indus Foods contacting me about this enquiry.",
+      "allText": "I agree to Indus Foods contacting me about this enquiry.",
+      "srcLine": 813,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "I agree to Indus Foods contacting me about this enquiry.",
+      "snippet": "<label style=\"display:flex;gap:12px;align-items:flex-start;margin-top:22px;font-size:14px;color:#4A5563;line-height:1.5;cursor:pointer;\" data-dc-tpl=\"569\"> <input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\"> I agree to Indus Foods contacting me about this enquiry. </label>",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 3237.2,
+          "w": 285,
+          "h": 42
+        },
+        "768": {
+          "x": 73,
+          "y": 2111.8,
+          "w": 622,
+          "h": 21
+        },
+        "1440": {
+          "x": 141,
+          "y": 1949,
+          "w": 713.6,
+          "h": 21
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/570#0",
+      "parentKey": "Root/569#0",
+      "depth": 2,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 570,
+      "attrs": {
+        "type": "checkbox",
+        "style": "width: 18px; height: 18px; margin: 1px 0px 0px; accent-color: rgb(10, 126, 168); flex-shrink: 0;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 814,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\">",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 3238.2,
+          "w": 18,
+          "h": 18
+        },
+        "768": {
+          "x": 73,
+          "y": 2112.8,
+          "w": 18,
+          "h": 18
+        },
+        "1440": {
+          "x": 141,
+          "y": 1950,
+          "w": 18,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/571#0",
+      "parentKey": "Root/550#0",
+      "depth": 1,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 571,
+      "attrs": {
+        "type": "submit",
+        "style": "margin-top: 26px; color: rgb(255, 255, 255); background: rgb(10, 126, 168); font-weight: 700; padding: 16px 26px; border-radius: 999px; font-size: 16px; display: inline-flex; align-items: center; gap: 10px; border: 0px; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s; box-shadow: rgba(10, 126, 168, 0.5) 0px 4px 14px -6px;"
+      },
+      "words": "Request catalogue",
+      "allText": "Request catalogue",
+      "srcLine": 817,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isForm }}",
+          "tpl": "540"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.notDone }}",
+          "tpl": "549"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ b.submit }} {{ arrowIcon }}",
+      "snippet": "<button type=\"submit\" sc-camel-on-mouse-enter=\"{{ btnEnter }}\" sc-camel-on-mouse-leave=\"{{ btnLeave }}\" data-mag=\"\" style=\"margin-top:26px;color:#FFFFFF;background:#0A7EA8;font-weight:700;padding:16px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;border:0;cursor:pointer;transition:transform .2s,box-shadow .3s;box-shadow:0 4px 14px -6px rgba(10,126,168,.5);",
+      "box": {
+        "375": {
+          "x": 45,
+          "y": 3305.2,
+          "w": 206.7,
+          "h": 54
+        },
+        "768": {
+          "x": 73,
+          "y": 2158.8,
+          "w": 206.7,
+          "h": 54
+        },
+        "1440": {
+          "x": 141,
+          "y": 1996,
+          "w": 206.7,
+          "h": 54
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    }
+  ],
+  "sources": {
+    "files": {
+      "EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
+      "Indus Foods Website v2.dc.html": "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf",
+      "README.md": "797285a24cb6ef737fd35855d7ec021465b6d37ecdcc3fecfcf9fd611bfeda7f",
+      "TradeApplication.dc.html": "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77",
+      "animations.json": "65dcc2c37383dfe5c9e0cdc40b54d1ec16248c0c71ce804e511149f5e88e1f1c",
+      "assets/about-hero-desktop.svg": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca",
+      "assets/about-hero-mobile.svg": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c",
+      "assets/about-hero-tablet.svg": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53",
+      "assets/logo-horizontal-anim.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-horizontal.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-square-anim.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/logo-square.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
+      "image-slot.js": "d797f41b7d66c445a7ddddc1f7d2871dfc0e996eee2b7a3dbab4c7a7d6c5d234",
+      "indus-logo.js": "23b8e7b64deb9dfdeee0e2d2a7afc922eb8e4beeb81f7e3f0a3d9bc68bc9c7f4",
+      "support.js": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+      "surfaces.json": "c63b959982e692809a0f34ec716ad74296c3a5e1b71f57a90d65922a11a6cc18",
+      "tokens/colors.css": "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035",
+      "tokens/spacing.css": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb",
+      "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
+    },
+    "route": {
+      "commit": "916eba5911241c1499a107fb7a3da66ba0a20f4e"
+    }
+  }
 }

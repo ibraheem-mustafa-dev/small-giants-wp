@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-25T08:58:55.582Z",
-  "source": "http://127.0.0.1:53375/",
+  "generated": "2026-10-26T08:10:58.816Z",
+  "source": "http://127.0.0.1:50362/",
   "root": "footer",
   "beside": [
     {
@@ -130,7 +130,7 @@
       {
         "tag": "span",
         "cls": "sc-interp",
-        "text": "Opens tomorrow at 9:30am"
+        "text": "Opens at 9:30am"
       },
       {
         "tag": "svg",
@@ -1787,7 +1787,7 @@
       "template": "Root",
       "tpl": 677,
       "attrs": {
-        "style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(220, 228, 234); font-weight: 400;"
+        "style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(216, 202, 80); font-weight: 700;"
       },
       "words": "",
       "allText": "Monday – Thursday9:30am – 5pm",
@@ -1867,19 +1867,19 @@
         "375": {
           "x": 47,
           "y": 7737.1,
-          "w": 130.2,
+          "w": 136.6,
           "h": 24.8
         },
         "768": {
           "x": 59,
           "y": 6098.5,
-          "w": 130.2,
+          "w": 136.6,
           "h": 24.8
         },
         "1440": {
           "x": 915.2,
           "y": 4609.5,
-          "w": 130.2,
+          "w": 136.6,
           "h": 24.8
         }
       },
@@ -1926,21 +1926,21 @@
       "snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
       "box": {
         "375": {
-          "x": 234.6,
+          "x": 230.3,
           "y": 7737.1,
-          "w": 93.4,
+          "w": 97.7,
           "h": 24.8
         },
         "768": {
-          "x": 615.6,
+          "x": 611.3,
           "y": 6098.5,
-          "w": 93.4,
+          "w": 97.7,
           "h": 24.8
         },
         "1440": {
-          "x": 1179.6,
+          "x": 1175.3,
           "y": 4609.5,
-          "w": 93.4,
+          "w": 97.7,
           "h": 24.8
         }
       },
@@ -2336,7 +2336,7 @@
       "template": "Root",
       "tpl": 677,
       "attrs": {
-        "style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(216, 202, 80); font-weight: 700;"
+        "style": "display: flex; justify-content: space-between; gap: 14px; font-size: 16px; padding: 7px 0px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: rgb(220, 228, 234); font-weight: 400;"
       },
       "words": "",
       "allText": "SundayClosed",
@@ -2416,19 +2416,19 @@
         "375": {
           "x": 47,
           "y": 7856.5,
-          "w": 53.1,
+          "w": 50.4,
           "h": 24.8
         },
         "768": {
           "x": 59,
           "y": 6217.8,
-          "w": 53.1,
+          "w": 50.4,
           "h": 24.8
         },
         "1440": {
           "x": 915.2,
           "y": 4728.9,
-          "w": 53.1,
+          "w": 50.4,
           "h": 24.8
         }
       },
@@ -2475,21 +2475,21 @@
       "snippet": "<span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span>",
       "box": {
         "375": {
-          "x": 280.8,
+          "x": 282.6,
           "y": 7856.5,
-          "w": 47.2,
+          "w": 45.4,
           "h": 24.8
         },
         "768": {
-          "x": 661.8,
+          "x": 663.6,
           "y": 6217.8,
-          "w": 47.2,
+          "w": 45.4,
           "h": 24.8
         },
         "1440": {
-          "x": 1225.8,
+          "x": 1227.6,
           "y": 4728.9,
-          "w": 47.2,
+          "w": 45.4,
           "h": 24.8
         }
       },
@@ -2521,8 +2521,8 @@
       "attrs": {
         "style": "font-size: 15px; color: rgb(201, 212, 222);"
       },
-      "words": "Opens tomorrow at 9:30am",
-      "allText": "Opens tomorrow at 9:30am",
+      "words": "Opens at 9:30am",
+      "allText": "Opens at 9:30am",
       "srcLine": 962,
       "membership": [],
       "srcTag": "span",
@@ -2532,19 +2532,19 @@
         "375": {
           "x": 47,
           "y": 7903.3,
-          "w": 170.4,
+          "w": 104.8,
           "h": 23.3
         },
         "768": {
           "x": 59,
           "y": 6264.6,
-          "w": 170.4,
+          "w": 104.8,
           "h": 23.3
         },
         "1440": {
           "x": 915.2,
           "y": 4775.7,
-          "w": 170.4,
+          "w": 104.8,
           "h": 23.3
         }
       },

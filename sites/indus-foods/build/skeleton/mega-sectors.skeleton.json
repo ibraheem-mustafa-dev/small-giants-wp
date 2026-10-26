@@ -1,0 +1,638 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "div",
+			"layout": "grid"
+		},
+		"draftRef": {
+			"tpl": "Root/85#0"
+		},
+		"draftFingerprint": {
+			"tag": "div",
+			"cls": "",
+			"styleHash": "ec70073d",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 114
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root/87#0"
+				},
+				"draftFingerprint": {
+					"tag": "a",
+					"cls": "scp6",
+					"styleHash": "9df875dd",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 116
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/88#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f263154c",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 117
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/media",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/89#0"
+								},
+								"draftFingerprint": {
+									"tag": "image-slot",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 118
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/90#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "4bebc814",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 120
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Food Service"
+								},
+								"draftRef": {
+									"tpl": "Root/91#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "29e3f3de",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "5452407a",
+									"line": 121
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Quality ingredients for venues, caterers & events across the UK."
+								},
+								"draftRef": {
+									"tpl": "Root/92#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "dfacc87",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "f30ee55d",
+									"line": 122
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Explore Food Service",
+									"url": "#/food-service"
+								},
+								"draftRef": {
+									"tpl": "Root/93#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c53e4742",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "e26e5c63",
+									"line": 123
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root/87#1"
+				},
+				"draftFingerprint": {
+					"tag": "a",
+					"cls": "scp6",
+					"styleHash": "28dc3c8a",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 116
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/88#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f263154c",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 117
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/media",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/89#1"
+								},
+								"draftFingerprint": {
+									"tag": "image-slot",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 118
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/90#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "4bebc814",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 120
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Manufacturing"
+								},
+								"draftRef": {
+									"tpl": "Root/91#1"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "29e3f3de",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "e3b34145",
+									"line": 121
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "High-quality, healthy & delicious food products at scale."
+								},
+								"draftRef": {
+									"tpl": "Root/92#1"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "dfacc87",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "e63756ba",
+									"line": 122
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Explore Manufacturing",
+									"url": "#/manufacturing"
+								},
+								"draftRef": {
+									"tpl": "Root/93#1"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c53e4742",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "2d5e9f7c",
+									"line": 123
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root/87#2"
+				},
+				"draftFingerprint": {
+					"tag": "a",
+					"cls": "scp6",
+					"styleHash": "70d58529",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 116
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/88#2"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f263218d",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 117
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/media",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/89#2"
+								},
+								"draftFingerprint": {
+									"tag": "image-slot",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 118
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/90#2"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "4bebc814",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 120
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Retail"
+								},
+								"draftRef": {
+									"tpl": "Root/91#2"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "29e3f3de",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "c44cce42",
+									"line": 121
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Retail-ready packaging for independent & national retailers."
+								},
+								"draftRef": {
+									"tpl": "Root/92#2"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "99118e79",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "6901e4f3",
+									"line": 122
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Explore Retail",
+									"url": "#/retail"
+								},
+								"draftRef": {
+									"tpl": "Root/93#2"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c53e4742",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "1d428c5b",
+									"line": 123
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root/87#3"
+				},
+				"draftFingerprint": {
+					"tag": "a",
+					"cls": "scp6",
+					"styleHash": "6b9c2a9e",
+					"parentTags": [
+						"div"
+					],
+					"textHash": "1505",
+					"line": 116
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/88#3"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f263218d",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 117
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/media",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/89#3"
+								},
+								"draftFingerprint": {
+									"tag": "image-slot",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 118
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/90#3"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "4bebc814",
+							"parentTags": [
+								"div",
+								"a"
+							],
+							"textHash": "1505",
+							"line": 120
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Wholesale"
+								},
+								"draftRef": {
+									"tpl": "Root/91#3"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "29e3f3de",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "32cd5487",
+									"line": 121
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Reliable stock levels & fast delivery across the whole of the UK."
+								},
+								"draftRef": {
+									"tpl": "Root/92#3"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "99118e79",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "f23c0bbd",
+									"line": 122
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Explore Wholesale",
+									"url": "#/wholesale"
+								},
+								"draftRef": {
+									"tpl": "Root/93#3"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c53e4742",
+									"parentTags": [
+										"div",
+										"a",
+										"div"
+									],
+									"textHash": "1bf062be",
+									"line": 123
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

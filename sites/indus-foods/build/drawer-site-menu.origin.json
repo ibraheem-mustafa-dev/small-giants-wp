@@ -1,0 +1,192 @@
+{
+  "cr-ref-drawer-site-menu-0": {
+    "tpl": "Root/108#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "6b759d66",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 157
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-1": {
+    "tpl": "Root/109#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "e602dcde",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 158
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-2": {
+    "tpl": "Root/110#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "b56769bc",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 159
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-3": {
+    "tpl": "Root/112#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f920f804",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 161
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-4": {
+    "tpl": "Root/114#0",
+    "fingerprint": {
+      "tag": "indus-logo",
+      "cls": "",
+      "styleHash": "8adea707",
+      "parentTags": [
+        "div",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 162
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-5": {
+    "tpl": "Root/115#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "23a67d8c",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 163
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-9": {
+    "tpl": "Root/118#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scp9",
+      "styleHash": "6b3f799d",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 166
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-10": {
+    "tpl": "Root/121#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f62c8ac8",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 172
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-11": {
+    "tpl": "Root/122#0",
+    "fingerprint": {
+      "tag": "nav",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 173
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-12": {
+    "tpl": "Root/178#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "781cd4d7",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 255
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-13": {
+    "tpl": "Root/179#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "87524caa",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "c4f6e6d2",
+      "line": 256
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-19": {
+    "tpl": "Root/196#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "76e27cd8",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 260
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-drawer-site-menu-20": {
+    "tpl": "Root/197#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpg",
+      "styleHash": "6238ea6c",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 261
+    },
+    "draft": "0fe5aee1c396a997"
+  }
+}

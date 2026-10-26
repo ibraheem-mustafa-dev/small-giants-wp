@@ -1,0 +1,878 @@
+{
+	"generated": "2026-10-26T05:51:12.955Z",
+	"inventory": "2026-10-23T19:45:08.190Z",
+	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"surface": "brands-mega-menu",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"builtPost": {
+		"site": "sandybrown",
+		"postType": "sgs_mega_menu",
+		"postId": 4440,
+		"title": "[QA] Indus mega: Brands"
+	},
+	"counts": {
+		"inventoryElements": 28,
+		"parts": 0,
+		"rows": 28,
+		"skeletonNodes": 8,
+		"expandedNodes": 8,
+		"low": 0,
+		"removed": 20,
+		"unresolved": 0,
+		"byRule": {
+			"clientBuiltSurface": 28
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/95#0",
+			"tag": "div",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/mega-panel",
+			"action": null,
+			"reason": "a menu surface (the panel a navigation item opens) is sgs/mega-panel",
+			"source": "rule surfaceRoot",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/mega-panel",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule surfaceRoot: a menu surface (the panel a navigation item opens) is sgs/mega-panel"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;\" data-dc-tpl=\"95\"> <div style=\"flex:1;min-width:0;padding:26px;\" data-dc-tpl=\"96\"> <div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div> <div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activeP",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/96#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21)",
+			"source": "rule megaContainer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule megaContainer: a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"flex:1;min-width:0;padding:26px;\" data-dc-tpl=\"96\"> <div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div> <div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activePanel.logos }}\" as=\"logo\" hint-placeholder-cou",
+			"attributes": {
+				"tagName": "div"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/97#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "Our Brands",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div>",
+			"attributes": {
+				"text": "Our Brands"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/98#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/gallery",
+			"action": null,
+			"reason": "a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items",
+			"source": "rule logoGrid",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/gallery",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule logoGrid: a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activePanel.logos }}\" as=\"logo\" hint-placeholder-count=\"10\" data-dc-tpl=\"99\"> <a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,bor",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/100#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/101#0",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/100#1",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/101#1",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/100#2",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/101#2",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/100#3",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/101#3",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/100#4",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/101#4",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/100#5",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/101#5",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/100#6",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/101#6",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/100#7",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/101#7",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/100#8",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/101#8",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/100#9",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/101#9",
+			"tag": "image-slot",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"into": "Root/98#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/102#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/mega-aside",
+			"action": null,
+			"reason": "a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21)",
+			"source": "rule megaAside",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/mega-aside",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule megaAside: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"width:300px;flex-shrink:0;padding:26px;background:#0A7EA8;display:flex;flex-direction:column;justify-content:center;\" data-dc-tpl=\"102\"> <span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;width:fit-content;\" data-dc-tpl=\"103\">Own Brands</spa",
+			"attributes": {},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/103#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "Own Brands",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;width:fit-content;\" data-dc-tpl=\"103\">Own Brands</span>",
+			"attributes": {
+				"text": "Own Brands"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/104#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:16px;color:#E3EFF4;line-height:1.5;\" data-dc-tpl=\"104\">{{ activePanel.ownDesc }}</div>",
+			"attributes": {
+				"text": "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree."
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/105#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "View All Brands",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": "clientBuiltSurface",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#/brands\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;width:fit-content;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"105\">{{ activePanel.cta }} {{ arrowIcon }}</a>",
+			"attributes": {
+				"label": "View All Brands",
+				"url": "#/brands"
+			},
+			"builtPost": {
+				"site": "sandybrown",
+				"postType": "sgs_mega_menu",
+				"postId": 4440,
+				"title": "[QA] Indus mega: Brands"
+			}
+		}
+	]
+}

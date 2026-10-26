@@ -321,5 +321,73 @@
     },
     "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
     "decided": "2026-10-25 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-20",
+    "scope": "form-enquiry",
+    "node": "cr-ref-form-enquiry-5",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 784px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-26 FR-48-50",
+    "snap": {
+      "draft": 784,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-21",
+    "scope": "single",
+    "node": "cr-ref-single-4",
+    "state": "*",
+    "property": "min-height",
+    "widths": [
+      375,
+      768,
+      1440
+    ],
+    "expected": {
+      "rule": "touch-target"
+    },
+    "reason": "the draft's min-height is 23.25px at 375, 23.25px at 768, 23.25px at 1440; an interactive element is never written below the 24px target size (WCAG 2.2 AA 2.5.8)",
+    "decided": "2026-10-26 Bean ruling (24px target size)"
+  },
+  {
+    "id": "D-22",
+    "scope": "form-trade-application",
+    "node": "cr-ref-form-trade-application-0",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1008px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-26 FR-48-50",
+    "snap": {
+      "draft": 1008,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-23",
+    "scope": "form-trade-application",
+    "node": "cr-ref-form-trade-application-0",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1040px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-26 FR-48-50",
+    "snap": {
+      "draft": 1040,
+      "tier": 1024,
+      "distance": 16
+    }
   }
 ]

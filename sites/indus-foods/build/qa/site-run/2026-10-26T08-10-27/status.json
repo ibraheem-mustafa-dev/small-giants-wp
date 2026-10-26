@@ -1,0 +1,24 @@
+{
+  "footer": {
+    "inventory": {
+      "ok": true,
+      "seconds": 32,
+      "detail": "96 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "47 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 193,
+      "detail": "fill footer: 406 settings written, 213 UNMAPPED, 11 handover, 2 fluid, 58 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\footer\\2026-10-26T08-10-59\\fill-report.md"
+    },
+    "build": {
+      "ok": false,
+      "seconds": 11,
+      "detail": "exit 5: [FAIL] save error: Updating failed. (POST /wp-json/wp/v2/block-renderer/sgs/business-info?context=edit&post_id=205&_locale=user 500: {\"code\":\"wp_die\",\"message\":\"<h1>Error establishing a database connection<\\/h1>\",\"data\":{\"status\":500},\"additional_errors\":[]} ; POST /wp-json/wp/v2/block-renderer/sgs/business-info?context=edit&post_id=205&_locale=user 500: {\"code\":\"wp_die\",\"message\":\"<h1>Error establishing a database connection<\\/h1>\",\"data\":{\"status\":500},\"additional_errors\":[]} ; POST /wp-json/wp/v2/block-renderer/sgs/business-info?context=edit&post_id=205&_locale=user 500: {\"code\":\"wp"
+    }
+  }
+}

@@ -3,7 +3,7 @@
 		"name": "sgs/mega-panel",
 		"attributes": {},
 		"draftRef": {
-			"tpl": "Indus Foods Website v2/67#0"
+			"tpl": "Root/67#0"
 		},
 		"draftFingerprint": {
 			"tag": "div",
@@ -18,7 +18,7 @@
 				"name": "sgs/mega-group",
 				"attributes": {},
 				"draftRef": {
-					"tpl": "Indus Foods Website v2/68#0"
+					"tpl": "Root/68#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -39,7 +39,7 @@
 							"sgsBlockLink": "#/our-story"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/70#0"
+							"tpl": "Root/70#0"
 						},
 						"draftFingerprint": {
 							"tag": "a",
@@ -59,7 +59,7 @@
 									"text": "01"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/71#0"
+									"tpl": "Root/71#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -81,7 +81,7 @@
 									"tagName": "div"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/72#0"
+									"tpl": "Root/72#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -102,7 +102,7 @@
 											"content": "Our Story"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/73#0"
+											"tpl": "Root/73#0"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -125,7 +125,7 @@
 											"text": "Six decades of family heritage"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/74#0"
+											"tpl": "Root/74#0"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -154,7 +154,7 @@
 							"sgsBlockLink": "#/certifications"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/70#1"
+							"tpl": "Root/70#1"
 						},
 						"draftFingerprint": {
 							"tag": "a",
@@ -174,7 +174,7 @@
 									"text": "02"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/71#1"
+									"tpl": "Root/71#1"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -196,7 +196,7 @@
 									"tagName": "div"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/72#1"
+									"tpl": "Root/72#1"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -217,7 +217,7 @@
 											"content": "Certifications"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/73#1"
+											"tpl": "Root/73#1"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -240,7 +240,7 @@
 											"text": "BRC & Halal certified"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/74#1"
+											"tpl": "Root/74#1"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -269,7 +269,7 @@
 							"sgsBlockLink": "#/community"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/70#2"
+							"tpl": "Root/70#2"
 						},
 						"draftFingerprint": {
 							"tag": "a",
@@ -289,7 +289,7 @@
 									"text": "03"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/71#2"
+									"tpl": "Root/71#2"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -311,7 +311,7 @@
 									"tagName": "div"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/72#2"
+									"tpl": "Root/72#2"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -332,7 +332,7 @@
 											"content": "Community & Charity"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/73#2"
+											"tpl": "Root/73#2"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -355,7 +355,7 @@
 											"text": "Giving back in Birmingham"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/74#2"
+											"tpl": "Root/74#2"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -384,7 +384,7 @@
 							"sgsBlockLink": "#/sustainability"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/70#3"
+							"tpl": "Root/70#3"
 						},
 						"draftFingerprint": {
 							"tag": "a",
@@ -404,7 +404,7 @@
 									"text": "04"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/71#3"
+									"tpl": "Root/71#3"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -426,7 +426,7 @@
 									"tagName": "div"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/72#3"
+									"tpl": "Root/72#3"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -447,7 +447,7 @@
 											"content": "Sustainability"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/73#3"
+											"tpl": "Root/73#3"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -470,7 +470,7 @@
 											"text": "Responsible sourcing"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/74#3"
+											"tpl": "Root/74#3"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -499,7 +499,7 @@
 							"sgsBlockLink": "#/careers"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/70#4"
+							"tpl": "Root/70#4"
 						},
 						"draftFingerprint": {
 							"tag": "a",
@@ -519,7 +519,7 @@
 									"text": "05"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/71#4"
+									"tpl": "Root/71#4"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -541,7 +541,7 @@
 									"tagName": "div"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/72#4"
+									"tpl": "Root/72#4"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -562,7 +562,7 @@
 											"content": "Careers"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/73#4"
+											"tpl": "Root/73#4"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -585,7 +585,7 @@
 											"text": "Join our growing team"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/74#4"
+											"tpl": "Root/74#4"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -614,7 +614,7 @@
 							"sgsBlockLink": "#/blog"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/70#5"
+							"tpl": "Root/70#5"
 						},
 						"draftFingerprint": {
 							"tag": "a",
@@ -634,7 +634,7 @@
 									"text": "06"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/71#5"
+									"tpl": "Root/71#5"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -656,7 +656,7 @@
 									"tagName": "div"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/72#5"
+									"tpl": "Root/72#5"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -677,7 +677,7 @@
 											"content": "News & Blog"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/73#5"
+											"tpl": "Root/73#5"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -700,7 +700,7 @@
 											"text": "Updates, recipes and trade news"
 										},
 										"draftRef": {
-											"tpl": "Indus Foods Website v2/74#5"
+											"tpl": "Root/74#5"
 										},
 										"draftFingerprint": {
 											"tag": "span",
@@ -727,7 +727,7 @@
 				"name": "sgs/mega-aside",
 				"attributes": {},
 				"draftRef": {
-					"tpl": "Indus Foods Website v2/76#0"
+					"tpl": "Root/76#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
@@ -746,7 +746,7 @@
 							"tagName": "div"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/77#0"
+							"tpl": "Root/77#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -764,7 +764,7 @@
 								"name": "sgs/media",
 								"attributes": {},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/78#0"
+									"tpl": "Root/78#0"
 								},
 								"draftFingerprint": {
 									"tag": "image-slot",
@@ -788,7 +788,7 @@
 							"tagName": "div"
 						},
 						"draftRef": {
-							"tpl": "Indus Foods Website v2/79#0"
+							"tpl": "Root/79#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
@@ -808,7 +808,7 @@
 									"text": "Since 1962"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/80#0"
+									"tpl": "Root/80#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
@@ -830,7 +830,7 @@
 									"text": "Six decades of heritage"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/81#0"
+									"tpl": "Root/81#0"
 								},
 								"draftFingerprint": {
 									"tag": "div",
@@ -852,7 +852,7 @@
 									"text": "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers."
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/82#0"
+									"tpl": "Root/82#0"
 								},
 								"draftFingerprint": {
 									"tag": "div",
@@ -875,7 +875,7 @@
 									"url": "#/our-story"
 								},
 								"draftRef": {
-									"tpl": "Indus Foods Website v2/83#0"
+									"tpl": "Root/83#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",

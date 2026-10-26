@@ -1,0 +1,1966 @@
+{
+  "generated": "2026-10-23T19:45:08.190Z",
+  "source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+  "root": "[data-sgs-skeleton-root=\"brands-mega-menu\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/95#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "We develop and market our own Sanam range alongside trusted "
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "View All Brands"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 28,
+      "768": 28,
+      "1440": 28
+    },
+    "tagAgree": 28,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/95#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 95,
+      "attrs": {
+        "style": "display: flex;"
+      },
+      "words": "",
+      "allText": "Our Brands Own Brands We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The L",
+      "srcLine": 131,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;\" data-dc-tpl=\"95\"> <div style=\"flex:1;min-width:0;padding:26px;\" data-dc-tpl=\"96\"> <div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div> <div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activeP",
+      "box": {
+        "375": {
+          "x": 181,
+          "y": 146,
+          "w": 1078,
+          "h": 296.6
+        },
+        "768": {
+          "x": 181,
+          "y": 146,
+          "w": 1078,
+          "h": 296.6
+        },
+        "1440": {
+          "x": 181,
+          "y": 146,
+          "w": 1078,
+          "h": 296.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/96#0",
+      "parentKey": "Root/95#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 96,
+      "attrs": {
+        "style": "flex: 1 1 0%; min-width: 0px; padding: 26px;"
+      },
+      "words": "",
+      "allText": "Our Brands",
+      "srcLine": 132,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"flex:1;min-width:0;padding:26px;\" data-dc-tpl=\"96\"> <div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div> <div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activePanel.logos }}\" as=\"logo\" hint-placeholder-cou",
+      "box": {
+        "375": {
+          "x": 181,
+          "y": 146,
+          "w": 778,
+          "h": 296.6
+        },
+        "768": {
+          "x": 181,
+          "y": 146,
+          "w": 778,
+          "h": 296.6
+        },
+        "1440": {
+          "x": 181,
+          "y": 146,
+          "w": 778,
+          "h": 296.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/97#0",
+      "parentKey": "Root/96#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 97,
+      "attrs": {
+        "style": "font-family: \"Geist Mono\", monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(104, 114, 124); margin-bottom: 14px;"
+      },
+      "words": "Our Brands",
+      "allText": "Our Brands",
+      "srcLine": 133,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Our Brands",
+      "snippet": "<div style=\"font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#68727C;margin-bottom:14px;\" data-dc-tpl=\"97\">Our Brands</div>",
+      "box": {
+        "375": {
+          "x": 207,
+          "y": 172,
+          "w": 726,
+          "h": 18.6
+        },
+        "768": {
+          "x": 207,
+          "y": 172,
+          "w": 726,
+          "h": 18.6
+        },
+        "1440": {
+          "x": 207,
+          "y": 172,
+          "w": 726,
+          "h": 18.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/98#0",
+      "parentKey": "Root/96#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 98,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 134,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:10px;\" data-dc-tpl=\"98\"> <sc-for list=\"{{ activePanel.logos }}\" as=\"logo\" hint-placeholder-count=\"10\" data-dc-tpl=\"99\"> <a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,bor",
+      "box": {
+        "375": {
+          "x": 207,
+          "y": 204.6,
+          "w": 726,
+          "h": 212
+        },
+        "768": {
+          "x": 207,
+          "y": 204.6,
+          "w": 726,
+          "h": 212
+        },
+        "1440": {
+          "x": 207,
+          "y": 204.6,
+          "w": 726,
+          "h": 212
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#0",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brand-sanam",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 207,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 207,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 207,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#0",
+      "parentKey": "Root/100#0",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 208,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 208,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 208,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#1",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brand-shan",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 391,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 391,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 391,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#1",
+      "parentKey": "Root/100#1",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 392,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 392,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 392,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#2",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brand-green-leaf",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 575,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 575,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 575,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#2",
+      "parentKey": "Root/100#2",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 576,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 576,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 576,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#3",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brand-lemon-tree",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 759,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 759,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 759,
+          "y": 204.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#3",
+      "parentKey": "Root/100#3",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 760,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 760,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 760,
+          "y": 205.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#4",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 207,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 207,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 207,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#4",
+      "parentKey": "Root/100#4",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 208,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 208,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 208,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#5",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 391,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 391,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 391,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#5",
+      "parentKey": "Root/100#5",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 392,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 392,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 392,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#6",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 575,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 575,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 575,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#6",
+      "parentKey": "Root/100#6",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 576,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 576,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 576,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#7",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 759,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 759,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 759,
+          "y": 278.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#7",
+      "parentKey": "Root/100#7",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 760,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 760,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 760,
+          "y": 279.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#8",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 207,
+          "y": 352.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 207,
+          "y": 352.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 207,
+          "y": 352.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#8",
+      "parentKey": "Root/100#8",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 208,
+          "y": 353.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 208,
+          "y": 353.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 208,
+          "y": 353.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#9",
+      "parentKey": "Root/98#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scp7",
+        "style": "display: block; height: 64px; border-radius: 12px; border: 1px solid rgba(30, 42, 60, 0.1); background: rgb(250, 250, 248); overflow: hidden; transition: transform 0.2s, box-shadow 0.25s, border-color 0.25s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 136,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a data-anim=\"\" href=\"{{ logo.href }}\" style=\"display:block;height:64px;border-radius:12px;border:1px solid rgba(30,42,60,.1);background:#FAFAF8;overflow:hidden;transition:transform .2s ease,box-shadow .25s ease,border-color .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);border-color:#D8CA50;box-shadow:0 12px 24px -12px rgba(0,0,0,.3)\" data-dc-tpl=\"100\"> <image-slot id=\"{{ logo.id }}\" ",
+      "box": {
+        "375": {
+          "x": 391,
+          "y": 352.6,
+          "w": 174,
+          "h": 64
+        },
+        "768": {
+          "x": 391,
+          "y": 352.6,
+          "w": 174,
+          "h": 64
+        },
+        "1440": {
+          "x": 391,
+          "y": 352.6,
+          "w": 174,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#9",
+      "parentKey": "Root/100#9",
+      "depth": 4,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ activePanel.logos }}",
+          "as": "logo",
+          "tpl": "99"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ logo.id }}\" shape=\"rect\" placeholder=\"{{ logo.name }}\" data-dc-tpl=\"101\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 392,
+          "y": 353.6,
+          "w": 172,
+          "h": 62
+        },
+        "768": {
+          "x": 392,
+          "y": 353.6,
+          "w": 172,
+          "h": 62
+        },
+        "1440": {
+          "x": 392,
+          "y": 353.6,
+          "w": 172,
+          "h": 62
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/102#0",
+      "parentKey": "Root/95#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 102,
+      "attrs": {
+        "style": "width: 300px; flex-shrink: 0; padding: 26px; background: rgb(10, 126, 168); display: flex; flex-direction: column; justify-content: center;"
+      },
+      "words": "",
+      "allText": "Own Brands We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree. ",
+      "srcLine": 142,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"width:300px;flex-shrink:0;padding:26px;background:#0A7EA8;display:flex;flex-direction:column;justify-content:center;\" data-dc-tpl=\"102\"> <span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;width:fit-content;\" data-dc-tpl=\"103\">Own Brands</spa",
+      "box": {
+        "375": {
+          "x": 959,
+          "y": 146,
+          "w": 300,
+          "h": 296.6
+        },
+        "768": {
+          "x": 959,
+          "y": 146,
+          "w": 300,
+          "h": 296.6
+        },
+        "1440": {
+          "x": 959,
+          "y": 146,
+          "w": 300,
+          "h": 296.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/103#0",
+      "parentKey": "Root/102#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 103,
+      "attrs": {
+        "style": "display: inline-block; background: rgb(216, 202, 80); color: rgb(30, 42, 60); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 5px 10px; border-radius: 3px; margin-bottom: 12px; width: fit-content;"
+      },
+      "words": "Own Brands",
+      "allText": "Own Brands",
+      "srcLine": 143,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Own Brands",
+      "snippet": "<span style=\"display:inline-block;background:#D8CA50;color:#1E2A3C;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;border-radius:3px;margin-bottom:12px;width:fit-content;\" data-dc-tpl=\"103\">Own Brands</span>",
+      "box": {
+        "375": {
+          "x": 985,
+          "y": 202.1,
+          "w": 96.8,
+          "h": 28.6
+        },
+        "768": {
+          "x": 985,
+          "y": 202.1,
+          "w": 96.8,
+          "h": 28.6
+        },
+        "1440": {
+          "x": 985,
+          "y": 202.1,
+          "w": 96.8,
+          "h": 28.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/104#0",
+      "parentKey": "Root/102#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 104,
+      "attrs": {
+        "style": "font-size: 16px; color: rgb(227, 239, 244); line-height: 1.5;"
+      },
+      "words": "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree.",
+      "allText": "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree.",
+      "srcLine": 144,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ activePanel.ownDesc }}",
+      "snippet": "<div style=\"font-size:16px;color:#E3EFF4;line-height:1.5;\" data-dc-tpl=\"104\">{{ activePanel.ownDesc }}</div>",
+      "box": {
+        "375": {
+          "x": 985,
+          "y": 242.7,
+          "w": 248,
+          "h": 96
+        },
+        "768": {
+          "x": 985,
+          "y": 242.7,
+          "w": 248,
+          "h": 96
+        },
+        "1440": {
+          "x": 985,
+          "y": 242.7,
+          "w": 248,
+          "h": 96
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#0",
+      "parentKey": "Root/102#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "href": "#/brands",
+        "class": "scp5",
+        "style": "display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; color: rgb(255, 255, 255); font-weight: 700; font-size: 16px; border-bottom: 2px solid rgb(216, 202, 80); padding-bottom: 3px; width: fit-content;"
+      },
+      "words": "View All Brands",
+      "allText": "View All Brands",
+      "srcLine": 145,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ open }}",
+          "tpl": "63"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isBrands }}",
+          "tpl": "94"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ activePanel.cta }} {{ arrowIcon }}",
+      "snippet": "<a href=\"#/brands\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;width:fit-content;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"105\">{{ activePanel.cta }} {{ arrowIcon }}</a>",
+      "box": {
+        "375": {
+          "x": 985,
+          "y": 356.7,
+          "w": 130.1,
+          "h": 29.8
+        },
+        "768": {
+          "x": 985,
+          "y": 356.7,
+          "w": 130.1,
+          "h": 29.8
+        },
+        "1440": {
+          "x": 985,
+          "y": 356.7,
+          "w": 130.1,
+          "h": 29.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    }
+  ],
+  "sources": {
+    "files": {
+      "EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
+      "Indus Foods Website v2.dc.html": "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf",
+      "README.md": "797285a24cb6ef737fd35855d7ec021465b6d37ecdcc3fecfcf9fd611bfeda7f",
+      "TradeApplication.dc.html": "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77",
+      "animations.json": "65dcc2c37383dfe5c9e0cdc40b54d1ec16248c0c71ce804e511149f5e88e1f1c",
+      "assets/about-hero-desktop.svg": "fa7ad864f3a488fc566af6920cf06b49a48816c44a9e06dd102a79dd6f3bdcca",
+      "assets/about-hero-mobile.svg": "7bd1a820160ff269be9c4c628fe42e97ba49428c50a40f31900ef5ed98f2da0c",
+      "assets/about-hero-tablet.svg": "536cef72b4c2b3be178d19a0f6323b29137d112107e70d006fac30403decfb53",
+      "assets/logo-horizontal-anim.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-horizontal.svg": "657e941c14adf091f3fb76840b5881fb46dbfbb5bab8ccf47bccd874f43cf01a",
+      "assets/logo-square-anim.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/logo-square.svg": "bfd601cfa34eb53d8501bcaf73294c765794cfe1b4ebba51d0a6450364c04c88",
+      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
+      "image-slot.js": "d797f41b7d66c445a7ddddc1f7d2871dfc0e996eee2b7a3dbab4c7a7d6c5d234",
+      "indus-logo.js": "23b8e7b64deb9dfdeee0e2d2a7afc922eb8e4beeb81f7e3f0a3d9bc68bc9c7f4",
+      "support.js": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+      "surfaces.json": "c63b959982e692809a0f34ec716ad74296c3a5e1b71f57a90d65922a11a6cc18",
+      "tokens/colors.css": "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035",
+      "tokens/spacing.css": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb",
+      "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
+    },
+    "route": {
+      "commit": "916eba5911241c1499a107fb7a3da66ba0a20f4e"
+    }
+  }
+}

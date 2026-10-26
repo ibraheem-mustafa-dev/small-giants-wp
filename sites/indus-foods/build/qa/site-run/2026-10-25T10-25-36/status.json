@@ -1,0 +1,24 @@
+{
+  "footer": {
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "47 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 146,
+      "detail": "fill footer: 406 settings written, 256 UNMAPPED, 11 handover, 2 fluid, 58 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\footer\\2026-10-25T10-25-37\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 12,
+      "detail": "{\"ok\":true,\"id\":205,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 693,
+      "detail": "report written (exit 1: footer: 2348 open, 40 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\footer\\report.md, contact sheet:)"
+    }
+  }
+}

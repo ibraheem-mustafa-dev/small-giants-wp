@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-25T09:59:19.011Z",
-  "source": "http://127.0.0.1:53375/#/brand-lemon-tree",
+  "generated": "2026-10-26T07:10:14.623Z",
+  "source": "http://127.0.0.1:60747/#/brand-lemon-tree",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -463,22 +463,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
       "box": {
         "375": {
-          "x": 21.7,
-          "y": 667.1,
-          "w": 500.9,
-          "h": 500.9
+          "x": 31.5,
+          "y": 647.1,
+          "w": 493.9,
+          "h": 493.9
         },
         "768": {
-          "x": 421.7,
-          "y": 849,
-          "w": 486.4,
-          "h": 486.4
+          "x": 402.5,
+          "y": 845.2,
+          "w": 499.2,
+          "h": 499.2
         },
         "1440": {
-          "x": 1099.8,
-          "y": 450.3,
-          "w": 462.6,
-          "h": 462.6
+          "x": 1101.8,
+          "y": 424.8,
+          "w": 488.1,
+          "h": 488.1
         }
       },
       "visible": {
@@ -5891,22 +5891,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
       "box": {
         "375": {
-          "x": 101.2,
-          "y": 2416.7,
-          "w": 368.5,
-          "h": 368.5
+          "x": 108.7,
+          "y": 2421.8,
+          "w": 357.1,
+          "h": 357.1
         },
         "768": {
-          "x": 489.7,
-          "y": 1997.6,
-          "w": 356.7,
-          "h": 356.7
+          "x": 467.3,
+          "y": 2008,
+          "w": 371.5,
+          "h": 371.5
         },
         "1440": {
-          "x": 1074.6,
-          "y": 1883.5,
-          "w": 379.9,
-          "h": 379.9
+          "x": 1083.4,
+          "y": 1883.3,
+          "w": 373.8,
+          "h": 373.8
         }
       },
       "visible": {
@@ -5959,22 +5959,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
       "box": {
         "375": {
-          "x": 163.9,
-          "y": 2493,
-          "w": 161.3,
-          "h": 161.3
+          "x": 146.2,
+          "y": 2504.5,
+          "w": 163.6,
+          "h": 163.6
         },
         "768": {
-          "x": 526.5,
-          "y": 2072.7,
-          "w": 165.5,
-          "h": 165.5
+          "x": 544.6,
+          "y": 2076.5,
+          "w": 157.4,
+          "h": 157.4
         },
         "1440": {
-          "x": 1145,
-          "y": 1979.7,
-          "w": 157.9,
-          "h": 157.9
+          "x": 1141.8,
+          "y": 1979,
+          "w": 163.7,
+          "h": 163.7
         }
       },
       "visible": {

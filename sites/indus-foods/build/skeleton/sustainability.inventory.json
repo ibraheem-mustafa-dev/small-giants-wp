@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-25T09:13:52.023Z",
-  "source": "http://127.0.0.1:53375/#/sustainability",
+  "generated": "2026-10-26T06:22:08.104Z",
+  "source": "http://127.0.0.1:60747/#/sustainability",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -402,22 +402,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
       "box": {
         "375": {
-          "x": 31.3,
-          "y": 497.5,
-          "w": 480.7,
-          "h": 480.7
+          "x": 24.9,
+          "y": 480.7,
+          "w": 504,
+          "h": 504
         },
         "768": {
-          "x": 423.6,
-          "y": 778.7,
-          "w": 491.7,
-          "h": 491.7
+          "x": 397.9,
+          "y": 754.2,
+          "w": 489,
+          "h": 489
         },
         "1440": {
-          "x": 1066.9,
-          "y": 428.4,
-          "w": 505.5,
-          "h": 505.5
+          "x": 1072.6,
+          "y": 410.3,
+          "w": 499.4,
+          "h": 499.4
         }
       },
       "visible": {
@@ -5207,22 +5207,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
       "box": {
         "375": {
-          "x": 100.6,
-          "y": 2511.7,
-          "w": 354.2,
-          "h": 354.2
+          "x": 84.5,
+          "y": 2514,
+          "w": 356.1,
+          "h": 356.1
         },
         "768": {
-          "x": 482.8,
-          "y": 2399.5,
-          "w": 348.1,
-          "h": 348.1
+          "x": 479.1,
+          "y": 2406.9,
+          "w": 357.9,
+          "h": 357.9
         },
         "1440": {
-          "x": 1066.6,
-          "y": 2089.5,
-          "w": 374.7,
-          "h": 374.7
+          "x": 1072.3,
+          "y": 2095,
+          "w": 353.9,
+          "h": 353.9
         }
       },
       "visible": {
@@ -5275,22 +5275,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
       "box": {
         "375": {
-          "x": 170,
-          "y": 2569.3,
-          "w": 161.8,
-          "h": 161.8
+          "x": 164.9,
+          "y": 2580.1,
+          "w": 151.3,
+          "h": 151.3
         },
         "768": {
-          "x": 537.8,
-          "y": 2483.3,
-          "w": 161.5,
-          "h": 161.5
+          "x": 530.5,
+          "y": 2480.2,
+          "w": 163.3,
+          "h": 163.3
         },
         "1440": {
-          "x": 1136.3,
-          "y": 2182.8,
-          "w": 162.2,
-          "h": 162.2
+          "x": 1138.1,
+          "y": 2187.1,
+          "w": 155.9,
+          "h": 155.9
         }
       },
       "visible": {

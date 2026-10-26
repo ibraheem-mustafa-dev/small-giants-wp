@@ -1,0 +1,19 @@
+{
+  "about": {
+    "inventory": {
+      "ok": true,
+      "seconds": 51,
+      "detail": "212 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "117 nodes, 28 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 161,
+      "detail": "fill about: 884 settings written, 315 UNMAPPED, 0 handover, 9 fluid, 199 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\about\\2026-10-26T01-01-05\\fill-report.md"
+    }
+  }
+}

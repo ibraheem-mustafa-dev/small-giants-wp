@@ -1,0 +1,29 @@
+{
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 51,
+      "detail": "210 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "97 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 180,
+      "detail": "fill home: 788 settings written, 531 UNMAPPED, 2 handover, 10 fluid, 149 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\home\\2026-10-25T08-32-02\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 17,
+      "detail": "{\"ok\":true,\"id\":90,\"link\":\"https://lavender-dinosaur-183533.hostingersite.com/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-90-diff.json\"}"
+    },
+    "walk": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "exit 1:   input: \"'https://lavender-dinosaur-183533.hostingersite.com'/\" | } |  | Node.js v24.16.0"
+    }
+  }
+}

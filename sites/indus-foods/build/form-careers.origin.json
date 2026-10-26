@@ -1,0 +1,215 @@
+{
+  "cr-ref-form-careers-0": {
+    "tpl": "Root/550#0",
+    "fingerprint": {
+      "tag": "form",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 789
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-1": {
+    "tpl": "Root/551#0",
+    "fingerprint": {
+      "tag": "h3",
+      "cls": "",
+      "styleHash": "2faf55a9",
+      "parentTags": [
+        "form"
+      ],
+      "textHash": "1691ddbb",
+      "line": 790
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-2": {
+    "tpl": "Root/552#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "9a044b2f",
+      "parentTags": [
+        "form"
+      ],
+      "textHash": "29c3bd8e",
+      "line": 791
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-3": {
+    "tpl": "Root/553#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "bcd6be1",
+      "parentTags": [
+        "form"
+      ],
+      "textHash": "1505",
+      "line": 792
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-4": {
+    "tpl": "Root/560#0",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "scp18",
+      "styleHash": "faf6996a",
+      "parentTags": [
+        "form",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 797
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/560#0"
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-5": {
+    "tpl": "Root/560#1",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "scp18",
+      "styleHash": "faf6996a",
+      "parentTags": [
+        "form",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 797
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/560#1"
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-6": {
+    "tpl": "Root/560#2",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "scp18",
+      "styleHash": "faf6996a",
+      "parentTags": [
+        "form",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 797
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/560#2"
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-7": {
+    "tpl": "Root/562#0",
+    "fingerprint": {
+      "tag": "select",
+      "cls": "scp19",
+      "styleHash": "9a9c32d7",
+      "parentTags": [
+        "form",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 800
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/562#0"
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-8": {
+    "tpl": "Root/562#1",
+    "fingerprint": {
+      "tag": "select",
+      "cls": "scp19",
+      "styleHash": "9a9c32d7",
+      "parentTags": [
+        "form",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 800
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/562#1"
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-9": {
+    "tpl": "Root/568#0",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "d127836c",
+      "parentTags": [
+        "form",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 808
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-10": {
+    "tpl": "Root/566#0",
+    "fingerprint": {
+      "tag": "textarea",
+      "cls": "scp18",
+      "styleHash": "6fe15476",
+      "parentTags": [
+        "form",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 805
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/566#0"
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-11": {
+    "tpl": "Root/570#0",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "9725c2a6",
+      "parentTags": [
+        "form",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 814
+    },
+    "draft": "0fe5aee1c396a997"
+  },
+  "cr-ref-form-careers-12": {
+    "tpl": "Root/571#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "389d248d",
+      "parentTags": [
+        "form"
+      ],
+      "textHash": "29759c43",
+      "line": 817
+    },
+    "draft": "0fe5aee1c396a997"
+  }
+}

@@ -542,6 +542,7 @@
   },
   "supporting-the-trade-through-ramadan": {
     "tree": "trees/post/supporting-the-trade-through-ramadan.json",
+    "intakeSurface": "page-post-post-1",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -553,12 +554,15 @@
     "walkerFull": "qa/parity/supporting-the-trade-through-ramadan.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/post-post-1",
     "states": {
       "resting": null
-    }
+    },
+    "contentOnly": true
   },
   "falak-rice-exclusive-uk-distribution": {
     "tree": "trees/post/falak-rice-exclusive-uk-distribution.json",
+    "intakeSurface": "page-post-post-2",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -570,12 +574,15 @@
     "walkerFull": "qa/parity/falak-rice-exclusive-uk-distribution.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/post-post-2",
     "states": {
       "resting": null
-    }
+    },
+    "contentOnly": true
   },
   "inside-our-birmingham-packing-line": {
     "tree": "trees/post/inside-our-birmingham-packing-line.json",
+    "intakeSurface": "page-post-post-3",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -587,12 +594,15 @@
     "walkerFull": "qa/parity/inside-our-birmingham-packing-line.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/post-post-3",
     "states": {
       "resting": null
-    }
+    },
+    "contentOnly": true
   },
   "sixty-years-in-the-balti-triangle": {
     "tree": "trees/post/sixty-years-in-the-balti-triangle.json",
+    "intakeSurface": "page-post-post-4",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -604,12 +614,15 @@
     "walkerFull": "qa/parity/sixty-years-in-the-balti-triangle.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/post-post-4",
     "states": {
       "resting": null
-    }
+    },
+    "contentOnly": true
   },
   "ordering-ahead-for-eid": {
     "tree": "trees/post/ordering-ahead-for-eid.json",
+    "intakeSurface": "page-post-post-5",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -621,12 +634,15 @@
     "walkerFull": "qa/parity/ordering-ahead-for-eid.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/post-post-5",
     "states": {
       "resting": null
-    }
+    },
+    "contentOnly": true
   },
   "why-independents-still-matter": {
     "tree": "trees/post/why-independents-still-matter.json",
+    "intakeSurface": "page-post-post-6",
     "envFile": ".claude/secrets/indus-test.env",
     "envKey": "INDUSTEST",
     "site": "indus-test",
@@ -638,9 +654,11 @@
     "walkerFull": "qa/parity/why-independents-still-matter.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/post-post-6",
     "states": {
       "resting": null
-    }
+    },
+    "contentOnly": true
   },
   "form-enquiry": {
     "tree": "trees/sgs_form/enquiry.json",
@@ -729,5 +747,25 @@
     "provides": [
       "sgs/form:trade-application"
     ]
+  },
+  "single": {
+    "tree": "trees/post/supporting-the-trade-through-ramadan.json",
+    "intakeSurface": "page-post-post-1",
+    "envFile": ".claude/secrets/indus-test.env",
+    "envKey": "INDUSTEST",
+    "site": "indus-test",
+    "target": {
+      "template": "single"
+    },
+    "canvas": true,
+    "walker": "qa/parity/single.fill-base.mjs",
+    "walkerFull": "qa/parity/single.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "draftRoute": "/post-post-1",
+    "states": {
+      "default": null
+    },
+    "fromPost": "supporting-the-trade-through-ramadan"
   }
 }
