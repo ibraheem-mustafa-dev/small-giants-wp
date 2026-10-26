@@ -179,6 +179,8 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 		$out['tablet'] = $is_tiered ? sgs_border_box_decls( $width_raw['tablet'] ?? null, $style_raw ) : array();
 		$out['mobile'] = $is_tiered ? sgs_border_box_decls( $width_raw['mobile'] ?? null, $style_raw ) : array();
 		$has_width     = $width_decls || $out['tablet'] || $out['mobile'];
+		$facts['has_width'] = (bool) $has_width;
+		$facts['has_ring']  = false;
 		$facts_box     = is_array( $width_box ) ? $width_box : array();
 		if ( is_scalar( $facts_box['top'] ?? null ) ) {
 			$facts['width_top'] = sgs_css_length_value( $facts_box['top'] );
@@ -203,6 +205,7 @@ if ( ! function_exists( 'sgs_border_element_decls' ) ) {
 			$hover_paint = '' !== $hover_grad ? $hover_grad : ( '' !== $hover_flat ? sgs_colour_value( $hover_flat ) : '' );
 
 			$facts['paint'] = sgs_background_paint_decl( $flat, $gradient );
+			$facts['has_ring'] = '' !== $gradient;
 
 			if ( ! empty( $options['colour_as_paint'] ) ) {
 				// The element paints the colour itself; the border carries none.

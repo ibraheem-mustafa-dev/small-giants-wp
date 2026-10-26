@@ -308,6 +308,8 @@ final class BorderElementDeclsTest extends TestCase {
 				'width_top' => '2px',
 				'style'     => 'dashed',
 				'paint'     => 'background-color:#3A2A22',
+				'has_width' => true,
+				'has_ring'  => false,
 			),
 			$out['facts']
 		);
@@ -332,6 +334,8 @@ final class BorderElementDeclsTest extends TestCase {
 		$empty = $this->decls( array(), array( 'facts' => true ) );
 		$this->assertSame( '', $empty['facts']['width_top'] );
 		$this->assertSame( '', $empty['facts']['paint'] );
+		$this->assertFalse( $empty['facts']['has_width'], 'no width at any tier' );
+		$this->assertFalse( $empty['facts']['has_ring'] );
 	}
 
 	/**

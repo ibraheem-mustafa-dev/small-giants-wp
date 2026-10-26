@@ -164,21 +164,8 @@ $sgs_di_clip  = sgs_media_atom_box_shape_clip_paths()[ $sgs_di_shape ] ?? '';
 // hover shadow alone draws nothing. A border style of none draws no border or ring.
 // `layer-preview.js::layerPaintsBox` is the canvas twin; tests/fixtures/decorative-image-paints-box.json
 // is the table both are tested against.
-$sgs_di_border_boxes = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
-if ( isset( $sgs_di_border_boxes['desktop'] ) || isset( $sgs_di_border_boxes['tablet'] ) || isset( $sgs_di_border_boxes['mobile'] ) ) {
-	$sgs_di_border_boxes = array_values( array_filter( $sgs_di_border_boxes, 'is_array' ) );
-} else {
-	$sgs_di_border_boxes = array( $sgs_di_border_boxes );
-}
-$sgs_di_has_width = false;
-foreach ( $sgs_di_border_boxes as $sgs_di_box ) {
-	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $sgs_di_side ) {
-		if ( is_scalar( $sgs_di_box[ $sgs_di_side ] ?? null ) && '' !== trim( (string) $sgs_di_box[ $sgs_di_side ] ) ) {
-			$sgs_di_has_width = true;
-		}
-	}
-}
-$sgs_di_has_ring   = '' !== sgs_css_gradient_value( (string) ( $attributes['borderColourGradient'] ?? '' ) );
+$sgs_di_has_width  = ! empty( $sgs_di_border['facts']['has_width'] );
+$sgs_di_has_ring   = ! empty( $sgs_di_border['facts']['has_ring'] );
 $sgs_di_paints_box = ( 'none' !== $sgs_di_border['facts']['style'] && ( $sgs_di_has_width || $sgs_di_has_ring ) )
 	|| array() !== $sgs_di_shadow['normal']
 	|| '' !== $sgs_di_fill;
