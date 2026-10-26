@@ -110,5 +110,36 @@
       "id": 18,
       "url": "http://localhost:8083/wp-content/uploads/2026/10/cr-overlay.png"
     }
+  },
+  "mamas-test": {
+    "envFile": ".claude/secrets/mamas-test.env",
+    "envKey": "MAMASTEST",
+    "postId": 115,
+    "image": {
+      "id": 98,
+      "url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-tray-love.jpg"
+    },
+    "refs": {
+      "image": {
+        "id": 98,
+        "url": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-tray-love.jpg"
+      },
+      "menu": 17,
+      "menuItem": 124,
+      "drawer": 118,
+      "logo": 128,
+      "product": 129
+    }
+  },
+  "local-mamas": {
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "mirrorOf": "mamas-test",
+    "postId": 115,
+    "pluginDir": "//wsl.localhost/Ubuntu/var/www/local-mamas/wp-content/plugins/sgs-blocks",
+    "image": {
+      "id": 98,
+      "url": "http://localhost:8084/wp-content/uploads/2026/10/photo-tray-love.jpg"
+    }
   }
 }

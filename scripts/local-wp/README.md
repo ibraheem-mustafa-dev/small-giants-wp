@@ -1,16 +1,17 @@
 # Local WordPress mirrors (WSL Ubuntu)
 
-Three local copies of the Hostinger test sites (database and `wp-content`; Eye Care and Sandybrown cloned on 2026-10-05, Indus on 2026-10-11; WordPress 7.1.x). They let browser-based measurement scripts on Windows run without Hostinger's firewall.
+Four local copies of the Hostinger test sites (database and `wp-content`; Eye Care and Sandybrown cloned on 2026-10-05, Indus on 2026-10-11, Mama's on 2026-10-26; WordPress 7.1.x). They let browser-based measurement scripts on Windows run without Hostinger's firewall.
 
 | Site | URL | Docroot (WSL) | Database |
 |---|---|---|---|
 | Eye Care (copies `eye-care-clone-test`) | http://localhost:8081 | `/var/www/local-eye-care` | `wp_eyecare` |
 | Sandybrown | http://localhost:8082 | `/var/www/local-sandybrown` | `wp_sandybrown` |
 | Indus | http://localhost:8083 | `/var/www/local-indus` | `wp_indus` |
+| Mama's Munches (copies `mamas-test`; WooCommerce copied from it, FluentSMTP left out so the mail block holds) | http://localhost:8084 | `/var/www/local-mamas` | `wp_mamas` |
 
-Windows can read the files at `\\wsl.localhost\Ubuntu\var\www\local-<site>\wp-content\...` (Node also accepts `//wsl.localhost/Ubuntu/...`). Logins are the same as the live sites; the values are in `.claude/secrets/local-eye-care.env`, `.claude/secrets/local-sandybrown.env` and `.claude/secrets/local-indus.env` (gitignored).
+Windows can read the files at `\\wsl.localhost\Ubuntu\var\www\local-<site>\wp-content\...` (Node also accepts `//wsl.localhost/Ubuntu/...`). Logins are the same as the live sites; the values are in `.claude/secrets/local-eye-care.env`, `.claude/secrets/local-sandybrown.env`, `.claude/secrets/local-indus.env` and `.claude/secrets/local-mamas.env` (gitignored).
 
-Calibration (Spec 48) targets them as `local-eye-care`, `local-sandybrown` and `local-indus` in `scripts/computed-route/calibration-targets.json`. Their `pluginDir` is read directly, so the deploy check needs no SSH. For the same build and snapshot they measure the same as the Hostinger sites (google-reviews: 228 settings and 5 dead on both, 2026-10-05).
+Calibration (Spec 48) targets them as `local-eye-care`, `local-sandybrown`, `local-indus` and `local-mamas` in `scripts/computed-route/calibration-targets.json`. Their `pluginDir` is read directly, so the deploy check needs no SSH. For the same build and snapshot they measure the same as the Hostinger sites (google-reviews: 228 settings and 5 dead on both, 2026-10-05).
 
 Each docroot has WordPress's standard `.htaccess` rewrite rules. The clone copied only `wp-content`; without the rules `/wp-json/` answers 404 and editor saves fail with "not a valid JSON response".
 
@@ -34,7 +35,7 @@ wsl -d Ubuntu -u root -- bash -lc 'service mariadb start; service apache2 start'
 wsl -d Ubuntu -u root -- bash /mnt/c/Users/Bean/Projects/small-giants-wp/scripts/local-wp/sync-build.sh all
 ```
 
-Use `local-eye-care`, `local-sandybrown` or `local-indus` instead of `all` for one site. It runs `rsync --delete` on `plugins/sgs-blocks/` (excluding `node_modules` and, at the plugin root only, `src`, `tests`, `.phpunit.cache`; `vendor/*/src` is copied), any other `plugins/sgs-*` folder already present on the site, and `theme/sgs-theme/`, replaces the theme's `theme.json` with the one a deploy ships to the test site the mirror copies (`mirror_theme_json.py`: the client snapshot named by that target's `client` in `deploy_common.py`, so default paint measured on the mirror carries that snapshot's paint key), then runs `wp cache flush`. From Git Bash, prefix the `wsl` command with `MSYS_NO_PATHCONV=1` or the `/mnt/c/...` path is rewritten. Build first (`npm run build` in `plugins/sgs-blocks`).
+Use `local-eye-care`, `local-sandybrown`, `local-indus` or `local-mamas` instead of `all` for one site. It runs `rsync --delete` on `plugins/sgs-blocks/` (excluding `node_modules` and, at the plugin root only, `src`, `tests`, `.phpunit.cache`; `vendor/*/src` is copied), any other `plugins/sgs-*` folder already present on the site, and `theme/sgs-theme/`, replaces the theme's `theme.json` with the one a deploy ships to the test site the mirror copies (`mirror_theme_json.py`: the client snapshot named by that target's `client` in `deploy_common.py`, so default paint measured on the mirror carries that snapshot's paint key), then runs `wp cache flush`. From Git Bash, prefix the `wsl` command with `MSYS_NO_PATHCONV=1` or the `/mnt/c/...` path is rewritten. Build first (`npm run build` in `plugins/sgs-blocks`).
 
 ## Refresh the database and uploads from the test site
 
@@ -48,4 +49,4 @@ It reads both URLs from `.claude/secrets/<name>.env` (`WP_URL_<KEY>`), backs up 
 
 ## Measuring on a mirror
 
-`scripts/computed-route/solve.mjs --site local-eye-care` builds and walks a surface on the mirror instead of the test site (`solve.mjs::siteOverride`; the walker's live URLs move with `SGS_LIVE_ORIGIN`). The mirror is a database copy, so the surface's post ids and templates are its own. Calibration targets the mirrors as `local-eye-care` / `local-sandybrown` / `local-indus`.
+`scripts/computed-route/solve.mjs --site local-eye-care` builds and walks a surface on the mirror instead of the test site (`solve.mjs::siteOverride`; the walker's live URLs move with `SGS_LIVE_ORIGIN`). The mirror is a database copy, so the surface's post ids and templates are its own. Calibration targets the mirrors as `local-eye-care` / `local-sandybrown` / `local-indus` / `local-mamas`.
