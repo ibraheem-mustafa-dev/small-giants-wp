@@ -245,6 +245,14 @@ Per client, inside `S site-run-start <client>` / `S site-run-end`. The order is 
 - The container's `:where(.sgs-container) > *` z-index needs a nested calibration fixture.
 - Painted-layer rows are never eligible for the ancestor hop (`lib/fill-resolve-element.mjs::checksRan` records why); making them eligible is a design call.
 - The Floating layer's shape: `clip-path` also clips the layer's shadow.
+- `sgs/buybox`'s slot map: the loss guard refuses the new map on `local-mamas` and `local-eye-care` alike (it drops `stickyBarBorderColour`); `sgs/cart`'s on `local-mamas` (it drops `badgeTextColourHover`); old maps kept, causes unproven.
+- Calibration of the Site Info blocks on a sparse Site Info: `sgs/business-info` and `sgs/whatsapp-cta` render nothing on `local-mamas` (mamas-test's Site Info holds only socials, email and copyright; their fixtures render a phone, address and hours), so Mama's has no default paint for them.
+- Two mirrors calibrating at once both re-measure the shared slot map `scripts/computed-route/cache/<block>.json`; `lib/calibration-lock.mjs` locks per calibration page only. Calibrate one mirror at a time until the lock covers the slot map.
+- The editor's server-render burst: `scripts/wp-build-page.js` caps block-renderer requests at `SGS_MAX_RENDERS` (default 6, `110966cc6`) after indus-test refused database sockets (mysqli 2002, reproduced at 45 parallel requests); whether the burst alone crosses the host's limit is unproven.
+- Walk open rows rose between the first pass and the U10 re-clone on the Indus header (+40), our-story (+34) and terms (+24), same walker `e1eb08720`; cause not looked at.
+- A carousel of review cards is not recognised as `sgs/testimonial-slider`: Mama's home reviews track (`Home/222`) is proposed as a sideways-scrolling `sgs/container`, so the draft's drag and arrows are a `gap:behaviour` row.
+- `intake.mjs --apply-review` writes `intake.json`'s `pageMap` over `page-map.json`, and `--page-map` regenerates only `page-map.json`: after a regeneration the review's page-map rows are stale and applying them reverts the confirmed map (Mama's, 2026-10-26, restored). `--page-map` should update `intake.json`'s `pageMap` and re-render the review, or `--apply-review` should refuse a page map older than `page-map.json`.
+- Mama's page map classes the shop's account and payment forms (`form-do-signin`, `form-do-register`, `form-pay`, `form-save-address` and the like) as `sgs_form` surfaces in intake's proposal, while WooCommerce owns those forms; the confirmed map keeps one form, so check the proposal's classification before the next Mama's intake.
 
 ## Phase 4: loop until identical
 Repeat Phase 2 (only the surfaces a fix touched, plus one full pass at the end) and Phase 3, until rulings D and E hold on every surface of the three clients. Then come the pairs for every surface and Bean's eye, which is the sign-off.
