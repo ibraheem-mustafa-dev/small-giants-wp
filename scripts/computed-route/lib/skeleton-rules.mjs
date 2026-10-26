@@ -515,9 +515,19 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		return out;
 	};
+	const holdsH1 = ( e ) => desc( e ).some( ( k ) => 'h1' === k.tag );
+	// An element that holds the page's sections rather than being one: the `<main>`, or an element holding two or more
+	// sections stacked one above the next.
+	const pageWrapper = ( e ) => {
+		const sections = m.blockKids( e ).filter( ( k ) => 'section' === k.tag );
+		return 'main' === e.tag || ( sections.length >= 2 && m.stacked( sections ) );
+	};
+	// A page wrapper that sits directly under the page's root, or inside another such wrapper.
+	const wrapperOfPage = ( e ) => pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) );
 	// A block the database files as a section (`block_composition.container_kind`, as the hero and the trust bar) is only
-	// ever a page's own section: an element directly under a page surface's root. Badges inside a section are labels.
-	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && 1 === e.depth );
+	// ever a page's own section: an element directly under a page surface's root, or directly inside a page wrapper (never the
+	// wrapper itself). Badges inside a section are labels.
+	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) ) );
 	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
 	// The element's own animation loops a translate for ever (the inventory's motion record): a marquee track.
 	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
@@ -598,9 +608,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			return v( 'trustBar', { block: T.block, absorb: true, attributes: { items: kidsB.map( ( k ) => ( { label: all( k ) } ) ) } } );
 		},
-		// The first section of a page holding its h1 is the hero; with an image inside it is the split hero.
+		// The first section of a page holding its h1 is the hero; with an image inside it is the split hero. A page wrapper (the
+		// `<main>`, or an element holding two or more stacked sections) is never the hero: the hero is its first block child
+		// holding the h1 among two or more (however many wrappers deep), and a section after that one is not. A wrapper's only
+		// child is the page's content container, not a section: such a page has no hero.
 		( { e, kidsB } ) => {
-			if ( 'page' !== surface.kind || 1 !== e.depth || ! kidsB.length || ! desc( e ).some( ( k ) => 'h1' === k.tag ) ) {
+			if ( 'page' !== surface.kind || ! kidsB.length || ! holdsH1( e ) || pageWrapper( e ) ) {
+				return null;
+			}
+			const parent = m.byKey[ e.parentKey ];
+			if ( 1 !== e.depth && ! ( parent && wrapperOfPage( parent ) && m.blockKids( parent ).length >= 2 && m.blockKids( parent ).find( holdsH1 ) === e ) ) {
 				return null;
 			}
 			const media = desc( e ).some( isMedia );

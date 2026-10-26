@@ -239,6 +239,41 @@ test( 'trustBar: a row of short labels naming a trust-bar capability is a trust 
 	}
 } );
 
+test( 'hero: sections inside one page wrapper (`<main>`) make the first section holding the h1 the hero, never the wrapper, and a later section is not unwrapped as inside a hero; a page whose sections sit directly under the root keeps its hero; MUST FAIL without the wrapper test', () => {
+	const at = ( y ) => ( { y, box: { x: 0, y, w: 100, h: 100 } } );
+	const sections = () => [
+		E( 'section', at( 0 ), [ E( 'div', {}, [ E( 'h1', { words: 'Baked fresh' } ), E( 'p', { words: 'To order.' } ) ] ) ] ),
+		E( 'section', { id: 'gifts', ...at( 200 ) }, [ E( 'div', {}, [ E( 'h2', { words: 'Gifts' } ), E( 'p', { words: 'Boxes.' } ) ] ) ] ),
+		E( 'section', at( 400 ), [ E( 'div', {}, [ E( 'h2', { words: 'Reviews' } ), E( 'p', { words: 'Kind words.' } ) ] ) ] ),
+	];
+	const wrapped = E( 'div', {}, [ E( 'div', { words: 'Menu' } ), E( 'main', at( 0 ), sections() ) ] );
+	const r = run( wrapped );
+	const heroRows = r.proposal.rows.filter( ( x ) => 'hero' === x.rule );
+	assert.deepEqual( heroRows.map( ( x ) => [ x.tag, x.block ] ), [ [ 'section', 'sgs/hero' ] ], 'one hero, the first section' );
+	assert.equal( heroRows[ 0 ].words, '', 'the section, not the h1' );
+	assert.notEqual( byTag( r, 'main' ).block, 'sgs/hero', 'the wrapper is not the hero' );
+	const later = r.proposal.rows.filter( ( x ) => 'section' === x.tag ).slice( 1 );
+	assert.equal( later.length, 2 );
+	assert.ok( later.every( ( x ) => 'heroInner' !== x.rule ), 'a later section is not inside the hero' );
+	// A `<main>` whose only child is the page's content container (heading and everything else inside it) has no sections: no hero.
+	const single = run( E( 'div', {}, [ E( 'main', at( 0 ), [ E( 'div', at( 0 ), [ E( 'h1', { words: 'Your basket' } ), E( 'div', { ...at( 200 ) }, [ E( 'p', { words: 'Empty.' } ) ] ) ] ) ] ) ] ) );
+	assert.equal( single.proposal.rows.filter( ( x ) => 'hero' === x.rule ).length, 0, 'a lone content container is not a hero' );
+	assert.ok( single.proposal.rows.every( ( x ) => 'heroInner' !== x.rule ), 'nothing is unwrapped as inside a hero' );
+	const flat = run( E( 'div', {}, sections() ) );
+	assert.deepEqual( flat.proposal.rows.filter( ( x ) => 'hero' === x.rule ).map( ( x ) => x.tag ), [ 'section' ], 'sections directly under the root: the first holding the h1 is the hero' );
+} );
+
+test( 'pageSection: a trust bar that is a section of a page wrapper (`<main>`) is proposed as the trust bar, the wrapper itself is not; MUST FAIL without the wrapper test', () => {
+	const at = ( y ) => ( { y, box: { x: 0, y, w: 100, h: 100 } } );
+	const badges = E( 'div', { display: 'flex', ...at( 200 ) }, [ 'BRC certified', 'Halal certified', 'Family run' ].map( ( w, i ) => E( 'span', { words: w, box: { x: i * 120, y: 200, w: 110, h: 30 } }, [ E( 'span', { style: 'width:7px;height:7px;border-radius:50%' } ) ] ) ) );
+	const page = E( 'div', {}, [ E( 'main', at( 0 ), [ E( 'section', at( 0 ), [ E( 'div', {}, [ E( 'h1', { words: 'Baked fresh' } ), E( 'p', { words: 'To order.' } ) ] ) ] ), badges, E( 'section', at( 400 ), [ E( 'h2', { words: 'Gifts' } ) ] ) ] ) ] );
+	const r = run( page );
+	const bar = row( r, ( x ) => 'div' === x.tag && 'trustBar' === x.rule );
+	assert.equal( bar?.block, 'sgs/trust-bar' );
+	assert.notEqual( byTag( r, 'main' ).rule, 'trustBar', 'the wrapper is never a page section' );
+	assert.ok( r.proposal.rows.filter( ( x ) => 'span' === x.tag ).every( ( x ) => 'absorbed' === x.action ), 'the badges are its items' );
+} );
+
 test( 'hero and heroInner: a page\'s first section holding its h1 is the split hero; its wrappers go, its image is its media, its buttons stay a group; MUST FAIL without each', () => {
 	const page = E( 'main', {}, [ E( 'section', {}, [ E( 'div', { display: 'grid' }, [
 		E( 'div', {}, [ E( 'h1', { words: 'Fresh food, delivered', y: 0 } ), E( 'p', { words: 'Family run since 1962.', y: 40 } ), E( 'div', { display: 'flex', y: 80 }, [ E( 'a', { words: 'Apply', attrs: { href: '/apply' }, box: { x: 0, y: 80, w: 100, h: 20 } } ), E( 'a', { words: 'Catalogue', attrs: { href: '/catalogue' }, box: { x: 120, y: 80, w: 100, h: 20 } } ) ] ), E( 'div', { display: 'flex', y: 120 }, [ E( 'span', { words: 'BRC certified', style: 'text-transform:uppercase', box: { x: 0, y: 120, w: 100, h: 20 } } ), E( 'span', { words: 'Halal certified', style: 'text-transform:uppercase', box: { x: 120, y: 120, w: 100, h: 20 } } ) ] ) ] ),
