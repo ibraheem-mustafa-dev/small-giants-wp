@@ -1,14 +1,16 @@
 // The site's own template copies (Spec 48 FR-48-56, Bean 2026-10-26): every theme template a site serves is the site's
 // own copy, cloned from the draft surface playing that template's role. A copy is the theme's frame (the header and
 // footer template parts) around the draft's page shell, and inside the shell either the page's own content
-// (`core/post-content`: the page, the front page and WooCommerce's cart, checkout and account pages, whose content is
-// WooCommerce's working block) or the theme template's own content block (the posts loop, a post's title and content, the
-// not-found message, the results list, the order details). The shell is the run of single-child `sgs/container` wrappers
+// (`core/post-content`: the page and the front page) or the theme template's own content block (the posts loop, a post's
+// title and content, the not-found message, the results list, the order details). The shell is the run of single-child `sgs/container` wrappers
 // at the top of a Filled tree (the main width and background); a template several pages use takes the wrappers every one
 // of them has (their common prefix), so no page renders inside a wrapper it does not have, and each page's post then
 // holds only what sits below that shell. The homepage's sections stay in the home page (editable there); its front-page
-// copy is the shell around `core/post-content` like any page. The shop's archive and product templates are built from
-// their whole Filled tree inside the frame, since the shop page's content is never shown.
+// copy is the shell around `core/post-content` like any page. WooCommerce's pages (the shop, the product, the cart, the
+// checkout and the account page) are SGS pages with WooCommerce's piece in them (Bean, 2026-10-26): their copy is the
+// whole Filled tree inside the frame, in which the skeleton placed WooCommerce's piece at the draft's commerce region
+// (lib/skeleton-commerce-region.mjs: the product collection, or `core/post-content` printing the page's own Cart, Checkout
+// or account block).
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -22,9 +24,9 @@ const PART = ( slug ) => ( { name: 'core/template-part', attributes: { slug, tag
 const MAIN = { name: 'sgs/container', attributes: { tagName: 'main', anchor: 'main', contentWidth: { desktop: 'full' } } };
 
 // Templates whose inner block is the page's own content.
-export const PAGE_CONTENT = [ 'front-page', 'page', 'cart', 'checkout', 'page-my-account' ];
-// Templates built from the shop row's whole tree.
-export const WHOLE_TREE = [ 'archive-product', 'single-product' ];
+export const PAGE_CONTENT = [ 'front-page', 'page' ];
+// Templates built from their surface's whole Filled tree: WooCommerce's pages.
+export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout', 'page-my-account' ];
 // Templates the draft has no surface for: built from the site's own `page` copy with the theme template's own content.
 export const DERIVED = [ '404', 'search', 'archive', 'product-search-results', 'taxonomy-product_attribute' ];
 // The templates WordPress reaches by its template hierarchy (a page's slug reaches `page-<slug>`), never set as a page's

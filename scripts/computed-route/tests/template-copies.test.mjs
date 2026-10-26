@@ -103,7 +103,7 @@ test( 'the site serves each template a row names, page, 404 and search everywher
 	assert.deepEqual( servedTemplates( SHOP ), [ 'page', 'search', '404', 'archive-product', 'single-product', 'product-search-results', 'taxonomy-product_attribute', 'cart', 'checkout', 'order-confirmation', 'page-my-account' ] );
 	assert.deepEqual( DERIVED.map( ( s ) => copySource( INDUS, s ) ), [ 'page', 'page', 'page', 'page', 'page' ] );
 	assert.equal( copySource( SHOP, 'archive-product' ), 'whole' );
-	assert.equal( copySource( SHOP, 'cart' ), 'shell' );
+	assert.equal( copySource( SHOP, 'cart' ), 'whole', 'a WooCommerce page is an SGS page with the WooCommerce piece in it: its copy is the whole tree' );
 } );
 
 test( 'MUST FAIL: a template the hierarchy reaches is never a page template; a registered custom one still is', () => {
