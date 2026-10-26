@@ -799,6 +799,7 @@ const PREFIXED_HELPER_SUFFIXES = {
 		'FontVariantNumeric',
 		'TextShadow',
 		'TextShadowColour',
+		'TextShadowColourHover',
 		// Added 2026-09-06 alongside the helper's column-count / text-indent /
 		// writing-mode branches — same dynamic-key reason as every suffix above.
 		//

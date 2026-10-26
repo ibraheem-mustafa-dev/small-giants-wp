@@ -17,6 +17,15 @@ jest.mock( '../../src/components/TypographyNumberShadowRows', () => {
 	};
 } );
 
+jest.mock( '../../src/components/DesignTokenPicker', () => ( {
+	__esModule: true,
+	default: ( { label, states } ) =>
+		require( 'react' ).createElement( 'div', {
+			'data-picker': label,
+			'data-states': states.map( ( state ) => state.key ).join( ',' ),
+		} ),
+} ) );
+
 const { typographyAttrKeys } = require( '../../src/components/TypographyControls' );
 const TypographyControls = require( '../../src/components/TypographyControls' ).default;
 const {
@@ -32,11 +41,13 @@ describe( 'typographyAttrKeys', () => {
 			fontVariantNumeric: 'fontVariantNumeric',
 			textShadow: 'textShadow',
 			textShadowColour: 'textShadowColour',
+			textShadowColourHover: 'textShadowColourHover',
 		} );
 		expect( typographyAttrKeys( 'label' ) ).toMatchObject( {
 			fontVariantNumeric: 'labelFontVariantNumeric',
 			textShadow: 'labelTextShadow',
 			textShadowColour: 'labelTextShadowColour',
+			textShadowColourHover: 'labelTextShadowColourHover',
 		} );
 	} );
 } );
@@ -111,6 +122,18 @@ describe( 'TypographyControls opt-in rows', () => {
 	it( 'shows the text shadow row only when asked', () => {
 		const { container, root } = mount( { showTextShadow: true } );
 		expect( rows( container ) ).toEqual( [ 'text-shadow' ] );
+		act( () => root.unmount() );
+	} );
+
+	it( 'offers the shadow colour in Normal and Hover states, like the outline colour', () => {
+		const { container, root } = mount( { showTextShadow: true } );
+		expect( container.querySelector( '[data-picker="Text shadow colour"]' ).getAttribute( 'data-states' ) ).toBe( 'normal,hover' );
+		act( () => root.unmount() );
+	} );
+
+	it( 'offers no shadow colour row unless asked', () => {
+		const { container, root } = mount( { showNumberStyle: true } );
+		expect( container.querySelector( '[data-picker="Text shadow colour"]' ) ).toBeNull();
 		act( () => root.unmount() );
 	} );
 } );

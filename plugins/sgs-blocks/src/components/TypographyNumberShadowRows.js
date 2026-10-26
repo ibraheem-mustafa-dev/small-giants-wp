@@ -2,12 +2,14 @@
  * Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`).
  *
  * SGS-ONLY: core has no `font-variant-numeric` or `text-shadow` typography support. The block must DECLARE
- * `{prefix}FontVariantNumeric`, `{prefix}TextShadow` and `{prefix}TextShadowColour` first, or WordPress discards what
+ * `{prefix}FontVariantNumeric`, `{prefix}TextShadow`, `{prefix}TextShadowColour` and `{prefix}TextShadowColourHover` first, or WordPress discards what
  * these write (the silent-discard class). Server side, `sgs_typography_css_rule()` prints both; the canvas twin is
  * `typographyPreviewStyle()`.
  *
  * The shadow is stored as layers of three lengths (`X Y BLUR`, px) with its colour in the sibling attribute, the
- * same shape-plus-colour split the box shadow uses. The row edits the FIRST layer's lengths and keeps all else a
+ * same shape-plus-colour split the box shadow uses. The colour row itself sits in TypographyControls beside the outline
+ * colour (Normal and Hover, no gradient: CSS `text-shadow` takes a colour only), so the shared-row scan resolves its
+ * paint through the mounting block's own prefix. The row edits the FIRST layer's lengths and keeps all else a
  * value written elsewhere holds: later layers, an inline colour on the first layer. A first layer in em or rem is
  * not shown as px, so the row says so and leaves it alone.
  *
@@ -15,8 +17,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { Flex, FlexItem, Notice, SelectControl } from '@wordpress/components';
-import { VStack, NumberControl } from './primitives';
-import DesignTokenPicker from './DesignTokenPicker';
+import { NumberControl } from './primitives';
 
 const DEFAULT_LABEL = __( 'Default', 'sgs-blocks' );
 
@@ -148,7 +149,7 @@ export function NumberStyleRow( { attributes, setAttributes, keys } ) {
 }
 
 /**
- * Text shadow: horizontal and vertical offset, blur and colour.
+ * Text shadow lengths: horizontal and vertical offset and blur.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -189,25 +190,10 @@ export function TextShadowRow( { attributes, setAttributes, keys } ) {
 		</FlexItem>
 	);
 	return (
-		<VStack spacing={ 3 }>
-			<Flex gap={ 2 } align="flex-start">
-				{ field( 'x', __( 'Shadow X (px)', 'sgs-blocks' ), -100 ) }
-				{ field( 'y', __( 'Shadow Y (px)', 'sgs-blocks' ), -100 ) }
-				{ field( 'blur', __( 'Blur (px)', 'sgs-blocks' ), 0 ) }
-			</Flex>
-			<DesignTokenPicker
-				label={ __( 'Text shadow colour', 'sgs-blocks' ) }
-				help={ __( 'Leave empty to draw the shadow in the text colour. Set all three lengths to 0 for no shadow.', 'sgs-blocks' ) }
-				states={ [
-					{
-						key: 'normal',
-						label: __( 'Normal', 'sgs-blocks' ),
-						value: attributes[ keys.textShadowColour ] || '',
-						onChange: ( next ) => setAttributes( { [ keys.textShadowColour ]: next ?? '' } ),
-						linked: true,
-					},
-				] }
-			/>
-		</VStack>
+		<Flex gap={ 2 } align="flex-start">
+			{ field( 'x', __( 'Shadow X (px)', 'sgs-blocks' ), -100 ) }
+			{ field( 'y', __( 'Shadow Y (px)', 'sgs-blocks' ), -100 ) }
+			{ field( 'blur', __( 'Blur (px)', 'sgs-blocks' ), 0 ) }
+		</Flex>
 	);
 }

@@ -402,6 +402,7 @@ export function typographyAttrKeys( prefix ) {
 		fontVariantNumeric: typographyAttrName( prefix, 'FontVariantNumeric' ),
 		textShadow: typographyAttrName( prefix, 'TextShadow' ),
 		textShadowColour: typographyAttrName( prefix, 'TextShadowColour' ),
+		textShadowColourHover: typographyAttrName( prefix, 'TextShadowColourHover' ),
 		// Hover companions (D309). Consumed only when showHover is enabled AND the
 		// block declares + renders them (else the dead-control gate flags it).
 		fontWeightHover: typographyAttrName( prefix, 'FontWeightHover' ),
@@ -503,7 +504,7 @@ function parseUnitValue( raw, currentUnit ) {
  *   {prefix}FontVariantNumeric. Emitted server-side by sgs_typography_css_rule().
  * @param {boolean}  [props.showTextShadow=false] Offer a text shadow (X, Y, blur
  *   and colour). OPT-IN: only pass true when the block declares {prefix}TextShadow
- *   and {prefix}TextShadowColour. Emitted server-side by sgs_typography_css_rule().
+ *   {prefix}TextShadowColour and {prefix}TextShadowColourHover. Emitted server-side by sgs_typography_css_rule().
  * @param {boolean}  [props.showFontFamily=false] Offer a font-family picker
  *   sourced from the theme.json `typography.fontFamilies` preset list (same
  *   opt-in shape as fontSizePresets). OPT-IN: only pass true when the block
@@ -1446,7 +1447,29 @@ function TypographyControlsFields( {
 				<NumberStyleRow attributes={ attributes } setAttributes={ setAttributes } keys={ k } />
 			) }
 			{ showTextShadow && (
-				<TextShadowRow attributes={ attributes } setAttributes={ setAttributes } keys={ k } />
+				<>
+					<TextShadowRow attributes={ attributes } setAttributes={ setAttributes } keys={ k } />
+					<DesignTokenPicker
+						label={ __( 'Text shadow colour', 'sgs-blocks' ) }
+						help={ __( 'Leave empty to draw the shadow in the text colour. Set all three lengths to 0 for no shadow. Hover repaints the same shadow in its own colour.', 'sgs-blocks' ) }
+						states={ [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: attributes[ k.textShadowColour ] || '',
+								onChange: ( next ) => setAttributes( { [ k.textShadowColour ]: next ?? '' } ),
+								linked: true,
+							},
+							{
+								key: 'hover',
+								label: __( 'Hover', 'sgs-blocks' ),
+								value: attributes[ k.textShadowColourHover ] || '',
+								onChange: ( next ) => setAttributes( { [ k.textShadowColourHover ]: next ?? '' } ),
+								linked: true,
+							},
+						] }
+					/>
+				</>
 			) }
 
 			{ /* Hover typography (D309). Opt-in: only render for a block that

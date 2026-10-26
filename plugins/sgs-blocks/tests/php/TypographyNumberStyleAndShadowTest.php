@@ -107,6 +107,45 @@ final class TypographyNumberStyleAndShadowTest extends TestCase {
 		$this->assertStringNotContainsString( 'body{', $css );
 	}
 
+	/**
+	 * @dataProvider adopters
+	 */
+	public function test_hover_colour_repaints_the_shadow_behind_the_touch_guard( string $slug, array $base ): void {
+		$out = $this->render_block(
+			$slug,
+			array_merge(
+				$base,
+				array(
+					'textShadow'            => '0px 4px 12px',
+					'textShadowColour'      => '#FFFFFFCB',
+					'textShadowColourHover' => '#D8CA50',
+				)
+			)
+		);
+
+		$this->assertMatchesRegularExpression( '/\{[^}]*text-shadow:0px 4px 12px #FFFFFFCB;[^}]*\}/', $out['css'], 'resting shadow is untouched' );
+		$this->assertMatchesRegularExpression( '/@media \(hover: hover\)[^{]*\{[^{]*:hover\{[^}]*text-shadow:0px 4px 12px #D8CA50;/', $out['css'], 'hover keeps the offsets and blur, changes only the colour' );
+	}
+
+	public function test_a_hover_colour_slug_resolves_and_a_hostile_one_is_refused(): void {
+		$css = $this->render_block( 'sgs/text', array( 'text' => 'x', 'textShadow' => '0 2px 4px', 'textShadowColourHover' => 'primary' ) )['css'];
+		$this->assertStringContainsString( 'text-shadow:0px 2px 4px var(--wp--preset--color--primary', $css );
+
+		$css = $this->render_block( 'sgs/text', array( 'text' => 'x', 'textShadow' => '0 2px 4px', 'textShadowColourHover' => 'red;} body{display:none' ) )['css'];
+		$this->assertStringNotContainsString( 'display:none', $css );
+		$this->assertStringNotContainsString( 'body{', $css );
+	}
+
+	public function test_nothing_prints_on_hover_when_the_hover_colour_or_the_shape_is_unset(): void {
+		$css = $this->render_block( 'sgs/text', array( 'text' => 'x', 'textShadow' => '0 2px 4px', 'textShadowColour' => '#000000' ) )['css'];
+		$this->assertStringContainsString( 'text-shadow:0px 2px 4px #000000', $css, 'positive control: the resting shadow printed' );
+		$this->assertStringNotContainsString( ':hover', $css );
+
+		$css = $this->render_block( 'sgs/text', array( 'text' => 'x', 'fontWeight' => '700', 'textShadowColourHover' => '#D8CA50' ) )['css'];
+		$this->assertStringContainsString( 'font-weight:700', $css, 'positive control: the typography rule printed' );
+		$this->assertStringNotContainsString( 'text-shadow', $css, 'a hover colour with no shadow shape draws nothing' );
+	}
+
 	public function test_nothing_set_prints_neither_property(): void {
 		$out = $this->render_block( 'sgs/text', array( 'text' => 'x', 'fontWeight' => '700' ) );
 
@@ -124,7 +163,7 @@ final class TypographyNumberStyleAndShadowTest extends TestCase {
 		foreach ( glob( dirname( __DIR__, 2 ) . '/src/blocks/*/block.json' ) ?: array() as $file ) {
 			$json  = json_decode( (string) file_get_contents( $file ), true );
 			$attrs = is_array( $json['attributes'] ?? null ) ? $json['attributes'] : array();
-			foreach ( array( 'fontVariantNumeric', 'textShadow', 'textShadowColour' ) as $name ) {
+			foreach ( array( 'fontVariantNumeric', 'textShadow', 'textShadowColour', 'textShadowColourHover' ) as $name ) {
 				if ( isset( $attrs[ $name ] ) ) {
 					$declared[ $json['name'] ][] = $name;
 					$this->assertSame( '', $attrs[ $name ]['default'], $json['name'] . ' ' . $name . ' defaults to nothing' );
@@ -137,7 +176,7 @@ final class TypographyNumberStyleAndShadowTest extends TestCase {
 			array_keys( $declared )
 		);
 		foreach ( $declared as $names ) {
-			$this->assertSame( array( 'fontVariantNumeric', 'textShadow', 'textShadowColour' ), $names );
+			$this->assertSame( array( 'fontVariantNumeric', 'textShadow', 'textShadowColour', 'textShadowColourHover' ), $names );
 		}
 	}
 }
