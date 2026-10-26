@@ -308,7 +308,10 @@
       "pickerLabelLinkUrl": "#size-guide",
       "gallerySavingBadge": true,
       "extrasBeforeCount": 3,
-      "extrasBeforeCartCount": 1
+      "extrasBeforeCartCount": 1,
+      "stickyBar": {
+        "desktop": "after-button"
+      }
     },
     "inner": [
       {
@@ -2219,7 +2222,8 @@
     "attributes": {
       "variant": "inline",
       "message": "Hi, I'd like to know more about your services.",
-      "label": "Message me"
+      "label": "Message me",
+      "phoneNumber": "447700900000"
     },
     "variants": [
       {},
