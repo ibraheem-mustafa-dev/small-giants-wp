@@ -258,9 +258,9 @@ Track R's session coordinates the four tracks: it keeps this board current from 
 | **R, Fill route** | Phase 1 closed 2026-10-25 (`ca45daa29`) | Waves 1 to 5: Bean's 6 decisions written by Fill; a strict census (0 of 1,205 declared reads without an honest outcome); the burger bars, bar alignment and hover shadow; the buttons' shadow timing and the top row's `rowAnimate`; the logo's alt; `census-all.mjs` on current data; Indus header 392 to 148 open rows on 375/768/1440 | none (rest moved to Phase 2 and 3) | none | 2026-10-25 |
 | **W, walker** | Phase 1 closed (waves 1 to 4; the lens cases fixed at `48262e245`) | Walker waves 1 to 4 (W14 to W21, Spec 48 §3.6 items 20 to 24): nothing dropped that the walk did not read on both sides; `census-classes.json` classes every Indus header unmapped and held row; lens benchmark cases e and f run and catch their gap | none (W22 and the walker comparison gaps moved to Phase 3) | none | 2026-10-25 |
 | **F, framework** | Phase 1 closed 2026-10-25 | F1 to F4 (base-transition table, `shadowDuration`/`shadowEasing`, `rowAnimate`, burger parts and `burgerShadowHover`, the scroll-away row fix); a scroll-away row prints its animation settings and the Hover panel names the site default (`e33eea6ae`, `c24f6aa6f`, live on all five test sites, canary motion 19 of 19) | none | none | 2026-10-25 |
-| **S, sites and inputs** | Phase 1 closed; runs Phase 2 | Mama's Site Info; the palette proposer reproduces its three keys; the extractor reads the draft's declared tokens, every easing, the button presets and the hover movement timing (`settings.custom.hover`, pushed to the three test sites 2026-10-25); `loadSnapshot` refuses a stale snapshot; Eye Care's calibration complete; `site-options.json` and shop-part locators in place | none | Bean: section padding (kept at 0 until he rules) | 2026-10-25 |
+| **S, sites and inputs** | Phase 1 closed; Phase 2 paused for Phase 3 loop 1 (deployed at `361f96bcf`), resuming at the loop plan's U9 and U10 | Mama's Site Info; the palette proposer reproduces its three keys; the extractor reads the draft's declared tokens, every easing, the button presets and the hover movement timing (`settings.custom.hover`, pushed to the three test sites 2026-10-25); `loadSnapshot` refuses a stale snapshot; Eye Care's calibration complete; `site-options.json` and shop-part locators in place | none | Bean: section padding (kept at 0 until he rules) | 2026-10-25 |
 
-All four rows are closed: Phase 2 is next.
+All four rows are closed for Phase 1. Phase 2 is in progress: Indus's first pass ran 25 of 40 surfaces through `scripts/computed-route/site-run.mjs`, then Phase 3 loop 1 interrupted it (the "Phase 2 interrupted" paragraph above).
 
 ### Done
 - [x] 2026-10-23: the Indus header walk and census, three diagnosis lanes, an adversarial council on the fix plan, the CSS-equivalence research, and the Spec 48 audit; this plan written.
@@ -272,7 +272,7 @@ All four rows are closed: Phase 2 is next.
   - **S5:** the page map classifies each surface by what it is (`lib/intake-pagemap-owners.mjs`, `lib/intake-pagemap-commerce.mjs`); `chooseActive` and `site-build-decisions.json` are gone; `intake.mjs --page-map <client>` regenerates offline. Eye Care matches `eye-care-test`'s types and counts. Bean confirmed the three maps on 2026-10-23, with two rulings: a page title uses the draft's wording ("Your bag", "Sign in / register"), and the shop keeps WooCommerce's `/shop/` and product addresses, not the manifest's `/sunglasses` and `/frames/`.
   - **S3:** the extractor reads `tokens/*.css`, refuses its undeclared fallbacks, re-hashes and stamps the MANIFEST files, and reads no README on a 48A export. The route's freshness gate (`lib/snapshot-freshness.mjs`) is called by `loadSnapshot`; the three snapshots were re-extracted from the drafts' tokens and pushed on 2026-10-24.
   - **S4:**
-    - FR-48-57: required and too-long copy, the form step and review nodes, and `form-submit-check.mjs`. Its live run waits on Phase 2, because the forms are placeholders.
+    - FR-48-57: required and too-long copy, the form step and review nodes, and `form-submit-check.mjs`. Its live run waits on the U10 re-clone (`.claude/plans/2026-10-25-phase3-loop1.md`), which builds each form as its own `sgs_form` post by reference.
     - FR-48-58: stock previews uploaded (indus-test 30, eye-care-clone-test 9; reruns upload 0).
     - Site options: applied from `sites/<client>/build/site-options.json`.
     - FR-48-60 to -62: shop parts matched by structure into `build/shop-parts.json`, and fixture products on mamas-test (107, 108) and eye-care-clone-test (82, 83).
@@ -287,7 +287,7 @@ All four rows are closed: Phase 2 is next.
   - **Still classified by words:** the `single-product` and `post` rows, and `lib/shop-parts-read.mjs`'s `NAMES` file pick.
 - [x] Phase 1 Track F (2026-10-24): F1 (`7778b1e8a`), F2 (decisions 1, 3 and 6, live on all four sites at `27d93336a`) and F3 (`4b5674467`) done; F2's open items (the marquee probe control, stale tests) are in its row.
 - [x] Phase 1, as four sessions Bean ran, one per track: closed 2026-10-25 (Track R waves 1 to 5 and the close lanes, merges up to `ca45daa29`; Tracks S, F and W done; the rest moved by Bean's decision, Phase 1 close paragraph).
-- [ ] Phase 2 to Phase 4 as above. Phase 2 is next: every Phase 1 track is closed and Track S's before-Phase-2 list is done; Bean confirmed the regenerated page maps on 2026-10-23.
+- [ ] Phase 2 to Phase 4 as above. Phase 2 is in progress, paused for Phase 3 loop 1; it resumes at that plan's U9 (Eye Care intake, Bean's skeleton reviews) and U10 (the re-clone of Indus, then Mama's and Eye Care).
 
 ## Verification
 - Per unit: MUST FAIL tests across the variant list, red mutations with 0 skipped, `capabilities.mjs --gate`, and the real-run proof.
