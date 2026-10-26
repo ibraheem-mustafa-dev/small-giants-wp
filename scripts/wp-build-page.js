@@ -37,6 +37,8 @@
  *   --dry-run validates the tree in the editor and saves nothing.
  *   --editor-timeout <ms> how long a page load, the editor boot and a save may each take (default 60000); a large
  *   calibration page on a slow host needs longer.
+ *   SGS_MAX_RENDERS (environment, default 6): how many of the editor's server-render requests (block-renderer) run
+ *   at once, so a surface with many server-rendered blocks stays under the host's concurrent-process limit.
  *
  * Credentials: WP_URL_<KEY>, WP_USER_<KEY>, WP_PWD_<KEY> from --env-file (never printed).
  *
@@ -354,21 +356,7 @@ async function main() {
 		// The cloud proxy drops connections when the editor opens its ~600 assets at once
 		// (net::ERR_TOO_MANY_RETRIES, then every request stalls). Funnel them through Node,
 		// PARITY_MAX_REQUESTS (default 4) at a time, retrying a dropped fetch.
-		const max = Number( process.env.PARITY_MAX_REQUESTS || 4 );
-		let active = 0;
-		const waiting = [];
-		const acquire = () => new Promise( ( resolve ) => {
-			if ( active < max ) {
-				active++;
-				resolve();
-			} else {
-				waiting.push( resolve );
-			}
-		} );
-		const release = () => {
-			const next = waiting.shift();
-			if ( next ) next(); else active--;
-		};
+		const { acquire, release } = limiter( Number( process.env.PARITY_MAX_REQUESTS || 4 ) );
 		await context.route( '**/*', async ( route ) => {
 			if ( /stats\.wp\.com|pixel\.wp\.com|gravatar\.com/.test( route.request().url() ) ) return route.abort();
 			await acquire();
@@ -391,6 +379,24 @@ async function main() {
 		} );
 	}
 	const page = shared ? shared.page : await context.newPage();
+	// The editor asks the server to render every server-rendered block at once (block-renderer), and again as its
+	// attributes settle. A host that refuses new database sockets past its concurrent-process limit (Hostinger:
+	// mysqli 2002 "Operation not permitted" at about 40 parallel requests, so 11 sgs/business-info blocks in one
+	// footer fail the save) answers "Error establishing a database connection". SGS_MAX_RENDERS (default 6) render
+	// requests run at a time; the cloud proxy's funnel above already caps every request.
+	const renders = limiter( Number( process.env.SGS_MAX_RENDERS || 6 ) );
+	const renderUrl = /\/wp\/v2\/block-renderer\//;
+	const renderRoute = async ( route ) => {
+		await renders.acquire();
+		try {
+			await route.fulfill( { response: await route.fetch( { timeout: args.editorTimeout } ) } );
+		} catch ( e ) {
+			await route.abort().catch( () => {} );
+		} finally {
+			renders.release();
+		}
+	};
+	if ( ! cloudProxy ) await page.route( renderUrl, renderRoute );
 	try {
 		try {
 			await wpSession.ensureLoggedIn( page, { url, user, pwd }, args.editorTimeout );
@@ -583,8 +589,29 @@ async function main() {
 		console.log( JSON.stringify( result ) );
 		if ( ! result.ok ) process.exitCode = 6;
 	} finally {
+		if ( ! cloudProxy ) await page.unroute( renderUrl, renderRoute ).catch( () => {} );
 		await ( shared ? shared.close() : browser.close() );
 	}
+}
+
+// A counting semaphore: acquire() resolves once fewer than max holders are active; release() hands the slot to the
+// next waiter.
+function limiter( max ) {
+	let active = 0;
+	const waiting = [];
+	const acquire = () => new Promise( ( resolve ) => {
+		if ( active < max ) {
+			active++;
+			resolve();
+		} else {
+			waiting.push( resolve );
+		}
+	} );
+	const release = () => {
+		const next = waiting.shift();
+		if ( next ) next(); else active--;
+	};
+	return { acquire, release };
 }
 
 if ( require.main === module ) {
