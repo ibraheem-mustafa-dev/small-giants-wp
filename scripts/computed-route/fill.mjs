@@ -374,6 +374,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			console.log( `fill ${ r.surface }: ${ r.counts.writes } settings written, ${ r.counts.unmapped } UNMAPPED, ${ r.counts.handover } handover, ${ r.counts.fluid } fluid, ${ r.counts.breakpointSteps } breakpoint steps. Report: ${ path.join( r.outDir, 'fill-report.md' ) }` );
 		}
 	} catch ( e ) {
+		// The stack goes to the log; the message stays the last line, which site-run reports.
+		console.error( e.stack || e );
 		console.error( e.message );
 		process.exit( 2 );
 	}

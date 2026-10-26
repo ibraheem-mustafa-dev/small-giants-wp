@@ -174,7 +174,7 @@ export async function main( argv ) {
 		}
 		if ( ! await step( 'inventory', async () => {
 			if ( fromSaved ) {
-				const entryDraft = ( intake.inventory?.animations?.drafts || [] ).find( ( d ) => d.file === path.basename( first.draftIndex ) ) || intake.inventory?.animations?.drafts?.[ 0 ];
+				const entryDraft = ( intake.inventory?.animations?.drafts || [] ).find( ( d ) => d.file === path.basename( entry.draftIndex ) ) || intake.inventory?.animations?.drafts?.[ 0 ];
 				const inv = stateOnly ? servedInventoryOf( readJson( saved ), entryDraft?.dc ?? null ) : savedInventoryOf( { repo: REPO, client, surface: key, surfaces, intake } );
 				fs.mkdirSync( path.dirname( p.inventory ), { recursive: true } );
 				fs.writeFileSync( p.inventory, `${ JSON.stringify( inv, null, 2 ) }
