@@ -485,6 +485,16 @@ export function applyReview( intake, markdown, { today = isoDay(), sections = nu
 		}
 	}
 	const order = new Map( all.map( ( r, i ) => [ r.rowId, i ] ) );
+	// An entry with no row of its own (a copy the review collapsed into another row) keeps its place: it sorts just after
+	// the entry it followed before.
+	let last = -1;
+	( intake.review || [] ).forEach( ( r, i ) => {
+		if ( order.has( r.rowId ) ) {
+			last = order.get( r.rowId );
+		} else {
+			order.set( r.rowId, last + ( i + 1 ) / ( ( intake.review || [] ).length + 1 ) );
+		}
+	} );
 	const at = ( r ) => order.get( r.rowId ) ?? all.length;
 	return { intake: { ...intake, review: sections ? review.sort( ( a, b ) => at( a ) - at( b ) ) : review }, problems, missing };
 }
