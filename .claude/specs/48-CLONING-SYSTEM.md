@@ -1750,7 +1750,7 @@ The JSON Schema (draft 2020-12) files for these records live in `scripts/compute
 
 Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-hover`, `getter`, `renderVals-key`, `handler`, `timer`, `observer`, `waapi`, `transition`, `keyframes`, `ref`, `data-hook`, `helmet-script`, `helmet-font`, `link`, `template-element`).
 
-**Page map row:** each item of `sites/<client>/build/page-map.json` (FR-48-30).
+**Page map row:** each item of `sites/<client>/build/page-map.json` (FR-48-30). A surface row paired with a `handoff/surfaces.json` record names it in `draftId` (`surfaces.json <id>`), and the surfaces manifest matches a row to its record by that id first.
 
 ```json
 { "type": "object", "required": ["slug", "title", "postType", "collection", "id"], "additionalProperties": false,
@@ -1768,6 +1768,7 @@ Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-
     "parts": { "type": "array", "items": { "type": "object", "required": ["kind", "label", "owner", "draftId"],
       "additionalProperties": false, "properties": { "kind": { "type": "string" }, "label": { "type": "string" },
         "owner": { "enum": ["block", "woocommerce", "page", "draft-notes"] }, "draftId": { "type": "string" } } } },
+    "draftId": { "type": "string", "pattern": "^surfaces\\.json \\S+$" },
     "id": { "type": ["integer", "null"] } } }
 ```
 

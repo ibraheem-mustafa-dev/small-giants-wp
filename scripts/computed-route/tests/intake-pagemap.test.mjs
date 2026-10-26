@@ -204,6 +204,8 @@ test( 'real exports: Indus, Eye Care and Mama\'s page maps', { skip: ! fs.exists
 	const m = proposePageMap( { folder: real( 'mamas-munches-redesign' ) } );
 	assert.equal( m.rows.filter( ( r ) => r.route ).length, 9, 'SignIn shares the my-account row; Confirmation is an endpoint of checkout' );
 	assert.ok( menuNames( m ).includes( 'drawer-menu-links' ), 'Mama\'s drawer menu stays' );
+	const recordOf = ( slug ) => m.rows.find( ( r ) => r.slug === slug )?.draftId;
+	assert.deepEqual( [ 'drawer-menu', 'choice-flow-build-your-zookie', 'choice-flow-gifts-she-ll-actually-eat', 'form-send' ].map( recordOf ), [ 'surfaces.json S-02', 'surfaces.json S-08', 'surfaces.json S-20', 'surfaces.json S-34' ], 'MUST FAIL: a surface row paired with a surfaces.json record names it' );
 	assert.deepEqual( pageMapProblems( m.rows, ajv ), [] );
 	assert.deepEqual( linkProblems( m ), [] );
 } );

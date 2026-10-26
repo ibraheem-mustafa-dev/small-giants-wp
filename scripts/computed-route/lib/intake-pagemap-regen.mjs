@@ -12,7 +12,7 @@ import { safeRowId } from './intake-review.mjs';
 import { rowKey } from './site-build-map.mjs';
 import { loadAjv } from './handoff.mjs';
 
-const FIELDS = [ 'route', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags', 'parts', 'id' ];
+const FIELDS = [ 'route', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags', 'parts', 'draftId', 'id' ];
 // The fields a review mark may edit.
 export const EDITABLE = new Set( [ 'route', 'title', 'parent', 'template', 'slug', 'postType', 'collection' ] );
 const rowIdOf = ( row ) => safeRowId( `page:${ row.postType }:${ row.slug }` );

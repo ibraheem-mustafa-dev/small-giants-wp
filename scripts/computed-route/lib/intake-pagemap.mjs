@@ -274,12 +274,14 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	gaps.push( ...checked.gaps );
 	const owned = ownedSurfaces( checked.surfaces, rows, endpoints, routeSlug );
 	const counts = ( kind ) => owned.rows.filter( ( s ) => s.kind === kind ).length;
+	// A surface row paired with a handoff/surfaces.json record names it (`draftId: 'surfaces.json <id>'`), which
+	// lib/manifest-build.mjs::matchRecord matches first.
 	for ( const s of owned.rows ) {
 		const name = /^(header|footer)$/.test( s.kind ) ? kebab( s.dc || '' ) : kebab( s.label ).replace( new RegExp( `^${ SLUG_PREFIX[ s.kind ] }-?` ), '' ) || kebab( s.dc || '' );
 		const base = /^(header|footer)$/.test( s.kind ) && 1 === counts( s.kind ) ? s.kind : [ SLUG_PREFIX[ s.kind ], name ].filter( Boolean ).join( '-' );
 		rows.push( { slug: unique( base, used ), title: s.title || s.label, parent: null, template: null,
 			menus: s.menuItem ? [ { menu: s.menuItem.menu, position: s.menuItem.position, parentItem: null } ] : [],
-			postType: KIND_POST_TYPE[ s.kind ], collection: 'static', flags: [], id: null } );
+			postType: KIND_POST_TYPE[ s.kind ], collection: 'static', flags: [], id: null, ...( s.hint ? { draftId: `surfaces.json ${ s.hint }` } : {} ) } );
 	}
 	// A part with no owning row belongs to the site chrome, held by the header row; with no header row it is a gap row.
 	owned.parts.forEach( ( { row, part } ) => {
