@@ -12,6 +12,7 @@ import { parseLogic, keyName } from './intake-ast.mjs';
 import { boundMenu } from './site-build-map.mjs';
 import { templateKey } from './fact-key.mjs';
 import { SERVED_ROOT } from './key-space.mjs';
+import { recordSite } from './cache.mjs';
 
 const IMAGE = /\.(svg|png|jpe?g|gif|webp|avif)$/i;
 const sha = ( file ) => crypto.createHash( 'sha256' ).update( fs.readFileSync( file ) ).digest( 'hex' );
@@ -66,12 +67,12 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 		return { reason: `${ file } is not a file of the draft` };
 	}
 	const want = sha( local );
-	const hits = ( map?.sites?.[ site ]?.files || [] ).filter( ( f ) => f.sha256 === want && Number.isInteger( f.id ) );
+	const hits = ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( f ) => f.sha256 === want && Number.isInteger( f.id ) );
 	const ids = new Set( hits.map( ( h ) => h.id ) );
 	if ( 1 === ids.size ) {
 		return { id: hits[ 0 ].id, asset: hits[ 0 ].asset };
 	}
-	return { reason: ids.size ? `${ file } matches different attachments (${ [ ...ids ].join( ', ' ) })` : `${ file } (sha256 ${ want.slice( 0, 8 ) }) is not in the media map for ${ site }` };
+	return { reason: ids.size ? `${ file } matches different attachments (${ [ ...ids ].join( ', ' ) })` : `${ file } (sha256 ${ want.slice( 0, 8 ) }) is not in the media map for ${ recordSite( site ) }` };
 }
 
 // What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset } | { reason } | null, menu( kind ) -> id | null }.
@@ -79,7 +80,7 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const folder = path.join( repo, 'sites', client, 'handoff' );
 	const map = readJson( path.join( build, 'media-map.json' ) );
-	const menus = readJson( path.join( build, 'menu-map.json' ) )?.sites?.[ site ]?.menus || {};
+	const menus = readJson( path.join( build, 'menu-map.json' ) )?.sites?.[ recordSite( site ) ]?.menus || {};
 	let maps = null;
 	return {
 		logo: ( e, view = null ) => {

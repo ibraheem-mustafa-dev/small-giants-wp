@@ -10,6 +10,7 @@
 import fs from 'fs';
 import { paintedAsset } from './media-upload.mjs';
 import { templateKeyOf } from './fact-key.mjs';
+import { recordSite } from './cache.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
 export const COVERAGE_WRITES = [
@@ -65,7 +66,7 @@ export function draftPath( src, origin = '' ) {
 // The media-map entries a draft path names: the files of `site` whose repo path is the draft path or ends with it at a
 // folder boundary (sites/<client>/handoff/assets/x.png for the draft's assets/x.png).
 export function mapEntries( map, site, p ) {
-	return ( map?.sites?.[ site ]?.files || [] ).filter( ( e ) => e.asset === p || String( e.asset ).endsWith( `/${ p }` ) );
+	return ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( e ) => e.asset === p || String( e.asset ).endsWith( `/${ p }` ) );
 }
 
 // The setting that holds the attachment id for a URL setting, or null when the block declares none.

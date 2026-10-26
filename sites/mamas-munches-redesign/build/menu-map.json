@@ -1,13 +1,5 @@
 {
 	"sites": {
-		"local-mamas": {
-			"menus": {
-				"drawer-menu-links": 31,
-				"footer-help": 29,
-				"footer-shop": 32,
-				"header": 30
-			}
-		},
 		"mamas-test": {
 			"menus": {
 				"drawer-menu-links": 31,

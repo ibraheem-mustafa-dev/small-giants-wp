@@ -26,6 +26,10 @@ export function paintSite( site ) {
 	return mirrors[ site ] || site;
 }
 
+// The site whose per-site records (the media map's attachments, the menu map's menu ids) `site` reads: a mirror's
+// database is a copy of the test site it mirrors (refreshed from it), so it reads that site's records, never its own.
+export const recordSite = paintSite;
+
 // The fields that make up the default paint; every other calibration field belongs to the slot map.
 export const PAINT_FIELDS = [ 'elements' ];
 
