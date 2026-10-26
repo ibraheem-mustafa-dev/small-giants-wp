@@ -27,7 +27,9 @@
 		},
 		"sgs": {
 			"motion": true,
-			"enabledExtensions": [ "childSizing" ],
+			"enabledExtensions": [
+				"childSizing"
+			],
 			"iconPicker": true,
 			"boxFamilies": {
 				"padding": [
@@ -81,8 +83,8 @@
 						"css:-webkit-text-stroke-width": "textStrokeWidth",
 						"css:-webkit-text-stroke-color": "textStrokeColour",
 						"css:column-count": "textColumns",
-					"css:gap": "iconGap",
-					"css:justify-content": "contentAlign"
+						"css:gap": "iconGap",
+						"css:justify-content": "contentAlign"
 					},
 					"states": {
 						"hover": {
@@ -126,7 +128,10 @@
 			}
 		}
 	},
-	"usesContext": [ "sgs/childBtnBorderWidth", "sgs/childBtnBorderStyle" ],
+	"usesContext": [
+		"sgs/childBtnBorderWidth",
+		"sgs/childBtnBorderStyle"
+	],
 	"attributes": {
 		"shadowLiftOnHover": {
 			"type": "boolean",
@@ -234,29 +239,9 @@
 			"type": "object",
 			"default": {}
 		},
-		"customWidthUnit": {
-			"type": "object",
-			"default": {
-				"desktop": "px",
-				"tablet": "px",
-				"mobile": "px"
-			}
-		},
 		"minHeight": {
 			"type": "object",
 			"default": {}
-		},
-		"minHeightUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"minHeightTabletUnit": {
-			"type": "string",
-			"default": "px"
-		},
-		"minHeightMobileUnit": {
-			"type": "string",
-			"default": "px"
 		},
 		"fontFamily": {
 			"type": "string",
@@ -408,7 +393,11 @@
 		},
 		"focusStyle": {
 			"type": "string",
-			"enum": [ "", "duotone", "signature" ],
+			"enum": [
+				"",
+				"duotone",
+				"signature"
+			],
 			"default": "",
 			"description": "Keyboard focus look (focus system, theme focus.css). '' uses the site's focus style; 'duotone' adds sgs-focus--duotone (the dark-and-light ring, for photos or busy grounds); 'signature' adds sgs-focus--signature (a slowly turning border in the site's colours that stops turning under reduced motion). Signature is refused when a gradient border or a motion effect already owns the button's ::before (helpers-button-focus.php)."
 		},

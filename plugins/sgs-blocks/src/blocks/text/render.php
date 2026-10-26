@@ -79,8 +79,6 @@ $padding_mobile_obj = is_array( $sgs_tor_padding_tiers['mobile'] ?? null ) ? $sg
 $margin_tablet_obj  = is_array( $sgs_tor_margin_tiers['tablet'] ?? null ) ? $sgs_tor_margin_tiers['tablet'] : array();
 $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs_tor_margin_tiers['mobile'] : array();
 
-$max_width           = isset( $attributes['maxWidth'] ) ? $attributes['maxWidth'] : null;
-$max_width_unit      = $attributes['maxWidthUnit'] ?? 'px';
 $drop_cap            = ! empty( $attributes['dropCap'] );
 $first_letter_colour = $attributes['firstLetterColour'] ?? '';
 // D636 — sibling-attribute shape, see $text_colour_gradient above.
@@ -126,10 +124,6 @@ $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
-// Width override.
-$custom_width      = $attributes['customWidth'] ?? '';
-$custom_width_unit = $attributes['customWidthUnit'] ?? 'px';
-
 // Inherit-style escape hatch.
 $inherit_style = ! empty( $attributes['inheritStyle'] );
 
@@ -144,11 +138,6 @@ $transition_easing   = 'ease';
 if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
 	return;
 }
-
-// Validate unit values — only allow safe CSS units.
-$allowed_units     = array( 'px', 'em', 'rem', '%', 'vw', 'vh' );
-$custom_width_unit = in_array( $custom_width_unit, $allowed_units, true ) ? $custom_width_unit : 'px';
-$max_width_unit    = in_array( $max_width_unit, $allowed_units, true ) ? $max_width_unit : 'px';
 
 // ---------------------------------------------------------------------------
 // 4. NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
@@ -262,8 +251,15 @@ if ( '' !== $text_colour_effective ) {
 // text-align now emitted via sgs_typography_css_rule() below (step 6,
 // D971/D972 full-replacement track), not here.
 
-if ( null !== $max_width && '' !== $max_width ) {
-	$base_decls[] = 'max-width:' . floatval( $max_width ) . $max_width_unit;
+// Max width prints per device through the shared responsive emitter in step 6;
+// the auto-centring pair follows any device holding a safe max width.
+$has_max_width = false;
+foreach ( sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null ) as $max_width_value ) {
+	if ( null !== $max_width_value && '' !== sgs_css_length_value( (string) $max_width_value ) ) {
+		$has_max_width = true;
+	}
+}
+if ( $has_max_width ) {
 	// Pair with auto-centring (2026-09-08 fix) — mirrors sgs/quote's identical
 	// maxWidth pattern (render.php ~line 414-415) and every other block that
 	// emits a bare max-width in this codebase (before-after, option-picker,
@@ -291,11 +287,6 @@ if ( null !== $max_width && '' !== $max_width ) {
 	if ( ! sgs_text_nearest_ancestor_establishes_own_alignment() ) {
 		$base_decls[] = 'margin-inline:auto';
 	}
-}
-
-// Custom width (overrides max-width when both are set — only one emitted).
-if ( '' !== $custom_width && null !== $custom_width ) {
-	$base_decls[] = 'width:' . esc_attr( $custom_width ) . $custom_width_unit;
 }
 
 // Box shadow — preset slug OR a raw ShadowControl-built shape, composed with
@@ -567,7 +558,21 @@ if ( $has_hover ) {
 	}
 }
 
-$responsive_css = trim( $css_base_decls . $css_base_spacing_radius . $css_base_and_tiers . $css_tablet_box . $css_mobile_box . $css_drop_cap . $css_hover );
+$css_widths = sgs_emit_responsive_css(
+	$scope,
+	array(
+		array(
+			'value' => $attributes['maxWidth'] ?? null,
+			'css'   => 'max-width',
+		),
+		array(
+			'value' => $attributes['customWidth'] ?? null,
+			'css'   => 'width',
+		),
+	)
+);
+
+$responsive_css = trim( $css_base_decls . $css_widths . $css_base_spacing_radius . $css_base_and_tiers . $css_tablet_box . $css_mobile_box . $css_drop_cap . $css_hover );
 
 // ---------------------------------------------------------------------------
 // 7. Assemble wrapper attributes.

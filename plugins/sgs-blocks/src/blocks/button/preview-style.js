@@ -18,6 +18,7 @@ import {
 	isCssGradient,
 	sgsBorderPreview,
 } from '../../utils';
+import { cssLengthValue } from '../../utils/css-length';
 
 const TIER_CHAIN = {
 	desktop: [ 'desktop' ],
@@ -29,19 +30,18 @@ const isUnset = ( v ) => undefined === v || null === v || '' === v;
 
 /**
  * Width at one tier, exactly as render.php's `$width_css_value`: full → 100%,
- * custom → value + unit, fit → fit-content, anything else → no override.
+ * custom → its length string, fit → fit-content, anything else → no override.
  *
  * @param {string} type Width type at the tier.
- * @param {*}      val  Custom width at the tier.
- * @param {string} unit Custom width unit at the tier.
+ * @param {*}      val  Custom width (a length string) at the tier.
  * @return {string|null} CSS width, or null for no override.
  */
-function widthValue( type, val, unit ) {
+function widthValue( type, val ) {
 	if ( 'full' === type ) {
 		return '100%';
 	}
 	if ( 'custom' === type ) {
-		return isUnset( val ) ? null : `${ Math.abs( parseInt( val, 10 ) ) || 0 }${ '%' === unit ? '%' : 'px' }`;
+		return cssLengthValue( isUnset( val ) ? '' : val ) || null;
 	}
 	if ( 'fit' === type ) {
 		return 'fit-content';
@@ -58,10 +58,10 @@ function widthValue( type, val, unit ) {
  * @return {string|null} CSS width.
  */
 function tierWidth( attributes, tier ) {
-	const { widthType = {}, customWidth = {}, customWidthUnit = {} } = attributes;
+	const { widthType = {}, customWidth = {} } = attributes;
 	for ( const t of TIER_CHAIN[ tier ] || TIER_CHAIN.desktop ) {
 		const type = 'desktop' === t ? widthType?.[ t ] || 'fit' : widthType?.[ t ];
-		const value = widthValue( type, customWidth?.[ t ], customWidthUnit?.[ t ] );
+		const value = widthValue( type, customWidth?.[ t ] );
 		if ( null !== value ) {
 			return value;
 		}
@@ -70,20 +70,17 @@ function tierWidth( attributes, tier ) {
 }
 
 /**
- * Min-height at a tier: each tier carries its own unit attribute
- * (minHeightUnit / minHeightTabletUnit / minHeightMobileUnit).
+ * Min-height at a tier: the narrowest tier holding a safe length string wins.
  *
  * @param {Object} attributes Block attributes.
  * @param {string} tier       Previewed tier.
  * @return {string|undefined} CSS length, or undefined (style.css default).
  */
 function tierMinHeight( attributes, tier ) {
-	const unitAttr = { desktop: 'minHeightUnit', tablet: 'minHeightTabletUnit', mobile: 'minHeightMobileUnit' };
 	for ( const t of TIER_CHAIN[ tier ] || TIER_CHAIN.desktop ) {
-		const v = attributes.minHeight?.[ t ];
-		if ( ! isUnset( v ) ) {
-			const unit = attributes[ unitAttr[ t ] ];
-			return `${ Math.abs( parseInt( v, 10 ) ) || 0 }${ [ 'px', 'em', 'rem', '%' ].includes( unit ) ? unit : 'px' }`;
+		const v = cssLengthValue( isUnset( attributes.minHeight?.[ t ] ) ? '' : attributes.minHeight[ t ] );
+		if ( v ) {
+			return v;
 		}
 	}
 	return undefined;

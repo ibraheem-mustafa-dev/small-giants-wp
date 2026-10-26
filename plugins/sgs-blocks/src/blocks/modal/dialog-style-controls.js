@@ -12,31 +12,11 @@ import { __ } from '@wordpress/i18n';
 import {
 	SgsBorderControl,
 	SgsLengthControl,
+	ResponsiveOverride,
 	ShadowControl,
 	shadowAttrKeys,
 } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
-
-// Split-scalar pair (dialogWidth stores the raw number as a string,
-// dialogWidthUnit the unit) — same private per-file helper shape every other
-// customWidth adopter (sgs/heading, sgs/text, sgs/button) carries.
-function composeUnit( num, unit ) {
-	if ( '' === num || null === num || undefined === num ) {
-		return '';
-	}
-	return `${ num }${ unit || 'px' }`;
-}
-
-function parseUnit( raw, currentUnit ) {
-	if ( ! raw ) {
-		return { num: '', unit: currentUnit };
-	}
-	const match = /^(-?\d*\.?\d+)\s*([a-z%]*)$/i.exec( String( raw ).trim() );
-	if ( ! match ) {
-		return { num: '', unit: currentUnit };
-	}
-	return { num: match[ 1 ], unit: match[ 2 ] || currentUnit };
-}
 
 const DIALOG_WIDTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -59,27 +39,31 @@ const DIALOG_WIDTH_UNITS = [
  * @return {JSX.Element} The panel body.
  */
 export function DialogSizeBorderControls( { attributes, setAttributes } ) {
-	const { dialogWidth, dialogWidthUnit, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;
+	const { dialogWidth, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;
 
 	return (
 		<>
-			<SgsLengthControl
+			<ResponsiveOverride
 				label={ __( 'Custom width', 'sgs-blocks' ) }
-				help={ __(
-					'Overrides Max width (Modal Settings panel) when set. Leave blank to keep the preset width.',
-					'sgs-blocks'
+				value={ dialogWidth }
+				onChange={ ( obj ) => setAttributes( { dialogWidth: obj } ) }
+			>
+				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+					<SgsLengthControl
+						label={ __( 'Custom width', 'sgs-blocks' ) }
+						hideLabelFromVision
+						help={ __(
+							'Overrides Max width (Modal Settings panel) when set. Leave blank to keep the preset width.',
+							'sgs-blocks'
+						) }
+						value={ ownValue || '' }
+						placeholder={ inherited ? effectiveValue || '' : '' }
+						units={ DIALOG_WIDTH_UNITS }
+						onChange={ ( raw ) => setOwnValue( raw || '' ) }
+						presets={ false }
+					/>
 				) }
-				value={ composeUnit( dialogWidth, dialogWidthUnit ) }
-				units={ DIALOG_WIDTH_UNITS }
-				onChange={ ( raw ) => {
-					const { num, unit } = parseUnit( raw, dialogWidthUnit || 'px' );
-					setAttributes( {
-						dialogWidth: '' === num ? '' : String( num ),
-						dialogWidthUnit: unit,
-					} );
-				} }
-				presets={ false }
-			/>
+			</ResponsiveOverride>
 			<SgsBorderControl
 				widthValues={ borderWidth ?? {} }
 				onWidthChange={ ( next ) => setAttributes( { borderWidth: next } ) }

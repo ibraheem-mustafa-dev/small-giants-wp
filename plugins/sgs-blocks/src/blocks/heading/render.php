@@ -55,47 +55,6 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 
 // ---------------------------------------------------------------------------
-// 1. Allowed units whitelist + numeric-length helper.
-// ---------------------------------------------------------------------------
-
-if ( ! function_exists( 'sgs_heading_safe_unit' ) ) {
-	/**
-	 * Sanitise a CSS length unit - falls back to px if the value is not allowed.
-	 * Guarded by function_exists to allow multiple includes in one request.
-	 *
-	 * @param string $unit     User-supplied unit.
-	 * @param string $fallback Fallback unit.
-	 * @return string          Sanitised unit.
-	 */
-	function sgs_heading_safe_unit( $unit, $fallback = 'px' ) {
-		static $allowed = array( 'px', 'em', 'rem', '%', 'vh', 'vw' );
-		$unit           = sanitize_text_field( (string) $unit );
-		return in_array( $unit, $allowed, true ) ? $unit : $fallback;
-	}
-}
-
-if ( ! function_exists( 'sgs_heading_spacing_val' ) ) {
-	/**
-	 * Convert a raw numeric spacing value + unit string to a CSS length.
-	 * Returns empty string for blank or non-numeric input.
-	 *
-	 * @param string $value Raw attribute value.
-	 * @param string $unit  Validated CSS unit.
-	 * @return string       CSS length string or empty string.
-	 */
-	function sgs_heading_spacing_val( $value, $unit ) {
-		$trimmed = trim( (string) $value );
-		if ( '' === $trimmed ) {
-			return '';
-		}
-		if ( ! preg_match( '/^-?\d+(\.\d+)?$/', $trimmed ) ) {
-			return '';
-		}
-		return $trimmed . $unit;
-	}
-}
-
-// ---------------------------------------------------------------------------
 // 2. Extract attributes with defaults.
 // ---------------------------------------------------------------------------
 
@@ -167,11 +126,7 @@ $hover_colour_gradient     = $attributes['textColourHoverGradient'] ?? '';
 $hover_background          = $attributes['backgroundColourHover'] ?? '';
 $hover_background_gradient = $attributes['backgroundColourHoverGradient'] ?? '';
 
-$custom_width      = $attributes['customWidth'] ?? '';
-$custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );
-$max_width_raw     = $attributes['maxWidth'] ?? '';
-$max_width_unit    = in_array( $attributes['maxWidthUnit'] ?? 'px', array( 'px', 'em', 'rem', '%', 'ch' ), true ) ? ( $attributes['maxWidthUnit'] ?? 'px' ) : 'px';
-$inherit_style     = ! empty( $attributes['inheritStyle'] );
+$inherit_style = ! empty( $attributes['inheritStyle'] );
 
 // Text alignment — validated against allowlist; emitted scoped on the wrapper.
 $text_align_raw      = isset( $attributes['textAlign'] ) ? sanitize_text_field( $attributes['textAlign'] ) : '';
@@ -322,18 +277,6 @@ if ( ! $inherit_style ) {
 	if ( $box_shadow_decls['normal'] ) {
 		$wrapper_decls = array_merge( $wrapper_decls, $box_shadow_decls['normal'] );
 	}
-	if ( '' !== $custom_width ) {
-		$cw_val = sgs_heading_spacing_val( $custom_width, $custom_width_unit );
-		if ( $cw_val ) {
-			$wrapper_decls[] = 'width:' . $cw_val;
-		}
-	}
-	if ( is_numeric( $max_width_raw ) ) {
-		$mw_val = sgs_heading_spacing_val( $max_width_raw, $max_width_unit );
-		if ( $mw_val ) {
-			$wrapper_decls[] = 'max-width:' . $mw_val;
-		}
-	}
 	// $text_align is allowlist-validated above.
 	if ( '' !== $text_align ) {
 		$wrapper_decls[] = 'text-align:' . $text_align;
@@ -409,6 +352,24 @@ $scoped_css[] = sgs_link_underline_css( $attributes, '', $root_sel );
 // --- Root box/visual declarations (scoped) ---
 if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
+}
+
+// --- Width and max width: one length string per device, printed by the shared
+// responsive emitter (desktop in the base rule, other devices in media queries). ---
+if ( ! $inherit_style ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel,
+		array(
+			array(
+				'value' => $attributes['customWidth'] ?? null,
+				'css'   => 'width',
+			),
+			array(
+				'value' => $attributes['maxWidth'] ?? null,
+				'css'   => 'max-width',
+			),
+		)
+	);
 }
 
 // --- Block background — painted on a `::after` layer, never the root itself.

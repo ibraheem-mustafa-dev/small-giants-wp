@@ -162,34 +162,21 @@ $icon_title    = isset( $attributes['iconTitle'] ) ? esc_html( $attributes['icon
 $label_collapse = isset( $attributes['labelCollapse'] ) ? (string) $attributes['labelCollapse'] : 'none';
 
 // Width.
-// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35) — each ONE
-// attr holding {desktop,tablet,mobile}. '' on tablet/mobile = inherit desktop.
+// widthType and customWidth are TIER OBJECTS (Spec 35), each ONE attr holding
+// {desktop,tablet,mobile}; customWidth holds one length string per device. '' on
+// tablet/mobile = inherit desktop.
 // ⛔ There are no …Tablet/…Mobile sibling attrs; reading them reads nothing.
-$width_type_obj        = sgs_responsive_normalise_object( $attributes['widthType'] ?? null );
-$width_type            = null !== $width_type_obj['desktop'] ? sanitize_text_field( $width_type_obj['desktop'] ) : 'fit';
-$custom_width_obj      = sgs_responsive_normalise_object( $attributes['customWidth'] ?? null );
-$custom_width          = null !== $custom_width_obj['desktop'] ? absint( $custom_width_obj['desktop'] ) : null;
-$custom_width_unit_obj = sgs_responsive_normalise_object( $attributes['customWidthUnit'] ?? null );
-$custom_width_unit     = '%' === ( $custom_width_unit_obj['desktop'] ?? '' ) ? '%' : 'px';
+$width_type_obj = sgs_responsive_normalise_object( $attributes['widthType'] ?? null );
+$width_type     = null !== $width_type_obj['desktop'] ? sanitize_text_field( $width_type_obj['desktop'] ) : 'fit';
+$custom_width_obj = sgs_responsive_normalise_object( $attributes['customWidth'] ?? null );
 
 // Per-device width tiers ('' = inherit desktop). Each tier carries its own
-// widthType enum + custom value + custom unit so a button can be e.g. fit on
-// desktop, full on mobile (the draft's full-width-on-mobile pattern).
-$width_type_tab     = null !== $width_type_obj['tablet'] ? sanitize_text_field( $width_type_obj['tablet'] ) : '';
-$width_type_mob     = null !== $width_type_obj['mobile'] ? sanitize_text_field( $width_type_obj['mobile'] ) : '';
-$custom_width_tab   = null !== $custom_width_obj['tablet'] ? absint( $custom_width_obj['tablet'] ) : null;
-$custom_width_mob   = null !== $custom_width_obj['mobile'] ? absint( $custom_width_obj['mobile'] ) : null;
-$custom_width_tab_u = '%' === ( $custom_width_unit_obj['tablet'] ?? '' ) ? '%' : 'px';
-$custom_width_mob_u = '%' === ( $custom_width_unit_obj['mobile'] ?? '' ) ? '%' : 'px';
-// minHeight is a TIER OBJECT (Spec 35) — {desktop,
-// tablet,mobile}; the old …Tablet/…Mobile sibling attrs are no longer
-// declared by block.json. minHeightUnit/minHeightTabletUnit/minHeightMobileUnit
-// are a SEPARATE, still-flat family (each tier's own unit) — untouched here,
-// out of this migration's scope.
+// widthType enum + custom length so a button can be e.g. fit on desktop, full on
+// mobile (the draft's full-width-on-mobile pattern).
+$width_type_tab = null !== $width_type_obj['tablet'] ? sanitize_text_field( $width_type_obj['tablet'] ) : '';
+$width_type_mob = null !== $width_type_obj['mobile'] ? sanitize_text_field( $width_type_obj['mobile'] ) : '';
+// minHeight is a TIER OBJECT (Spec 35) holding one length string per device.
 $min_height_obj = sgs_responsive_normalise_object( $attributes['minHeight'] ?? null );
-$min_height     = null !== $min_height_obj['desktop'] ? absint( $min_height_obj['desktop'] ) : null;
-$min_height_tab = null !== $min_height_obj['tablet'] ? absint( $min_height_obj['tablet'] ) : null;
-$min_height_mob = null !== $min_height_obj['mobile'] ? absint( $min_height_obj['mobile'] ) : null;
 
 // Box-object interface contract (.claude/plans/2026-07-09-box-object-interface-contract.md
 // §1): a CSS-length sanitiser for object-attr side/corner values — strips
@@ -200,16 +187,6 @@ $min_height_mob = null !== $min_height_obj['mobile'] ? absint( $min_height_obj['
 // Strips everything except letters + hyphen, so ;{}():digits can never break out
 // of the declaration into a new CSS rule. A Contributor-authored malicious value
 // (e.g. "solid;}body{display:none") is reduced to safe keyword chars.
-$allowed_units = array( 'px', 'em', 'rem', '%' );
-
-// Min-height units — validated after $allowed_units is declared.
-$min_height_unit  = isset( $attributes['minHeightUnit'] ) ? sanitize_text_field( $attributes['minHeightUnit'] ) : 'px';
-$min_height_unit  = in_array( $min_height_unit, $allowed_units, true ) ? $min_height_unit : 'px';
-$min_height_tab_u = isset( $attributes['minHeightTabletUnit'] ) ? sanitize_text_field( $attributes['minHeightTabletUnit'] ) : 'px';
-$min_height_tab_u = in_array( $min_height_tab_u, $allowed_units, true ) ? $min_height_tab_u : 'px';
-$min_height_mob_u = isset( $attributes['minHeightMobileUnit'] ) ? sanitize_text_field( $attributes['minHeightMobileUnit'] ) : 'px';
-$min_height_mob_u = in_array( $min_height_mob_u, $allowed_units, true ) ? $min_height_mob_u : 'px';
-
 // Box-object interface contract §1/§2: padding/margin BASE reads WP-native
 // style.spacing.* (skipSerialization keeps it out of the auto-inline output —
 // see the scoped-rule emission in step 4); tablet/mobile tiers are the
@@ -609,32 +586,32 @@ if ( $icon ) {
 	);
 }
 
-// Min-height — base + tablet + mobile on the SAME selector (Pattern A). Each
-// tier has its OWN unit attribute (minHeightUnit / minHeightTabletUnit /
-// minHeightMobileUnit) — the general helper assumes one shared unit per
-// property family, so min-height is built by hand here rather than forced
-// through it. Because the base value lives in this same-selector <style>
-// rule (not inline on the element), the tier overrides do not need
+// Min-height — base + tablet + mobile on the SAME selector (Pattern A), printed by
+// the shared responsive emitter. Because the base value lives in this same-selector
+// <style> rule (not inline on the element), the tier overrides do not need
 // !important to win.
 //
 // The base tier is ALWAYS emitted (falling back to style.css's own 48px
-// default when no explicit minHeight is set). sgs/container's shrink-to-fit
-// backstop (`:where(… >*){min-width:0;min-height:0}` on its flex/grid
-// direct children) has zero specificity, so this rule wins; the repeated
-// uid class (`.{$uid}.{$uid}`, (0,3,0)) also keeps it ahead of any other
+// default when no explicit minHeight is set, or the stored one is refused).
+// sgs/container's shrink-to-fit backstop (`:where(… >*){min-width:0;min-height:0}`
+// on its flex/grid direct children) has zero specificity, so this rule wins; the
+// repeated uid class (`.{$uid}.{$uid}`, (0,3,0)) also keeps it ahead of any other
 // ancestor rule regardless of source order.
-$min_height_base  = null !== $min_height ? $min_height : 48;
-$min_height_decls = array( ".{$uid}.{$uid}.sgs-button{min-height:{$min_height_base}{$min_height_unit};}" );
-if ( null !== $min_height_tab ) {
-	$min_height_decls[] = "@media(max-width:1023px){.{$uid}.{$uid}.sgs-button{min-height:{$min_height_tab}{$min_height_tab_u};}}";
+if ( null === $min_height_obj['desktop'] || '' === sgs_css_length_value( (string) $min_height_obj['desktop'] ) ) {
+	$min_height_obj['desktop'] = '48px';
 }
-if ( null !== $min_height_mob ) {
-	$min_height_decls[] = "@media(max-width:767px){.{$uid}.{$uid}.sgs-button{min-height:{$min_height_mob}{$min_height_mob_u};}}";
-}
-$scoped_css_parts[] = implode( '', $min_height_decls );
+$scoped_css_parts[] = sgs_emit_responsive_css(
+	".{$uid}.{$uid}.sgs-button",
+	array(
+		array(
+			'value' => $min_height_obj,
+			'css'   => 'min-height',
+		),
+	)
+);
 
 // Width — base + tablet + mobile on the SAME selector (Pattern A). Each tier's
-// width derives from its own widthType enum: full → 100%, custom → value+unit,
+// width derives from its own widthType enum: full → 100%, custom → its length,
 // fit → fit-content (the button is a flex item that a flex-column parent would
 // otherwise stretch to its full width), '' (tier only) → no override. Emitted via the scoped <style>
 // (not inline) so a tier override reliably beats the base regardless of
@@ -643,12 +620,12 @@ $scoped_css_parts[] = implode( '', $min_height_decls );
 // wrapper's sgs-button-wrapper--full class (see step 8) to hold the line
 // inside a flex-row parent (flex:0 0 auto, so its width:100% is not shrunk), which this id-scoped element
 // width rule alone cannot guarantee.
-$width_css_value = static function ( $type, $val, $unit ) {
+$width_css_value = static function ( $type, $val ) {
 	switch ( $type ) {
 		case 'full':
 			return '100%';
 		case 'custom':
-			return null !== $val ? $val . $unit : null;
+			return null !== $val && '' !== $val ? (string) $val : null;
 		case 'fit':
 			return 'fit-content';
 		default:
@@ -658,24 +635,19 @@ $width_css_value = static function ( $type, $val, $unit ) {
 
 $has_width_tier = ( '' !== $width_type_tab ) || ( '' !== $width_type_mob );
 if ( $has_width_tier || in_array( $width_type, array( 'custom', 'full', 'fit' ), true ) ) {
-	$width_decls = array();
-
-	$base_width = $width_css_value( $width_type, $custom_width, $custom_width_unit );
-	if ( null !== $base_width ) {
-		$width_decls[] = ".{$uid}.sgs-button{width:{$base_width};}";
-	}
-	$tab_width = $width_css_value( $width_type_tab, $custom_width_tab, $custom_width_tab_u );
-	if ( null !== $tab_width ) {
-		$width_decls[] = "@media(max-width:1023px){.{$uid}.sgs-button{width:{$tab_width};}}";
-	}
-	$mob_width = $width_css_value( $width_type_mob, $custom_width_mob, $custom_width_mob_u );
-	if ( null !== $mob_width ) {
-		$width_decls[] = "@media(max-width:767px){.{$uid}.sgs-button{width:{$mob_width};}}";
-	}
-
-	if ( $width_decls ) {
-		$scoped_css_parts[] = implode( '', $width_decls );
-	}
+	$scoped_css_parts[] = sgs_emit_responsive_css(
+		".{$uid}.sgs-button",
+		array(
+			array(
+				'value' => array(
+					'desktop' => $width_css_value( $width_type, $custom_width_obj['desktop'] ),
+					'tablet'  => $width_css_value( $width_type_tab, $custom_width_obj['tablet'] ),
+					'mobile'  => $width_css_value( $width_type_mob, $custom_width_obj['mobile'] ),
+				),
+				'css'   => 'width',
+			),
+		)
+	);
 }
 
 // ---------------------------------------------------------------------------

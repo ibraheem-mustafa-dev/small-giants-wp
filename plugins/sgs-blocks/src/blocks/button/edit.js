@@ -7,7 +7,6 @@ import {
 	RichText,
 	useSettings,
 } from '@wordpress/block-editor';
-import { useSelect } from '@wordpress/data';
 import { link as linkIcon } from '@wordpress/icons';
 import {
 	PanelBody,
@@ -102,12 +101,6 @@ const TEXT_TRANSFORM_OPTIONS = [
 	{ label: __( 'Capitalise', 'sgs-blocks' ), value: 'capitalize' },
 ];
 
-const DEVICE_TO_TIER = {
-	Desktop: 'desktop',
-	Tablet: 'tablet',
-	Mobile: 'mobile',
-};
-
 const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Underline', 'sgs-blocks' ), value: 'underline' },
@@ -115,11 +108,8 @@ const TEXT_DECORATION_OPTIONS = [
 	{ label: __( 'Strike-through', 'sgs-blocks' ), value: 'line-through' },
 ];
 
-// widthType / customWidth / customWidthUnit are now TIER OBJECTS (Spec 35
-// migration, 2026-08-11) — one attr each holding {desktop,tablet,mobile} — so
-// the per-breakpoint attr-name map that used to live here is gone; the Width
-// panel below reads/writes the three objects directly via the tier a shared
-// <ResponsiveOverride> exposes.
+// widthType and customWidth are tier objects ({desktop,tablet,mobile}); the Width
+// panel reads and writes them for the tier a shared <ResponsiveOverride> exposes.
 
 export default function Edit( {
 	attributes,
@@ -142,7 +132,6 @@ export default function Edit( {
 		inheritStyle,
 		widthType,
 		customWidth,
-		customWidthUnit,
 		// minHeight is a TIER OBJECT (Spec 35 migration, 2026-08-11) — read via
 		// `attributes.minHeight` at its control below, not destructured with a
 		// bare default, matching the widthType/customWidth objects above.
@@ -219,26 +208,6 @@ export default function Edit( {
 		setLinkPopoverAnchor( triggerRef.current );
 		setIsLinkPopoverOpen( true );
 	};
-
-	// minHeight's VALUE is a tier object (ResponsiveOverride-driven), but its
-	// UNIT stays a separate flat-per-tier family (minHeightUnit/Tablet/Mobile) —
-	// not part of this migration. Need the active tier locally to read/write the
-	// matching unit attr alongside ResponsiveOverride's value. Same device-type
-	// resolution ResponsiveOverride.js itself uses internally.
-	const activeMinHeightTier = useSelect( ( select ) => {
-		const ed = select( 'core/editor' );
-		const device =
-			ed && typeof ed.getDeviceType === 'function'
-				? ed.getDeviceType()
-				: null;
-		return DEVICE_TO_TIER[ device ] || 'desktop';
-	}, [] );
-	const minHeightUnitAttr = {
-		desktop: 'minHeightUnit',
-		tablet: 'minHeightTabletUnit',
-		mobile: 'minHeightMobileUnit',
-	}[ activeMinHeightTier ];
-	const activeMinHeightUnit = attributes[ minHeightUnitAttr ] || 'px';
 
 	// Build editor preview inline styles. Every button is attribute-driven now
 	// (no locked preset mode) — all colour/typography/border attrs preview
@@ -898,16 +867,13 @@ export default function Edit( {
 					title={ __( 'Layout', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Width — widthType / customWidth / customWidthUnit are TIER
-					   OBJECTS (Spec 35 migration, 2026-08-11), each ONE attr
-					   holding {desktop,tablet,mobile}. ResponsiveOverride drives
-					   the shared device tier; widthType is the object it manages
-					   directly, and customWidth/customWidthUnit are written for
-					   the SAME tier (via the render-prop's exposed `tier`) so all
-					   three stay in lockstep per breakpoint. Tablet/mobile keep
-					   the explicit "— Same as desktop —" sentinel ('' = inherit,
-					   matching the pre-migration behaviour) rather than showing
-					   the resolved inherited value in the dropdown. */ }
+					{ /* Width — widthType and customWidth are tier objects
+					   ({desktop,tablet,mobile}). ResponsiveOverride drives the
+					   shared device tier; widthType is the object it manages
+					   directly, and customWidth is written for the SAME tier (via
+					   the render-prop's exposed `tier`), holding one length string
+					   per device. Tablet/mobile keep the explicit "— Same as
+					   desktop —" sentinel ('' = inherit). */ }
 					<ResponsiveOverride
 						label={ __( 'Width', 'sgs-blocks' ) }
 						value={ widthType }
@@ -923,9 +889,6 @@ export default function Edit( {
 									? WIDTH_OPTIONS
 									: WIDTH_OPTIONS_TIER;
 							const widthObj = customWidth || {};
-							const unitObj = customWidthUnit || {};
-							const numVal = widthObj[ tier ];
-							const unitVal = unitObj[ tier ] || 'px';
 							return (
 								<>
 									<SelectControl
@@ -946,27 +909,16 @@ export default function Edit( {
 												'Custom width',
 												'sgs-blocks'
 											) }
-											value={ composeUnit(
-												numVal,
-												unitVal
-											) }
+											value={ widthObj[ tier ] || '' }
 											units={ CUSTOM_WIDTH_UNITS }
-											onChange={ ( raw ) => {
-												const { num, unit } = parseUnit(
-													raw,
-													unitVal
-												);
+											onChange={ ( raw ) =>
 												setAttributes( {
 													customWidth: {
 														...widthObj,
-														[ tier ]: num,
+														[ tier ]: raw || '',
 													},
-													customWidthUnit: {
-														...unitObj,
-														[ tier ]: unit,
-													},
-												} );
-											} }
+												} )
+											}
 											style={ { marginTop: '8px' } }
 										/>
 									) }
@@ -975,11 +927,7 @@ export default function Edit( {
 						} }
 					</ResponsiveOverride>
 
-					{ /* `minHeight`'s VALUE is a TIER OBJECT (Spec 35 migration, 2026-08-11)
-					   — {desktop,tablet,mobile} — so it uses ResponsiveOverride. Its UNIT
-					   stays the separate flat-per-tier family declared above
-					   (minHeightUnit/minHeightTabletUnit/minHeightMobileUnit), read/written
-					   alongside via `activeMinHeightTier`/`activeMinHeightUnit`. */ }
+					{ /* minHeight is a tier object holding one length string per device. */ }
 					<ResponsiveOverride
 						label={ __( 'Min height', 'sgs-blocks' ) }
 						value={ attributes.minHeight }
@@ -997,33 +945,12 @@ export default function Edit( {
 								presets={ false }
 								label={ __( 'Min height', 'sgs-blocks' ) }
 								hideLabelFromVision
-								value={ composeUnit(
-									inherited
-										? ownValue
-										: ownValue ?? effectiveValue,
-									activeMinHeightUnit
-								) }
+								value={ ownValue || '' }
 								placeholder={
-									inherited
-										? composeUnit(
-												effectiveValue,
-												activeMinHeightUnit
-										  )
-										: undefined
+									inherited ? effectiveValue || '' : ''
 								}
 								units={ MIN_HEIGHT_UNITS }
-								onChange={ ( raw ) => {
-									const { num, unit } = parseUnit(
-										raw,
-										activeMinHeightUnit
-									);
-									setOwnValue( num );
-									if ( unit !== activeMinHeightUnit ) {
-										setAttributes( {
-											[ minHeightUnitAttr ]: unit,
-										} );
-									}
-								} }
+								onChange={ ( raw ) => setOwnValue( raw || '' ) }
 							/>
 						) }
 					</ResponsiveOverride>

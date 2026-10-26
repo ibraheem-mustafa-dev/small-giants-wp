@@ -40,7 +40,6 @@ import {
 import {
 	PanelBody,
 	SelectControl,
-	RangeControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, SgsColourPanel, textRow, ShadowControl, shadowAttrKeys, SgsLengthControl, TypographyControls, SgsBorderControl, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, LinkUnderlineControl } from '../../components';
@@ -57,6 +56,7 @@ import {
 	resolveTier,
 	sgsBorderPreview,
 } from '../../utils';
+import { cssLengthValue } from '../../utils/css-length';
 import { composeShadow } from '../../utils/shadow-layers';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
@@ -91,34 +91,6 @@ const LENGTH_UNITS = [
 	{ value: 'em', label: 'em', default: 0 },
 	{ value: '%', label: '%', default: 0 },
 ];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function composeUnit( num, unit ) {
-	if ( num === undefined || num === null || num === '' ) {
-		return '';
-	}
-	return `${ num }${ unit || '' }`;
-}
-
-function parseUnit( raw, currentUnit ) {
-	if ( ! raw && raw !== 0 ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const str = String( raw ).trim();
-	if ( '' === str ) {
-		return { num: undefined, unit: currentUnit || 'px' };
-	}
-	const match = str.match( /^([\d.]+)\s*([a-z%]*)$/i );
-	if ( match ) {
-		const num = parseFloat( match[ 1 ] );
-		const unit = match[ 2 ] !== undefined ? match[ 2 ] : ( currentUnit || 'px' );
-		return { num: isNaN( num ) ? undefined : num, unit };
-	}
-	return { num: undefined, unit: currentUnit || 'px' };
-}
 
 // ---------------------------------------------------------------------------
 // Editor preview style builder — desktop styles only; responsive via PHP
@@ -161,7 +133,7 @@ function buildAttribStyle( attributes, tier ) {
 	const {
 		attributionColour,
 		attributionColourGradient,
-		attributionMarginTop, attributionMarginUnit,
+		attributionMarginTop,
 	} = attributes;
 	const style = {
 		...resolveTextColourPreviewStyle(
@@ -171,11 +143,11 @@ function buildAttribStyle( attributes, tier ) {
 		),
 	};
 	Object.assign( style, typographyPreviewStyle( attributes, 'attribution', tier ) );
-	// attributionMarginTop is a tier object of bare numbers; a narrower tier
+	// attributionMarginTop holds a length per device; a narrower device
 	// inherits the wider one, as the front-end media rules do.
-	const marginTop = resolveTier( attributionMarginTop, tier ).value;
-	if ( marginTop != null && '' !== marginTop ) {
-		style.marginTop = `${ marginTop }${ attributionMarginUnit }`;
+	const marginTop = cssLengthValue( resolveTier( attributionMarginTop, tier ).value );
+	if ( '' !== marginTop ) {
+		style.marginTop = marginTop;
 	}
 	return style;
 }
@@ -212,7 +184,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		attributionLineHeight,
 		attributionLineHeightUnit,
 		attributionMarginTop,
-		attributionMarginUnit,
 		backgroundColour,
 		borderWidth,
 		borderStyle,
@@ -476,7 +447,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							attributionTextTransform: '',
 							attributionLineHeight: undefined,
 							attributionLineHeightUnit: 'em',
-							attributionMarginUnit: 'px',
 							attributionFontSize: {},
 							attributionMarginTop: {},
 						} )
@@ -567,10 +537,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								/>
 							</ToolsPanelItem>
 
-							{ /* Attribution margin-top — ResponsiveOverride + UnitControl/RangeControl
-							   (KEPT-SCALAR single-side family, contract §C). attributionMarginTop
-							   is a TIER OBJECT (Spec 35 pass 3b) storing the bare NUMBER per tier;
-							   attributionMarginUnit stays a single shared unit across all tiers. */ }
+							{ /* Attribution margin-top: one length per device (attributionMarginTop),
+							   the same length box on every device. */ }
 							<ToolsPanelItem
 								label={ __( 'Margin-top (gap above attribution)', 'sgs-blocks' ) }
 								hasValue={ () =>
@@ -587,38 +555,17 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 									value={ attributionMarginTop }
 									onChange={ ( obj ) => setAttributes( { attributionMarginTop: obj } ) }
 								>
-									{ ( { ownValue, setOwnValue, tier } ) => {
-										const unitVal = attributionMarginUnit || 'px';
-										if ( tier === 'desktop' ) {
-											return (
-												<SgsLengthControl
-													label={ __( 'Margin-top', 'sgs-blocks' ) }
-													hideLabelFromVision
-													value={ composeUnit( ownValue, unitVal ) }
-													units={ MARGIN_UNITS }
-													onChange={ ( raw ) => {
-														const { num, unit } = parseUnit( raw, unitVal );
-														setOwnValue( num );
-														setAttributes( { attributionMarginUnit: unit } );
-													} }
-													presets={ false }
-												/>
-											);
-										}
-										return (
-											<RangeControl
-												label={ tier === 'tablet'
-													? __( 'Margin-top (tablet)', 'sgs-blocks' )
-													: __( 'Margin-top (mobile)', 'sgs-blocks' )
-												}
-												value={ ownValue ?? '' }
-												onChange={ ( val ) => setOwnValue( val ) }
-												min={ 0 } max={ 80 } step={ 1 } allowReset
-												__nextHasNoMarginBottom
-												__next40pxDefaultSize
-											/>
-										);
-									} }
+									{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+										<SgsLengthControl
+											label={ __( 'Margin-top', 'sgs-blocks' ) }
+											hideLabelFromVision
+											value={ ownValue || '' }
+											placeholder={ inherited ? effectiveValue || '' : '' }
+											units={ MARGIN_UNITS }
+											onChange={ ( v ) => setOwnValue( v || '' ) }
+											presets={ false }
+										/>
+									) }
 								</ResponsiveOverride>
 							</ToolsPanelItem>
 						</>

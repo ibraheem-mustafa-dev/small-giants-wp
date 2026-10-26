@@ -16,7 +16,7 @@ import {
 import { dialogPreviewStyle } from './preview-style';
 import { resolveColourToken, DesignTokenPicker, GradientCapableColourControl, SgsColourPanel, ScrimControls, scrimColourRow } from '../../components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel } from '../../components/primitives';
-import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, backgroundPaintPreview, isCssGradient } from '../../utils';
+import { resolveTextColourPreviewStyle, resolveBackgroundPaintPreviewStyle, backgroundPaintPreview, isCssGradient, usePreviewTier } from '../../utils';
 import { ModalAnchorNotice, ModalHashLoadToggle, ModalNoOpenerWarning } from './anchor-open-controls';
 import { DialogSizeBorderControls, DialogShadowControl, CloseStyleControl } from './dialog-style-controls';
 
@@ -60,6 +60,7 @@ const TEMPLATE = [
 ];
 
 export default function Edit( { attributes, setAttributes, clientId } ) {
+	const previewTier = usePreviewTier();
 	const {
 		modalRef,
 		triggerText,
@@ -139,7 +140,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		maxWidth: isFullscreenSize ? '100%' : MAX_WIDTH_VALUES[ maxWidth ] || undefined,
 		borderRadius: isFullscreenSize ? 0 : undefined,
 		backgroundColor: resolveColourToken( modalBackground, palette ) || undefined,
-		...dialogPreviewStyle( attributes, palette ),
+		...dialogPreviewStyle( attributes, palette, previewTier ),
 	};
 
 	const innerBlocksProps = useInnerBlocksProps(

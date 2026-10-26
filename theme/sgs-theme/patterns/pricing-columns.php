@@ -23,7 +23,7 @@
 				<!-- wp:sgs/separator {"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}} /-->
 				<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Up to 5 pages"},{"text":"Mobile responsive"},{"text":"Contact form"},{"text":"Basic SEO setup"}],"gap":"10","textColour":"text-muted"} /-->
 				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
-					<!-- wp:sgs/button {"label":"Choose Starter","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"borderRadius":{"desktop":"8px"}} /-->
+					<!-- wp:sgs/button {"label":"Choose Starter","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":"100%"},"borderRadius":{"desktop":"8px"}} /-->
 				<!-- /wp:sgs/multi-button -->
 			<!-- /wp:sgs/container -->
 		<!-- /wp:sgs/container -->
@@ -37,7 +37,7 @@
 				<!-- wp:sgs/separator {"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}} /-->
 				<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Up to 15 pages"},{"text":"Everything in Starter"},{"text":"Blog setup"},{"text":"Advanced SEO"},{"text":"Priority support"}],"gap":"10","textColour":"text-muted"} /-->
 				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
-					<!-- wp:sgs/button {"label":"Choose Professional","inheritStyle":"primary","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"borderRadius":{"desktop":"8px"}} /-->
+					<!-- wp:sgs/button {"label":"Choose Professional","inheritStyle":"primary","widthType":{"desktop":"custom"},"customWidth":{"desktop":"100%"},"borderRadius":{"desktop":"8px"}} /-->
 				<!-- /wp:sgs/multi-button -->
 			<!-- /wp:sgs/container -->
 		<!-- /wp:sgs/container -->
@@ -50,7 +50,7 @@
 				<!-- wp:sgs/separator {"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}} /-->
 				<!-- wp:sgs/icon-list {"markerType":"bullet","items":[{"text":"Unlimited pages"},{"text":"Everything in Professional"},{"text":"Custom integrations"},{"text":"E-commerce features"},{"text":"Dedicated account manager"}],"gap":"10","textColour":"text-muted"} /-->
 				<!-- wp:sgs/multi-button {"justifyContent":{"desktop":"center"},"margin":{"top":"var:preset|spacing|40"}} -->
-					<!-- wp:sgs/button {"label":"Contact Us","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":100},"customWidthUnit":{"desktop":"%"},"borderRadius":{"desktop":"8px"}} /-->
+					<!-- wp:sgs/button {"label":"Contact Us","inheritStyle":"outline","widthType":{"desktop":"custom"},"customWidth":{"desktop":"100%"},"borderRadius":{"desktop":"8px"}} /-->
 				<!-- /wp:sgs/multi-button -->
 			<!-- /wp:sgs/container -->
 		<!-- /wp:sgs/container -->

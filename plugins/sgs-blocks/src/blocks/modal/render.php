@@ -43,16 +43,16 @@ $modal_background_gradient = sgs_css_gradient_value( $attributes['modalBackgroun
 $close_style        = in_array( $attributes['closeStyle'] ?? 'icon', array( 'icon', 'glyph' ), true ) ? ( $attributes['closeStyle'] ?? 'icon' ) : 'icon';
 $close_button_class = 'glyph' === $close_style ? 'sgs-modal__close sgs-modal__close--glyph' : 'sgs-modal__close';
 
-// Dialog custom width — overrides
-// the maxWidth variant class's `width` when set; empty keeps every existing
-// modal's maxWidth-driven width unchanged. sgs_css_length_value() would
-// treat a bare number as a spacing-preset lookup, which is wrong for a
-// dialog width, so the number+unit pair is validated and concatenated here
-// instead (mirrors sgs/heading's customWidth/customWidthUnit split-scalar
-// shape).
-$dialog_width_raw  = isset( $attributes['dialogWidth'] ) && is_string( $attributes['dialogWidth'] ) ? trim( $attributes['dialogWidth'] ) : '';
-$dialog_width_unit = in_array( $attributes['dialogWidthUnit'] ?? 'px', array( 'px', '%', 'em', 'rem', 'vw' ), true ) ? ( $attributes['dialogWidthUnit'] ?? 'px' ) : 'px';
-$dialog_width      = ( '' !== $dialog_width_raw && preg_match( '/^\d+(?:\.\d+)?$/', $dialog_width_raw ) ) ? $dialog_width_raw . $dialog_width_unit : '';
+// Dialog custom width: one length string per device, overriding the maxWidth
+// variant class's `width` when set; empty keeps every existing modal's
+// maxWidth-driven width unchanged. Printed by the shared responsive emitter below.
+$dialog_width_obj = sgs_responsive_normalise_object( $attributes['dialogWidth'] ?? null );
+$has_dialog_width = false;
+foreach ( $dialog_width_obj as $dialog_width_value ) {
+	if ( null !== $dialog_width_value && '' !== sgs_css_length_value( (string) $dialog_width_value ) ) {
+		$has_dialog_width = true;
+	}
+}
 
 // Dialog shadow — ShadowControl's layered shape+colour text pair
 // (sgs_shadow_box_decls(), includes/helpers-shadow-layers.php, loaded
@@ -148,8 +148,7 @@ if ( $modal_background ) {
 // source-order-independent specificity (this scoped rule is two classes,
 // `.sgs-modal__dialog--{variant}` is one). `max-width` keeps the same
 // viewport-safety clamp the variant classes already carry.
-if ( '' !== $dialog_width ) {
-	$dialog_rules[] = 'width:' . $dialog_width;
+if ( $has_dialog_width ) {
 	$dialog_rules[] = 'max-width:calc(100vw - 2rem)';
 }
 // Dialog border (width, style, colour, gradient ring) through the shared
@@ -230,6 +229,15 @@ if ( $trigger_bg_css ) {
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';
 }
+$scoped_css_rules[] = sgs_emit_responsive_css(
+	$root_sel . ' .sgs-modal__dialog',
+	array(
+		array(
+			'value' => $attributes['dialogWidth'] ?? null,
+			'css'   => 'width',
+		),
+	)
+);
 // Dialog border rules: the gradient ring and, for an explicit none style, the
 // none override.
 $scoped_css_rules = array_merge( $scoped_css_rules, $border['rules'] );

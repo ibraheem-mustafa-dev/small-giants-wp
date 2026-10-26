@@ -40,6 +40,8 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
+import { cssLengthValue } from '../../utils/css-length';
+import { resolveTier } from '../../utils/responsive';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 // ─── Option sets ─────────────────────────────────────────────────────────────
@@ -95,32 +97,6 @@ const CUSTOM_WIDTH_UNITS = [
 	{ value: 'vw', label: 'vw', default: undefined },
 	{ value: 'vh', label: 'vh', default: undefined },
 ];
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function composeUnit( num, unit ) {
-	if ( num === undefined || num === null || num === '' ) {
-		return '';
-	}
-	return `${ num }${ unit || '' }`;
-}
-
-function parseUnit( raw, currentUnit ) {
-	if ( ! raw && raw !== 0 ) {
-		return { num: undefined, unit: currentUnit || 'em' };
-	}
-	const str = String( raw ).trim();
-	if ( '' === str ) {
-		return { num: undefined, unit: currentUnit || 'em' };
-	}
-	const match = str.match( /^([\d.+-][\d.]*)\s*([a-z%]*)$/i );
-	if ( match ) {
-		const num = parseFloat( match[ 1 ] );
-		const unit = match[ 2 ] || currentUnit || 'em';
-		return { num: isNaN( num ) ? undefined : num, unit };
-	}
-	return { num: undefined, unit: currentUnit || 'em' };
-}
 
 // ─── Inline style builder ─────────────────────────────────────────────────────
 
@@ -236,9 +212,7 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 		borderColourGradient,
 		inheritStyle,
 		customWidth,
-		customWidthUnit,
 		maxWidth,
-		maxWidthUnit,
 	} = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
@@ -262,18 +236,17 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 		if ( shadowPreview ) {
 			wrapperStyle.boxShadow = shadowPreview;
 		}
-		// Custom width — mirrors render.php's sgs_heading_spacing_val() numeric
-		// guard (a non-numeric raw value emits nothing, same as the server).
-		if (
-			'' !== customWidth &&
-			null !== customWidth &&
-			undefined !== customWidth &&
-			/^-?\d+(\.\d+)?$/.test( String( customWidth ).trim() )
-		) {
-			wrapperStyle.width = `${ customWidth }${ customWidthUnit || 'px' }`;
+		const customWidthPreview = cssLengthValue(
+			resolveTier( customWidth, previewTier, '' ).value ?? ''
+		);
+		if ( customWidthPreview ) {
+			wrapperStyle.width = customWidthPreview;
 		}
-		if ( 'number' === typeof maxWidth && ! Number.isNaN( maxWidth ) ) {
-			wrapperStyle.maxWidth = `${ maxWidth }${ maxWidthUnit || 'px' }`;
+		const maxWidthPreview = cssLengthValue(
+			resolveTier( maxWidth, previewTier, '' ).value ?? ''
+		);
+		if ( maxWidthPreview ) {
+			wrapperStyle.maxWidth = maxWidthPreview;
 		}
 		Object.assign(
 			wrapperStyle,
@@ -343,9 +316,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		borderColour,
 		borderColourGradient,
 		customWidth,
-		customWidthUnit,
 		maxWidth,
-		maxWidthUnit,
 	} = attributes;
 	// ⚠ textAlign / fontStyle / textDecoration / letterSpacing /
 	// letterSpacingUnit / textTransform / textWrap are deliberately NOT
@@ -696,53 +667,62 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					   client changes alongside it. Do not re-add it here: a
 					   second SelectControl writing `textAlign` would be a
 					   duplicate writer for one attribute. */ }
-					{ /* Custom width — ONE SgsLengthControl mount, split-scalar pattern
-					   (customWidth stores the raw number as a string; render.php calls
-					   sgs_heading_spacing_val( $custom_width, $custom_width_unit )). */ }
-					<SgsLengthControl
+					<ResponsiveOverride
 						label={ __( 'Custom width', 'sgs-blocks' ) }
-						value={ composeUnit( customWidth, customWidthUnit ) }
-						units={ CUSTOM_WIDTH_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit(
-								raw,
-								customWidthUnit || 'px'
-							);
-							setAttributes( {
-								customWidth:
-									num === undefined || num === null
-										? ''
-										: String( num ),
-								customWidthUnit: unit,
-							} );
-						} }
-						presets={ false }
-					/>
-					<SgsLengthControl
-						label={ __( 'Max width', 'sgs-blocks' ) }
-						help={ __(
-							'Wraps the heading at this width without fixing it; ch counts characters.',
-							'sgs-blocks'
+						value={ customWidth }
+						onChange={ ( obj ) =>
+							setAttributes( { customWidth: obj } )
+						}
+					>
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
+							<SgsLengthControl
+								label={ __( 'Custom width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
+								units={ CUSTOM_WIDTH_UNITS }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								presets={ false }
+							/>
 						) }
-						value={ composeUnit( maxWidth, maxWidthUnit ) }
-						units={ MAX_WIDTH_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit(
-								raw,
-								maxWidthUnit || 'px'
-							);
-							setAttributes( {
-								maxWidth:
-									num === undefined ||
-									num === null ||
-									'' === num
-										? undefined
-										: Number( num ),
-								maxWidthUnit: unit,
-							} );
-						} }
-						presets={ false }
-					/>
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ maxWidth }
+						onChange={ ( obj ) =>
+							setAttributes( { maxWidth: obj } )
+						}
+					>
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
+							<SgsLengthControl
+								label={ __( 'Max width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __(
+									'Wraps the heading at this width without fixing it; ch counts characters.',
+									'sgs-blocks'
+								) }
+								value={ ownValue || '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
+								units={ MAX_WIDTH_UNITS }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				{ /* ── Border panel ── Box-object interface contract §1/§5: borderWidth

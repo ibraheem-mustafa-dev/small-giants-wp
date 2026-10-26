@@ -48,6 +48,8 @@ import {
 	sgsBorderPreview,
 } from '../../utils';
 import { composeShadow } from '../../utils/shadow-layers';
+import { cssLengthValue } from '../../utils/css-length';
+import { resolveTier } from '../../utils/responsive';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 
 // ---------------------------------------------------------------------------
@@ -92,8 +94,7 @@ const MAX_WIDTH_UNITS = [
 	{ value: 'ch', label: 'ch', default: 65 },
 ];
 
-// Mirrors render.php's $allowed_units for customWidth (px/em/rem/%/vw/vh) —
-// a unit outside this set is rejected server-side, so the editor never offers one.
+// Units the Custom width control offers.
 const CUSTOM_WIDTH_UNITS = [
 	{ value: 'px', label: 'px', default: 300 },
 	{ value: 'em', label: 'em', default: 20 },
@@ -122,9 +123,7 @@ function buildEditorStyle( attributes, tier ) {
 		textColour,
 		textColourGradient,
 		maxWidth,
-		maxWidthUnit,
 		customWidth,
-		customWidthUnit,
 		borderWidth,
 		borderStyle,
 		borderColour,
@@ -150,14 +149,13 @@ function buildEditorStyle( attributes, tier ) {
 	if ( attributes.textIndent ) {
 		previewStyle[ '--sgs-ed-text-indent' ] = attributes.textIndent;
 	}
-	if ( maxWidth ) {
-		previewStyle.maxWidth = `${ maxWidth }${ maxWidthUnit }`;
+	const maxWidthPreview = cssLengthValue( resolveTier( maxWidth, tier, '' ).value ?? '' );
+	if ( maxWidthPreview ) {
+		previewStyle.maxWidth = maxWidthPreview;
 	}
-	// Custom width overrides max-width when both are set — mirrors render.php's
-	// step-4 "only one is emitted" rule, so the canvas preview matches the
-	// frontend rather than showing both competing rules.
-	if ( '' !== customWidth && null !== customWidth && undefined !== customWidth ) {
-		previewStyle.width = `${ customWidth }${ customWidthUnit }`;
+	const customWidthPreview = cssLengthValue( resolveTier( customWidth, tier, '' ).value ?? '' );
+	if ( customWidthPreview ) {
+		previewStyle.width = customWidthPreview;
 	}
 
 	// Base padding/margin/border-radius preview — padding/margin are owned
@@ -277,7 +275,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		textAlign,
 		textWrap,
 		maxWidth,
-		maxWidthUnit,
 		dropCap,
 		firstLetterColour,
 		firstLetterColourHover,
@@ -307,7 +304,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		linkUnderlineColourHover,
 		linkUnderlineOffset,
 		customWidth,
-		customWidthUnit,
 		inheritStyle,
 	} = attributes;
 
@@ -732,36 +728,42 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Layout', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ /* Max width — SgsLengthControl (number + unit in one input) */ }
-					<SgsLengthControl
+					<ResponsiveOverride
 						label={ __( 'Max width', 'sgs-blocks' ) }
-						value={ composeUnit( maxWidth, maxWidthUnit ) }
-						units={ MAX_WIDTH_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit( raw, maxWidthUnit || 'px' );
-							setAttributes( { maxWidth: num, maxWidthUnit: unit } );
-						} }
-						presets={ false }
-					/>
+						value={ maxWidth }
+						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								label={ __( 'Max width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								units={ MAX_WIDTH_UNITS }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveOverride>
 
-					{ /* Custom width — split-scalar customWidth/customWidthUnit pair,
-					   same SgsLengthControl composeUnit/parseUnit shape as Max width
-					   above and sgs/label's lineHeight/lineHeightUnit. render.php
-					   emits `width:` from these when set (overriding max-width — only
-					   one is emitted server-side). */ }
-					<SgsLengthControl
+					{ /* Custom width sets the block's own width on each device. */ }
+					<ResponsiveOverride
 						label={ __( 'Custom width', 'sgs-blocks' ) }
-						value={ composeUnit( customWidth, customWidthUnit ) }
-						units={ CUSTOM_WIDTH_UNITS }
-						onChange={ ( raw ) => {
-							const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );
-							setAttributes( {
-								customWidth: undefined === num ? '' : String( num ),
-								customWidthUnit: unit,
-							} );
-						} }
-						presets={ false }
-					/>
+						value={ customWidth }
+						onChange={ ( obj ) => setAttributes( { customWidth: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								label={ __( 'Custom width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								units={ CUSTOM_WIDTH_UNITS }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveOverride>
 
 					{ /* padding/margin are each a single block-owned tier-object attr
 					   { desktop, tablet, mobile }, written via ResponsiveOverride +

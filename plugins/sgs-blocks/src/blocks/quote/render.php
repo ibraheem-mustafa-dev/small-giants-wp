@@ -106,7 +106,6 @@ if ( ! $has_body && ! $has_attribution ) {
 $attrib_tag             = $attributes['attributionTag'] ?? 'footer';
 $attrib_colour          = $attributes['attributionColour'] ?? '';
 $attrib_colour_gradient = $attributes['attributionColourGradient'] ?? '';
-$attrib_margin_unit     = $attributes['attributionMarginUnit'] ?? 'px';
 
 // Validate attribution tag.
 if ( ! in_array( $attrib_tag, array( 'footer', 'div', 'cite' ), true ) ) {
@@ -283,38 +282,17 @@ $css_attrib_typography .= sgs_link_colour_css( $attributes, 'attribution', $attr
 // How a link in the attribution is underlined (empty when unset).
 $css_attrib_typography .= sgs_link_underline_css( $attributes, 'attribution', $attrib_scope );
 
-// Attribution margin-top — base + tablet + mobile on the SAME selector
-// (Pattern A). A KEPT-SCALAR single-side family (contract §C), NOT part of
-// the shared typography helper above.
-//
-// attributionMarginTop is a TIER OBJECT {desktop,tablet,mobile} (Spec 35
-// pass 3b, 2026-08-11) — the *Tablet/*Mobile siblings no longer exist in
-// block.json. sgs_responsive_css_rule() reads its prop_map by ATTRIBUTE NAME
-// from a flat $attributes-shaped array, so the object attr is normalised
-// here and fed back in under its old flat key names — this keeps
-// sgs_responsive_css_rule()'s per-tier emission behaviour byte-identical to
-// before the migration, just fed from the new storage shape.
-$attrib_margin_top_tiers = sgs_responsive_normalise_object( $attributes['attributionMarginTop'] ?? null );
-$css_attrib_margin_attrs = array_merge(
-	$attributes,
-	array(
-		'attributionMarginTop'       => $attrib_margin_top_tiers['desktop'] ?? null,
-		'attributionMarginTopTablet' => $attrib_margin_top_tiers['tablet'] ?? null,
-		'attributionMarginTopMobile' => $attrib_margin_top_tiers['mobile'] ?? null,
-	)
-);
-$css_attrib_margin       = sgs_responsive_css_rule(
-	$css_attrib_margin_attrs,
+// Attribution margin-top: a length per device (attributionMarginTop), printed
+// on the attribution's own selector through the shared responsive emitter,
+// desktop in the base rule and a narrower device only where it differs.
+$css_attrib_margin = sgs_emit_responsive_css(
+	$attrib_scope,
 	array(
 		array(
-			'attr'         => 'attributionMarginTop',
-			'css'          => 'margin-top',
-			'unit_default' => $attrib_margin_unit,
-			'tablet_attr'  => 'attributionMarginTopTablet',
-			'mobile_attr'  => 'attributionMarginTopMobile',
+			'value' => $attributes['attributionMarginTop'] ?? null,
+			'css'   => 'margin-top',
 		),
-	),
-	$attrib_scope
+	)
 );
 
 // ---------------------------------------------------------------------------

@@ -25,7 +25,9 @@
 		"color": false,
 		"sgs": {
 			"motion": true,
-			"enabledExtensions": [ "childSizing" ],
+			"enabledExtensions": [
+				"childSizing"
+			],
 			"boxFamilies": {
 				"borderWidth": [
 					"borderWidth"
@@ -204,7 +206,13 @@
 		},
 		"linkUnderline": {
 			"type": "string",
-			"enum": [ "", "none", "always", "hover", "sweep" ],
+			"enum": [
+				"",
+				"none",
+				"always",
+				"hover",
+				"sweep"
+			],
 			"default": "",
 			"description": "How links in the text are underlined: '' the theme's underline, none, always, hover (an underline on hover and keyboard focus), or sweep (a line sweeps in on hover and keyboard focus). sgs_link_underline_css()."
 		},
@@ -327,7 +335,14 @@
 		},
 		"fontVariantNumeric": {
 			"type": "string",
-			"enum": [ "", "normal", "tabular-nums", "proportional-nums", "lining-nums", "oldstyle-nums" ],
+			"enum": [
+				"",
+				"normal",
+				"tabular-nums",
+				"proportional-nums",
+				"lining-nums",
+				"oldstyle-nums"
+			],
 			"default": ""
 		},
 		"textShadow": {
@@ -360,11 +375,8 @@
 			"default": ""
 		},
 		"maxWidth": {
-			"type": "number"
-		},
-		"maxWidthUnit": {
-			"type": "string",
-			"default": "px"
+			"type": "object",
+			"default": {}
 		},
 		"dropCap": {
 			"type": "boolean",
@@ -464,12 +476,8 @@
 			"default": ""
 		},
 		"customWidth": {
-			"type": "string",
-			"default": ""
-		},
-		"customWidthUnit": {
-			"type": "string",
-			"default": "px"
+			"type": "object",
+			"default": {}
 		},
 		"inheritStyle": {
 			"type": "boolean",
