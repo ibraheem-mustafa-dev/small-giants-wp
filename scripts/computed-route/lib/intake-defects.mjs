@@ -20,7 +20,7 @@ import { deadCodeVerdict, prototypeOnlyWhy, dataGatedWhy } from './intake-defect
 import { deadFieldVerdict } from './intake-defects-deadfield.mjs';
 import { chainPass } from './intake-defects-chain.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
-import { moveToHash } from './state-route.mjs';
+import { moveToHash, parseStateHash } from './state-route.mjs';
 
 export { boundStyleRows, classifyCompiled, readPageBindings, bindingVerdicts, unresolvedBindingDefects } from './intake-defects-binding.mjs';
 
@@ -48,7 +48,7 @@ export const motionModifier = ( r ) => [ 'transition', 'keyframes' ].includes( r
 // as each visit starts at each width and one for each visit whose browser call timed out (lib/intake-defects-force.mjs::forcedVisits:
 // that visit is a gap row and its width undecided, never a hang). Returns { rows,
 // notDefects, gaps, blocked, units } (`blocked`: every forced page's aborted requests; `units`: how many width-and-visit-run units ran, which
-// INTAKE_PARALLEL_VISITS and INTAKE_PARALLEL_WIDTHS raise).
+// side-by-side widths, unless INTAKE_PARALLEL_WIDTHS=0, and INTAKE_PARALLEL_VISITS raise).
 export async function unreachedDefects( { folder, entry, harPath, census, visits = [ entry ], widths = WIDTHS, harness = {}, timeout = 60000, onPage = null, reads = null, force = {}, only = null, flags = null, log = () => {} } ) {
 	const out = { rows: [], notDefects: [], gaps: [], blocked: [] };
 	const unreached = census.rows.filter( ( r ) => true === r.unreached );
@@ -86,7 +86,7 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 	// writing into `into`. Returns the unit's gap rows, blocked requests and whether a visit failed.
 	const runUnit = ( { width, group, slice, last }, on, into ) => {
 		let call = 0;
-		const open = ( v ) => openForcedPage( { folder, entry, harPath, file: group.file, hash: v.hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
+		const open = ( v ) => openForcedPage( { folder, entry, harPath, file: group.file, hash: v.hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords, stateRoutes: group.visits.some( ( x ) => parseStateHash( x.hash ) ) } );
 		const visit = async ( s, v, i, fresh ) => {
 			if ( ! fresh ) {
 				await moveToHash( s.page, v.hash );
@@ -118,7 +118,7 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 			fold( folded, width );
 		}
 	};
-	// Side by side (FR-48-28): the widths when INTAKE_PARALLEL_WIDTHS=1, and the visits of a page group in INTAKE_PARALLEL_VISITS
+	// Side by side (FR-48-28): the widths unless INTAKE_PARALLEL_WIDTHS=0, and the visits of a page group in INTAKE_PARALLEL_VISITS
 	// slices. Each unit runs on its own copy of the plan (its own reach marks, patches, gaps and readiness; the row, target,
 	// props gating, dead and prototype verdicts shared) and the copies are merged in the order a one-at-a-time run visits
 	// them. A one-at-a-time run carries one thing across visits: a row's sc-if patches, props and gaps are read once, at the
@@ -126,7 +126,7 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 	// component's template, the same at every width and route, so the copies are merged as that run would hold them only
 	// when every copy that read them read the same; otherwise everything is run again one at a time.
 	const slices = Math.max( 1, Number.parseInt( process.env.INTAKE_PARALLEL_VISITS || '1', 10 ) || 1 );
-	const sideWidths = '1' === process.env.INTAKE_PARALLEL_WIDTHS;
+	const sideWidths = '0' !== process.env.INTAKE_PARALLEL_WIDTHS;
 	const sliceOf = ( g ) => {
 		const size = Math.ceil( g.visits.length / slices );
 		return Array.from( { length: Math.ceil( g.visits.length / size ) }, ( _, i ) => g.visits.slice( i * size, ( i + 1 ) * size ) );

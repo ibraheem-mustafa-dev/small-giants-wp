@@ -16,6 +16,7 @@ import { forceable } from './state-vocab.mjs';
 import { preparePage, gotoDraft, settleRest, drainTimeouts, RAW_PAGE } from './intake-harness.mjs';
 import { traceInit, collect } from './intake-census-trace.mjs';
 import { setDraftState, snapshotDraftState, restoreDraftState, draftStateChanged, fireTrigger, listenerInit, fireListeners } from './intake-state.mjs';
+import { currentStateRoute } from './state-route.mjs';
 import { handlerInit, gestureIn, POINTER_TYPES, DRAG_TYPES } from './intake-defects-gesture.mjs';
 
 // Pseudo-elements need no forcing (their element renders them). The forceable pseudo-classes are the state
@@ -176,11 +177,11 @@ export async function forcedVisits( { file, slice, width, open, visit, log = () 
 // One harness page at one width with the probes on: CDP coverage, DOM and CSS. Returns a session:
 // { page, origin, width, rest, collect(), setState(comp, patch), enclosingIfs(row), forcePseudo(row), dispatch(row),
 //   dispatchAt(row, index), copies(row), gestures(), snapshot(slot), restore(slot), changed(slot), coverage(), settle(),
-//   close(), blocked } (`blocked`: the sandbox's aborted requests). A failure to open carries the requests blocked so far
+//   close(), blocked, route() } (`blocked`: the sandbox's aborted requests; `route`: only with `stateRoutes`). A failure to open carries the requests blocked so far
 // as the error's `blocked`. Every page and CDP call after preparePage, the session's own and its callers' through
 // `page`, is bounded to `callTimeout` ms (bounded; default `timeout`), naming the session step it ran in.
 // `forcePseudoState`, `drag` and `coords` false exist only for the tests' negative controls.
-export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, callTimeout = timeout, forcePseudoState = true, drag = true, coords = true } ) {
+export async function openForcedPage( { folder, entry, harPath, file = entry, hash = '', width, harness = {}, timeout = 60000, callTimeout = timeout, forcePseudoState = true, drag = true, coords = true, stateRoutes = false } ) {
 	const sb = await openSandbox( { folder, index: entry, harPath, mode: 'replay', widths: [ width ], timeout } );
 	// The session step running and the last forcing step (FORCING) started: a page stuck by a forced state often fails
 	// in the settle or check after it, so a timed-out call names both.
@@ -374,6 +375,11 @@ export async function openForcedPage( { folder, entry, harPath, file = entry, ha
 			close: () => sb.close(),
 			blocked: sb.blocked,
 		};
+		// On a state-page draft (`stateRoutes`) the route is the URL and the entry component's route state, which the
+		// draft's router moves without the URL (lib/intake-defects-chain.mjs reads it to tell a route change).
+		if ( stateRoutes ) {
+			session.route = async () => `${ await page.evaluate( () => window.location.href ) } ${ await currentStateRoute( page ) }`;
+		}
 		// The outermost session call running is the forcing step a timed-out browser call names.
 		for ( const [ k, fn ] of Object.entries( session ) ) {
 			if ( 'function' === typeof fn && 'close' !== k ) {

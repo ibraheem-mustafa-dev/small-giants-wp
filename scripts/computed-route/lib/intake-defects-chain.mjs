@@ -9,12 +9,13 @@
 //     fired on each of its first rendered copies.
 // Depth is 2. The state is snapshotted before each level and put back after each attempt (named snapshot slots of
 // lib/intake-state.mjs, deleted when the pass ends), so one attempt never leaks into the next. An attempt that changes
-// the URL is a route change, which the visits cover on their own: its URL and state are put back and nothing under it
-// is tried. The route counts as back when the same components render as before the attempt; when putting the URL back
-// does not bring them back, the visit's URL is re-opened (popstate and hashchange fired on it), and when that fails too
-// the pass stops with `lost` set. A budget caps the attempts per visit; only an attempt whose event or patch actually
-// fired counts. Stopping at the budget, or on a lost route, with candidates still pending sets `exhausted` / `lost`,
-// which the caller records as a gap on each pending row (R-48-3: forcing that cannot finish is a gap, never silent).
+// the URL, or a state-page draft's route state (lib/state-route.mjs), is a route change, which the visits cover on
+// their own: its URL and state are put back and nothing under it is tried. The route counts as back when the same
+// components render as before the attempt; when putting the URL back does not bring them back, the visit's URL is
+// re-opened (popstate and hashchange fired on it), and when that fails too the pass stops with `lost` set. A budget
+// caps the attempts per visit; only an attempt whose event or patch actually fired counts. Stopping at the budget, or
+// on a lost route, with candidates still pending sets `exhausted` / `lost`, which the caller records as a gap on each
+// pending row (R-48-3: forcing that cannot finish is a gap, never silent).
 
 export const CHAIN_SLOTS = [ 'chain0', 'chain1' ];
 const nOf = ( id ) => id.slice( id.lastIndexOf( ':' ) + 1 );
@@ -46,6 +47,8 @@ export async function chainPass( s, { triggers, patches, pending, check, rendere
 	};
 	const copiesOf = async ( h ) => Math.min( maxCopies, await s.copies( h ) );
 	const href = () => s.page.evaluate( () => window.location.href );
+	// Where the page is: the URL, plus the route state on a state-page draft (`s.route`), whose router moves no URL.
+	const where = () => ( s.route ? s.route() : href() );
 	// Puts the URL back to `was` and the state to `slot`; true when the same components render as before the attempt.
 	// `reopen` also fires popstate and hashchange, so a router that listens for them renders the visit's route again.
 	const backTo = async ( was, slot, before, reopen ) => {
@@ -61,17 +64,18 @@ export async function chainPass( s, { triggers, patches, pending, check, rendere
 		await check();
 		return sameSet( compsOf( rendered() ), compsOf( before ) );
 	};
-	// One attempt: fire, put a changed URL back, keep going only when the state changed, let it render, check, force what it rendered, then
+	// One attempt: fire, put a changed route back, keep going only when the state changed, let it render, check, force what it rendered, then
 	// put the state back to `slot`. Only a fired attempt counts against the budget.
 	const attempt = async ( fire, slot, inner = null ) => {
 		const before = rendered();
 		const was = await href();
+		const at = await where();
 		if ( ! await fire() ) {
 			return;
 		}
 		out.attempts++;
-		// The URL is checked before the state: a link can move the route before (or without) any state change.
-		if ( was !== await href() ) {
+		// The route is checked before the state: a link can move the route before (or without) any other state change.
+		if ( at !== await where() ) {
 			// The timers the click started (a drawer's close animation) finish first: they would otherwise run on the restored page.
 			await s.drain();
 			await check();

@@ -162,6 +162,25 @@ test( 'MUST FAIL (FR-48-34): a timer an attempt started runs before the state is
 	assert.equal( app.reached, true, 'the accordion row was fired with the drawer open' );
 } );
 
+// Eye Care (2026-10-26): a state-page draft's router sets the entry component's `page` state and never moves the URL, so a
+// menu link read as an opener and every handler of the page it drew was fired under it, on every visit: the chain spent
+// almost its whole budget re-visiting the other routes, about 12 minutes a visit.
+test( 'MUST FAIL (route): a state-page route change (the route state moves, the URL does not) is put back and nothing under it is tried', async () => {
+	const { s, app, opts } = fakeSession();
+	s.route = async () => `#/ ${ app.state.page ?? 'home' }`;
+	const check = async () => {
+		app.last = new Set( 'about' === app.state.page ? [ 'About:1' ] : [ 'Home:1' ] );
+	};
+	const link = { component: 'Home', draftId: 'Home:5', copies: 1, fire: async () => ( app.state = { ...app.state, page: 'about' }, true ) };
+	const onAbout = { component: 'About', draftId: 'About:1', copies: 1, fire: async () => ( app.state = { ...app.state, faq: 1 }, true ) };
+	await check();
+	const out = await chainPass( s, { ...opts, check, triggers: [ link, onAbout ] } );
+	assert.equal( app.calls, 2, 'the link and the About handler fired once each, never the About handler under the link' );
+	assert.equal( app.state.page, undefined, 'the route state was put back' );
+	assert.equal( out.opened, 0, 'a route change opens nothing' );
+	assert.equal( out.lost, false );
+} );
+
 test( 'MUST FAIL (FR-48-34): a timer drained after an attempt that changed nothing has its state put back before the next attempt', async () => {
 	const { s, app, opts } = fakeSession();
 	const timers = [];

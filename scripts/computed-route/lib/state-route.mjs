@@ -70,6 +70,13 @@ export async function applyStateRoute( page, { timeout } = {} ) {
 	return r;
 }
 
+// The route a state-page draft is on, as text: the entry component's `page` state on every live instance (a template
+// handler that moves the route moves this, never the URL).
+export async function currentStateRoute( page, { key = PAGE_KEY } = {} ) {
+	const component = await page.evaluate( () => ( 'function' === typeof window.__dcRootName ? window.__dcRootName() : null ) ) ?? ROOT_HOST;
+	return JSON.stringify( await readDraftState( page, { component, key } ) );
+}
+
 // Moves a loaded page to a visit's hash: a state route through its setter, any other hash by location.hash.
 export async function moveToHash( page, hash ) {
 	const at = parseStateHash( hash );
