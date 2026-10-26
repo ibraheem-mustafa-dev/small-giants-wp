@@ -213,16 +213,15 @@ Each unit's done-when is its FR's, plus a re-run of the real Indus header Fill w
 
 **Phase 1 close (Bean, 2026-10-25).** Track R's session closes Phase 1 as the only active track. Further single-instance fixes on one Indus header rest on thin data, so every open row not fixed by the close lanes (census-all on current data, the scroll-away row's settings CSS, the hover movement timing token, the lens benchmark case) moves to a later phase by this decision, where all three clients give each cause several instances:
 - **To Phase 2 (comes up as surfaces are cloned):** the accepted differences for an Indus `divergences.json` (the buttons' transition property list, the burger's invisible touch `::after`, the live nav's separate submenu buttons); Mama's sticky-bar shop part (FR-48-60) and Fill writing a shop part's style values from its locators; `itemHoverScope` (Contact keeps its colour on hover in the Indus draft) once calibration reads it.
-- **To Phase 3 (census classes):** calibration reading `transition-property`/`transition-behavior` (`lib/calibrate-props.mjs::CAL_EXTRA_PROPS`, stales every calibration, with Track S); W22 and the walker comparison gaps (a hover on an off-screen or hidden element is unreached, a transition entry for a property that never changes is inert, a background against a live layer covering the same box, the `normal` line-height probe's 24.8px); `burgerBarGap` dead in calibration; the nav item hover tint painting the link only, not the item with its caret toggle; an inset current-item bar (the Indus Home underline) and absorbed draft elements that paint leaving no unmapped row; the logo link's fixed `Go to %s homepage` label; the scroll-away mode that returns only at the top; R8's bar 1 `0s` row (an accepted difference for Bean); from the closing council's Minor findings: split `plugins/sgs-blocks/src/header-behaviours/view.js` (912 lines) and `scripts/computed-route/lib/resolve.mjs` (730) (`lib/fill-motion.mjs` is R12's); a footer row prints collapse rules no footer runs (`includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css`); `motion_tokens.py::apply_movement_timing` replaces the whole `settings.custom.hover` object; the alignment equivalence judges the draft's flex context, not the block element's; the logo name is read at desktop only; `lib/fill-part-pairing.mjs::laysOutPart` passes a width whose children are all hidden; test gaps (a non-token shadow value, a layer with no shadow transition, a picture holding a link, extractor and Hover panel mutation coverage).
+- **To Phase 3 (census classes):** W22 and the walker comparison gaps (a hover on an off-screen or hidden element is unreached, a transition entry for a property that never changes is inert, a background against a live layer covering the same box, the `normal` line-height probe's 24.8px); `burgerBarGap` dead in calibration; the nav item hover tint painting the link only, not the item with its caret toggle; an inset current-item bar (the Indus Home underline) and absorbed draft elements that paint leaving no unmapped row; the logo link's fixed `Go to %s homepage` label; the scroll-away mode that returns only at the top; R8's bar 1 `0s` row (an accepted difference for Bean); from the closing council's Minor findings: split `plugins/sgs-blocks/src/header-behaviours/view.js` (912 lines) and `scripts/computed-route/lib/resolve.mjs` (730) (`lib/fill-motion.mjs` is R12's); a footer row prints collapse rules no footer runs (`includes/helpers-row-behaviour.php::sgs_row_shrink_settings_css`); `motion_tokens.py::apply_movement_timing` replaces the whole `settings.custom.hover` object; the alignment equivalence judges the draft's flex context, not the block element's; the logo name is read at desktop only; `lib/fill-part-pairing.mjs::laysOutPart` passes a width whose children are all hidden; test gaps (a non-token shadow value, a layer with no shadow transition, a picture holding a link, extractor and Hover panel mutation coverage).
 
 ## Phase 2: the full re-clone and census (Track S runs, Track W measures; waits on Phase 1)
 Per client, inside `S site-run-start <client>` / `S site-run-end`. The order is Indus (`indus-test`), Mama's redesign (`mamas-test`), Eye Care (`eye-care-clone-test`):
 1. a `mysqldump` backup;
-2. `site-build.mjs <client> --site <target> --apply`;
-3. `manifest.mjs <client> --apply`;
-4. per surface (61, 58 and 52): skeleton `propose`, Fill, then `scripts/wp-build-page.js` (dry run, then build);
-5. the walker at 1440/768/375 with hover, effects and motion, three surfaces at a time in the background (a failed surface is logged and the run continues);
-6. `census-all.mjs` over the three clients.
+2. the client's calibration current on its local mirror (`local-*` in `scripts/computed-route/calibration-targets.json`; never the Hostinger site);
+3. `manifest.mjs <client> --site <target>` (dry run, then `--apply`) and `site-build.mjs <client> --site <target>` (dry run, then `--apply`);
+4. `scripts/computed-route/site-run.mjs <client> --site <target>` over every `surfaces.json` entry: inventory, skeleton propose, Fill, the `wp-build-page.js` dry run then build, and the walker at 1440/768/375 with hover, effects and motion (forms Fill into their saved `sgs_form` posts and pages hold the linked embed; post rows are content-only and skipped; a failed stage is recorded and the run continues);
+5. `census-all.mjs` over the three clients.
 
 **Phase 2 interrupted for Phase 3 loop 1 (Bean, 2026-10-25).** The first Indus pass (25 of 40 surfaces, driver `scripts/computed-route/site-run.mjs`) showed about 80% of Fill's `no-setting` rows are the route's own faults (`.claude/reports/2026-10-25-no-setting-diagnosis.md`), so the faults are fixed before Mama's and Eye Care are cloned: `.claude/plans/2026-10-25-phase3-loop1.md`. A council rejected moving Fill to Node parse-only reading (Spec 48 FR-48-24 stands; Fill gains a state opener instead). Phase 2 also gains: the form kind in the manifest, the single-post template surface, and Eye Care's full intake (its intake is palette-only).
 
@@ -235,6 +234,17 @@ Per client, inside `S site-run-start <client>` / `S site-run-end`. The order is 
 4. Every fix covers every variant its class names (ruling 13).
 
 **Done when** every class is fixed with its proof, or is a gaps-log row Bean has seen.
+
+### Phase 3 loop 2 (the named list, from loop 1's findings)
+- `sgs/account`'s calibration is refused by the loss guard (its card settings drop); cause unproven.
+- The Floating layer's position: the draft's top/right px against the layer's centre-percentage model, and its float animation (about 10 rows per page on Indus).
+- Fill writes one effect twice on an element ("Marquee/Ambient float/Cursor field is already on this element").
+- The resolver writes `display` on `.sgs-icon__svg` as `iconSource: emoji` before the icon writer corrects it.
+- The resting font-weight helpers strip rather than allowlist (`includes/helpers-button-style.php`, `includes/helpers-typography.php`).
+- `src/components/TypographyControls.js` (1,687 lines) needs its stroke and shadow colour rows split out, which needs inspector rule 31 to resolve mounts through an intermediate component.
+- The container's `:where(.sgs-container) > *` z-index needs a nested calibration fixture.
+- Painted-layer rows are never eligible for the ancestor hop (`lib/fill-resolve-element.mjs::checksRan` records why); making them eligible is a design call.
+- The Floating layer's shape: `clip-path` also clips the layer's shadow.
 
 ## Phase 4: loop until identical
 Repeat Phase 2 (only the surfaces a fix touched, plus one full pass at the end) and Phase 3, until rulings D and E hold on every surface of the three clients. Then come the pairs for every surface and Bean's eye, which is the sign-off.

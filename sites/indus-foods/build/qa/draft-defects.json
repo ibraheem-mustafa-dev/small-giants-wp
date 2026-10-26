@@ -83,7 +83,17 @@
 				768,
 				1440
 			],
-			"built": null,
+			"built": [
+				{
+					"state": "hover",
+					"prop": "color",
+					"values": {
+						"375": "#2C3E50",
+						"768": "#2C3E50",
+						"1440": "#2C3E50"
+					}
+				}
+			],
 			"listedOn": "2026-10-23",
 			"sentOn": null
 		},

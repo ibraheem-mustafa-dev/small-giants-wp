@@ -89,7 +89,7 @@ WordPress's own closest structural analogue to this proposal — Synced Patterns
 
 ## 10. Known cross-cutting gap -- not resolved here
 
-**FR-42-10 (shared with Spec 43):** Spec 48's site-build script (FR-48-55, built 2026-10-20) creates a saved `sgs_form` / `sgs_choice_flow` post for every form and flow row of the confirmed page map (Spec 48 §12, R-47-11; Indus's four forms exist on indus-test), holding a placeholder. Stage 3 builds the fields into that post and links the page's `sgs/form` to it (Spec 48 FR-48-19, Indus plan step 21); until then a cloned form or flow is built into the page that shows it. Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1; the narrowing option (mandate for hand-authored content only) is Bean's policy call.
+**FR-42-10 (shared with Spec 43):** Spec 48's site-build script (FR-48-55, built 2026-10-20) creates a saved `sgs_form` / `sgs_choice_flow` post for every form and flow row of the confirmed page map (Spec 48 §12, R-47-11; Indus's four forms exist on indus-test), holding a placeholder. Since 2026-10-25 the route's skeleton writes a page's form as one linked `sgs/form` (`formIsLinked`, `formId` = the saved form's slug, no inner blocks; `scripts/computed-route/lib/skeleton-form-link.mjs`) and gives each form its own surface (the `sgs/form` host with its fields and steps), which Fill fills and the build writes into the saved post (Spec 48 FR-48-57, FR-48-14b); the Indus form posts are filled at that client's re-clone (`.claude/plans/2026-10-25-phase3-loop1.md` U10). Tracked in `.claude/plans/2026-09-26-form-choiceflow-pipeline-and-analytics.md` section 1; the narrowing option (mandate for hand-authored content only) is Bean's policy call.
 
 ## 11. Sequencing
 
@@ -116,7 +116,7 @@ WordPress's own closest structural analogue to this proposal — Synced Patterns
 | FR-42-7b | built | Delete guard (hook-level) + Gutenberg #33234 race check |
 | FR-42-8 | built | Cache/nonce contract: cache-independent lookup at submit time |
 | FR-42-9 | built | Mandate enforced in the editor: saved-forms-only embed |
-| FR-42-10 | open | The computed route does not yet create a form/flow post (see §10) |
+| FR-42-10 | in build | The route links a page's form to its saved post and clones each form as its own surface; the Indus posts are filled at its re-clone (see §10) |
 | FR-42-11 | met | CPT/picker/lifecycle proven before the mandatory rebuild runs at scale |
 | FR-42-12 | deferred | Presets stay an open brainstorm, not invented here |
 | FR-42-13 | deferred | Analytics/A-B testing (the stated reuse-mandate justification) is unbuilt |
