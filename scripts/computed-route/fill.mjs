@@ -249,7 +249,7 @@ export async function fillSurface( o ) {
 		result.writes = presets.writes;
 		result.notes.push( ...presets.notes );
 		// FR-48-57: each form field's settings from the draft's control and logic (lib/fill-form.mjs).
-		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, sources: formSources( o.draftDir, facts ) } );
+		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( o.draftDir, facts, intakeParts.rootComponent ) } );
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
 		result.notes.push( ...forms.notes );

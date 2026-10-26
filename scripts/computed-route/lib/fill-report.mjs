@@ -35,8 +35,10 @@ const cell = ( v ) => String( typeof v === 'object' && null !== v ? JSON.stringi
 const table = ( head, rows ) => ( rows.length ? [ `| ${ head.join( ' | ' ) } |`, `|${ head.map( () => '---' ).join( '|' ) }|`, ...rows.map( ( r ) => `| ${ r.map( cell ).join( ' | ' ) } |` ), '' ] : [ 'None.', '' ] );
 
 // The UNMAPPED list as the contract names it: property, value, node, reason (plus the block, the element and the state the
-// row was read in, null at rest, which lib/confirm-live.mjs::judgeUnmapped judges by).
-export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '', state: u.state ?? null, ...( u.nodes?.length > 1 ? { nodes: u.nodes } : {} ) } ) );
+// row was read in, null at rest, which lib/confirm-live.mjs::judgeUnmapped judges by). A `no-setting` row keeps the `code`,
+// `checks` and `unchecked` fields the resolver recorded (lib/fill-resolve-element.mjs::checksRan): lib/gap-classes.mjs::mapResolverGap
+// classes the row from them.
+export const unmappedList = ( unmapped ) => unmapped.map( ( u ) => ( { property: u.property, value: u.value, node: u.node, reason: u.reason, block: u.block, slot: u.slot ?? '', state: u.state ?? null, ...( u.nodes?.length > 1 ? { nodes: u.nodes } : {} ), ...( u.code ? { code: u.code } : {} ), ...( u.checks ? { checks: u.checks } : {} ), ...( u.unchecked ? { unchecked: u.unchecked } : {} ) } ) );
 
 // The property an UNMAPPED row names for a draft read that failed: no one property was read.
 export const READ_FAILED = '(declared read)';
