@@ -23,7 +23,7 @@ Marks per section (first value = Accept all):
 
 ## Page map (page-map)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -50,7 +50,7 @@ Accept all: [ ]
 
 ## Palette roles (palette-role)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -90,7 +90,7 @@ Accept all: [ ]
 
 ## Site Info (site-info)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -117,7 +117,7 @@ Accept all: [ ]
 
 ## Flags (flag)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -139,23 +139,23 @@ Accept all: [ ]
 
 ## Draft defects (draft-defect)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `defect-group:Eye Care Birmingham:componentDidMount` | Eye Care Birmingham componentDidMount: 2 defects (timer, handler) at Eye Care Birmingham:js:2647:81, Eye Care Birmingham:js:2650:4 | build the code's intent |  |  |
+| `defect-group:Eye Care Birmingham:componentDidMount` | Eye Care Birmingham componentDidMount: 2 defects (timer, handler) at Eye Care Birmingham:js:2647:81, Eye Care Birmingham:js:2650:4 | build the code's intent |  | render-wins |
 
 ## Missing features (missing-feature)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `missing:Eye Care Birmingham:19` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/nav-bar-menu |
 | `missing:Eye Care Birmingham:20` | <span>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/nav-bar-menu |
-| `missing:Eye Care Birmingham:382` | <span>: no SGS block fits it | no block proposed | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Eye Care Birmingham:516` | <span>: no SGS block fits it | no block proposed | 5 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Frame Card:3` | <div>: no SGS block fits it | no block proposed | 10 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
+| `missing:Eye Care Birmingham:382` | <span>: no SGS block fits it | no block proposed | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | map:sgs/buybox |
+| `missing:Eye Care Birmingham:516` | <span>: no SGS block fits it | no block proposed | 5 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | difference |
+| `missing:Frame Card:3` | <div>: no SGS block fits it | no block proposed | 10 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide | map:sgs/media |
 
 ### Confident proposals (Accept all covers these)
 
@@ -201,17 +201,17 @@ Accept all: [ ]
 
 ## Skeleton block choices (skeleton-block)
 
-Accept all: [ ]
+Accept all: [x]
 
 ### Needs a decision (unresolved): no block (5)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:header:Eye Care Birmingham/19#0` | header Eye Care Birmingham/19#0 <span> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:header:Eye Care Birmingham/20#0` | header Eye Care Birmingham/20#0 <span> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/3` | page-home Eye Care Birmingham>Frame Card@139/3 <div> | no block | 0: 10 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-product:Eye Care Birmingham/382` | page-product Eye Care Birmingham/382 <span> | no block | 0: 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-product:Eye Care Birmingham/516` | page-product Eye Care Birmingham/516 <span> | no block | 0: 5 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
+| `skeleton:header:Eye Care Birmingham/19#0` | header Eye Care Birmingham/19#0 <span> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | remove |
+| `skeleton:header:Eye Care Birmingham/20#0` | header Eye Care Birmingham/20#0 <span> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | remove |
+| `skeleton:page-home:Eye Care Birmingham>Frame Card@139/3` | page-home Eye Care Birmingham>Frame Card@139/3 <div> | no block | 0: 10 copies of one template element on 3 surfaces; no block fits this element: decide it with skeleton.mjs decide | block:sgs/media |
+| `skeleton:page-product:Eye Care Birmingham/382` | page-product Eye Care Birmingham/382 <span> | no block | 0: 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | remove |
+| `skeleton:page-product:Eye Care Birmingham/516` | page-product Eye Care Birmingham/516 <span> | no block | 0: 5 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | remove |
 
 ### Needs a decision (low): block:sgs/business-info (1)
 
@@ -259,7 +259,7 @@ Accept all: [ ]
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-home:Eye Care Birmingham/204` | page-home Eye Care Birmingham/204 <blockquote> "Had a lovely experience taking my daughter here. The optician Fatima is very good with children and made the experience enjoyable for my daughter. The receptionist was also very welcoming." | block:sgs/quote | 0.5: 13 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/524` | page-product Eye Care Birmingham/524 <blockquote> "Bought with single vision lenses and the tint matches the originals exactly. Nobody can tell they're prescription." | block:sgs/quote | 0.5: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/524` | page-product Eye Care Birmingham/524 <blockquote> "Bought with single vision lenses and the tint matches the originals exactly. Nobody can tell they're prescription." | block:sgs/quote | 0.5: 3 copies of one template element | remove |
 
 ### Needs a decision (low): block:sgs/responsive-logo (1)
 
@@ -375,11 +375,11 @@ Accept all: [ ]
 | `skeleton:page-product:Eye Care Birmingham/428#0` | page-product Eye Care Birmingham/428#0 <li> "Prescription lenses available in this frame — single vision or varifocal" | block:sgs/text | 0.25 |  |
 | `skeleton:page-product:Eye Care Birmingham/497` | page-product Eye Care Birmingham/497 <span> "Will prescription lenses work in these?" | block:sgs/text | 0.25: 4 copies of one template element |  |
 | `skeleton:page-product:Eye Care Birmingham/498` | page-product Eye Care Birmingham/498 <span> "+" | block:sgs/text | 0.25: 4 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/507#0` | page-product Eye Care Birmingham/507#0 <span> "4.9" | block:sgs/text | 0.25 |  |
-| `skeleton:page-product:Eye Care Birmingham/508#0` | page-product Eye Care Birmingham/508#0 <span> "out of 5" | block:sgs/text | 0.25 |  |
-| `skeleton:page-product:Eye Care Birmingham/514` | page-product Eye Care Birmingham/514 <span> "5 ★" | block:sgs/text | 0.25: 5 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/517` | page-product Eye Care Birmingham/517 <span> "34" | block:sgs/text | 0.25: 5 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/525` | page-product Eye Care Birmingham/525 <figcaption> "Placeholder review" | block:sgs/text | 0.25: 3 copies of one template element |  |
+| `skeleton:page-product:Eye Care Birmingham/507#0` | page-product Eye Care Birmingham/507#0 <span> "4.9" | block:sgs/text | 0.25 | remove |
+| `skeleton:page-product:Eye Care Birmingham/508#0` | page-product Eye Care Birmingham/508#0 <span> "out of 5" | block:sgs/text | 0.25 | remove |
+| `skeleton:page-product:Eye Care Birmingham/514` | page-product Eye Care Birmingham/514 <span> "5 ★" | block:sgs/text | 0.25: 5 copies of one template element | remove |
+| `skeleton:page-product:Eye Care Birmingham/517` | page-product Eye Care Birmingham/517 <span> "34" | block:sgs/text | 0.25: 5 copies of one template element | remove |
+| `skeleton:page-product:Eye Care Birmingham/525` | page-product Eye Care Birmingham/525 <figcaption> "Placeholder review" | block:sgs/text | 0.25: 3 copies of one template element | remove |
 | `skeleton:page-shop:Eye Care Birmingham/282` | page-shop Eye Care Birmingham/282 <span> "up to £340" | block:sgs/text | 0.25: 3 copies of one template element |  |
 | `skeleton:page-shop:Eye Care Birmingham>Frame Card@327/23` | page-shop Eye Care Birmingham>Frame Card@327/23 <span> "No reviews yet" | block:sgs/text | 0.25: 3 copies of one template element on 2 surfaces |  |
 | `skeleton:size-guide:Eye Care Birmingham/1239#0` | size-guide Eye Care Birmingham/1239#0 <span> "Which size am I?" | block:sgs/text | 0.25 |  |
@@ -616,9 +616,9 @@ Accept all: [ ]
 | `skeleton:page-product:Eye Care Birmingham/372#0` | page-product Eye Care Birmingham/372#0 <span> "You save £32" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-product:Eye Care Birmingham/377#0` | page-product Eye Care Birmingham/377#0 <span> "Colour" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-product:Eye Care Birmingham/387#0` | page-product Eye Care Birmingham/387#0 <span> "Size" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
-| `skeleton:page-product:Eye Care Birmingham/509#0` | page-product Eye Care Birmingham/509#0 <div> "★★★★★" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
-| `skeleton:page-product:Eye Care Birmingham/522` | page-product Eye Care Birmingham/522 <span> "★★★★★" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
-| `skeleton:page-product:Eye Care Birmingham/523` | page-product Eye Care Birmingham/523 <span> "Verified · prescription lenses" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
+| `skeleton:page-product:Eye Care Birmingham/509#0` | page-product Eye Care Birmingham/509#0 <div> "★★★★★" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | remove |
+| `skeleton:page-product:Eye Care Birmingham/522` | page-product Eye Care Birmingham/522 <span> "★★★★★" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | remove |
+| `skeleton:page-product:Eye Care Birmingham/523` | page-product Eye Care Birmingham/523 <span> "Verified · prescription lenses" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | remove |
 | `skeleton:page-shop:Eye Care Birmingham/251#0` | page-shop Eye Care Birmingham/251#0 <p> "Shop" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-shop:Eye Care Birmingham/280` | page-shop Eye Care Birmingham/280 <span> "Gender" | block:sgs/label | 1: 10 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-shop:Eye Care Birmingham/316#0` | page-shop Eye Care Birmingham/316#0 <span> "Polarised only" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
@@ -1026,19 +1026,19 @@ Accept all: [ ]
 | `skeleton:page-product:Eye Care Birmingham/493#0` | page-product Eye Care Birmingham/493#0 <h2> "Good to know" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-product:Eye Care Birmingham/495` | page-product Eye Care Birmingham/495 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
 | `skeleton:page-product:Eye Care Birmingham/496` | page-product Eye Care Birmingham/496 <button> | block:sgs/container | 1: 4 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/502#0` | page-product Eye Care Birmingham/502#0 <section> | block:sgs/container | 0.75 |  |
-| `skeleton:page-product:Eye Care Birmingham/503#0` | page-product Eye Care Birmingham/503#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-product:Eye Care Birmingham/504#0` | page-product Eye Care Birmingham/504#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:page-product:Eye Care Birmingham/505#0` | page-product Eye Care Birmingham/505#0 <h2> "Reviews" | block:sgs/heading | 0.75 |  |
-| `skeleton:page-product:Eye Care Birmingham/506#0` | page-product Eye Care Birmingham/506#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-product:Eye Care Birmingham/510#0` | page-product Eye Care Birmingham/510#0 <p> "Based on 41 reviews" | block:sgs/text | 0.75 |  |
-| `skeleton:page-product:Eye Care Birmingham/511#0` | page-product Eye Care Birmingham/511#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-product:Eye Care Birmingham/513` | page-product Eye Care Birmingham/513 <div> | block:sgs/container | 1: 5 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/515` | page-product Eye Care Birmingham/515 <span> | block:sgs/container | 0.75: 5 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/518#0` | page-product Eye Care Birmingham/518#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:page-product:Eye Care Birmingham/520` | page-product Eye Care Birmingham/520 <figure> | block:sgs/container | 1: 3 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/521` | page-product Eye Care Birmingham/521 <div> | block:sgs/container | 1: 3 copies of one template element |  |
-| `skeleton:page-product:Eye Care Birmingham/526#0` | page-product Eye Care Birmingham/526#0 <p> "Placeholder reviews, clearly marked — swap in the real ones whenever you're ready." | block:sgs/text | 0.75 |  |
+| `skeleton:page-product:Eye Care Birmingham/502#0` | page-product Eye Care Birmingham/502#0 <section> | block:sgs/container | 0.75 | remove |
+| `skeleton:page-product:Eye Care Birmingham/503#0` | page-product Eye Care Birmingham/503#0 <div> | block:sgs/container | 1 | remove |
+| `skeleton:page-product:Eye Care Birmingham/504#0` | page-product Eye Care Birmingham/504#0 <div> | block:sgs/container | 0.75 | remove |
+| `skeleton:page-product:Eye Care Birmingham/505#0` | page-product Eye Care Birmingham/505#0 <h2> "Reviews" | block:sgs/heading | 0.75 | remove |
+| `skeleton:page-product:Eye Care Birmingham/506#0` | page-product Eye Care Birmingham/506#0 <div> | block:sgs/container | 1 | remove |
+| `skeleton:page-product:Eye Care Birmingham/510#0` | page-product Eye Care Birmingham/510#0 <p> "Based on 41 reviews" | block:sgs/text | 0.75 | remove |
+| `skeleton:page-product:Eye Care Birmingham/511#0` | page-product Eye Care Birmingham/511#0 <div> | block:sgs/container | 1 | remove |
+| `skeleton:page-product:Eye Care Birmingham/513` | page-product Eye Care Birmingham/513 <div> | block:sgs/container | 1: 5 copies of one template element | remove |
+| `skeleton:page-product:Eye Care Birmingham/515` | page-product Eye Care Birmingham/515 <span> | block:sgs/container | 0.75: 5 copies of one template element | remove |
+| `skeleton:page-product:Eye Care Birmingham/518#0` | page-product Eye Care Birmingham/518#0 <div> | block:sgs/container | 1 | remove |
+| `skeleton:page-product:Eye Care Birmingham/520` | page-product Eye Care Birmingham/520 <figure> | block:sgs/container | 1: 3 copies of one template element | remove |
+| `skeleton:page-product:Eye Care Birmingham/521` | page-product Eye Care Birmingham/521 <div> | block:sgs/container | 1: 3 copies of one template element | remove |
+| `skeleton:page-product:Eye Care Birmingham/526#0` | page-product Eye Care Birmingham/526#0 <p> "Placeholder reviews, clearly marked — swap in the real ones whenever you're ready." | block:sgs/text | 0.75 | remove |
 | `skeleton:page-product:Eye Care Birmingham/537#0` | page-product Eye Care Birmingham/537#0 <section> | block:sgs/container | 0.75 |  |
 | `skeleton:page-product:Eye Care Birmingham/538#0` | page-product Eye Care Birmingham/538#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-product:Eye Care Birmingham/539#0` | page-product Eye Care Birmingham/539#0 <h2> "More from Ray-Ban" | block:sgs/heading | 0.75 |  |
@@ -1112,7 +1112,7 @@ Accept all: [ ]
 
 ## Inventory diffs (inventory-diff)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
