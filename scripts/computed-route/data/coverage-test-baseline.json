@@ -11,7 +11,6 @@
 		"block-setting:enum-mode:styling",
 		"block-setting:layout:styling",
 		"block-setting:motion:motion",
-		"block-setting:number-css-percent:styling",
 		"block-setting:number-css-px:styling",
 		"block-setting:position:styling",
 		"block-setting:presence-boolean:boolean",

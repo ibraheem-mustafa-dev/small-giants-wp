@@ -16,7 +16,6 @@ export const COVERAGE_WRITES = [
 	'block-setting:colour-gradient:styling',
 	'block-setting:enum-mode:styling',
 	'block-setting:layout:styling',
-	'block-setting:number-css-percent:styling',
 	'block-setting:number-css-px:styling',
 	'block-setting:position:styling',
 	'block-setting:select-from-enum:styling',

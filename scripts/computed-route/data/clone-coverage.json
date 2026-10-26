@@ -1441,13 +1441,6 @@
 			"wave": "content, media and icons",
 			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
 		},
-		"block-setting:enum-class-probe:styling": {
-			"recognise": null,
-			"write": null,
-			"check": null,
-			"wave": "content, media and icons",
-			"note": "media and logo library IDs: the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
-		},
 		"block-setting:enum-mode:mode": {
 			"recognise": null,
 			"write": null,
@@ -1537,6 +1530,13 @@
 			"check": null,
 			"wave": "content, media and icons",
 			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
+		},
+		"block-setting:image-object:number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"note": "media and logo library IDs (sgs/responsive-logo logoId per device): the media upload and image writer (lib/media-upload.mjs, lib/fill-media.mjs) handle images only; nothing writes this yet (FR-48-39)"
 		},
 		"block-setting:image-object:object": {
 			"recognise": null,
@@ -1640,12 +1640,6 @@
 			"write": "scripts/computed-route/lib/fill-timing.mjs#timingWrites",
 			"check": "scripts/computed-route/lib/fill-timing.mjs#timingCheck",
 			"note": "a transition-duration or transition-timing-function the draft declares: the resting rule times both directions (settings with no state), a state rule times entering that state (settings tagged with it), and closing reverses opening, so a draft with only a state timing writes one value; the settings are found by the resolver from the DB (css_property, css_element, css_state); the check compares the live resting and state timings with the draft's"
-		},
-		"block-setting:number-css-percent:styling": {
-			"recognise": "scripts/computed-route/lib/fill-read.mjs#readDraft",
-			"write": "scripts/computed-route/lib/fill-prop.mjs#resolveProperty",
-			"check": "scripts/computed-route/lib/triage.mjs#triage",
-			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
 		"block-setting:number-css-px:string": {
 			"recognise": null,
@@ -1876,6 +1870,13 @@
 			"check": null,
 			"wave": "modes and values with no CSS property",
 			"note": "modes, variants, units and values with no CSS property: no writer (FR-48-42)"
+		},
+		"block-setting:typography:object": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-26, not yet triaged"
 		},
 		"block-setting:typography:string": {
 			"recognise": null,
@@ -8707,6 +8708,13 @@
 			"wave": "modes and values with no CSS property",
 			"note": "extension settings: modes and values with no CSS property"
 		},
+		"extension:focusRests": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-26, not yet triaged"
+		},
 		"extension:imageControls": {
 			"recognise": null,
 			"write": null,
@@ -14954,6 +14962,13 @@
 			"wave": "site and surfaces",
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
 		},
+		"snapshot-key:settings.color.defaultDuotone": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-26, not yet triaged"
+		},
 		"snapshot-key:settings.color.defaultGradients": {
 			"recognise": null,
 			"write": null,
@@ -15066,6 +15081,27 @@
 			"wave": "site and surfaces",
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
 		},
+		"snapshot-key:settings.custom.highlight": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-26, not yet triaged"
+		},
+		"snapshot-key:settings.custom.hover": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-26, not yet triaged"
+		},
+		"snapshot-key:settings.custom.inlinePhoto": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-26, not yet triaged"
+		},
 		"snapshot-key:settings.custom.linkSweep": {
 			"recognise": null,
 			"write": null,
@@ -15086,6 +15122,13 @@
 			"check": null,
 			"wave": "site and surfaces",
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
+		},
+		"snapshot-key:settings.custom.scrollbar": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-10-26, not yet triaged"
 		},
 		"snapshot-key:settings.custom.section": {
 			"recognise": null,
