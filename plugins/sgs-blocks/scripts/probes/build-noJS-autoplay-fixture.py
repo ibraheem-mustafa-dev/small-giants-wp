@@ -100,8 +100,7 @@ def video_block(video: dict, autoplay: bool, muted: bool, marker: str) -> str:
         'videoControls': True,
         'caption': marker,
         'mediaSizing': 'height',
-        'height': {'desktop': '200'},
-        'heightUnit': 'px',
+        'height': {'desktop': '200px'},
     }, separators=(',', ':'), ensure_ascii=False)
     return f'<!-- wp:sgs/media {payload} /-->'
 

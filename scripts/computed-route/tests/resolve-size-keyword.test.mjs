@@ -1,6 +1,6 @@
 // R6: a size keyword (none, auto, fit-content, min-content, max-content) is written to a size-family setting whose emitter
 // prints it (lib/resolve-declared.mjs::sizeKeyword, called from lib/resolve.mjs::formatValue), and refused by a setting whose
-// emitter stores a number (a unit partner, a number type) or by a property that does not take it.
+// emitter stores a number (a number type) or by a property that does not take it.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
@@ -36,11 +36,14 @@ test( 'MUST FAIL: a keyword the property does not take is a shape gap, never wri
 	}
 } );
 
-test( 'a setting that stores a number beside a unit refuses the keyword (the logo ceiling the render strips to digits)', () => {
-	for ( const [ block, attr, prop ] of [ [ 'sgs/responsive-logo', 'maxWidth', 'max-width' ], [ 'sgs/media', 'maxHeight', 'max-height' ], [ 'sgs/heading', 'customWidth', 'width' ] ] ) {
-		const r = run( block, attr, prop, keywordFor( prop ) );
-		assert.equal( r.gap, 'shape', `${ block } ${ attr }` );
-		assert.match( r.detail, /cannot be held/ );
+// The single lengths that stored a number beside a `<name>Unit` attribute until 2026-10-26
+// (plugins/sgs-blocks/scripts/check-length-unit-partners.py) hold a length per device, so a keyword and a length string
+// are both written. Reads the framework DB: passes once the DB is reseeded from the migrated block.json files.
+test( 'MUST FAIL: a single length on the shared shape is written its keyword and a length string (the logo ceiling, the media box, the heading width)', () => {
+	for ( const [ block, attr, prop ] of [ [ 'sgs/responsive-logo', 'maxWidth', 'max-width' ], [ 'sgs/media', 'maxHeight', 'max-height' ], [ 'sgs/heading', 'customWidth', 'width' ], [ 'sgs/separator', 'width', 'width' ] ] ) {
+		const w = keywordFor( prop );
+		assert.deepEqual( run( block, attr, prop, w ).writes?.[ 0 ]?.value, { mobile: w, tablet: w, desktop: w }, `${ block } ${ attr } ${ w }` );
+		assert.deepEqual( run( block, attr, prop, '340px' ).writes?.[ 0 ]?.value, { mobile: '340px', tablet: '340px', desktop: '340px' }, `${ block } ${ attr } 340px` );
 	}
 } );
 

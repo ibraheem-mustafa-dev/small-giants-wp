@@ -205,7 +205,6 @@
               "minHeight": {
                 "desktop": "50px"
               },
-              "minHeightUnit": "px",
               "fontFamily": "'Sometype Mono', monospace",
               "fontSize": {
                 "desktop": 10
@@ -296,7 +295,6 @@
               "minHeight": {
                 "desktop": "50px"
               },
-              "minHeightUnit": "px",
               "fontFamily": "'Sometype Mono', monospace",
               "fontSize": {
                 "desktop": 10
@@ -350,7 +348,6 @@
               "minHeight": {
                 "desktop": "50px"
               },
-              "minHeightUnit": "px",
               "fontFamily": "'Sometype Mono', monospace",
               "fontSize": {
                 "desktop": 10

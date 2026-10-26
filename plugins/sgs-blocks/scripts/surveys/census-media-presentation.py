@@ -93,14 +93,13 @@ ROSTER = {
     'media': {
         'object-fit': ['objectFit'],
         'focal-point': ['objectPosition'],
-        'box-shape': ['mediaSizing', 'height', 'heightUnit', 'maxHeight',
-                      'maxHeightUnit', 'maxWidth', 'maxWidthUnit'],
+        'box-shape': ['mediaSizing', 'height', 'maxHeight', 'maxWidth'],
         'overlay': [],
     },
     'before-after': {
         'object-fit': [],
         'focal-point': [],
-        'box-shape': ['height', 'heightUnit', 'maxWidth', 'maxWidthUnit'],
+        'box-shape': ['height', 'maxWidth'],
         'overlay': [],
     },
     'hero': {
@@ -108,9 +107,8 @@ ROSTER = {
         'focal-point': ['splitMediaObjectPosition', 'splitMediaObjectPositionTablet',
                         'splitMediaObjectPositionMobile', 'backgroundPosition',
                         'backgroundRepeat', 'backgroundAttachment'],
-        'box-shape': ['splitMediaHeight', 'splitMediaHeightUnit', 'splitMediaWidth',
-                      'splitMediaWidthTablet', 'splitMediaWidthMobile',
-                      'splitMediaWidthUnit', 'minHeight'],
+        'box-shape': ['splitMediaHeight', 'splitMediaWidth',
+                      'splitMediaWidthTablet', 'splitMediaWidthMobile', 'minHeight'],
         'overlay': ['backgroundOverlayColour', 'backgroundOverlayColourHover',
                     'backgroundOverlayOpacity', 'backgroundOverlayOpacityTablet',
                     'backgroundOverlayOpacityMobile', 'backgroundOverlayBlendMode',
@@ -274,7 +272,7 @@ DISAGREEMENTS = [
         'detail': {
             'ratio-spaced': '"16 / 9" (MediaSizingPanel RATIO_OPTIONS, image-sequence)',
             'ratio-unspaced': '"16/10" (card-grid, gallery, post-grid -- free text)',
-            'height-tier-object': 'sgs/media, before-after `height` + heightUnit',
+            'height-tier-object': 'sgs/media, before-after `height`, a length per device',
             'height-flat-string': 'product-card `imageHeight` = "180px", non-responsive',
         },
         'resolution': 'OPEN -- atom 9 must pick one ratio format and read both.',

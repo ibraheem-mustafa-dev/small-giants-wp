@@ -3,10 +3,9 @@
 // GROUND-TRUTH: spec=.superpowers/sdd/task-2-brief.md ("make rule 34 consume the
 // gate's verdicts, split by SURFACE") source=file evidence=live-read
 // plugins/sgs-blocks/scripts/check-dead-controls.js `dumpAttributeRows()`
-// (:1412-1480) + its `--dump-json` CLI branch (:1610-1614), run live
-// 2026-08-27: `node check-dead-controls.js --dump-json` emits 2,657 rows, of
-// which exactly 2 have `renderConsumed:false` AND `exempt:false` —
-// `sgs/before-after::maxWidthUnit` and `sgs/button::fontFamily`.
+// and its `--dump-json` CLI branch: `node check-dead-controls.js --dump-json`
+// emits one row per (block, attribute), and the rows with
+// `renderConsumed:false` AND `exempt:false` are this rule's findings.
 //
 // ── WHY THIS REWRITE EXISTS ─────────────────────────────────────────────────
 // Rule 34 used to scan ONE corpus (its own render.php/view.js/save.js/style.css

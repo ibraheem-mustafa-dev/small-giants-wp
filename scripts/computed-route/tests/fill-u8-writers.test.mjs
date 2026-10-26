@@ -75,18 +75,18 @@ const planted = ( tiers ) => ( {
 	unmapped: [ { node: 'cr-ref-f-9', block: 'sgs/responsive-logo', slot: '', property: 'width', code: 'one-value-every-width', reason: 'shape: width holds one value for every width; draft has 260px, 200px' } ],
 } );
 
-test( 'a logo block\'s size settings come from the framework DB: an unresponsive width and a tier-object max-width with its unit', () => {
-	assert.deepEqual( logoSizeSettings( db, 'sgs/responsive-logo' ), { width: 'width', max: 'maxWidth', unit: 'maxWidthUnit' } );
+test( 'a logo block\'s size settings come from the framework DB: an unresponsive width and a tier-object max-width', () => {
+	assert.deepEqual( logoSizeSettings( db, 'sgs/responsive-logo' ), { width: 'width', max: 'maxWidth' } );
 	assert.equal( logoSizeSettings( db, 'sgs/container' ), null );
 	const stub = ( rows ) => ( { prepare: ( sql ) => ( { all: () => rows, get: () => undefined } ) } );
 	const untiered = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'maxWidth', css_property: 'max-width', is_responsive: 0, tier_shape: null } ] );
 	assert.equal( logoSizeSettings( untiered, 'sgs/x' ), null, 'a max width that is not a tier object cannot take per-device sizes' );
 } );
 
-test( 'MUST FAIL: a footer logo 200px on mobile is written as the per-device max width, the gap row is gone, and only differing tiers are written', () => {
+test( 'MUST FAIL: a footer logo 200px on mobile is written as the per-device max width in lengths, the gap row is gone, and only differing tiers are written', () => {
 	const p = planted( { 1440: 260, 768: 260, 375: 200 } );
 	const r = logoSizeWrites( p );
-	assert.deepEqual( p.flat[ 0 ].attributes.maxWidth, { desktop: 260, mobile: 200 } );
+	assert.deepEqual( p.flat[ 0 ].attributes.maxWidth, { desktop: '260px', mobile: '200px' } );
 	assert.deepEqual( r.unmapped, [] );
 	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.prop, w.how ] ), [ [ 'maxWidth', 'width', 'logo-size' ] ] );
 	assert.match( r.notes[ 0 ], /260px at desktop, 260px at tablet, 200px at mobile/ );

@@ -1027,9 +1027,9 @@ const MEDIA_ELEMENT_ATOM_BASES = {
 	'object-fit': [ 'ObjectFit', 'Size' ],
 	'focal-point': [ 'ObjectPosition', 'Position', 'Repeat', 'Attachment' ],
 	'box-shape': [
-		'MediaSizing', 'AspectRatio', 'Shape', 'Height', 'HeightUnit', 'MaxHeight',
-		'MaxHeightUnit', 'MaxWidth', 'MaxWidthUnit', 'MinHeight',
-		'Width', 'WidthUnit', 'BorderRadius', 'BorderWidth', 'BorderStyle',
+		'MediaSizing', 'AspectRatio', 'Shape', 'Height', 'MaxHeight',
+		'MaxWidth', 'MinHeight',
+		'Width', 'BorderRadius', 'BorderWidth', 'BorderStyle',
 		'BorderColour', 'BorderColourGradient',
 	],
 	overlay: [
@@ -2187,9 +2187,8 @@ function main() {
 			);
 		}
 		// PROMOTION TRIGGER (R3-c, dated 2026-08-20) — CHECK 4 stays advisory ONLY while
-		// real net-new findings exist. As of 2026-08-20 there are exactly TWO:
-		//   sgs/before-after :: maxWidthUnit   sgs/button :: fontFamily
-		// Both are fully dead — no control anywhere AND no render consumption anywhere.
+		// real net-new findings exist (the list above names each one: fully dead, no
+		// control anywhere AND no render consumption anywhere).
 		// ⏱ TRIGGER: when `--check` reports 0 net-new for CHECK 4, make this BLOCKING in the
 		// same commit that clears the last one. Do NOT baseline them to reach zero — a
 		// fully-dead attribute has nothing to preserve; delete it or wire it. An advisory

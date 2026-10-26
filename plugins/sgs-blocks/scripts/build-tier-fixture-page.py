@@ -821,25 +821,16 @@ def _numeric_unit_companion(blk: dict, prop: str, tiers: dict, props: list[str])
 
     Only pins when EVERY tier value is a genuine bare number (the numeric
     branch — never called for a keyword/length-string probe) AND the sibling
-    itself is NOT independently under test this run (`customWidthUnit` gets
-    its own deliberately-varying enum probe in that case; forcing 'px' over
-    it would corrupt THAT property's own positive control, and the combined
-    result is still not a probe-shape bug — see `derive_probe_tiers()`'s
-    "Two cases to leave alone" note for why `customWidth`+`customWidthUnit`
-    together produce a percentage-resolved computed value no probe string can
-    literally match).
+    itself is NOT independently under test this run (it then gets its own
+    deliberately-varying enum probe; forcing 'px' over it would corrupt THAT
+    property's own positive control).
     """
     if not all(_is_number(v) for v in tiers.values()):
         return None
     unit_attr = f'{prop}Unit'
     if unit_attr in props or unit_attr not in blk['attrs']:
         return None
-    unit_decl = blk['attrs'].get(unit_attr)
-    # An object-shaped Unit sibling (e.g. customWidthUnit) is itself a
-    # migrated tier property with its own probe derivation — never flatten a
-    # bare 'px' string onto an object-typed attr (WordPress silently coerces
-    # a wrong-shape value to the default, D338).
-    if not isinstance(unit_decl, dict) or unit_decl.get('type') == 'object':
+    if not isinstance(blk['attrs'].get(unit_attr), dict):
         return None
     return unit_attr
 
@@ -1441,26 +1432,13 @@ def self_test() -> int:
         ok('media order: every tier is a bare int, not a string',
            all(isinstance(v, int) for v in ord_tiers.values()))
 
-    # 35. button.customWidth (empty default, sibling customWidthUnit exists)
-    #     resolves NUMERIC via the sibling-Unit-attr rule, not a length string.
+    # 35. button.customWidth (empty default, a length per device, no unit
+    #     sibling) resolves to a length string with its own unit at every tier.
     cw_tiers, cw_reason = derive_probe_tiers(btn, 'customWidth') if btn else (None, 'missing')
     ok('button customWidth: probe derivation did not refuse', cw_tiers is not None)
     if cw_tiers:
-        ok('button customWidth: every tier is a bare number (unit comes from '
-           'customWidthUnit, left untouched)',
-           all(_is_number(v) for v in cw_tiers.values()))
-
-    # 36. button.customWidthUnit — derived via the `units={}` UnitControl scan
-    #     (customWidth's own control, not an independent binding) — must be a
-    #     legal CSS unit keyword ('px'/'%'), not '64px'.
-    cwu_tiers, cwu_reason = (derive_probe_tiers(btn, 'customWidthUnit')
-                             if btn else (None, 'missing'))
-    ok('button customWidthUnit: probe derivation did not refuse', cwu_tiers is not None)
-    if cwu_tiers:
-        ok('button customWidthUnit: every tier is a legal unit keyword',
-           all(v in {'px', '%'} for v in cwu_tiers.values()))
-        ok('button customWidthUnit: differs from the declared default (px)',
-           all(v != 'px' for v in cwu_tiers.values()))
+        ok('button customWidth: every tier is a length string carrying its own unit',
+           all(isinstance(v, str) and not _is_number(v) for v in cw_tiers.values()))
 
     # 37. The REFUSE path is real, not vacuous — a keyword-shaped default with
     #     NO derivable edit.js pool (fictional block, no edit.js on disk at
@@ -1573,22 +1551,9 @@ def self_test() -> int:
         ok("text: lineHeightUnit is PINNED to 'px' likewise",
            text_probe.get('lineHeightUnit') == 'px')
 
-    # 54. The companion pin never flattens an OBJECT-typed Unit sibling
-    #     (button.customWidthUnit is itself a migrated tier-object with its
-    #     OWN probe derivation) — proven end-to-end through block_markup(),
-    #     not just the guard in isolation.
-    if btn:
-        btn_probe = payload_of(block_markup(btn, ['customWidth', 'customWidthUnit'],
-                                            'probe', image=SELFTEST_IMAGE))
-        ok('button: customWidthUnit keeps its OWN object-shaped probe value '
-           "(never flattened to a bare 'px' string)",
-           isinstance(btn_probe.get('customWidthUnit'), dict))
-
-    # 55-56. Direct test of the OTHER exclusion — a FLAT-STRING Unit sibling
-    #        that IS independently under test this run. No real block hits
-    #        this branch today (a Unit attr that has itself migrated to a
-    #        tier-object is always object-typed, caught by 54 above instead),
-    #        so it is exercised on a synthetic fixture — otherwise this half
+    # 55-56. Direct test of the exclusion — a Unit sibling that IS
+    #        independently under test this run. No real block hits this
+    #        branch today, so it is exercised on a synthetic fixture — otherwise this half
     #        of `_numeric_unit_companion()`'s guard is unreachable by any
     #        assertion and untested by construction, the D573 trap.
     fake_len = {'dir': 'fakelen', 'attrs': {'gap': {'type': 'object', 'default': {}},

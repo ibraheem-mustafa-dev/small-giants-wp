@@ -119,9 +119,6 @@ _CSS_PROPERTY_OVERRIDES = {
 # an unmeasurable property must be DECLARED unmeasurable, never silently read as
 # an empty string and reported as evidence.
 _NOT_CSS_MEASURABLE = {
-    # A UNIT modifier — it changes the unit on customWidth's output, it is not a
-    # property in its own right. customWidth itself IS measured (→ width).
-    'customWidthUnit': 'a unit modifier for customWidth, not a property of its own',
     # product-search: a REST query limit (how many results to fetch). Genuinely
     # not a visual property — evidenced by its own render.php/edit.js, which use
     # it as a query arg, never in CSS.

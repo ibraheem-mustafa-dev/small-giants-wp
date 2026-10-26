@@ -3,8 +3,8 @@
 
 Ground truth (separator/block.json read 2026-07-18):
   lineStyle  string  enum solid/dashed/dotted/double/none, default 'solid'
-  width      number  default 100        widthUnit  enum px/%, default '%'
-  thickness  number  default 1          thicknessUnit string, default 'px'
+  width      object  a length per device, default {"desktop":"100%"}
+  thickness  object  a length per device, default {"desktop":"1px"}
   colour     string  default ''
   alignment  string  enum left/center/right, default 'center'
   gradientEnabled      boolean default false
@@ -95,8 +95,7 @@ def transform(node, text):
         out['lineStyle'] = 'dotted'
         notes.append('is-style-dots -> lineStyle:"dotted"')
     elif style_variant == 'wide':
-        out['width'] = 100
-        out['widthUnit'] = '%'
+        out['width'] = {'desktop': '100%'}
         notes.append('is-style-wide -> width:100% (core\'s wide-line variant has no independent '
                      'thickness token beyond the default 1px border-width, which carries through '
                      'the border.width mapping below if the source set one)')
@@ -127,8 +126,7 @@ def transform(node, text):
                 raise GapError(f'align {value!r} has no sgs/separator mapping (only wide/full are '
                                f'meaningful on an hr — anything else is a WP core impossibility for '
                                f'this block, refusing to guess)')
-            out['width'] = 100
-            out['widthUnit'] = '%'
+            out['width'] = {'desktop': '100%'}
             accounting[key] = ('mapped', f'align:{value} -> width:100% (full-bleed divider)')
         elif key == 'opacity':
             # sgs/separator now has a typed `opacity` (0-100 %, default 100).
@@ -194,11 +192,9 @@ def transform(node, text):
                             m = PX_WIDTH_RE.match(str(bv))
                             if not m:
                                 raise GapError(f'style.border.width {bv!r} is not a literal px length — '
-                                              f'sgs/separator thickness is a plain number+unit and this '
-                                              f'module only converts px widths safely')
-                            out['thickness'] = float(m.group(1)) if '.' in m.group(1) else int(m.group(1))
-                            out['thicknessUnit'] = 'px'
-                            detail.append('style.border.width -> thickness/thicknessUnit (px)')
+                                              f'this module only converts px widths safely')
+                            out['thickness'] = {'desktop': f'{m.group(1)}px'}
+                            detail.append('style.border.width -> thickness (a px length)')
                         elif bk in ('style', 'radius', 'top', 'right', 'bottom', 'left'):
                             raise GapError(f'style.border.{bk} has no sgs/separator mapping — a divider '
                                           f'is a single flat line, no per-side/radius equivalent')

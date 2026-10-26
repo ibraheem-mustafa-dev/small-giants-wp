@@ -134,11 +134,6 @@
       "disposition": "accepted-debt"
     },
     {
-      "block": "separator",
-      "attr": "widthUnit",
-      "disposition": "accepted-debt"
-    },
-    {
       "block": "tabs",
       "attr": "orientation",
       "disposition": "accepted-debt"

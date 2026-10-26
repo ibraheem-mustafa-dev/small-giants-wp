@@ -626,10 +626,7 @@
                     "desktop": "custom"
                   },
                   "customWidth": {
-                    "desktop": 245
-                  },
-                  "customWidthUnit": {
-                    "desktop": "px"
+                    "desktop": "245px"
                   },
                   "opacityHover": 0.75,
                   "minHeight": {

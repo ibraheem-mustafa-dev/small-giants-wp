@@ -262,7 +262,7 @@ test( 'MUST FAIL (end to end): a logo of intrinsic ratio takes its rendered heig
 	const writes = out.writes.filter( ( w ) => 'height' === w.prop );
 	assert.deepEqual( writes.map( ( w ) => [ w.attr, w.how ] ), [ [ 'maxHeight', 'equivalent:self' ] ] );
 	const mh = tree[ 0 ].attributes.maxHeight;
-	assert.deepEqual( [ mh.mobile, mh.tablet, mh.desktop ].map( Number ), [ 40, 56, 66 ] );
+	assert.deepEqual( [ mh.mobile, mh.tablet, mh.desktop ], [ '40px', '56px', '66px' ] );
 	assert.equal( out.unmapped.filter( ( u ) => 'height' === u.property ).length, 0, JSON.stringify( out.unmapped ) );
 	assert.match( writes[ 0 ].note, /replaces the not-plain declared values .*height clamp\(54px, 4\.4vw, 66px\)/, 'the not-plain values the write replaces stay on its note' );
 	assert.match( writes[ 0 ].note, /min\(54px, -26\.2443px \+ 22\.6244vw\)/ );
@@ -272,7 +272,7 @@ test( 'MUST FAIL: a ratio element whose maximum height already holds the rendere
 	const skeleton = [ { name: 'sgs/responsive-logo', draftRef: 'main', attributes: {} } ];
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'eq' );
-	tree[ 0 ].attributes.maxHeight = { mobile: 40, tablet: 56, desktop: 66 };
+	tree[ 0 ].attributes.maxHeight = { mobile: '40px', tablet: '56px', desktop: '66px' };
 	const heights = { 375: 40, 768: 56, 1440: 66, 1920: 66, 1024: 60 };
 	const declaredHeight = { 375: 'min(54px, -26.2443px + 22.6244vw)', 768: '56px', 1440: 'clamp(54px, 4.4vw, 66px)', 1024: '60px', 1920: 'clamp(54px, 4.4vw, 66px)' };
 	const widths = Object.fromEntries( FIVE.map( ( w ) => [ w, { '0:': { styles: { ...BASE, height: `${ heights[ w ] }px` }, pseudo: {}, rect: { x: 0, y: 0, w: heights[ w ] * RATIO, h: heights[ w ] }, inFlow: true, words: '', href: null, intrinsic: { ratio: RATIO } } } ] ) );

@@ -6,8 +6,8 @@ Ground truth (button/block.json + render.php read 2026-07-16):
   supports.spacing      {margin:true, padding:true, skipSerialization}
   supports.__experimentalBorder {radius:true, skipSerialization}
   attributes: label, url, linkTarget, rel, download, isSubmit, inheritStyle
-              (enum primary|secondary|outline|custom), widthType, customWidth,
-              customWidthUnit, colourText/colourBackground/colourBorder (+Hover),
+              (enum primary|secondary|outline|custom), widthType, customWidth
+              (a length per device), colourText/colourBackground/colourBorder (+Hover),
               fontWeight/fontStyle/textTransform/textDecoration/fontSize/
               lineHeight/letterSpacing (+ Tablet/Mobile + Unit companions),
               borderStyle, borderWidth (object), boxShadow(+Hover), icon*,
@@ -271,14 +271,12 @@ def transform(node, text):
                 detail.append('className was only is-style-* token(s), fully consumed')
             accounting[key] = ('mapped', '; '.join(detail))
         elif key == 'width':
-            # Known-good: render.php lines 55-57 accept customWidthUnit "%" verbatim;
-            # core's `width` is always a percentage (25/50/75/100).
+            # core's `width` is always a percentage (25/50/75/100); customWidth holds a length per device.
             if not isinstance(value, (int, float)) or isinstance(value, bool):
                 raise GapError(f'width {value!r} is not numeric -- refusing to guess')
             out['widthType'] = 'custom'
-            out['customWidth'] = value
-            out['customWidthUnit'] = '%'
-            accounting[key] = ('mapped', 'widthType:"custom" + customWidth + customWidthUnit:"%"')
+            out['customWidth'] = {'desktop': f'{value}%'}
+            accounting[key] = ('mapped', f'widthType:"custom" + customWidth {{"desktop":"{value}%"}}')
         elif key == 'style':
             detail = []
             style_out = {}

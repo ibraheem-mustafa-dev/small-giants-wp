@@ -232,7 +232,7 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		}
 		return { value: [].concat( def?.type || [] ).includes( 'string' ) && ! [].concat( def?.type || [] ).includes( 'number' ) ? String( ms ) : ms };
 	}
-	const keyword = sizeKeyword( { prop, raw, def, unit } );
+	const keyword = sizeKeyword( { prop, raw, def } );
 	if ( keyword ) {
 		return keyword;
 	}

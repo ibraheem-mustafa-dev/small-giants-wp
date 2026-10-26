@@ -183,7 +183,7 @@ def find_reference(block_slug: str, attr: str) -> tuple[str, int] | None:
             # read, not a technical one. Structural signal, not a name guess:
             # the same line builds a custom property, a declaration, or a style
             # string. Added 2026-08-05 after 8 rows (shapeDividerTop,
-            # gradientColourStart, customWidthUnit …) survived the wrapper-only
+            # gradientColourStart …) survived the wrapper-only
             # exclusion because their consumer is the block's OWN render.php
             # rather than the shared wrapper — same conclusion, different file.
             #

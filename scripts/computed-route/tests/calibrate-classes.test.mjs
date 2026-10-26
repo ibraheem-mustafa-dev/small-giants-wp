@@ -68,12 +68,6 @@ test( 'MUST FAIL (dead, marker equals rest; rejected, weight type): two weights,
 	assert.deepEqual( ms.map( ( m ) => m.attrs.featuredFontWeight ), [ 700, 300 ] );
 } );
 
-test( 'MUST FAIL (rejected, unit shape): a per-device unit companion is written as a per-device object', () => {
-	const schema = { customWidth: { type: 'number' }, customWidthUnit: { type: 'object', default: { desktop: '%' } } };
-	const [ m ] = mk( { attr_name: 'customWidth', css_property: 'width' }, schema );
-	assert.deepEqual( m.attrs.customWidthUnit, { desktop: 'px', tablet: 'px', mobile: 'px' } );
-} );
-
 test( 'MUST FAIL (silent drop): gradient, border-gradient, shadow-colour and height properties are read', () => {
 	assert.deepEqual( longhands( 'color-gradient' ), [ 'background-image' ] );
 	assert.ok( longhands( 'border-color-gradient' ).includes( 'background-image' ) );

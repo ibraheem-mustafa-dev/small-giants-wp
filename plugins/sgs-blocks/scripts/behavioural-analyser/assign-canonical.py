@@ -2334,8 +2334,8 @@ def apply_role_detection_inline(conn: sqlite3.Connection) -> dict:
     # ROLE ONLY, NEVER css_property. Bean ruled 2026-07-21 that unit attrs never enter
     # css_property at all (extract-signatures.py's `unit_attrs_excluded`) -- a unit is
     # not itself a declaration, and writing one would feed the emission layer a mapping
-    # that paints nothing. The established rows agree: widthUnit=layout,
-    # contentFontSizeUnit=typography, maxWidthUnit=layout, all with css_property NULL.
+    # that paints nothing. The established rows agree: contentFontSizeUnit=typography
+    # with css_property NULL.
     #
     # GATED ON THE BASE BEING STYLING-BEHAVIOUR, not merely non-NULL. A base that is
     # itself unclassified proves nothing about its unit sibling, and a CONTENT-bearing

@@ -259,9 +259,9 @@
 						"mobile": "50%"
 					},
 					"customWidth": {
-						"desktop": 54,
-						"tablet": 50,
-						"mobile": 45
+						"desktop": "54px",
+						"tablet": "50px",
+						"mobile": "45px"
 					},
 					"minHeight": {
 						"desktop": "54px",
@@ -272,11 +272,6 @@
 						"desktop": "custom",
 						"tablet": "custom",
 						"mobile": "custom"
-					},
-					"customWidthUnit": {
-						"desktop": "px",
-						"tablet": "px",
-						"mobile": "px"
 					},
 					"padding": {
 						"desktop": {

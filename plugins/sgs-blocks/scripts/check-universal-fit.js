@@ -278,8 +278,7 @@ const EXTENSIONS = [
 		file: 'image-controls.js',
 		panel: 'Image Controls',
 		attrs: [
-			'sgsObjectPosition', 'sgsMaxWidth', 'sgsHeightDesktop',
-			'sgsHeightTablet', 'sgsHeightMobile', 'sgsHeightUnit',
+			'sgsObjectPosition', 'sgsMaxWidth', 'sgsHeight',
 		],
 		hideSlug: null, // opt-IN allowlist (supports.sgs.imageControls) — no opt-out needed.
 		appliesTo: ( b ) => b.imageControlsEnabled,

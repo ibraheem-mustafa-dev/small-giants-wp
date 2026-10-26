@@ -109,7 +109,6 @@ CONTAINER_NEW_ATTR_SLOTS: dict[str, str] = {
     "columnsMobile": "column",
     "columnsTablet": "column",
     "customWidth": "width",
-    "customWidthUnit": "width",
     "gap": "gap",
     "gapMobile": "gap",
     "gapTablet": "gap",

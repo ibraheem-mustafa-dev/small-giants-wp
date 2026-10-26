@@ -1260,13 +1260,6 @@
 			}
 		},
 		{
-			"slug": "sgs/quote",
-			"attr": "attributionMarginUnit",
-			"fields": {
-				"derived_selector": ".sgs-quote__attribution"
-			}
-		},
-		{
 			"slug": "sgs/star-rating",
 			"attr": "rating",
 			"fields": {

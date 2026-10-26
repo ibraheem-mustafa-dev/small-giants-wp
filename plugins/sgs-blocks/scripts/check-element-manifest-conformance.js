@@ -499,9 +499,8 @@ function findOrphans( elementKeys, elements, blockJson, claimedAttrs, roleMap ) 
 		// A `*Unit` selector is not an independent style property — it is the
 		// unit companion of a VALUE attribute. It is claimed whenever its value
 		// family is claimed. The Unit-stripped stem may be a PREFIX of the
-		// claimed attr rather than an exact match (e.g. `attributionMarginUnit`
-		// is the unit for `attributionMarginTop`/`…Tablet`/`…Mobile` — the value
-		// carries a per-side `Top` infix the stem lacks), so match any claimed
+		// claimed attr rather than an exact match (a unit for a per-side value
+		// such as `<stem>Top` carries an infix the stem lacks), so match any claimed
 		// attr that continues the stem at a PascalCase boundary. Discriminating,
 		// not blanket: a `*Unit` whose value family is itself unclaimed (an
 		// unaddressed control, e.g. icon-list `itemFontSizeUnit`) stays an orphan.

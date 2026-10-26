@@ -64,7 +64,7 @@ function stylesheetPaint( block, prop ) {
 const relativeCeiling = ( v ) => undefined !== v && null !== v && ! NO_SIZE.has( String( v ).trim() ) && null === pxOf( v );
 
 // What a resolver result holds at a width, in px, or null where it cannot be read as px: a tier object carries its nearest
-// wider tier down, and a unit partner write (maxWidthUnit beside maxWidth) names the unit.
+// wider tier down, and a unit partner write (a typography setting's fontSizeUnit beside fontSize) names the unit.
 const WIDER = { 375: [ 'mobile', 'tablet', 'desktop' ], 768: [ 'tablet', 'desktop' ], 1440: [ 'desktop' ] };
 function writtenPx( res, w ) {
 	const at = ( value ) => ( value && 'object' === typeof value ? WIDER[ w ].map( ( t ) => value[ t ] ).find( ( v ) => undefined !== v && '' !== v ) : value );

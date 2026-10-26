@@ -278,10 +278,7 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 	const listed = row.css_property.split( ',' )[ 0 ].trim();
 	const prop = modifierOf( listed ) || listed;
 	const unitAttr = schema[ `${ row.attr_name }Unit` ] ? `${ row.attr_name }Unit` : null;
-	// The unit companion in its own shape: a per-device unit object gets px at every tier.
-	const unitDef = unitAttr ? schema[ unitAttr ] : null;
-	const unitVal = unitDef && types( unitDef ).includes( 'object' ) ? { desktop: 'px', tablet: 'px', mobile: 'px' } : 'px';
-	const withUnit = ( attrs ) => ( unitAttr ? { ...attrs, [ unitAttr ]: unitVal } : attrs );
+	const withUnit = ( attrs ) => ( unitAttr ? { ...attrs, [ unitAttr ]: 'px' } : attrs );
 	// A number when the setting is numeric; a string ("37" beside a unit setting, else "37px") when it is a string.
 	const lengthIn = ( n ) => {
 		if ( t.includes( 'number' ) || t.includes( 'integer' ) || FLOORED_ATTR.test( row.attr_name ) || ( unitAttr && ! t.includes( 'string' ) ) ) {
