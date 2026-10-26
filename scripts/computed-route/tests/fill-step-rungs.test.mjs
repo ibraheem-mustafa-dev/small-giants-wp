@@ -80,3 +80,18 @@ test( 'MUST FAIL: a measured item that does not show the step keeps the rule on 
 	const differ = runItems( [ [ 3, navPad ], [ 7, sweep( ( w ) => ( w < 1024 ? undefined : ( w < 1200 ? '12px' : '15px' ) ) ) ] ] );
 	assert.match( differ.flat[ 0 ].attributes.sgsCustomCss, /nth-of-type\(3\).*padding-left: 10px.*nth-of-type\(7\).*padding-left: 12px/, 'items that disagree each keep their own value' );
 } );
+
+// Real case: Mama's home Fill (2026-10-26) crashed reading `.node` of a null: a snap the ledger already held gave no entry,
+// the empty one was pushed, and the next snap's duplicate check read it.
+test( 'MUST FAIL: a snap the ledger already holds, followed by another snap, writes only the new entry', () => {
+	const series = sweep( ( w ) => ( w < 1024 ? undefined : ( w < 1040 ? '10px' : '15px' ) ) );
+	const held = run( series ).ledger;
+	assert.equal( held.length, 1 );
+	const props = [ 'padding-left', 'padding-right' ];
+	const flat = [ { name: 'sgs/nav-bar-menu', ref: 'n0', attributes: {} } ];
+	const nodes = [ { index: 0, name: 'sgs/nav-bar-menu', children: [], targets: [ { id: '0:', slot: '' }, { id: '0:link', slot: LINK } ] } ];
+	const other = sweep( ( w ) => ( w < 1024 ? undefined : ( w < 1056 ? '10px' : '15px' ) ) );
+	const reads = { sweep: { '0:link': { 'padding-left': series, 'padding-right': other } }, widths: { 375: {}, 768: {}, 1440: { '0:link': { styles: { 'padding-left': '15px', 'padding-right': '15px' }, rect: { w: 1, h: 1 } } } } };
+	const r = stepRungWrites( { nodes, flat, refOf: ( n ) => n.ref, reads, writes: props.map( ( prop ) => ( { node: 'n0', slot: LINK, prop, how: 'tiers' } ) ), scope: 'header', entries: held, date: '2026-10-23' } );
+	assert.deepEqual( r.ledger.map( ( e ) => e.snap.draft ), [ 1056 ] );
+} );

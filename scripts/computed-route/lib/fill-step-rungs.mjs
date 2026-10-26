@@ -96,7 +96,9 @@ export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '',
 		for ( const m of placeRules( members ) ) {
 			for ( const s of m.stretches ) {
 				s.snaps.forEach( ( snap, i ) => {
-					snap && out.ledger.push( snapEntry( { scope, ref: m.g.node, snap: { draft: s.range[ i ], tier: snap.tier, distance: snap.distance }, entries: [ ...entries, ...out.ledger ], date } ) );
+					// A snap already in the ledger (a sibling property's stretch at the same edge) gives no entry.
+					const e = snap && snapEntry( { scope, ref: m.g.node, snap: { draft: s.range[ i ], tier: snap.tier, distance: snap.distance }, entries: [ ...entries, ...out.ledger ], date } );
+					e && out.ledger.push( e );
 				} );
 				// A stretch the snap to a tier absorbs entirely is the tier boundary's: nothing is left to write.
 				if ( s.snapped[ 0 ] >= s.snapped[ 1 ] ) {
@@ -111,7 +113,6 @@ export function stepRungWrites( { nodes, flat, refOf, reads, writes, scope = '',
 			}
 		}
 	}
-	out.ledger = out.ledger.filter( Boolean );
 	const byNode = new Map();
 	for ( const r of rules.values() ) {
 		byNode.set( r.node, [ ...( byNode.get( r.node ) || [] ), r ] );
