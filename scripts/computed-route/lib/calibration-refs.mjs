@@ -195,8 +195,12 @@ export function wpCommand( target, site, repo ) {
 	return ( args, input ) => execFileSync( 'ssh', [ ...SSH, `cd ${ quote( root ) } && wp ${ args.map( quote ).join( ' ' ) } --user=Claude` ], { encoding: 'utf8', timeout: 120000, input } );
 }
 
+// The file `wp eval-file -` reads for a PHP body: one opening tag, whether or not the body carries its own (the PHP
+// builders shared with a direct `wp eval-file -` call start with one).
+export const evalScript = ( php ) => `<?php\n${ String( php ).replace( /^\s*<\?php\b/, '' ) }\n`;
+
 // runPhp for checkRefsExist: the PHP goes in on stdin to `wp eval-file -`, so no shell quoting touches it.
 export const wpEvalRunner = ( target, site, repo ) => {
 	const wp = wpCommand( target, site, repo );
-	return ( php ) => wp( [ 'eval-file', '-' ], `<?php\n${ php }\n` );
+	return ( php ) => wp( [ 'eval-file', '-' ], evalScript( php ) );
 };
