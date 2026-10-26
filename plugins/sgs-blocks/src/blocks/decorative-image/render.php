@@ -86,7 +86,7 @@ $position_x          = $position_x_obj['desktop'] ?? 50;
 $position_y          = $position_y_obj['desktop'] ?? 50;
 $width_obj           = sgs_responsive_normalise_object( $attributes['width'] ?? null );
 $width               = $width_obj['desktop'] ?? 200;
-$max_width_percent   = $attributes['maxWidthPercent'] ?? 20;
+$sgs_di_max_width    = sgs_responsive_normalise_object( $attributes['maxWidth'] ?? null );
 $rotation            = $rotation_obj['desktop'] ?? 0;
 $opacity             = $attributes['opacity'] ?? 100;
 $z_index             = $attributes['zIndex'] ?? 1;
@@ -191,7 +191,7 @@ $width_unit     = in_array( $width_unit_raw, array( 'px', '%', 'auto' ), true ) 
 $pos_x_css        = $sgs_css_num( $position_x, 2 );
 $pos_y_css        = $sgs_css_num( $position_y, 2 );
 $width_css        = $sgs_css_num( $width, 2 );
-$max_width_css    = min( 100.0, max( 0.0, $sgs_css_num( $max_width_percent, 2 ) ) );
+$max_width_css    = sgs_css_length_value( $sgs_di_max_width['desktop'] ?? '' );
 $opacity_css      = $sgs_css_num( $opacity / 100, 4 );
 $z_index_css      = (int) $sgs_css_num( $z_index, 0 );
 
@@ -223,14 +223,15 @@ $sgs_di_transform = function ( $rotation_deg ) use ( $sgs_css_num, $flip_x, $sgs
 	return $parts ? implode( ' ', $parts ) : 'none';
 };
 
-// Fit the content ignores the width tiers and the percentage cap; a percentage width is already a share of the
-// section, so the cap applies to fixed pixel widths only.
+// Fit the content ignores the width tiers and is capped at the parent unless a max width is set; a max width set
+// for a device applies in every width mode.
 if ( 'auto' === $width_unit ) {
-	$size_decls = array( 'width:max-content', 'max-width:100%' );
-} elseif ( '%' === $width_unit ) {
-	$size_decls = array( 'width:' . $width_css . '%' );
+	$size_decls = array( 'width:max-content', 'max-width:' . ( '' !== $max_width_css ? $max_width_css : '100%' ) );
 } else {
-	$size_decls = array( 'width:' . $width_css . 'px', 'max-width:' . $max_width_css . '%' );
+	$size_decls = array( 'width:' . $width_css . ( '%' === $width_unit ? '%' : 'px' ) );
+	if ( '' !== $max_width_css ) {
+		$size_decls[] = 'max-width:' . $max_width_css;
+	}
 }
 
 $root_decls = array_merge(
@@ -309,7 +310,7 @@ if ( '' !== $sgs_di_tier_css ) {
 	$scoped_css[] = $sgs_di_tier_css;
 }
 
-// The box's own tiers (edge offsets, border width and radius, height), its hover shadow and its gradient
+// The box's own tiers (edge offsets, border width and radius, height, max width), its hover shadow and its gradient
 // ring. Tier rules print after the base rule, so a device value wins inside its query.
 foreach ( array( 'tablet', 'mobile' ) as $sgs_di_tier ) {
 	$sgs_di_max        = SGS_Breakpoints::max_for_tier( $sgs_di_tier );
@@ -317,6 +318,10 @@ foreach ( array( 'tablet', 'mobile' ) as $sgs_di_tier ) {
 	$sgs_di_tier_h     = sgs_css_length_value( $sgs_di_height[ $sgs_di_tier ] ?? '' );
 	if ( '' !== $sgs_di_tier_h ) {
 		$sgs_di_tier_decls[] = 'height:' . $sgs_di_tier_h;
+	}
+	$sgs_di_tier_mw = sgs_css_length_value( $sgs_di_max_width[ $sgs_di_tier ] ?? '' );
+	if ( '' !== $sgs_di_tier_mw ) {
+		$sgs_di_tier_decls[] = 'max-width:' . $sgs_di_tier_mw;
 	}
 	if ( $sgs_di_tier_decls ) {
 		$scoped_css[] = '@media(max-width:' . $sgs_di_max . 'px){' . $root_sel . '{' . implode( ';', $sgs_di_tier_decls ) . ';}}';

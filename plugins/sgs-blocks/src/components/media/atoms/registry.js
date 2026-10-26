@@ -312,15 +312,6 @@ export const MEDIA_ATOMS = {
 				splitMediaWidthTablet: 'NUMBER, same legacy shape as splitMediaWidth — editor-inert, render.php-only',
 				splitMediaWidthMobile: 'NUMBER, same legacy shape as splitMediaWidth — editor-inert, render.php-only',
 			},
-			'sgs/decorative-image': {
-				// This is sgs/decorative-image's OWN independent maxWidthPercent —
-				// a block-private attr (the block takes this atom's Shape
-				// vocabulary only, not its bases), and
-				// is UNRELATED to (and unaffected by) the shared atom's own
-				// MaxWidthPercent, which was deleted 2026-09-07 — see
-				// box-shape.js's docblock note on that deletion.
-				maxWidthPercent: 'a bare percentage number, not a length+unit pair',
-			},
 		},
 		vocabulary: {
 			// Spaced, matching MediaSizingPanel's RATIO_OPTIONS and the only

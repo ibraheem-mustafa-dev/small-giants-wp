@@ -129,7 +129,7 @@ ROSTER = {
     'decorative-image': {
         'object-fit': [],
         'focal-point': [],
-        'box-shape': ['width', 'maxWidthPercent'],
+        'box-shape': ['width', 'maxWidth'],
         'overlay': [],
     },
     'product-card': {
@@ -610,6 +610,7 @@ def self_test():
 
 
 def main():
+    sys.stdout.reconfigure(encoding='utf-8')
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--survey', action='store_true', help='print the manifest')

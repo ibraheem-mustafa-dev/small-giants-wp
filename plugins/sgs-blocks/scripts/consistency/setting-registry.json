@@ -2094,7 +2094,7 @@
 			"current_state": "7 distinct attr names / 58 instances across 38 blocks; observed_control_types: RangeControl, SelectControl, TextControl, UnitControl; observed_roles: layout; conformance: divergent (dedup_confidence: high)",
 			"divergence": "7 attrs mix RangeControl/SelectControl/TextControl/UnitControl; TextControl is a free-text field for what should be a validated unit value",
 			"divergence_severity": "medium",
-			"notes": "This is also the container/wrapper contentWidth capability (Spec 31 §13.6 3-layer model) — must not silently reintroduce a hardcoded default per the 'hardcoded wrapper defaults are cheats' rule in CLAUDE.md. Absorbed css:percentage 2026-07-20 — sgs/decorative-image `maxWidthPercent` (RangeControl 0-100) is a max-width in %, not a distinct property."
+			"notes": "This is also the container/wrapper contentWidth capability (Spec 31 §13.6 3-layer model) — must not silently reintroduce a hardcoded default per the 'hardcoded wrapper defaults are cheats' rule in CLAUDE.md. Absorbed css:percentage 2026-07-20 — sgs/decorative-image's max width is `maxWidth`, a per-device length (SgsLengthControl), not a distinct property."
 		},
 		{
 			"setting_key": "css:min-width",

@@ -3,8 +3,8 @@
  *
  * Position, size, opacity, stacking and transform are read for the previewed tier (a narrower tier inherits from the
  * wider one, as the frontend's @media overrides do). `widthUnit` follows render.php: Fit the content ("auto") is
- * max-content capped at the parent and ignores the tiers; Percentage drops the cap; Fixed keeps the pixel width with
- * the percentage cap. An axis with an edge offset set is placed by its edges instead of its centre (`layerEdges`).
+ * max-content capped at the parent (or at the max width) and ignores the tiers; Percentage and Fixed take the max width
+ * for the previewed tier when one is set, none otherwise. An axis with an edge offset set is placed by its edges instead of its centre (`layerEdges`).
  */
 
 import { resolveTier } from '../../utils/responsive';
@@ -64,7 +64,7 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 		positionY,
 		width,
 		widthUnit,
-		maxWidthPercent,
+		maxWidth,
 		rotation,
 		opacity,
 		zIndex,
@@ -86,18 +86,16 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 	const degrees = resolveTier( rotation, tier, 0 ).value;
 	const tierWidth = resolveTier( width, tier, 200 ).value;
 
+	const cap = cssLengthValue( resolveTier( maxWidth, tier, '' ).value ?? '' );
 	const size = {};
 	if ( 'auto' === widthUnit ) {
 		size.width = 'max-content';
-		size.maxWidth = '100%';
-	} else if ( '%' === widthUnit ) {
-		size.width = `${ tierWidth }%`;
+		size.maxWidth = cap || '100%';
 	} else {
-		size.width = `${ tierWidth }px`;
-		size.maxWidth = `${ Math.min(
-			100,
-			Math.max( 0, Number( maxWidthPercent ?? 20 ) || 0 )
-		) }%`;
+		size.width = `${ tierWidth }${ '%' === widthUnit ? '%' : 'px' }`;
+		if ( cap ) {
+			size.maxWidth = cap;
+		}
 	}
 
 	return {

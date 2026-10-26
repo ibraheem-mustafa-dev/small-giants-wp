@@ -153,16 +153,27 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertStringNotContainsString( 'width:60px', $out['css'] );
 	}
 
-	public function test_fixed_width_stays_in_pixels_with_the_max_width_cap(): void {
-		$out = $this->render_layer(
+	public function test_fixed_width_stays_in_pixels_with_no_cap_unless_a_max_width_is_set(): void {
+		$capped = $this->render_layer(
 			self::IMAGE + array(
-				'width'           => array( 'desktop' => 240 ),
-				'maxWidthPercent' => 30,
+				'width'    => array( 'desktop' => 240 ),
+				'maxWidth' => array(
+					'desktop' => '30%',
+					'mobile'  => '12rem',
+				),
 			)
 		);
+		$this->assertMatchesRegularExpression( '/\.sgs-decorative-image\{[^}]*width:240px;max-width:30%;/', $capped['css'] );
+		$this->assertMatchesRegularExpression( '/@media\(max-width:767px\)\{\.sgs-di-[a-f0-9]{8}\.sgs-decorative-image\{[^}]*max-width:12rem/', $capped['css'] );
 
-		$this->assertStringContainsString( 'width:240px', $out['css'] );
-		$this->assertStringContainsString( 'max-width:30%', $out['css'] );
+		$free = $this->render_layer( self::IMAGE + array( 'width' => array( 'desktop' => 240 ) ) );
+		$this->assertStringContainsString( 'width:240px', $free['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/[;{]max-width:/', $free['css'], 'no cap the client did not set' );
+	}
+
+	public function test_a_max_width_replaces_fit_the_contents_parent_cap(): void {
+		$out = $this->render_layer( array( 'widthUnit' => 'auto', 'maxWidth' => array( 'desktop' => '320px' ) ), self::CONTENT );
+		$this->assertStringContainsString( 'width:max-content;max-width:320px', $out['css'] );
 	}
 
 	/**
@@ -174,7 +185,6 @@ final class DecorativeImageLayerTest extends TestCase {
 	private function ring_attrs(): array {
 		return array(
 			'width'           => array( 'desktop' => 340 ),
-			'maxWidthPercent' => 100,
 			'height'          => array( 'desktop' => '340px' ),
 			'borderWidth'     => array(
 				'top'    => '2px',
@@ -261,11 +271,10 @@ final class DecorativeImageLayerTest extends TestCase {
 		$this->assertStringContainsString( '@media(max-width:' . SGS_Breakpoints::MOBILE_MAX . 'px)', $out['css'] );
 	}
 
-	public function test_max_width_percent_is_capped_at_the_editor_range(): void {
-		foreach ( array( 250 => 'max-width:100%', -5 => 'max-width:0%', 40 => 'max-width:40%' ) as $given => $expected ) {
-			$out = $this->render_layer( self::IMAGE + array( 'maxWidthPercent' => $given ) );
-			$this->assertStringContainsString( $expected, $out['css'], (string) $given );
-		}
+	public function test_an_unsafe_max_width_prints_nothing(): void {
+		$out = $this->render_layer( self::IMAGE + array( 'maxWidth' => array( 'desktop' => '1px;}body{color:red' ) ) );
+		$this->assertStringNotContainsString( 'body{', $out['css'] );
+		$this->assertDoesNotMatchRegularExpression( '/[;{]max-width:/', $out['css'] );
 	}
 
 	public function test_an_empty_layer_with_only_a_fill_or_a_shadow_renders(): void {

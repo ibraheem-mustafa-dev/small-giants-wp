@@ -51,7 +51,7 @@
                     "isWrapper": true,
                     "prefix": "",
                     "attrMap": {
-                        "css:max-width": "maxWidthPercent",
+                        "css:max-width": "maxWidth",
                         "css:width": "width",
                         "css:opacity": "opacity",
                         "css:z-index": "zIndex",
@@ -158,9 +158,10 @@
 			"type": "object",
 			"default": {"desktop": 200}
 		},
-        "maxWidthPercent": {
-            "type": "number",
-            "default": 20
+        "_comment_maxWidth": "The layer's widest size per device: any length the shared length control stores (px, %, em, rem, vw) or none. Unset prints no cap (CSS's own initial value), so a fixed width holds at every device unless the client limits it; Fit the content keeps its max-width:100% until a value is set.",
+        "maxWidth": {
+            "type": "object",
+            "default": {}
         },
         "rotation": {
 			"type": "object",

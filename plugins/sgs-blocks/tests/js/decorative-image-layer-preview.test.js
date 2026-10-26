@@ -18,11 +18,10 @@ describe( 'layerPreviewStyle', () => {
 		expect( style.transform ).toBe( 'translate(-50%, -50%) rotate(12deg)' );
 	} );
 
-	it( 'Percentage uses the previewed tier and drops the max-width cap', () => {
+	it( 'Percentage uses the previewed tier and has no cap unless a max width is set', () => {
 		const attrs = {
 			widthUnit: '%',
 			width: { desktop: 60, tablet: 40 },
-			maxWidthPercent: 20,
 		};
 		expect( layerPreviewStyle( attrs, 'desktop', true ).width ).toBe( '60%' );
 		expect( layerPreviewStyle( attrs, 'tablet', true ).width ).toBe( '40%' );
@@ -30,14 +29,13 @@ describe( 'layerPreviewStyle', () => {
 		expect( layerPreviewStyle( attrs, 'desktop', true ).maxWidth ).toBeUndefined();
 	} );
 
-	it( 'Fixed stays in pixels with the percentage cap', () => {
-		const style = layerPreviewStyle(
-			{ width: { desktop: 240 }, maxWidthPercent: 30 },
-			'desktop',
-			false
-		);
-		expect( style.width ).toBe( '240px' );
-		expect( style.maxWidth ).toBe( '30%' );
+	it( 'Fixed stays in pixels; a max width applies per previewed tier, any unit, none by default', () => {
+		const attrs = { width: { desktop: 240 }, maxWidth: { desktop: '30%', mobile: '12rem' } };
+		expect( layerPreviewStyle( attrs, 'desktop', false ) ).toMatchObject( { width: '240px', maxWidth: '30%' } );
+		expect( layerPreviewStyle( attrs, 'tablet', false ).maxWidth ).toBe( '30%' );
+		expect( layerPreviewStyle( attrs, 'mobile', false ).maxWidth ).toBe( '12rem' );
+		expect( layerPreviewStyle( { width: { desktop: 240 } }, 'desktop', false ).maxWidth ).toBeUndefined();
+		expect( layerPreviewStyle( { widthUnit: 'auto', maxWidth: { desktop: '320px' } }, 'desktop', true ).maxWidth ).toBe( '320px' );
 	} );
 
 	it( 'the canvas layer always takes pointer events so an empty layer keeps a clickable appender', () => {
@@ -124,16 +122,6 @@ describe( 'an empty layer draws exactly when render.php says', () => {
 		expect( layerBoxPreview( heightOnly, 'desktop', [], true ) ).toEqual( {} );
 		expect( layerBoxPreview( heightOnly, 'desktop', [], false ).height ).toBe( '80px' );
 		expect( layerBoxPreview( { ...heightOnly, backgroundColour: '#112233' }, 'desktop', [], true ).height ).toBe( '80px' );
-	} );
-} );
-
-describe( 'layerPreviewStyle max width cap', () => {
-	it( 'caps the percentage cap at the editor range, as render.php does', () => {
-		const at = ( maxWidthPercent ) => layerPreviewStyle( { widthUnit: 'px', maxWidthPercent }, 'desktop', false ).maxWidth;
-		expect( at( 250 ) ).toBe( '100%' );
-		expect( at( -5 ) ).toBe( '0%' );
-		expect( at( 40 ) ).toBe( '40%' );
-		expect( at( undefined ) ).toBe( '20%' );
 	} );
 } );
 

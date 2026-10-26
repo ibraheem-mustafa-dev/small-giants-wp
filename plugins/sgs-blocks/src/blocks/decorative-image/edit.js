@@ -14,7 +14,7 @@ import {
 	SelectControl,
 	TextControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride } from '../../components';
+import { ResponsiveControl, ResponsiveOverride, SgsLengthControl } from '../../components';
 import MediaPicker from '../../components/MediaPicker';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import DecorativeImagePanelLayout from '../../components/media/DecorativeImagePanelLayout';
@@ -24,6 +24,14 @@ import LayerImagePanel from './LayerImagePanel';
 import LayerBoxPanels from './LayerBoxPanels';
 import LayerEdgePanel from './LayerEdgePanel';
 import { layerPreviewStyle, layerBoxPreview } from './layer-preview';
+
+const MAX_WIDTH_UNITS = [
+	{ value: 'px', label: 'px' },
+	{ value: '%', label: '%' },
+	{ value: 'em', label: 'em' },
+	{ value: 'rem', label: 'rem' },
+	{ value: 'vw', label: 'vw' },
+];
 
 const OVERFLOW_OPTIONS = [
 	{ label: __( 'Visible', 'sgs-blocks' ), value: 'visible' },
@@ -51,7 +59,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		positionLeft,
 		width,
 		widthUnit,
-		maxWidthPercent,
+		maxWidth,
 		rotation,
 		opacity,
 		zIndex,
@@ -164,7 +172,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			positionLeft,
 			width,
 			widthUnit,
-			maxWidthPercent,
+			maxWidth,
 			rotation,
 			opacity,
 			zIndex,
@@ -323,18 +331,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ 'px' === widthUnitValue && (
-						<RangeControl
-							label={ __( 'Max Width (% of parent)', 'sgs-blocks' ) }
-							value={ maxWidthPercent }
-							onChange={ ( val ) => setAttributes( { maxWidthPercent: val } ) }
-							min={ 0 }
-							max={ 100 }
-							step={ 1 }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
-						/>
-					) }
+					<ResponsiveOverride
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ maxWidth }
+						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Max width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								units={ MAX_WIDTH_UNITS }
+								help={ __( 'The widest the layer gets on this device, in any unit. Leave empty for no limit.', 'sgs-blocks' ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 
 				<PanelBody

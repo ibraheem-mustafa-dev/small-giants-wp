@@ -18,9 +18,8 @@
  * `MaxWidthPercent` was DELETED (2026-09-07) — a percentage max-width IS a
  * max-width with a `%` unit, and `%` is already an allowed `MaxWidthUnit`
  * value, so the dedicated attribute/custom-property/control row was a
- * second cascade layer for zero capability loss. `sgs/decorative-image`'s
- * OWN `maxWidthPercent` (block-private, never adopted this atom) is
- * unaffected.
+ * second cascade layer for zero capability loss. `sgs/decorative-image`
+ * (which never adopted this atom) holds its own per-device `maxWidth` length.
  *
  * `sgs_media_atom_box_shape_css()` must emit BYTE-IDENTICAL declarations to
  * the JS twin's `css()` for the same attribute set — enforced by

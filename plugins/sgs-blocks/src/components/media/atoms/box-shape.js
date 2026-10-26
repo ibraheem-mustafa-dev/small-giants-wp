@@ -75,9 +75,8 @@
  * `MaxWidthPercent` was DELETED (2026-09-07) — a percentage max-width IS a
  * max-width with a `%` unit, and `%` is already in `MaxWidthUnit`'s allowed
  * values, so the dedicated attribute/custom-property/control row was a
- * second cascade layer for zero capability loss. `sgs/decorative-image`'s
- * OWN `maxWidthPercent` (block-private, never adopted this atom) is
- * unaffected — see that block's own block.json.
+ * second cascade layer for zero capability loss. `sgs/decorative-image`
+ * (which never adopted this atom) holds its own per-device `maxWidth` length.
  *
  * `css()` mirrors `includes/media/atoms/box-shape.php`'s
  * `sgs_media_atom_box_shape_css()` byte-for-byte — enforced by
