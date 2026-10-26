@@ -8,8 +8,8 @@ import path from 'path';
 import { DERIVED, POST_CONTENT, commonChain, contentUnder, copySource, copyTree, framed, pageTemplateOf, parseBlocks, servedTemplates, splitShell, themeContent, THEME_TEMPLATES } from '../lib/template-copies.mjs';
 import { planBuild } from '../lib/site-build-plan.mjs';
 import { buildManifest, templateSurfaces } from '../lib/manifest-build.mjs';
-import { copyTrees, liveAddress, runKeys, surfaceReach } from '../site-run.mjs';
-import { templateRecordPhp } from '../lib/site-build-apply.mjs';
+import { copyTrees, liveAddress, needsTestOrder, orderAddress, runKeys, surfaceReach } from '../site-run.mjs';
+import { TEST_ORDER_META, deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from '../lib/site-build-apply.mjs';
 
 const row = ( o ) => ( { route: o.slug, parent: null, template: null, menus: [], postType: 'page', collection: 'static', flags: [], id: null, ...o } );
 const state = ( o = {} ) => ( {
@@ -209,4 +209,20 @@ test( 'the site run records a copy as the site build does: the tree hash and the
 	assert.match( php, /sgs_site_build_template_content/ );
 	assert.doesNotMatch( templateRecordPhp( 'page' ), /sgs_site_build_templates'/ );
 	assert.throws( () => templateRecordPhp( "page'; drop", null ), /not plain/ );
+} );
+
+test( 'MUST FAIL: the order confirmation is read at a test order the run makes and deletes; it is pending, so no email goes out', () => {
+	const surfaces = manifest( SHOP ).entries;
+	assert.equal( needsTestOrder( surfaces, [ 'template-order-confirmation' ] ), true );
+	assert.equal( needsTestOrder( surfaces, [ 'template-cart' ] ), false );
+	const confirmation = SHOP.find( ( r ) => 'template' === r.postType );
+	const at = orderAddress( { id: 5680, url: 'http://localhost:8082/checkout/order-received/5680/?key=wc_order_x' } );
+	assert.equal( at, '/checkout/order-received/5680/?key=wc_order_x' );
+	assert.equal( liveAddress( confirmation, SHOP, { 'order-confirmation': at } ), at );
+	assert.equal( orderAddress( { error: 'the site has no published product' } ), null );
+	const make = testOrderPhp();
+	assert.ok( make.includes( "wc_create_order( array( 'status' => 'pending' ) )" ) );
+	assert.ok( make.includes( `update_meta_data( '${ TEST_ORDER_META }'` ) );
+	assert.doesNotMatch( make, /processing|completed|on-hold/ );
+	assert.ok( deleteTestOrdersPhp().includes( `'meta_key' => '${ TEST_ORDER_META }'` ) );
 } );

@@ -33,7 +33,7 @@ import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-invent
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
-import { templateRecordPhp } from './lib/site-build-apply.mjs';
+import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpEvalRunner } from './lib/calibration-refs.mjs';
 import { commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
@@ -95,14 +95,20 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 }
 
 // The live address of a row: a page or post's permalink; a `template` row's template where WordPress shows it (the search
-// results for any query, the not-found page for an address nothing holds), or null for one shown only at a WooCommerce
-// endpoint (the order confirmation needs an order).
-export function liveAddress( row, rows ) {
+// results for any query, the not-found page for an address nothing holds, the order confirmation at the run's test order,
+// `shown`: template slug -> address), or null when the run has none.
+export function liveAddress( row, rows, shown = {} ) {
 	if ( 'template' !== row?.postType ) {
 		return row ? permalinkOf( row, rows ) : '/';
 	}
-	return { search: '/?s=sgs', 404: '/sgs-no-such-page/' }[ row.template ] ?? null;
+	return { search: '/?s=sgs', 404: '/sgs-no-such-page/', ...shown }[ row.template ] ?? null;
 }
+
+// Whether the run reads the order confirmation, which shows only at an order's received page.
+export const needsTestOrder = ( surfaces, keys ) => keys.some( ( k ) => 'order-confirmation' === surfaces[ k ]?.target?.template && 'fill' === surfaces[ k ]?.copy?.from );
+
+// The path and query of the received page a test order reply names ({ url }), or null for a reply with no url.
+export const orderAddress = ( reply ) => ( reply?.url ? ( ( u ) => `${ u.pathname }${ u.search }` )( new URL( reply.url ) ) : null );
 
 // The surfaces a run covers: the named ones, plus each template copy a named page's content sits in (its shell decides what
 // the page's post holds) and, with the page copy, the copies built from its shell.
@@ -233,7 +239,7 @@ export async function main( argv ) {
 		// they are never Filled or built over; a template copy read at one of them is.
 		const wooPage = entry.target?.template ? null : wooContentRole( row );
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
-		const address = liveAddress( row, rows );
+		const address = liveAddress( row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;
 		const step = stepper( key, wooPage );
 		const exec = execFor( key );
@@ -376,23 +382,36 @@ export async function main( argv ) {
 		} ) );
 		return results;
 	};
-	const ready = ( await pool( keys, prepare ) ).filter( Boolean );
-	// Between the passes: every template copy's tree, from this run's Filled trees and the shells recorded before.
-	const filled = Object.fromEntries( ready.filter( ( c ) => c.filled ).map( ( c ) => [ c.key, c.filled ] ) );
-	const copies = copyTrees( { surfaces, keys, filled, buildDir: build } );
-	for ( const [ slug, c ] of Object.entries( copies ) ) {
-		writeCopy( build, slug, c.tree, c.shell );
-		console.log( `copy ${ slug }: ${ path.relative( REPO, copyFile( build, slug ) ) }${ c.shell ? ` (shell of ${ c.shell.chain.length } wrapper${ 1 === c.shell.chain.length ? '' : 's' })` : '' }` );
+	// The order confirmation is read at a real order: one test order (pending, so no email) for the run, deleted at its end.
+	const shown = {};
+	// Every template copy's tree, made between the passes (finish builds from it).
+	let copies = {};
+	if ( needsTestOrder( surfaces, keys ) ) {
+		const reply = JSON.parse( String( runPhp( testOrderPhp() ) ).trim().split( /\r?\n/ ).pop() );
+		shown[ 'order-confirmation' ] = orderAddress( reply );
+		console.log( reply.error ? `test order: none (${ reply.error }); the order confirmation is not read` : `test order ${ reply.id }: ${ shown[ 'order-confirmation' ] }` );
 	}
-	// One logged-in browser for every build of the run (lib/wp-run-session.mjs): each wp-build-page.js child attaches through
-	// SGS_CDP_URL instead of launching and logging in on its own.
-	const withEnv = keys.map( ( k ) => surfaces[ k ] ).find( ( e ) => e?.envFile && e?.envKey );
-	const session = stages.includes( 'build' ) && withEnv ? await openRunSession( site, readEnv( withEnv.envFile, withEnv.envKey ) ) : null;
-	// The template copies build first, so a page never shows its content-only post inside the theme's generic template.
-	const rank = ( c ) => ( c.entry.target?.template ? 0 : 1 );
-	await pool( ready.sort( ( a, b ) => rank( a ) - rank( b ) ), finish );
-	await Promise.all( [ ...servers.values() ].map( async ( x ) => ( await x ).close() ) );
-	session && await session.close();
+	try {
+		const ready = ( await pool( keys, prepare ) ).filter( Boolean );
+		// Between the passes: every template copy's tree, from this run's Filled trees and the shells recorded before.
+		const filled = Object.fromEntries( ready.filter( ( c ) => c.filled ).map( ( c ) => [ c.key, c.filled ] ) );
+		copies = copyTrees( { surfaces, keys, filled, buildDir: build } );
+		for ( const [ slug, c ] of Object.entries( copies ) ) {
+			writeCopy( build, slug, c.tree, c.shell );
+			console.log( `copy ${ slug }: ${ path.relative( REPO, copyFile( build, slug ) ) }${ c.shell ? ` (shell of ${ c.shell.chain.length } wrapper${ 1 === c.shell.chain.length ? '' : 's' })` : '' }` );
+		}
+		// One logged-in browser for every build of the run (lib/wp-run-session.mjs): each wp-build-page.js child attaches through
+		// SGS_CDP_URL instead of launching and logging in on its own.
+		const withEnv = keys.map( ( k ) => surfaces[ k ] ).find( ( e ) => e?.envFile && e?.envKey );
+		const session = stages.includes( 'build' ) && withEnv ? await openRunSession( site, readEnv( withEnv.envFile, withEnv.envKey ) ) : null;
+		// The template copies build first, so a page never shows its content-only post inside the theme's generic template.
+		const rank = ( c ) => ( c.entry.target?.template ? 0 : 1 );
+		await pool( ready.sort( ( a, b ) => rank( a ) - rank( b ) ), finish );
+		session && await session.close();
+	} finally {
+		Object.hasOwn( shown, 'order-confirmation' ) && console.log( `test orders deleted: ${ String( runPhp( deleteTestOrdersPhp() ) ).trim().split( /\r?\n/ ).pop() }` );
+		await Promise.all( [ ...servers.values() ].map( async ( x ) => ( await x ).close() ) );
+	}
 	const failed = Object.entries( status ).filter( ( [ , s ] ) => Object.values( s ).some( ( x ) => ! x.ok ) );
 	console.log( `site run ${ client }: ${ keys.length } surfaces, ${ failed.length } with a failed stage. ${ path.join( dir, 'status.json' ) }` );
 }

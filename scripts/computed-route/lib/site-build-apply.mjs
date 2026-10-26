@@ -67,6 +67,41 @@ if ( $t ) {
 `;
 }
 
+// The meta key that marks an order the site run made only to show the order confirmation (FR-48-56).
+export const TEST_ORDER_META = '_sgs_site_run_test_order';
+
+// The PHP making one order with the site's first published product, so the order confirmation template has an order to
+// show: status `pending`, which sends no customer or admin email (WooCommerce mails on the move to processing, on-hold
+// or completed), marked with TEST_ORDER_META. Prints { id, url } (the order-received address with its key), or
+// { error } when the site has no WooCommerce or no product.
+export function testOrderPhp() {
+	return `<?php
+if ( ! function_exists( 'wc_create_order' ) ) { echo wp_json_encode( array( 'error' => 'WooCommerce is not active' ) ); return; }
+$p = wc_get_products( array( 'status' => 'publish', 'limit' => 1, 'orderby' => 'ID', 'order' => 'ASC' ) );
+if ( ! $p ) { echo wp_json_encode( array( 'error' => 'the site has no published product' ) ); return; }
+$o = wc_create_order( array( 'status' => 'pending' ) );
+$o->add_product( $p[0], 1 );
+$o->set_billing_first_name( 'Test' );
+$o->set_billing_last_name( 'Order' );
+$o->set_billing_email( 'test-order@example.invalid' );
+$o->calculate_totals();
+$o->update_meta_data( '${ TEST_ORDER_META }', '1' );
+$o->save();
+echo wp_json_encode( array( 'id' => $o->get_id(), 'url' => $o->get_checkout_order_received_url() ) );
+`;
+}
+
+// The PHP deleting every order the site run marked as a test order (TEST_ORDER_META); prints how many.
+export function deleteTestOrdersPhp() {
+	return `<?php
+$n = 0;
+if ( function_exists( 'wc_get_orders' ) ) {
+	foreach ( wc_get_orders( array( 'limit' => -1, 'status' => 'any', 'meta_key' => '${ TEST_ORDER_META }', 'meta_value' => '1' ) ) as $o ) { $o->delete( true ); $n++; }
+}
+echo wp_json_encode( array( 'deleted' => $n ) );
+`;
+}
+
 function lastJson( text ) {
 	const line = String( text || '' ).trim().split( /\r?\n/ ).reverse().find( ( l ) => l.startsWith( '{' ) );
 	try {
