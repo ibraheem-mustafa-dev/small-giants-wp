@@ -46,7 +46,7 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 		size.width = `${ tierWidth }%`;
 	} else {
 		size.width = `${ tierWidth }px`;
-		size.maxWidth = `${ maxWidthPercent ?? 20 }%`;
+		size.maxWidth = `${ Math.min( 100, Math.max( 0, Number( maxWidthPercent ?? 20 ) || 0 ) ) }%`;
 	}
 
 	return {
@@ -68,17 +68,63 @@ export function layerPreviewStyle( attributes, tier, hasContent ) {
 	};
 }
 
+const BORDER_SIDES = [ 'top', 'right', 'bottom', 'left' ];
+const BORDER_TIERS = [ 'desktop', 'tablet', 'mobile' ];
+
+/**
+ * Whether a border width attribute sets any side at any tier (a flat box or a tier object of boxes).
+ *
+ * @param {*} widthValues The `borderWidth` attribute.
+ * @return {boolean} True when a side holds a value.
+ */
+function hasBorderWidth( widthValues ) {
+	if ( ! widthValues || 'object' !== typeof widthValues ) {
+		return false;
+	}
+	const tiered = BORDER_TIERS.some( ( t ) => null != widthValues[ t ] );
+	const boxes = tiered ? BORDER_TIERS.map( ( t ) => widthValues[ t ] ) : [ widthValues ];
+	return boxes.some(
+		( box ) =>
+			box &&
+			'object' === typeof box &&
+			BORDER_SIDES.some( ( side ) => [ 'string', 'number' ].includes( typeof box[ side ] ) && '' !== String( box[ side ] ).trim() )
+	);
+}
+
+/**
+ * Whether an empty layer (no media, no inner blocks) draws anything: a border width at any tier, a gradient ring, a
+ * resting shadow or a fill. A height, radius, shape or hover shadow alone draws nothing, and a border style of none
+ * draws no border or ring. The twin of render.php's `$sgs_di_paints_box`; tests/fixtures/decorative-image-paints-box.json
+ * is the table both are tested against.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {Array}  [palette]  Theme colour palette.
+ * @return {boolean} True when render.php would print the layer.
+ */
+export function layerPaintsBox( attributes, palette ) {
+	const { borderWidth, borderStyle, borderColourGradient, backgroundColour, backgroundColourGradient, boxShadow, boxShadowColour } = attributes;
+	const bordered = 'none' !== String( borderStyle || '' ).trim().toLowerCase() && ( hasBorderWidth( borderWidth ) || '' !== String( borderColourGradient || '' ).trim() );
+	const shadow = composeShadow( boxShadow || '', boxShadowColour || '' );
+	const filled = Object.keys( backgroundPaintPreview( backgroundColour, backgroundColourGradient, palette ) ).length > 0;
+	return bordered || ( '' !== shadow && 'none' !== shadow ) || filled;
+}
+
 /**
  * The box the layer paints itself, as the canvas twin of what render.php adds to the root rule: border
  * (width, style, colour, radius), fill, shadow and height, each for the previewed tier. A value left
- * unset adds nothing.
+ * unset adds nothing. A layer with no media and no content (`shapeOnly`) previews a box only when
+ * `layerPaintsBox()` says render.php would draw one, so the canvas never shows a layer the page omits.
  *
  * @param {Object} attributes Block attributes.
  * @param {string} tier       Previewed tier: 'desktop' | 'tablet' | 'mobile'.
  * @param {Array}  [palette]  Theme colour palette.
+ * @param {boolean} [shapeOnly=false] The layer holds no media and no inner blocks.
  * @return {Object} React style fragment; {} when nothing is set.
  */
-export function layerBoxPreview( attributes, tier, palette ) {
+export function layerBoxPreview( attributes, tier, palette, shapeOnly = false ) {
+	if ( shapeOnly && ! layerPaintsBox( attributes, palette ) ) {
+		return {};
+	}
 	const {
 		borderWidth,
 		borderStyle,

@@ -1,0 +1,17 @@
+[
+	{ "name": "nothing set", "attrs": {}, "paints": false },
+	{ "name": "height alone", "attrs": { "height": { "desktop": "80px" } }, "paints": false },
+	{ "name": "shape alone", "attrs": { "shape": "circle" }, "paints": false },
+	{ "name": "radius alone", "attrs": { "borderRadius": { "desktop": { "topLeft": "50%" } } }, "paints": false },
+	{ "name": "tablet radius alone", "attrs": { "borderRadius": { "tablet": { "topLeft": "50%" } } }, "paints": false },
+	{ "name": "hover shadow alone", "attrs": { "boxShadowHover": "0 8px 20px 0", "boxShadowColourHover": "#000000" }, "paints": false },
+	{ "name": "border colour alone", "attrs": { "borderColour": "#112233" }, "paints": false },
+	{ "name": "border width and no style", "attrs": { "borderWidth": { "top": "2px" } }, "paints": true },
+	{ "name": "border width at tablet only", "attrs": { "borderWidth": { "tablet": { "top": "2px" } } }, "paints": true },
+	{ "name": "border width with style none", "attrs": { "borderWidth": { "top": "2px" }, "borderStyle": "none" }, "paints": false },
+	{ "name": "gradient ring alone", "attrs": { "borderColourGradient": "linear-gradient(red, blue)" }, "paints": true },
+	{ "name": "gradient ring with style none", "attrs": { "borderColourGradient": "linear-gradient(red, blue)", "borderStyle": "none" }, "paints": false },
+	{ "name": "resting shadow", "attrs": { "boxShadow": "0 4px 12px 0", "boxShadowColour": "#000000" }, "paints": true },
+	{ "name": "flat fill", "attrs": { "backgroundColour": "#112233" }, "paints": true },
+	{ "name": "gradient fill", "attrs": { "backgroundColourGradient": "linear-gradient(red, blue)" }, "paints": true }
+]

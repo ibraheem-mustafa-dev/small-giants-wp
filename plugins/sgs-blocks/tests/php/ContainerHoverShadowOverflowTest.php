@@ -83,6 +83,48 @@ final class ContainerHoverShadowOverflowTest extends TestCase {
 		}
 	}
 
+	/**
+	 * @return array<string, array{0: array<string, mixed>, 1: string}>
+	 */
+	public static function clipping_modes(): array {
+		return array(
+			'shape divider' => array(
+				array(
+					'shapeDividerTop'       => 'wave',
+					'shapeDividerTopColour' => 'primary',
+				),
+				'sgs-container--has-shape-divider',
+			),
+			'svg background' => array(
+				array( 'bgSvgContent' => '<svg viewBox="0 0 10 10"><rect width="10" height="10"/></svg>' ),
+				'sgs-container--has-bg-svg',
+			),
+		);
+	}
+
+	/**
+	 * A mode that clips (shape divider, SVG background) gets `overflow: hidden` from style.css. The overflow
+	 * control prints only an explicit hidden or clip, so leaving it on Visible (or unset) must never print a rule
+	 * that would unclip the mode.
+	 *
+	 * @dataProvider clipping_modes
+	 * @param array<string, mixed> $mode_attrs Attributes that switch the mode on.
+	 * @param string               $class_name The mode's root class.
+	 */
+	public function test_the_overflow_control_never_unclips_a_clipping_mode( array $mode_attrs, string $class_name ): void {
+		$css = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/container/style.css' );
+		$this->assertMatchesRegularExpression( '/\.' . preg_quote( $class_name, '/' ) . '\s*[,{][^}]*overflow:\s*hidden/s', $css, 'the stylesheet clips this mode' );
+
+		foreach ( array( array(), array( 'overflow' => 'visible' ) ) as $attrs ) {
+			$out = $this->render_container( $mode_attrs + $attrs );
+			$this->assertStringContainsString( $class_name, $out['html'], 'positive control: the mode is on' );
+			$this->assertStringNotContainsString( 'overflow:', $out['css'], 'Visible or unset prints no overflow rule' );
+		}
+
+		$out = $this->render_container( $mode_attrs + array( 'overflow' => 'hidden' ) );
+		$this->assertStringContainsString( '.' . $out['uid'] . '{overflow:hidden', $out['css'], 'an explicit hidden agrees with the mode' );
+	}
+
 	public function test_scroll_row_overflow_stays_on_the_row_and_wins_on_its_own_axis(): void {
 		$out = $this->render_container(
 			array(

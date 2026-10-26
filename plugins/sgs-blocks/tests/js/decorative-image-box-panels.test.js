@@ -7,7 +7,6 @@
 
 'use strict';
 
-const fs = require( 'fs' );
 const path = require( 'path' );
 const React = require( 'react' );
 const { createRoot } = require( 'react-dom/client' );
@@ -15,7 +14,6 @@ const { act } = require( 'react' );
 
 const BLOCK_DIR = path.join( __dirname, '../../src/blocks/decorative-image' );
 const SCHEMA = require( path.join( BLOCK_DIR, 'block.json' ) ).attributes;
-const PANELS_JS = fs.readFileSync( path.join( BLOCK_DIR, 'LayerBoxPanels.js' ), 'utf8' );
 
 const h = React.createElement;
 
@@ -83,10 +81,14 @@ jest.mock( '../../src/components', () => {
 			} ),
 		SgsLengthControl: () => R.createElement( 'div', { 'data-length-control': true } ),
 		ShadowControl: ( { attrNames } ) => R.createElement( 'div', { 'data-shadow-control': JSON.stringify( attrNames ) } ),
-		ResponsiveOverride: ( { label, children } ) =>
+		ResponsiveOverride: ( { label, value, onChange, children } ) =>
 			R.createElement(
 				'div',
-				{ 'data-responsive': label },
+				{
+					'data-responsive': label,
+					'data-value': JSON.stringify( value ),
+					onClick: () => onChange( { desktop: '99px' } ),
+				},
 				children( { ownValue: '', effectiveValue: '', inherited: false, setOwnValue: () => {} } )
 			),
 		shadowAttrKeys: ( base, { hover, hoverColour } ) => ( {
@@ -99,6 +101,7 @@ jest.mock( '../../src/components', () => {
 } );
 
 const LayerBoxPanels = require( path.join( BLOCK_DIR, 'LayerBoxPanels.js' ) ).default;
+const { layerBoxPreview, layerPaintsBox } = require( path.join( BLOCK_DIR, 'layer-preview.js' ) );
 
 function mount( attributes, setAttributes ) {
 	const host = document.createElement( 'div' );
@@ -163,20 +166,49 @@ describe( 'Floating layer box panels', () => {
 		expect( setAttributes ).toHaveBeenCalledWith( { borderRadius: { desktop: { topLeft: '4px' }, mobile: { topLeft: '8px' } } } );
 	} );
 
-	it( 'every new block.json attribute is declared and reachable from the panels', () => {
+	it( 'every new block.json attribute is declared, and each control reads and writes its own attribute', () => {
 		NEW_ATTRIBUTES.forEach( ( name ) => {
 			expect( SCHEMA[ name ] ).toBeDefined();
 		} );
-		// The shadow attributes are reached through shadowAttrKeys( 'boxShadow', ... ); the rest by name.
-		NEW_ATTRIBUTES.filter( ( n ) => ! n.startsWith( 'boxShadow' ) ).forEach( ( name ) => {
-			expect( PANELS_JS ).toContain( name );
+
+		const setAttributes = jest.fn();
+		const attributes = { height: { desktop: '80px' }, shape: 'rounded', borderStyle: 'dashed', borderColour: 'accent' };
+		const host = mount( attributes, setAttributes );
+
+		// Height: reads `height` and writes it back whole.
+		const height = host.querySelector( '[data-responsive="Height"]' );
+		expect( JSON.parse( height.dataset.value ) ).toEqual( attributes.height );
+		act( () => {
+			height.click();
 		} );
-		expect( PANELS_JS ).toContain( "shadowAttrKeys( 'boxShadow', { hover: true, hoverColour: true } )" );
+		expect( setAttributes ).toHaveBeenCalledWith( { height: { desktop: '99px' } } );
+
+		// Shape, border and fill: read from and write to the named attributes.
+		expect( host.querySelector( '[data-select="Shape"]' ).dataset.value ).toBe( 'rounded' );
+		expect( host.querySelector( '[data-border-control]' ).dataset.style ).toBe( 'dashed' );
+		expect( host.querySelector( '[data-border-control]' ).dataset.colour ).toBe( 'accent' );
+		act( () => {
+			host.querySelector( '[data-border-control]' ).click();
+		} );
+		expect( setAttributes ).toHaveBeenCalledWith( { borderWidth: { top: '2px' } } );
+		expect( setAttributes ).toHaveBeenCalledWith( { borderColour: 'accent' } );
+
+		// The shadow control is handed all four shadow attribute names.
+		const shadowNames = JSON.parse( host.querySelector( '[data-shadow-control]' ).dataset.shadowControl );
+		expect( Object.values( shadowNames ).sort() ).toEqual( [ 'boxShadow', 'boxShadowColour', 'boxShadowColourHover', 'boxShadowHover' ] );
+		expect( JSON.parse( host.querySelector( '[data-colour-panel]' ).dataset.rows )[ 0 ].attrs ).toEqual( {
+			base: 'backgroundColour',
+			gradient: 'backgroundColourGradient',
+		} );
 	} );
 
-	it( 'an unset layer prints nothing: every new attribute defaults empty, or solid for the border style', () => {
+	it( 'an unset layer prints nothing: the schema defaults preview no box and no clip', () => {
+		const defaults = {};
 		NEW_ATTRIBUTES.forEach( ( name ) => {
-			expect( [ '', {}, 'solid', 'none' ] ).toContainEqual( SCHEMA[ name ].default );
+			defaults[ name ] = SCHEMA[ name ].default;
 		} );
+
+		expect( layerBoxPreview( defaults, 'desktop', [] ) ).toEqual( {} );
+		expect( layerPaintsBox( defaults, [] ) ).toBe( false );
 	} );
 } );

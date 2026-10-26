@@ -159,12 +159,27 @@ $sgs_di_height = sgs_responsive_normalise_object( $attributes['height'] ?? null 
 $sgs_di_shape = sgs_media_atom_box_shape_validate_shape( $attributes['shape'] ?? null );
 $sgs_di_clip  = sgs_media_atom_box_shape_clip_paths()[ $sgs_di_shape ] ?? '';
 
-// A layer with no media and no content renders only when it has something to draw: a
-// border width or gradient ring, a shadow or a fill. A height or a radius alone draws nothing.
-$sgs_di_paints_box = '' !== $sgs_di_border['facts']['width_top']
-	|| array() !== $sgs_di_border['tablet']
-	|| array() !== $sgs_di_border['mobile']
-	|| array() !== $sgs_di_border['rules']
+// A layer with no media and no content renders only when it has something to draw: a border
+// width at any tier, a gradient ring, a resting shadow or a fill. A height, a radius, a shape or a
+// hover shadow alone draws nothing. A border style of none draws no border or ring.
+// `layer-preview.js::layerPaintsBox` is the canvas twin; tests/fixtures/decorative-image-paints-box.json
+// is the table both are tested against.
+$sgs_di_border_boxes = is_array( $attributes['borderWidth'] ?? null ) ? $attributes['borderWidth'] : array();
+if ( isset( $sgs_di_border_boxes['desktop'] ) || isset( $sgs_di_border_boxes['tablet'] ) || isset( $sgs_di_border_boxes['mobile'] ) ) {
+	$sgs_di_border_boxes = array_values( array_filter( $sgs_di_border_boxes, 'is_array' ) );
+} else {
+	$sgs_di_border_boxes = array( $sgs_di_border_boxes );
+}
+$sgs_di_has_width = false;
+foreach ( $sgs_di_border_boxes as $sgs_di_box ) {
+	foreach ( array( 'top', 'right', 'bottom', 'left' ) as $sgs_di_side ) {
+		if ( is_scalar( $sgs_di_box[ $sgs_di_side ] ?? null ) && '' !== trim( (string) $sgs_di_box[ $sgs_di_side ] ) ) {
+			$sgs_di_has_width = true;
+		}
+	}
+}
+$sgs_di_has_ring   = '' !== sgs_css_gradient_value( (string) ( $attributes['borderColourGradient'] ?? '' ) );
+$sgs_di_paints_box = ( 'none' !== $sgs_di_border['facts']['style'] && ( $sgs_di_has_width || $sgs_di_has_ring ) )
 	|| array() !== $sgs_di_shadow['normal']
 	|| '' !== $sgs_di_fill;
 $sgs_di_shape_only = ! $has_media && ! $has_content;
@@ -188,7 +203,7 @@ $width_unit     = in_array( $width_unit_raw, array( 'px', '%', 'auto' ), true ) 
 $pos_x_css        = $sgs_css_num( $position_x, 2 );
 $pos_y_css        = $sgs_css_num( $position_y, 2 );
 $width_css        = $sgs_css_num( $width, 2 );
-$max_width_css    = $sgs_css_num( $max_width_percent, 2 );
+$max_width_css    = min( 100.0, max( 0.0, $sgs_css_num( $max_width_percent, 2 ) ) );
 $opacity_css      = $sgs_css_num( $opacity / 100, 4 );
 $z_index_css      = (int) $sgs_css_num( $z_index, 0 );
 
@@ -296,7 +311,8 @@ if ( '' !== $sgs_di_tier_css ) {
 
 // The box's own tiers (border width and radius, height), its hover shadow and its gradient
 // ring. Tier rules print after the base rule, so a device value wins inside its query.
-foreach ( array( 'tablet' => 1023, 'mobile' => 767 ) as $sgs_di_tier => $sgs_di_max ) {
+foreach ( array( 'tablet', 'mobile' ) as $sgs_di_tier ) {
+	$sgs_di_max        = SGS_Breakpoints::max_for_tier( $sgs_di_tier );
 	$sgs_di_tier_decls = $sgs_di_border[ $sgs_di_tier ];
 	$sgs_di_tier_h     = sgs_css_length_value( $sgs_di_height[ $sgs_di_tier ] ?? '' );
 	if ( '' !== $sgs_di_tier_h ) {
