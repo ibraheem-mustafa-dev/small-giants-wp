@@ -878,6 +878,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `cachedSite(file)` → the site a slot map was measured on, or null. `readSlotMap(dir, block)` → the slot map or null. `readPaint(dir, site, block)` → that site's paint or null (a file naming another site is null).
 - `splitCalibration(file)` → `{ slotMap, paint }` from one combined calibration object. `writeSlotMap(dir, block, slotMap)`, `writePaint(dir, site, block, paint)`.
 - `paintSite(site)` → the site whose paint folder `site` uses: the test site a mirror copies (`mirrorOf` in `calibration-targets.json`), else the site itself.
+- `recordSite(site)` → the site whose per-site records (the media map's attachments, the menu map's menu ids) `site` reads: a mirror reads its test site's (the same `mirrorOf` rule as `paintSite`), never its own.
 - `loadCalibration(dir, block, site)` → the slot map with the site's paint merged in as `elements`, or null without a slot map; `paintReadKey` is the paint's own read list; a site with no paint gets `elements: {}` and `paintMissing`, never another site's paint.
 - `slotMapSkip(dir, block, site, slotKey, recalibrate?)` → why the slot map must be left alone (another site measured it, or its key is current), or null.
 - `dueOutputs(slotWhy, paintWhy, slotMapOnly?)` → `{ slotMap, paint }`: which outputs a run writes; `slotMapOnly` (`calibrate.mjs --slot-map-only`, stage 0) never makes the paint due.
