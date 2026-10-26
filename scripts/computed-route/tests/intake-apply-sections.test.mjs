@@ -55,8 +55,10 @@ test( 'on a scratch copy of the redesign client\'s full intake, --section palett
 	try {
 		const at = pathsFor( repo, 'mamas-munches-redesign' );
 		fs.mkdirSync( at.dir, { recursive: true } );
-		const before = JSON.parse( fs.readFileSync( src.intake, 'utf8' ) );
-		fs.copyFileSync( src.intake, at.intake );
+		// The client's own review may already be applied: the copy starts with no marks, so its other sections are unmarked.
+		const before = { ...JSON.parse( fs.readFileSync( src.intake, 'utf8' ) ), review: [] };
+		fs.writeFileSync( at.intake, `${ JSON.stringify( before, null, 1 ) }
+` );
 		fs.writeFileSync( at.review, tick( renderReview( before ), 'palette-role' ) );
 		const quiet = { log: () => {}, today: '2026-10-24' };
 		assert.equal( applyIntakeReview( { repo, client: 'mamas-munches-redesign' }, quiet ), 1, 'the unmarked other sections refuse a whole apply' );
