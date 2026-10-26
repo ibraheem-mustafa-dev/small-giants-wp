@@ -1,0 +1,1903 @@
+{
+  "pairs": [
+    {
+      "block": "sgs/before-after",
+      "setting": "height",
+      "unit": "heightUnit"
+    },
+    {
+      "block": "sgs/before-after",
+      "setting": "maxWidth",
+      "unit": "maxWidthUnit"
+    },
+    {
+      "block": "sgs/button",
+      "setting": "customWidth",
+      "unit": "customWidthUnit"
+    },
+    {
+      "block": "sgs/button",
+      "setting": "minHeight",
+      "unit": "minHeightUnit"
+    },
+    {
+      "block": "sgs/container",
+      "setting": "minColumnWidth",
+      "unit": "minColumnWidthUnit"
+    },
+    {
+      "block": "sgs/feature-grid",
+      "setting": "minItemWidth",
+      "unit": "minItemWidthUnit"
+    },
+    {
+      "block": "sgs/heading",
+      "setting": "customWidth",
+      "unit": "customWidthUnit"
+    },
+    {
+      "block": "sgs/heading",
+      "setting": "maxWidth",
+      "unit": "maxWidthUnit"
+    },
+    {
+      "block": "sgs/hero",
+      "setting": "splitMediaWidth",
+      "unit": "splitMediaWidthUnit"
+    },
+    {
+      "block": "sgs/hero",
+      "setting": "splitMediaHeight",
+      "unit": "splitMediaHeightUnit"
+    },
+    {
+      "block": "sgs/hero",
+      "setting": "splitMediaMaxWidth",
+      "unit": "splitMediaMaxWidthUnit"
+    },
+    {
+      "block": "sgs/hero",
+      "setting": "splitMediaMaxHeight",
+      "unit": "splitMediaMaxHeightUnit"
+    },
+    {
+      "block": "sgs/media",
+      "setting": "maxWidth",
+      "unit": "maxWidthUnit"
+    },
+    {
+      "block": "sgs/media",
+      "setting": "maxHeight",
+      "unit": "maxHeightUnit"
+    },
+    {
+      "block": "sgs/media",
+      "setting": "height",
+      "unit": "heightUnit"
+    },
+    {
+      "block": "sgs/modal",
+      "setting": "dialogWidth",
+      "unit": "dialogWidthUnit"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "setting": "shrinkWidth",
+      "unit": "shrinkWidthUnit"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "setting": "maxWidth",
+      "unit": "maxWidthUnit"
+    },
+    {
+      "block": "sgs/responsive-logo",
+      "setting": "maxHeight",
+      "unit": "maxHeightUnit"
+    },
+    {
+      "block": "sgs/separator",
+      "setting": "width",
+      "unit": "widthUnit"
+    },
+    {
+      "block": "sgs/separator",
+      "setting": "thickness",
+      "unit": "thicknessUnit"
+    },
+    {
+      "block": "sgs/text",
+      "setting": "maxWidth",
+      "unit": "maxWidthUnit"
+    },
+    {
+      "block": "sgs/text",
+      "setting": "customWidth",
+      "unit": "customWidthUnit"
+    },
+    {
+      "block": "extension",
+      "setting": "sgsHeight",
+      "unit": "sgsHeightUnit"
+    }
+  ],
+  "readers": {
+    "customWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42085,
+        "text": "\"attr\": \"customWidthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 824,
+        "text": "itself is NOT independently under test this run (`customWidthUnit` gets"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 828,
+        "text": "\"Two cases to leave alone\" note for why `customWidth`+`customWidthUnit`"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 838,
+        "text": "# An object-shaped Unit sibling (e.g. customWidthUnit) is itself a"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1444,
+        "text": "# 35. button.customWidth (empty default, sibling customWidthUnit exists)"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1450,
+        "text": "'customWidthUnit, left untouched)',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1453,
+        "text": "# 36. button.customWidthUnit \u2014 derived via the `units={}` UnitControl scan"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1456,
+        "text": "cwu_tiers, cwu_reason = (derive_probe_tiers(btn, 'customWidthUnit')"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1458,
+        "text": "ok('button customWidthUnit: probe derivation did not refuse', cwu_tiers is not None)"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1460,
+        "text": "ok('button customWidthUnit: every tier is a legal unit keyword',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1462,
+        "text": "ok('button customWidthUnit: differs from the declared default (px)',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1577,
+        "text": "#     (button.customWidthUnit is itself a migrated tier-object with its"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1581,
+        "text": "btn_probe = payload_of(block_markup(btn, ['customWidth', 'customWidthUnit'],"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1583,
+        "text": "ok('button: customWidthUnit keeps its OWN object-shaped probe value '"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/build-tier-fixture-page.py",
+        "line": 1585,
+        "text": "isinstance(btn_probe.get('customWidthUnit'), dict))"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/capture-tier-fixture.py",
+        "line": 124,
+        "text": "'customWidthUnit': 'a unit modifier for customWidth, not a property of its own',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 1269,
+        "text": "\"sgs/button::customWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 4383,
+        "text": "\"sgs/heading::customWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 8835,
+        "text": "\"sgs/text::customWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/content-role-detect/detector4_referenced_not_output.py",
+        "line": 186,
+        "text": "# gradientColourStart, customWidthUnit \u2026) survived the wrapper-only"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/button_pairing.py",
+        "line": 10,
+        "text": "customWidthUnit, colourText/colourBackground/colourBorder (+Hover),"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/button_pairing.py",
+        "line": 274,
+        "text": "# Known-good: render.php lines 55-57 accept customWidthUnit \"%\" verbatim;"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/button_pairing.py",
+        "line": 280,
+        "text": "out['customWidthUnit'] = '%'"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/button_pairing.py",
+        "line": 281,
+        "text": "accounting[key] = ('mapped', 'widthType:\"custom\" + customWidth + customWidthUnit:\"%\"')"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/nav-qa/gate3c/indus-mega-brands.tree.json",
+        "line": 631,
+        "text": "\"customWidthUnit\": {"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/nav-qa/lane-c/qa-furniture.json",
+        "line": 276,
+        "text": "\"customWidthUnit\": {"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/uimax-tools/enrich-db.py",
+        "line": 112,
+        "text": "\"customWidthUnit\": \"width\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 118,
+        "text": "// widthType / customWidth / customWidthUnit are now TIER OBJECTS (Spec 35"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 145,
+        "text": "customWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 901,
+        "text": "{ /* Width \u2014 widthType / customWidth / customWidthUnit are TIER"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 905,
+        "text": "directly, and customWidth/customWidthUnit are written for"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 926,
+        "text": "const unitObj = customWidthUnit || {};"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 964,
+        "text": "customWidthUnit: {"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/preview-style.js",
+        "line": 61,
+        "text": "const { widthType = {}, customWidth = {}, customWidthUnit = {} } = attributes;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/preview-style.js",
+        "line": 64,
+        "text": "const value = widthValue( type, customWidth?.[ t ], customWidthUnit?.[ t ] );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/render.php",
+        "line": 165,
+        "text": "// widthType / customWidth / customWidthUnit are TIER OBJECTS (Spec 35) \u2014 each ONE"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/render.php",
+        "line": 172,
+        "text": "$custom_width_unit_obj = sgs_responsive_normalise_object( $attributes['customWidthUnit'] ?? null );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 239,
+        "text": "customWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 273,
+        "text": "wrapperStyle.width = `${ customWidth }${ customWidthUnit || 'px' }`;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 346,
+        "text": "customWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 704,
+        "text": "value={ composeUnit( customWidth, customWidthUnit ) }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 709,
+        "text": "customWidthUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 716,
+        "text": "customWidthUnit: unit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/render.php",
+        "line": 171,
+        "text": "$custom_width_unit = sgs_heading_safe_unit( $attributes['customWidthUnit'] ?? 'px' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/render.php",
+        "line": 51,
+        "text": "// instead (mirrors sgs/heading's customWidth/customWidthUnit split-scalar"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 127,
+        "text": "customWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 160,
+        "text": "previewStyle.width = `${ customWidth }${ customWidthUnit }`;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 310,
+        "text": "customWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 747,
+        "text": "{ /* Custom width \u2014 split-scalar customWidth/customWidthUnit pair,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 754,
+        "text": "value={ composeUnit( customWidth, customWidthUnit ) }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 757,
+        "text": "const { num, unit } = parseUnit( raw, customWidthUnit || 'px' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 760,
+        "text": "customWidthUnit: unit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/render.php",
+        "line": 131,
+        "text": "$custom_width_unit = $attributes['customWidthUnit'] ?? 'px';"
+      },
+      {
+        "file": "scripts/computed-route/tests/calibrate-classes.test.mjs",
+        "line": 72,
+        "text": "const schema = { customWidth: { type: 'number' }, customWidthUnit: { type: 'object', default: { desktop: '%' } } };"
+      },
+      {
+        "file": "scripts/computed-route/tests/calibrate-classes.test.mjs",
+        "line": 74,
+        "text": "assert.deepEqual( m.attrs.customWidthUnit, { desktop: 'px', tablet: 'px', mobile: 'px' } );"
+      },
+      {
+        "file": "scripts/computed-route/tests/fixtures/frozen-db/rows.json",
+        "line": 139,
+        "text": "{\"block_slug\":\"sgs/button\",\"attr_name\":\"customWidthUnit\",\"attr_type\":\"object\",\"default_value\":\"{\\\"desktop\\\": \\\"px\\\", \\\"tablet\\\": \\\"px\\\", \\\"mobile\\\": \\\"px\\\"}\",\"i"
+      },
+      {
+        "file": "theme/sgs-theme/patterns/pricing-columns.php",
+        "line": 26,
+        "text": "<!-- wp:sgs/button {\"label\":\"Choose Starter\",\"inheritStyle\":\"outline\",\"widthType\":{\"desktop\":\"custom\"},\"customWidth\":{\"desktop\":100},\"customWidthUnit\":{\"desktop"
+      },
+      {
+        "file": "theme/sgs-theme/patterns/pricing-columns.php",
+        "line": 40,
+        "text": "<!-- wp:sgs/button {\"label\":\"Choose Professional\",\"inheritStyle\":\"primary\",\"widthType\":{\"desktop\":\"custom\"},\"customWidth\":{\"desktop\":100},\"customWidthUnit\":{\"de"
+      },
+      {
+        "file": "theme/sgs-theme/patterns/pricing-columns.php",
+        "line": 53,
+        "text": "<!-- wp:sgs/button {\"label\":\"Contact Us\",\"inheritStyle\":\"outline\",\"widthType\":{\"desktop\":\"custom\"},\"customWidth\":{\"desktop\":100},\"customWidthUnit\":{\"desktop\":\"%"
+      }
+    ],
+    "dialogWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 5520,
+        "text": "\"sgs/modal::dialogWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/block.json",
+        "line": 73,
+        "text": "\"_note\": \"This block declares containerMirror:false (does NOT wrap SGS_Container_Wrapper) and disables native color support entirely \u2014 every declaration is bloc"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/dialog-style-controls.js",
+        "line": 21,
+        "text": "// dialogWidthUnit the unit) \u2014 same private per-file helper shape every other"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/dialog-style-controls.js",
+        "line": 62,
+        "text": "const { dialogWidth, dialogWidthUnit, borderWidth, borderStyle, borderColour, borderColourGradient } = attributes;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/dialog-style-controls.js",
+        "line": 72,
+        "text": "value={ composeUnit( dialogWidth, dialogWidthUnit ) }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/dialog-style-controls.js",
+        "line": 75,
+        "text": "const { num, unit } = parseUnit( raw, dialogWidthUnit || 'px' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/dialog-style-controls.js",
+        "line": 78,
+        "text": "dialogWidthUnit: unit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/preview-style.js",
+        "line": 25,
+        "text": "const unit = [ 'px', '%', 'em', 'rem', 'vw' ].includes( attributes.dialogWidthUnit ) ? attributes.dialogWidthUnit : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/preview-style.js",
+        "line": 25,
+        "text": "const unit = [ 'px', '%', 'em', 'rem', 'vw' ].includes( attributes.dialogWidthUnit ) ? attributes.dialogWidthUnit : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/render.php",
+        "line": 54,
+        "text": "$dialog_width_unit = in_array( $attributes['dialogWidthUnit'] ?? 'px', array( 'px', '%', 'em', 'rem', 'vw' ), true ) ? ( $attributes['dialogWidthUnit'] ?? 'px' "
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/modal/render.php",
+        "line": 54,
+        "text": "$dialog_width_unit = in_array( $attributes['dialogWidthUnit'] ?? 'px', array( 'px', '%', 'em', 'rem', 'vw' ), true ) ? ( $attributes['dialogWidthUnit'] ?? 'px' "
+      }
+    ],
+    "heightUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42040,
+        "text": "\"attr\": \"heightUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 905,
+        "text": "\"sgs/before-after::heightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 5234,
+        "text": "\"sgs/media::heightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/probes/build-noJS-autoplay-fixture.py",
+        "line": 104,
+        "text": "'heightUnit': 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/probes/extend-page-3145-video-svg.py",
+        "line": 112,
+        "text": "'heightUnit': 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/probes/extend-page-3145-video-svg.py",
+        "line": 124,
+        "text": "'heightUnit': 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 96,
+        "text": "'box-shape': ['mediaSizing', 'height', 'heightUnit', 'maxHeight',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 103,
+        "text": "'box-shape': ['height', 'heightUnit', 'maxWidth', 'maxWidthUnit'],"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 277,
+        "text": "'height-tier-object': 'sgs/media, before-after `height` + heightUnit',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/tests/test-media-atom-parity.mjs",
+        "line": 120,
+        "text": "heightUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/tests/test-media-atom-parity.mjs",
+        "line": 190,
+        "text": "patch: { mediaSizing: undefined, aspectRatio: '', height: { desktop: 320 }, heightUnit: 'px' },"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/tests/test-media-atom-parity.mjs",
+        "line": 208,
+        "text": "patch: { mediaSizing: 'auto', aspectRatio: '', height: { desktop: 320 }, heightUnit: 'px' },"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/edit.js",
+        "line": 489,
+        "text": "heightUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/edit.js",
+        "line": 828,
+        "text": "`heightUnit` attr \u2014 that per-tier-number/shared-unit"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/edit.js",
+        "line": 846,
+        "text": ": `${ val }${ heightUnit }`"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/edit.js",
+        "line": 848,
+        "text": "placeholder={ inherited && '' !== effectiveValue ? `${ effectiveValue }${ heightUnit }` : '' }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/edit.js",
+        "line": 860,
+        "text": "setAttributes( { heightUnit: unitMatch[ 0 ] } );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/render.php",
+        "line": 141,
+        "text": "// heightTablet/heightMobile keys. `heightUnit` stays a separate flat attr"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/render.php",
+        "line": 145,
+        "text": "$height_unit   = in_array( $attributes['heightUnit'] ?? 'px', array( 'px', 'vh', 'em', 'rem', '%' ), true ) ? $attributes['heightUnit'] : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/before-after/render.php",
+        "line": 145,
+        "text": "$height_unit   = in_array( $attributes['heightUnit'] ?? 'px', array( 'px', 'vh', 'em', 'rem', '%' ), true ) ? $attributes['heightUnit'] : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.control.js",
+        "line": 78,
+        "text": "heightUnit={ attributes[ heightUnitKey ] }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 139,
+        "text": "* @param {string}   props.heightUnit"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 197,
+        "text": "heightUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 257,
+        "text": "unit={ heightUnit }"
+      },
+      {
+        "file": "plugins/sgs-blocks/tests/php/BorderElementParityTest.php",
+        "line": 227,
+        "text": "'heightUnit'     => 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/tests/php/FocusGroundClassTest.php",
+        "line": 80,
+        "text": "'heightUnit'      => 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/tests/php/FocusProxyMarkupTest.php",
+        "line": 121,
+        "text": "'heightUnit'     => 'px',"
+      },
+      {
+        "file": "scripts/computed-route/data/capabilities.json",
+        "line": 614,
+        "text": "\"sgs/before-after.heightUnit\","
+      }
+    ],
+    "maxHeightUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 5250,
+        "text": "\"sgs/media::maxHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 7755,
+        "text": "\"sgs/responsive-logo::maxHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 97,
+        "text": "'maxHeightUnit', 'maxWidth', 'maxWidthUnit'],"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 234,
+        "text": "maxHeightUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 255,
+        "text": "// `maxWidthUnit`/`maxHeightUnit` \u2014 the tier axis and the unit are separate"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 268,
+        "text": "const { num, unit } = parseMaxBoxValue( raw, maxHeightUnit || 'px' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 270,
+        "text": "setAttributes( { maxHeightUnit: unit } );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 678,
+        "text": "maxHeightUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 684,
+        "text": "maxHeightUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/render.php",
+        "line": 483,
+        "text": "'unit_attr'    => 'maxHeightUnit',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.control.js",
+        "line": 92,
+        "text": "maxHeightUnit={ attributes[ maxHeightUnitKey ] }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 634,
+        "text": "const maxHeightUnit = attributes[ maxHeightUnitKey ] || 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 638,
+        "text": "const val = formatLength( maxHeightObj[ tier ], maxHeightUnit, false );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 155,
+        "text": "* @param {string}   [props.maxHeightUnit]"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 211,
+        "text": "maxHeightUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 348,
+        "text": "unit={ maxHeightUnit }"
+      },
+      {
+        "file": "scripts/computed-route/tests/fixtures/frozen-db/rows.json",
+        "line": 782,
+        "text": "{\"block_slug\":\"sgs/responsive-logo\",\"attr_name\":\"maxHeightUnit\",\"attr_type\":\"string\",\"default_value\":\"\\\"px\\\"\",\"is_responsive\":0,\"source\":\"sgs\",\"role\":\"layout\"},"
+      }
+    ],
+    "maxWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 2338,
+        "text": "# contentFontSizeUnit=typography, maxWidthUnit=layout, all with css_property NULL."
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42095,
+        "text": "\"attr\": \"maxWidthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/check-dead-controls.js",
+        "line": 2191,
+        "text": "//   sgs/before-after :: maxWidthUnit   sgs/button :: fontFamily"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 931,
+        "text": "\"sgs/before-after::maxWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 4408,
+        "text": "\"sgs/heading::maxWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 5252,
+        "text": "\"sgs/media::maxWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 7757,
+        "text": "\"sgs/responsive-logo::maxWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 8865,
+        "text": "\"sgs/text::maxWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/inspector-scan/rules.json",
+        "line": 216,
+        "text": "\"advisoryReason\": \"LOWERED 67 -> 49 (2026-10-16). Composition ENUMERATED from `node run.js --json` that day, not inferred: FLAGGED 49, BASELINED 0, TOTAL 49. Th"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/inspector-scan/rules.json",
+        "line": 216,
+        "text": "\"advisoryReason\": \"LOWERED 67 -> 49 (2026-10-16). Composition ENUMERATED from `node run.js --json` that day, not inferred: FLAGGED 49, BASELINED 0, TOTAL 49. Th"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/inspector-scan/rules/34-declared-attr-unrendered.js",
+        "line": 9,
+        "text": "// `sgs/before-after::maxWidthUnit` and `sgs/button::fontFamily`."
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/survey-length-control-scale.py",
+        "line": 458,
+        "text": "'<SgsLengthControl label=\"Width\" scale=\"font-size\" value={ composeUnit( attributes.maxWidth, attributes.maxWidthUnit ) } onChange={ f } />\\n'"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 97,
+        "text": "'maxHeightUnit', 'maxWidth', 'maxWidthUnit'],"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 103,
+        "text": "'box-shape': ['height', 'heightUnit', 'maxWidth', 'maxWidthUnit'],"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/tests/test-media-atom-parity.mjs",
+        "line": 214,
+        "text": "patch: { maxWidth: { desktop: 640 }, maxWidthUnit: 'px' },"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/block.json",
+        "line": 392,
+        "text": "\"description\": \"Maximum width of the heading (number; unit in maxWidthUnit). Empty = no cap. Lets a long heading wrap at a set measure, e.g. 15ch, without fixin"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 241,
+        "text": "maxWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 276,
+        "text": "wrapperStyle.maxWidth = `${ maxWidth }${ maxWidthUnit || 'px' }`;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 348,
+        "text": "maxWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 727,
+        "text": "value={ composeUnit( maxWidth, maxWidthUnit ) }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 732,
+        "text": "maxWidthUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/edit.js",
+        "line": 741,
+        "text": "maxWidthUnit: unit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/render.php",
+        "line": 173,
+        "text": "$max_width_unit    = in_array( $attributes['maxWidthUnit'] ?? 'px', array( 'px', 'em', 'rem', '%', 'ch' ), true ) ? ( $attributes['maxWidthUnit'] ?? 'px' ) : 'p"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/heading/render.php",
+        "line": 173,
+        "text": "$max_width_unit    = in_array( $attributes['maxWidthUnit'] ?? 'px', array( 'px', 'em', 'rem', '%', 'ch' ), true ) ? ( $attributes['maxWidthUnit'] ?? 'px' ) : 'p"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/block.json",
+        "line": 189,
+        "text": "\"description\": \"CSS unit for shrinkWidth (px|%|em|rem), same unit set as maxWidthUnit. Declared with a default so the unit is always resolvable once a width is "
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 233,
+        "text": "maxWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 255,
+        "text": "// `maxWidthUnit`/`maxHeightUnit` \u2014 the tier axis and the unit are separate"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 262,
+        "text": "const { num, unit } = parseMaxBoxValue( raw, maxWidthUnit || 'px' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 264,
+        "text": "setAttributes( { maxWidthUnit: unit } );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 642,
+        "text": "maxWidthUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 648,
+        "text": "maxWidthUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/render.php",
+        "line": 284,
+        "text": "// as maxWidthUnit) -- a client sizing a shrunk logo relative to its header"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/render.php",
+        "line": 405,
+        "text": "// `maxWidthUnit` attr, and sgs_responsive_css_rule()'s validity gate is"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/render.php",
+        "line": 438,
+        "text": "'unit_attr'    => 'maxWidthUnit',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 125,
+        "text": "maxWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 154,
+        "text": "previewStyle.maxWidth = `${ maxWidth }${ maxWidthUnit }`;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 280,
+        "text": "maxWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 738,
+        "text": "value={ composeUnit( maxWidth, maxWidthUnit ) }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 741,
+        "text": "const { num, unit } = parseUnit( raw, maxWidthUnit || 'px' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/edit.js",
+        "line": 742,
+        "text": "setAttributes( { maxWidth: num, maxWidthUnit: unit } );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/text/render.php",
+        "line": 83,
+        "text": "$max_width_unit      = $attributes['maxWidthUnit'] ?? 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.control.js",
+        "line": 88,
+        "text": "maxWidthUnit={ attributes[ maxWidthUnitKey ] }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 620,
+        "text": "const maxWidthUnit = attributes[ maxWidthUnitKey ] || 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 624,
+        "text": "const val = formatLength( maxWidthObj[ tier ], maxWidthUnit, false );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 151,
+        "text": "* @param {string}   [props.maxWidthUnit]"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 207,
+        "text": "maxWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 338,
+        "text": "unit={ maxWidthUnit }"
+      },
+      {
+        "file": "plugins/sgs-blocks/tests/php/StoredUnitBreakoutTest.php",
+        "line": 26,
+        "text": "$css = $this->render_block( 'sgs/text', array( 'text' => 'Fresh bread', 'maxWidth' => 300, 'maxWidthUnit' => self::HOSTILE ) )['css'];"
+      },
+      {
+        "file": "plugins/sgs-blocks/tests/php/StoredUnitBreakoutTest.php",
+        "line": 30,
+        "text": "$ok = $this->render_block( 'sgs/text', array( 'text' => 'Fresh bread', 'maxWidth' => 40, 'maxWidthUnit' => 'rem' ) )['css'];"
+      },
+      {
+        "file": "scripts/computed-route/README.md",
+        "line": 768,
+        "text": "`cache/` (gitignored) holds the calibration: one slot map per block for the whole library (`cache/<block>.json`, recording the `site` that measured it) and one "
+      },
+      {
+        "file": "scripts/computed-route/data/capabilities.json",
+        "line": 615,
+        "text": "\"sgs/before-after.maxWidthUnit\","
+      },
+      {
+        "file": "scripts/computed-route/lib/fill-dimensions.mjs",
+        "line": 67,
+        "text": "// wider tier down, and a unit partner write (maxWidthUnit beside maxWidth) names the unit."
+      },
+      {
+        "file": "scripts/computed-route/lib/fill-logo-size.mjs",
+        "line": 2,
+        "text": "// width) and a per-device ceiling (`maxWidth`, a tier object with its unit in `maxWidthUnit`). A draft logo whose width"
+      },
+      {
+        "file": "scripts/computed-route/lib/resolve-declared.mjs",
+        "line": 108,
+        "text": "// which returns a bare keyword unchanged) or a string with no unit partner. A setting with a unit partner (`maxWidthUnit`) or"
+      },
+      {
+        "file": "scripts/computed-route/tests/fill-u8-writers.test.mjs",
+        "line": 79,
+        "text": "assert.deepEqual( logoSizeSettings( db, 'sgs/responsive-logo' ), { width: 'width', max: 'maxWidth', unit: 'maxWidthUnit' } );"
+      },
+      {
+        "file": "scripts/computed-route/tests/fixtures/frozen-db/rows.json",
+        "line": 784,
+        "text": "{\"block_slug\":\"sgs/responsive-logo\",\"attr_name\":\"maxWidthUnit\",\"attr_type\":\"string\",\"default_value\":\"\\\"px\\\"\",\"is_responsive\":0,\"source\":\"sgs\",\"role\":\"layout\"},"
+      }
+    ],
+    "minColumnWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/includes/helpers-container.php",
+        "line": 203,
+        "text": "*                               `minColumnWidth`/`minColumnWidthUnit` attribute pair"
+      },
+      {
+        "file": "plugins/sgs-blocks/includes/helpers-container.php",
+        "line": 234,
+        "text": "* `minColumnWidthUnit` attribute pair."
+      },
+      {
+        "file": "plugins/sgs-blocks/includes/helpers-container.php",
+        "line": 237,
+        "text": "* `minColumnWidthUnit` is a single flat string applied to every tier, the same"
+      },
+      {
+        "file": "plugins/sgs-blocks/includes/helpers-container.php",
+        "line": 260,
+        "text": "$unit = $attributes['minColumnWidthUnit'] ?? 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 2341,
+        "text": "\"sgs/container::minColumnWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 98,
+        "text": "// P2-5: minColumnWidth/minColumnWidthUnit are declared ONLY on sgs/container's"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 133,
+        "text": "// minColumnWidthUnit is read inline (attributes.minColumnWidthUnit) inside the"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 133,
+        "text": "// minColumnWidthUnit is read inline (attributes.minColumnWidthUnit) inside the"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 475,
+        "text": "`minColumnWidthUnit` attribute (not tiered) \u2014 mirroring"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 485,
+        "text": "`minColumnWidth`/`minColumnWidthUnit` attributes \u2014 currently"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 504,
+        "text": "const minColumnWidthUnit ="
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 505,
+        "text": "attributes.minColumnWidthUnit || 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 513,
+        "text": "? `${ ownValue }${ minColumnWidthUnit }`"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 521,
+        "text": "? `${ effectiveValue }${ minColumnWidthUnit }`"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 558,
+        "text": "unit !== minColumnWidthUnit"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 561,
+        "text": "minColumnWidthUnit:"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/layout-preview.js",
+        "line": 56,
+        "text": "const unit = UNITS.includes( attributes.minColumnWidthUnit ) ? attributes.minColumnWidthUnit : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/layout-preview.js",
+        "line": 56,
+        "text": "const unit = UNITS.includes( attributes.minColumnWidthUnit ) ? attributes.minColumnWidthUnit : 'px';"
+      },
+      {
+        "file": "scripts/computed-route/tests/fixtures/frozen-db/rows.json",
+        "line": 286,
+        "text": "{\"block_slug\":\"sgs/container\",\"attr_name\":\"minColumnWidthUnit\",\"attr_type\":\"string\",\"default_value\":\"\\\"px\\\"\",\"is_responsive\":0,\"source\":\"sgs\",\"role\":\"layout\"},"
+      }
+    ],
+    "minHeightUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42055,
+        "text": "\"attr\": \"minHeightUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 105,
+        "text": "\"core/cover::minHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 1308,
+        "text": "\"sgs/button::minHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/feature-parity-exceptions.json",
+        "line": 343,
+        "text": "\"minHeightUnit\": {"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
+        "line": 11,
+        "text": "(number) + minHeightUnit, gradient/customGradient, contentPosition, isDark"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
+        "line": 79,
+        "text": "Unit defaults to 'px' when minHeightUnit is absent"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
+        "line": 335,
+        "text": "unit = attrs_in.get('minHeightUnit') or 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
+        "line": 341,
+        "text": "if 'minHeightUnit' in attrs_in:"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py",
+        "line": 342,
+        "text": "accounting['minHeightUnit'] = ('mapped', 'folded into minHeight string above')"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/nav-qa/gate3c/lamalama-drawer.tree.json",
+        "line": 208,
+        "text": "\"minHeightUnit\": \"px\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/nav-qa/gate3c/lamalama-drawer.tree.json",
+        "line": 299,
+        "text": "\"minHeightUnit\": \"px\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/nav-qa/gate3c/lamalama-drawer.tree.json",
+        "line": 353,
+        "text": "\"minHeightUnit\": \"px\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 224,
+        "text": "// UNIT stays a separate flat-per-tier family (minHeightUnit/Tablet/Mobile) \u2014"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 237,
+        "text": "desktop: 'minHeightUnit',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/edit.js",
+        "line": 981,
+        "text": "(minHeightUnit/minHeightTabletUnit/minHeightMobileUnit), read/written"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/preview-style.js",
+        "line": 74,
+        "text": "* (minHeightUnit / minHeightTabletUnit / minHeightMobileUnit)."
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/preview-style.js",
+        "line": 81,
+        "text": "const unitAttr = { desktop: 'minHeightUnit', tablet: 'minHeightTabletUnit', mobile: 'minHeightMobileUnit' };"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/render.php",
+        "line": 186,
+        "text": "// declared by block.json. minHeightUnit/minHeightTabletUnit/minHeightMobileUnit"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/render.php",
+        "line": 206,
+        "text": "$min_height_unit  = isset( $attributes['minHeightUnit'] ) ? sanitize_text_field( $attributes['minHeightUnit'] ) : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/render.php",
+        "line": 206,
+        "text": "$min_height_unit  = isset( $attributes['minHeightUnit'] ) ? sanitize_text_field( $attributes['minHeightUnit'] ) : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/button/render.php",
+        "line": 613,
+        "text": "// tier has its OWN unit attribute (minHeightUnit / minHeightTabletUnit /"
+      },
+      {
+        "file": "scripts/computed-route/tests/fixtures/frozen-db/rows.json",
+        "line": 177,
+        "text": "{\"block_slug\":\"sgs/button\",\"attr_name\":\"minHeightUnit\",\"attr_type\":\"string\",\"default_value\":\"\\\"px\\\"\",\"is_responsive\":0,\"source\":\"sgs\",\"role\":\"layout\"},"
+      }
+    ],
+    "minItemWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/includes/helpers-container.php",
+        "line": 238,
+        "text": "* shape as `sgs/feature-grid`'s `minItemWidth`/`minItemWidthUnit` pair. Tiers"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42060,
+        "text": "\"attr\": \"minItemWidthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 2698,
+        "text": "\"sgs/feature-grid::minItemWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/container/components/LayoutPanel.js",
+        "line": 476,
+        "text": "sgs/feature-grid's `minItemWidth`/`minItemWidthUnit` pair \u2014"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/edit.js",
+        "line": 79,
+        "text": "minItemWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/edit.js",
+        "line": 99,
+        "text": "gridTemplateColumns: `repeat(auto-fill, minmax(${ minItemWidth }${ minItemWidthUnit }, 1fr))`,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/edit.js",
+        "line": 133,
+        "text": "minItemWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/edit.js",
+        "line": 170,
+        "text": "minItemWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/edit.js",
+        "line": 272,
+        "text": "case: minItemWidth (number) + minItemWidthUnit (string) are two"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/edit.js",
+        "line": 281,
+        "text": "value={ `${ minItemWidth }${ minItemWidthUnit || 'px' }` }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/edit.js",
+        "line": 290,
+        "text": "setAttributes( { minItemWidth: num, minItemWidthUnit: unit } );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/render.php",
+        "line": 33,
+        "text": "$min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attributes['minItemWidthUnit'], array( 'px', 'em', 'rem' ), true )"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/render.php",
+        "line": 33,
+        "text": "$min_item_unit   = isset( $attributes['minItemWidthUnit'] ) && in_array( $attributes['minItemWidthUnit'], array( 'px', 'em', 'rem' ), true )"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/feature-grid/render.php",
+        "line": 34,
+        "text": "? $attributes['minItemWidthUnit']"
+      }
+    ],
+    "sgsHeightUnit": [
+      {
+        "file": "plugins/sgs-blocks/includes/extension-attributes.generated.php",
+        "line": 37,
+        "text": "'sgsHeightUnit' => array( 'type' => 'string' ),"
+      },
+      {
+        "file": "plugins/sgs-blocks/includes/image-controls.php",
+        "line": 17,
+        "text": "* - sgsHeightUnit     (string \u2014 px / vh / em / %)"
+      },
+      {
+        "file": "plugins/sgs-blocks/includes/image-controls.php",
+        "line": 100,
+        "text": "$height_unit_raw = $attrs['sgsHeightUnit'] ?? 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/check-universal-fit.js",
+        "line": 282,
+        "text": "'sgsHeightTablet', 'sgsHeightMobile', 'sgsHeightUnit',"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 1824,
+        "text": "\"sgs/card-grid::sgsHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 3858,
+        "text": "\"sgs/gallery::sgsHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 8584,
+        "text": "\"sgs/team-member::sgsHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/extensions/extension-roster.json",
+        "line": 108,
+        "text": "\"sgsHeightUnit\": { \"type\": \"string\", \"default\": \"px\", \"enum\": [ \"px\", \"vh\", \"em\", \"%\" ], \"role\": \"layout\" },"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/extensions/image-controls.js",
+        "line": 109,
+        "text": "sgsHeightUnit: { type: 'string', default: 'px' },"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/extensions/image-controls.js",
+        "line": 134,
+        "text": "sgsHeightUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/extensions/image-controls.js",
+        "line": 275,
+        "text": "value={ sgsHeightUnit }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/extensions/image-controls.js",
+        "line": 278,
+        "text": "setAttributes( { sgsHeightUnit: val } )"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/extensions/image-controls.js",
+        "line": 349,
+        "text": "const unit = HEIGHT_UNITS.includes( attrs.sgsHeightUnit ) ? attrs.sgsHeightUnit : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/extensions/image-controls.js",
+        "line": 349,
+        "text": "const unit = HEIGHT_UNITS.includes( attrs.sgsHeightUnit ) ? attrs.sgsHeightUnit : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/tests/js/canvas-tier-preview.test.js",
+        "line": 118,
+        "text": "expect( imageControlsCanvasVars( { sgsObjectFit: 'contain', sgsHeightTablet: 300, sgsHeightUnit: 'vh', sgsObjectPosition: { x: 0.5, y: 0.5 } } ) ).toEqual( {"
+      },
+      {
+        "file": "scripts/computed-route/data/capabilities.json",
+        "line": 2618,
+        "text": "\"sgsHeightUnit\""
+      }
+    ],
+    "shrinkWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 7784,
+        "text": "\"sgs/responsive-logo::shrinkWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/block.json",
+        "line": 184,
+        "text": "\"description\": \"Logo width while an ancestor SGS header (`sgs/site-header` headerShrink) or header row (`sgs/site-header-row` rowShrink) is in its shrunk scroll"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 232,
+        "text": "shrinkWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 534,
+        "text": "shrinkWidthUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 539,
+        "text": "shrinkWidthUnit || 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/edit.js",
+        "line": 543,
+        "text": "shrinkWidthUnit: unit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/render.php",
+        "line": 283,
+        "text": "// lives in the paired `shrinkWidthUnit` attribute (px|%|em|rem, same set"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/render.php",
+        "line": 291,
+        "text": "$shrink_width_unit = isset( $attributes['shrinkWidthUnit'] ) ? sanitize_key( $attributes['shrinkWidthUnit'] ) : 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/responsive-logo/render.php",
+        "line": 291,
+        "text": "$shrink_width_unit = isset( $attributes['shrinkWidthUnit'] ) ? sanitize_key( $attributes['shrinkWidthUnit'] ) : 'px';"
+      },
+      {
+        "file": "scripts/computed-route/tests/fixtures/frozen-db/rows.json",
+        "line": 811,
+        "text": "{\"block_slug\":\"sgs/responsive-logo\",\"attr_name\":\"shrinkWidthUnit\",\"attr_type\":\"string\",\"default_value\":\"\\\"px\\\"\",\"is_responsive\":0,\"source\":\"sgs\",\"role\":\"layout\""
+      }
+    ],
+    "splitMediaHeightUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42065,
+        "text": "\"attr\": \"splitMediaHeightUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 4564,
+        "text": "\"sgs/hero::splitMediaHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 111,
+        "text": "'box-shape': ['splitMediaHeight', 'splitMediaHeightUnit', 'splitMediaWidth',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/block.json",
+        "line": 99,
+        "text": "\"splitMediaHeightUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/canvas-preview.js",
+        "line": 196,
+        "text": "image.height = isUnset( height ) ? '100%' : `${ Math.abs( parseInt( height, 10 ) ) || 0 }${ attributes.splitMediaHeightUnit || 'px' }`;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 250,
+        "text": "splitMediaHeightUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1511,
+        "text": "splitMediaHeightUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1563,
+        "text": "splitMediaHeightUnit !== 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1572,
+        "text": "splitMediaHeightUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1611,
+        "text": "splitMediaHeightUnit !== 'px' ||"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1639,
+        "text": "splitMediaHeightUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/render.php",
+        "line": 299,
+        "text": "$image_height_unit   = sgs_css_length_value( $attributes['splitMediaHeightUnit'] ?? 'px' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/render.php",
+        "line": 708,
+        "text": "// (`splitMediaHeightUnit`) rather than hardcoding px, forces no `object-fit`, and is"
+      }
+    ],
+    "splitMediaMaxHeightUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42070,
+        "text": "\"attr\": \"splitMediaMaxHeightUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 4575,
+        "text": "\"sgs/hero::splitMediaMaxHeightUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/block.json",
+        "line": 117,
+        "text": "\"splitMediaMaxHeightUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/canvas-preview.js",
+        "line": 226,
+        "text": "image.maxHeight = `${ Math.abs( parseInt( maxH, 10 ) ) }${ attributes.splitMediaMaxHeightUnit || 'px' }`;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 292,
+        "text": "splitMediaMaxHeightUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1519,
+        "text": "splitMediaMaxHeightUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1616,
+        "text": "splitMediaMaxHeightUnit !== 'px' ||"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1644,
+        "text": "splitMediaMaxHeightUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/render.php",
+        "line": 969,
+        "text": "$image_max_height_unit = sgs_css_length_value( $attributes['splitMediaMaxHeightUnit'] ?? 'px' );"
+      }
+    ],
+    "splitMediaMaxWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42075,
+        "text": "\"attr\": \"splitMediaMaxWidthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 4577,
+        "text": "\"sgs/hero::splitMediaMaxWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/block.json",
+        "line": 115,
+        "text": "\"splitMediaMaxWidthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/block.json",
+        "line": 375,
+        "text": "\"_note\": \"The type-agnostic base class emitted by sgs_tier_media_render() \u2014 carries `sgs-hero__split-media` plus `--{tier}` and `--{type}` modifiers on EVERY ti"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/block.json",
+        "line": 375,
+        "text": "\"_note\": \"The type-agnostic base class emitted by sgs_tier_media_render() \u2014 carries `sgs-hero__split-media` plus `--{tier}` and `--{type}` modifiers on EVERY ti"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/block.json",
+        "line": 756,
+        "text": "\"_comment_boxShapeNewBases\": \"C19 item 3 (2026-09-04) \u2014 the box-shape atom's remaining bases (Wave 6 only adopted object-fit/focal-point). Hand-declared, not le"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/canvas-preview.js",
+        "line": 222,
+        "text": "image.maxWidth = `${ Math.abs( parseInt( maxW, 10 ) ) }${ attributes.splitMediaMaxWidthUnit || 'px' }`;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 290,
+        "text": "splitMediaMaxWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1517,
+        "text": "splitMediaMaxWidthUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1614,
+        "text": "splitMediaMaxWidthUnit !== 'px' ||"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1642,
+        "text": "splitMediaMaxWidthUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/render.php",
+        "line": 963,
+        "text": "$image_max_width_unit = sgs_css_length_value( $attributes['splitMediaMaxWidthUnit'] ?? 'px' );"
+      }
+    ],
+    "splitMediaWidthUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/css-property-classifications.json",
+        "line": 42080,
+        "text": "\"attr\": \"splitMediaWidthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 4599,
+        "text": "\"sgs/hero::splitMediaWidthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/surveys/census-media-presentation.py",
+        "line": 113,
+        "text": "'splitMediaWidthUnit', 'minHeight'],"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/block.json",
+        "line": 97,
+        "text": "\"splitMediaWidthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/canvas-preview.js",
+        "line": 190,
+        "text": "const unitW = attributes.splitMediaWidthUnit || '%';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 246,
+        "text": "splitMediaWidthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1509,
+        "text": "splitMediaWidthUnit: '%',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1561,
+        "text": "splitMediaWidthUnit !== '%' ||"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1570,
+        "text": "splitMediaWidthUnit: '%',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1609,
+        "text": "splitMediaWidthUnit !== '%' ||"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/edit.js",
+        "line": 1637,
+        "text": "splitMediaWidthUnit: '%',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/hero/render.php",
+        "line": 288,
+        "text": "$image_width_unit   = sgs_css_length_value( $attributes['splitMediaWidthUnit'] ?? '%' );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/MediaElementControls.js",
+        "line": 313,
+        "text": "//           `splitMediaWidth` as a NUMBER paired with `splitMediaWidthUnit`."
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 72,
+        "text": "*     `splitMediaWidthUnit`, not a tier object. `resolveWidth()` accepts"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 227,
+        "text": "* paired with `splitMediaWidthUnit` handled by the caller)."
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/registry.js",
+        "line": 299,
+        "text": "splitMediaWidth: 'NUMBER paired with splitMediaWidthUnit, not a tier object',"
+      }
+    ],
+    "thicknessUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3815,
+        "text": "(8, \"sgs/plant\", \"thicknessUnit\", \"typography\", None, None),"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3871,
+        "text": "if got.get(\"thicknessUnit\") != \"typography\":"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3873,
+        "text": "f\"thicknessUnit -> {got.get('thicknessUnit')!r}: an EXISTING role was \""
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3873,
+        "text": "f\"thicknessUnit -> {got.get('thicknessUnit')!r}: an EXISTING role was \""
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 7841,
+        "text": "\"sgs/separator::thicknessUnit\": \"styling\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/setting-reclassification.json",
+        "line": 331,
+        "text": "\"thicknessUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/setting-reclassification.json",
+        "line": 1666,
+        "text": "\"thicknessUnit\""
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/setting-reclassification.json",
+        "line": 9711,
+        "text": "\"thicknessUnit\": {"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/setting-registry-inputs.json",
+        "line": 42,
+        "text": "\"current_state\": \"127 attrs across ~60 blocks. full_classification 'why' is almost uniformly 'enum_values present or SelectControl/ToggleGroupControl' \u2014 the rec"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/setting-registry.json",
+        "line": 2803,
+        "text": "\"current_state\": \"127 attrs across ~60 blocks. full_classification 'why' is almost uniformly 'enum_values present or SelectControl/ToggleGroupControl' \u2014 the rec"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+        "line": 7,
+        "text": "thickness  number  default 1          thicknessUnit string, default 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+        "line": 200,
+        "text": "out['thicknessUnit'] = 'px'"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+        "line": 201,
+        "text": "detail.append('style.border.width -> thickness/thicknessUnit (px)')"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 124,
+        "text": "thicknessUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 152,
+        "text": "composeUnit( thicknessDesktop, thicknessUnit ) || undefined;"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 388,
+        "text": "thicknessUnit: 'px',"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 418,
+        "text": "the block-level `thicknessUnit` (tier axis and unit are"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 448,
+        "text": "value={ composeUnit( ownValue, thicknessUnit ) }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 451,
+        "text": "? composeUnit( effectiveValue, thicknessUnit )"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 458,
+        "text": "thicknessUnit"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 461,
+        "text": "setAttributes( { thicknessUnit: unit } );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/render.php",
+        "line": 80,
+        "text": "$thickness_unit = sgs_css_length_value( $attributes['thicknessUnit'] ?? 'px' );"
+      }
+    ],
+    "widthUnit": [
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 2337,
+        "text": "# that paints nothing. The established rows agree: widthUnit=layout,"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3809,
+        "text": "(2, \"sgs/plant\", \"widthUnit\", None, None, None),"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3857,
+        "text": "if got.get(\"widthUnit\") != \"layout\":"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3858,
+        "text": "failures.append(f\"widthUnit -> {got.get('widthUnit')!r}, expected 'layout' \""
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py",
+        "line": 3858,
+        "text": "failures.append(f\"widthUnit -> {got.get('widthUnit')!r}, expected 'layout' \""
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/check-enum-control-shape-baseline.json",
+        "line": 138,
+        "text": "\"attr\": \"widthUnit\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 435,
+        "text": "\"core/search::widthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 2637,
+        "text": "\"sgs/decorative-image::widthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/consistency/attr-role-map.json",
+        "line": 7843,
+        "text": "\"sgs/separator::widthUnit\": \"layout\","
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+        "line": 6,
+        "text": "width      number  default 100        widthUnit  enum px/%, default '%'"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+        "line": 99,
+        "text": "out['widthUnit'] = '%'"
+      },
+      {
+        "file": "plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/separator_pairing.py",
+        "line": 131,
+        "text": "out['widthUnit'] = '%'"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 122,
+        "text": "widthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 165,
+        "text": "width: composeUnit( widthDesktop, widthUnit ) || undefined,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 277,
+        "text": "value={ composeUnit( ownValue, widthUnit ) }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 280,
+        "text": "? composeUnit( effectiveValue, widthUnit )"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 287,
+        "text": "widthUnit"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/edit.js",
+        "line": 290,
+        "text": "setAttributes( { widthUnit: unit } );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/blocks/separator/render.php",
+        "line": 77,
+        "text": "$width_unit_raw = $attributes['widthUnit'] ?? '%';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.control.js",
+        "line": 84,
+        "text": "widthUnit={ attributes[ widthUnitKey ] }"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 588,
+        "text": "const widthUnit = attributes[ widthUnitKey ] || 'px';"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/atoms/box-shape.js",
+        "line": 592,
+        "text": "const val = formatLength( resolvedWidth[ tier ], widthUnit, false );"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 146,
+        "text": "* @param {string}   [props.widthUnit]"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 203,
+        "text": "widthUnit,"
+      },
+      {
+        "file": "plugins/sgs-blocks/src/components/media/controls/MediaBoxShapeControls.js",
+        "line": 328,
+        "text": "unit={ widthUnit }"
+      }
+    ]
+  }
+}
