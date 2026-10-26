@@ -37,7 +37,8 @@ const text = ( pw ) => {
 
 // input: { slot, prop, state, perWidth ({ width: value }), siblings (the element's other draft properties, { prop: {
 // width: value } }), parent ({ width: { prop: value } } of the parent element, or null), rest ({ width: value }, the draft's own
-// resting value of `prop` on this element, where the caller knows it), anyIndex }.
+// resting value of `prop` on this element, where the caller knows it), anyIndex, owned (the settings a content writer
+// decided, lib/fill-prop.mjs::OWNED) }.
 // ctx: { calibration, db }.
 // Returns one of
 //   { verdict: 'write', writes: [ { attr, value, merge } ], layer: 4, detail, layers }
@@ -45,7 +46,7 @@ const text = ( pw ) => {
 //   { verdict: 'gap', detail, layers, homes }
 // `layers` holds one line per layer tried; `detail` is the line of the deciding layer, or every line for a gap.
 export function consult( input, ctx ) {
-	const { slot = '', prop, state = null, perWidth = {}, siblings = {}, parent = null, rest = {}, anyIndex = false } = input;
+	const { slot = '', prop, state = null, perWidth = {}, siblings = {}, parent = null, rest = {}, anyIndex = false, owned = null } = input;
 	const cal = ctx.calibration;
 	const widths = WIDTHS.filter( ( w ) => undefined !== perWidth[ w ] );
 	const layers = [];
@@ -94,7 +95,7 @@ export function consult( input, ctx ) {
 	layers.push( `3 inert: no (${ inert.detail })` );
 
 	// 4 effect.
-	const hit = discoveredWrite( cal, { slot, prop: canon, perWidth, state, anyIndex } );
+	const hit = discoveredWrite( cal, { slot, prop: canon, perWidth, state, anyIndex, owned } );
 	if ( hit && ! hit.ambiguous ) {
 		const detail = `${ hit.attr }=${ hit.value } paints ${ canon } ${ text( perWidth ) } on this element (calibration measured it${ hit.name !== canon ? ` under ${ hit.name }` : '' })`;
 		return { verdict: 'write', writes: [ { attr: hit.attr, value: hit.value, merge: 'replace' } ], layer: 4, detail, layers: [ ...layers, `4 effect: ${ detail }` ] };

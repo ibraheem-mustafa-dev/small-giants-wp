@@ -11,6 +11,7 @@ import { attrsFor, enumSettings } from './db.mjs';
 import { setAttr, refOf } from './tree.mjs';
 import { LOOSE } from './resolve.mjs';
 import { ROW_GLYPH_SLOT } from './fill-skeleton.mjs';
+import { ownedCopy } from './fill-prop.mjs';
 
 const json = ( v ) => JSON.stringify( v );
 const freshOut = () => ( { writes: [], unmapped: [], notes: [], handover: [], spacing: [], fluid: [], held: [], unread: [], settled: [] } );
@@ -45,7 +46,7 @@ const keyOf = ( r ) => `${ r.css_element }|${ r.css_property }|${ r.css_state ||
 // props: { attr: prop }, covers: { attr: [every property written to it] }, widths: { attr: [read widths] }, unmapped: [rows],
 // settled: [rows] }.
 function readCopy( st, rec, ref, cal, target, path, snaps, fillElement ) {
-	const node = structuredClone( st.flat[ rec.index ] );
+	const node = ownedCopy( st.flat[ rec.index ], structuredClone( st.flat[ rec.index ] ) );
 	const flat = st.flat.slice();
 	flat[ rec.index ] = node;
 	const sub = { ...st, flat, out: freshOut(), shown: new Map( st.shown ) };

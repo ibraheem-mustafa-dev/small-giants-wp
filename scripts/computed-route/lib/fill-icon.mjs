@@ -264,11 +264,14 @@ export function iconDecisions( { svg, schema, attributes = {}, allowed = null, h
 	const { kind, lucideStyle } = markKind( kept );
 	// Only a setting the node's own block declares is written; any other is a named row (a button drawing an inline icon
 	// holds its own icon settings, not the icon block's).
+	// `decided` holds every value the draft's mark settles, written or already held, so no styling answer changes it.
+	out.decided = {};
 	const put = ( attr, value ) => {
 		if ( ! ( attr in schema ) ) {
 			out.unmapped.push( { property: 'svg', value: attr, slot: '', reason: `the block declares no ${ attr }, so the draft icon's ${ attr } is not written` } );
 			return;
 		}
+		out.decided[ attr ] = value;
 		if ( JSON.stringify( attributes[ attr ] ) !== JSON.stringify( value ) ) {
 			out.writes.push( { attr, value, merge: 'replace' } );
 		}

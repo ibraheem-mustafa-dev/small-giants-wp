@@ -305,8 +305,10 @@ export function defaultPaint( calibration, slot, prop, same = ( a, b ) => a === 
 // Slots compare under the same `loose` rule every other path comparison uses, taking `anyIndex` from the input, so a
 // setting discovered on a fixture's second repetition is found on a client's first. `state` must equal the state
 // discovery recorded for the entry (an entry recording no state answers rest rows only): a resting measurement can
-// never prove an open or hover value.
-export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyIndex = false, state = null }, calibration ) {
+// never prove an open or hover value. `owned` ({ attr: value }) names the settings a content writer decided from the draft
+// (an icon's source from its mark, lib/fill-icon.mjs): no other value of them is ever an answer, so a look the draft's own
+// element paints (an SVG's display) is never held by turning the icon into a source that draws no SVG.
+export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyIndex = false, state = null, owned = null }, calibration ) {
 	const lp = ( p ) => ( anyIndex ? LOOSE( p ) : String( p ?? '' ) );
 	// The desktop tier is read at 1440 alone (FR-48-74): 1920 never stands in for it.
 	const at = ( pw, w ) => pw[ w ];
@@ -326,13 +328,16 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 			continue;
 		}
 		if ( 'tier_object' === d.tier ) {
-			const w = tierWrite( attr, d, perWidth, at, same );
+			const w = owned && attr in owned ? null : tierWrite( attr, d, perWidth, at, same );
 			if ( w ) {
 				return w;
 			}
 			continue;
 		}
 		for ( const [ value, values ] of Object.entries( d.values ) ) {
+			if ( owned && attr in owned && String( owned[ attr ] ) !== value ) {
+				continue;
+			}
 			if ( rowWidths.some( ( w ) => undefined !== values[ w ] ) && fits( values, perWidth, baseOf( prop ) ) ) {
 				const matched = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ] && fits( props[ p2 ].values[ value ] || {}, atRow( pw ), baseOf( p2 ) ) ).map( ( [ p2 ] ) => p2 );
 				const own = matched.filter( ( p2 ) => ( props[ p2 ].slots || [] ).map( lp ).includes( lp( slot ) ) ).length;

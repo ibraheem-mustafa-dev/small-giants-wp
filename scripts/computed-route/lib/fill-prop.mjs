@@ -279,12 +279,24 @@ export function tiersDiffering( prop, draft, baseline, defaultAt = baseline, con
 	return out;
 }
 
+// The settings a content writer decided from the draft for a tree node (an icon's source from its mark,
+// lib/fill-icon.mjs::iconDecisions), keyed by the node object: lib/fill-resolve.mjs sets them before any look is resolved,
+// and every resolver call on the node (or a copy registered with ownedCopy) leaves them as decided.
+export const OWNED = new WeakMap();
+
+// Registers a working copy of a node as holding its source's decided settings.
+export function ownedCopy( from, copy ) {
+	OWNED.has( from ) && OWNED.set( copy, OWNED.get( from ) );
+	return copy;
+}
+
 // A setting holding one value for every width: its writes are no tier object and no Tablet or Mobile sibling.
 const untiered = ( writes ) => writes.every( ( w ) => ! ( isObj( w.value ) && TIER_KEYS.some( ( t ) => t in w.value ) ) && ! /(Tablet|Mobile)$/.test( w.attr ) );
 
 const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => acceptsClamp( cal, w.attr ) || acceptsClamp( cal, w.attr.replace( /(Tablet|Mobile)$/, '' ) ) );
 
-// ctx: { node, block, prop, draft ({ width: value }), baseline( slot, width ), slots (the slot first, then other slots a
+// ctx: { node, owned ({ attr: value }: the settings a content writer decided for the node, which no answer changes;
+// default: what OWNED holds for the node), block, prop, draft ({ width: value }), baseline( slot, width ), slots (the slot first, then other slots a
 // setting for a carried property could paint), calibration, db, snapshot, log, fontPx, siblings, fluid ({ width: value }
 // at the five fluid widths, or null), state (a setting state, block_attributes.css_state; null for the resting look),
 // declared ({ width: value }: the code's value where it agrees with the draft value, written in its place, FR-48-36),
@@ -293,7 +305,7 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail? }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
-	const { node, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
+	const { node, owned = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
 	const contextOf = ( w ) => ( { position: siblings.position?.[ w ], direction: siblings.direction?.[ w ], ...contextAt( w ) } );
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
@@ -313,7 +325,7 @@ export function resolveProperty( ctx ) {
 		const call = ( perWidth ) => {
 			sink.length = 0;
 			const declaredForm = Object.fromEntries( Object.keys( perWidth ).filter( ( w ) => undefined !== declared[ w ] ).map( ( w ) => [ w, declared[ w ] ] ) );
-			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, siblings, declaredForm, ...( rest ? { rest } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
+			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
 		};
 		let r = call( included );
 		if ( r.gap ) {

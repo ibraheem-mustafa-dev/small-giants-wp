@@ -4,7 +4,7 @@
 // the tree as handover.
 import { blockSchema, LOOSE } from './resolve.mjs';
 import { setAttr, refOf } from './tree.mjs';
-import { knownPaths } from './fill-prop.mjs';
+import { knownPaths, OWNED } from './fill-prop.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
 import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf } from './fill-media.mjs';
@@ -50,7 +50,12 @@ function fillContent( st, rec, ref, cal ) {
 	const hrefs = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.href ] ) );
 	const linkFacts = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing && ( s.target || s.rel || s.id || s.ariaLabel ) ).map( ( [ slot, s ] ) => [ slot, { target: s.target, rel: s.rel, id: s.id, ariaLabel: s.ariaLabel, imageName: s.imageName ?? null } ] ) );
 	const local = [];
+	// The settings a content writer decided from the draft (an icon's source from its mark) are this node's own: no styling
+	// answer of the resolver may change them (lib/fill-prop.mjs::OWNED).
+	const owned = OWNED.get( node ) ?? {};
 	const take = ( r ) => {
+		Object.assign( owned, r.decided || {} );
+		Object.keys( owned ).length && OWNED.set( node, owned );
 		for ( const w of r.writes ) {
 			if ( json( w.value ) !== json( node.attributes?.[ w.attr ] ) ) {
 				const { before, after } = setAttr( node, w );
@@ -116,9 +121,10 @@ function withFamilies( cal ) {
 export function fillTree( opts ) {
 	const st = makeState( { ledger: [], ledgerStates: [], origin: '', fixtures: null, ...opts, calFor: ( block ) => withFamilies( opts.calFor( block ) ), snaps: [] } );
 	const settle = makeSettle( st );
+	// A node Fill reads: it has targets, a calibration and a visible draftRef element (each refusal is reported once).
+	const readable = new Set();
 	for ( const rec of st.nodes ) {
 		const ref = refOf( st.flat[ rec.index ] );
-		planSpacing( st, rec );
 		if ( ! rec.targets.length ) {
 			continue;
 		}
@@ -132,7 +138,18 @@ export function fillTree( opts ) {
 			unmapped( st, rec, ref, { property: '(element)', value: json( rec.targets[ 0 ].finder ), reason: 'the draftRef finder resolved no visible element at 375, 768 or 1440' } );
 			continue;
 		}
+		readable.add( rec.index );
+		// Every node's content (presence, words, links, icon, image) is decided before any node's look, so a look written
+		// from a parent (a Site Info row lifting its icons) meets the content the draft settles, never a skeleton default.
 		fillContent( st, rec, ref, cal );
+	}
+	for ( const rec of st.nodes ) {
+		const ref = refOf( st.flat[ rec.index ] );
+		planSpacing( st, rec );
+		if ( ! readable.has( rec.index ) ) {
+			continue;
+		}
+		const cal = st.calFor( rec.name );
 		// A generated Site Info icon's look belongs to its row (liftRow, run at the row): the icon keeps its content only.
 		if ( null !== rec.parent && hasRow( st.nodes[ rec.parent ].node ) ) {
 			continue;

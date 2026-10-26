@@ -76,7 +76,7 @@ test( 'MUST FAIL: an icon node that starts brand takes the draft\'s inline SVG a
 	assert.equal( val( lucide, 'iconSource' ), 'lucide' );
 	assert.equal( val( lucide, 'iconName' ), 'activity' );
 	const same = run( WHATSAPP.replace( '<path', '<path fill="currentColor"' ), { attributes: brandNode } );
-	assert.deepEqual( same, { writes: [], unmapped: [], notes: [] }, 'a draft that is the node\'s own brand glyph changes nothing' );
+	assert.deepEqual( same, { writes: [], unmapped: [], notes: [], decided: { iconSource: 'brand', brandName: 'whatsapp' } }, 'a draft that is the node\'s own brand glyph changes nothing, and decides the source it already holds' );
 	const first = run( lucideMarkup( 'activity' ).replace( /stroke-width="2px"/g, 'stroke-width="1.5px"' ), { attributes: { iconSource: 'emoji', brandName: 'whatsapp' } } );
 	assert.deepEqual( first.writes, other.writes, 'the decision does not depend on the value an earlier write left in iconSource' );
 } );
