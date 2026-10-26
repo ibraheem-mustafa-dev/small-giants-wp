@@ -9,8 +9,10 @@
 // is created; an unmarked post already holding its type and slug (another author's) stops the run, so it is never
 // duplicated or renamed `<slug>-2`, and a stored id naming a same-slug post that has no row key and no tree hash (one a
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
-import { POST_TEMPLATE, templateSource } from './manifest-build.mjs';
-import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, builtTemplate, hasPost, orderRows, pageTreeFor, parentRow, rowKey, templateTreeFor, treeHash, wpType } from './site-build-map.mjs';
+import fs from 'fs';
+import path from 'path';
+import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
+import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
@@ -22,7 +24,7 @@ const CREATES = [ 'create', 'menu', 'item-add' ];
 const shown = ( v ) => ( v && 'object' === typeof v && v.ref ? `(new ${ v.ref })` : String( v ) );
 
 // WooCommerce's role for a page-map row whose page WooCommerce renders itself ('cart', 'checkout', 'my account'), else null:
-// its template (cart, checkout) or WooCommerce's own page name (my-account, account) says which.
+// its template (cart, checkout, page-my-account) or WooCommerce's own page name (my-account, account) says which.
 export function wooContentRole( row ) {
 	if ( 'page' !== row?.postType ) {
 		return null;
@@ -30,7 +32,7 @@ export function wooContentRole( row ) {
 	if ( [ 'cart', 'checkout' ].includes( row.template ) ) {
 		return row.template;
 	}
-	return [ 'my-account', 'account' ].includes( row.slug ) ? 'my account' : null;
+	return 'page-my-account' === row.template || [ 'my-account', 'account' ].includes( row.slug ) ? 'my account' : null;
 }
 
 // The WooCommerce page options (part 6) and the page-map row each takes: the shop row by its type, the others by
@@ -138,8 +140,10 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			problems.push( `${ key }: its parent "${ row.parent }" is no ${ row.postType } row of the page map` );
 			continue;
 		}
-		// A shop row's `template` is the template its tree builds (below), not a page template its page takes.
-		if ( 'shop' !== row.postType && row.template && ! ( state.templates?.[ row.postType ] || [] ).includes( row.template ) ) {
+		// A shop row's `template` is the template its tree builds (below), not a page template its page takes; a template
+		// the hierarchy reaches (page, front-page, home, single, page-<slug>) is never a page template either.
+		const pageTemplate = 'shop' === row.postType ? '' : pageTemplateOf( row );
+		if ( pageTemplate && ! ( state.templates?.[ row.postType ] || [] ).includes( pageTemplate ) ) {
 			problems.push( `${ key }: template "${ row.template }" is not one the theme registers for a ${ row.postType }` );
 			continue;
 		}
@@ -147,7 +151,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
 		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];
-		const fields = { post_parent: parent ? idOf( rowKey( parent ) ) : 0, page_template: 'shop' === row.postType ? '' : row.template || '' };
+		const fields = { post_parent: parent ? idOf( rowKey( parent ) ) : 0, page_template: pageTemplate };
 		if ( ! ids[ key ] ) {
 			const after = Object.fromEntries( Object.entries( fields ).filter( ( [ , v ] ) => v ) );
 			actions.push( { phase, type: 'create', key, postType: wpType( row ), title: row.title, slug: row.slug, tree, hash, fields: after, say: `${ key }: create "${ row.title }" from the ${ source } tree${ unbound ? ' (its menu is bound once the menus exist)' : '' }${ Object.keys( after ).length ? `, then set ${ Object.entries( after ).map( ( [ k, v ] ) => `${ k }=${ shown( v ) }` ).join( ', ' ) }` : '' }` } );
@@ -181,22 +185,41 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		}
 	}
 
-	// Site-owned template copies (FR-48-56): a shop row's tree builds the template it names, once per template, rebuilt only
-	// when its tree changed. A template two rows name is built from the row with a stage 3 tree, else the first.
-	// The posts share one template, the site's own copy of the theme's single-post template, shaped from the first post row.
+	// Site-owned template copies (FR-48-56): one per template the site serves, built once and rebuilt only when its tree
+	// changed. Its tree is the copy the site run made from the draft (sites/<client>/build/trees/template/<slug>.json); else
+	// the frame around a shop row's stage 3 tree; else the shell of the stage 3 trees of every row it serves (the first
+	// post for `single`); else, for a template no row names, the site's own `page` copy's recorded shell around the
+	// theme's own content. A served template with none of these keeps the theme's file and is listed in `uncopied`.
+	const buildDir = path.join( repo, 'sites', client, 'build' );
+	const rel = ( f ) => path.relative( repo, f ).split( path.sep ).join( '/' );
 	const builders = new Map();
-	const owners = [ ...rows.filter( builtTemplate ).map( ( row ) => [ builtTemplate( row ), row ] ), ...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] ) ];
-	for ( const [ slug, row ] of owners ) {
-		builders.set( slug, [ ...( builders.get( slug ) || [] ), { row, ...templateTreeFor( repo, client, row ) } ] );
+	const uncopied = [];
+	for ( const slug of servedTemplates( rows ) ) {
+		const how = copySource( rows, slug );
+		const mine = rowsOf( rows, slug );
+		const sources = 'single' === slug ? mine.filter( ( r ) => 'post' === r.postType ).slice( 0, 1 ) : mine;
+		const trees = sources.map( ( row ) => ( { row, ...treeFor( repo, client, row, {} ) } ) ).filter( ( t ) => 'placeholder' !== t.source );
+		const owner = mine[ 0 ] || null;
+		let pick = null;
+		if ( fs.existsSync( copyFile( buildDir, slug ) ) ) {
+			pick = { row: owner, tree: JSON.parse( fs.readFileSync( copyFile( buildDir, slug ), 'utf8' ) ), source: rel( copyFile( buildDir, slug ) ) };
+		} else if ( 'whole' === how && trees.length ) {
+			pick = { row: trees[ 0 ].row, tree: copyTree( { slug, whole: trees[ 0 ].tree } ), source: trees[ 0 ].source };
+			mine.filter( ( r ) => r !== pick.row ).forEach( ( r ) => notes.push( `${ rowKey( r ) }: names the ${ slug } template, which ${ rowKey( pick.row ) } builds; this row adds nothing to it` ) );
+		} else if ( 'shell' === how && trees.length && trees.length === sources.length ) {
+			pick = { row: owner, tree: copyTree( { slug, chain: commonChain( trees.map( ( t ) => splitShell( t.tree ).chain ) ) } ), source: `shell of ${ trees.map( ( t ) => t.source ).join( ', ' ) }` };
+		} else if ( 'page' === how && readShell( buildDir, 'page' ) ) {
+			pick = { row: null, tree: copyTree( { slug, chain: readShell( buildDir, 'page' ).chain } ), source: `the page copy's shell (${ rel( copyFile( buildDir, 'page' ) ) })` };
+		}
+		if ( pick ) {
+			builders.set( slug, pick );
+		} else if ( ! ( state.templateHashes || {} )[ slug ] && ! ( state.customTemplates || [] ).includes( slug ) ) {
+			const from = owner ? rowKey( owner ) : 'page' === how ? "the site's own page copy" : null;
+			uncopied.push( { slug, why: from ? `no tree yet (sites/<client>/build/trees/template/${ slug }.json): the site run builds it from ${ from }` : 'no draft surface plays it and no page-map row names it' } );
+		}
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
-	for ( const [ slug, list ] of builders ) {
-		const pick = list.find( ( c ) => 'placeholder' !== c.source );
-		if ( ! pick ) {
-			notes.push( `${ rowKey( list[ 0 ].row ) }: names the ${ slug } template but has no tree (sites/<client>/build/trees/<postType>/<slug>.json), so the site keeps the theme's own default ${ slug } template` );
-			continue;
-		}
-		list.filter( ( c ) => c !== pick ).forEach( ( c ) => notes.push( `${ rowKey( c.row ) }: names the ${ slug } template, which ${ rowKey( pick.row ) } builds; this row adds nothing to it` ) );
+	for ( const [ slug, pick ] of builders ) {
 		const hash = treeHash( pick.tree );
 		const saved = ( state.customTemplates || [] ).includes( slug );
 		// A recorded hash with no saved copy is a build that stopped before it saved: built again.
@@ -204,18 +227,18 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		if ( ! hashes[ slug ] && ( state.customTemplates || [] ).includes( slug ) ) {
-			problems.push( `${ rowKey( pick.row ) }: the site already holds its own saved copy of the ${ slug } template that the site build did not make; clear it in Site Editor > Templates ("Clear customisations") so the site build can take it over` );
+			problems.push( `${ pick.row ? rowKey( pick.row ) : 'template' }: the site already holds its own saved copy of the ${ slug } template that the site build did not make; clear it in Site Editor > Templates ("Clear customisations") so the site build can take it over` );
 			continue;
 		}
 		if ( hashes[ slug ] && saved && state.templateSaved?.[ slug ] && state.templateContent?.[ slug ] !== state.templateSaved[ slug ] ) {
-			problems.push( `${ rowKey( pick.row ) }: the site's ${ slug } template was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or clear it in Site Editor > Templates ("Clear customisations") to let the site build rebuild it` );
+			problems.push( `${ pick.row ? rowKey( pick.row ) : 'template' }: the site's ${ slug } template was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or clear it in Site Editor > Templates ("Clear customisations") to let the site build rebuild it` );
 			continue;
 		}
 		options.push( { name: `${ TEMPLATE_OPTION }[${ slug }]`, before: hashes[ slug ] ? hashes[ slug ].slice( 0, 12 ) : '(none)', after: hash.slice( 0, 12 ) } );
 		const verb = hashes[ slug ] ? 'rebuild' : 'build';
 		const previous = hashes;
 		hashes = { ...hashes, [ slug ]: hash };
-		actions.push( { phase: 'posts', type: 'template', key: rowKey( pick.row ), template: slug, tree: pick.tree, hash, hashes, previous, say: `${ rowKey( pick.row ) }: ${ verb } the site's own ${ slug } template from the ${ pick.source } tree` } );
+		actions.push( { phase: 'posts', type: 'template', key: pick.row ? rowKey( pick.row ) : `template:${ slug }`, template: slug, tree: pick.tree, hash, hashes, previous, say: `${ pick.row ? `${ rowKey( pick.row ) }: ` : '' }${ verb } the site's own ${ slug } template from ${ pick.source }` } );
 	}
 
 	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.
@@ -345,7 +368,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		options.push( { name: `sgs_active_${ area }_cpt_id`, before: String( current ), after: shown( id ) } );
 		actions.push( { phase: 'site', type: 'pointer', area, id, say: `active ${ area }: ${ current || 'none' } -> ${ shown( id ) }` } );
 	}
-	return problems.length ? { actions: [], problems, notes, options: [] } : { actions, problems, notes, options };
+	return problems.length ? { actions: [], problems, notes, options: [], uncopied } : { actions, problems, notes, options, uncopied };
 }
 
 // The plan's counts: posts, menus and items it creates; everything else it changes (an adoption only fills the map).

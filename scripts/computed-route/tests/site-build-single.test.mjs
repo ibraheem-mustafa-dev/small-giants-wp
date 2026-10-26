@@ -34,10 +34,10 @@ test( 'MUST FAIL: the first post row\'s tree builds the single template once, no
 	assert.deepEqual( later.actions.filter( ( a ) => 'template' === a.type ), [], 'the later post tree never shapes the template: the first post row is its source' );
 } );
 
-test( 'a post tree that does not exist keeps the theme\'s single template and says so; a built one is not rebuilt', () => {
+test( 'a post tree that does not exist keeps the theme\'s single template and the report lists it; a built one is not rebuilt', () => {
 	const none = plan( {} );
 	assert.deepEqual( none.actions.filter( ( a ) => 'template' === a.type ), [] );
-	assert.match( none.notes.join( '\n' ), /post:first-post: names the single template but has no tree/ );
+	assert.match( none.uncopied.find( ( u ) => 'single' === u.slug ).why, /the site run builds it from post:first-post/ );
 	const first = plan( { 'sites/c/build/trees/post/first-post.json': TREE } ).actions.find( ( a ) => 'template' === a.type );
 	const again = plan( { 'sites/c/build/trees/post/first-post.json': TREE }, state( { templateHashes: { single: first.hash }, customTemplates: [ 'single' ] } ) );
 	assert.deepEqual( again.actions.filter( ( a ) => 'template' === a.type ), [] );

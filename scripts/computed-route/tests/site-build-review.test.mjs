@@ -84,11 +84,11 @@ test( 'MUST FAIL: after a save the writer records the saved content\'s hash, for
 } );
 
 // 3 -----------------------------------------------------------------------------------------------------------------
-test( 'MUST FAIL: a shop template is built only from a real tree; a placeholder leaves the theme default and says so', () => {
+test( 'MUST FAIL: a shop template is built only from a real tree; a placeholder leaves the theme default and the report lists it', () => {
 	const p = plan( SHOP(), state() );
 	assert.deepEqual( p.actions.filter( ( a ) => 'template' === a.type ), [] );
-	assert.match( p.notes.join( '\n' ), /archive-product template.*no tree.*theme's own default/ );
-	assert.match( p.notes.join( '\n' ), /single-product template.*no tree.*theme's own default/ );
+	assert.match( p.uncopied.find( ( u ) => 'archive-product' === u.slug ).why, /no tree yet.*trees\/template\/archive-product\.json/ );
+	assert.match( p.uncopied.find( ( u ) => 'single-product' === u.slug ).why, /no tree yet/ );
 	const real = planWithTrees( SHOP(), state() );
 	assert.deepEqual( real.actions.filter( ( a ) => 'template' === a.type ).map( ( a ) => a.template ).sort(), [ 'archive-product', 'single-product' ] );
 } );

@@ -14,7 +14,9 @@ export const LAYOUT_TYPES = { sgs_header: 'header', sgs_drawer: 'drawer', sgs_fo
 // and categories are WooCommerce's data, and the row's tree builds the site's own copy of its template. A `shop` row is
 // the WooCommerce shop page (a `page`, whose id is `woocommerce_shop_page_id`) and its tree builds the archive template.
 export const SHOP_TYPES = [ 'product', 'product_cat', 'shop' ];
-export const POSTLESS_TYPES = [ 'product', 'product_cat' ];
+// A `template` row (the order confirmation, a draft's search results or not-found page) makes no post either: it is a
+// surface of the template it names (FR-48-56).
+export const POSTLESS_TYPES = [ 'product', 'product_cat', 'template' ];
 const TEMPLATE_DEFAULTS = { product: 'single-product', product_cat: 'archive-product', shop: 'archive-product' };
 
 // The WordPress post type a row is made as.

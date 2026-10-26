@@ -54,6 +54,10 @@ const print = ( plan ) => {
 			mine.forEach( ( a ) => console.log( `  ${ a.say }` ) );
 		}
 	}
+	if ( plan.uncopied?.length ) {
+		console.log( 'templates the site serves with no copy of its own (FR-48-56):' );
+		plan.uncopied.forEach( ( u ) => console.log( `  ${ u.slug }: ${ u.why }` ) );
+	}
 	if ( plan.options.length ) {
 		console.log( 'option | before | after' );
 		plan.options.forEach( ( o ) => console.log( `${ o.name } | ${ o.before } | ${ o.after }` ) );

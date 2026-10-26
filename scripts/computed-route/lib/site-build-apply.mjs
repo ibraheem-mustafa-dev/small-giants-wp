@@ -47,6 +47,26 @@ export function wpBuildPage( repo, site ) {
 	};
 }
 
+// The PHP recording a template copy the way the site build does after its own build (FR-48-56): the hash of the tree it
+// was built from (when `hash` is given) and the hash of the content the site saved, so the next site build sees the copy
+// as its own and a later difference as a person's edit. The site run records each copy it builds through this.
+export function templateRecordPhp( slug, hash = null ) {
+	if ( ! /^[a-z0-9-]+$/.test( slug ) || ( null !== hash && ! /^[a-f0-9]{64}$/.test( hash ) ) ) {
+		throw new Error( `template slug "${ slug }" or hash "${ hash }" is not plain` );
+	}
+	return `<?php
+$t = get_block_template( get_stylesheet() . '//${ slug }', 'wp_template' );
+${ null === hash ? '' : `$h = (array) get_option( '${ TEMPLATE_OPTION }', array() );
+$h['${ slug }'] = '${ hash }';
+update_option( '${ TEMPLATE_OPTION }', $h );
+` }$o = (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
+if ( $t ) {
+	$o['${ slug }'] = hash( 'sha256', (string) $t->content );
+	update_option( '${ TEMPLATE_CONTENT_OPTION }', $o );
+}
+`;
+}
+
 function lastJson( text ) {
 	const line = String( text || '' ).trim().split( /\r?\n/ ).reverse().find( ( l ) => l.startsWith( '{' ) );
 	try {
@@ -96,17 +116,8 @@ export function applyPhase( actions, phase, { wp, build, onId, log = () => {}, r
 update_post_meta( ${ Number( id ) }, '${ CONTENT_META }', hash( 'sha256', get_post_field( 'post_content', ${ Number( id ) }, 'raw' ) ) );
 ` ) );
 	const markTemplateContent = ( slug ) => {
-		if ( ! /^[a-z0-9-]+$/.test( slug ) ) {
-			throw new Error( `template slug "${ slug }" is not a plain slug` );
-		}
-		again( () => wp( [ 'eval-file', '-' ], `<?php
-$t = get_block_template( get_stylesheet() . '//${ slug }', 'wp_template' );
-$o = (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
-if ( $t ) {
-	$o['${ slug }'] = hash( 'sha256', (string) $t->content );
-	update_option( '${ TEMPLATE_CONTENT_OPTION }', $o );
-}
-` ) );
+		const php = templateRecordPhp( slug );
+		again( () => wp( [ 'eval-file', '-' ], php ) );
 	};
 	let done = 0;
 	for ( const a of actions.filter( ( x ) => x.phase === phase ) ) {
