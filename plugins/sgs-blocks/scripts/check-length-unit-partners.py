@@ -75,6 +75,9 @@ MIGRATED = {
     'sgs/heading': ['customWidthUnit', 'maxWidthUnit'],
     'sgs/hero': ['splitMediaWidthUnit', 'splitMediaHeightUnit', 'splitMediaMaxWidthUnit', 'splitMediaMaxHeightUnit'],
     'sgs/media': ['maxWidthUnit', 'maxHeightUnit', 'heightUnit'],
+    # The box-shape atom builds its prefixed names at runtime from these bases (sgs_media_element_stored_attr(),
+    # mediaStoredAttrName()), so the bases themselves are retired too.
+    'media-atom': ['HeightUnit', 'WidthUnit', 'MaxWidthUnit', 'MaxHeightUnit'],
     'sgs/modal': ['dialogWidthUnit'],
     'sgs/responsive-logo': ['shrinkWidthUnit', 'maxWidthUnit', 'maxHeightUnit'],
     'sgs/separator': ['widthUnit', 'thicknessUnit'],
