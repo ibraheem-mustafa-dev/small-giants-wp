@@ -89,6 +89,20 @@ function declaredAttrs( db, block ) {
 
 // The key a site's default paint is kept under: the deployed build's md5 and the snapshot's, plus the block's paint
 // states (calibration-fixtures.json `paintStates`) where it has them, so a changed paint state is measured again.
+// A paint state's paint: every property, or only `props` (the properties its render shape changes) where the state
+// names them. A filtered state keeps no context keys (`_tag`, `_parentDisplay`, ...); Fill reads those from the default.
+export function statePaint( elements, props ) {
+	if ( ! Array.isArray( props ) ) {
+		return elements;
+	}
+	return Object.fromEntries( Object.entries( elements ).map( ( [ p, widths ] ) => [ p, Object.fromEntries( Object.entries( widths ).map( ( [ w, styles ] ) => [ w, Object.fromEntries( Object.entries( styles || {} ).filter( ( [ k ] ) => props.includes( k ) ) ) ] ) ) ] ) );
+}
+
+// The paint states a fixture declares that a run did not measure.
+export function missingPaintStates( fixture, paintStates ) {
+	return ( fixture?.paintStates || [] ).map( ( s ) => s.name ).filter( ( n ) => ! paintStates?.[ n ] );
+}
+
 export function paintKeyOf( slotKey, snapshotKey, fixture ) {
 	const states = fixture?.paintStates;
 	return states?.length ? `${ slotKey }-${ snapshotKey }-${ md5( JSON.stringify( states ) ).slice( 0, 8 ) }` : `${ slotKey }-${ snapshotKey }`;
@@ -233,7 +247,10 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const elements = {};
 	instances.filter( ( i ) => i.isDefault ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
 	// Each paint state's own default paint, with the condition Fill matches a node against (lib/paint-state.mjs).
-	const paintStates = Object.fromEntries( instances.filter( ( i ) => i.paintState && i.read ).map( ( i ) => [ i.paintState.name, { when: i.paintState.when, elements: defaultPaint( i.read ) } ] ) );
+	const paintStates = Object.fromEntries( instances.filter( ( i ) => i.paintState && i.read ).map( ( i ) => [ i.paintState.name, { when: i.paintState.when, elements: statePaint( defaultPaint( i.read ), i.paintState.props ) } ] ) );
+	// A state the fixture declares that was not measured (its instance rejected or unread): the paint is not written, so
+	// the next run measures it again instead of keeping a paint key that claims the state.
+	const statesMissing = missingPaintStates( fixture, paintStates );
 	// A block whose tiers follow its container's width (an @container rule) reaches a tier at fewer page widths by design.
 	// Either the built stylesheet holds an @container rule, or the render emits them at run time (site-footer-row's
 	// built style-index.css has none, because the wrapper writes its tier rules when it renders).
@@ -285,11 +302,14 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [], declaredAttrs( db, block ) ) : { write: false, lost: [] };
 	decision.write && writeSlotMap( CACHE, block, slotMap );
 	decision.write && fs.rmSync( refusedFile( CACHE, block ), { force: true } );
-	due.paint && writePaint( CACHE, site, block, paint );
+	due.paint && ! statesMissing.length && writePaint( CACHE, site, block, paint );
 	if ( decision.lost.length ) {
 		fs.writeFileSync( refusedFile( CACHE, block ), JSON.stringify( { ...slotMap, refusedBecause: { lost: decision.lost } }, null, 1 ) );
 		const names = decision.lost.map( ( l ) => l.setting ).join( ', ' );
 		return { block, error: `refused: the new slot map drops ${ names } that the existing one reaches; candidate kept in cache/${ block.replace( /^sgs\//, '' ) }.refused.json; pass --allow-loss ${ block }:<setting> to accept a named loss` };
+	}
+	if ( due.paint && statesMissing.length ) {
+		return { block, error: `paint state(s) ${ statesMissing.join( ', ' ) } not measured (rejected or unread); the default paint was not written, so the next run measures it again` };
 	}
 	return { block, settings: Object.keys( settings ).length, dead: deadNames.length, oneWidth: oneWidth.length, noMarker: noMarker.size, rejected: rejected.length };
 }

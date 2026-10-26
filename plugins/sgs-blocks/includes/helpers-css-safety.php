@@ -225,10 +225,11 @@ if ( ! function_exists( 'sgs_font_weight_value' ) ) {
 	/**
 	 * A font weight, safe to print after `font-weight:`.
 	 *
-	 * The allowlist is the weights the editor offers (100 to 900 in hundreds,
-	 * TypographyControls.js) and every client draft uses, plus the keywords
-	 * normal, bold, lighter and bolder. Anything else returns '' so the caller
-	 * prints nothing, never a stripped remainder ("7;0 0" is not 700).
+	 * The allowlist is what CSS Fonts 4 accepts for `font-weight`: a number from
+	 * 1 to 1000 (the editor's hundreds, and a variable font's 450 or 650.5 a
+	 * cloned draft can carry), the keywords normal, bold, lighter and bolder, and
+	 * the CSS-wide keywords. Anything else returns '' so the caller prints
+	 * nothing, never a stripped remainder ("7;0 0" is not 700).
 	 * Gate: scripts/check-font-weight-allowlist.py.
 	 *
 	 * @param mixed $value Stored weight (a string or a number).
@@ -239,10 +240,10 @@ if ( ! function_exists( 'sgs_font_weight_value' ) ) {
 			return '';
 		}
 		$weight = strtolower( trim( (string) $value ) );
-		if ( in_array( $weight, array( 'normal', 'bold', 'lighter', 'bolder' ), true ) ) {
+		if ( in_array( $weight, array( 'normal', 'bold', 'lighter', 'bolder', 'inherit', 'initial', 'unset', 'revert' ), true ) ) {
 			return $weight;
 		}
-		if ( 1 === preg_match( '/^[1-9]00$/', $weight ) ) {
+		if ( 1 === preg_match( '/^\d{1,4}(?:\.\d+)?$/', $weight ) && (float) $weight >= 1 && (float) $weight <= 1000 ) {
 			return $weight;
 		}
 		return '';

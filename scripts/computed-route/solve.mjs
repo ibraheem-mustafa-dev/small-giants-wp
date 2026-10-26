@@ -88,7 +88,18 @@ export function withInnerRootAliases( cal, block ) {
 			elements[ alias ] = v;
 		}
 	}
-	return { ...cal, settings, elements };
+	const aliased = ( els ) => {
+		const out = { ...els };
+		for ( const [ p, v ] of Object.entries( els ) ) {
+			const alias = strip( p );
+			if ( null !== alias && ! Object.hasOwn( out, alias ) ) {
+				out[ alias ] = v;
+			}
+		}
+		return out;
+	};
+	const paintStates = cal.paintStates ? Object.fromEntries( Object.entries( cal.paintStates ).map( ( [ k, s ] ) => [ k, { ...s, elements: aliased( s.elements || {} ) } ] ) ) : undefined;
+	return { ...cal, settings, elements, ...( paintStates ? { paintStates } : {} ) };
 }
 
 // A block's render.php source, or null.

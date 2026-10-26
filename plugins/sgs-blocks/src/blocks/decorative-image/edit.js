@@ -379,7 +379,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 								hideLabelFromVision
 								value={ ownValue || '' }
 								placeholder={
-									inherited ? effectiveValue || '' : ''
+									( inherited && effectiveValue ) || '200px'
 								}
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								units={ LENGTH_UNITS }

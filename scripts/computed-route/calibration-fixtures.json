@@ -2326,7 +2326,11 @@
           "borderStyle": "solid",
           "borderColour": "#000000"
         },
-        "inner": []
+        "inner": [],
+        "props": [
+          "pointer-events",
+          "user-select"
+        ]
       },
       {
         "name": "image",

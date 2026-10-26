@@ -31,7 +31,8 @@ final class FontWeightAllowlistTest extends TestCase {
 			'bold keyword'   => array( 'bold', 'font-weight:bold' ),
 			'stripped junk'  => array( '7;0 0', '' ),
 			'a word'         => array( 'heavy', '' ),
-			'off the scale'  => array( '950', '' ),
+			'variable font'  => array( '450', 'font-weight:450' ),
+			'off the scale'  => array( '1001', '' ),
 			'a breakout'     => array( '700;color:red', '' ),
 		);
 	}
@@ -124,7 +125,10 @@ ob_end_clean();
 			$this->assertSame( strtolower( trim( $ok ) ), sgs_font_weight_value( $ok ), $ok );
 		}
 		$this->assertSame( '700', sgs_font_weight_value( 700 ), 'a stored number' );
-		foreach ( array( '', '0', '50', '950', '1000', '650', 'heavy', '7;0 0', '700;color:red', null ) as $bad ) {
+		foreach ( array( '450', '650.5', '950', '1000', '1', 'inherit' ) as $ok ) {
+			$this->assertSame( $ok, sgs_font_weight_value( $ok ), 'a CSS weight a draft can carry: ' . $ok );
+		}
+		foreach ( array( '', '0', '0.5', '1001', '1e3', '-400', 'heavy', '7;0 0', '700;color:red', null ) as $bad ) {
 			$this->assertSame( '', sgs_font_weight_value( $bad ), var_export( $bad, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- assertion message.
 		}
 		$this->assertSame( '', sgs_font_weight_value( array( '700' ) ), 'an array is not a weight' );

@@ -23,6 +23,19 @@ export function matchesPaintState( when = {}, node = {} ) {
 	return ! ( Array.isArray( when.lacks ) && when.lacks.some( ( a ) => isSet( attrs[ a ] ) ) );
 }
 
+// The state's paint laid over the default property by property, per element and width: a property the state does not
+// carry (a state that keeps only what its render shape changes) keeps the default's value.
+function overlay( base, top ) {
+	const out = { ...base };
+	for ( const [ p, widths ] of Object.entries( top ) ) {
+		out[ p ] = { ...( base[ p ] || {} ) };
+		for ( const [ w, styles ] of Object.entries( widths || {} ) ) {
+			out[ p ][ w ] = { ...( base[ p ]?.[ w ] || {} ), ...( styles || {} ) };
+		}
+	}
+	return out;
+}
+
 const views = new WeakMap();
 
 // The calibration as Fill judges `node` with it: the default paint with the first matching paint state's elements laid
@@ -39,7 +52,7 @@ export function calibrationForNode( cal, node ) {
 	const byState = views.get( cal ) || new Map();
 	views.set( cal, byState );
 	if ( ! byState.has( name ) ) {
-		byState.set( name, { ...cal, elements: { ...( cal.elements || {} ), ...( states[ name ].elements || {} ) }, paintState: name } );
+		byState.set( name, { ...cal, elements: overlay( cal.elements || {}, states[ name ].elements || {} ), paintState: name } );
 	}
 	return byState.get( name );
 }

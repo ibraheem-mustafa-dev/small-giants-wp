@@ -12,7 +12,8 @@ import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
 import { matchesPaintState, calibrationForNode } from '../lib/paint-state.mjs';
 import { planInstances, buildTree } from '../lib/calibrate.mjs';
-import { paintKeyOf } from '../calibrate.mjs';
+import { paintKeyOf, statePaint, missingPaintStates } from '../calibrate.mjs';
+import { withInnerRootAliases } from '../solve.mjs';
 
 const db = openDb();
 const THREE = [ 375, 768, 1440 ];
@@ -95,4 +96,34 @@ test( 'the paint key changes with a block\'s paint states and is unchanged for a
 	const one = paintKeyOf( 'a', 'b', { paintStates: [ { name: 'empty' } ] } );
 	assert.match( one, /^a-b-[0-9a-f]{8}$/ );
 	assert.notEqual( one, paintKeyOf( 'a', 'b', { paintStates: [ { name: 'image' } ] } ) );
+} );
+
+test( 'MUST FAIL: a state that keeps only its render-shape properties leaves the default\'s other properties in place', () => {
+	const base = { block: BLOCK, elements: { '': { 1440: { 'pointer-events': 'auto', 'border-top-width': '0px', width: '200px' } } }, settings: {}, discovered: {},
+		paintStates: { empty: { when: EMPTY_WHEN, elements: { '': { 1440: { 'pointer-events': 'none' } } } } } };
+	const view = calibrationForNode( base, { attributes: {}, innerBlocks: [] } );
+	assert.deepEqual( view.elements[ '' ][ 1440 ], { 'pointer-events': 'none', 'border-top-width': '0px', width: '200px' }, 'merged property by property, not replaced whole' );
+} );
+
+test( 'MUST FAIL: a state naming its properties keeps only those, so the border and size it was drawn with never read as resting paint', () => {
+	const read = { '': { 1440: { 'pointer-events': 'none', 'user-select': 'none', 'border-top-width': '2px', width: '120px', _tag: 'span' } } };
+	assert.deepEqual( statePaint( read, [ 'pointer-events', 'user-select' ] ), { '': { 1440: { 'pointer-events': 'none', 'user-select': 'none' } } } );
+	assert.equal( statePaint( read, undefined ), read, 'a state with no props keeps its whole paint (the image-only layer, drawn with no extra settings)' );
+	const fixture = { attributes: {}, inner: [], paintStates: [ { name: 'empty', when: EMPTY_WHEN, props: [ 'pointer-events' ], attributes: {}, inner: [] } ] };
+	const ps = planInstances( BLOCK, { rows: [], schema: {}, snapshot: {}, fixture } ).instances.find( ( i ) => i.paintState );
+	assert.deepEqual( ps.paintState.props, [ 'pointer-events' ], 'the planned instance carries the props' );
+} );
+
+test( 'MUST FAIL: a declared state the run did not measure is named, so its paint is not written under a key that claims it', () => {
+	const fixture = { paintStates: [ { name: 'empty' }, { name: 'image' } ] };
+	assert.deepEqual( missingPaintStates( fixture, { image: {} } ), [ 'empty' ] );
+	assert.deepEqual( missingPaintStates( fixture, { empty: {}, image: {} } ), [] );
+	assert.deepEqual( missingPaintStates( {}, {} ), [], 'a block with no states misses none' );
+} );
+
+test( 'the solver\'s inner-root aliases reach a paint state\'s elements', () => {
+	const cal = { elements: { '.sgs-thing': { 1440: { 'pointer-events': 'auto' } } }, settings: {}, paintStates: { empty: { when: {}, elements: { '.sgs-thing': { 1440: { 'pointer-events': 'none' } } } } } };
+	const out = withInnerRootAliases( cal, 'sgs/thing' );
+	assert.deepEqual( out.paintStates.empty.elements[ '' ], { 1440: { 'pointer-events': 'none' } } );
+	assert.deepEqual( out.elements[ '' ], { 1440: { 'pointer-events': 'auto' } } );
 } );

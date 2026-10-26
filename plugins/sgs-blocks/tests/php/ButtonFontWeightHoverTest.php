@@ -58,7 +58,8 @@ final class ButtonFontWeightHoverTest extends TestCase {
 			'bold keyword'   => array( 'bold', true ),
 			'normal keyword' => array( 'normal', true ),
 			'nine hundred'   => array( '900', true ),
-			'off the scale'  => array( '950', false ),
+			'variable font'  => array( '450', true ),
+			'off the scale'  => array( '1001', false ),
 			'a word'         => array( 'heavy', false ),
 			'stripped junk'  => array( '7;0 0', false ),
 		);
