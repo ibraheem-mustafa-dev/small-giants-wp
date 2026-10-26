@@ -125,25 +125,32 @@ test( 'MUST FAIL: an inherited property on an element with no text of its own, e
 	assert.equal( settle( [ { ...row( leaf, 'font-size', '19px' ), block: 'sgs/button' } ] ).alreadyHeld.length, 0 );
 } );
 
-test( 'MUST FAIL: a text property on a leaf element that prints no text at any width is held as inherited, whatever its parent renders', () => {
+test( 'MUST FAIL: a font longhand on a text-less leaf is held only where its parent renders the same value, never a design value, the em basis or an icon-font glyph', () => {
 	const sk = () => [ { name: 'sgs/container', draftRef: 'main', attributes: {}, innerBlocks: [ { name: 'sgs/container', draftRef: '.leaf', attributes: {} } ] } ];
-	const spec = ( words ) => ( { '0:': snap( { 'font-size': '19px', 'z-index': '5' } ), '1:': snap( { 'font-size': '13px', 'font-family': 'system-ui', 'font-kerning': 'none', 'z-index': '5' }, { words } ) } );
+	const PARENT = { 'font-size': '19px', 'font-family': 'system-ui', 'font-kerning': 'none', 'z-index': '5' };
+	const spec = ( leaf, { words = '', pseudo = {} } = {} ) => ( { '0:': snap( PARENT ), '1:': { ...snap( { ...PARENT, ...leaf, 'z-index': '5' }, { words } ), pseudo } } );
 	const row = ( r, property, value ) => ( { node: refOf( r.tree[ 0 ].innerBlocks[ 0 ] ), block: 'sgs/container', slot: '', property, value, reason: `no-setting: sgs/container has no setting for ${ property }` } );
 	const settle = ( r, rows ) => r.settleHeld( { unmapped: rows, writes: r.writes } );
-	const bare = run( sk(), spec( '' ) );
-	const h = settle( bare, [ row( bare, 'font-size', '13px' ), row( bare, 'font-family', 'system-ui' ), row( bare, 'font-kerning', 'none' ) ] );
+	// Held: no text, and the parent renders the very value.
+	const same = run( sk(), spec( {} ) );
+	const h = settle( same, [ row( same, 'font-family', 'system-ui' ), row( same, 'font-kerning', 'none' ), row( same, 'font-size', '19px' ) ] );
 	assert.deepEqual( h.alreadyHeld.map( ( x ) => x.heldReason ), [ 'inherited', 'inherited', 'inherited' ] );
 	assert.match( h.alreadyHeld[ 0 ].heldDetail, /prints no text/ );
-	// Negative controls: an element that prints text keeps its row; a property that is no text property stays raised; a value
-	// that is not what the element reads is not held.
-	const texted = run( sk(), spec( 'Go' ) );
-	assert.equal( settle( texted, [ row( texted, 'font-size', '13px' ) ] ).alreadyHeld.length, 0, 'an element that prints text' );
-	assert.equal( settle( bare, [ row( bare, 'z-index', '5' ) ] ).alreadyHeld.length, 0, 'not a text property' );
-	assert.equal( settle( bare, [ row( bare, 'color', DEFAULT.color ) ] ).alreadyHeld.length, 0, 'an inherited property that paints without text' );
+	// A value that differs from the parent is a design value (the em basis for font-size, a face for font-family): the leaf reads
+	// its own value, so a guard comparing it with the leaf's own read can never fail and is not evidence. It stays raised.
+	const own = run( sk(), spec( { 'font-size': '13px', 'font-family': 'Georgia', 'font-kerning': 'normal' } ) );
+	assert.equal( settle( own, [ row( own, 'font-size', '13px' ), row( own, 'font-family', 'Georgia' ), row( own, 'font-kerning', 'normal' ) ] ).alreadyHeld.length, 0, 'differs from the parent' );
+	// An icon font: the glyph is generated content of the leaf, so its face paints although the leaf prints no words.
+	const icon = run( sk(), spec( {}, { pseudo: { '::before': { content: '"\e900"' } } } ) );
+	assert.equal( settle( icon, [ row( icon, 'font-family', 'system-ui' ) ] ).alreadyHeld.length, 0, 'a leaf with generated content' );
+	// Negative controls: an element that prints text, a property that is no text property, an inherited paint property.
+	const texted = run( sk(), spec( {}, { words: 'Go' } ) );
+	assert.equal( settle( texted, [ row( texted, 'font-family', 'system-ui' ) ] ).alreadyHeld.length, 0, 'an element that prints text' );
+	assert.equal( settle( same, [ row( same, 'z-index', '5' ) ] ).alreadyHeld.length, 0, 'not a text property' );
+	assert.equal( settle( same, [ row( same, 'color', DEFAULT.color ) ] ).alreadyHeld.length, 0, 'an inherited property that paints without text' );
 	const nested = [ { name: 'sgs/container', draftRef: 'main', attributes: {}, innerBlocks: [ { name: 'sgs/container', draftRef: '.row', attributes: {}, innerBlocks: [ { name: 'sgs/container', draftRef: '.leaf', attributes: {} } ] } ] } ];
 	const wrap = run( nested, { '0:': snap( { 'font-size': '19px' } ), '1:': snap( { 'font-size': '13px' } ), '2:': snap( { 'font-size': '19px' } ) } );
 	assert.equal( settle( wrap, [ { ...row( wrap, 'font-size', '13px' ), node: refOf( wrap.tree[ 0 ].innerBlocks[ 0 ] ) } ] ).alreadyHeld.length, 0, 'an element holding other blocks is judged by its parent, not by having no words' );
-	assert.equal( settle( bare, [ row( bare, 'font-size', '14px' ) ] ).alreadyHeld.length, 0, 'a value the element does not read' );
 } );
 
 test( 'MUST FAIL: a value equal to the calibrated default paint is never held at Fill: the calibration page is not the page being built', () => {

@@ -55,13 +55,20 @@ const PROPS = [ 'transition-duration', 'transition-delay', 'transition-timing-fu
 
 // opts: { unmapped, writes (the motion pass's writes), nodes, flat, refOf, mdb, db, calFor, reads, rawSnapshot }.
 // Returns { unmapped (the rows still raised), answered ([ row + { widths } ], for passSettled) }. A resting timing the state
-// pass raised per property leaves no generic row beside it (lib/fill-timing.mjs::timingDuplicates): it is dropped, not settled.
+// pass raised per property leaves no generic row beside it (lib/fill-timing.mjs::timingDuplicates): the generic row is
+// answered with a detail naming the state pass's row that holds its evidence, so it is listed settled, never lost.
 export function motionSettled( { unmapped, writes, nodes, flat, refOf, mdb, db, calFor, reads, rawSnapshot } ) {
 	const tokens = clientTokens( rawSnapshot );
 	const tok = ( v ) => ( 'string' === typeof v && v.startsWith( 'token:' ) ? tokens[ v.slice( 6 ) ] : v );
 	const kept = [];
 	const answered = [];
-	for ( const row of timingDuplicates( unmapped ).unmapped ) {
+	const dup = timingDuplicates( unmapped );
+	for ( const row of dup.dropped ) {
+		const twin = dup.of.get( row );
+		const declaredAt = READ_WIDTHS.filter( ( w ) => undefined !== reads?.declared?.[ w ] && Object.values( reads.declared[ w ] ).some( ( d ) => undefined !== d?.[ row.property ] ) );
+		answered.push( { ...row, slot: row.slot ?? '', widths: Object.keys( perWidth( row, declaredAt.length ? declaredAt : READ_WIDTHS ) ).map( Number ), settledDetail: `lib/fill-timing.mjs: the state pass's ${ String( twin.reason ).split( ':' )[ 0 ] } row for the same ${ row.property } (${ twin.value }) holds it per property` } );
+	}
+	for ( const row of dup.unmapped ) {
 		const n = row.slot && PROPS.includes( row.property ) && ! row.state ? nodes.find( ( x ) => refOf( flat[ x.index ] ) === row.node ) : null;
 		const t = n?.targets.find( ( x ) => x.slot === ( row.slot ?? '' ) );
 		const doc = t ? writes.find( ( w ) => w.node === row.node && 'motion' === w.how && 'sgsMotion' === w.attr )?.after : null;
@@ -164,10 +171,11 @@ function liveList( { n, t, w, motion, mdb, db, cal, base } ) {
 	return undefined === at( 'transition-property' ) ? null : { props: names( at( 'transition-property' ) ), behaviours: undefined === behaviour ? null : names( behaviour ), complete: true, by: 'paint' };
 }
 
-// What the draft's state looks change at one width: { own, up } or null where no state look was read there. `own` holds
-// the properties the target's own looks declare differently from rest (a pseudo-element's look is another element's);
-// `up` holds those of every target of the node's ancestors, which an inherited property follows
-// (lib/fill-state-reach.mjs::ancestorLook).
+// What the draft's state looks change at one width: { own, up, ownUnknown, upUnknown } or null where no state look was read
+// there. `own` holds the properties the target's own looks declare differently from rest (a pseudo-element's look is
+// another element's); `up` holds those of every target of the node's ancestors, which an inherited property follows
+// (lib/fill-state-reach.mjs::ancestorLook). A state the read could not reach (`reads.states[w].unreached`) on the target, or
+// on an ancestor's target, is unknown, not unchanging: `ownUnknown` and `upUnknown` say so.
 function changingAt( reads, nodes, n, t, w ) {
 	if ( ! reads?.states?.[ w ] ) {
 		return null;
@@ -177,7 +185,8 @@ function changingAt( reads, nodes, n, t, w ) {
 	for ( let p = n.parent; null !== p && undefined !== p; p = nodes[ p ]?.parent ) {
 		above.push( ...( nodes[ p ]?.targets || [] ).map( ( x ) => x.id ) );
 	}
-	return { own: declared( [ t.id ] ), up: declared( above ) };
+	const unknown = ( ids ) => ( reads.states[ w ].unreached || [] ).some( ( u ) => ids.includes( u.id ) );
+	return { own: declared( [ t.id ] ), up: declared( above ), ownUnknown: unknown( [ t.id ] ), upUnknown: unknown( above ) };
 }
 
 // One resting read's outcome at one width: { settle: 'equal' | 'motion', inert } or { reason } (an UNMAPPED row's).
@@ -204,10 +213,13 @@ function listOutcome( { prop, draft, behaviour, live, block, part, changing = nu
 	if ( exact ) {
 		return { settle };
 	}
-	if ( changing && more.length && ! less.length && ! uncovered( draft, live.props ).some( ( p ) => ! MOVEMENT.includes( p ) ) && more.every( ( p ) => ! longhandsOf( p ).some( ( l ) => changing.own.has( l ) || ( INHERITED.includes( p ) && changing.up.has( l ) ) ) ) ) {
+	// Whether no state change reaches an extra property, given what the states change (`c`).
+	const still = ( c ) => more.length && ! less.length && ! uncovered( draft, live.props ).some( ( p ) => ! MOVEMENT.includes( p ) ) && more.every( ( p ) => ! longhandsOf( p ).some( ( l ) => c.own.has( l ) || ( INHERITED.includes( p ) && c.up.has( l ) ) ) );
+	if ( changing && ! changing.ownUnknown && ! ( changing.upUnknown && more.some( ( p ) => INHERITED.includes( p ) ) ) && still( changing ) ) {
 		return { settle, inert: more };
 	}
-	const diff = [ more.length ? `live also transitions ${ more.join( ', ' ) }` : '', less.length ? `the draft also transitions ${ less.join( ', ' ) }` : '' ].filter( Boolean ).join( '; ' ) || ( live.complete ? 'the same properties in another order' : 'Fill cannot tell whether the movement, an effect or the entrance adds a property the draft does not transition' );
+	const unreached = changing && ( changing.ownUnknown || changing.upUnknown ) && still( changing ) ? 'a state of this element or an ancestor was not reached, so the extra properties are not known to stay still' : '';
+	const diff = [ more.length ? `live also transitions ${ more.join( ', ' ) }` : '', less.length ? `the draft also transitions ${ less.join( ', ' ) }` : '', unreached ].filter( Boolean ).join( '; ' ) || ( live.complete ? 'the same properties in another order' : 'Fill cannot tell whether the movement, an effect or the entrance adds a property the draft does not transition' );
 	return { reason: `no-setting: ${ block } has no setting for which properties ${ part } transitions; ${ whose }, the draft ${ draft.join( ', ' ) }: ${ diff }` };
 }
 

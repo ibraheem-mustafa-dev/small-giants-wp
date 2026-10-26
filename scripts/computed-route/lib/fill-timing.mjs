@@ -276,12 +276,13 @@ export function timingWrites( { node, ref, rec, target, cal, db, snapshot, reads
 
 // The resting rows of a timing longhand the generic pass raised beside the state pass's own `timing-*` rows for the same
 // node, element and longhand: the state pass splits the list per property and names each group, so one row per timing
-// is kept, the state pass's. rows: the surface's UNMAPPED rows. Returns { unmapped (the rows kept), dropped }.
+// is kept, the state pass's. rows: the surface's UNMAPPED rows. Returns { unmapped (the rows kept), dropped, of (a Map from
+// each dropped row to the state pass's row it duplicates), so a caller reports the dropped row, never loses it }.
 export function timingDuplicates( rows ) {
 	const key = ( r ) => `${ r.node }|${ r.slot ?? '' }|${ r.property }`;
-	const own = new Set( rows.filter( ( r ) => LIST_PROPS.includes( r.property ) && ! r.state && /^timing-/.test( String( r.reason ) ) ).map( key ) );
+	const own = new Map( rows.filter( ( r ) => LIST_PROPS.includes( r.property ) && ! r.state && /^timing-/.test( String( r.reason ) ) ).map( ( r ) => [ key( r ), r ] ) );
 	const dropped = rows.filter( ( r ) => LIST_PROPS.includes( r.property ) && ! r.state && ! /^timing-/.test( String( r.reason ) ) && own.has( key( r ) ) );
-	return { unmapped: rows.filter( ( r ) => ! dropped.includes( r ) ), dropped };
+	return { unmapped: rows.filter( ( r ) => ! dropped.includes( r ) ), dropped, of: new Map( dropped.map( ( r ) => [ r, own.get( key( r ) ) ] ) ) };
 }
 
 // Whether a resting timing times nothing at every width it is read at: a 0s duration or delay (the initial value, no

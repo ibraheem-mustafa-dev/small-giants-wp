@@ -9,6 +9,7 @@ import path from 'node:path';
 import { writeNode } from '../lib/fill-motion.mjs';
 import { loadMotionSchema, REPO } from '../lib/motion-schema.mjs';
 import { timingDuplicates } from '../lib/fill-timing.mjs';
+import { passSettled } from '../lib/fill-report.mjs';
 import { coveredByMotion } from '../lib/fill-held.mjs';
 import { motionSettled, transitionListOutcomes } from '../lib/fill-motion-settle.mjs';
 
@@ -45,12 +46,22 @@ test( 'MUST FAIL: a resting timing raised per property by the state pass drops t
 	assert.deepEqual( timingDuplicates( [ row( 'transition-duration', 'no-setting: x', { state: 'hover' } ), row( 'transition-duration', 'timing-no-home: x' ) ] ).dropped, [] );
 } );
 
-test( 'MUST FAIL: motionSettled raises one row per timing and does not settle the dropped generic row', () => {
+test( 'MUST FAIL: motionSettled raises one row per timing and settles the dropped generic row naming the row it duplicates', () => {
 	const generic = row( 'transition-duration', 'no-setting: sgs/card has no setting for transition-duration' );
 	const split = row( 'transition-duration', 'timing-no-home: sgs/card has no setting that holds the transition-duration of color', { value: '[{"properties":["color"],"value":"0.25s"}]' } );
 	const out = motionSettled( { unmapped: [ generic, split ], writes: [], nodes: [], flat: [], refOf: () => null, mdb: null, db: null, calFor: null, reads: null, rawSnapshot: {} } );
 	assert.deepEqual( out.unmapped, [ split ] );
-	assert.deepEqual( out.answered, [] );
+	// The dropped row is answered, so the report lists it as settled with the row that holds its evidence, never silently.
+	assert.equal( out.answered.length, 1 );
+	assert.equal( out.answered[ 0 ].property, 'transition-duration' );
+	assert.deepEqual( out.answered[ 0 ].widths, [ 375, 768, 1440 ] );
+	assert.match( out.answered[ 0 ].settledDetail, /timing-no-home/ );
+	assert.ok( out.answered[ 0 ].settledDetail.includes( split.value ) );
+	const settled = passSettled( [ generic, split ], out.unmapped, 'motion', out.answered );
+	assert.equal( settled.length, 1 );
+	assert.match( settled[ 0 ].detail, /timing-no-home/ );
+	// Negative control: no state-pass row beside it, so nothing is dropped or answered.
+	assert.deepEqual( motionSettled( { unmapped: [ generic ], writes: [], nodes: [], flat: [], refOf: () => null, mdb: null, db: null, calFor: null, reads: null, rawSnapshot: {} } ).answered, [] );
 } );
 
 const layerWrite = ( values ) => ( { how: 'motion', attr: 'sgsMotion', after: { v: 1, elements: { root: { hover: { state: { values } } } } } } );
@@ -106,6 +117,25 @@ test( 'MUST FAIL: a live list that is a superset of the draft\'s settles where n
 	// A list that lacks a draft property stays raised whatever the states do.
 	const less = list( reads( { 'transition-property': 'transform, width' }, [ look( { transform: 'scale(1.1)' } ) ] ) );
 	assert.equal( less.unmapped.filter( ( u ) => 'transition-property' === u.property ).length, 1 );
+} );
+
+test( 'MUST FAIL: a state the read could not reach is unknown, so extra transitioned properties are never called inert there', () => {
+	const unreached = ( id ) => ( { id, selector: '.b:hover', why: 'the state needs a pointer the read cannot place' } );
+	const at = ( gone ) => ( { ...reads( DRAFT, [ look( { transform: 'scale(1.1)', 'box-shadow': '0 0 4px #000' } ) ] ), states: { 768: { looks: { '0:': [ look( { transform: 'scale(1.1)', 'box-shadow': '0 0 4px #000' } ) ] }, unreached: gone } } } );
+	const rows = ( r ) => list( r ).unmapped.filter( ( u ) => 'transition-property' === u.property );
+	// Positive control: every state read, the extras are inert.
+	assert.equal( rows( at( [] ) ).length, 0 );
+	// This element has a state the read never reached: its extras may change there.
+	const own = rows( at( [ unreached( '0:' ) ] ) );
+	assert.equal( own.length, 1 );
+	assert.match( own[ 0 ].reason, /live also transitions color, background-color, border-color; a state of this element or an ancestor was not reached/ );
+	// An ancestor's unreached state may change an inherited extra (color).
+	const tree = [ { index: 0, name: 'sgs/container', parent: null, targets: [ { id: '0:', slot: '' } ] }, { index: 1, name: 'sgs/button', parent: 0, targets: [ { id: '1:', slot: '' } ] } ];
+	const go = ( gone ) => transitionListOutcomes( { nodes: tree, flat: [ { ref: 'r0' }, { ref: 'r1' } ], refOf: ( x ) => x.ref, reads: { declared: { 768: { '1:': DRAFT } }, widths: { 768: { '1:': { styles: {} } } }, states: { 768: { looks: { '1:': [ look( { transform: 'scale(1.1)' } ) ] }, unreached: gone } } }, writes: [ { ...hoverWrite, node: 'r1' } ], mdb, db: null, calFor: () => null, base } ).unmapped.filter( ( u ) => 'transition-property' === u.property && 'r1' === u.node );
+	assert.equal( go( [] ).length, 0 );
+	assert.equal( go( [ unreached( '0:' ) ] ).length, 1, 'an ancestor state not reached' );
+	// An unreached state of an unrelated element decides nothing here.
+	assert.equal( go( [ unreached( '9:' ) ] ).length, 0 );
 } );
 
 test( 'a calibrated list that lacks a draft property stays raised though its extras never change', () => {

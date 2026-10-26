@@ -85,8 +85,8 @@
 	},
 	{
 		"file": "lib/fill-state-motion.mjs",
-		"find": "rest[ key ] ?? rendered[ key ] ?? rendered[ 'padding-left' ] ?? '0px' );\n\t\t\tif",
-		"replace": "'0px' );\n\t\t\tif",
+		"find": ".find( ( v ) => undefined !== v ) ?? '0px' );",
+		"replace": ".find( () => false ) ?? '0px' );",
 		"why": "the resting padding would be taken as 0 instead of read from the element"
 	},
 	{
@@ -112,5 +112,35 @@
 		"find": "( null === p.from || undefined === p.from )",
 		"replace": "true",
 		"why": "a record that names its own resting padding would be overwritten by the element's"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "( k in ( into.tiers || {} ) ? into.tiers[ k ] : into )?.properties || []",
+		"replace": "[]",
+		"why": "the inventory record's own tiers (or base) are dropped from the merged tier"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "...adds.flatMap( ( r ) => ( k in ( r.tiers || {} ) ? r.tiers[ k ]?.properties || [] : r.properties ) ),",
+		"replace": "",
+		"why": "the state read's tiers are dropped when the inventory record has tiers"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "...adds.flatMap( ( r ) => Object.keys( r.tiers || {} ) )",
+		"replace": "",
+		"why": "a tier only the state read has is lost"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "...timing( key, [ 'padding', 'padding-inline', ...INDENT_PROPS ] )",
+		"replace": "...timing( 'padding-left', [ 'padding' ] )",
+		"why": "a padding-inline-start hover takes the first transition entry, not its own"
+	},
+	{
+		"file": "lib/fill-state-motion.mjs",
+		"find": "[ rest, rendered ].flatMap( ( src ) => [ src[ key ], ...INDENT_PROPS.map( ( k ) => src[ k ] ) ] )",
+		"replace": "[ rest[ key ], rendered[ key ], rendered[ 'padding-left' ] ]",
+		"why": "the resting start padding is read from the rendered value, never the declared other spelling"
 	}
 ]

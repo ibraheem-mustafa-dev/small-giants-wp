@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "( INHERITED.includes( prop ) ? undefined : initialOf( prop ) ?? undefined )",
+		"replace": "undefined",
+		"why": "a draft that never declares the property at rest has no known resting value, so no reset is held"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "snap.styles?.[ prop ] ?? reads.declared?.[ w ]?.[ id ]?.[ prop ] ??",
+		"replace": "reads.declared?.[ w ]?.[ id ]?.[ prop ] ??",
+		"why": "the rendered resting read is ignored"
+	},
+	{
+		"file": "lib/fill-state.mjs",
+		"find": "snap.styles?.[ prop ] ?? reads.declared?.[ w ]?.[ id ]?.[ prop ] ??",
+		"replace": "snap.styles?.[ prop ] ??",
+		"why": "the declared resting value is ignored"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "...( rest ? { rest } : {} ),",
+		"replace": "",
+		"why": "the resolver input never carries the draft's resting value"
+	}
+]
