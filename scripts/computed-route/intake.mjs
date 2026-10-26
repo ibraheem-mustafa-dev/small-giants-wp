@@ -20,9 +20,10 @@
 //     picks for rows that still await it, and re-renders review.md.
 //   node scripts/computed-route/intake.mjs --facts <client>         writes only build/intake/facts.json (FR-48-7) from the
 //     export, the replay file and the inventories the last run saved, without the other intake stages.
-//   node scripts/computed-route/intake.mjs --page-map <client>      rebuilds only build/page-map.json offline from the
-//     export, with Bean's saved page-map review marks and the current map's ids carried by row key, and prints every
-//     changed row (lib/intake-pagemap-regen.mjs).
+//   node scripts/computed-route/intake.mjs --page-map <client>      rebuilds build/page-map.json offline from the
+//     export, with Bean's saved page-map review marks and the current map's ids carried by row key, puts the same
+//     proposal into intake.json's pageMap and re-renders review.md (so --apply-review confirms the regenerated map), and
+//     prints every changed row (lib/intake-pagemap-regen.mjs).
 //   node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake]   writes build/intake/palette.json
 //     (the palette proposal and its colour usage) from the draft tokens and one 1440 rest reading per route, without
 //     the other stages; --record records the replay file first; --into-intake also replaces intake.json's palette block and

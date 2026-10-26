@@ -573,8 +573,11 @@
             "type": "boolean"
           },
           "realignedFrom": {
-            "type": "string",
-            "minLength": 1
+            "description": "Every earlier row ID the row's element had, earliest first (lib/intake-review-carry.mjs::earlierIds); a record written before the list holds the single ID.",
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+            ]
           }
         }
       }

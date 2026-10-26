@@ -4,13 +4,18 @@
 // row, `edit:<field>=<value>` sets one of the EDITABLE fields), then the ids of the current map by row key
 // (lib/site-build-map.mjs::rowKey), is validated against data/page-map.schema.json, and replaces the map; every added,
 // removed or changed row is printed. A row of the current map holding a WordPress id that the new map would lose is
-// refused unless Bean's review dropped it.
+// refused unless Bean's review dropped it. The saved intake record takes the same proposal as its `pageMap` and review.md
+// is rendered again from it (syncIntake), so `--apply-review` confirms the regenerated map, never the one it replaced.
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { proposePageMap, pageMapProblems } from './intake-pagemap.mjs';
-import { safeRowId } from './intake-review.mjs';
+import { safeRowId, renderReview } from './intake-review.mjs';
+import { carryOver, withUnappliedMarks } from './intake-review-carry.mjs';
 import { rowKey } from './site-build-map.mjs';
-import { loadAjv } from './handoff.mjs';
+import { loadAjv, schemaProblems } from './handoff.mjs';
+
+const SCHEMA = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'intake.schema.json' );
 
 const FIELDS = [ 'route', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags', 'parts', 'draftId', 'id' ];
 // The fields a review mark may edit.
@@ -87,6 +92,23 @@ export function mapChanges( before, after ) {
 	return out;
 }
 
+// The saved intake record with `proposal` (the regenerated rows before marks and ids) as its page map, and its review rows
+// carried over as a re-run carries them (lib/intake-review-carry.mjs): review.md's marks not yet applied first, then every
+// mark whose row is unchanged. Returns { record, problems, refused } (problems: what stops it validating; refused: the
+// marks that reach no row). A palette-only record, or none, is { record: null }: it holds no page map.
+export function syncIntake( intake, proposal, { reviewText = null, day } = {} ) {
+	if ( ! intake || intake.paletteOnly || ! Array.isArray( intake.pageMap ) ) {
+		return { record: null, problems: [], refused: [] };
+	}
+	const previous = null === reviewText ? intake : withUnappliedMarks( intake, reviewText, day ? { day } : {} ).intake;
+	const record = { ...intake, pageMap: proposal };
+	const carried = carryOver( previous, record );
+	record.review = carried.review;
+	const ajv = loadAjv();
+	const problems = [ ...schemaProblems( ajv, SCHEMA, record ).map( ( p ) => `intake.json ${ p }` ), ...pageMapProblems( record.pageMap, ajv ).map( ( p ) => `page map ${ p }` ) ];
+	return { record, problems, refused: carried.refused };
+}
+
 // Runs the regeneration for `o.client` under `o.repo`. Returns the exit code (1 when the export is missing or the new
 // map does not validate; nothing is written then).
 export function runPageMap( o, { log = ( l ) => process.stderr.write( `${ l }\n` ) } = {} ) {
@@ -114,9 +136,22 @@ export function runPageMap( o, { log = ( l ) => process.stderr.write( `${ l }\n`
 		say( `the regenerated map does not validate, nothing written:\n${ problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
 		return 1;
 	}
+	const reviewFile = path.join( path.dirname( intakeFile ), 'review.md' );
+	const hasReview = fs.existsSync( reviewFile );
+	const synced = syncIntake( intake, proposal.rows, { reviewText: hasReview ? fs.readFileSync( reviewFile, 'utf8' ) : null, day: hasReview ? fs.statSync( reviewFile ).mtime.toISOString().slice( 0, 10 ) : undefined } );
+	if ( synced.problems.length ) {
+		say( `intake.json with the regenerated page map does not validate, nothing written:\n${ synced.problems.map( ( p ) => `  - ${ p }` ).join( '\n' ) }` );
+		return 1;
+	}
 	const changes = mapChanges( current, rows );
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
 	fs.writeFileSync( file, `${ JSON.stringify( rows, null, 2 ) }\n` );
+	if ( synced.record ) {
+		fs.writeFileSync( intakeFile, `${ JSON.stringify( synced.record, null, 1 ) }\n` );
+		fs.writeFileSync( reviewFile, renderReview( synced.record ) );
+		say( `${ path.relative( o.repo, intakeFile ) } takes the regenerated page map (${ proposal.rows.length } proposed rows) and review.md is rendered again from it` );
+		synced.refused.forEach( ( r ) => say( `review: mark NOT carried: ${ r }` ) );
+	}
 	say( `${ o.client }: ${ rows.length } rows (${ intake ? `${ marked.applied } review marks matched` : 'no intake record, no review marks' }); ${ changes.length } changes${ changes.length ? `:\n${ changes.map( ( c ) => `  - ${ c }` ).join( '\n' ) }` : '' }` );
 	marked.unapplied.forEach( ( id ) => say( `review mark for ${ id } names no row of the new proposal (not applied)` ) );
 	marked.refused.forEach( ( m ) => say( `review mark ${ m } edits a field a mark may not set (only ${ [ ...EDITABLE ].join( ', ' ) }; not applied)` ) );
