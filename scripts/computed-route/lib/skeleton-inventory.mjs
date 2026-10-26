@@ -7,6 +7,7 @@ import path from 'path';
 import { tplKeyOf } from '../../parity/lib/collect.mjs';
 import { tplLineOf } from './identity.mjs';
 import { loadChromium } from './fill-read.mjs';
+import { applyStateRoute } from './state-route.mjs';
 
 export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The attributes kept per element: what a block needs to know (link, name, label, image source) and the style attribute
@@ -283,6 +284,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			const ctx = await browser.newContext( { viewport: { width: w, height: 900 } } );
 			const page = await ctx.newPage();
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
+			await applyStateRoute( page );
 			await settle( page, root );
 			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ] );
 			if ( res.error ) {

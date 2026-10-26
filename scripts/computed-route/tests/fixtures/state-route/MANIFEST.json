@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-26",
+  "project": "State route fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 1555,
+      "sha256": "2edd68f812939844554924d200d55bc272ebbba0fb466540712a802aaaeae715"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 715,
+      "sha256": "4cb88014cd670f6d8afe58b5fe554cdc0b8ba2df62adc449bdc96d0935a3075d"
+    }
+  ]
+}

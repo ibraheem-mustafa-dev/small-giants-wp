@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="font-family:system-ui,sans-serif;color:#222">
+  <header>
+    <nav aria-label="Main">
+      <a href="#" onClick="{{ goHome }}">Home</a>
+      <a href="#" onClick="{{ goShop }}">Shop</a>
+      <a href="#" onClick="{{ goAbout }}">About</a>
+    </nav>
+  </header>
+  <main>
+    <sc-if value="{{ isHome }}">
+      <section class="page-home"><h1>Welcome home</h1></section>
+    </sc-if>
+    <sc-if value="{{ isShop }}">
+      <section class="page-shop"><h1>The shop</h1><p>Frames and lenses.</p></section>
+    </sc-if>
+    <sc-if value="{{ isAbout }}">
+      <section class="page-about"><h1>About us</h1></section>
+    </sc-if>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { page: 'home', menuOpen: false };
+  go(page, extra) {
+    this.setState(Object.assign({ page, menuOpen: false }, extra || {}));
+    window.scrollTo(0, 0);
+  }
+  renderVals() {
+    const S = this.state;
+    const nav = page => e => { if (e && e.preventDefault) e.preventDefault(); this.go(page); };
+    return {
+      goHome: nav('home'), goShop: nav('shop'), goAbout: nav('about'),
+      isHome: 'home' === S.page, isShop: 'shop' === S.page, isAbout: 'about' === S.page,
+    };
+  }
+}
+</script>
+</body>
+</html>

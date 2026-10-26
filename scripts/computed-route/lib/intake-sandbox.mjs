@@ -12,6 +12,7 @@ import path from 'path';
 import { serveDraft } from './draft.mjs';
 import { readJson, sha256, walkFolder, REPO } from './handoff.mjs';
 import { loadChromium } from './fill-read.mjs';
+import { parseStateHash, openStateRoute } from './state-route.mjs';
 import { browserPidOf, closeBrowser } from './browser-close.mjs';
 
 // The three runtime scripts every known support.js build pins, with the SRI hash it declares for each.
@@ -355,8 +356,16 @@ export async function openSandbox( { folder, index, harPath = null, mode = 'repl
 			window.setInterval = () => later( () => {}, 0 );
 		} );
 		const [ file, query = '' ] = pagePath.split( /\?(.*)/s );
-		await page.goto( `${ origin }/${ file.split( '/' ).map( encodeURIComponent ).join( '/' ) }${ query ? `?${ query }` : '' }`, { waitUntil: 'load', timeout } );
+		// A state-page route (`?#@state/page=<route>`, lib/state-route.mjs) is no URL: the entry opens, then the route is set.
+		const stateRoute = parseStateHash( query );
+		await page.goto( `${ origin }/${ file.split( '/' ).map( encodeURIComponent ).join( '/' ) }${ query && ! stateRoute ? `?${ query }` : '' }`, { waitUntil: 'load', timeout } );
 		await page.waitForFunction( () => document.querySelector( '#dc-root [data-dc-tpl]' ) && 'function' === typeof window.__dcAnnotatedTemplate && window.__dcAnnotatedTemplate( window.__dcRootName() ), null, { timeout } );
+		if ( stateRoute ) {
+			const r = await openStateRoute( page, { ...stateRoute, timeout } );
+			if ( ! r.ok ) {
+				throw new Error( `state route ${ stateRoute.route } was not reached: ${ r.reason }` );
+			}
+		}
 		await page.evaluate( async () => {
 			const step = Math.max( 200, window.innerHeight - 100 );
 			for ( let y = 0; y < document.documentElement.scrollHeight; y += step ) {

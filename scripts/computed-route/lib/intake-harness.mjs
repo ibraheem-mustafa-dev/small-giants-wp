@@ -25,6 +25,7 @@ import { parse } from '@babel/parser';
 import { tplKeyOf } from '../../parity/lib/collect.mjs';
 import { harnessInit } from './intake-harness-page.mjs';
 import { openSandbox } from './intake-sandbox.mjs';
+import { applyStateRoute } from './state-route.mjs';
 
 export const HARNESS_DEFAULTS = Object.freeze( {
 	clock: '2026-01-05T10:00:00Z', // a Monday morning, inside every UK opening-hours window
@@ -199,6 +200,8 @@ export async function gotoDraft( page, origin, file, { hash = '', timeout = 6000
 	const url = `${ origin }/${ file.split( '/' ).map( encodeURIComponent ).join( '/' ) }${ hash ? `#${ hash.replace( /^#/, '' ) }` : '' }`;
 	await page.goto( url, { waitUntil: 'load', timeout } );
 	await page.waitForFunction( () => document.querySelector( '#dc-root [data-dc-tpl]' ) && 'function' === typeof window.__dcAnnotatedTemplate && window.__dcAnnotatedTemplate( window.__dcRootName() ), null, { timeout } );
+	// A state-page route (lib/state-route.mjs) is set on the live logic; any other hash is already the page's own.
+	await applyStateRoute( page, { timeout } );
 	assertNoPageErrors( page, 'while booting' );
 	const errors = await page.evaluate( () => window.__sgsHarness?.errors ?? [ 'the in-page harness is not installed (call preparePage before goto)' ] );
 	if ( errors.length ) {

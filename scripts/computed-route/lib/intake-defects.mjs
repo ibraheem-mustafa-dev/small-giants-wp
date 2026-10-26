@@ -20,6 +20,7 @@ import { deadCodeVerdict, prototypeOnlyWhy, dataGatedWhy } from './intake-defect
 import { deadFieldVerdict } from './intake-defects-deadfield.mjs';
 import { chainPass } from './intake-defects-chain.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
+import { moveToHash } from './state-route.mjs';
 
 export { boundStyleRows, classifyCompiled, readPageBindings, bindingVerdicts, unresolvedBindingDefects } from './intake-defects-binding.mjs';
 
@@ -88,9 +89,7 @@ export async function unreachedDefects( { folder, entry, harPath, census, visits
 		const open = ( v ) => openForcedPage( { folder, entry, harPath, file: group.file, hash: v.hash, width, harness, timeout, forcePseudoState: false !== force.pseudo, drag: false !== force.drag, coords: false !== force.coords } );
 		const visit = async ( s, v, i, fresh ) => {
 			if ( ! fresh ) {
-				await s.page.evaluate( ( h ) => {
-					window.location.hash = h;
-				}, v.hash );
+				await moveToHash( s.page, v.hash );
 				await s.settle();
 			}
 			if ( onPage ) {

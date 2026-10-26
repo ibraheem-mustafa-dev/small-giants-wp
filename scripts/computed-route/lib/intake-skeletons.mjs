@@ -24,6 +24,7 @@ import { detectReferences } from './references.mjs';
 import { loadFacts, decisionsProblems, REPO } from './skeleton-facts.mjs';
 import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
 import { readRouting } from './intake-routing.mjs';
+import { stateRouteHash } from './state-route.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
 import { setDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
@@ -140,8 +141,8 @@ function markRoot( [ component, tpl, mark, attr, isPage ] ) {
 }
 
 // Where a surface is opened: { file, hash } or { error }. A '*' or '/' route is the entry at its default route; a hash
-// export opens `#<route>`; a page-file export opens the file a route names.
-function visitOf( route, { entry, routing } ) {
+// export opens `#<route>`; a page-file export opens the file a route names; a state-page export sets the route's state.
+export function visitOf( route, { entry, routing } ) {
 	if ( null == route || '*' === route || '/' === route || '' === route ) {
 		return { file: entry, hash: '' };
 	}
@@ -156,7 +157,9 @@ function visitOf( route, { entry, routing } ) {
 		const [ file, frag = '' ] = route.replace( /^\//, '' ).split( '#' );
 		return r.routes.some( ( x ) => x.key === file ) ? { file, hash: frag } : { error: `route ${ route } is not a page file of the export` };
 	}
-	return { error: `route ${ route } is reached by the ${ r.adapter } adapter's state, which a URL cannot open` };
+	// A state-page route opens the entry and sets the route's state (lib/state-route.mjs); a route the export does not have is a named gap.
+	const key = String( route ).replace( /^#?\/?/, '' );
+	return r.routes.some( ( x ) => x.key === key ) ? { file: entry, hash: stateRouteHash( key ) } : { error: `route ${ route } is not a route of the ${ r.adapter } export` };
 }
 
 export const summaryOf = ( inv ) => ( {

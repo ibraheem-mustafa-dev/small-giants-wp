@@ -8,13 +8,14 @@
 // Every function takes a Playwright page and returns once the call is made; the caller settles the page after it.
 
 // In-page: the logic state of every mounted instance of `comp` (every component when null), through its own setState.
-// op `set` applies `patch`; `snapshot` keeps each instance's state; `restore` puts back every key changed since; `diff`
+// op `set` applies `patch`; `get` lists the value of the key named by `patch` on each instance; `snapshot` keeps each instance's state; `restore` puts back every key changed since; `diff`
 // counts the instances with a key changed since, changing nothing. `slot` names a separate snapshot (the default one
 // when absent), so a nested forcing step keeps its own. Returns how many instances it reached (`restore`, `diff`: how
 // many changed).
 function logicState( { comp, op, patch, slot } ) {
 	const slots = ( window.__sgsStateSnaps ||= {} );
 	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
 	let count = 0;
 	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
 		const name = host.dataset.scName;
@@ -33,6 +34,8 @@ function logicState( { comp, op, patch, slot } ) {
 		if ( 'set' === op ) {
 			logic.setState( patch );
 			count++;
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
 		} else if ( 'snapshot' === op ) {
 			snap.set( logic, { ...logic.state } );
 			count++;
@@ -49,7 +52,7 @@ function logicState( { comp, op, patch, slot } ) {
 			}
 		}
 	}
-	return count;
+	return 'get' === op ? values : count;
 }
 
 // In-page: dispatches an event on the first element `sel` matches (or the first rendered copy of comp:n); false when
@@ -134,6 +137,9 @@ export const fireListeners = ( page, types = LISTENER_TRIGGERS ) => page.evaluat
 
 // Sets `keys` ({ stateKey: value }) on every mounted instance of `component`; returns how many (0: not mounted).
 export const setDraftState = ( page, { component, keys } ) => page.evaluate( logicState, { comp: component, op: 'set', patch: keys } );
+
+// The value of state key `key` on each mounted instance of `component` (an empty list: not mounted).
+export const readDraftState = ( page, { component, key } ) => page.evaluate( logicState, { comp: component, op: 'get', patch: key } );
 
 // Keeps the state of every mounted instance; restoreDraftState puts back every key changed since and returns how
 // many instances changed. `slot` (optional) keeps a named snapshot beside the default one; draftStateChanged counts the

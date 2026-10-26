@@ -7,6 +7,7 @@ import { openSandbox, classifyUrl } from './intake-sandbox.mjs';
 import { recordExport, recordReplay } from './intake-record.mjs';
 import { runCensus } from './intake-census.mjs';
 import { readRouting } from './intake-routing.mjs';
+import { stateRouteHash } from './state-route.mjs';
 import { readBreakpoints } from './intake-breakpoints.mjs';
 import { proposePageMap } from './intake-pagemap.mjs';
 import { readTokens } from './tokens.mjs';
@@ -45,7 +46,7 @@ function frameworkFacts( job ) {
 
 // Every route as a visit: { key, file, hash } plus the three spellings the libraries take (census `file#hash`,
 // sandbox `file?#hash`). A hash route opens with the href the draft's own links use for it (`#/about`), else `#/<key>`;
-// a page-file route opens its file; a state-page draft has only its entry, which is a gap row.
+// a page-file route opens its file; a state-page route opens the entry and sets the route's state (lib/state-route.mjs).
 export function routeVisits( routing, entry ) {
 	const gaps = [];
 	let list;
@@ -60,8 +61,8 @@ export function routeVisits( routing, entry ) {
 	} else if ( 'files' === routing.adapter ) {
 		list = routing.routes.map( ( r ) => ( { key: r.key, file: r.key, hash: '' } ) );
 	} else {
-		list = [ { key: routing.routes[ 0 ]?.key ?? 'entry', file: entry, hash: '' } ];
-		gaps.push( gap( 'visits', entry, `the ${ routing.adapter } adapter reaches routes by state, which a URL cannot open: only the entry route is visited by the census, readings and defects` ) );
+		// A state-page route is no URL: its visit carries the state route (lib/state-route.mjs), set on the live logic after the entry loads.
+		list = routing.routes.map( ( r ) => ( { key: r.key, file: entry, hash: stateRouteHash( r.key ) } ) );
 	}
 	return {
 		list,

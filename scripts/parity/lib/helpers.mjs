@@ -54,6 +54,10 @@ export function makeHelpers( page, side, { cb, RESOLVE, onAction } ) {
 			h.log.push( { type: 'goto', target: url } );
 			await page.goto( cb( url ), { waitUntil: 'networkidle' } );
 			await waitOutHostCheck( page );
+			// A state-page draft's route is a `#@state/page=<route>` fragment the draft ignores: it is set on the live logic.
+			if ( 'draft' === side && String( url ).includes( '#@state/' ) ) {
+				await ( await import( '../../computed-route/lib/state-route.mjs' ) ).applyStateRoute( page );
+			}
 		},
 		// Clicks the smallest visible element whose rendered text matches the regex source.
 		clickText: async ( src, opts = {} ) => {
