@@ -1,0 +1,304 @@
+{
+  "my-account": {
+    "tree": "trees/page/my-account.json",
+    "intakeSurface": "page-account-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 103
+    },
+    "walker": "qa/parity/my-account.fill-base.mjs",
+    "walkerFull": "qa/parity/my-account.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Account.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null,
+      "next-bake-line-in-hero": null
+    }
+  },
+  "cart": {
+    "tree": "trees/page/cart.json",
+    "intakeSurface": "page-basket-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 101
+    },
+    "walker": "qa/parity/cart.fill-base.mjs",
+    "walkerFull": "qa/parity/cart.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Basket.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null,
+      "empty": null,
+      "has-items": null
+    }
+  },
+  "checkout": {
+    "tree": "trees/page/checkout.json",
+    "intakeSurface": "page-checkout-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 102
+    },
+    "walker": "qa/parity/checkout.fill-base.mjs",
+    "walkerFull": "qa/parity/checkout.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Checkout.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null
+    }
+  },
+  "contact": {
+    "tree": "trees/page/contact.json",
+    "intakeSurface": "page-contact-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 148
+    },
+    "walker": "qa/parity/contact.fill-base.mjs",
+    "walkerFull": "qa/parity/contact.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Contact.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null
+    }
+  },
+  "gifts": {
+    "tree": "trees/page/gifts.json",
+    "intakeSurface": "page-gifts-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 150
+    },
+    "walker": "qa/parity/gifts.fill-base.mjs",
+    "walkerFull": "qa/parity/gifts.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Gifts.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null
+    }
+  },
+  "help": {
+    "tree": "trees/page/help.json",
+    "intakeSurface": "page-help-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 152
+    },
+    "walker": "qa/parity/help.fill-base.mjs",
+    "walkerFull": "qa/parity/help.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Help.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null
+    }
+  },
+  "home": {
+    "tree": "trees/page/home.json",
+    "intakeSurface": "page-home-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 154
+    },
+    "walker": "qa/parity/home.fill-base.mjs",
+    "walkerFull": "qa/parity/home.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Home.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null,
+      "greeting-variant": null
+    }
+  },
+  "product": {
+    "tree": "trees/product/product.json",
+    "intakeSurface": "page-product-dc-html-id-zookies",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "single-product"
+    },
+    "canvas": true,
+    "walker": "qa/parity/product.fill-base.mjs",
+    "walkerFull": "qa/parity/product.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Product.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null,
+      "kind-zookies": null,
+      "kind-card": null,
+      "kind-simple": null,
+      "gift-toggle-available": null,
+      "badge": null
+    }
+  },
+  "shop": {
+    "tree": "trees/shop/shop.json",
+    "intakeSurface": "page-shop-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "archive-product"
+    },
+    "canvas": true,
+    "walker": "qa/parity/shop.fill-base.mjs",
+    "walkerFull": "qa/parity/shop.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Shop.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null
+    }
+  },
+  "form-send": {
+    "tree": "trees/sgs_form/form-send.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 157
+    },
+    "canvas": true,
+    "walker": "qa/parity/form-send.fill-base.mjs",
+    "walkerFull": "qa/parity/form-send.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Home.dc.html",
+    "states": {
+      "resting": null
+    },
+    "provides": [
+      "sgs/form:form-send"
+    ]
+  },
+  "flow-choice-flow-gifts-she-ll-actually-eat": {
+    "tree": "trees/sgs_choice_flow/choice-flow-gifts-she-ll-actually-eat.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 159
+    },
+    "canvas": true,
+    "walker": "qa/parity/flow-choice-flow-gifts-she-ll-actually-eat.fill-base.mjs",
+    "walkerFull": "qa/parity/flow-choice-flow-gifts-she-ll-actually-eat.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Home.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "flow-choice-flow-build-your-zookie": {
+    "tree": "trees/sgs_choice_flow/choice-flow-build-your-zookie.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 161
+    },
+    "canvas": true,
+    "walker": "qa/parity/flow-choice-flow-build-your-zookie.fill-base.mjs",
+    "walkerFull": "qa/parity/flow-choice-flow-build-your-zookie.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Home.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "footer": {
+    "tree": "trees/sgs_footer/footer.json",
+    "intakeSurface": "site-footer",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 176
+    },
+    "canvas": true,
+    "walker": "qa/parity/footer.fill-base.mjs",
+    "walkerFull": "qa/parity/footer.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Home.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null,
+      "tagline-marquee-paused": null
+    },
+    "provides": [
+      "core/template-part:footer"
+    ]
+  },
+  "header": {
+    "tree": "trees/sgs_header/header.json",
+    "intakeSurface": "site-header-announcement-strip-bar",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 178
+    },
+    "canvas": true,
+    "walker": "qa/parity/header.fill-base.mjs",
+    "walkerFull": "qa/parity/header.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Home.dc.html",
+    "states": {
+      "mobile-tablet-bar-menu-button-centred-logo-account-icon-basket-icon": null,
+      "desktop-bar-logo-nav-shop-gifts-subscribe-save-help-contact-account-icon-basket-pill-with-count": null,
+      "count-badge-on-the-mobile-basket-icon": null,
+      "account-link-signed-out-signin-dc-html": null,
+      "account-link-signed-in-account-dc-html": null
+    },
+    "provides": [
+      "core/template-part:header"
+    ]
+  },
+  "drawer-menu": {
+    "tree": "trees/sgs_drawer/drawer-menu.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "postId": 180
+    },
+    "canvas": true,
+    "walker": "qa/parity/drawer-menu.fill-base.mjs",
+    "walkerFull": "qa/parity/drawer-menu.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Home.dc.html",
+    "states": {
+      "resting": null
+    }
+  }
+}
