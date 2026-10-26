@@ -1,0 +1,141 @@
+{
+	"surfaces": {
+		"site-footer": {
+			"Home>SiteFooter@250#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			}
+		},
+		"page-home-dc-html": {
+			"Home>SiteFooter@250#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Home/136#0": {
+				"block": "sgs/media",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			},
+			"Home/136#1": {
+				"block": "sgs/media",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			},
+			"Home/136#2": {
+				"block": "sgs/media",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			},
+			"Home/136#3": {
+				"block": "sgs/media",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			}
+		},
+		"page-shop-dc-html": {
+			"Shop>SiteFooter@51#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Shop/50#0": {
+				"block": "sgs/media",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			}
+		},
+		"page-gifts-dc-html": {
+			"Gifts>SiteFooter@83#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Gifts/27#0": {
+				"block": "sgs/media",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/media in the intake review on 2026-10-26"
+			}
+		},
+		"page-basket-dc-html": {
+			"Basket>SiteFooter@73#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Basket>SiteHeader@7#0/137#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Basket/27#0": {
+				"remove": true,
+				"signature": "div|",
+				"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block"
+			},
+			"Basket/30#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			},
+			"Basket/30#1": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			}
+		},
+		"page-contact-dc-html": {
+			"Contact>SiteFooter@80#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			}
+		},
+		"page-help-dc-html": {
+			"Help>SiteFooter@89#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			}
+		},
+		"page-signin-dc-html": {
+			"SignIn>SiteFooter@106#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			}
+		},
+		"page-account-dc-html": {
+			"Account>SiteFooter@212#0/54#0": {
+				"block": "sgs/container",
+				"signature": "div|",
+				"reason": "Bean marked block:sgs/container in the intake review on 2026-10-26"
+			}
+		},
+		"page-checkout-dc-html": {
+			"Checkout/40#0": {
+				"block": "sgs/separator",
+				"signature": "span|",
+				"reason": "Bean marked block:sgs/separator in the intake review on 2026-10-26"
+			},
+			"Checkout/41#0": {
+				"block": "sgs/separator",
+				"signature": "span|",
+				"reason": "Bean marked block:sgs/separator in the intake review on 2026-10-26"
+			}
+		},
+		"checkout-form": {
+			"Checkout/40#0": {
+				"block": "sgs/separator",
+				"signature": "span|",
+				"reason": "Bean marked block:sgs/separator in the intake review on 2026-10-26"
+			},
+			"Checkout/41#0": {
+				"block": "sgs/separator",
+				"signature": "span|",
+				"reason": "Bean marked block:sgs/separator in the intake review on 2026-10-26"
+			}
+		}
+	}
+}

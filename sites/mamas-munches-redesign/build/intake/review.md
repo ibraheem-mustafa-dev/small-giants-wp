@@ -4,7 +4,7 @@ Taken on 2026-10-19T01:02:50.451Z; manifest 1.0, files hash d5ed630059b071ef.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1610; 835 need reading, 775 are confident proposals that Accept all covers (skeleton block choices 670, missing features 105).
+Rows: 1589; 837 need reading, 752 are confident proposals that Accept all covers (skeleton block choices 647, missing features 105).
 
 Not defects counted, not listed: breakpoint 4, reached-when-forced 103, render-wins 27.
 
@@ -23,7 +23,7 @@ Marks per section (first value = Accept all):
 
 ## Page map (page-map)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -64,7 +64,7 @@ Accept all: [ ]
 
 ## Palette roles (palette-role)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -108,7 +108,7 @@ Accept all: [ ]
 
 ## Site Info (site-info)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -118,7 +118,7 @@ Accept all: [ ]
 
 ## Flags (flag)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -129,7 +129,7 @@ Accept all: [ ]
 
 ## Draft defects (draft-defect)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -137,21 +137,21 @@ Accept all: [ ]
 
 ## Missing features (missing-feature)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:Basket:27` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Basket:30` | <div>: no SGS block fits it | no block proposed | 2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:40` | <span>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Checkout:41` | <span>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Gifts:27` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Home:136` | <div>: no SGS block fits it | no block proposed | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:Shop:50` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:SiteFooter:54` | <div>: no SGS block fits it | no block proposed | 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:SiteHeader:137` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide |  |
-| `missing:handler@Home:132/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database |  |
-| `missing:handler@Home:222/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database |  |
+| `missing:Basket:27` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/cart |
+| `missing:Basket:30` | <div>: no SGS block fits it | no block proposed | 2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | map:sgs/container |
+| `missing:Checkout:40` | <span>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide | map:sgs/separator |
+| `missing:Checkout:41` | <span>: no SGS block fits it | no block proposed | 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide | map:sgs/separator |
+| `missing:Gifts:27` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/media |
+| `missing:Home:136` | <div>: no SGS block fits it | no block proposed | 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | map:sgs/media |
+| `missing:Shop:50` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/media |
+| `missing:SiteFooter:54` | <div>: no SGS block fits it | no block proposed | 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | map:sgs/container |
+| `missing:SiteHeader:137` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/cart |
+| `missing:handler@Home:132/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | difference |
+| `missing:handler@Home:222/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | gap:behaviour |
 
 ### Confident proposals (Accept all covers these)
 
@@ -265,21 +265,21 @@ Accept all: [ ]
 
 ## Skeleton block choices (skeleton-block)
 
-Accept all: [ ]
+Accept all: [x]
 
 ### Needs a decision (unresolved): no block (9)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-basket-dc-html:Basket/27#0` | page-basket-dc-html Basket/27#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-basket-dc-html:Basket/30` | page-basket-dc-html Basket/30 <div> | no block | 0: 2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/137#0` | page-basket-dc-html Basket>SiteHeader@7#0/137#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/40#0` | page-checkout-dc-html Checkout/40#0 <span> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-checkout-dc-html:Checkout/41#0` | page-checkout-dc-html Checkout/41#0 <span> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-gifts-dc-html:Gifts/27#0` | page-gifts-dc-html Gifts/27#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-home-dc-html:Home/136` | page-home-dc-html Home/136 <div> | no block | 0: 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:page-shop-dc-html:Shop/50#0` | page-shop-dc-html Shop/50#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide |  |
-| `skeleton:site-footer:Home>SiteFooter@250#0/54#0` | site-footer Home>SiteFooter@250#0/54#0 <div> | no block | 0: 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide |  |
+| `skeleton:page-basket-dc-html:Basket/27#0` | page-basket-dc-html Basket/27#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | remove |
+| `skeleton:page-basket-dc-html:Basket/30` | page-basket-dc-html Basket/30 <div> | no block | 0: 2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | block:sgs/container |
+| `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/137#0` | page-basket-dc-html Basket>SiteHeader@7#0/137#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | remove |
+| `skeleton:page-checkout-dc-html:Checkout/40#0` | page-checkout-dc-html Checkout/40#0 <span> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide | block:sgs/separator |
+| `skeleton:page-checkout-dc-html:Checkout/41#0` | page-checkout-dc-html Checkout/41#0 <span> | no block | 0: 2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide | block:sgs/separator |
+| `skeleton:page-gifts-dc-html:Gifts/27#0` | page-gifts-dc-html Gifts/27#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | block:sgs/media |
+| `skeleton:page-home-dc-html:Home/136` | page-home-dc-html Home/136 <div> | no block | 0: 4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide | block:sgs/media |
+| `skeleton:page-shop-dc-html:Shop/50#0` | page-shop-dc-html Shop/50#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | block:sgs/media |
+| `skeleton:site-footer:Home>SiteFooter@250#0/54#0` | site-footer Home>SiteFooter@250#0/54#0 <div> | no block | 0: 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | block:sgs/container |
 
 ### Needs a decision (low): block:sgs/business-info (1)
 
@@ -293,13 +293,16 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/45#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/45#0 <a> | block:sgs/icon | 0.5: 9 copies of one template element on 9 surfaces |  |
 
-### Needs a decision (low): block:sgs/media (3)
+### Needs a decision (low): block:sgs/media (6)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/64#0` | nav-drawer-left Home>SiteHeader@7#0/64#0 <img> | block:sgs/media | 0.29: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/69#0` | nav-drawer-left Home>SiteHeader@7#0/69#0 <img> | block:sgs/media | 0.29: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/141` | page-basket-dc-html Basket>SiteHeader@7/141 <img> | block:sgs/media | 0.29: 2 copies of one template element |  |
+| `skeleton:page-home-dc-html:Home/199#0` | page-home-dc-html Home/199#0 <img> | block:sgs/media | 0.29 |  |
+| `skeleton:page-home-dc-html:Home/48#0` | page-home-dc-html Home/48#0 <img> | block:sgs/media | 0.29 |  |
+| `skeleton:page-home-dc-html:Home/56#0` | page-home-dc-html Home/56#0 <img> | block:sgs/media | 0.29 |  |
 
 ### Needs a decision (low): block:sgs/multi-button (12)
 
@@ -318,13 +321,16 @@ Accept all: [ ]
 | `skeleton:page-signin-dc-html:SignIn/36#0` | page-signin-dc-html SignIn/36#0 <div> | block:sgs/multi-button | 0.51 |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/57#0` | site-footer Home>SiteFooter@250#0/57#0 <span> | block:sgs/multi-button | 0.51: 9 copies of one template element on 9 surfaces |  |
 
-### Needs a decision (low): block:sgs/responsive-logo (5)
+### Needs a decision (low): block:sgs/responsive-logo (8)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/177#0` | basket-drawer-right Home>SiteHeader@7#0/177#0 <img> | block:sgs/responsive-logo | 0.66: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/58#0` | nav-drawer-left Home>SiteHeader@7#0/58#0 <img> | block:sgs/responsive-logo | 0.66: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/11#0` | page-checkout-dc-html Checkout/11#0 <img> | block:sgs/responsive-logo | 0.66 |  |
+| `skeleton:page-gifts-dc-html:Gifts/68#0` | page-gifts-dc-html Gifts/68#0 <img> | block:sgs/responsive-logo | 0.66 |  |
+| `skeleton:page-gifts-dc-html:Gifts/74#0` | page-gifts-dc-html Gifts/74#0 <img> | block:sgs/responsive-logo | 0.66 |  |
+| `skeleton:page-home-dc-html:Home/158#0` | page-home-dc-html Home/158#0 <img> | block:sgs/responsive-logo | 0.66 |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/26#0` | site-footer Home>SiteFooter@250#0/26#0 <img> | block:sgs/responsive-logo | 0.66: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/37#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/37#0 <img> | block:sgs/responsive-logo | 0.66: 9 copies of one template element on 9 surfaces |  |
 
@@ -334,7 +340,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/13#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/13#0 <header> | block:sgs/site-header | 0.58 |  |
 
-### Needs a decision (low): block:sgs/text (169)
+### Needs a decision (low): block:sgs/text (165)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -353,8 +359,6 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket/33` | page-basket-dc-html Basket/33 <div> "Oat · Milk choc · Strawberry" | block:sgs/text | 0.25: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/37` | page-basket-dc-html Basket/37 <span> "1" | block:sgs/text | 0.25: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/40` | page-basket-dc-html Basket/40 <div> "£21.50" | block:sgs/text | 0.25: 2 copies of one template element |  |
-| `skeleton:page-basket-dc-html:Basket/45#0` | page-basket-dc-html Basket/45#0 <span> "This is a gift" | block:sgs/text | 0.25 |  |
-| `skeleton:page-basket-dc-html:Basket/46#0` | page-basket-dc-html Basket/46#0 <span> "Add a note. The prices stay off the packing slip." | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket/59#0` | page-basket-dc-html Basket/59#0 <span> "Subtotal" | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket/60#0` | page-basket-dc-html Basket/60#0 <b> "£26.50" | block:sgs/text | 0.25 |  |
 | `skeleton:page-basket-dc-html:Basket/62#0` | page-basket-dc-html Basket/62#0 <span> "Delivery" | block:sgs/text | 0.25 |  |
@@ -386,8 +390,6 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/143#0` | page-checkout-dc-html Checkout/143#0 <div> "Baked fresh for you · with you in 3–5 days" | block:sgs/text | 0.25 |  |
 | `skeleton:page-checkout-dc-html:Checkout/33#0` | page-checkout-dc-html Checkout/33#0 <div> "last bit, promise" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/43#0` | page-checkout-dc-html Checkout/43#0 <legend> "1 · Your details" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
-| `skeleton:page-checkout-dc-html:Checkout/61#0` | page-checkout-dc-html Checkout/61#0 <span> "Create an account (optional)" | block:sgs/text | 0.25 |  |
-| `skeleton:page-checkout-dc-html:Checkout/62#0` | page-checkout-dc-html Checkout/62#0 <span> "See your bake dates and manage subscriptions online." | block:sgs/text | 0.25 |  |
 | `skeleton:page-checkout-dc-html:Checkout/72#0` | page-checkout-dc-html Checkout/72#0 <legend> "2 · Who’s it for?" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/86#0` | page-checkout-dc-html Checkout/86#0 <legend> "3 · Delivery" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact-dc-html:Contact/12#0` | page-contact-dc-html Contact/12#0 <div> "pop the kettle on ☕" | block:sgs/text | 0.25 |  |
@@ -508,12 +510,14 @@ Accept all: [ ]
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/12#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/12#0 <span> "Free UK delivery over £35" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/7#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/7#0 <span> "✦ Baked fresh when you order" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces |  |
 
-### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (11)
+### Settled by rule alignWrapper: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) (13)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/60#0` | nav-drawer-left Home>SiteHeader@7#0/60#0 <div> | unwrap | 1: 9 copies of one template element on 9 surfaces; a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
 | `skeleton:page-account-dc-html:Account/16#0` | page-account-dc-html Account/16#0 <section> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-basket-dc-html:Basket/8#0` | page-basket-dc-html Basket/8#0 <main> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
+| `skeleton:page-checkout-dc-html:Checkout/16#0` | page-checkout-dc-html Checkout/16#0 <main> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
 | `skeleton:page-contact-dc-html:Contact/16#0` | page-contact-dc-html Contact/16#0 <section> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
 | `skeleton:page-gifts-dc-html:Gifts/54#0` | page-gifts-dc-html Gifts/54#0 <section> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
 | `skeleton:page-gifts-dc-html:Gifts/72#0` | page-gifts-dc-html Gifts/72#0 <section> | unwrap | 1: a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13) |  |
@@ -594,13 +598,13 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250#0/45#0` | site-footer Home>SiteFooter@250#0/45#0 <a> | block:sgs/icon | 0.9: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/50#0` | site-footer Home>SiteFooter@250#0/50#0 <a> | block:sgs/icon | 0.75: drawn by sgs/social-icons: Fill generates its icons from the Site Info row |  |
 
-### Settled by rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) (50)
+### Settled by rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) (51)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:checkout-form:Checkout/60#0` | checkout-form Checkout/60#0 <span> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
 | `skeleton:page-basket-dc-html:Basket/42#0` | page-basket-dc-html Basket/42#0 <label> | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-basket-dc-html:Basket/43#0` | page-basket-dc-html Basket/43#0 <input> | block:sgs/form-field-checkbox | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-basket-dc-html:Basket/44#0` | page-basket-dc-html Basket/44#0 <span> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/153#0` | page-basket-dc-html Basket>SiteHeader@7#0/153#0 <label> | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/154#0` | page-basket-dc-html Basket>SiteHeader@7#0/154#0 <input> | block:sgs/form-field-checkbox | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/155#0` | page-basket-dc-html Basket>SiteHeader@7#0/155#0 <span> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
@@ -617,6 +621,7 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/55#0` | page-checkout-dc-html Checkout/55#0 <input> | block:sgs/form-field-phone | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-checkout-dc-html:Checkout/58#0` | page-checkout-dc-html Checkout/58#0 <label> | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-checkout-dc-html:Checkout/59#0` | page-checkout-dc-html Checkout/59#0 <input> | block:sgs/form-field-checkbox | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:page-checkout-dc-html:Checkout/60#0` | page-checkout-dc-html Checkout/60#0 <span> | remove | 1: 2 copies of one template element on 2 surfaces; the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) |  |
 | `skeleton:page-checkout-dc-html:Checkout/88#0` | page-checkout-dc-html Checkout/88#0 <label> "Postcode" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-checkout-dc-html:Checkout/89#0` | page-checkout-dc-html Checkout/89#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-checkout-dc-html:Checkout/91#0` | page-checkout-dc-html Checkout/91#0 <label> "Address line 1" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
@@ -649,15 +654,17 @@ Accept all: [ ]
 | `skeleton:page-signin-dc-html:SignIn/32#0` | page-signin-dc-html SignIn/32#0 <label> "Password" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:page-signin-dc-html:SignIn/33#0` | page-signin-dc-html SignIn/33#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 
-### Settled by rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part (6)
+### Settled by rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part (8)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
-| `skeleton:checkout-form:Checkout/31#0` | checkout-form Checkout/31#0 <form> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
 | `skeleton:gift-finder:Gifts/24#0` | gift-finder Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
 | `skeleton:gift-note-preview:Gifts/61#0` | gift-note-preview Gifts/61#0 <input> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
 | `skeleton:help-search-category-chips:Help/18#0` | help-search-category-chips Help/18#0 <input> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:page-checkout-dc-html:Checkout/31#0` | page-checkout-dc-html Checkout/31#0 <form> | block:sgs/form | 1: 2 copies of one template element on 2 surfaces; a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:page-contact-dc-html:Contact/44#0` | page-contact-dc-html Contact/44#0 <form> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
+| `skeleton:page-signin-dc-html:SignIn/27#0` | page-signin-dc-html SignIn/27#0 <form> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
 | `skeleton:product-buy-box:Product/108#0` | product-buy-box Product/108#0 <button> "Add to basket · £21.50" | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part |  |
 
 ### Settled by rule headerSlots: a strip above the header's main bar is its top row (1)
@@ -666,124 +673,33 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/5#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/5#0 <div> | block:sgs/site-header-row | 1: a strip above the header's main bar is its top row |  |
 
-### Settled by rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) (9)
+### Settled by rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) (7)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-account-dc-html:Account/8#0` | page-account-dc-html Account/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-basket-dc-html:Basket/8#0` | page-basket-dc-html Basket/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-checkout-dc-html:Checkout/16#0` | page-checkout-dc-html Checkout/16#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-contact-dc-html:Contact/8#0` | page-contact-dc-html Contact/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-gifts-dc-html:Gifts/8#0` | page-gifts-dc-html Gifts/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-help-dc-html:Help/8#0` | page-help-dc-html Help/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-home-dc-html:Home/8#0` | page-home-dc-html Home/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-shop-dc-html:Shop/8#0` | page-shop-dc-html Shop/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
-| `skeleton:page-signin-dc-html:SignIn/8#0` | page-signin-dc-html SignIn/8#0 <main> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-account-dc-html:Account/9#0` | page-account-dc-html Account/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-contact-dc-html:Contact/9#0` | page-contact-dc-html Contact/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-gifts-dc-html:Gifts/9#0` | page-gifts-dc-html Gifts/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-help-dc-html:Help/9#0` | page-help-dc-html Help/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-home-dc-html:Home/9#0` | page-home-dc-html Home/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-shop-dc-html:Shop/9#0` | page-shop-dc-html Shop/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
+| `skeleton:page-signin-dc-html:SignIn/9#0` | page-signin-dc-html SignIn/9#0 <section> | block:sgs/hero | 1: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero) |  |
 
-### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (140)
+### Settled by rule heroInner: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays (20)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-account-dc-html:Account/10#0` | page-account-dc-html Account/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-account-dc-html:Account/17#0` | page-account-dc-html Account/17#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-account-dc-html:Account/19#0` | page-account-dc-html Account/19#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-account-dc-html:Account/9#0` | page-account-dc-html Account/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/23#0` | page-basket-dc-html Basket/23#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/24#0` | page-basket-dc-html Basket/24#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/26#0` | page-basket-dc-html Basket/26#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/31` | page-basket-dc-html Basket/31 <div> | unwrap | 1: 2 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/41#0` | page-basket-dc-html Basket/41#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/44#0` | page-basket-dc-html Basket/44#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/56#0` | page-basket-dc-html Basket/56#0 <aside> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-basket-dc-html:Basket/9#0` | page-basket-dc-html Basket/9#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/106#0` | page-checkout-dc-html Checkout/106#0 <fieldset> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/121#0` | page-checkout-dc-html Checkout/121#0 <aside> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/125` | page-checkout-dc-html Checkout/125 <div> | unwrap | 1: 2 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/127` | page-checkout-dc-html Checkout/127 <div> | unwrap | 1: 2 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/31#0` | page-checkout-dc-html Checkout/31#0 <form> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/32#0` | page-checkout-dc-html Checkout/32#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/42#0` | page-checkout-dc-html Checkout/42#0 <fieldset> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/57#0` | page-checkout-dc-html Checkout/57#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/60#0` | page-checkout-dc-html Checkout/60#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/71#0` | page-checkout-dc-html Checkout/71#0 <fieldset> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-checkout-dc-html:Checkout/85#0` | page-checkout-dc-html Checkout/85#0 <fieldset> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-contact-dc-html:Contact/10#0` | page-contact-dc-html Contact/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-contact-dc-html:Contact/11#0` | page-contact-dc-html Contact/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-contact-dc-html:Contact/15#0` | page-contact-dc-html Contact/15#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/17#0` | page-contact-dc-html Contact/17#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/19#0` | page-contact-dc-html Contact/19#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/26#0` | page-contact-dc-html Contact/26#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/34#0` | page-contact-dc-html Contact/34#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/42#0` | page-contact-dc-html Contact/42#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/44#0` | page-contact-dc-html Contact/44#0 <form> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/46#0` | page-contact-dc-html Contact/46#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/74#0` | page-contact-dc-html Contact/74#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-contact-dc-html:Contact/9#0` | page-contact-dc-html Contact/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-gifts-dc-html:Gifts/11#0` | page-gifts-dc-html Gifts/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-gifts-dc-html:Gifts/15#0` | page-gifts-dc-html Gifts/15#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/34#0` | page-gifts-dc-html Gifts/34#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/35#0` | page-gifts-dc-html Gifts/35#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/39` | page-gifts-dc-html Gifts/39 <div> | unwrap | 1: 4 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/40` | page-gifts-dc-html Gifts/40 <div> | unwrap | 1: 4 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/44#0` | page-gifts-dc-html Gifts/44#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/45#0` | page-gifts-dc-html Gifts/45#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/50` | page-gifts-dc-html Gifts/50 <div> | unwrap | 1: 3 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/55#0` | page-gifts-dc-html Gifts/55#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/56#0` | page-gifts-dc-html Gifts/56#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/66#0` | page-gifts-dc-html Gifts/66#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/68#0` | page-gifts-dc-html Gifts/68#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/73#0` | page-gifts-dc-html Gifts/73#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/74#0` | page-gifts-dc-html Gifts/74#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/75#0` | page-gifts-dc-html Gifts/75#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-gifts-dc-html:Gifts/9#0` | page-gifts-dc-html Gifts/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-help-dc-html:Help/10#0` | page-help-dc-html Help/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/23#0` | page-help-dc-html Help/23#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/26` | page-help-dc-html Help/26 <div> | unwrap | 1: 12 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/28` | page-help-dc-html Help/28 <span> | unwrap | 1: 12 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/37#0` | page-help-dc-html Help/37#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/38#0` | page-help-dc-html Help/38#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/42#0` | page-help-dc-html Help/42#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/44#0` | page-help-dc-html Help/44#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/52#0` | page-help-dc-html Help/52#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/58#0` | page-help-dc-html Help/58#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/64#0` | page-help-dc-html Help/64#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/65#0` | page-help-dc-html Help/65#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/76#0` | page-help-dc-html Help/76#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/78#0` | page-help-dc-html Help/78#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/81#0` | page-help-dc-html Help/81#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/85#0` | page-help-dc-html Help/85#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-help-dc-html:Help/9#0` | page-help-dc-html Help/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/10#0` | page-home-dc-html Home/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/100#0` | page-home-dc-html Home/100#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/107#0` | page-home-dc-html Home/107#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/109#0` | page-home-dc-html Home/109#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/11#0` | page-home-dc-html Home/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/112#0` | page-home-dc-html Home/112#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/124#0` | page-home-dc-html Home/124#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/125#0` | page-home-dc-html Home/125#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/127#0` | page-home-dc-html Home/127#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/138` | page-home-dc-html Home/138 <div> | unwrap | 1: 4 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/15#0` | page-home-dc-html Home/15#0 <span> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/152#0` | page-home-dc-html Home/152#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/157#0` | page-home-dc-html Home/157#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/158#0` | page-home-dc-html Home/158#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/159#0` | page-home-dc-html Home/159#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/16#0` | page-home-dc-html Home/16#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/168#0` | page-home-dc-html Home/168#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/189#0` | page-home-dc-html Home/189#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/194#0` | page-home-dc-html Home/194#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/195#0` | page-home-dc-html Home/195#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/196#0` | page-home-dc-html Home/196#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/199#0` | page-home-dc-html Home/199#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/201#0` | page-home-dc-html Home/201#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/206#0` | page-home-dc-html Home/206#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/208#0` | page-home-dc-html Home/208#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/209#0` | page-home-dc-html Home/209#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/211#0` | page-home-dc-html Home/211#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/224` | page-home-dc-html Home/224 <article> | unwrap | 1: 6 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/238#0` | page-home-dc-html Home/238#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/243#0` | page-home-dc-html Home/243#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/245` | page-home-dc-html Home/245 <div> | unwrap | 1: 4 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/28#0` | page-home-dc-html Home/28#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/29#0` | page-home-dc-html Home/29#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/30#0` | page-home-dc-html Home/30#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
@@ -791,41 +707,10 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/33#0` | page-home-dc-html Home/33#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/35#0` | page-home-dc-html Home/35#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-home-dc-html:Home/36#0` | page-home-dc-html Home/36#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/44#0` | page-home-dc-html Home/44#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/46#0` | page-home-dc-html Home/46#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/47#0` | page-home-dc-html Home/47#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/48#0` | page-home-dc-html Home/48#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/49#0` | page-home-dc-html Home/49#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/55#0` | page-home-dc-html Home/55#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/56#0` | page-home-dc-html Home/56#0 <img> | absorbed | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/57#0` | page-home-dc-html Home/57#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/63#0` | page-home-dc-html Home/63#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/65#0` | page-home-dc-html Home/65#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/66#0` | page-home-dc-html Home/66#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/70#0` | page-home-dc-html Home/70#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/76#0` | page-home-dc-html Home/76#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/81#0` | page-home-dc-html Home/81#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/9#0` | page-home-dc-html Home/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-home-dc-html:Home/90#0` | page-home-dc-html Home/90#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-shop-dc-html:Shop/11#0` | page-shop-dc-html Shop/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop/26#0` | page-shop-dc-html Shop/26#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop/30` | page-shop-dc-html Shop/30 <div> | unwrap | 1: 5 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop/31` | page-shop-dc-html Shop/31 <div> | unwrap | 1: 5 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop/33#0` | page-shop-dc-html Shop/33#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop/39#0` | page-shop-dc-html Shop/39#0 <a> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop/46#0` | page-shop-dc-html Shop/46#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop/9#0` | page-shop-dc-html Shop/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop>ProductCard@31/1` | page-shop-dc-html Shop>ProductCard@31/1 <a> | unwrap | 1: 9 copies of one template element on 2 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-shop-dc-html:Shop>ProductCard@31/4=unwrap` | page-shop-dc-html Shop>ProductCard@31/4=unwrap <div> | unwrap | 1: 7 copies of one template element on 2 surfaces; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 | `skeleton:page-signin-dc-html:SignIn/10#0` | page-signin-dc-html SignIn/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-signin-dc-html:SignIn/101` | page-signin-dc-html SignIn/101 <div> | unwrap | 1: 3 copies of one template element; inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-signin-dc-html:SignIn/15#0` | page-signin-dc-html SignIn/15#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-signin-dc-html:SignIn/27#0` | page-signin-dc-html SignIn/27#0 <form> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-signin-dc-html:SignIn/9#0` | page-signin-dc-html SignIn/9#0 <section> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-signin-dc-html:SignIn/95#0` | page-signin-dc-html SignIn/95#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
-| `skeleton:page-signin-dc-html:SignIn/97#0` | page-signin-dc-html SignIn/97#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays |  |
 
-### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (18)
+### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (17)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -846,7 +731,6 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/83#0` | page-home-dc-html Home/83#0 <span> "3 · Flavours" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-home-dc-html:Home/91#0` | page-home-dc-html Home/91#0 <div> "4 · How many" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 | `skeleton:page-shop-dc-html:Shop/44=sgs/label` | page-shop-dc-html Shop/44=sgs/label <span> "10% off every box" | block:sgs/label | 1: 1 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
-| `skeleton:page-shop-dc-html:Shop>ProductCard@31/3` | page-shop-dc-html Shop>ProductCard@31/3 <span> "Build your own" | block:sgs/label | 1: 9 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number |  |
 
 ### Settled by rule listWrapper: a bare wrapper whose only content is one list goes: the list block is that wrapper (3)
 
@@ -934,7 +818,7 @@ Accept all: [ ]
 | `skeleton:page-contact-dc-html:Contact/48#0` | page-contact-dc-html Contact/48#0 <div> | block:sgs/form-field-tiles | 1: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) |  |
 | `skeleton:page-contact-dc-html:Contact/50` | page-contact-dc-html Contact/50 <button> "My order" | absorbed | 1: 5 copies of one template element; drawn by sgs/form-field-tiles: rule optionSetForm |  |
 
-### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (8)
+### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (10)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -944,6 +828,8 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/22#0` | page-home-dc-html Home/22#0 <span> "→" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
 | `skeleton:page-home-dc-html:Home/25#0` | page-home-dc-html Home/25#0 <a> "4.3 on Trustpilot" | block:sgs/button | 1: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:page-home-dc-html:Home/26#0` | page-home-dc-html Home/26#0 <span> "★★★★★" | absorbed | 1: drawn by sgs/button: rule pillButton |  |
+| `skeleton:page-shop-dc-html:Shop>ProductCard@31/1` | page-shop-dc-html Shop>ProductCard@31/1 <a> | block:sgs/button | 1: 9 copies of one template element on 2 surfaces; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
+| `skeleton:page-shop-dc-html:Shop>ProductCard@31/3` | page-shop-dc-html Shop>ProductCard@31/3 <span> "Build your own" | absorbed | 1: 9 copies of one template element on 2 surfaces; drawn by sgs/button: rule pillButton |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/24#0` | site-footer Home>SiteFooter@250#0/24#0 <a> "Build your box" | block:sgs/button | 1: 9 copies of one template element on 9 surfaces; a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/25#0` | site-footer Home>SiteFooter@250#0/25#0 <span> "→" | absorbed | 1: 9 copies of one template element on 9 surfaces; drawn by sgs/button: rule pillButton |  |
 
@@ -976,16 +862,25 @@ Accept all: [ ]
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/11#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/11#0 <span> "·" | remove | 1: 9 copies of one template element on 9 surfaces; a typed divider between items is the row's separators setting, not a block |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/9#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/9#0 <span> "·" | remove | 1: 9 copies of one template element on 9 surfaces; a typed divider between items is the row's separators setting, not a block |  |
 
-### Settled by rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) (7)
+### Settled by rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) (16)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/123#0` | nav-drawer-left Home>SiteHeader@7#0/123#0 <a> | block:sgs/container | 1: 9 copies of one template element on 9 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/63#0` | nav-drawer-left Home>SiteHeader@7#0/63#0 <a> | block:sgs/container | 1: 9 copies of one template element on 9 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/68#0` | nav-drawer-left Home>SiteHeader@7#0/68#0 <a> | block:sgs/container | 1: 9 copies of one template element on 9 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-contact-dc-html:Contact/19#0` | page-contact-dc-html Contact/19#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-contact-dc-html:Contact/26#0` | page-contact-dc-html Contact/26#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-contact-dc-html:Contact/34#0` | page-contact-dc-html Contact/34#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-gifts-dc-html:Gifts/73#0` | page-gifts-dc-html Gifts/73#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 | `skeleton:page-help-dc-html:Help/84#0` | page-help-dc-html Help/84#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 | `skeleton:page-home-dc-html:Home/134` | page-home-dc-html Home/134 <a> | block:sgs/container | 1: 4 copies of one template element; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-home-dc-html:Home/157#0` | page-home-dc-html Home/157#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 | `skeleton:page-home-dc-html:Home/215#0` | page-home-dc-html Home/215#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-home-dc-html:Home/47#0` | page-home-dc-html Home/47#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-home-dc-html:Home/55#0` | page-home-dc-html Home/55#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-shop-dc-html:Shop/33#0` | page-shop-dc-html Shop/33#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
+| `skeleton:page-shop-dc-html:Shop/39#0` | page-shop-dc-html Shop/39#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 | `skeleton:page-shop-dc-html:Shop/45#0` | page-shop-dc-html Shop/45#0 <a> | block:sgs/container | 1: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) |  |
 
 ### Settled by rule widthWrapper: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there (4)
@@ -997,7 +892,7 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250#0/4#0` | site-footer Home>SiteFooter@250#0/4#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/6#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/6#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there |  |
 
-### Confident proposals (Accept all covers these) (311)
+### Confident proposals (Accept all covers these) (395)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -1008,24 +903,6 @@ Accept all: [ ]
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/179#0` | basket-drawer-right Home>SiteHeader@7#0/179#0 <p> "New to Zookies? The Taster Trio is 3 cookies for £5, postage included." | block:sgs/text | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/180#0` | basket-drawer-right Home>SiteHeader@7#0/180#0 <button> "Add a Taster Trio · £5" | block:sgs/button | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/181#0` | basket-drawer-right Home>SiteHeader@7#0/181#0 <a> "Browse the shop" | block:sgs/button | 0.75: 8 copies of one template element on 8 surfaces |  |
-| `skeleton:build-your-zookie:Home/100#0` | build-your-zookie Home/100#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:build-your-zookie:Home/107#0` | build-your-zookie Home/107#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:build-your-zookie:Home/109#0` | build-your-zookie Home/109#0 <span> | block:sgs/container | 1 |  |
-| `skeleton:build-your-zookie:Home/112#0` | build-your-zookie Home/112#0 <span> | block:sgs/container | 1 |  |
-| `skeleton:build-your-zookie:Home/65#0` | build-your-zookie Home/65#0 <div> | block:sgs/container | 1 |  |
-| `skeleton:build-your-zookie:Home/66#0` | build-your-zookie Home/66#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:build-your-zookie:Home/70#0` | build-your-zookie Home/70#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:build-your-zookie:Home/76#0` | build-your-zookie Home/76#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:build-your-zookie:Home/81#0` | build-your-zookie Home/81#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:build-your-zookie:Home/90#0` | build-your-zookie Home/90#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:checkout-form:Checkout/106#0` | checkout-form Checkout/106#0 <fieldset> | block:sgs/container | 1 |  |
-| `skeleton:checkout-form:Checkout/32#0` | checkout-form Checkout/32#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:checkout-form:Checkout/42#0` | checkout-form Checkout/42#0 <fieldset> | block:sgs/container | 1 |  |
-| `skeleton:checkout-form:Checkout/57#0` | checkout-form Checkout/57#0 <div> | block:sgs/container | 0.75 |  |
-| `skeleton:checkout-form:Checkout/61#0` | checkout-form Checkout/61#0 <span> "Create an account (optional)" | remove | 1: inside a removed element (Checkout/60#0) |  |
-| `skeleton:checkout-form:Checkout/62#0` | checkout-form Checkout/62#0 <span> "See your bake dates and manage subscriptions online." | remove | 1: inside a removed element (Checkout/60#0) |  |
-| `skeleton:checkout-form:Checkout/71#0` | checkout-form Checkout/71#0 <fieldset> | block:sgs/container | 1 |  |
-| `skeleton:checkout-form:Checkout/85#0` | checkout-form Checkout/85#0 <fieldset> | block:sgs/container | 1 |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/104#0` | nav-drawer-left Home>SiteHeader@7#0/104#0 <div> | block:sgs/container | 0.75: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/107#0` | nav-drawer-left Home>SiteHeader@7#0/107#0 <a> "WhatsApp" | block:sgs/icon-list | 0.7: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/112#0` | nav-drawer-left Home>SiteHeader@7#0/112#0 <a> "Email" | block:sgs/icon-list | 0.7: 9 copies of one template element on 9 surfaces |  |
@@ -1048,6 +925,8 @@ Accept all: [ ]
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/92#0` | nav-drawer-left Home>SiteHeader@7#0/92#0 <a> "Sign in" | block:sgs/icon-list | 0.7: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/93#0` | nav-drawer-left Home>SiteHeader@7#0/93#0 <a> "Create account" | block:sgs/icon-list | 0.7: 9 copies of one template element on 9 surfaces |  |
 | `skeleton:page-account-dc-html:Account/12#0` | page-account-dc-html Account/12#0 <h1> "My account" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-account-dc-html:Account/17#0` | page-account-dc-html Account/17#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-account-dc-html:Account/19#0` | page-account-dc-html Account/19#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-account-dc-html:Account/20#0` | page-account-dc-html Account/20#0 <h2> "Sign in to see your orders" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-account-dc-html:Account/21#0` | page-account-dc-html Account/21#0 <p> "Your orders, bake dates, subscriptions and saved addresses live here." | block:sgs/text | 0.75 |  |
 | `skeleton:page-account-dc-html:Account/212#0` | page-account-dc-html Account/212#0 <div> | block:sgs/container | 0.75 |  |
@@ -1055,14 +934,23 @@ Accept all: [ ]
 | `skeleton:page-account-dc-html:Account/24#0` | page-account-dc-html Account/24#0 <a> "Create an account" | block:sgs/button | 0.75 |  |
 | `skeleton:page-account-dc-html:Account/6#0` | page-account-dc-html Account/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-account-dc-html:Account/7#0` | page-account-dc-html Account/7#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-account-dc-html:Account/8#0` | page-account-dc-html Account/8#0 <main> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket/11#0` | page-basket-dc-html Basket/11#0 <h1> "Your basket" | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket/22#0` | page-basket-dc-html Basket/22#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-basket-dc-html:Basket/23#0` | page-basket-dc-html Basket/23#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-basket-dc-html:Basket/24#0` | page-basket-dc-html Basket/24#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-basket-dc-html:Basket/26#0` | page-basket-dc-html Basket/26#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket/29` | page-basket-dc-html Basket/29 <div> | block:sgs/container | 1: 2 copies of one template element |  |
+| `skeleton:page-basket-dc-html:Basket/31` | page-basket-dc-html Basket/31 <div> | block:sgs/container | 1: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/34` | page-basket-dc-html Basket/34 <div> | block:sgs/container | 1: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/35` | page-basket-dc-html Basket/35 <div> | block:sgs/container | 1: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/36` | page-basket-dc-html Basket/36 <button> "−" | block:sgs/button | 0.75: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/38` | page-basket-dc-html Basket/38 <button> "+" | block:sgs/button | 0.75: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket/39` | page-basket-dc-html Basket/39 <button> "Remove" | block:sgs/button | 0.75: 2 copies of one template element |  |
+| `skeleton:page-basket-dc-html:Basket/41#0` | page-basket-dc-html Basket/41#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-basket-dc-html:Basket/45#0` | page-basket-dc-html Basket/45#0 <span> "This is a gift" | remove | 1: inside a removed element (Basket/44#0) |  |
+| `skeleton:page-basket-dc-html:Basket/46#0` | page-basket-dc-html Basket/46#0 <span> "Add a note. The prices stay off the packing slip." | remove | 1: inside a removed element (Basket/44#0) |  |
+| `skeleton:page-basket-dc-html:Basket/56#0` | page-basket-dc-html Basket/56#0 <aside> | block:sgs/container | 1 |  |
 | `skeleton:page-basket-dc-html:Basket/57#0` | page-basket-dc-html Basket/57#0 <div> "Summary" | block:sgs/heading | 0.8 |  |
 | `skeleton:page-basket-dc-html:Basket/58#0` | page-basket-dc-html Basket/58#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-basket-dc-html:Basket/6#0` | page-basket-dc-html Basket/6#0 <div> | block:sgs/container | 0.75 |  |
@@ -1074,6 +962,7 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket/70#0` | page-basket-dc-html Basket/70#0 <button> "Google Pay" | block:sgs/button | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket/72#0` | page-basket-dc-html Basket/72#0 <a> "Keep shopping" | block:sgs/button | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket/73#0` | page-basket-dc-html Basket/73#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-basket-dc-html:Basket/9#0` | page-basket-dc-html Basket/9#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/134#0` | page-basket-dc-html Basket>SiteHeader@7#0/134#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/136#0` | page-basket-dc-html Basket>SiteHeader@7#0/136#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/138#0` | page-basket-dc-html Basket>SiteHeader@7#0/138#0 <div> | block:sgs/container | 0.75 |  |
@@ -1092,44 +981,60 @@ Accept all: [ ]
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/149` | page-basket-dc-html Basket>SiteHeader@7/149 <div> | block:sgs/container | 1: 2 copies of one template element |  |
 | `skeleton:page-basket-dc-html:Basket>SiteHeader@7/151` | page-basket-dc-html Basket>SiteHeader@7/151 <button> "Remove" | block:sgs/button | 0.75: 2 copies of one template element |  |
 | `skeleton:page-checkout-dc-html:Checkout/10#0` | page-checkout-dc-html Checkout/10#0 <a> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout-dc-html:Checkout/106#0` | page-checkout-dc-html Checkout/106#0 <fieldset> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/110#0` | page-checkout-dc-html Checkout/110#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/115#0` | page-checkout-dc-html Checkout/115#0 <div> "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts." | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/116#0` | page-checkout-dc-html Checkout/116#0 <a> "Full allergen info" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/117#0` | page-checkout-dc-html Checkout/117#0 <button> "Pay £30.45" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/118#0` | page-checkout-dc-html Checkout/118#0 <div> "By placing your order you agree to our ." | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/119#0` | page-checkout-dc-html Checkout/119#0 <a> "terms" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-checkout-dc-html:Checkout/121#0` | page-checkout-dc-html Checkout/121#0 <aside> | block:sgs/container | 1 |  |
 | `skeleton:page-checkout-dc-html:Checkout/124` | page-checkout-dc-html Checkout/124 <div> | block:sgs/container | 1: 2 copies of one template element |  |
+| `skeleton:page-checkout-dc-html:Checkout/125` | page-checkout-dc-html Checkout/125 <div> | block:sgs/container | 0.75: 2 copies of one template element |  |
+| `skeleton:page-checkout-dc-html:Checkout/127` | page-checkout-dc-html Checkout/127 <div> | block:sgs/container | 0.75: 2 copies of one template element |  |
 | `skeleton:page-checkout-dc-html:Checkout/131#0` | page-checkout-dc-html Checkout/131#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-checkout-dc-html:Checkout/133#0` | page-checkout-dc-html Checkout/133#0 <button> "Apply" | block:sgs/button | 0.75 |  |
 | `skeleton:page-checkout-dc-html:Checkout/134#0` | page-checkout-dc-html Checkout/134#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-checkout-dc-html:Checkout/137#0` | page-checkout-dc-html Checkout/137#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-checkout-dc-html:Checkout/140#0` | page-checkout-dc-html Checkout/140#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-checkout-dc-html:Checkout/17#0` | page-checkout-dc-html Checkout/17#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout-dc-html:Checkout/32#0` | page-checkout-dc-html Checkout/32#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/34#0` | page-checkout-dc-html Checkout/34#0 <h1> "Checkout" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/36#0` | page-checkout-dc-html Checkout/36#0 <button> "Apple Pay" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/37#0` | page-checkout-dc-html Checkout/37#0 <button> "Google Pay" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/38#0` | page-checkout-dc-html Checkout/38#0 <button> "PayPal" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/39#0` | page-checkout-dc-html Checkout/39#0 <div> "or pay by card" | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-checkout-dc-html:Checkout/42#0` | page-checkout-dc-html Checkout/42#0 <fieldset> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/50#0` | page-checkout-dc-html Checkout/50#0 <div> "Checking out as a guest." | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/51#0` | page-checkout-dc-html Checkout/51#0 <a> "Have an account? Sign in" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-checkout-dc-html:Checkout/57#0` | page-checkout-dc-html Checkout/57#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/6#0` | page-checkout-dc-html Checkout/6#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout-dc-html:Checkout/61#0` | page-checkout-dc-html Checkout/61#0 <span> "Create an account (optional)" | remove | 1: 2 copies of one template element on 2 surfaces; inside a removed element (Checkout/60#0) |  |
+| `skeleton:page-checkout-dc-html:Checkout/62#0` | page-checkout-dc-html Checkout/62#0 <span> "See your bake dates and manage subscriptions online." | remove | 1: 2 copies of one template element on 2 surfaces; inside a removed element (Checkout/60#0) |  |
 | `skeleton:page-checkout-dc-html:Checkout/7#0` | page-checkout-dc-html Checkout/7#0 <header> | block:sgs/container | 0.75 |  |
+| `skeleton:page-checkout-dc-html:Checkout/71#0` | page-checkout-dc-html Checkout/71#0 <fieldset> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/8#0` | page-checkout-dc-html Checkout/8#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-checkout-dc-html:Checkout/85#0` | page-checkout-dc-html Checkout/85#0 <fieldset> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/87#0` | page-checkout-dc-html Checkout/87#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/9#0` | page-checkout-dc-html Checkout/9#0 <a> "← Basket" | block:sgs/button | 0.75 |  |
 | `skeleton:page-checkout-dc-html:Checkout/90#0` | page-checkout-dc-html Checkout/90#0 <button> "Find address" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-checkout-dc-html:Checkout/93#0` | page-checkout-dc-html Checkout/93#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-contact-dc-html:Contact/13#0` | page-contact-dc-html Contact/13#0 <h1> "Say hello to Zainab" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/14#0` | page-contact-dc-html Contact/14#0 <p> "Questions about an order, a gift, allergens or a bulk order for a baby shower or event? Get in touch however suits you." | block:sgs/text | 0.75 |  |
+| `skeleton:page-contact-dc-html:Contact/17#0` | page-contact-dc-html Contact/17#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/18#0` | page-contact-dc-html Contact/18#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/40#0` | page-contact-dc-html Contact/40#0 <span> "Zainab@mamasmunches.com" | block:sgs/business-info | 0.8 |  |
 | `skeleton:page-contact-dc-html:Contact/41#0` | page-contact-dc-html Contact/41#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-contact-dc-html:Contact/42#0` | page-contact-dc-html Contact/42#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/45#0` | page-contact-dc-html Contact/45#0 <h2> "Send a message" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-contact-dc-html:Contact/46#0` | page-contact-dc-html Contact/46#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/51#0` | page-contact-dc-html Contact/51#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/6#0` | page-contact-dc-html Contact/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/67#0` | page-contact-dc-html Contact/67#0 <button> "Send message →" | block:sgs/button | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/7#0` | page-contact-dc-html Contact/7#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-contact-dc-html:Contact/74#0` | page-contact-dc-html Contact/74#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-contact-dc-html:Contact/77` | page-contact-dc-html Contact/77 <a> "When will my order arrive?" | block:sgs/icon-list | 0.7: 4 copies of one template element |  |
+| `skeleton:page-contact-dc-html:Contact/8#0` | page-contact-dc-html Contact/8#0 <main> | block:sgs/container | 0.75 |  |
 | `skeleton:page-contact-dc-html:Contact/80#0` | page-contact-dc-html Contact/80#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/10#0` | page-gifts-dc-html Gifts/10#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-gifts-dc-html:Gifts/13#0` | page-gifts-dc-html Gifts/13#0 <h1> "Gifts she’ll actually eat" | block:sgs/heading | 0.75 |  |
@@ -1138,51 +1043,90 @@ Accept all: [ ]
 | `skeleton:page-gifts-dc-html:Gifts/25#0` | page-gifts-dc-html Gifts/25#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/26#0` | page-gifts-dc-html Gifts/26#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/29#0` | page-gifts-dc-html Gifts/29#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-gifts-dc-html:Gifts/34#0` | page-gifts-dc-html Gifts/34#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-gifts-dc-html:Gifts/35#0` | page-gifts-dc-html Gifts/35#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/36#0` | page-gifts-dc-html Gifts/36#0 <h2> "Gifts for “just had a baby”" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/37#0` | page-gifts-dc-html Gifts/37#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-gifts-dc-html:Gifts/39` | page-gifts-dc-html Gifts/39 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
+| `skeleton:page-gifts-dc-html:Gifts/40` | page-gifts-dc-html Gifts/40 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
+| `skeleton:page-gifts-dc-html:Gifts/44#0` | page-gifts-dc-html Gifts/44#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-gifts-dc-html:Gifts/45#0` | page-gifts-dc-html Gifts/45#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/47#0` | page-gifts-dc-html Gifts/47#0 <h2> "How gifting works" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/48#0` | page-gifts-dc-html Gifts/48#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-gifts-dc-html:Gifts/50` | page-gifts-dc-html Gifts/50 <div> | block:sgs/container | 0.75: 3 copies of one template element |  |
+| `skeleton:page-gifts-dc-html:Gifts/55#0` | page-gifts-dc-html Gifts/55#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-gifts-dc-html:Gifts/56#0` | page-gifts-dc-html Gifts/56#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-gifts-dc-html:Gifts/58#0` | page-gifts-dc-html Gifts/58#0 <h2> "Write her a note" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/59#0` | page-gifts-dc-html Gifts/59#0 <p> "See how it’ll look in the box. You can finish it at checkout." | block:sgs/text | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/6#0` | page-gifts-dc-html Gifts/6#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-gifts-dc-html:Gifts/66#0` | page-gifts-dc-html Gifts/66#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/7#0` | page-gifts-dc-html Gifts/7#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-gifts-dc-html:Gifts/75#0` | page-gifts-dc-html Gifts/75#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-gifts-dc-html:Gifts/79#0` | page-gifts-dc-html Gifts/79#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-gifts-dc-html:Gifts/8#0` | page-gifts-dc-html Gifts/8#0 <main> | block:sgs/container | 0.75 |  |
 | `skeleton:page-gifts-dc-html:Gifts/83#0` | page-gifts-dc-html Gifts/83#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/12#0` | page-help-dc-html Help/12#0 <h1> "Help & FAQs" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/23#0` | page-help-dc-html Help/23#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help-dc-html:Help/26` | page-help-dc-html Help/26 <div> | block:sgs/container | 0.75: 12 copies of one template element |  |
 | `skeleton:page-help-dc-html:Help/27` | page-help-dc-html Help/27 <button> | block:sgs/container | 1: 12 copies of one template element |  |
+| `skeleton:page-help-dc-html:Help/28` | page-help-dc-html Help/28 <span> | block:sgs/container | 1: 12 copies of one template element |  |
 | `skeleton:page-help-dc-html:Help/33#0` | page-help-dc-html Help/33#0 <p> "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/37#0` | page-help-dc-html Help/37#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/38#0` | page-help-dc-html Help/38#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/40#0` | page-help-dc-html Help/40#0 <h2> "Delivery" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/41#0` | page-help-dc-html Help/41#0 <p> "Every order is baked fresh when it comes in, then posted with Royal Mail Tracked. Most orders are with you in 3–5 days." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/42#0` | page-help-dc-html Help/42#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-help-dc-html:Help/43#0` | page-help-dc-html Help/43#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help-dc-html:Help/44#0` | page-help-dc-html Help/44#0 <span> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/48#0` | page-help-dc-html Help/48#0 <b> "£3.95" | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/51#0` | page-help-dc-html Help/51#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help-dc-html:Help/52#0` | page-help-dc-html Help/52#0 <span> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/57#0` | page-help-dc-html Help/57#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help-dc-html:Help/58#0` | page-help-dc-html Help/58#0 <span> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/6#0` | page-help-dc-html Help/6#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/64#0` | page-help-dc-html Help/64#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/65#0` | page-help-dc-html Help/65#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/67#0` | page-help-dc-html Help/67#0 <h2> "Ingredients & allergens" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/68#0` | page-help-dc-html Help/68#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-help-dc-html:Help/7#0` | page-help-dc-html Help/7#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/73#0` | page-help-dc-html Help/73#0 <p> "Fenugreek may cross-react with peanut and soy allergies in sensitive people. Made in a kitchen that also handles tree nuts, so not suitable for anyone with a tree nut allergy." | block:sgs/text | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/74#0` | page-help-dc-html Help/74#0 <p> "no eggs or dairy. Still contains oats, flaxseed and fenugreek, and the same tree nut advice applies. Some flavours and chips may add allergens; each is listed on the product page." | block:sgs/container | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/76#0` | page-help-dc-html Help/76#0 <section> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/77#0` | page-help-dc-html Help/77#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-help-dc-html:Help/78#0` | page-help-dc-html Help/78#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/8#0` | page-help-dc-html Help/8#0 <main> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/80#0` | page-help-dc-html Help/80#0 <p> "Policy text to be supplied." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/81#0` | page-help-dc-html Help/81#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/83#0` | page-help-dc-html Help/83#0 <p> "Terms text to be supplied." | block:sgs/text | 0.75 |  |
+| `skeleton:page-help-dc-html:Help/85#0` | page-help-dc-html Help/85#0 <span> | block:sgs/container | 0.75 |  |
 | `skeleton:page-help-dc-html:Help/89#0` | page-help-dc-html Help/89#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/100#0` | page-home-dc-html Home/100#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/101#0` | page-home-dc-html Home/101#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/103#0` | page-home-dc-html Home/103#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/107#0` | page-home-dc-html Home/107#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/108#0` | page-home-dc-html Home/108#0 <button> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/109#0` | page-home-dc-html Home/109#0 <span> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/112#0` | page-home-dc-html Home/112#0 <span> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/118` | page-home-dc-html Home/118 <button> "Every 2 weeks" | block:sgs/button | 0.75: 4 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/119#0` | page-home-dc-html Home/119#0 <button> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/12#0` | page-home-dc-html Home/12#0 <div> "good morning, mama" | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/122#0` | page-home-dc-html Home/122#0 <button> "Subscribe · £19.35" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/124#0` | page-home-dc-html Home/124#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/125#0` | page-home-dc-html Home/125#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/126#0` | page-home-dc-html Home/126#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/127#0` | page-home-dc-html Home/127#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/129#0` | page-home-dc-html Home/129#0 <h2> "A gift she’ll actually eat" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/132#0` | page-home-dc-html Home/132#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/135` | page-home-dc-html Home/135 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
+| `skeleton:page-home-dc-html:Home/138` | page-home-dc-html Home/138 <div> | block:sgs/container | 1: 4 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/14#0` | page-home-dc-html Home/14#0 <h1> "Made for the mum who needs it" | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/141` | page-home-dc-html Home/141 <span> | block:sgs/container | 1: 4 copies of one template element |  |
+| `skeleton:page-home-dc-html:Home/152#0` | page-home-dc-html Home/152#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/153#0` | page-home-dc-html Home/153#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/159#0` | page-home-dc-html Home/159#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/163#0` | page-home-dc-html Home/163#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/164#0` | page-home-dc-html Home/164#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/168#0` | page-home-dc-html Home/168#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/169#0` | page-home-dc-html Home/169#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/17#0` | page-home-dc-html Home/17#0 <span> "most" | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/171#0` | page-home-dc-html Home/171#0 <div> | block:sgs/container | 0.75 |  |
@@ -1192,21 +1136,31 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/181#0` | page-home-dc-html Home/181#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/184#0` | page-home-dc-html Home/184#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/186#0` | page-home-dc-html Home/186#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/189#0` | page-home-dc-html Home/189#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/19#0` | page-home-dc-html Home/19#0 <p> "Giant, filling lactation cookies with oats, brewer’s yeast, flaxseed and fenugreek. Built the way you like them and baked fresh in Birmingham the moment you order." | block:sgs/text | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/190#0` | page-home-dc-html Home/190#0 <h2> "Proper ingredients, from generations of mums" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/191#0` | page-home-dc-html Home/191#0 <p> "The same four have gone into postpartum food for generations, from Pakistan to West Africa. No shortcuts, no preservatives." | block:sgs/text | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/192#0` | page-home-dc-html Home/192#0 <div> "We make nourishing food, not medicine. If you’re worried about your supply, your midwife, health visitor or a lactation consultant (IBCLC) is the right person to talk to." | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/193#0` | page-home-dc-html Home/193#0 <a> "Allergens →" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/194#0` | page-home-dc-html Home/194#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/195#0` | page-home-dc-html Home/195#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/196#0` | page-home-dc-html Home/196#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/201#0` | page-home-dc-html Home/201#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/203#0` | page-home-dc-html Home/203#0 <p> "“My story with lactation cookies started when my friend started struggling with breastfeeding her newborn.”" | block:sgs/text | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/204#0` | page-home-dc-html Home/204#0 <p> "At the time, we had no choice but to start making lactation cookies ourselves, praying that it would work for the sake of her baby and amazingly, it did! These cookies helped her milk supply almost immediately and I was so grateful to have been able to make her early motherhood days just a bit easier." | block:sgs/text | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/205#0` | page-home-dc-html Home/205#0 <p> "Now I hope that I can do the same thing for you. Using natural, wholesome ingredients, everything is made with care and intention for breastfeeding mums and their new beautiful babies." | block:sgs/text | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/206#0` | page-home-dc-html Home/206#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/208#0` | page-home-dc-html Home/208#0 <section> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/209#0` | page-home-dc-html Home/209#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/210#0` | page-home-dc-html Home/210#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/211#0` | page-home-dc-html Home/211#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/213#0` | page-home-dc-html Home/213#0 <h2> "Loved by mums, and the people who love them" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/214#0` | page-home-dc-html Home/214#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/217#0` | page-home-dc-html Home/217#0 <span> "8 on Trustpilot ↗" | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/220#0` | page-home-dc-html Home/220#0 <button> "←" | block:sgs/button | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/221#0` | page-home-dc-html Home/221#0 <button> "→" | block:sgs/button | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/222#0` | page-home-dc-html Home/222#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/224` | page-home-dc-html Home/224 <article> | block:sgs/container | 1: 6 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/225` | page-home-dc-html Home/225 <div> | block:sgs/container | 1: 6 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/228` | page-home-dc-html Home/228 <h3> "Healthy and filling snack" | block:sgs/heading | 0.75: 6 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/229` | page-home-dc-html Home/229 <p> "I received the strawberry and milk chocolate chip cookies. I gave half of them to my SIL, who is also postpartum. They were fresh, soft and delicious! … I think these would be lovely to gift a new Mum." | block:sgs/text | 0.75: 6 copies of one template element |  |
@@ -1214,23 +1168,38 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/230` | page-home-dc-html Home/230 <div> | block:sgs/container | 1: 6 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/235` | page-home-dc-html Home/235 <button> | block:sgs/button | 0.75: 4 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/237#0` | page-home-dc-html Home/237#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/238#0` | page-home-dc-html Home/238#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/240#0` | page-home-dc-html Home/240#0 <h2> "Questions mums ask" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/241#0` | page-home-dc-html Home/241#0 <p> "Can’t see yours? Message Zainab on WhatsApp, or read the full ." | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/242#0` | page-home-dc-html Home/242#0 <a> "Help & FAQs" | block:sgs/button | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/243#0` | page-home-dc-html Home/243#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/245` | page-home-dc-html Home/245 <div> | block:sgs/container | 0.75: 4 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/246` | page-home-dc-html Home/246 <button> "When will my order arrive?" | block:sgs/container | 1: 4 copies of one template element |  |
 | `skeleton:page-home-dc-html:Home/249#0` | page-home-dc-html Home/249#0 <p> "Zainab bakes every order fresh when it comes in, then posts it with Royal Mail Tracked. Most orders are with you in 3–5 days." | block:sgs/text | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/250#0` | page-home-dc-html Home/250#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/27#0` | page-home-dc-html Home/27#0 <a> "New? Taster Trio, 3 for £5 →" | block:sgs/button | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/38#0` | page-home-dc-html Home/38#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/44#0` | page-home-dc-html Home/44#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/45#0` | page-home-dc-html Home/45#0 <h2> "Who are we baking for today?" | block:sgs/heading | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/46#0` | page-home-dc-html Home/46#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/49#0` | page-home-dc-html Home/49#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/53#0` | page-home-dc-html Home/53#0 <span> "Build your box" | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/57#0` | page-home-dc-html Home/57#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-home-dc-html:Home/6#0` | page-home-dc-html Home/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/61#0` | page-home-dc-html Home/61#0 <span> "Shop gifts" | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/63#0` | page-home-dc-html Home/63#0 <section> | block:sgs/container | 0.75 |  |
 | `skeleton:page-home-dc-html:Home/64#0` | page-home-dc-html Home/64#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-home-dc-html:Home/65#0` | page-home-dc-html Home/65#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/66#0` | page-home-dc-html Home/66#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/68#0` | page-home-dc-html Home/68#0 <h2> "Build your Zookie" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/69#0` | page-home-dc-html Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | block:sgs/text | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/7#0` | page-home-dc-html Home/7#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/70#0` | page-home-dc-html Home/70#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/76#0` | page-home-dc-html Home/76#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/8#0` | page-home-dc-html Home/8#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-home-dc-html:Home/81#0` | page-home-dc-html Home/81#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home/82#0` | page-home-dc-html Home/82#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces |  |
+| `skeleton:page-home-dc-html:Home/90#0` | page-home-dc-html Home/90#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteFooter@250#0/19#0` | page-home-dc-html Home>SiteFooter@250#0/19#0 <div> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteFooter@250#0/2#0` | page-home-dc-html Home>SiteFooter@250#0/2#0 <footer> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
 | `skeleton:page-home-dc-html:Home>SiteFooter@250#0/20#0` | page-home-dc-html Home>SiteFooter@250#0/20#0 <div> | block:sgs/container | 0.75: 8 copies of one template element on 8 surfaces |  |
@@ -1254,30 +1223,40 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop/10#0` | page-shop-dc-html Shop/10#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/13#0` | page-shop-dc-html Shop/13#0 <h1> "The shop" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-shop-dc-html:Shop/14#0` | page-shop-dc-html Shop/14#0 <p> "Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35." | block:sgs/text | 0.75 |  |
+| `skeleton:page-shop-dc-html:Shop/26#0` | page-shop-dc-html Shop/26#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-shop-dc-html:Shop/28#0` | page-shop-dc-html Shop/28#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-shop-dc-html:Shop/30` | page-shop-dc-html Shop/30 <div> | block:sgs/container | 0.75: 5 copies of one template element |  |
+| `skeleton:page-shop-dc-html:Shop/31` | page-shop-dc-html Shop/31 <div> | block:sgs/container | 0.75: 5 copies of one template element |  |
 | `skeleton:page-shop-dc-html:Shop/32#0` | page-shop-dc-html Shop/32#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/37#0` | page-shop-dc-html Shop/37#0 <span> "Start building" | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/42#0` | page-shop-dc-html Shop/42#0 <span> | block:sgs/container | 1 |  |
+| `skeleton:page-shop-dc-html:Shop/46#0` | page-shop-dc-html Shop/46#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-shop-dc-html:Shop/51#0` | page-shop-dc-html Shop/51#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-shop-dc-html:Shop/6#0` | page-shop-dc-html Shop/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-shop-dc-html:Shop/7#0` | page-shop-dc-html Shop/7#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-shop-dc-html:Shop/8#0` | page-shop-dc-html Shop/8#0 <main> | block:sgs/container | 0.75 |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/0` | page-shop-dc-html Shop>ProductCard@31/0 <div> | block:sgs/container | 1: 9 copies of one template element on 2 surfaces |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/11` | page-shop-dc-html Shop>ProductCard@31/11 <button> "Build your box" | block:sgs/button | 0.75: 9 copies of one template element on 2 surfaces |  |
-| `skeleton:page-shop-dc-html:Shop>ProductCard@31/4=sgs/container` | page-shop-dc-html Shop>ProductCard@31/4=sgs/container <div> | block:sgs/container | 1: 2 copies of one template element |  |
+| `skeleton:page-shop-dc-html:Shop>ProductCard@31/4` | page-shop-dc-html Shop>ProductCard@31/4 <div> | block:sgs/container | 1: 9 copies of one template element on 2 surfaces |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/5` | page-shop-dc-html Shop>ProductCard@31/5 <a> "Zookies" | block:sgs/button | 0.75: 9 copies of one template element on 2 surfaces |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/7` | page-shop-dc-html Shop>ProductCard@31/7 <p> "Our giant lactation cookie, baked to order in the flavour you pick." | block:sgs/text | 0.75: 9 copies of one template element on 2 surfaces |  |
 | `skeleton:page-shop-dc-html:Shop>ProductCard@31/8` | page-shop-dc-html Shop>ProductCard@31/8 <div> | block:sgs/container | 1: 9 copies of one template element on 2 surfaces |  |
+| `skeleton:page-signin-dc-html:SignIn/101` | page-signin-dc-html SignIn/101 <div> | block:sgs/container | 0.75: 3 copies of one template element |  |
 | `skeleton:page-signin-dc-html:SignIn/104#0` | page-signin-dc-html SignIn/104#0 <div> "You don’t need an account to order. Checkout works fine as a guest, and you can create one at the end." | block:sgs/container | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/105#0` | page-signin-dc-html SignIn/105#0 <a> "Go to the shop →" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/106#0` | page-signin-dc-html SignIn/106#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/12#0` | page-signin-dc-html SignIn/12#0 <h1> "Sign in" | block:sgs/heading | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/14#0` | page-signin-dc-html SignIn/14#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-signin-dc-html:SignIn/15#0` | page-signin-dc-html SignIn/15#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/24#0` | page-signin-dc-html SignIn/24#0 <button> "Sign in" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/25#0` | page-signin-dc-html SignIn/25#0 <button> "Create account" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/37#0` | page-signin-dc-html SignIn/37#0 <button> "Sign in →" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/38#0` | page-signin-dc-html SignIn/38#0 <button> "Forgotten your password?" | block:sgs/button | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/6#0` | page-signin-dc-html SignIn/6#0 <div> | block:sgs/container | 0.75 |  |
 | `skeleton:page-signin-dc-html:SignIn/7#0` | page-signin-dc-html SignIn/7#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:page-signin-dc-html:SignIn/8#0` | page-signin-dc-html SignIn/8#0 <main> | block:sgs/container | 0.75 |  |
+| `skeleton:page-signin-dc-html:SignIn/95#0` | page-signin-dc-html SignIn/95#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:page-signin-dc-html:SignIn/97#0` | page-signin-dc-html SignIn/97#0 <div> | block:sgs/container | 1 |  |
 | `skeleton:page-signin-dc-html:SignIn/99` | page-signin-dc-html SignIn/99 <div> | block:sgs/container | 1: 3 copies of one template element |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/19#0` | site-footer Home>SiteFooter@250#0/19#0 <div> | block:sgs/site-footer-row | 1 |  |
 | `skeleton:site-footer:Home>SiteFooter@250#0/2#0` | site-footer Home>SiteFooter@250#0/2#0 <footer> | block:sgs/site-footer | 1 |  |
@@ -1315,7 +1294,7 @@ Accept all: [ ]
 
 ## Inventory diffs (inventory-diff)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
