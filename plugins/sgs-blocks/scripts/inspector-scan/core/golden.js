@@ -972,6 +972,8 @@ const MECHANISM_BY_CSS_PROPERTY = {
 	'border-bottom-color': 'border',
 	'outline-color': 'border',
 	'box-shadow-color': 'shadow',
+	// A text shadow's colour (sgs_typography_css_rule): CSS text-shadow takes a colour only, so its row needs no gradient path.
+	'text-shadow-color': 'shadow',
 	// A link underline's own colour (helpers-link-underline.php): text-decoration-color takes
 	// no gradient, so, like a shadow colour, its row needs no gradient path.
 	'text-decoration-color': 'decoration',

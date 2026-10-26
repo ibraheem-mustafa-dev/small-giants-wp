@@ -199,6 +199,7 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$k_numeric     = sgs_typography_attr( $prefix, 'FontVariantNumeric' );
 		$k_shadow      = sgs_typography_attr( $prefix, 'TextShadow' );
 		$k_shadow_col  = sgs_typography_attr( $prefix, 'TextShadowColour' );
+		$k_shadow_hov  = sgs_typography_attr( $prefix, 'TextShadowColourHover' );
 
 		// Numeric responsive families (font-size / line-height / letter-spacing) may
 		// each be stored EITHER as the modern {desktop,tablet,mobile} OBJECT (Spec 35
@@ -513,6 +514,14 @@ if ( ! function_exists( 'sgs_typography_css_rule' ) ) {
 		$stroke_hover = isset( $attributes[ $k_stroke_hov ] ) ? sgs_colour_value( (string) $attributes[ $k_stroke_hov ] ) : '';
 		if ( '' !== $stroke_hover ) {
 			$css .= sgs_hover_state_rules( $selector, '-webkit-text-stroke-color:' . $stroke_hover . ';' );
+		}
+
+		// Text shadow hover — the same layers repainted in the hover colour (resolved by sgs_text_shadow_value() through sgs_colour_value(); a colour on a layer of its own wins).
+		if ( '' !== $text_shadow && 'none' !== $text_shadow && ! empty( $attributes[ $k_shadow_hov ] ) ) {
+			$hover_shadow = sgs_text_shadow_value( (string) $attributes[ $k_shadow ], (string) $attributes[ $k_shadow_hov ] );
+			if ( '' !== $hover_shadow ) {
+				$css .= sgs_hover_state_rules( $selector, 'text-shadow:' . $hover_shadow . ';' );
+			}
 		}
 
 		return $css;

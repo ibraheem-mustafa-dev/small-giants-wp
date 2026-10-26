@@ -83,7 +83,8 @@
 								"css:color": "textColourHover",
 								"css:color-gradient": "textColourHoverGradient",
 								"css:text-decoration-color-link": "linkUnderlineColourHover",
-								"css:-webkit-text-stroke-color": "textStrokeColourHover"
+								"css:-webkit-text-stroke-color": "textStrokeColourHover",
+								"css:text-shadow-color": "textShadowColourHover"
 							}
 						}
 					},
@@ -372,6 +373,10 @@
 			"default": ""
 		},
 		"textShadowColour": {
+			"type": "string",
+			"default": ""
+		},
+		"textShadowColourHover": {
 			"type": "string",
 			"default": ""
 		},
