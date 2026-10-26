@@ -1,0 +1,2732 @@
+{
+	"generated": "2026-10-26T17:54:31.111Z",
+	"inventory": "2026-10-19T00:32:01.861Z",
+	"source": "http://127.0.0.1:59472/Home.dc.html#build",
+	"surface": "build-your-zookie",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [
+		{
+			"key": "Home/74",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Home/80",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Home/87",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Home/94",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "Home/108",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		}
+	],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 106,
+		"parts": 0,
+		"rows": 106,
+		"skeletonNodes": 41,
+		"expandedNodes": 41,
+		"low": 12,
+		"removed": 65,
+		"unresolved": 0,
+		"byRule": {
+			"formHost": 1,
+			"widthWrapper": 1,
+			"label": 4,
+			"optionSet": 48,
+			"decorationLayer": 20
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/63#0",
+			"tag": "section",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/form",
+			"action": null,
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"source": "rule formHost",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formHost",
+			"candidates": [
+				{
+					"block": "sgs/form",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<section id=\"build\" style=\"padding:{{ L.secPadTop0 }};scroll-margin-top:72px\" data-dc-tpl=\"63\"> <div data-reveal=\"\" style=\"max-width:1240px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:36px;padding:{{ L.boxPad }};display:grid;grid-template-columns:{{ L.buildCols }};gap:{{ L.gap }}\" data-dc-tpl=\"64\"> <div style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" dat",
+			"attributes": {},
+			"slots": {
+				".sgs-container__inner": {
+					"tpl": "Root/64#0"
+				}
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/64#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
+			"source": "rule widthWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "widthWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-reveal=\"\" style=\"max-width:1240px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:36px;padding:{{ L.boxPad }};display:grid;grid-template-columns:{{ L.buildCols }};gap:{{ L.gap }}\" data-dc-tpl=\"64\"> <div style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" data-dc-tpl=\"65\"> <div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;co",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/65#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" data-dc-tpl=\"65\"> <div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div> <h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/66#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div> <h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"68\">Build your Zookie</h2> <p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/67#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "your cookie, your way",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div>",
+			"attributes": {
+				"text": "your cookie, your way"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/68#0",
+			"tag": "h2",
+			"depth": 4,
+			"words": "Build your Zookie",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"68\">Build your Zookie</h2>",
+			"attributes": {
+				"content": "Build your Zookie"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/69#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3C31;max-width:520px\" data-dc-tpl=\"69\">Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.</p>",
+			"attributes": {
+				"text": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh."
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/70#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-dc-tpl=\"70\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"71\">1 · Base</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"72\"><sc-for list=\"{{ bases }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"73\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;pad",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/71#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "1 · Base",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"71\">1 · Base</div>",
+			"attributes": {
+				"text": "1 · Base"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/72#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+			"source": "rule optionSet",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"72\"><sc-for list=\"{{ bases }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"73\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px 0 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;alig",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/74#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "Classic oat",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/72#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px 0 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/75#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/72#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.dot }};border:2px solid #3A2A22\" data-dc-tpl=\"75\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/74#1",
+			"tag": "button",
+			"depth": 5,
+			"words": "Vegan oat",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/72#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px 0 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/75#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/72#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.dot }};border:2px solid #3A2A22\" data-dc-tpl=\"75\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/76#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-dc-tpl=\"76\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"77\">2 · Chips</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"78\"><sc-for list=\"{{ chips }}\" as=\"o\" hint-placeholder-count=\"4\" data-dc-tpl=\"79\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;pa",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/77#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "2 · Chips",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"77\">2 · Chips</div>",
+			"attributes": {
+				"text": "2 · Chips"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/78#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+			"source": "rule optionSet",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"78\"><sc-for list=\"{{ chips }}\" as=\"o\" hint-placeholder-count=\"4\" data-dc-tpl=\"79\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }",
+			"attributes": {}
+		},
+		{
+			"order": 17,
+			"key": "Root/80#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "Milk choc",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/80#1",
+			"tag": "button",
+			"depth": 5,
+			"words": "White choc",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root/80#2",
+			"tag": "button",
+			"depth": 5,
+			"words": "Dark choc",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 20,
+			"key": "Root/80#3",
+			"tag": "button",
+			"depth": 5,
+			"words": "No chips",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root/81#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-dc-tpl=\"81\"><div style=\"display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px\" data-dc-tpl=\"82\"><span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span><span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span></div> <div style=\"disp",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/82#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px\" data-dc-tpl=\"82\"><span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span><span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span></div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/83#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "3 · Flavours",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span>",
+			"attributes": {
+				"text": "3 · Flavours"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/84#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Pick up to 3 and we’ll split your box between them",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span>",
+			"attributes": {
+				"text": "Pick up to 3 and we’ll split your box between them"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/85#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+			"source": "rule optionSet",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"85\"><sc-for list=\"{{ flavs }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"86\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;alig",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root/87#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "Vanilla",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root/88#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 28,
+			"key": "Root/87#1",
+			"tag": "button",
+			"depth": 5,
+			"words": "Chocolate",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 29,
+			"key": "Root/88#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "Root/87#2",
+			"tag": "button",
+			"depth": 5,
+			"words": "Strawberry",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 31,
+			"key": "Root/88#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 32,
+			"key": "Root/87#3",
+			"tag": "button",
+			"depth": 5,
+			"words": "Mango",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 33,
+			"key": "Root/88#3",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 34,
+			"key": "Root/87#4",
+			"tag": "button",
+			"depth": 5,
+			"words": "Banana",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 35,
+			"key": "Root/88#4",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 36,
+			"key": "Root/87#5",
+			"tag": "button",
+			"depth": 5,
+			"words": "Coffee",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 37,
+			"key": "Root/88#5",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 38,
+			"key": "Root/87#6",
+			"tag": "button",
+			"depth": 5,
+			"words": "Mint",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 39,
+			"key": "Root/88#6",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 40,
+			"key": "Root/87#7",
+			"tag": "button",
+			"depth": 5,
+			"words": "Caramel",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 41,
+			"key": "Root/88#7",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 42,
+			"key": "Root/87#8",
+			"tag": "button",
+			"depth": 5,
+			"words": "Coconut",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 43,
+			"key": "Root/88#8",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 44,
+			"key": "Root/87#9",
+			"tag": "button",
+			"depth": 5,
+			"words": "Pistachio",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 45,
+			"key": "Root/88#9",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 46,
+			"key": "Root/87#10",
+			"tag": "button",
+			"depth": 5,
+			"words": "Honey",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+			"attributes": {}
+		},
+		{
+			"order": 47,
+			"key": "Root/88#10",
+			"tag": "span",
+			"depth": 6,
+			"words": "✓",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/85#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+			"attributes": {}
+		},
+		{
+			"order": 48,
+			"key": "Root/89#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "Your 20: 10 strawberry · 10 mango",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:10px;font-size:14px;font-weight:700\" data-dc-tpl=\"89\">{{ split }}</div>",
+			"attributes": {
+				"text": "Your 20: 10 strawberry · 10 mango"
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root/90#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div data-dc-tpl=\"90\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"91\">4 · How many</div> <div style=\"display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:6px\" data-dc-tpl=\"92\"><sc-for list=\"{{ sizes }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"93\"><button sc-camel-on-click=\"{{ o.pick }}",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root/91#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "4 · How many",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"91\">4 · How many</div>",
+			"attributes": {
+				"text": "4 · How many"
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root/92#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+			"source": "rule optionSet",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:6px\" data-dc-tpl=\"92\"><sc-for list=\"{{ sizes }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"93\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;c",
+			"attributes": {}
+		},
+		{
+			"order": 52,
+			"key": "Root/94#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,",
+			"attributes": {}
+		},
+		{
+			"order": 53,
+			"key": "Root/95#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "8",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:26px;line-height:1\" data-dc-tpl=\"95\">{{ o.n }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 54,
+			"key": "Root/96#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "£9.50",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:14px;font-weight:700\" data-dc-tpl=\"96\">{{ o.priceTxt }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 55,
+			"key": "Root/97#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "£1.19 each",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:12px\" data-dc-tpl=\"97\">{{ o.each }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 56,
+			"key": "Root/94#1",
+			"tag": "button",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,",
+			"attributes": {}
+		},
+		{
+			"order": 57,
+			"key": "Root/95#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "20",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:26px;line-height:1\" data-dc-tpl=\"95\">{{ o.n }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 58,
+			"key": "Root/96#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "£21.50",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:14px;font-weight:700\" data-dc-tpl=\"96\">{{ o.priceTxt }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 59,
+			"key": "Root/97#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "£1.08 each",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:12px\" data-dc-tpl=\"97\">{{ o.each }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 60,
+			"key": "Root/99#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Most popular",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;top:-12px;background:#EE8088;border:2px solid #3A2A22;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:700;white-space:nowrap\" data-dc-tpl=\"99\">{{ o.tag }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 61,
+			"key": "Root/94#2",
+			"tag": "button",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,",
+			"attributes": {}
+		},
+		{
+			"order": 62,
+			"key": "Root/95#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "40",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:26px;line-height:1\" data-dc-tpl=\"95\">{{ o.n }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 63,
+			"key": "Root/96#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "£38.00",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:14px;font-weight:700\" data-dc-tpl=\"96\">{{ o.priceTxt }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 64,
+			"key": "Root/97#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "£0.95 each",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:12px\" data-dc-tpl=\"97\">{{ o.each }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 65,
+			"key": "Root/99#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "Best value",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root/92#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;top:-12px;background:#EE8088;border:2px solid #3A2A22;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:700;white-space:nowrap\" data-dc-tpl=\"99\">{{ o.tag }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 66,
+			"key": "Root/100#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:16px;min-width:0\" data-dc-tpl=\"100\"> <div style=\"position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden\" data-dc-tpl=\"101\"> <div style=\"position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 67,
+			"key": "Root/101#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden\" data-dc-tpl=\"101\"> <div style=\"position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%, transparent 35%)\" data-dc-tpl=\"102\"></div> <div ref=\"{{ cookieRef }}\" role=\"img\" aria-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 68,
+			"key": "Root/102#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%, transparent 35%)\" data-dc-tpl=\"102\"></div>",
+			"attributes": {}
+		},
+		{
+			"order": 69,
+			"key": "Root/103#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 19 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div ref=\"{{ cookieRef }}\" role=\"img\" aria-label=\"{{ summary }}\" style=\"position:relative;width:{{ L.cookie }};height:{{ L.cookie }};border-radius:48% 52% 50% 50% / 52% 47% 53% 48%;background:{{ cookieBg }};border:2px solid #3A2A22;box-shadow:inset -10px -12px 0 rgba(58,42,34,.12), 6px 6px 0 #3A2A22\" data-dc-tpl=\"103\"> <sc-for list=\"{{ dots }}\" as=\"d\" hint-placeholder-count=\"0\" data-dc-tpl=\"104\"><",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 70,
+			"key": "Root/105#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 71,
+			"key": "Root/105#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 72,
+			"key": "Root/105#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 73,
+			"key": "Root/105#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 74,
+			"key": "Root/105#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 75,
+			"key": "Root/105#5",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 76,
+			"key": "Root/105#6",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 77,
+			"key": "Root/105#7",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 78,
+			"key": "Root/105#8",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 79,
+			"key": "Root/105#9",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 80,
+			"key": "Root/105#10",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 81,
+			"key": "Root/105#11",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 82,
+			"key": "Root/105#12",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 83,
+			"key": "Root/105#13",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 84,
+			"key": "Root/105#14",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 85,
+			"key": "Root/105#15",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 86,
+			"key": "Root/105#16",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 87,
+			"key": "Root/105#17",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 88,
+			"key": "Root/105#18",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 89,
+			"key": "Root/106#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "20 × Classic oat, milk choc chips, strawberry & mango",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;font-family:'Caveat',cursive;font-size:26px;text-align:center;line-height:1.1\" data-dc-tpl=\"106\">{{ summary }}</div>",
+			"attributes": {
+				"text": "20 × Classic oat, milk choc chips, strawberry & mango"
+			}
+		},
+		{
+			"order": 90,
+			"key": "Root/107#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;gap:10px\" data-dc-tpl=\"107\"> <button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg }};box-shadow:{{ subOpt.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:box-shadow .2s, backg",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 91,
+			"key": "Root/108#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg }};box-shadow:{{ subOpt.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s\" data-dc-tpl=\"108\"><span style=\"display:flex",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 92,
+			"key": "Root/109#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;flex-direction:column\" data-dc-tpl=\"109\"><span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"110\">Subscribe &amp; save 10%</span><span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"111\">Skip, swap or cancel any time</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 93,
+			"key": "Root/110#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Subscribe & save 10%",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"110\">Subscribe &amp; save 10%</span>",
+			"attributes": {
+				"text": "Subscribe & save 10%"
+			}
+		},
+		{
+			"order": 94,
+			"key": "Root/111#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Skip, swap or cancel any time",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"111\">Skip, swap or cancel any time</span>",
+			"attributes": {
+				"text": "Skip, swap or cancel any time"
+			}
+		},
+		{
+			"order": 95,
+			"key": "Root/112#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;flex-direction:column;align-items:flex-end\" data-dc-tpl=\"112\"><span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"113\">{{ subTxt }}</span><span style=\"font-size:13px;color:#6B5646;text-decoration:line-through\" data-dc-tpl=\"114\">{{ onceTxt }}</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 96,
+			"key": "Root/113#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "£19.35",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"113\">{{ subTxt }}</span>",
+			"attributes": {
+				"text": "£19.35"
+			}
+		},
+		{
+			"order": 97,
+			"key": "Root/114#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "£21.50",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:13px;color:#6B5646;text-decoration:line-through\" data-dc-tpl=\"114\">{{ onceTxt }}</span>",
+			"attributes": {
+				"text": "£21.50"
+			}
+		},
+		{
+			"order": 98,
+			"key": "Root/116#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\" data-dc-tpl=\"116\"><sc-for list=\"{{ freqs }}\" as=\"f\" hint-placeholder-count=\"2\" data-dc-tpl=\"117\"><button sc-camel-on-click=\"{{ f.pick }}\" style=\"min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer;transition:background .2s\" data-dc-tpl=\"118\">{{ f.label }}</bu",
+			"attributes": {
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 99,
+			"key": "Root/118#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "Every 2 weeks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ f.pick }}\" style=\"min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer;transition:background .2s\" data-dc-tpl=\"118\">{{ f.label }}</button>",
+			"attributes": {
+				"label": "Every 2 weeks"
+			}
+		},
+		{
+			"order": 100,
+			"key": "Root/118#1",
+			"tag": "button",
+			"depth": 5,
+			"words": "Every 4 weeks",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ f.pick }}\" style=\"min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer;transition:background .2s\" data-dc-tpl=\"118\">{{ f.label }}</button>",
+			"attributes": {
+				"label": "Every 4 weeks"
+			}
+		},
+		{
+			"order": 101,
+			"key": "Root/119#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ pickOnce }}\" aria-pressed=\"{{ isOnce }}\" style=\"min-height:60px;border-radius:20px;border:2px solid #3A2A22;background:{{ once.bg }};box-shadow:{{ once.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s\" data-dc-tpl=\"119\"><span style=\"font-weight:700;font-si",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 102,
+			"key": "Root/120#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "One-off box",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"120\">One-off box</span>",
+			"attributes": {
+				"text": "One-off box"
+			}
+		},
+		{
+			"order": 103,
+			"key": "Root/121#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "£21.50",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"121\">{{ onceTxt }}</span>",
+			"attributes": {
+				"text": "£21.50"
+			}
+		},
+		{
+			"order": 104,
+			"key": "Root/122#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "Subscribe · £19.35",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ add }}\" style=\"height:64px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:18px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" style-active=",
+			"attributes": {
+				"label": "Subscribe · £19.35"
+			}
+		},
+		{
+			"order": 105,
+			"key": "Root/123#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"font-size:14px;font-weight:600;text-align:center\" data-dc-tpl=\"123\">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>",
+			"attributes": {
+				"text": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35"
+			}
+		}
+	]
+}

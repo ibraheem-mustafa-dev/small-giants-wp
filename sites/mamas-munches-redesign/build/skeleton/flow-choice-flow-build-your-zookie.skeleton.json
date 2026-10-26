@@ -1,0 +1,922 @@
+[
+	{
+		"name": "sgs/form",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/63#0"
+		},
+		"draftFingerprint": {
+			"tag": "section",
+			"cls": "",
+			"styleHash": "5db1f62f",
+			"parentTags": [],
+			"textHash": "1505"
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root/65#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "e5b9b746",
+					"parentTags": [
+						"section",
+						"div"
+					],
+					"textHash": "1505"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/66#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "your cookie, your way"
+								},
+								"draftRef": {
+									"tpl": "Root/67#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "c99acba9",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "ae836562"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "Build your Zookie"
+								},
+								"draftRef": {
+									"tpl": "Root/68#0"
+								},
+								"draftFingerprint": {
+									"tag": "h2",
+									"cls": "",
+									"styleHash": "7e0fa315",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "88c8559f"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh."
+								},
+								"draftRef": {
+									"tpl": "Root/69#0"
+								},
+								"draftFingerprint": {
+									"tag": "p",
+									"cls": "",
+									"styleHash": "9fcdc40e",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "5825abf6"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/70#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/label",
+								"attributes": {
+									"text": "1 · Base"
+								},
+								"draftRef": {
+									"tpl": "Root/71#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "d14a126",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "cb9b2116"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/option-picker",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/72#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "2a2f14b5",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/76#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/label",
+								"attributes": {
+									"text": "2 · Chips"
+								},
+								"draftRef": {
+									"tpl": "Root/77#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "d14a126",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "4dc4e0e1"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/option-picker",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/78#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "2a2f14b5",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/81#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/82#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "3ca36f58",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/label",
+										"attributes": {
+											"text": "3 · Flavours"
+										},
+										"draftRef": {
+											"tpl": "Root/83#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "4715e8f2",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "d530b127"
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Pick up to 3 and we’ll split your box between them"
+										},
+										"draftRef": {
+											"tpl": "Root/84#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "d1ce9cd1",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "29f09391"
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/option-picker",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/85#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "2a2f14b5",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Your 20: 10 strawberry · 10 mango"
+								},
+								"draftRef": {
+									"tpl": "Root/89#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "7c22a4aa",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "6453f9ac"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/90#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/label",
+								"attributes": {
+									"text": "4 · How many"
+								},
+								"draftRef": {
+									"tpl": "Root/91#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "d14a126",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "3303638d"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/option-picker",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/92#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "d736ae7b",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": []
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root/100#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "912d8301",
+					"parentTags": [
+						"section",
+						"div"
+					],
+					"textHash": "1505"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/101#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "98d8e1de",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Root/103#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "f614090c",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "20 × Classic oat, milk choc chips, strawberry & mango"
+								},
+								"draftRef": {
+									"tpl": "Root/106#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "e7dae277",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "55364dfa"
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/107#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "fc658fd8",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/108#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "61819b03",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/109#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "c2154e41",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "1505"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Subscribe & save 10%"
+												},
+												"draftRef": {
+													"tpl": "Root/110#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "14f5fbb8",
+													"parentTags": [
+														"section",
+														"div",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "d01dadce"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Skip, swap or cancel any time"
+												},
+												"draftRef": {
+													"tpl": "Root/111#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "feea9976",
+													"parentTags": [
+														"section",
+														"div",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "7051f7a5"
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/112#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "d3c7f313",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "1505"
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "£19.35"
+												},
+												"draftRef": {
+													"tpl": "Root/113#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe6d8d78",
+													"parentTags": [
+														"section",
+														"div",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "987d5926"
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "£21.50"
+												},
+												"draftRef": {
+													"tpl": "Root/114#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "7d33852b",
+													"parentTags": [
+														"section",
+														"div",
+														"div",
+														"div",
+														"button",
+														"span"
+													],
+													"textHash": "9820f9ee"
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/multi-button",
+								"attributes": {
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/116#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "804ad66d",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Every 2 weeks"
+										},
+										"draftRef": {
+											"tpl": "Root/118#0"
+										},
+										"draftFingerprint": {
+											"tag": "button",
+											"cls": "",
+											"styleHash": "e8b6e997",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "4ca71c25"
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Every 4 weeks"
+										},
+										"draftRef": {
+											"tpl": "Root/118#1"
+										},
+										"draftFingerprint": {
+											"tag": "button",
+											"cls": "",
+											"styleHash": "408a4a1e",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "e69db523"
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/119#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "f3c747ce",
+									"parentTags": [
+										"section",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "One-off box"
+										},
+										"draftRef": {
+											"tpl": "Root/120#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "14f5fbb8",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "9ca89076"
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "£21.50"
+										},
+										"draftRef": {
+											"tpl": "Root/121#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "fe6d8d78",
+											"parentTags": [
+												"section",
+												"div",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "9820f9ee"
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Subscribe · £19.35"
+						},
+						"draftRef": {
+							"tpl": "Root/122#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "scp0 scp1",
+							"styleHash": "58579cdd",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "a8e428b9"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35"
+						},
+						"draftRef": {
+							"tpl": "Root/123#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "d31fb78c",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "ebe5e5ff"
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		],
+		"draftSlots": {
+			".sgs-container__inner": {
+				"tpl": "Root/64#0"
+			}
+		}
+	}
+]

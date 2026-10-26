@@ -1,0 +1,272 @@
+{
+  "my-account": {
+    "inventory": {
+      "ok": true,
+      "seconds": 41,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "118 nodes, 29 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 205,
+      "detail": "fill my-account: 858 settings written, 372 UNMAPPED, 9 handover, 2 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\my-account\\2026-10-26T12-46-43\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "{\"ok\":true,\"id\":103,\"link\":\"http://localhost:8084/my-account/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-103-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1130,
+      "detail": "report written (exit 1: my-account: 2521 open, 150 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\my-account\\repor)"
+    }
+  },
+  "checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 42,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "118 nodes, 29 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 207,
+      "detail": "fill checkout: 858 settings written, 372 UNMAPPED, 9 handover, 2 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\checkout\\2026-10-26T12-46-43\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 51,
+      "detail": "{\"ok\":true,\"id\":102,\"link\":\"http://localhost:8084/checkout/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-102-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 345,
+      "detail": "report written (exit 1: checkout: 499 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\checkout\\report.md, c)"
+    }
+  },
+  "cart": {
+    "inventory": {
+      "ok": false,
+      "seconds": 43,
+      "detail": "page.evaluate: TypeError: window.__dcRootName is not a function\n    at collect (eval at evaluate (:290:30), <anonymous>:127:93)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+    }
+  },
+  "contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 40,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "118 nodes, 29 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 219,
+      "detail": "fill contact: 858 settings written, 372 UNMAPPED, 9 handover, 2 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\contact\\2026-10-26T12-47-25\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 24,
+      "detail": "{\"ok\":true,\"id\":148,\"link\":\"http://localhost:8084/contact/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-148-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1118,
+      "detail": "report written (exit 1: contact: 2521 open, 150 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\contact\\report.md, )"
+    }
+  },
+  "gifts": {
+    "inventory": {
+      "ok": true,
+      "seconds": 41,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "node 74 (sgs/option-picker) handover owner \"site-build\" is not one of site-info, product-data, content-page, behaviour, woocommerce-text; node 74 (sgs/option-picker) handover #0 kind \"filter\" is not one of text, presence, link, behaviour"
+    }
+  },
+  "help": {
+    "inventory": {
+      "ok": true,
+      "seconds": 40,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "118 nodes, 29 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 256,
+      "detail": "fill help: 858 settings written, 372 UNMAPPED, 9 handover, 2 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\help\\2026-10-26T12-58-08\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 36,
+      "detail": "{\"ok\":true,\"id\":152,\"link\":\"http://localhost:8084/help/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-152-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1093,
+      "detail": "report written (exit 1: help: 2521 open, 150 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\help\\report.md, contac)"
+    }
+  },
+  "product": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "the intake record names no root element for a page surface"
+    }
+  },
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 41,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "118 nodes, 29 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 195,
+      "detail": "fill home: 858 settings written, 372 UNMAPPED, 9 handover, 2 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\home\\2026-10-26T13-10-06\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 26,
+      "detail": "{\"ok\":true,\"id\":154,\"link\":\"http://localhost:8084/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-154-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1097,
+      "detail": "report written (exit 1: home: 2521 open, 150 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\home\\report.md, contac)"
+    }
+  },
+  "shop": {
+    "inventory": {
+      "ok": true,
+      "seconds": 41,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "112 nodes, 28 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 197,
+      "detail": "fill shop: 809 settings written, 394 UNMAPPED, 9 handover, 2 fluid, 131 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\shop\\2026-10-26T13-10-46\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 12,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//archive-product\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 397,
+      "detail": "report written (exit 1: shop: 546 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\shop\\report.md, contact s)"
+    }
+  },
+  "form-send": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "flow-choice-flow-gifts-she-ll-actually-eat": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "flow-choice-flow-build-your-zookie": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "footer": {
+    "inventory": {
+      "ok": true,
+      "seconds": 26,
+      "detail": "68 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "33 nodes, 5 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 149,
+      "detail": "fill footer: 275 settings written, 165 UNMAPPED, 5 handover, 1 fluid, 55 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\footer\\2026-10-26T13-21-19\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 24,
+      "detail": "{\"ok\":true,\"id\":176,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-176-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 536,
+      "detail": "report written (exit 1: footer: 2389 open, 52 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\footer\\report.md, con)"
+    }
+  },
+  "header": {
+    "inventory": {
+      "ok": true,
+      "seconds": 21,
+      "detail": "45 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "17 nodes, 8 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 93,
+      "detail": "fill header: 122 settings written, 76 UNMAPPED, 2 handover, 0 fluid, 24 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\header\\2026-10-26T13-21-33\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 20,
+      "detail": "{\"ok\":true,\"id\":178,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 193,
+      "detail": "report written (exit 1: header: 294 open, 16 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\header\\report.md, cont)"
+    }
+  },
+  "drawer-menu": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  }
+}

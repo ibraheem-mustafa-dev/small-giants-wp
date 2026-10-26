@@ -1,0 +1,157 @@
+{
+  "my-account": {
+    "inventory": {
+      "ok": true,
+      "seconds": 42,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/58#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/177#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in"
+    }
+  },
+  "cart": {
+    "inventory": {
+      "ok": true,
+      "seconds": 43,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/58#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/177#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in"
+    }
+  },
+  "checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 43,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/58#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/177#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in"
+    }
+  },
+  "gifts": {
+    "inventory": {
+      "ok": true,
+      "seconds": 41,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "node 74 (sgs/option-picker) handover owner \"site-build\" is not one of site-info, product-data, content-page, behaviour, woocommerce-text; node 74 (sgs/option-picker) handover #0 kind \"filter\" is not one of text, presence, link, behaviour; Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-"
+    }
+  },
+  "contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 43,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/58#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/177#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in"
+    }
+  },
+  "product": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "the intake record names no root element for a page surface"
+    }
+  },
+  "help": {
+    "inventory": {
+      "ok": true,
+      "seconds": 42,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/58#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/177#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in"
+    }
+  },
+  "form-send": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "flow-choice-flow-gifts-she-ll-actually-eat": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "flow-choice-flow-build-your-zookie": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "footer": {
+    "inventory": {
+      "ok": true,
+      "seconds": 26,
+      "detail": "68 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "Root>SiteFooter@212#0/26#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in the media map for local-mamas"
+    }
+  },
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 43,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/58#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/177#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in"
+    }
+  },
+  "drawer-menu": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "shop": {
+    "inventory": {
+      "ok": true,
+      "seconds": 43,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/58#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/177#0: no logoId is carried: assets/logo-round.png (sha256 d1c03973) is not in"
+    }
+  },
+  "header": {
+    "inventory": {
+      "ok": true,
+      "seconds": 23,
+      "detail": "45 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "Root>SiteHeader@7#0/22#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas; Root>SiteHeader@7#0/37#0: no logoId is carried: assets/logo-horizontal.png (sha256 55fd2eef) is not in the media map for local-mamas"
+    }
+  }
+}

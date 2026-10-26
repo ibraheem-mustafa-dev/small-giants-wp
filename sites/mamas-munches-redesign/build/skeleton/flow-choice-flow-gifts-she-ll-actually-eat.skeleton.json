@@ -1,0 +1,19 @@
+[
+	{
+		"name": "sgs/form",
+		"attributes": {
+			"submitLabel": "Show 4 gifts ↓"
+		},
+		"draftRef": {
+			"tpl": "Root/24#0"
+		},
+		"draftFingerprint": {
+			"tag": "a",
+			"cls": "scp1",
+			"styleHash": "1fd4209a",
+			"parentTags": [],
+			"textHash": "64bb8a6e"
+		},
+		"innerBlocks": []
+	}
+]

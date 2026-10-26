@@ -1,0 +1,380 @@
+[
+	{
+		"name": "sgs/site-header",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root>SiteHeader@7#0/13#0"
+		},
+		"draftFingerprint": {
+			"tag": "header",
+			"cls": "",
+			"styleHash": "61c82a47",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 16
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"layout": "flex",
+					"rowSlot": "top"
+				},
+				"draftRef": {
+					"tpl": "Root>SiteHeader@7#0/5#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "7a03c132",
+					"parentTags": [],
+					"textHash": "1505",
+					"line": 8
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "✦ Baked fresh when you order"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/7#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "b2d267f9",
+							"line": 10
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "With you in 3–5 days"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/10#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "25807db9",
+							"line": 11
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Free UK delivery over £35"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/12#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "73ae89d8",
+							"line": 12
+						},
+						"innerBlocks": []
+					}
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root>SiteHeader@7#0/6#0"
+					}
+				}
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "middle"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/16#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "77af20c5",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 19
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/nav-bar-menu",
+								"attributes": {
+									"ref": 30
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/38#0"
+								},
+								"draftFingerprint": {
+									"tag": "nav",
+									"cls": "",
+									"styleHash": "b9493ca4",
+									"parentTags": [
+										"header",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 39
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+										"tpl": "Root>SiteHeader@7#0/39#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
+										"tpl": "Root>SiteHeader@7#0/49#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
+										"tpl": "Root>SiteHeader@7#0/53#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
+										"tpl": "Root>SiteHeader@7#0/54#0"
+									},
+									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": {
+										"tpl": "Root>SiteHeader@7#0/20#0"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/21#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "",
+							"styleHash": "66f39e17",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 26
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {
+									"logoId": 91
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/22#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "",
+									"styleHash": "c317d0a5",
+									"parentTags": [
+										"header",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 26
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/23#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "639fe7d7",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 27
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/icon",
+								"attributes": {
+									"linkUrl": "SignIn.dc.html"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/24#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scpe",
+									"styleHash": "3f15c87a",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 28
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/36#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 38
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {
+									"logoId": 91
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/37#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "",
+									"styleHash": "b82fcbef",
+									"parentTags": [
+										"header",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 38
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/44#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f2ffc6c",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 46
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/icon",
+								"attributes": {
+									"linkUrl": "SignIn.dc.html"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/45#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scpe",
+									"styleHash": "3f15c87a",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 47
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-icon__shape > .sgs-icon__glyph > svg": {
+										"tpl": "Root>SiteHeader@7#0/46#0"
+									}
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "bottom"
+				},
+				"innerBlocks": []
+			}
+		]
+	}
+]

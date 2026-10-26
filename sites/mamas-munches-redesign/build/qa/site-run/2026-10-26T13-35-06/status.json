@@ -1,0 +1,126 @@
+{
+  "checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 32,
+      "detail": "116 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "83 nodes, 26 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 700,
+      "detail": "fill checkout: 536 settings written, 414 UNMAPPED, 1 handover, 0 fluid, 156 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\checkout\\2026-10-26T13-35-41\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 102,
+      "detail": "{\"ok\":true,\"id\":102,\"link\":\"http://localhost:8084/checkout/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 456,
+      "detail": "report written (exit 1: checkout: 564 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\checkout\\report.md, c)"
+    }
+  },
+  "my-account": {
+    "inventory": {
+      "ok": true,
+      "seconds": 54,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 2,
+      "detail": "118 nodes, 29 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 224,
+      "detail": "fill my-account: 856 settings written, 372 UNMAPPED, 9 handover, 2 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\my-account\\2026-10-26T13-36-05\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 40,
+      "detail": "{\"ok\":true,\"id\":103,\"link\":\"http://localhost:8084/my-account/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-103-diff.json\"}"
+    }
+  },
+  "cart": {
+    "inventory": {
+      "ok": true,
+      "seconds": 69,
+      "detail": "285 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 2,
+      "detail": "190 nodes, 58 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 282,
+      "detail": "fill cart: 1456 settings written, 562 UNMAPPED, 8 handover, 1 fluid, 175 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\cart\\2026-10-26T13-36-20\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 34,
+      "detail": "{\"ok\":true,\"id\":101,\"link\":\"http://localhost:8084/cart/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-101-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 955,
+      "detail": "report written (exit 1: cart: 1199 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\cart\\report.md, contact )"
+    }
+  },
+  "contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 54,
+      "detail": "256 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "143 nodes, 33 low"
+    }
+  },
+  "gifts": {
+    "inventory": {
+      "ok": true,
+      "seconds": 68,
+      "detail": "317 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "node 77 (sgs/option-picker) handover owner \"site-build\" is not one of site-info, product-data, content-page, behaviour, woocommerce-text; node 77 (sgs/option-picker) handover #0 kind \"filter\" is not one of text, presence, link, behaviour; node 79 (sgs/option-picker) handover owner \"site-build\" is not one of site-info, product-data, content-page, behaviour, woocommerce-text; node 79 (sgs/option-picker) handover #0 kind \"filter\" is not one of text, presence, link, behaviour"
+    }
+  },
+  "help": {
+    "inventory": {
+      "ok": true,
+      "seconds": 61,
+      "detail": "336 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "node 76 (sgs/option-picker) handover owner \"site-build\" is not one of site-info, product-data, content-page, behaviour, woocommerce-text; node 76 (sgs/option-picker) handover #0 kind \"filter\" is not one of text, presence, link, behaviour"
+    }
+  },
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 100,
+      "detail": "562 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "393 nodes, 116 low"
+    }
+  }
+}

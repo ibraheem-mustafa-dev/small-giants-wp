@@ -40,6 +40,7 @@ try {
 	console.log( `${ from } -> ${ to }: ${ posts.length } post(s) and ${ templates.length } template(s) differ, ${ plan.same } already the same` );
 	posts.length && console.log( `  posts: ${ posts.join( ', ' ) }` );
 	templates.length && console.log( `  templates: ${ templates.join( ', ' ) }` );
+	plan.notBuilt.length && console.log( `  not built yet on either site (skipped): ${ plan.notBuilt.join( ', ' ) }` );
 	if ( plan.problems.length ) {
 		throw new Error( plan.problems.join( '; ' ) );
 	}

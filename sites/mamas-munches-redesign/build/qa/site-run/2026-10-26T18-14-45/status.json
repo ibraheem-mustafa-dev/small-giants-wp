@@ -1,0 +1,29 @@
+{
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 119,
+      "detail": "562 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 3,
+      "detail": "393 nodes, 116 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 970,
+      "detail": "fill home: 2799 settings written, 954 UNMAPPED, 12 handover, 1 fluid, 769 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\home\\2026-10-26T18-16-50\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 36,
+      "detail": "{\"ok\":true,\"id\":154,\"link\":\"http://localhost:8084/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-154-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 4267,
+      "detail": "report written (exit 1: home: 11217 open, 490 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\home\\report.md, conta)"
+    }
+  }
+}

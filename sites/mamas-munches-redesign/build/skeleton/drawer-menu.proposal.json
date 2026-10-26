@@ -1,0 +1,1771 @@
+{
+	"generated": "2026-10-26T17:46:37.511Z",
+	"inventory": "2026-10-26T17:46:37.226Z",
+	"source": "http://127.0.0.1:63654/",
+	"surface": "nav-drawer-left",
+	"siteName": null,
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 61,
+		"parts": 10,
+		"rows": 51,
+		"skeletonNodes": 28,
+		"expandedNodes": 28,
+		"low": 8,
+		"removed": 14,
+		"unresolved": 0,
+		"byRule": {
+			"surfaceRoot": 1,
+			"alignWrapper": 1,
+			"wholeCardLink": 3,
+			"cardTitle": 3,
+			"listWrapper": 3,
+			"drawsChildren": 10,
+			"label": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root>SiteHeader@7#0/56#0",
+			"tag": "aside",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/nav-drawer",
+			"action": null,
+			"reason": "a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body",
+			"source": "rule surfaceRoot",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "surfaceRoot",
+			"candidates": [
+				{
+					"block": "sgs/nav-drawer",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule surfaceRoot: a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_56_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_56_0@1440.png"
+			},
+			"snippet": "<aside ref=\"{{ navRef }}\" aria-label=\"Menu\" style=\"position:fixed;top:0;left:0;bottom:0;width:min(88vw,400px);background:#FBF3DC;z-index:91;transform:{{ navX }};transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;overflow-y:auto\" data-dc-tpl=\"56\"> <div style=\"display:flex;align-items:center;justify-content:space-between;padding:10px 12px 10px 20px;border-bottom:1p",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root>SiteHeader@7#0/57#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_57_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_57_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;padding:10px 12px 10px 20px;border-bottom:1px solid #EADBC0\" data-dc-tpl=\"57\"> <img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:44px;width:auto\" data-dc-tpl=\"58\"> <button sc-camel-on-click=\"{{ close }}\" aria-label=\"Close menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root>SiteHeader@7#0/58#0",
+			"tag": "img",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.66,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.85,
+					"share": 0.773,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
+						"logo image: logo-horizontal.png / alt \"Mama's Munches\" (an image whose file name, alt text or class says it is the brand mark)"
+					]
+				},
+				{
+					"block": "sgs/media",
+					"score": 0.25,
+					"share": 0.227,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_58_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:44px;width:auto\" data-dc-tpl=\"58\">",
+			"attributes": {
+				"logoId": 91
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root>SiteHeader@7#0/59#0",
+			"tag": "button",
+			"depth": 2,
+			"words": "×",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_59_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_59_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ close }}\" aria-label=\"Close menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;font-size:28px;line-height:1;cursor:pointer;color:#3A2A22\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"59\">×</button>",
+			"attributes": {
+				"label": "×"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root>SiteHeader@7#0/60#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_60_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_60_0@1440.png"
+			},
+			"snippet": "<div style=\"padding:20px 20px 8px\" data-dc-tpl=\"60\"> <div data-dstagger=\"\" style=\"font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#A8404F;margin-bottom:10px\" data-dc-tpl=\"61\">Who are you shopping for?</div> <div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"62\"> <a data-dstagger=\"\" href=\"Shop.dc.html\" style=\"display:flex;flex-direction:",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root>SiteHeader@7#0/61#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "Who are you shopping for?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_61_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_61_0@1440.png"
+			},
+			"snippet": "<div data-dstagger=\"\" style=\"font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#A8404F;margin-bottom:10px\" data-dc-tpl=\"61\">Who are you shopping for?</div>",
+			"attributes": {
+				"text": "Who are you shopping for?"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root>SiteHeader@7#0/62#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_62_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_62_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"62\"> <a data-dstagger=\"\" href=\"Shop.dc.html\" style=\"display:flex;flex-direction:column;background:#F9D5D3;border:2px solid #3A2A22;border-radius:18px;overflow:hidden;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s\" style-hover=\"transform:translate(-3px,-3px);box-shado",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root>SiteHeader@7#0/63#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_63_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_63_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Shop.dc.html\" style=\"display:flex;flex-direction:column;background:#F9D5D3;border:2px solid #3A2A22;border-radius:18px;overflow:hidden;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:5px 5px 0 #3A2A22\" data-dc-tpl=\"63\"> <img src=\"assets/photo-bags-pink.jpg\" alt=\"\"",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "Shop.dc.html"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root>SiteHeader@7#0/64#0",
+			"tag": "img",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_64_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_64_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/photo-bags-pink.jpg\" alt=\"\" style=\"width:100%;height:84px;object-fit:cover;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"64\">",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root>SiteHeader@7#0/65#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_65_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_65_0@1440.png"
+			},
+			"snippet": "<span style=\"padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"65\"><span style=\"font-family:'Young Serif',serif;font-size:18px\" data-dc-tpl=\"66\">For me</span><span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"67\">Zookies &amp; trial packs</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root>SiteHeader@7#0/66#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "For me",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_66_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_66_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:18px\" data-dc-tpl=\"66\">For me</span>",
+			"attributes": {
+				"content": "For me"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root>SiteHeader@7#0/67#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Zookies & trial packs",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_67_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_67_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"67\">Zookies &amp; trial packs</span>",
+			"attributes": {
+				"text": "Zookies & trial packs"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root>SiteHeader@7#0/68#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_68_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_68_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Gifts.dc.html\" style=\"display:flex;flex-direction:column;background:#FCEBBE;border:2px solid #3A2A22;border-radius:18px;overflow:hidden;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s\" style-hover=\"transform:translate(-3px,-3px);box-shadow:5px 5px 0 #3A2A22\" data-dc-tpl=\"68\"> <img src=\"assets/photo-gift-heart.jpg\" alt=",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack",
+				"sgsBlockLink": "Gifts.dc.html"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root>SiteHeader@7#0/69#0",
+			"tag": "img",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_69_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_69_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/photo-gift-heart.jpg\" alt=\"\" style=\"width:100%;height:84px;object-fit:cover;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"69\">",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root>SiteHeader@7#0/70#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_70_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_70_0@1440.png"
+			},
+			"snippet": "<span style=\"padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"70\"><span style=\"font-family:'Young Serif',serif;font-size:18px\" data-dc-tpl=\"71\">For a new mum</span><span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"72\">Gift boxes &amp; cards</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root>SiteHeader@7#0/71#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "For a new mum",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_71_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_71_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:18px\" data-dc-tpl=\"71\">For a new mum</span>",
+			"attributes": {
+				"content": "For a new mum"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root>SiteHeader@7#0/72#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Gift boxes & cards",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_72_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_72_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"72\">Gift boxes &amp; cards</span>",
+			"attributes": {
+				"text": "Gift boxes & cards"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root>SiteHeader@7#0/73#0",
+			"tag": "nav",
+			"depth": 1,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper",
+			"source": "rule listWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "listWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_73_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_73_0@1440.png"
+			},
+			"snippet": "<nav aria-label=\"Menu links\" style=\"display:flex;flex-direction:column;padding:8px 20px\" data-dc-tpl=\"73\"> <a data-dstagger=\"\" href=\"Shop.dc.html\" aria-current=\"{{ cur.shop }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;border-bottom:1.5px dashed #E6D4B4;font-family:'Young Serif',serif;font-size:22px;color:{{ dcol.shop }};text-decoration:none;tran",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root>SiteHeader@7#0/74#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Shop all",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"7 bare text links, one above the next"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.5,
+					"share": 0.303,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_74_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_74_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Shop.dc.html\" aria-current=\"{{ cur.shop }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;border-bottom:1.5px dashed #E6D4B4;font-family:'Young Serif',serif;font-size:22px;color:{{ dcol.shop }};text-decoration:none;transition:padding .25s cubic-bezier(.3,1.4,.5,1), color .2s\" style-hover=\"padding-left:8px;color:#A8404F\" data",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Shop all",
+				"url": "Shop.dc.html"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root>SiteHeader@7#0/75#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "→",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/74#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_75_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_75_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-family:Karla;font-size:16px;color:#3A2A22\" data-dc-tpl=\"75\">→</span>",
+			"attributes": {}
+		},
+		{
+			"order": 20,
+			"key": "Root>SiteHeader@7#0/76#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Zookies",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"7 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_76_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_76_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Product.dc.html?id=zookies\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;border-bottom:1.5px dashed #E6D4B4;font-family:'Young Serif',serif;font-size:22px;color:#3A2A22;text-decoration:none;transition:padding .25s cubic-bezier(.3,1.4,.5,1), color .2s\" style-hover=\"padding-left:8px;color:#A8404F\" data-dc-tpl=\"76\">Zookies<spa",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Zookies",
+				"url": "Product.dc.html?id=zookies"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root>SiteHeader@7#0/77#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "→",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/76#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_77_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_77_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-family:Karla;font-size:16px;color:#3A2A22\" data-dc-tpl=\"77\">→</span>",
+			"attributes": {}
+		},
+		{
+			"order": 22,
+			"key": "Root>SiteHeader@7#0/78#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Taster Trio",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"7 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_78_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_78_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Product.dc.html?id=trial\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;border-bottom:1.5px dashed #E6D4B4;font-family:'Young Serif',serif;font-size:22px;color:#3A2A22;text-decoration:none;transition:padding .25s cubic-bezier(.3,1.4,.5,1), color .2s\" style-hover=\"padding-left:8px;color:#A8404F\" data-dc-tpl=\"78\">Taster Trio<s",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Taster Trio",
+				"url": "Product.dc.html?id=trial"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root>SiteHeader@7#0/79#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "3 for £5",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/78#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_79_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_79_0@1440.png"
+			},
+			"snippet": "<span style=\"flex:none;font-family:Karla;font-size:14px;font-weight:700;color:#3A2A22;background:#F9CF6E;border:2px solid #3A2A22;border-radius:999px;padding:3px 10px\" data-dc-tpl=\"79\">3 for £5</span>",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root>SiteHeader@7#0/80#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Gifts",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"7 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_80_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_80_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Gifts.dc.html\" aria-current=\"{{ cur.gifts }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;border-bottom:1.5px dashed #E6D4B4;font-family:'Young Serif',serif;font-size:22px;color:{{ dcol.gifts }};text-decoration:none;transition:padding .25s cubic-bezier(.3,1.4,.5,1), color .2s\" style-hover=\"padding-left:8px;color:#A8404F\" d",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Gifts",
+				"url": "Gifts.dc.html"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root>SiteHeader@7#0/81#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "→",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/80#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_81_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_81_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-family:Karla;font-size:16px;color:#3A2A22\" data-dc-tpl=\"81\">→</span>",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root>SiteHeader@7#0/82#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Subscribe & save",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"7 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_82_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_82_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Product.dc.html?id=zookies&amp;sub=1\" aria-current=\"{{ cur.sub }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;border-bottom:1.5px dashed #E6D4B4;font-family:'Young Serif',serif;font-size:22px;color:{{ dcol.sub }};text-decoration:none;transition:padding .25s cubic-bezier(.3,1.4,.5,1), color .2s\" style-hover=\"padding-left:8",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Subscribe & save",
+				"url": "Product.dc.html?id=zookies&sub=1"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root>SiteHeader@7#0/83#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "10% off",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/82#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_83_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_83_0@1440.png"
+			},
+			"snippet": "<span style=\"flex:none;font-family:Karla;font-size:14px;font-weight:700;color:#3A2A22;background:#F9D5D3;border:2px solid #3A2A22;border-radius:999px;padding:3px 10px\" data-dc-tpl=\"83\">10% off</span>",
+			"attributes": {}
+		},
+		{
+			"order": 28,
+			"key": "Root>SiteHeader@7#0/84#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Help & FAQs",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"7 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_84_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_84_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Help.dc.html\" aria-current=\"{{ cur.help }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;border-bottom:1.5px dashed #E6D4B4;font-family:'Young Serif',serif;font-size:22px;color:{{ dcol.help }};text-decoration:none;transition:padding .25s cubic-bezier(.3,1.4,.5,1), color .2s\" style-hover=\"padding-left:8px;color:#A8404F\" data",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Help & FAQs",
+				"url": "Help.dc.html"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root>SiteHeader@7#0/85#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "→",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/84#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_85_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_85_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-family:Karla;font-size:16px;color:#3A2A22\" data-dc-tpl=\"85\">→</span>",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "Root>SiteHeader@7#0/86#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Contact",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"7 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_86_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_86_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"Contact.dc.html\" aria-current=\"{{ cur.contact }}\" style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;font-family:'Young Serif',serif;font-size:22px;color:{{ dcol.contact }};text-decoration:none;transition:padding .25s cubic-bezier(.3,1.4,.5,1), color .2s\" style-hover=\"padding-left:8px;color:#A8404F\" data-dc-tpl=\"86\">Contact<span ",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Contact",
+				"url": "Contact.dc.html"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root>SiteHeader@7#0/87#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "→",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/86#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_87_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_87_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-family:Karla;font-size:16px;color:#3A2A22\" data-dc-tpl=\"87\">→</span>",
+			"attributes": {}
+		},
+		{
+			"order": 32,
+			"key": "Root>SiteHeader@7#0/88#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_88_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_88_0@1440.png"
+			},
+			"snippet": "<div style=\"margin:auto 20px 0;padding:20px 0 24px;display:flex;flex-direction:column;gap:16px\" data-dc-tpl=\"88\"> <div data-dstagger=\"\" data-dc-tpl=\"89\"> <sc-if value=\"{{ signedOut }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"90\"> <div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"91\"><a href=\"SignIn.dc.html\" style=\"min-height:52px;border-radius:999px;border:2px so",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root>SiteHeader@7#0/89#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_89_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_89_0@1440.png"
+			},
+			"snippet": "<div data-dstagger=\"\" data-dc-tpl=\"89\"> <sc-if value=\"{{ signedOut }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"90\"> <div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"91\"><a href=\"SignIn.dc.html\" style=\"min-height:52px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:7",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root>SiteHeader@7#0/91#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper",
+			"source": "rule listWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "listWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_91_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_91_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"91\"><a href=\"SignIn.dc.html\" style=\"min-height:52px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:none;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-",
+			"attributes": {}
+		},
+		{
+			"order": 35,
+			"key": "Root>SiteHeader@7#0/92#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Sign in",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"2 bare text links, one above the next"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.5,
+					"share": 0.303,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_92_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_92_0@1440.png"
+			},
+			"snippet": "<a href=\"SignIn.dc.html\" style=\"min-height:52px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:none;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Sign in",
+				"url": "SignIn.dc.html"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root>SiteHeader@7#0/93#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Create account",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"2 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_93_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_93_0@1440.png"
+			},
+			"snippet": "<a href=\"SignIn.dc.html?mode=register\" style=\"min-height:52px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#3A2A22;text-decoration:none;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transfor",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Create account",
+				"url": "SignIn.dc.html?mode=register"
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root>SiteHeader@7#0/104#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_104_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_104_0@1440.png"
+			},
+			"snippet": "<div data-dstagger=\"\" data-dc-tpl=\"104\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;line-height:1;margin-bottom:8px\" data-dc-tpl=\"105\">say hello</div> <div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px\" data-dc-tpl=\"106\"> <a href=\"Contact.dc.html\" style=\"min-height:78px;border-radius:18px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;flex-dire",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root>SiteHeader@7#0/105#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "say hello",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_105_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_105_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;line-height:1;margin-bottom:8px\" data-dc-tpl=\"105\">say hello</div>",
+			"attributes": {
+				"text": "say hello"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root>SiteHeader@7#0/106#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper",
+			"source": "rule listWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "listWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_106_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_106_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px\" data-dc-tpl=\"106\"> <a href=\"Contact.dc.html\" style=\"min-height:78px;border-radius:18px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700;color:#3A2A22;text-decoration:none;box-shadow:3px 3px 0 #3A2A22;transition:transform",
+			"attributes": {}
+		},
+		{
+			"order": 40,
+			"key": "Root>SiteHeader@7#0/107#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "WhatsApp",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"3 bare text links, one above the next"
+					]
+				},
+				{
+					"block": "sgs/button",
+					"score": 0.5,
+					"share": 0.303,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (each link on its own)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_107_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_107_0@1440.png"
+			},
+			"snippet": "<a href=\"Contact.dc.html\" style=\"min-height:78px;border-radius:18px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700;color:#3A2A22;text-decoration:none;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "WhatsApp",
+				"url": "Contact.dc.html"
+			}
+		},
+		{
+			"order": 41,
+			"key": "Root>SiteHeader@7#0/108#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/107#0",
+			"candidates": [],
+			"parts": [
+				"Root>SiteHeader@7#0/109#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_108_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_108_0@1440.png"
+			},
+			"snippet": "<span style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#25D366;color:#FFFFFF;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"108\"><svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round\" data-dc-tpl=\"109\"><path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"110\"></p",
+			"attributes": {}
+		},
+		{
+			"order": 42,
+			"key": "Root>SiteHeader@7#0/112#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Email",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"3 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_112_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_112_0@1440.png"
+			},
+			"snippet": "<a href=\"mailto:Zainab@mamasmunches.com\" style=\"min-height:78px;border-radius:18px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700;color:#3A2A22;text-decoration:none;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hov",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "",
+				"siteInfoSource": "email"
+			},
+			"siteInfoKind": "email"
+		},
+		{
+			"order": 43,
+			"key": "Root>SiteHeader@7#0/113#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/112#0",
+			"candidates": [],
+			"parts": [
+				"Root>SiteHeader@7#0/114#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_113_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_113_0@1440.png"
+			},
+			"snippet": "<span style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"113\"><svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round\" data-dc-tpl=\"114\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\" data-dc-tpl=\"",
+			"attributes": {}
+		},
+		{
+			"order": 44,
+			"key": "Root>SiteHeader@7#0/117#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Instagram",
+			"block": "sgs/icon-list",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.7,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon-list",
+					"score": 1.15,
+					"share": 0.697,
+					"evidence": [
+						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
+						"block_capabilities: sgs/icon-list lists \"list\"",
+						"3 bare text links, one above the next"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_117_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_117_0@1440.png"
+			},
+			"snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" style=\"min-height:78px;border-radius:18px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:14px;font-weight:700;color:#3A2A22;text-decoration:none;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" ",
+			"attributes": {},
+			"unit": "list",
+			"item": {
+				"text": "Instagram",
+				"url": "https://www.instagram.com/mamasmunches/"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root>SiteHeader@7#0/118#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/icon-list: the list item's marker",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawsChildren",
+			"into": "Root>SiteHeader@7#0/117#0",
+			"candidates": [],
+			"parts": [
+				"Root>SiteHeader@7#0/119#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_118_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_118_0@1440.png"
+			},
+			"snippet": "<span style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"118\"><svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"119\"><rec",
+			"attributes": {}
+		},
+		{
+			"order": 46,
+			"key": "Root>SiteHeader@7#0/123#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)",
+			"source": "rule wholeCardLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "wholeCardLink",
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule wholeCardLink: a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_123_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_123_0@1440.png"
+			},
+			"snippet": "<a data-dstagger=\"\" href=\"https://uk.trustpilot.com/review/mamasmunches.com\" style=\"display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:18px;border:2px dashed #3A2A22;color:#3A2A22;text-decoration:none;transition:background .2s, transform .2s cubic-bezier(.3,1.6,.5,1)\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px)\" data-dc-tpl=\"123\"><span style=\"font-family:'Y",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex",
+				"sgsBlockLink": "https://uk.trustpilot.com/review/mamasmunches.com"
+			}
+		},
+		{
+			"order": 47,
+			"key": "Root>SiteHeader@7#0/124#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "4.3",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label",
+			"source": "rule cardTitle",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardTitle",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardTitle: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_124_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:32px;line-height:1\" data-dc-tpl=\"124\">4.3</span>",
+			"attributes": {
+				"content": "4.3"
+			}
+		},
+		{
+			"order": 48,
+			"key": "Root>SiteHeader@7#0/125#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_125_0@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"125\"><span style=\"letter-spacing:2px;font-size:16px\" data-dc-tpl=\"126\">★★★★★</span><span style=\"font-size:13px;font-weight:700\" data-dc-tpl=\"127\">8 reviews on Trustpilot ↗</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root>SiteHeader@7#0/126#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "★★★★★",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_126_0@1440.png"
+			},
+			"snippet": "<span style=\"letter-spacing:2px;font-size:16px\" data-dc-tpl=\"126\">★★★★★</span>",
+			"attributes": {
+				"text": "★★★★★"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root>SiteHeader@7#0/127#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "8 reviews on Trustpilot ↗",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_127_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:13px;font-weight:700\" data-dc-tpl=\"127\">8 reviews on Trustpilot ↗</span>",
+			"attributes": {
+				"text": "8 reviews on Trustpilot ↗"
+			}
+		}
+	]
+}

@@ -1,0 +1,2722 @@
+{
+  "generated": "2026-10-26T17:39:43.292Z",
+  "source": "http://127.0.0.1:63654/",
+  "root": "header",
+  "beside": [
+    {
+      "key": "Root>SiteHeader@7#0/5#0",
+      "side": "before",
+      "distance": 1,
+      "position": "static",
+      "renders": true,
+      "holdsOtherRoot": false
+    },
+    {
+      "key": "Root>SiteHeader@7#0/55#0",
+      "side": "after",
+      "distance": 1,
+      "position": "fixed",
+      "renders": false,
+      "holdsOtherRoot": true
+    },
+    {
+      "key": "Root>SiteHeader@7#0/56#0",
+      "side": "after",
+      "distance": 2,
+      "position": "fixed",
+      "renders": true,
+      "holdsOtherRoot": true
+    },
+    {
+      "key": "Root>SiteHeader@7#0/128#0",
+      "side": "after",
+      "distance": 3,
+      "position": "fixed",
+      "renders": true,
+      "holdsOtherRoot": true
+    }
+  ],
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root>SiteHeader@7#0/13#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "0"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Baked fresh when you order"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Free UK delivery over £35"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 23,
+      "768": 23,
+      "1440": 28
+    },
+    "tagAgree": 45,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [
+        "Root>SiteHeader@7#0/35#0",
+        "Root>SiteHeader@7#0/36#0",
+        "Root>SiteHeader@7#0/37#0",
+        "Root>SiteHeader@7#0/38#0",
+        "Root>SiteHeader@7#0/39#0",
+        "Root>SiteHeader@7#0/40#0",
+        "Root>SiteHeader@7#0/41#0",
+        "Root>SiteHeader@7#0/42#0",
+        "Root>SiteHeader@7#0/43#0",
+        "Root>SiteHeader@7#0/44#0",
+        "Root>SiteHeader@7#0/45#0",
+        "Root>SiteHeader@7#0/46#0",
+        "Root>SiteHeader@7#0/47#0",
+        "Root>SiteHeader@7#0/48#0",
+        "Root>SiteHeader@7#0/49#0",
+        "Root>SiteHeader@7#0/50#0",
+        "Root>SiteHeader@7#0/51#0",
+        "Root>SiteHeader@7#0/52#0",
+        "Root>SiteHeader@7#0/53#0",
+        "Root>SiteHeader@7#0/54#0",
+        "Root>SiteHeader@7#0/9#0",
+        "Root>SiteHeader@7#0/10#0"
+      ],
+      "768": [
+        "Root>SiteHeader@7#0/35#0",
+        "Root>SiteHeader@7#0/36#0",
+        "Root>SiteHeader@7#0/37#0",
+        "Root>SiteHeader@7#0/38#0",
+        "Root>SiteHeader@7#0/39#0",
+        "Root>SiteHeader@7#0/40#0",
+        "Root>SiteHeader@7#0/41#0",
+        "Root>SiteHeader@7#0/42#0",
+        "Root>SiteHeader@7#0/43#0",
+        "Root>SiteHeader@7#0/44#0",
+        "Root>SiteHeader@7#0/45#0",
+        "Root>SiteHeader@7#0/46#0",
+        "Root>SiteHeader@7#0/47#0",
+        "Root>SiteHeader@7#0/48#0",
+        "Root>SiteHeader@7#0/49#0",
+        "Root>SiteHeader@7#0/50#0",
+        "Root>SiteHeader@7#0/51#0",
+        "Root>SiteHeader@7#0/52#0",
+        "Root>SiteHeader@7#0/53#0",
+        "Root>SiteHeader@7#0/54#0",
+        "Root>SiteHeader@7#0/9#0",
+        "Root>SiteHeader@7#0/10#0"
+      ],
+      "1440": [
+        "Root>SiteHeader@7#0/15#0",
+        "Root>SiteHeader@7#0/16#0",
+        "Root>SiteHeader@7#0/17#0",
+        "Root>SiteHeader@7#0/18#0",
+        "Root>SiteHeader@7#0/19#0",
+        "Root>SiteHeader@7#0/20#0",
+        "Root>SiteHeader@7#0/21#0",
+        "Root>SiteHeader@7#0/22#0",
+        "Root>SiteHeader@7#0/23#0",
+        "Root>SiteHeader@7#0/24#0",
+        "Root>SiteHeader@7#0/25#0",
+        "Root>SiteHeader@7#0/26#0",
+        "Root>SiteHeader@7#0/27#0",
+        "Root>SiteHeader@7#0/28#0",
+        "Root>SiteHeader@7#0/29#0",
+        "Root>SiteHeader@7#0/30#0",
+        "Root>SiteHeader@7#0/31#0"
+      ]
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root>SiteHeader@7#0/13#0",
+      "parentKey": "Root>SiteHeader@7#0/4#0",
+      "depth": 0,
+      "tag": "header",
+      "template": "SiteHeader",
+      "tpl": 13,
+      "attrs": {
+        "style": "background: rgb(251, 243, 220); border-bottom: 1px solid rgb(234, 219, 192);"
+      },
+      "words": "",
+      "allText": "Shop Gifts Subscribe & save Help Contact Basket 0",
+      "srcLine": 16,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        }
+      ],
+      "srcTag": "header",
+      "srcOwnText": "",
+      "snippet": "<header style=\"background:#FBF3DC;border-bottom:1px solid #EADBC0\" data-dc-tpl=\"13\"> <sc-if value=\"{{ notD }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"14\"> <div style=\"max-width:1240px;margin:0 auto;padding:{{ barPad }};height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"15\"> <div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-c",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 32,
+          "w": 375,
+          "h": 65
+        },
+        "768": {
+          "x": 0,
+          "y": 32,
+          "w": 768,
+          "h": 65
+        },
+        "1440": {
+          "x": 0,
+          "y": 32,
+          "w": 1440,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_13_0@375.png",
+        "1440": "shots/Root_SiteHeader_7_0_13_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/15#0",
+      "parentKey": "Root>SiteHeader@7#0/13#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "SiteHeader",
+      "tpl": 15,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto; padding: 0px 8px; height: 64px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto;padding:{{ barPad }};height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"15\"> <div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 32,
+          "w": 375,
+          "h": 64
+        },
+        "768": {
+          "x": 0,
+          "y": 32,
+          "w": 768,
+          "h": 64
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_15_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/16#0",
+      "parentKey": "Root>SiteHeader@7#0/15#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "SiteHeader",
+      "tpl": 16,
+      "attrs": {
+        "style": "display: flex; align-items: center;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"17\"> <span style=\"display:block;w",
+      "box": {
+        "375": {
+          "x": 8,
+          "y": 40,
+          "w": 107.5,
+          "h": 48
+        },
+        "768": {
+          "x": 20,
+          "y": 40,
+          "w": 280,
+          "h": 48
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_16_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/17#0",
+      "parentKey": "Root>SiteHeader@7#0/16#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "SiteHeader",
+      "tpl": 17,
+      "attrs": {
+        "aria-label": "Open menu",
+        "class": "scpe",
+        "style": "width: 48px; height: 48px; border: 0px; background: transparent; border-radius: 999px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; padding: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 20,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"17\"> <span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data",
+      "box": {
+        "375": {
+          "x": 8,
+          "y": 40,
+          "w": 48,
+          "h": 48
+        },
+        "768": {
+          "x": 20,
+          "y": 40,
+          "w": 48,
+          "h": 48
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "column",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_17_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/18#0",
+      "parentKey": "Root>SiteHeader@7#0/17#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 18,
+      "attrs": {
+        "style": "display: block; width: 22px; height: 2px; background: rgb(58, 42, 34); border-radius: 2px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 21,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data-dc-tpl=\"18\"></span>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 56,
+          "w": 22,
+          "h": 2
+        },
+        "768": {
+          "x": 33,
+          "y": 56,
+          "w": 22,
+          "h": 2
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_18_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/19#0",
+      "parentKey": "Root>SiteHeader@7#0/17#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 19,
+      "attrs": {
+        "style": "display: block; width: 22px; height: 2px; background: rgb(58, 42, 34); border-radius: 2px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 22,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data-dc-tpl=\"19\"></span>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 63,
+          "w": 22,
+          "h": 2
+        },
+        "768": {
+          "x": 33,
+          "y": 63,
+          "w": 22,
+          "h": 2
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_19_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/20#0",
+      "parentKey": "Root>SiteHeader@7#0/17#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 20,
+      "attrs": {
+        "style": "display: block; width: 16px; height: 2px; background: rgb(58, 42, 34); border-radius: 2px; margin-right: 6px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 23,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:block;width:16px;height:2px;background:#3A2A22;border-radius:2px;margin-right:6px\" data-dc-tpl=\"20\"></span>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 70,
+          "w": 16,
+          "h": 2
+        },
+        "768": {
+          "x": 33,
+          "y": 70,
+          "w": 16,
+          "h": 2
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_20_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/21#0",
+      "parentKey": "Root>SiteHeader@7#0/15#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 21,
+      "attrs": {
+        "href": "Home.dc.html",
+        "aria-label": "Mama's Munches home",
+        "style": "display: block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 26,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" style=\"display:block\" data-dc-tpl=\"21\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\"></a>",
+      "box": {
+        "375": {
+          "x": 115.5,
+          "y": 40,
+          "w": 144,
+          "h": 48
+        },
+        "768": {
+          "x": 300,
+          "y": 36,
+          "w": 168,
+          "h": 56
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_21_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/22#0",
+      "parentKey": "Root>SiteHeader@7#0/21#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "SiteHeader",
+      "tpl": 22,
+      "attrs": {
+        "alt": "Mama's Munches",
+        "style": "height: 48px; width: auto; display: block;",
+        "srcBasename": "logo-horizontal.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 26,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\">",
+      "box": {
+        "375": {
+          "x": 115.5,
+          "y": 40,
+          "w": 144,
+          "h": 48
+        },
+        "768": {
+          "x": 300,
+          "y": 36,
+          "w": 168,
+          "h": 56
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_22_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/23#0",
+      "parentKey": "Root>SiteHeader@7#0/15#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "SiteHeader",
+      "tpl": 23,
+      "attrs": {
+        "style": "display: flex; justify-content: flex-end;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 27,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;justify-content:flex-end\" data-dc-tpl=\"23\"> <a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"24\"><svg width=\"24\" height=\"24\" sc-camel-view-box",
+      "box": {
+        "375": {
+          "x": 259.5,
+          "y": 40,
+          "w": 107.5,
+          "h": 48
+        },
+        "768": {
+          "x": 468,
+          "y": 40,
+          "w": 280,
+          "h": 48
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_23_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/24#0",
+      "parentKey": "Root>SiteHeader@7#0/23#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 24,
+      "attrs": {
+        "href": "SignIn.dc.html",
+        "aria-label": "Sign in or create an account",
+        "class": "scpe",
+        "style": "width: 48px; height: 48px; border-radius: 999px; display: flex; align-items: center; justify-content: center; color: rgb(58, 42, 34); background: transparent;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 28,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"24\"><svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;st",
+      "box": {
+        "375": {
+          "x": 271,
+          "y": 40,
+          "w": 48,
+          "h": 48
+        },
+        "768": {
+          "x": 652,
+          "y": 40,
+          "w": 48,
+          "h": 48
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_24_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/25#0",
+      "parentKey": "Root>SiteHeader@7#0/24#0",
+      "depth": 4,
+      "tag": "svg",
+      "template": "SiteHeader",
+      "tpl": 25,
+      "attrs": {
+        "viewBox": "0 0 24 24",
+        "style": "fill: none; stroke: currentcolor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 28,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "svg",
+      "srcOwnText": "",
+      "snippet": "<svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round\" data-dc-tpl=\"25\"><circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"26\"></circle><path d=\"M4 21a8 8 0 0 1 16 0\" data-dc-tpl=\"27\"></path></svg>",
+      "box": {
+        "375": {
+          "x": 283,
+          "y": 52,
+          "w": 24,
+          "h": 24
+        },
+        "768": {
+          "x": 664,
+          "y": 52,
+          "w": 24,
+          "h": 24
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_25_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/26#0",
+      "parentKey": "Root>SiteHeader@7#0/25#0",
+      "depth": 5,
+      "tag": "circle",
+      "template": "SiteHeader",
+      "tpl": 26,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 28,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "circle",
+      "srcOwnText": "",
+      "snippet": "<circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"26\"></circle>",
+      "box": {
+        "375": {
+          "x": 291,
+          "y": 56,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 672,
+          "y": 56,
+          "w": 8,
+          "h": 8
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_26_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/27#0",
+      "parentKey": "Root>SiteHeader@7#0/25#0",
+      "depth": 5,
+      "tag": "path",
+      "template": "SiteHeader",
+      "tpl": 27,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 28,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M4 21a8 8 0 0 1 16 0\" data-dc-tpl=\"27\"></path>",
+      "box": {
+        "375": {
+          "x": 287,
+          "y": 65,
+          "w": 16,
+          "h": 8
+        },
+        "768": {
+          "x": 668,
+          "y": 65,
+          "w": 16,
+          "h": 8
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_27_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/28#0",
+      "parentKey": "Root>SiteHeader@7#0/23#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "SiteHeader",
+      "tpl": 28,
+      "attrs": {
+        "aria-label": "Open basket",
+        "class": "scpe",
+        "style": "position: relative; width: 48px; height: 48px; border: 0px; background: transparent; border-radius: 999px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgb(58, 42, 34); padding: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 29,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" aria-label=\"Open basket\" style=\"position:relative;width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#3A2A22;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"28\"> <svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:cu",
+      "box": {
+        "375": {
+          "x": 319,
+          "y": 40,
+          "w": 48,
+          "h": 48
+        },
+        "768": {
+          "x": 700,
+          "y": 40,
+          "w": 48,
+          "h": 48
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_28_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/29#0",
+      "parentKey": "Root>SiteHeader@7#0/28#0",
+      "depth": 4,
+      "tag": "svg",
+      "template": "SiteHeader",
+      "tpl": 29,
+      "attrs": {
+        "viewBox": "0 0 24 24",
+        "style": "fill: none; stroke: currentcolor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 30,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "svg",
+      "srcOwnText": "",
+      "snippet": "<svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round\" data-dc-tpl=\"29\"><path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\" data-dc-tpl=\"30\"></path><path d=\"M9 10V7a3 3 0 0 1 6 0v3\" data-dc-tpl=\"31\"></path></svg>",
+      "box": {
+        "375": {
+          "x": 331,
+          "y": 52,
+          "w": 24,
+          "h": 24
+        },
+        "768": {
+          "x": 712,
+          "y": 52,
+          "w": 24,
+          "h": 24
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_29_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/30#0",
+      "parentKey": "Root>SiteHeader@7#0/29#0",
+      "depth": 5,
+      "tag": "path",
+      "template": "SiteHeader",
+      "tpl": 30,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 30,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\" data-dc-tpl=\"30\"></path>",
+      "box": {
+        "375": {
+          "x": 336,
+          "y": 60,
+          "w": 14,
+          "h": 13
+        },
+        "768": {
+          "x": 717,
+          "y": 60,
+          "w": 14,
+          "h": 13
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_30_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/31#0",
+      "parentKey": "Root>SiteHeader@7#0/29#0",
+      "depth": 5,
+      "tag": "path",
+      "template": "SiteHeader",
+      "tpl": 31,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 30,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ notD }}",
+          "tpl": "14"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M9 10V7a3 3 0 0 1 6 0v3\" data-dc-tpl=\"31\"></path>",
+      "box": {
+        "375": {
+          "x": 340,
+          "y": 56,
+          "w": 6,
+          "h": 6
+        },
+        "768": {
+          "x": 721,
+          "y": 56,
+          "w": 6,
+          "h": 6
+        },
+        "1440": null
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": false
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": null
+      },
+      "flexDirection": "row",
+      "layoutChanged": true,
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_31_0@375.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/35#0",
+      "parentKey": "Root>SiteHeader@7#0/13#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "SiteHeader",
+      "tpl": 35,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto; padding: 0px 40px; height: 84px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 24px;"
+      },
+      "words": "",
+      "allText": "Shop Gifts Subscribe & save Help Contact Basket 0",
+      "srcLine": 37,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto;padding:0 40px;height:84px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px\" data-dc-tpl=\"35\"> <a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"36\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\"></a> <nav aria-label=\"Main\" style=\"displ",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 100,
+          "y": 32,
+          "w": 1240,
+          "h": 84
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_35_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/36#0",
+      "parentKey": "Root>SiteHeader@7#0/35#0",
+      "depth": 2,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 36,
+      "attrs": {
+        "href": "Home.dc.html",
+        "aria-label": "Mama's Munches home"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 38,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"36\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\"></a>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 140,
+          "y": 44,
+          "w": 180,
+          "h": 60
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_36_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/37#0",
+      "parentKey": "Root>SiteHeader@7#0/36#0",
+      "depth": 3,
+      "tag": "img",
+      "template": "SiteHeader",
+      "tpl": 37,
+      "attrs": {
+        "alt": "Mama's Munches",
+        "style": "height: 60px; width: auto; display: block;",
+        "srcBasename": "logo-horizontal.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 38,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\">",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 140,
+          "y": 44,
+          "w": 180,
+          "h": 60
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_37_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/38#0",
+      "parentKey": "Root>SiteHeader@7#0/35#0",
+      "depth": 2,
+      "tag": "nav",
+      "template": "SiteHeader",
+      "tpl": 38,
+      "attrs": {
+        "aria-label": "Main",
+        "style": "display: flex; justify-content: center; gap: 2px;"
+      },
+      "words": "",
+      "allText": "Shop Gifts Subscribe & save Help Contact",
+      "srcLine": 39,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "nav",
+      "srcOwnText": "",
+      "snippet": "<nav aria-label=\"Main\" style=\"display:flex;justify-content:center;gap:2px\" data-dc-tpl=\"38\"> <a href=\"Shop.dc.html\" aria-current=\"{{ cur.shop }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.shop }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"39\">Shop</a> <a href=\"Gifts.dc.html\" aria-current=\"{{ cur.gifts }}\" st",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 344,
+          "y": 52.5,
+          "w": 732.8,
+          "h": 43
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_38_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/39#0",
+      "parentKey": "Root>SiteHeader@7#0/38#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 39,
+      "attrs": {
+        "href": "Shop.dc.html",
+        "class": "scpe",
+        "style": "padding: 12px 16px; border-radius: 999px; font-size: 16px; font-weight: 700; color: rgb(58, 42, 34); text-decoration: none; background: transparent;"
+      },
+      "words": "Shop",
+      "allText": "Shop",
+      "srcLine": 40,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Shop",
+      "snippet": "<a href=\"Shop.dc.html\" aria-current=\"{{ cur.shop }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.shop }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"39\">Shop</a>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 474.1,
+          "y": 52.5,
+          "w": 71,
+          "h": 43
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_39_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/40#0",
+      "parentKey": "Root>SiteHeader@7#0/38#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 40,
+      "attrs": {
+        "href": "Gifts.dc.html",
+        "class": "scpe",
+        "style": "padding: 12px 16px; border-radius: 999px; font-size: 16px; font-weight: 700; color: rgb(58, 42, 34); text-decoration: none; background: transparent;"
+      },
+      "words": "Gifts",
+      "allText": "Gifts",
+      "srcLine": 41,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Gifts",
+      "snippet": "<a href=\"Gifts.dc.html\" aria-current=\"{{ cur.gifts }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.gifts }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"40\">Gifts</a>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 547.1,
+          "y": 52.5,
+          "w": 68.7,
+          "h": 43
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_40_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/41#0",
+      "parentKey": "Root>SiteHeader@7#0/38#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 41,
+      "attrs": {
+        "href": "Product.dc.html?id=zookies&sub=1",
+        "class": "scpe",
+        "style": "padding: 12px 16px; border-radius: 999px; font-size: 16px; font-weight: 700; color: rgb(58, 42, 34); text-decoration: none; background: transparent;"
+      },
+      "words": "Subscribe & save",
+      "allText": "Subscribe & save",
+      "srcLine": 42,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Subscribe & save",
+      "snippet": "<a href=\"Product.dc.html?id=zookies&amp;sub=1\" aria-current=\"{{ cur.sub }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.sub }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"41\">Subscribe &amp; save</a>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 617.8,
+          "y": 52.5,
+          "w": 166.9,
+          "h": 43
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_41_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/42#0",
+      "parentKey": "Root>SiteHeader@7#0/38#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 42,
+      "attrs": {
+        "href": "Help.dc.html",
+        "class": "scpe",
+        "style": "padding: 12px 16px; border-radius: 999px; font-size: 16px; font-weight: 700; color: rgb(58, 42, 34); text-decoration: none; background: transparent;"
+      },
+      "words": "Help",
+      "allText": "Help",
+      "srcLine": 43,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Help",
+      "snippet": "<a href=\"Help.dc.html\" aria-current=\"{{ cur.help }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.help }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"42\">Help</a>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 786.7,
+          "y": 52.5,
+          "w": 66.4,
+          "h": 43
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_42_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/43#0",
+      "parentKey": "Root>SiteHeader@7#0/38#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 43,
+      "attrs": {
+        "href": "Contact.dc.html",
+        "class": "scpe",
+        "style": "padding: 12px 16px; border-radius: 999px; font-size: 16px; font-weight: 700; color: rgb(58, 42, 34); text-decoration: none; background: transparent;"
+      },
+      "words": "Contact",
+      "allText": "Contact",
+      "srcLine": 44,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Contact",
+      "snippet": "<a href=\"Contact.dc.html\" aria-current=\"{{ cur.contact }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.contact }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"43\">Contact</a>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 855.1,
+          "y": 52.5,
+          "w": 91.6,
+          "h": 43
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_43_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/44#0",
+      "parentKey": "Root>SiteHeader@7#0/35#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "SiteHeader",
+      "tpl": 44,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 6px;"
+      },
+      "words": "",
+      "allText": "Basket 0",
+      "srcLine": 46,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:6px\" data-dc-tpl=\"44\"> <a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"45\"><svg width=\"24\" height=\"24\" sc-camel-view-b",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1100.8,
+          "y": 50,
+          "w": 199.2,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_44_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/45#0",
+      "parentKey": "Root>SiteHeader@7#0/44#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "SiteHeader",
+      "tpl": 45,
+      "attrs": {
+        "href": "SignIn.dc.html",
+        "aria-label": "Sign in or create an account",
+        "class": "scpe",
+        "style": "width: 48px; height: 48px; border-radius: 999px; display: flex; align-items: center; justify-content: center; color: rgb(58, 42, 34); background: transparent;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 47,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"45\"><svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;st",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1100.8,
+          "y": 50,
+          "w": 48,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_45_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/46#0",
+      "parentKey": "Root>SiteHeader@7#0/45#0",
+      "depth": 4,
+      "tag": "svg",
+      "template": "SiteHeader",
+      "tpl": 46,
+      "attrs": {
+        "viewBox": "0 0 24 24",
+        "style": "fill: none; stroke: currentcolor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 47,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "svg",
+      "srcOwnText": "",
+      "snippet": "<svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round\" data-dc-tpl=\"46\"><circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"47\"></circle><path d=\"M4 21a8 8 0 0 1 16 0\" data-dc-tpl=\"48\"></path></svg>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1112.8,
+          "y": 62,
+          "w": 24,
+          "h": 24
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_46_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/47#0",
+      "parentKey": "Root>SiteHeader@7#0/46#0",
+      "depth": 5,
+      "tag": "circle",
+      "template": "SiteHeader",
+      "tpl": 47,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 47,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "circle",
+      "srcOwnText": "",
+      "snippet": "<circle cx=\"12\" cy=\"8\" r=\"4\" data-dc-tpl=\"47\"></circle>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1120.8,
+          "y": 66,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_47_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/48#0",
+      "parentKey": "Root>SiteHeader@7#0/46#0",
+      "depth": 5,
+      "tag": "path",
+      "template": "SiteHeader",
+      "tpl": 48,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 47,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M4 21a8 8 0 0 1 16 0\" data-dc-tpl=\"48\"></path>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1116.8,
+          "y": 75,
+          "w": 16,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_48_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/49#0",
+      "parentKey": "Root>SiteHeader@7#0/44#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "SiteHeader",
+      "tpl": 49,
+      "attrs": {
+        "class": "scpc",
+        "style": "height: 48px; padding: 0px 18px 0px 14px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); border-radius: 999px; display: flex; align-items: center; gap: 8px; cursor: pointer; color: rgb(58, 42, 34); font-size: 15px; font-weight: 700; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "Basket 0",
+      "srcLine": 48,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" style=\"height:48px;padding:0 18px 0 14px;border:2px solid #3A2A22;background:#FFFAF0;border-radius:999px;display:flex;align-items:center;gap:8px;cursor:pointer;color:#3A2A22;font-size:15px;font-weight:700;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1154.8,
+          "y": 50,
+          "w": 145.2,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_49_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/50#0",
+      "parentKey": "Root>SiteHeader@7#0/49#0",
+      "depth": 4,
+      "tag": "svg",
+      "template": "SiteHeader",
+      "tpl": 50,
+      "attrs": {
+        "viewBox": "0 0 24 24",
+        "style": "fill: none; stroke: currentcolor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 49,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "svg",
+      "srcOwnText": "",
+      "snippet": "<svg width=\"22\" height=\"22\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round\" data-dc-tpl=\"50\"><path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\" data-dc-tpl=\"51\"></path><path d=\"M9 10V7a3 3 0 0 1 6 0v3\" data-dc-tpl=\"52\"></path></svg>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1170.8,
+          "y": 63,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_50_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/51#0",
+      "parentKey": "Root>SiteHeader@7#0/50#0",
+      "depth": 5,
+      "tag": "path",
+      "template": "SiteHeader",
+      "tpl": 51,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 49,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\" data-dc-tpl=\"51\"></path>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1175.4,
+          "y": 70.3,
+          "w": 12.8,
+          "h": 11.9
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_51_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/52#0",
+      "parentKey": "Root>SiteHeader@7#0/50#0",
+      "depth": 5,
+      "tag": "path",
+      "template": "SiteHeader",
+      "tpl": 52,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 49,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M9 10V7a3 3 0 0 1 6 0v3\" data-dc-tpl=\"52\"></path>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1179.1,
+          "y": 66.7,
+          "w": 5.5,
+          "h": 5.5
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_52_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/53#0",
+      "parentKey": "Root>SiteHeader@7#0/49#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 53,
+      "attrs": {},
+      "words": "Basket",
+      "allText": "Basket",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Basket",
+      "snippet": "<span data-dc-tpl=\"53\">Basket</span>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1200.8,
+          "y": 65,
+          "w": 49.2,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_53_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/54#0",
+      "parentKey": "Root>SiteHeader@7#0/49#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 54,
+      "attrs": {
+        "style": "min-width: 22px; height: 22px; border-radius: 999px; background: rgb(238, 128, 136); color: rgb(58, 42, 34); font-size: 12px; display: flex; align-items: center; justify-content: center; padding: 0px 6px;"
+      },
+      "words": "0",
+      "allText": "0",
+      "srcLine": 51,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "34"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ count }}",
+      "snippet": "<span style=\"min-width:22px;height:22px;border-radius:999px;background:#EE8088;color:#3A2A22;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0 6px\" data-dc-tpl=\"54\">{{ count }}</span>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 1258,
+          "y": 63,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_54_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/5#0",
+      "parentKey": null,
+      "strip": {
+        "side": "before",
+        "distance": 1
+      },
+      "depth": 1,
+      "tag": "div",
+      "template": "SiteHeader",
+      "tpl": 5,
+      "attrs": {
+        "style": "height: 32px; background: rgb(249, 207, 110); display: flex; align-items: center; padding: 0px 12px;"
+      },
+      "words": "",
+      "allText": "✦ Baked fresh when you order ·With you in 3–5 days ·Free UK delivery over £35",
+      "srcLine": 8,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:32px;background:#F9CF6E;display:flex;align-items:center;padding:0 12px\" data-dc-tpl=\"5\"> <div style=\"width:100%;max-width:1240px;margin:0 auto;height:24px;border-top:1.5px dashed rgba(58,42,34,.3);border-bottom:1.5px dashed rgba(58,42,34,.3);display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden\" data-dc-",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 0,
+          "w": 375,
+          "h": 32
+        },
+        "768": {
+          "x": 0,
+          "y": 0,
+          "w": 768,
+          "h": 32
+        },
+        "1440": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_5_0@375.png",
+        "1440": "shots/Root_SiteHeader_7_0_5_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/6#0",
+      "parentKey": "Root>SiteHeader@7#0/5#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "SiteHeader",
+      "tpl": 6,
+      "attrs": {
+        "style": "width: 100%; max-width: 1240px; margin: 0px auto; height: 24px; border-top: 1.5px dashed rgba(58, 42, 34, 0.3); border-bottom: 1.5px dashed rgba(58, 42, 34, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden;"
+      },
+      "words": "",
+      "allText": "✦ Baked fresh when you order ·With you in 3–5 days ·Free UK delivery over £35",
+      "srcLine": 9,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"width:100%;max-width:1240px;margin:0 auto;height:24px;border-top:1.5px dashed rgba(58,42,34,.3);border-bottom:1.5px dashed rgba(58,42,34,.3);display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden\" data-dc-tpl=\"6\"> <span data-dc-tpl=\"7\">✦ {{ annBake }}</span> <sc-if value=\"{{ isD }}\" hint-placeholder-val=\"{{ fals",
+      "box": {
+        "375": {
+          "x": 12,
+          "y": 4,
+          "w": 351,
+          "h": 24
+        },
+        "768": {
+          "x": 12,
+          "y": 4,
+          "w": 744,
+          "h": 24
+        },
+        "1440": {
+          "x": 100,
+          "y": 4,
+          "w": 1240,
+          "h": 24
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_6_0@375.png",
+        "1440": "shots/Root_SiteHeader_7_0_6_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/7#0",
+      "parentKey": "Root>SiteHeader@7#0/6#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 7,
+      "attrs": {},
+      "words": "✦ Baked fresh when you order",
+      "allText": "✦ Baked fresh when you order",
+      "srcLine": 10,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✦ {{ annBake }}",
+      "snippet": "<span data-dc-tpl=\"7\">✦ {{ annBake }}</span>",
+      "box": {
+        "375": {
+          "x": 57.2,
+          "y": 7.5,
+          "w": 104,
+          "h": 17
+        },
+        "768": {
+          "x": 202.9,
+          "y": 7.5,
+          "w": 184.8,
+          "h": 17
+        },
+        "1440": {
+          "x": 463.1,
+          "y": 7.5,
+          "w": 184.8,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_7_0@375.png",
+        "1440": "shots/Root_SiteHeader_7_0_7_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/9#0",
+      "parentKey": "Root>SiteHeader@7#0/6#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 9,
+      "attrs": {
+        "aria-hidden": "true"
+      },
+      "words": "·",
+      "allText": "·",
+      "srcLine": 11,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "8"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "·",
+      "snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"9\">·</span>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 657.9,
+          "y": 8.5,
+          "w": 2.8,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_9_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/10#0",
+      "parentKey": "Root>SiteHeader@7#0/6#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 10,
+      "attrs": {},
+      "words": "With you in 3–5 days",
+      "allText": "With you in 3–5 days",
+      "srcLine": 11,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ isD }}",
+          "tpl": "8"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "With you in 3–5 days",
+      "snippet": "<span data-dc-tpl=\"10\">With you in 3–5 days</span>",
+      "box": {
+        "375": null,
+        "768": null,
+        "1440": {
+          "x": 670.7,
+          "y": 8.5,
+          "w": 128.8,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": false,
+        "768": false,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": null,
+        "768": null,
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": null,
+      "screenshots": {
+        "1440": "shots/Root_SiteHeader_7_0_10_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/11#0",
+      "parentKey": "Root>SiteHeader@7#0/6#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 11,
+      "attrs": {
+        "aria-hidden": "true"
+      },
+      "words": "·",
+      "allText": "·",
+      "srcLine": 12,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "·",
+      "snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"11\">·</span>",
+      "box": {
+        "375": {
+          "x": 171.2,
+          "y": 8.5,
+          "w": 2.8,
+          "h": 15
+        },
+        "768": {
+          "x": 397.7,
+          "y": 8.5,
+          "w": 2.8,
+          "h": 15
+        },
+        "1440": {
+          "x": 809.5,
+          "y": 8.5,
+          "w": 2.8,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_11_0@375.png",
+        "1440": "shots/Root_SiteHeader_7_0_11_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteHeader@7#0/12#0",
+      "parentKey": "Root>SiteHeader@7#0/6#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "SiteHeader",
+      "tpl": 12,
+      "attrs": {},
+      "words": "Free UK delivery over £35",
+      "allText": "Free UK delivery over £35",
+      "srcLine": 12,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteHeader"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ annFree }}",
+      "snippet": "<span data-dc-tpl=\"12\">{{ annFree }}</span>",
+      "box": {
+        "375": {
+          "x": 184,
+          "y": 8.5,
+          "w": 133.8,
+          "h": 15
+        },
+        "768": {
+          "x": 410.5,
+          "y": 8.5,
+          "w": 154.6,
+          "h": 15
+        },
+        "1440": {
+          "x": 822.3,
+          "y": 8.5,
+          "w": 154.6,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteHeader_7_0_12_0@375.png",
+        "1440": "shots/Root_SiteHeader_7_0_12_0@1440.png"
+      }
+    }
+  ]
+}

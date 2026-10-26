@@ -63,11 +63,12 @@ export function syncTargets( surfaces, only = null ) {
 	return { ids: [ ...new Set( ids ) ], templates: [ ...new Set( templates ) ] };
 }
 
-// The plan from the two reads: { posts: { id: content }, templates: { slug: content }, same, problems }. A post missing on
-// either side, or of another type on each, is a problem; a template the mirror lacks is a problem (the target's own copy
-// is created when it lacks one); content with the same md5 is left alone.
+// The plan from the two reads: { posts: { id: content }, templates: { slug: content }, same, notBuilt, problems }. A post
+// missing on either side, or of another type on each, is a problem; a template the mirror lacks is a problem when the target
+// has a copy (the mirror is behind it) and is `notBuilt` when neither has one (its surface has not been built yet); the
+// target's own copy is created when it lacks one; content with the same md5 is left alone.
 export function planSync( from, to ) {
-	const plan = { posts: {}, templates: {}, same: 0, problems: [] };
+	const plan = { posts: {}, templates: {}, same: 0, notBuilt: [], problems: [] };
 	for ( const [ id, s ] of Object.entries( from.posts || {} ) ) {
 		const t = to.posts?.[ id ];
 		if ( ! s ) {
@@ -84,8 +85,10 @@ export function planSync( from, to ) {
 	}
 	for ( const [ slug, s ] of Object.entries( from.templates || {} ) ) {
 		const t = to.templates?.[ slug ];
-		if ( ! s ) {
-			plan.problems.push( `template ${ slug } has no copy on the mirror` );
+		if ( ! s && ! t ) {
+			plan.notBuilt.push( slug );
+		} else if ( ! s ) {
+			plan.problems.push( `template ${ slug } has no copy on the mirror but has one on the target site (refresh the mirror from the target)` );
 		} else if ( t && s.md5 === t.md5 ) {
 			plan.same++;
 		} else {

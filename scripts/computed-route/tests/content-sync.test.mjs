@@ -24,10 +24,14 @@ test( 'MUST FAIL: a post missing on either side is a problem, never a write', ()
 	assert.match( planSync( { posts: { 9: post( 'page', 'a' ) }, templates: {} }, { posts: { 9: null }, templates: {} } ).problems[ 0 ], /not on the target site/ );
 } );
 
-test( 'a template copy the target lacks is written; one the mirror lacks is a problem', () => {
-	const plan = planSync( { posts: {}, templates: { single: { id: 3, md5: 'a', content: 'VA==' }, page: null } }, { posts: {}, templates: { single: null } } );
+test( 'a template copy the target lacks is written; one only the target holds is a problem; one neither holds is not built yet', () => {
+	const copy = { id: 3, md5: 'a', content: 'VA==' };
+	const plan = planSync( { posts: {}, templates: { single: copy, page: null, 'single-product': null } }, { posts: {}, templates: { single: null, page: { id: 9, md5: 'b' }, 'single-product': null } } );
 	assert.deepEqual( plan.templates, { single: 'VA==' } );
-	assert.match( plan.problems[ 0 ], /template page has no copy on the mirror/ );
+	assert.equal( plan.problems.length, 1 );
+	assert.match( plan.problems[ 0 ], /template page has no copy on the mirror but has one on the target site/ );
+	// Real case: Mama's product surface (2026-10-26) had not been built, so the whole sync refused.
+	assert.deepEqual( plan.notBuilt, [ 'single-product' ] );
 } );
 
 test( 'syncTargets takes each surface\'s post id and template slug once, limited by --only', () => {

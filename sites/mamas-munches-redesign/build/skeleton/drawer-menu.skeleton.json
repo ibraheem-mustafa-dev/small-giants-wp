@@ -1,0 +1,694 @@
+[
+	{
+		"name": "sgs/nav-drawer",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root>SiteHeader@7#0/56#0"
+		},
+		"draftFingerprint": {
+			"tag": "aside",
+			"cls": "",
+			"styleHash": "9a2aeb2",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 60
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root>SiteHeader@7#0/57#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "b471f6d4",
+					"parentTags": [
+						"aside"
+					],
+					"textHash": "1505",
+					"line": 61
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/responsive-logo",
+						"attributes": {
+							"logoId": 91
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/58#0"
+						},
+						"draftFingerprint": {
+							"tag": "img",
+							"cls": "",
+							"styleHash": "cfd6503b",
+							"parentTags": [
+								"aside",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 62
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "site-info",
+								"kind": "presence",
+								"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+							}
+						]
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "×"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/59#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "scpe",
+							"styleHash": "7b985aeb",
+							"parentTags": [
+								"aside",
+								"div"
+							],
+							"textHash": "2b572",
+							"line": 63
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Who are you shopping for?"
+				},
+				"draftRef": {
+					"tpl": "Root>SiteHeader@7#0/61#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "b9485f76",
+					"parentTags": [
+						"aside",
+						"div"
+					],
+					"textHash": "b1fd04d0",
+					"line": 66
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "grid"
+				},
+				"draftRef": {
+					"tpl": "Root>SiteHeader@7#0/62#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "89293b14",
+					"parentTags": [
+						"aside",
+						"div"
+					],
+					"textHash": "1505",
+					"line": 67
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack",
+							"sgsBlockLink": "Shop.dc.html"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/63#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scpf",
+							"styleHash": "1a0a235",
+							"parentTags": [
+								"aside",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 68
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/media",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/64#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "",
+									"styleHash": "5dda3fd1",
+									"parentTags": [
+										"aside",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 69
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/65#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "801f5e75",
+									"parentTags": [
+										"aside",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 70
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "For me"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteHeader@7#0/66#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "fe592c31",
+											"parentTags": [
+												"aside",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "96fa8d16",
+											"line": 70
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Zookies & trial packs"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteHeader@7#0/67#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "feea9976",
+											"parentTags": [
+												"aside",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "899c11e5",
+											"line": 70
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack",
+							"sgsBlockLink": "Gifts.dc.html"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/68#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scpf",
+							"styleHash": "395a82d1",
+							"parentTags": [
+								"aside",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 72
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/media",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/69#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "",
+									"styleHash": "5dda3fd1",
+									"parentTags": [
+										"aside",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 73
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/70#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "801f5e75",
+									"parentTags": [
+										"aside",
+										"div",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 74
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "For a new mum"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteHeader@7#0/71#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "fe592c31",
+											"parentTags": [
+												"aside",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "a1767896",
+											"line": 74
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Gift boxes & cards"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteHeader@7#0/72#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "feea9976",
+											"parentTags": [
+												"aside",
+												"div",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "113543fb",
+											"line": 74
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/icon-list",
+				"attributes": {
+					"items": [
+						{
+							"text": "Shop all",
+							"url": "Shop.dc.html"
+						},
+						{
+							"text": "Zookies",
+							"url": "Product.dc.html?id=zookies"
+						},
+						{
+							"text": "Taster Trio",
+							"url": "Product.dc.html?id=trial"
+						},
+						{
+							"text": "Gifts",
+							"url": "Gifts.dc.html"
+						},
+						{
+							"text": "Subscribe & save",
+							"url": "Product.dc.html?id=zookies&sub=1"
+						},
+						{
+							"text": "Help & FAQs",
+							"url": "Help.dc.html"
+						},
+						{
+							"text": "Contact",
+							"url": "Contact.dc.html"
+						}
+					]
+				},
+				"draftRef": {
+					"tpl": "Root>SiteHeader@7#0/74#0"
+				},
+				"draftFingerprint": {
+					"tag": "a",
+					"cls": "scpg",
+					"styleHash": "9f092d66",
+					"parentTags": [
+						"aside",
+						"nav"
+					],
+					"textHash": "af5fd20",
+					"line": 79
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "stack"
+				},
+				"draftRef": {
+					"tpl": "Root>SiteHeader@7#0/88#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "d6a34f77",
+					"parentTags": [
+						"aside"
+					],
+					"textHash": "1505",
+					"line": 87
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/89#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"aside",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 88
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/icon-list",
+								"attributes": {
+									"items": [
+										{
+											"text": "Sign in",
+											"url": "SignIn.dc.html"
+										},
+										{
+											"text": "Create account",
+											"url": "SignIn.dc.html?mode=register"
+										}
+									]
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/92#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scph scpi",
+									"styleHash": "da25025b",
+									"parentTags": [
+										"aside",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "c0419d31",
+									"line": 90
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/104#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1505",
+							"parentTags": [
+								"aside",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 96
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "say hello"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/105#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "99b4af88",
+									"parentTags": [
+										"aside",
+										"div",
+										"div"
+									],
+									"textHash": "2a70174c",
+									"line": 97
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/icon-list",
+								"attributes": {
+									"items": [
+										{
+											"text": "WhatsApp",
+											"url": "Contact.dc.html"
+										},
+										{
+											"text": "",
+											"siteInfoSource": "email"
+										},
+										{
+											"text": "Instagram",
+											"url": "https://www.instagram.com/mamasmunches/"
+										}
+									]
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/107#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scpj scpi",
+									"styleHash": "74005f8a",
+									"parentTags": [
+										"aside",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "71fcb1bd",
+									"line": 99
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex",
+							"sgsBlockLink": "https://uk.trustpilot.com/review/mamasmunches.com"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteHeader@7#0/123#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "scpk",
+							"styleHash": "25bec23c",
+							"parentTags": [
+								"aside",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 104
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"content": "4.3"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/124#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "84be40f5",
+									"parentTags": [
+										"aside",
+										"div",
+										"a"
+									],
+									"textHash": "b865b4c",
+									"line": 104
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/125#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "99bb8b6c",
+									"parentTags": [
+										"aside",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 104
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/label",
+										"attributes": {
+											"text": "★★★★★"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteHeader@7#0/126#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "b91b2c79",
+											"parentTags": [
+												"aside",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "af1300e0",
+											"line": 104
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "8 reviews on Trustpilot ↗"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteHeader@7#0/127#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "cc979add",
+											"parentTags": [
+												"aside",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "7fea3018",
+											"line": 104
+										},
+										"innerBlocks": []
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

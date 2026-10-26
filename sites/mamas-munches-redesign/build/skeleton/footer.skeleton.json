@@ -1,0 +1,811 @@
+[
+	{
+		"name": "sgs/site-footer",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root>SiteFooter@250#0/2#0"
+		},
+		"draftFingerprint": {
+			"tag": "footer",
+			"cls": "",
+			"styleHash": "e5c2f6e2",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 3
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"rowSlot": "top"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"rowSlot": "columns"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteFooter@250#0/5#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "e16c0349",
+							"parentTags": [
+								"footer",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 6
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/6#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"footer",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 7
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "fresh out the oven…"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/7#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "9448f64e",
+											"parentTags": [
+												"footer",
+												"section",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "32d0fb0c",
+											"line": 8
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "@mamasmunches"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/8#0"
+										},
+										"draftFingerprint": {
+											"tag": "h2",
+											"cls": "",
+											"styleHash": "f5228848",
+											"parentTags": [
+												"footer",
+												"section",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "d14148fd",
+											"line": 9
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Follow along",
+									"url": "https://www.instagram.com/mamasmunches/"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/9#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scpm",
+									"styleHash": "2c4a97cb",
+									"parentTags": [
+										"footer",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "a9296ddf",
+									"line": 11
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-button__icon > svg": {
+										"tpl": "Root>SiteFooter@250#0/10#0"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/gallery",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root>SiteFooter@250#0/14#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "546172e2",
+							"parentTags": [
+								"footer",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 16
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/trust-bar",
+						"attributes": {
+							"title": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteFooter@250#0/18#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "c62cf530",
+							"parentTags": [
+								"footer"
+							],
+							"textHash": "d3a12005",
+							"line": 26
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "content-page",
+								"kind": "presence",
+								"detail": "the strip's items are built by the draft's code (its template holds one text binding): add each item to the trust bar"
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteFooter@250#0/21#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "64dfa69",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 30
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/22#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "90c7514d",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 31
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "Hungry? Of course you are."
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/23#0"
+										},
+										"draftFingerprint": {
+											"tag": "h2",
+											"cls": "",
+											"styleHash": "12343f85",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "aa74720a",
+											"line": 32
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Build your box →"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/24#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scpm",
+											"styleHash": "969f086d",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "7a4fe9f7",
+											"line": 33
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {
+									"logoId": 92
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/26#0"
+								},
+								"draftFingerprint": {
+									"tag": "img",
+									"cls": "scpo",
+									"styleHash": "a7e1ab3f",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 35
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteFooter@250#0/27#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a407114e",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 38
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "nav",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/28#0"
+								},
+								"draftFingerprint": {
+									"tag": "nav",
+									"cls": "",
+									"styleHash": "99bb8b6c",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 39
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "shop"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/29#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "7cc84a08",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"nav"
+											],
+											"textHash": "7c79aa81",
+											"line": 40
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/icon-list",
+										"attributes": {
+											"items": [
+												{
+													"text": "All Zookies",
+													"url": "Shop.dc.html"
+												},
+												{
+													"text": "Build your box",
+													"url": "Home.dc.html#build"
+												},
+												{
+													"text": "Subscribe & save",
+													"url": "Product.dc.html?id=zookies&sub=1"
+												},
+												{
+													"text": "Gifts",
+													"url": "Gifts.dc.html"
+												},
+												{
+													"text": "Taster Trio",
+													"url": "Product.dc.html?id=trial"
+												}
+											]
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/30#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scpp",
+											"styleHash": "330a228c",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"nav"
+											],
+											"textHash": "c63e4e2a",
+											"line": 41
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "nav",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/35#0"
+								},
+								"draftFingerprint": {
+									"tag": "nav",
+									"cls": "",
+									"styleHash": "99bb8b6c",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 47
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"content": "help"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/36#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "7cc84a08",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"nav"
+											],
+											"textHash": "7c715c94",
+											"line": 48
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/icon-list",
+										"attributes": {
+											"items": [
+												{
+													"text": "FAQs",
+													"url": "Help.dc.html"
+												},
+												{
+													"text": "Delivery",
+													"url": "Help.dc.html#delivery"
+												},
+												{
+													"text": "Allergens",
+													"url": "Help.dc.html#allergens"
+												},
+												{
+													"text": "Contact",
+													"url": "Contact.dc.html"
+												}
+											]
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/37#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scpp",
+											"styleHash": "330a228c",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"nav"
+											],
+											"textHash": "7c7df400",
+											"line": 49
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "stack"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/41#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "b488f10",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 54
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "say hello"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/42#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "87863ea9",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "2a70174c",
+											"line": 55
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Zainab@mamasmunches.com",
+											"url": "mailto:Zainab@mamasmunches.com",
+											"linkSource": "email",
+											"labelFromSiteInfo": true
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/43#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scpq",
+											"styleHash": "4bcbd69f",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "40b3970d",
+											"line": 56
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/social-icons",
+										"attributes": {},
+										"draftRef": "footer[data-dc-tpl=\"2\"] [data-dc-tpl=\"44\"]",
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "e88c8477",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 57
+										},
+										"innerBlocks": [],
+										"siteInfoRow": [
+											"instagram",
+											"whatsapp"
+										],
+										"childRefs": {
+											"instagram": "[data-dc-tpl=\"45\"]",
+											"whatsapp": "[data-dc-tpl=\"50\"]"
+										}
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root>SiteFooter@250#0/55#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "56d4c2a3",
+							"parentTags": [
+								"footer",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 65
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "copyright",
+									"copyrightPrefix": ""
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/56#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "b694059b",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "da571ed0",
+									"line": 66
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"copyright\" must read: © 2026 Mama’s Munches · Registered food business"
+									}
+								]
+							},
+							{
+								"name": "sgs/multi-button",
+								"attributes": {
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/57#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "e1faa8bf",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 67
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Privacy",
+											"url": "Help.dc.html#legal"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/58#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "",
+											"styleHash": "ef1f56a3",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"span"
+											],
+											"textHash": "cf47b943",
+											"line": 67
+										},
+										"innerBlocks": []
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Terms",
+											"url": "Help.dc.html#legal"
+										},
+										"draftRef": {
+											"tpl": "Root>SiteFooter@250#0/59#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "",
+											"styleHash": "ef1f56a3",
+											"parentTags": [
+												"footer",
+												"div",
+												"div",
+												"div",
+												"span"
+											],
+											"textHash": "d92b8f8",
+											"line": 67
+										},
+										"innerBlocks": []
+									}
+								]
+							},
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "attribution"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteFooter@250#0/60#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scps",
+									"styleHash": "ce17cff9",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "3acb3cac",
+									"line": 68
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"attribution\" must read: Website by Small Giants Studio"
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"rowSlot": "bottom"
+				},
+				"innerBlocks": []
+			}
+		]
+	}
+]

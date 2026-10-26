@@ -1,0 +1,4305 @@
+{
+  "generated": "2026-10-26T17:35:49.326Z",
+  "source": "http://127.0.0.1:63654/",
+  "root": "footer",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root>SiteFooter@250#0/2#0",
+    "unstamped": [
+      {
+        "tag": "div",
+        "cls": "",
+        "text": "boost your milk, bite by bite✦baked when you order✦handmade "
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "boost your milk, bite by bite✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "baked when you order✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "handmade in Birmingham✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "one-handed snacking✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "boost your milk, bite by bite✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "baked when you order✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "handmade in Birmingham✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "one-handed snacking✦"
+      },
+      {
+        "tag": "span",
+        "cls": "",
+        "text": "✦"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 68,
+      "768": 68,
+      "1440": 68
+    },
+    "tagAgree": 68,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root>SiteFooter@250#0/2#0",
+      "parentKey": "Root/250#0",
+      "depth": 0,
+      "tag": "footer",
+      "template": "SiteFooter",
+      "tpl": 2,
+      "attrs": {
+        "style": "font-family: Karla, system-ui, sans-serif; color: rgb(58, 42, 34);"
+      },
+      "words": "",
+      "allText": "fresh out the oven… @mamasmunches Follow along boost your milk, bite by bite✦baked when you order✦handmade in Birmingham",
+      "srcLine": 3,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "footer",
+      "srcOwnText": "",
+      "snippet": "<footer sc-camel-on-focus=\"{{ focusIn }}\" sc-camel-on-blur=\"{{ focusOut }}\" style=\"font-family:'Karla',system-ui,sans-serif;color:#3A2A22\" data-dc-tpl=\"2\"> <section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-betw",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 8884.9,
+          "w": 375,
+          "h": 1441.3
+        },
+        "768": {
+          "x": 0,
+          "y": 8031.5,
+          "w": 768,
+          "h": 1479.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 6364.9,
+          "w": 1440,
+          "h": 1314.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_2_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_2_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/3#0",
+      "parentKey": "Root>SiteFooter@250#0/2#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "SiteFooter",
+      "tpl": 3,
+      "attrs": {
+        "aria-label": "Instagram",
+        "style": "background: rgb(251, 243, 220); padding: 88px 40px;"
+      },
+      "words": "",
+      "allText": "fresh out the oven… @mamasmunches Follow along",
+      "srcLine": 4,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section aria-label=\"Instagram\" style=\"background:#FBF3DC;padding:{{ igPad }}\" data-dc-tpl=\"3\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 8884.9,
+          "w": 375,
+          "h": 420.1
+        },
+        "768": {
+          "x": 0,
+          "y": 8031.5,
+          "w": 768,
+          "h": 693.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 6364.9,
+          "w": 1440,
+          "h": 482.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_3_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_3_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/4#0",
+      "parentKey": "Root>SiteFooter@250#0/3#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 4,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "fresh out the oven… @mamasmunches Follow along",
+      "srcLine": 5,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"4\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margi",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 8932.9,
+          "w": 335,
+          "h": 324.1
+        },
+        "768": {
+          "x": 32,
+          "y": 8095.5,
+          "w": 704,
+          "h": 565.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 6452.9,
+          "w": 1240,
+          "h": 306.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_4_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_4_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/5#0",
+      "parentKey": "Root>SiteFooter@250#0/4#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 5,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 24px;"
+      },
+      "words": "",
+      "allText": "fresh out the oven… @mamasmunches Follow along",
+      "srcLine": 6,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:24px\" data-dc-tpl=\"5\"> <div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;f",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 8932.9,
+          "w": 335,
+          "h": 132.7
+        },
+        "768": {
+          "x": 32,
+          "y": 8095.5,
+          "w": 704,
+          "h": 77.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 6452.9,
+          "w": 1240,
+          "h": 87.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_5_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_5_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/6#0",
+      "parentKey": "Root>SiteFooter@250#0/5#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 6,
+      "attrs": {},
+      "words": "",
+      "allText": "fresh out the oven… @mamasmunches",
+      "srcLine": 7,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"6\"> <div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 8932.9,
+          "w": 315.5,
+          "h": 68.7
+        },
+        "768": {
+          "x": 32,
+          "y": 8095.5,
+          "w": 389.8,
+          "h": 77.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 6452.9,
+          "w": 482.6,
+          "h": 87.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_6_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_6_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/7#0",
+      "parentKey": "Root>SiteFooter@250#0/6#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 7,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 26px; color: rgb(168, 64, 79); transform: rotate(-2deg); transform-origin: left center;"
+      },
+      "words": "fresh out the oven…",
+      "allText": "fresh out the oven…",
+      "srcLine": 8,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "fresh out the oven…",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:26px;color:#A8404F;transform:rotate(-2deg);transform-origin:left\" data-dc-tpl=\"7\">fresh out the oven…</div>",
+      "box": {
+        "375": {
+          "x": 19.4,
+          "y": 8921.9,
+          "w": 316.5,
+          "h": 44
+        },
+        "768": {
+          "x": 31.4,
+          "y": 8081.9,
+          "w": 390.7,
+          "h": 46.6
+        },
+        "1440": {
+          "x": 99.4,
+          "y": 6436.1,
+          "w": 483.4,
+          "h": 49.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_7_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_7_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/8#0",
+      "parentKey": "Root>SiteFooter@250#0/6#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "SiteFooter",
+      "tpl": 8,
+      "attrs": {
+        "style": "margin: 0px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 52px; line-height: 1.05;"
+      },
+      "words": "@mamasmunches",
+      "allText": "@mamasmunches",
+      "srcLine": 9,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "@mamasmunches",
+      "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ h2 }};line-height:1.05\" data-dc-tpl=\"8\">@mamasmunches</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 8965.9,
+          "w": 315.5,
+          "h": 35.7
+        },
+        "768": {
+          "x": 32,
+          "y": 8128.5,
+          "w": 389.8,
+          "h": 44.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 6485.9,
+          "w": 482.6,
+          "h": 54.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_8_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_8_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/9#0",
+      "parentKey": "Root>SiteFooter@250#0/5#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 9,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "class": "scpm",
+        "style": "height: 52px; padding: 0px 22px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Follow along",
+      "allText": "Follow along",
+      "srcLine": 11,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Follow along",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" style=\"height:52px;padding:0 22px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;color:#3A2A22;font-weight:700;font-size:16px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9013.6,
+          "w": 172.8,
+          "h": 52
+        },
+        "768": {
+          "x": 563.2,
+          "y": 8120.5,
+          "w": 172.8,
+          "h": 52
+        },
+        "1440": {
+          "x": 1167.2,
+          "y": 6488.5,
+          "w": 172.8,
+          "h": 52
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_9_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_9_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/10#0",
+      "parentKey": "Root>SiteFooter@250#0/9#0",
+      "depth": 5,
+      "tag": "svg",
+      "template": "SiteFooter",
+      "tpl": 10,
+      "attrs": {
+        "viewBox": "0 0 24 24",
+        "style": "fill: none; stroke: currentcolor; stroke-width: 2;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 12,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "svg",
+      "srcOwnText": "",
+      "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"10\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"11\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"12\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"13\"></circle></svg>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 9029.6,
+          "w": 20,
+          "h": 20
+        },
+        "768": {
+          "x": 587.2,
+          "y": 8136.5,
+          "w": 20,
+          "h": 20
+        },
+        "1440": {
+          "x": 1191.2,
+          "y": 6504.5,
+          "w": 20,
+          "h": 20
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_10_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/11#0",
+      "parentKey": "Root>SiteFooter@250#0/10#0",
+      "depth": 6,
+      "tag": "rect",
+      "template": "SiteFooter",
+      "tpl": 11,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 12,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "rect",
+      "srcOwnText": "",
+      "snippet": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"11\"></rect>",
+      "box": {
+        "375": {
+          "x": 46.5,
+          "y": 9032.1,
+          "w": 15,
+          "h": 15
+        },
+        "768": {
+          "x": 589.7,
+          "y": 8139,
+          "w": 15,
+          "h": 15
+        },
+        "1440": {
+          "x": 1193.7,
+          "y": 6507,
+          "w": 15,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_11_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/12#0",
+      "parentKey": "Root>SiteFooter@250#0/10#0",
+      "depth": 6,
+      "tag": "circle",
+      "template": "SiteFooter",
+      "tpl": 12,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 12,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "circle",
+      "srcOwnText": "",
+      "snippet": "<circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"12\"></circle>",
+      "box": {
+        "375": {
+          "x": 50.7,
+          "y": 9036.2,
+          "w": 6.7,
+          "h": 6.7
+        },
+        "768": {
+          "x": 593.8,
+          "y": 8143.2,
+          "w": 6.7,
+          "h": 6.7
+        },
+        "1440": {
+          "x": 1197.8,
+          "y": 6511.2,
+          "w": 6.7,
+          "h": 6.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_12_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/13#0",
+      "parentKey": "Root>SiteFooter@250#0/10#0",
+      "depth": 6,
+      "tag": "circle",
+      "template": "SiteFooter",
+      "tpl": 13,
+      "attrs": {
+        "style": "fill: currentcolor; stroke: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 12,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "circle",
+      "srcOwnText": "",
+      "snippet": "<circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"13\"></circle>",
+      "box": {
+        "375": {
+          "x": 57.6,
+          "y": 9034,
+          "w": 2,
+          "h": 2
+        },
+        "768": {
+          "x": 600.7,
+          "y": 8141,
+          "w": 2,
+          "h": 2
+        },
+        "1440": {
+          "x": 1204.7,
+          "y": 6508.9,
+          "w": 2,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_13_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/14#0",
+      "parentKey": "Root>SiteFooter@250#0/4#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 14,
+      "attrs": {
+        "style": "display: grid; grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(6, minmax(0px, 1fr)); gap: 14px; overflow-x: visible; scroll-snap-type: x mandatory; scrollbar-width: none; margin: 0px; padding: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 16,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-auto-flow:{{ flow }};grid-auto-columns:{{ autoCols }};grid-template-columns:{{ igCols }};gap:14px;overflow-x:{{ ovx }};scroll-snap-type:x mandatory;scrollbar-width:none;margin:{{ bleedM }};padding:{{ bleedP }}\" data-dc-tpl=\"14\"> <sc-for list=\"{{ posts }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"15\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 9089.6,
+          "w": 375,
+          "h": 167.4
+        },
+        "768": {
+          "x": 32,
+          "y": 8196.5,
+          "w": 704,
+          "h": 464.7
+        },
+        "1440": {
+          "x": 100,
+          "y": 6564.5,
+          "w": 1240,
+          "h": 195
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_14_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_14_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/16#0",
+      "parentKey": "Root>SiteFooter@250#0/14#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 16,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "aria-label": "View on Instagram",
+        "class": "scpn",
+        "style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(-2deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "box": {
+        "375": {
+          "x": 0.5,
+          "y": 9095,
+          "w": 152.4,
+          "h": 152.4
+        },
+        "768": {
+          "x": 28.1,
+          "y": 8192.7,
+          "w": 233.1,
+          "h": 233.1
+        },
+        "1440": {
+          "x": 96.7,
+          "y": 6561.2,
+          "w": 201.7,
+          "h": 201.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_16_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_16_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/17#0",
+      "parentKey": "Root>SiteFooter@250#0/16#0",
+      "depth": 5,
+      "tag": "img",
+      "template": "SiteFooter",
+      "tpl": 17,
+      "attrs": {
+        "style": "width: 100%; height: 100%; object-fit: cover;",
+        "srcBasename": "photo-hero-mug.jpg"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "box": {
+        "375": {
+          "x": 2.5,
+          "y": 9097.1,
+          "w": 148.3,
+          "h": 148.3
+        },
+        "768": {
+          "x": 30.2,
+          "y": 8194.8,
+          "w": 228.9,
+          "h": 228.9
+        },
+        "1440": {
+          "x": 98.7,
+          "y": 6563.3,
+          "w": 197.5,
+          "h": 197.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_17_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_17_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/16#1",
+      "parentKey": "Root>SiteFooter@250#0/14#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 16,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "aria-label": "View on Instagram",
+        "class": "scpn",
+        "style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(1.5deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "box": {
+        "375": {
+          "x": 162.5,
+          "y": 9095.7,
+          "w": 151.2,
+          "h": 151.2
+        },
+        "768": {
+          "x": 268.4,
+          "y": 8193.6,
+          "w": 231.1,
+          "h": 231.1
+        },
+        "1440": {
+          "x": 306.5,
+          "y": 6562,
+          "w": 200,
+          "h": 200
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_16_1@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_16_1@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/17#1",
+      "parentKey": "Root>SiteFooter@250#0/16#1",
+      "depth": 5,
+      "tag": "img",
+      "template": "SiteFooter",
+      "tpl": 17,
+      "attrs": {
+        "style": "width: 100%; height: 100%; object-fit: cover;",
+        "srcBasename": "photo-gift-heart.jpg"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "box": {
+        "375": {
+          "x": 164.5,
+          "y": 9097.7,
+          "w": 147.1,
+          "h": 147.1
+        },
+        "768": {
+          "x": 270.5,
+          "y": 8195.7,
+          "w": 227,
+          "h": 227
+        },
+        "1440": {
+          "x": 308.5,
+          "y": 6564.1,
+          "w": 195.9,
+          "h": 195.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_17_1@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_17_1@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/16#2",
+      "parentKey": "Root>SiteFooter@250#0/14#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 16,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "aria-label": "View on Instagram",
+        "class": "scpn",
+        "style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(-1deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "box": {
+        "375": {
+          "x": 324.5,
+          "y": 9096.3,
+          "w": 149.9,
+          "h": 149.9
+        },
+        "768": {
+          "x": 508.7,
+          "y": 8194.6,
+          "w": 229.2,
+          "h": 229.2
+        },
+        "1440": {
+          "x": 516.3,
+          "y": 6562.8,
+          "w": 198.4,
+          "h": 198.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_16_2@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_16_2@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/17#2",
+      "parentKey": "Root>SiteFooter@250#0/16#2",
+      "depth": 5,
+      "tag": "img",
+      "template": "SiteFooter",
+      "tpl": 17,
+      "attrs": {
+        "style": "width: 100%; height: 100%; object-fit: cover;",
+        "srcBasename": "photo-pair-love.jpg"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "box": {
+        "375": {
+          "x": 326.5,
+          "y": 9098.3,
+          "w": 145.9,
+          "h": 145.9
+        },
+        "768": {
+          "x": 510.7,
+          "y": 8196.6,
+          "w": 225.2,
+          "h": 225.2
+        },
+        "1440": {
+          "x": 518.3,
+          "y": 6564.9,
+          "w": 194.3,
+          "h": 194.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_17_2@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_17_2@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/16#3",
+      "parentKey": "Root>SiteFooter@250#0/14#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 16,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "aria-label": "View on Instagram",
+        "class": "scpn",
+        "style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(2deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "box": {
+        "375": {
+          "x": 484.6,
+          "y": 9095,
+          "w": 152.4,
+          "h": 152.4
+        },
+        "768": {
+          "x": 28.1,
+          "y": 8432,
+          "w": 233.1,
+          "h": 233.1
+        },
+        "1440": {
+          "x": 723.7,
+          "y": 6561.2,
+          "w": 201.7,
+          "h": 201.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_16_3@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_16_3@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/17#3",
+      "parentKey": "Root>SiteFooter@250#0/16#3",
+      "depth": 5,
+      "tag": "img",
+      "template": "SiteFooter",
+      "tpl": 17,
+      "attrs": {
+        "style": "width: 100%; height: 100%; object-fit: cover;",
+        "srcBasename": "photo-bags-pink.jpg"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "box": {
+        "375": {
+          "x": 486.7,
+          "y": 9097.1,
+          "w": 148.3,
+          "h": 148.3
+        },
+        "768": {
+          "x": 30.2,
+          "y": 8434.1,
+          "w": 228.9,
+          "h": 228.9
+        },
+        "1440": {
+          "x": 725.7,
+          "y": 6563.3,
+          "w": 197.5,
+          "h": 197.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_17_3@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_17_3@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/16#4",
+      "parentKey": "Root>SiteFooter@250#0/14#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 16,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "aria-label": "View on Instagram",
+        "class": "scpn",
+        "style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(-1.5deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "box": {
+        "375": {
+          "x": 646.7,
+          "y": 9095.7,
+          "w": 151.2,
+          "h": 151.2
+        },
+        "768": {
+          "x": 268.4,
+          "y": 8433,
+          "w": 231.1,
+          "h": 231.1
+        },
+        "1440": {
+          "x": 933.5,
+          "y": 6562,
+          "w": 200,
+          "h": 200
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_16_4@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_16_4@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/17#4",
+      "parentKey": "Root>SiteFooter@250#0/16#4",
+      "depth": 5,
+      "tag": "img",
+      "template": "SiteFooter",
+      "tpl": 17,
+      "attrs": {
+        "style": "width: 100%; height: 100%; object-fit: cover;",
+        "srcBasename": "photo-tray-love.jpg"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "box": {
+        "375": {
+          "x": 648.7,
+          "y": 9097.7,
+          "w": 147.1,
+          "h": 147.1
+        },
+        "768": {
+          "x": 270.5,
+          "y": 8435,
+          "w": 227,
+          "h": 227
+        },
+        "1440": {
+          "x": 935.5,
+          "y": 6564.1,
+          "w": 195.9,
+          "h": 195.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_17_4@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_17_4@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/16#5",
+      "parentKey": "Root>SiteFooter@250#0/14#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 16,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "aria-label": "View on Instagram",
+        "class": "scpn",
+        "style": "position: relative; display: block; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden; background: rgb(249, 213, 211); scroll-snap-align: start; border: 2px solid rgb(58, 42, 34); transform: rotate(1deg); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 18,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"View on Instagram\" style=\"position:relative;display:block;aspect-ratio:1 / 1;border-radius:18px;overflow:hidden;background:#F9D5D3;scroll-snap-align:start;border:2px solid #3A2A22;transform:rotate({{ p.rot }});transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-6px);box-sh",
+      "box": {
+        "375": {
+          "x": 808.7,
+          "y": 9096.3,
+          "w": 149.9,
+          "h": 149.9
+        },
+        "768": {
+          "x": 508.7,
+          "y": 8433.9,
+          "w": 229.2,
+          "h": 229.2
+        },
+        "1440": {
+          "x": 1143.3,
+          "y": 6562.8,
+          "w": 198.4,
+          "h": 198.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_16_5@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_16_5@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/17#5",
+      "parentKey": "Root>SiteFooter@250#0/16#5",
+      "depth": 5,
+      "tag": "img",
+      "template": "SiteFooter",
+      "tpl": 17,
+      "attrs": {
+        "style": "width: 100%; height: 100%; object-fit: cover;",
+        "srcBasename": "photo-bun-case.jpg"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 19,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ posts }}",
+          "as": "p",
+          "tpl": "15"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"{{ p.src }}\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\" data-dc-tpl=\"17\">",
+      "box": {
+        "375": {
+          "x": 810.7,
+          "y": 9098.3,
+          "w": 145.9,
+          "h": 145.9
+        },
+        "768": {
+          "x": 510.7,
+          "y": 8436,
+          "w": 225.2,
+          "h": 225.2
+        },
+        "1440": {
+          "x": 1145.3,
+          "y": 6564.9,
+          "w": 194.3,
+          "h": 194.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_17_5@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_17_5@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/18#0",
+      "parentKey": "Root>SiteFooter@250#0/2#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 18,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "background: rgb(249, 207, 110); border-top: 2px solid rgb(58, 42, 34); border-bottom: 2px solid rgb(58, 42, 34); overflow: hidden; padding: 14px 0px;"
+      },
+      "words": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦",
+      "allText": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by b",
+      "srcLine": 26,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ tagline }}",
+      "snippet": "<div aria-hidden=\"true\" sc-camel-on-mouse-enter=\"{{ tagIn }}\" sc-camel-on-mouse-leave=\"{{ tagOut }}\" style=\"background:#F9CF6E;border-top:2px solid #3A2A22;border-bottom:2px solid #3A2A22;overflow:hidden;padding:14px 0\" data-dc-tpl=\"18\">{{ tagline }}</div>",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 9305,
+          "w": 375,
+          "h": 67
+        },
+        "768": {
+          "x": 0,
+          "y": 8725.2,
+          "w": 768,
+          "h": 79
+        },
+        "1440": {
+          "x": 0,
+          "y": 6847.5,
+          "w": 1440,
+          "h": 79
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_18_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_18_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/19#0",
+      "parentKey": "Root>SiteFooter@250#0/2#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 19,
+      "attrs": {
+        "style": "background: rgb(245, 194, 200); padding: 80px 40px 32px; overflow: hidden;"
+      },
+      "words": "",
+      "allText": "Hungry? Of course you are. Build your box → shop All Zookies Build your box Subscribe & save Gifts Taster Trio help FAQs",
+      "srcLine": 28,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#F5C2C8;padding:{{ mainPad }};overflow:hidden\" data-dc-tpl=\"19\"> <div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 9372,
+          "w": 375,
+          "h": 954.3
+        },
+        "768": {
+          "x": 0,
+          "y": 8804.2,
+          "w": 768,
+          "h": 707
+        },
+        "1440": {
+          "x": 0,
+          "y": 6926.5,
+          "w": 1440,
+          "h": 753
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_19_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_19_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/20#0",
+      "parentKey": "Root>SiteFooter@250#0/19#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 20,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Hungry? Of course you are. Build your box → shop All Zookies Build your box Subscribe & save Gifts Taster Trio help FAQs",
+      "srcLine": 29,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:1240px;margin:0 auto\" data-dc-tpl=\"20\"> <div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9420,
+          "w": 335,
+          "h": 882.3
+        },
+        "768": {
+          "x": 32,
+          "y": 8868.2,
+          "w": 704,
+          "h": 615
+        },
+        "1440": {
+          "x": 100,
+          "y": 7006.5,
+          "w": 1240,
+          "h": 641
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_20_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_20_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/21#0",
+      "parentKey": "Root>SiteFooter@250#0/20#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 21,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; padding-bottom: 56px; border-bottom: 2px dashed rgba(58, 42, 34, 0.28);"
+      },
+      "words": "",
+      "allText": "Hungry? Of course you are. Build your box →",
+      "srcLine": 30,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ topCols }};gap:28px;align-items:center;padding-bottom:{{ topGap }};border-bottom:2px dashed rgba(58,42,34,.28)\" data-dc-tpl=\"21\"> <div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaS",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9420,
+          "w": 335,
+          "h": 357.3
+        },
+        "768": {
+          "x": 32,
+          "y": 8868.2,
+          "w": 704,
+          "h": 236
+        },
+        "1440": {
+          "x": 100,
+          "y": 7006.5,
+          "w": 1240,
+          "h": 296
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_21_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_21_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/22#0",
+      "parentKey": "Root>SiteFooter@250#0/21#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 22,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 18px; align-items: flex-start; text-align: left;"
+      },
+      "words": "",
+      "allText": "Hungry? Of course you are. Build your box →",
+      "srcLine": 31,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:18px;align-items:{{ ctaAlign }};text-align:{{ ctaText }}\" data-dc-tpl=\"22\"> <h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2> <a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;borde",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9420,
+          "w": 335,
+          "h": 158
+        },
+        "768": {
+          "x": 32,
+          "y": 8868.2,
+          "w": 526,
+          "h": 190
+        },
+        "1440": {
+          "x": 100,
+          "y": 7006.5,
+          "w": 1022,
+          "h": 238
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_22_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_22_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/23#0",
+      "parentKey": "Root>SiteFooter@250#0/22#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "SiteFooter",
+      "tpl": 23,
+      "attrs": {
+        "style": "margin: 0px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 80px; line-height: 1; letter-spacing: -0.02em; text-wrap: balance;"
+      },
+      "words": "Hungry? Of course you are.",
+      "allText": "Hungry? Of course you are.",
+      "srcLine": 32,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "Hungry? Of course you are.",
+      "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ ctaSize }};line-height:1;letter-spacing:-0.02em;text-wrap:balance\" data-dc-tpl=\"23\">Hungry? Of course you are.</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9420,
+          "w": 335,
+          "h": 80
+        },
+        "768": {
+          "x": 32,
+          "y": 8868.2,
+          "w": 526,
+          "h": 112
+        },
+        "1440": {
+          "x": 100,
+          "y": 7006.5,
+          "w": 1022,
+          "h": 160
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_23_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_23_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/24#0",
+      "parentKey": "Root>SiteFooter@250#0/22#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 24,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scpm",
+        "style": "height: 60px; padding: 0px 30px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(238, 128, 136); color: rgb(58, 42, 34); font-weight: 700; font-size: 17px; display: flex; align-items: center; gap: 10px; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box →",
+      "srcLine": 33,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#EE8088;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;gap:10px;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);box-shadow:6px 6",
+      "box": {
+        "375": {
+          "x": 84.9,
+          "y": 9518,
+          "w": 205.1,
+          "h": 60
+        },
+        "768": {
+          "x": 32,
+          "y": 8998.2,
+          "w": 205.1,
+          "h": 60
+        },
+        "1440": {
+          "x": 100,
+          "y": 7184.5,
+          "w": 205.1,
+          "h": 60
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_24_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_24_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/25#0",
+      "parentKey": "Root>SiteFooter@250#0/24#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "SiteFooter",
+      "tpl": 25,
+      "attrs": {
+        "aria-hidden": "true"
+      },
+      "words": "→",
+      "allText": "→",
+      "srcLine": 33,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "→",
+      "snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"25\">→</span>",
+      "box": {
+        "375": {
+          "x": 243.4,
+          "y": 9537,
+          "w": 14.7,
+          "h": 22
+        },
+        "768": {
+          "x": 190.5,
+          "y": 9017.2,
+          "w": 14.7,
+          "h": 22
+        },
+        "1440": {
+          "x": 258.5,
+          "y": 7203.5,
+          "w": 14.7,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_25_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/26#0",
+      "parentKey": "Root>SiteFooter@250#0/21#0",
+      "depth": 4,
+      "tag": "img",
+      "template": "SiteFooter",
+      "tpl": 26,
+      "attrs": {
+        "alt": "Mama's Munches",
+        "class": "scpo",
+        "style": "width: 190px; justify-self: end; transform: rotate(-8deg); transition: transform 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);",
+        "srcBasename": "logo-round.png"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 35,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/logo-round.png\" alt=\"Mama's Munches\" style=\"width:{{ logoW }};justify-self:{{ logoJust }};transform:rotate(-8deg);transition:transform .6s cubic-bezier(.3,1.6,.5,1)\" style-hover=\"transform:rotate(6deg) scale(1.05)\" data-dc-tpl=\"26\">",
+      "box": {
+        "375": {
+          "x": 108.9,
+          "y": 9596.9,
+          "w": 157.2,
+          "h": 151.4
+        },
+        "768": {
+          "x": 576.8,
+          "y": 8882.1,
+          "w": 168.4,
+          "h": 162.3
+        },
+        "1440": {
+          "x": 1138.3,
+          "y": 7022.8,
+          "w": 213.3,
+          "h": 205.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_26_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_26_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/27#0",
+      "parentKey": "Root>SiteFooter@250#0/20#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 27,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 48px; padding: 56px 0px 40px;"
+      },
+      "words": "",
+      "allText": "shop All Zookies Build your box Subscribe & save Gifts Taster Trio help FAQs Delivery Allergens Contact say hello Zainab",
+      "srcLine": 38,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ cols }};gap:{{ gap }};padding:{{ colsPad }}\" data-dc-tpl=\"27\"> <nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17p",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9777.2,
+          "w": 335,
+          "h": 426
+        },
+        "768": {
+          "x": 32,
+          "y": 9104.2,
+          "w": 704,
+          "h": 280
+        },
+        "1440": {
+          "x": 100,
+          "y": 7302.5,
+          "w": 1240,
+          "h": 300
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_27_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_27_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/28#0",
+      "parentKey": "Root>SiteFooter@250#0/27#0",
+      "depth": 4,
+      "tag": "nav",
+      "template": "SiteFooter",
+      "tpl": 28,
+      "attrs": {
+        "aria-label": "Shop",
+        "style": "display: flex; flex-direction: column; gap: 2px;"
+      },
+      "words": "",
+      "allText": "shop All Zookies Build your box Subscribe & save Gifts Taster Trio",
+      "srcLine": 39,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "nav",
+      "srcOwnText": "",
+      "snippet": "<nav aria-label=\"Shop\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"28\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div> <a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9813.2,
+          "w": 157.5,
+          "h": 204
+        },
+        "768": {
+          "x": 32,
+          "y": 9148.2,
+          "w": 193.9,
+          "h": 204
+        },
+        "1440": {
+          "x": 100,
+          "y": 7358.5,
+          "w": 346.7,
+          "h": 204
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_28_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_28_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/29#0",
+      "parentKey": "Root>SiteFooter@250#0/28#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 29,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 24px; color: rgb(142, 52, 68); margin-bottom: 4px;"
+      },
+      "words": "shop",
+      "allText": "shop",
+      "srcLine": 40,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "shop",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"29\">shop</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9813.2,
+          "w": 157.5,
+          "h": 30
+        },
+        "768": {
+          "x": 32,
+          "y": 9148.2,
+          "w": 193.9,
+          "h": 30
+        },
+        "1440": {
+          "x": 100,
+          "y": 7358.5,
+          "w": 346.7,
+          "h": 30
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_29_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_29_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/30#0",
+      "parentKey": "Root>SiteFooter@250#0/28#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 30,
+      "attrs": {
+        "href": "Shop.dc.html",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "All Zookies",
+      "allText": "All Zookies",
+      "srcLine": 41,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "All Zookies",
+      "snippet": "<a href=\"Shop.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"30\">All Zookies</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9849.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 32,
+          "y": 9184.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 100,
+          "y": 7394.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_30_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_30_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/31#0",
+      "parentKey": "Root>SiteFooter@250#0/28#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 31,
+      "attrs": {
+        "href": "Home.dc.html#build",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "Build your box",
+      "allText": "Build your box",
+      "srcLine": 42,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Build your box",
+      "snippet": "<a href=\"Home.dc.html#build\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"31\">Build your box</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9883.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 32,
+          "y": 9218.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 100,
+          "y": 7428.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_31_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_31_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/32#0",
+      "parentKey": "Root>SiteFooter@250#0/28#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 32,
+      "attrs": {
+        "href": "Product.dc.html?id=zookies&sub=1",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "Subscribe & save",
+      "allText": "Subscribe & save",
+      "srcLine": 43,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Subscribe & save",
+      "snippet": "<a href=\"Product.dc.html?id=zookies&amp;sub=1\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"32\">Subscribe &amp; save</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9917.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 32,
+          "y": 9252.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 100,
+          "y": 7462.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_32_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_32_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/33#0",
+      "parentKey": "Root>SiteFooter@250#0/28#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 33,
+      "attrs": {
+        "href": "Gifts.dc.html",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "Gifts",
+      "allText": "Gifts",
+      "srcLine": 44,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Gifts",
+      "snippet": "<a href=\"Gifts.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"33\">Gifts</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9951.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 32,
+          "y": 9286.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 100,
+          "y": 7496.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_33_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_33_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/34#0",
+      "parentKey": "Root>SiteFooter@250#0/28#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 34,
+      "attrs": {
+        "href": "Product.dc.html?id=trial",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "Taster Trio",
+      "allText": "Taster Trio",
+      "srcLine": 45,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Taster Trio",
+      "snippet": "<a href=\"Product.dc.html?id=trial\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"34\">Taster Trio</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 9985.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 32,
+          "y": 9320.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 100,
+          "y": 7530.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_34_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_34_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/35#0",
+      "parentKey": "Root>SiteFooter@250#0/27#0",
+      "depth": 4,
+      "tag": "nav",
+      "template": "SiteFooter",
+      "tpl": 35,
+      "attrs": {
+        "aria-label": "Help",
+        "style": "display: flex; flex-direction: column; gap: 2px;"
+      },
+      "words": "",
+      "allText": "help FAQs Delivery Allergens Contact",
+      "srcLine": 47,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "nav",
+      "srcOwnText": "",
+      "snippet": "<nav aria-label=\"Help\" style=\"display:flex;flex-direction:column;gap:2px\" data-dc-tpl=\"35\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div> <a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;te",
+      "box": {
+        "375": {
+          "x": 197.5,
+          "y": 9813.2,
+          "w": 157.5,
+          "h": 204
+        },
+        "768": {
+          "x": 257.9,
+          "y": 9148.2,
+          "w": 193.9,
+          "h": 204
+        },
+        "1440": {
+          "x": 494.7,
+          "y": 7358.5,
+          "w": 346.7,
+          "h": 204
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_35_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_35_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/36#0",
+      "parentKey": "Root>SiteFooter@250#0/35#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 36,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 24px; color: rgb(142, 52, 68); margin-bottom: 4px;"
+      },
+      "words": "help",
+      "allText": "help",
+      "srcLine": 48,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "help",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444;margin-bottom:4px\" data-dc-tpl=\"36\">help</div>",
+      "box": {
+        "375": {
+          "x": 197.5,
+          "y": 9813.2,
+          "w": 157.5,
+          "h": 30
+        },
+        "768": {
+          "x": 257.9,
+          "y": 9148.2,
+          "w": 193.9,
+          "h": 30
+        },
+        "1440": {
+          "x": 494.7,
+          "y": 7358.5,
+          "w": 346.7,
+          "h": 30
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_36_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_36_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/37#0",
+      "parentKey": "Root>SiteFooter@250#0/35#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 37,
+      "attrs": {
+        "href": "Help.dc.html",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "FAQs",
+      "allText": "FAQs",
+      "srcLine": 49,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "FAQs",
+      "snippet": "<a href=\"Help.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"37\">FAQs</a>",
+      "box": {
+        "375": {
+          "x": 197.5,
+          "y": 9849.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 257.9,
+          "y": 9184.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 494.7,
+          "y": 7394.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_37_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_37_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/38#0",
+      "parentKey": "Root>SiteFooter@250#0/35#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 38,
+      "attrs": {
+        "href": "Help.dc.html#delivery",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "Delivery",
+      "allText": "Delivery",
+      "srcLine": 50,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Delivery",
+      "snippet": "<a href=\"Help.dc.html#delivery\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"38\">Delivery</a>",
+      "box": {
+        "375": {
+          "x": 197.5,
+          "y": 9883.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 257.9,
+          "y": 9218.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 494.7,
+          "y": 7428.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_38_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_38_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/39#0",
+      "parentKey": "Root>SiteFooter@250#0/35#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 39,
+      "attrs": {
+        "href": "Help.dc.html#allergens",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "Allergens",
+      "allText": "Allergens",
+      "srcLine": 51,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Allergens",
+      "snippet": "<a href=\"Help.dc.html#allergens\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"39\">Allergens</a>",
+      "box": {
+        "375": {
+          "x": 197.5,
+          "y": 9917.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 257.9,
+          "y": 9252.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 494.7,
+          "y": 7462.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_39_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_39_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/40#0",
+      "parentKey": "Root>SiteFooter@250#0/35#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 40,
+      "attrs": {
+        "href": "Contact.dc.html",
+        "class": "scpp",
+        "style": "color: rgb(58, 42, 34); text-decoration: none; font-size: 17px; font-weight: 600; padding: 6px 0px; transition: transform 0.2s;"
+      },
+      "words": "Contact",
+      "allText": "Contact",
+      "srcLine": 52,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Contact",
+      "snippet": "<a href=\"Contact.dc.html\" style=\"color:#3A2A22;text-decoration:none;font-size:17px;font-weight:600;padding:6px 0;transition:transform .2s\" style-hover=\"transform:translateX(4px);color:#3A2A22;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-color:#FFFAF0\" data-dc-tpl=\"40\">Contact</a>",
+      "box": {
+        "375": {
+          "x": 197.5,
+          "y": 9951.2,
+          "w": 157.5,
+          "h": 32
+        },
+        "768": {
+          "x": 257.9,
+          "y": 9286.2,
+          "w": 193.9,
+          "h": 32
+        },
+        "1440": {
+          "x": 494.7,
+          "y": 7496.5,
+          "w": 346.7,
+          "h": 32
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_40_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_40_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/41#0",
+      "parentKey": "Root>SiteFooter@250#0/27#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 41,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 12px; grid-column: auto;"
+      },
+      "words": "",
+      "allText": "say hello Zainab@mamasmunches.com",
+      "srcLine": 54,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:12px;grid-column:{{ helloSpan }}\" data-dc-tpl=\"41\"> <div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div> <a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 10049.2,
+          "w": 335,
+          "h": 126
+        },
+        "768": {
+          "x": 483.9,
+          "y": 9148.2,
+          "w": 252.1,
+          "h": 204
+        },
+        "1440": {
+          "x": 889.3,
+          "y": 7358.5,
+          "w": 450.7,
+          "h": 204
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_41_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_41_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/42#0",
+      "parentKey": "Root>SiteFooter@250#0/41#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 42,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 24px; color: rgb(142, 52, 68);"
+      },
+      "words": "say hello",
+      "allText": "say hello",
+      "srcLine": 55,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "say hello",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:24px;color:#8E3444\" data-dc-tpl=\"42\">say hello</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 10049.2,
+          "w": 335,
+          "h": 30
+        },
+        "768": {
+          "x": 483.9,
+          "y": 9148.2,
+          "w": 252.1,
+          "h": 30
+        },
+        "1440": {
+          "x": 889.3,
+          "y": 7358.5,
+          "w": 450.7,
+          "h": 30
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_42_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_42_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/43#0",
+      "parentKey": "Root>SiteFooter@250#0/41#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 43,
+      "attrs": {
+        "href": "mailto:Zainab@mamasmunches.com",
+        "class": "scpq",
+        "style": "align-self: flex-start; color: rgb(58, 42, 34); font-size: 17px; font-weight: 700; text-decoration: underline 2px rgb(232, 106, 117); text-underline-offset: 4px; word-break: break-all; padding: 2px 6px; margin-left: -6px; border-radius: 8px; transition: background 0.2s, text-decoration-color 0.2s;"
+      },
+      "words": "Zainab@mamasmunches.com",
+      "allText": "Zainab@mamasmunches.com",
+      "srcLine": 56,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Zainab@mamasmunches.com",
+      "snippet": "<a href=\"mailto:Zainab@mamasmunches.com\" style=\"align-self:flex-start;color:#3A2A22;font-size:17px;font-weight:700;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:2px;text-decoration-color:#E86A75;word-break:break-all;padding:2px 6px;margin-left:-6px;border-radius:8px;transition:background .2s, text-decoration-color .2s\" style-hover=\"background:#FFFAF0;text-decoration",
+      "box": {
+        "375": {
+          "x": 14,
+          "y": 10091.2,
+          "w": 261.1,
+          "h": 24
+        },
+        "768": {
+          "x": 477.9,
+          "y": 9190.2,
+          "w": 258.1,
+          "h": 44
+        },
+        "1440": {
+          "x": 883.3,
+          "y": 7400.5,
+          "w": 261.1,
+          "h": 24
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_43_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/44#0",
+      "parentKey": "Root>SiteFooter@250#0/41#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 44,
+      "attrs": {
+        "style": "display: flex; gap: 10px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 57,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;gap:10px\" data-dc-tpl=\"44\"> <a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;tra",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 10127.2,
+          "w": 335,
+          "h": 48
+        },
+        "768": {
+          "x": 483.9,
+          "y": 9246.2,
+          "w": 252.1,
+          "h": 48
+        },
+        "1440": {
+          "x": 889.3,
+          "y": 7436.5,
+          "w": 450.7,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_44_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_44_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/45#0",
+      "parentKey": "Root>SiteFooter@250#0/44#0",
+      "depth": 6,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 45,
+      "attrs": {
+        "href": "https://www.instagram.com/mamasmunches/",
+        "aria-label": "Instagram",
+        "class": "scpr",
+        "style": "width: 48px; height: 48px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: radial-gradient(circle at 30% 107%, rgb(253, 244, 151) 0%, rgb(253, 89, 73) 45%, rgb(214, 36, 159) 60%, rgb(40, 90, 235) 90%); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 58,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://www.instagram.com/mamasmunches/\" aria-label=\"Instagram\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%);color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 10127.2,
+          "w": 48,
+          "h": 48
+        },
+        "768": {
+          "x": 483.9,
+          "y": 9246.2,
+          "w": 48,
+          "h": 48
+        },
+        "1440": {
+          "x": 889.3,
+          "y": 7436.5,
+          "w": 48,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_45_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/46#0",
+      "parentKey": "Root>SiteFooter@250#0/45#0",
+      "depth": 7,
+      "tag": "svg",
+      "template": "SiteFooter",
+      "tpl": 46,
+      "attrs": {
+        "viewBox": "0 0 24 24",
+        "style": "fill: none; stroke: currentcolor; stroke-width: 2;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 58,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "svg",
+      "srcOwnText": "",
+      "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2\" data-dc-tpl=\"46\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"47\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"48\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"49\"></circle></svg>",
+      "box": {
+        "375": {
+          "x": 34,
+          "y": 10141.2,
+          "w": 20,
+          "h": 20
+        },
+        "768": {
+          "x": 497.9,
+          "y": 9260.2,
+          "w": 20,
+          "h": 20
+        },
+        "1440": {
+          "x": 903.3,
+          "y": 7450.5,
+          "w": 20,
+          "h": 20
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_46_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/47#0",
+      "parentKey": "Root>SiteFooter@250#0/46#0",
+      "depth": 8,
+      "tag": "rect",
+      "template": "SiteFooter",
+      "tpl": 47,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 58,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "rect",
+      "srcOwnText": "",
+      "snippet": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" data-dc-tpl=\"47\"></rect>",
+      "box": {
+        "375": {
+          "x": 36.5,
+          "y": 10143.7,
+          "w": 15,
+          "h": 15
+        },
+        "768": {
+          "x": 500.4,
+          "y": 9262.7,
+          "w": 15,
+          "h": 15
+        },
+        "1440": {
+          "x": 905.8,
+          "y": 7453,
+          "w": 15,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_47_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/48#0",
+      "parentKey": "Root>SiteFooter@250#0/46#0",
+      "depth": 8,
+      "tag": "circle",
+      "template": "SiteFooter",
+      "tpl": 48,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 58,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "circle",
+      "srcOwnText": "",
+      "snippet": "<circle cx=\"12\" cy=\"12\" r=\"4\" data-dc-tpl=\"48\"></circle>",
+      "box": {
+        "375": {
+          "x": 40.7,
+          "y": 10147.9,
+          "w": 6.7,
+          "h": 6.7
+        },
+        "768": {
+          "x": 504.5,
+          "y": 9266.9,
+          "w": 6.7,
+          "h": 6.7
+        },
+        "1440": {
+          "x": 910,
+          "y": 7457.2,
+          "w": 6.7,
+          "h": 6.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_48_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/49#0",
+      "parentKey": "Root>SiteFooter@250#0/46#0",
+      "depth": 8,
+      "tag": "circle",
+      "template": "SiteFooter",
+      "tpl": 49,
+      "attrs": {
+        "style": "fill: currentcolor; stroke: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 58,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "circle",
+      "srcOwnText": "",
+      "snippet": "<circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"49\"></circle>",
+      "box": {
+        "375": {
+          "x": 47.6,
+          "y": 10145.6,
+          "w": 2,
+          "h": 2
+        },
+        "768": {
+          "x": 511.5,
+          "y": 9264.6,
+          "w": 2,
+          "h": 2
+        },
+        "1440": {
+          "x": 916.9,
+          "y": 7454.9,
+          "w": 2,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_49_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/50#0",
+      "parentKey": "Root>SiteFooter@250#0/44#0",
+      "depth": 6,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 50,
+      "attrs": {
+        "href": "Contact.dc.html",
+        "aria-label": "WhatsApp",
+        "class": "scpr",
+        "style": "width: 48px; height: 48px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(37, 211, 102); color: rgb(255, 255, 255); display: flex; align-items: center; justify-content: center; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 59,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"Contact.dc.html\" aria-label=\"WhatsApp\" style=\"width:48px;height:48px;border-radius:999px;border:2px solid #3A2A22;background:#25D366;color:#FFFFFF;display:flex;align-items:center;justify-content:center;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px,-2px) rotate(-8deg);box-shadow:5px 5px 0 #3A2A22\" data-dc-tpl=\"5",
+      "box": {
+        "375": {
+          "x": 78,
+          "y": 10127.2,
+          "w": 48,
+          "h": 48
+        },
+        "768": {
+          "x": 541.9,
+          "y": 9246.2,
+          "w": 48,
+          "h": 48
+        },
+        "1440": {
+          "x": 947.3,
+          "y": 7436.5,
+          "w": 48,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_50_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/51#0",
+      "parentKey": "Root>SiteFooter@250#0/50#0",
+      "depth": 7,
+      "tag": "svg",
+      "template": "SiteFooter",
+      "tpl": 51,
+      "attrs": {
+        "viewBox": "0 0 24 24",
+        "style": "fill: none; stroke: currentcolor; stroke-width: 2; stroke-linejoin: round;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 59,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "svg",
+      "srcOwnText": "",
+      "snippet": "<svg width=\"20\" height=\"20\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round\" data-dc-tpl=\"51\"><path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"52\"></path><path d=\"M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"53\"></path></svg>",
+      "box": {
+        "375": {
+          "x": 92,
+          "y": 10141.2,
+          "w": 20,
+          "h": 20
+        },
+        "768": {
+          "x": 555.9,
+          "y": 9260.2,
+          "w": 20,
+          "h": 20
+        },
+        "1440": {
+          "x": 961.3,
+          "y": 7450.5,
+          "w": 20,
+          "h": 20
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_51_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/52#0",
+      "parentKey": "Root>SiteFooter@250#0/51#0",
+      "depth": 8,
+      "tag": "path",
+      "template": "SiteFooter",
+      "tpl": 52,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 59,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M4 20l1.3-4A8 8 0 1 1 8.5 19Z\" data-dc-tpl=\"52\"></path>",
+      "box": {
+        "375": {
+          "x": 95.3,
+          "y": 10144.4,
+          "w": 13.5,
+          "h": 13.4
+        },
+        "768": {
+          "x": 559.2,
+          "y": 9263.4,
+          "w": 13.5,
+          "h": 13.4
+        },
+        "1440": {
+          "x": 964.7,
+          "y": 7453.8,
+          "w": 13.5,
+          "h": 13.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_52_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/53#0",
+      "parentKey": "Root>SiteFooter@250#0/51#0",
+      "depth": 8,
+      "tag": "path",
+      "template": "SiteFooter",
+      "tpl": 53,
+      "attrs": {
+        "style": "fill: currentcolor; stroke: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 59,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "path",
+      "srcOwnText": "",
+      "snippet": "<path d=\"M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-2-2l.8-1-1-2Z\" style=\"fill:currentColor;stroke:none\" data-dc-tpl=\"53\"></path>",
+      "box": {
+        "375": {
+          "x": 99.5,
+          "y": 10148.1,
+          "w": 5.4,
+          "h": 5.6
+        },
+        "768": {
+          "x": 563.4,
+          "y": 9267.1,
+          "w": 5.4,
+          "h": 5.6
+        },
+        "1440": {
+          "x": 968.8,
+          "y": 7457.4,
+          "w": 5.4,
+          "h": 5.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_53_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/54#0",
+      "parentKey": "Root>SiteFooter@250#0/20#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 54,
+      "attrs": {
+        "style": "height: 8px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 64,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:8px\" data-dc-tpl=\"54\"></div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 10203.2,
+          "w": 335,
+          "h": 8
+        },
+        "768": {
+          "x": 32,
+          "y": 9384.2,
+          "w": 704,
+          "h": 8
+        },
+        "1440": {
+          "x": 100,
+          "y": 7602.5,
+          "w": 1240,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_54_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_54_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/55#0",
+      "parentKey": "Root>SiteFooter@250#0/20#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "SiteFooter",
+      "tpl": 55,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 24px; font-size: 14px; padding-top: 18px; border-top: 2px dashed rgba(58, 42, 34, 0.28); text-align: center;"
+      },
+      "words": "",
+      "allText": "© 2026 Mama’s Munches · Registered food business PrivacyTerms Website by Small Giants Studio",
+      "srcLine": 65,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ bottomCols }};align-items:center;gap:10px 24px;font-size:14px;padding-top:18px;border-top:2px dashed rgba(58,42,34,.28);text-align:center\" data-dc-tpl=\"55\"> <span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span> <span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 10211.2,
+          "w": 335,
+          "h": 91
+        },
+        "768": {
+          "x": 32,
+          "y": 9392.2,
+          "w": 704,
+          "h": 91
+        },
+        "1440": {
+          "x": 100,
+          "y": 7610.5,
+          "w": 1240,
+          "h": 37
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_55_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_55_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/56#0",
+      "parentKey": "Root>SiteFooter@250#0/55#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "SiteFooter",
+      "tpl": 56,
+      "attrs": {
+        "style": "justify-self: start;"
+      },
+      "words": "© 2026 Mama’s Munches · Registered food business",
+      "allText": "© 2026 Mama’s Munches · Registered food business",
+      "srcLine": 66,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "© 2026 Mama’s Munches · Registered food business",
+      "snippet": "<span style=\"justify-self:{{ leftJust }}\" data-dc-tpl=\"56\">© 2026 Mama’s Munches · Registered food business</span>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 10231.2,
+          "w": 332.9,
+          "h": 17
+        },
+        "768": {
+          "x": 217.5,
+          "y": 9412.2,
+          "w": 332.9,
+          "h": 17
+        },
+        "1440": {
+          "x": 100,
+          "y": 7630.5,
+          "w": 332.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_SiteFooter_250_0_56_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/57#0",
+      "parentKey": "Root>SiteFooter@250#0/55#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "SiteFooter",
+      "tpl": 57,
+      "attrs": {
+        "style": "display: flex; justify-content: center; gap: 18px;"
+      },
+      "words": "",
+      "allText": "PrivacyTerms",
+      "srcLine": 67,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:flex;justify-content:center;gap:18px\" data-dc-tpl=\"57\"><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a><a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 10258.2,
+          "w": 335,
+          "h": 17
+        },
+        "768": {
+          "x": 32,
+          "y": 9439.2,
+          "w": 704,
+          "h": 17
+        },
+        "1440": {
+          "x": 668.9,
+          "y": 7630.5,
+          "w": 102.1,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_57_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_57_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/58#0",
+      "parentKey": "Root>SiteFooter@250#0/57#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 58,
+      "attrs": {
+        "href": "Help.dc.html#legal",
+        "style": "color: rgb(58, 42, 34);"
+      },
+      "words": "Privacy",
+      "allText": "Privacy",
+      "srcLine": 67,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Privacy",
+      "snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a>",
+      "box": {
+        "375": {
+          "x": 136.4,
+          "y": 10258.2,
+          "w": 45.5,
+          "h": 17
+        },
+        "768": {
+          "x": 332.9,
+          "y": 9439.2,
+          "w": 45.5,
+          "h": 17
+        },
+        "1440": {
+          "x": 668.9,
+          "y": 7630.5,
+          "w": 45.5,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_58_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_58_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/59#0",
+      "parentKey": "Root>SiteFooter@250#0/57#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 59,
+      "attrs": {
+        "href": "Help.dc.html#legal",
+        "style": "color: rgb(58, 42, 34);"
+      },
+      "words": "Terms",
+      "allText": "Terms",
+      "srcLine": 67,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Terms",
+      "snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a>",
+      "box": {
+        "375": {
+          "x": 199.9,
+          "y": 10258.2,
+          "w": 38.7,
+          "h": 17
+        },
+        "768": {
+          "x": 396.4,
+          "y": 9439.2,
+          "w": 38.7,
+          "h": 17
+        },
+        "1440": {
+          "x": 732.4,
+          "y": 7630.5,
+          "w": 38.7,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_59_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_59_0@1440.png"
+      }
+    },
+    {
+      "key": "Root>SiteFooter@250#0/60#0",
+      "parentKey": "Root>SiteFooter@250#0/55#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "SiteFooter",
+      "tpl": 60,
+      "attrs": {
+        "href": "https://smallgiantsstudio.com",
+        "class": "scps",
+        "style": "justify-self: end; color: rgb(58, 42, 34); font-weight: 700; text-decoration: none; white-space: nowrap;"
+      },
+      "words": "Website by Small Giants Studio",
+      "allText": "Website by Small Giants Studio",
+      "srcLine": 68,
+      "membership": [
+        {
+          "kind": "inside-import",
+          "template": "SiteFooter"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Website by Small Giants Studio",
+      "snippet": "<a href=\"https://smallgiantsstudio.com\" style=\"justify-self:{{ rightJust }};color:#3A2A22;font-weight:700;text-decoration:none;white-space:nowrap\" style-hover=\"text-decoration:underline\" data-dc-tpl=\"60\">Website by Small Giants Studio</a>",
+      "box": {
+        "375": {
+          "x": 82.2,
+          "y": 10285.2,
+          "w": 210.6,
+          "h": 17
+        },
+        "768": {
+          "x": 278.7,
+          "y": 9466.2,
+          "w": 210.6,
+          "h": 17
+        },
+        "1440": {
+          "x": 1129.4,
+          "y": 7630.5,
+          "w": 210.6,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_SiteFooter_250_0_60_0@375.png",
+        "1440": "shots/Root_SiteFooter_250_0_60_0@1440.png"
+      }
+    }
+  ]
+}

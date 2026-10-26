@@ -1,0 +1,1118 @@
+{
+	"generated": "2026-10-26T17:39:43.589Z",
+	"inventory": "2026-10-26T17:39:43.292Z",
+	"source": "http://127.0.0.1:63654/",
+	"surface": "site-header-announcement-strip-bar",
+	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-02",
+			"kind": "drawer",
+			"name": "Nav drawer (left)",
+			"openedBy": "Menu button (openNav) → setState({ nav: true })",
+			"roots": [
+				"SiteHeader/56"
+			]
+		},
+		{
+			"id": "S-03",
+			"kind": "backdrop",
+			"name": "Drawer scrim",
+			"openedBy": "Either drawer opening",
+			"roots": [
+				"SiteHeader/55"
+			]
+		},
+		{
+			"id": "S-04",
+			"kind": "drawer",
+			"name": "Basket drawer (right)",
+			"openedBy": "Basket button (openBasket), or any page calling MM.openBasket() (mm:open-basket event) after Add to basket",
+			"roots": [
+				"SiteHeader/128"
+			]
+		}
+	],
+	"stripRoots": [
+		"Root>SiteHeader@7#0/5#0"
+	],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 45,
+		"parts": 12,
+		"rows": 33,
+		"skeletonNodes": 17,
+		"expandedNodes": 17,
+		"low": 8,
+		"removed": 16,
+		"unresolved": 0,
+		"byRule": {
+			"headerSlots": 1,
+			"widthWrapper": 1,
+			"typedDivider": 2,
+			"drawerOpener": 8,
+			"navigation": 6
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root>SiteHeader@7#0/13#0",
+			"tag": "header",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/site-header",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.58,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/site-header",
+					"score": 1.4,
+					"share": 0.583,
+					"evidence": [
+						"block_capabilities: sgs/site-header lists \"header\" (the draft root tag)",
+						"block_composition: sgs/site-header is a section-root accepting [\"sgs/site-header-row\"]",
+						"the root of the surface",
+						"the root's children fit what it accepts (sgs/site-header-row)"
+					]
+				},
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 0.417,
+					"evidence": [
+						"block_capabilities: sgs/hero lists \"header\" (the draft root tag)",
+						"block_composition: sgs/hero is a section-root accepting [\"sgs/media\"]",
+						"the root of the surface"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_13_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_13_0@1440.png"
+			},
+			"snippet": "<header style=\"background:#FBF3DC;border-bottom:1px solid #EADBC0\" data-dc-tpl=\"13\"> <sc-if value=\"{{ notD }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"14\"> <div style=\"max-width:1240px;margin:0 auto;padding:{{ barPad }};height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"15\"> <div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-c",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root>SiteHeader@7#0/5#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-header-row",
+			"action": null,
+			"reason": "a strip above the header's main bar is its top row",
+			"source": "rule headerSlots",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "headerSlots",
+			"candidates": [
+				{
+					"block": "sgs/site-header-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule headerSlots: a header is always three rows: the main bar is the middle row and a strip above or below it (a top bar, an announcement or utility strip) is the top or bottom row, whether the draft draws it inside the header or beside it (Bean, 2026-10-22)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_5_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_5_0@1440.png"
+			},
+			"snippet": "<div style=\"height:32px;background:#F9CF6E;display:flex;align-items:center;padding:0 12px\" data-dc-tpl=\"5\"> <div style=\"width:100%;max-width:1240px;margin:0 auto;height:24px;border-top:1.5px dashed rgba(58,42,34,.3);border-bottom:1.5px dashed rgba(58,42,34,.3);display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden\" data-dc-",
+			"attributes": {
+				"layout": "flex",
+				"rowSlot": "top"
+			},
+			"slots": {
+				".sgs-container__inner": {
+					"tpl": "Root>SiteHeader@7#0/6#0"
+				}
+			},
+			"strip": "Root>SiteHeader@7#0/5#0"
+		},
+		{
+			"order": 2,
+			"key": "Root>SiteHeader@7#0/6#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
+			"source": "rule widthWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "widthWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_6_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_6_0@1440.png"
+			},
+			"snippet": "<div style=\"width:100%;max-width:1240px;margin:0 auto;height:24px;border-top:1.5px dashed rgba(58,42,34,.3);border-bottom:1.5px dashed rgba(58,42,34,.3);display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden\" data-dc-tpl=\"6\"> <span data-dc-tpl=\"7\">✦ {{ annBake }}</span> <sc-if value=\"{{ isD }}\" hint-placeholder-val=\"{{ fals",
+			"attributes": {},
+			"strip": "Root>SiteHeader@7#0/5#0"
+		},
+		{
+			"order": 3,
+			"key": "Root>SiteHeader@7#0/7#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "✦ Baked fresh when you order",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_7_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_7_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"7\">✦ {{ annBake }}</span>",
+			"attributes": {
+				"text": "✦ Baked fresh when you order"
+			},
+			"strip": "Root>SiteHeader@7#0/5#0"
+		},
+		{
+			"order": 4,
+			"key": "Root>SiteHeader@7#0/9#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "·",
+			"block": null,
+			"action": "remove",
+			"reason": "a typed divider between items is the row's separators setting, not a block",
+			"source": "rule typedDivider",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "typedDivider",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_9_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"9\">·</span>",
+			"attributes": {},
+			"strip": "Root>SiteHeader@7#0/5#0"
+		},
+		{
+			"order": 5,
+			"key": "Root>SiteHeader@7#0/10#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "With you in 3–5 days",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_10_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"10\">With you in 3–5 days</span>",
+			"attributes": {
+				"text": "With you in 3–5 days"
+			},
+			"strip": "Root>SiteHeader@7#0/5#0"
+		},
+		{
+			"order": 6,
+			"key": "Root>SiteHeader@7#0/11#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "·",
+			"block": null,
+			"action": "remove",
+			"reason": "a typed divider between items is the row's separators setting, not a block",
+			"source": "rule typedDivider",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "typedDivider",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_11_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_11_0@1440.png"
+			},
+			"snippet": "<span aria-hidden=\"true\" data-dc-tpl=\"11\">·</span>",
+			"attributes": {},
+			"strip": "Root>SiteHeader@7#0/5#0"
+		},
+		{
+			"order": 7,
+			"key": "Root>SiteHeader@7#0/12#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Free UK delivery over £35",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_12_0@375.png",
+				"1440": "shots/Root_SiteHeader_7_0_12_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"12\">{{ annFree }}</span>",
+			"attributes": {
+				"text": "Free UK delivery over £35"
+			},
+			"strip": "Root>SiteHeader@7#0/5#0"
+		},
+		{
+			"order": 8,
+			"key": "Root>SiteHeader@7#0/15#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-header-row",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/site-header-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/site-header (section-root) accepts [\"sgs/site-header-row\"]; sgs/site-header-row is a content-block",
+						"sgs/site-header accepts sgs/site-header-row as its only child",
+						"element holds 3 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_15_0@375.png"
+			},
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto;padding:{{ barPad }};height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"15\"> <div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:",
+			"attributes": {
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root>SiteHeader@7#0/16#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_16_0@375.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center\" data-dc-tpl=\"16\"> <button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"17\"> <span style=\"display:block;w",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root>SiteHeader@7#0/17#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": "rule drawerOpener",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_17_0@375.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ openNav }}\" aria-label=\"Open menu\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"17\"> <span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root>SiteHeader@7#0/18#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_18_0@375.png"
+			},
+			"snippet": "<span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data-dc-tpl=\"18\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root>SiteHeader@7#0/19#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_19_0@375.png"
+			},
+			"snippet": "<span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data-dc-tpl=\"19\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root>SiteHeader@7#0/20#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_20_0@375.png"
+			},
+			"snippet": "<span style=\"display:block;width:16px;height:2px;background:#3A2A22;border-radius:2px;margin-right:6px\" data-dc-tpl=\"20\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root>SiteHeader@7#0/21#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_21_0@375.png"
+			},
+			"snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" style=\"display:block\" data-dc-tpl=\"21\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\"></a>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root>SiteHeader@7#0/22#0",
+			"tag": "img",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.66,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.85,
+					"share": 0.773,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
+						"logo image: logo-horizontal.png / alt \"Mama's Munches\" (an image whose file name, alt text or class says it is the brand mark)"
+					]
+				},
+				{
+					"block": "sgs/media",
+					"score": 0.25,
+					"share": 0.227,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_22_0@375.png"
+			},
+			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\">",
+			"attributes": {
+				"logoId": 91
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root>SiteHeader@7#0/23#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_23_0@375.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:flex-end\" data-dc-tpl=\"23\"> <a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"24\"><svg width=\"24\" height=\"24\" sc-camel-view-box",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root>SiteHeader@7#0/24#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.5,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.5,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg"
+					]
+				}
+			],
+			"parts": [
+				"Root>SiteHeader@7#0/25#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_24_0@375.png"
+			},
+			"snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"24\"><svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;st",
+			"attributes": {
+				"linkUrl": "SignIn.dc.html"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root>SiteHeader@7#0/28#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": "rule drawerOpener",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [
+				"Root>SiteHeader@7#0/29#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_SiteHeader_7_0_28_0@375.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" aria-label=\"Open basket\" style=\"position:relative;width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#3A2A22;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"28\"> <svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:cu",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root>SiteHeader@7#0/35#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/site-header-row",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/site-header-row",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/site-header (section-root) accepts [\"sgs/site-header-row\"]; sgs/site-header-row is a content-block",
+						"sgs/site-header accepts sgs/site-header-row as its only child",
+						"element holds 3 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_35_0@1440.png"
+			},
+			"snippet": "<div style=\"max-width:1240px;margin:0 auto;padding:0 40px;height:84px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px\" data-dc-tpl=\"35\"> <a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"36\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\"></a> <nav aria-label=\"Main\" style=\"displ",
+			"attributes": {
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root>SiteHeader@7#0/36#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_36_0@1440.png"
+			},
+			"snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"36\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\"></a>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root>SiteHeader@7#0/37#0",
+			"tag": "img",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/responsive-logo",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.66,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.85,
+					"share": 0.773,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
+						"logo image: logo-horizontal.png / alt \"Mama's Munches\" (an image whose file name, alt text or class says it is the brand mark)"
+					]
+				},
+				{
+					"block": "sgs/media",
+					"score": 0.25,
+					"share": 0.227,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_37_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:60px;width:auto;display:block\" data-dc-tpl=\"37\">",
+			"attributes": {
+				"logoId": 91
+			},
+			"carried": {
+				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root>SiteHeader@7#0/38#0",
+			"tag": "nav",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/nav-bar-menu",
+			"action": null,
+			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu",
+			"source": "rule navigation",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"candidates": [
+				{
+					"block": "sgs/nav-bar-menu",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_38_0@1440.png"
+			},
+			"snippet": "<nav aria-label=\"Main\" style=\"display:flex;justify-content:center;gap:2px\" data-dc-tpl=\"38\"> <a href=\"Shop.dc.html\" aria-current=\"{{ cur.shop }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.shop }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"39\">Shop</a> <a href=\"Gifts.dc.html\" aria-current=\"{{ cur.gifts }}\" st",
+			"attributes": {
+				"ref": 30
+			},
+			"carried": {
+				"ref": "menu-map.json: the header menu"
+			},
+			"slots": {
+				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+					"tpl": "Root>SiteHeader@7#0/39#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
+					"tpl": "Root>SiteHeader@7#0/49#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
+					"tpl": "Root>SiteHeader@7#0/53#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
+					"tpl": "Root>SiteHeader@7#0/54#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": {
+					"tpl": "Root>SiteHeader@7#0/20#0"
+				}
+			},
+			"slotNotes": [
+				"no draft child is rendered by a \"current\" sc-if, so no current child slot",
+				"no draft child holds a glyph element, so no glyph slot",
+				"0 width thresholds show this navigation, so no collapse point",
+				"sgs/nav-bar-menu stands in Root>SiteHeader@7#0/16#0 where its Root>SiteHeader@7#0/17#0 part is, beside the wrapper's other content",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon",
+				"sgs/nav-bar-menu stays beside Root>SiteHeader@7#0/23#0: Root>SiteHeader@7#0/23#0 is not inside the node Root>SiteHeader@7#0/38#0 stands in",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1): the draft has no element for .sgs-nav-bar-menu__burger-icon",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2): the draft has no element for .sgs-nav-bar-menu__burger-icon",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3): the draft has no element for .sgs-nav-bar-menu__burger-icon",
+				"sgs/nav-bar-menu stays beside Root>SiteHeader@7#0/44#0: the elements holding Root>SiteHeader@7#0/49#0 render at Root>SiteHeader@7#0/38#0's widths",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3): the draft has no element for .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+			],
+			"placedIn": "Root>SiteHeader@7#0/16#0"
+		},
+		{
+			"order": 23,
+			"key": "Root>SiteHeader@7#0/39#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Shop",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_39_0@1440.png"
+			},
+			"snippet": "<a href=\"Shop.dc.html\" aria-current=\"{{ cur.shop }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.shop }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"39\">Shop</a>",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root>SiteHeader@7#0/40#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Gifts",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_40_0@1440.png"
+			},
+			"snippet": "<a href=\"Gifts.dc.html\" aria-current=\"{{ cur.gifts }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.gifts }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"40\">Gifts</a>",
+			"attributes": {}
+		},
+		{
+			"order": 25,
+			"key": "Root>SiteHeader@7#0/41#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Subscribe & save",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_41_0@1440.png"
+			},
+			"snippet": "<a href=\"Product.dc.html?id=zookies&amp;sub=1\" aria-current=\"{{ cur.sub }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.sub }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"41\">Subscribe &amp; save</a>",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root>SiteHeader@7#0/42#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Help",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_42_0@1440.png"
+			},
+			"snippet": "<a href=\"Help.dc.html\" aria-current=\"{{ cur.help }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.help }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"42\">Help</a>",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root>SiteHeader@7#0/43#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Contact",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_43_0@1440.png"
+			},
+			"snippet": "<a href=\"Contact.dc.html\" aria-current=\"{{ cur.contact }}\" style=\"padding:12px 16px;border-radius:999px;font-size:16px;font-weight:700;color:#3A2A22;text-decoration:none;background:{{ act.contact }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"43\">Contact</a>",
+			"attributes": {}
+		},
+		{
+			"order": 28,
+			"key": "Root>SiteHeader@7#0/44#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_44_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:6px\" data-dc-tpl=\"44\"> <a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"45\"><svg width=\"24\" height=\"24\" sc-camel-view-b",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root>SiteHeader@7#0/45#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.5,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.5,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg"
+					]
+				}
+			],
+			"parts": [
+				"Root>SiteHeader@7#0/46#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_45_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:#3A2A22;background:{{ act.account }}\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"45\"><svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:1.8;st",
+			"attributes": {
+				"linkUrl": "SignIn.dc.html"
+			},
+			"slots": {
+				".sgs-icon__shape > .sgs-icon__glyph > svg": {
+					"tpl": "Root>SiteHeader@7#0/46#0"
+				}
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root>SiteHeader@7#0/49#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": "rule drawerOpener",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [
+				"Root>SiteHeader@7#0/50#0"
+			],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_49_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" style=\"height:48px;padding:0 18px 0 14px;border:2px solid #3A2A22;background:#FFFAF0;border-radius:999px;display:flex;align-items:center;gap:8px;cursor:pointer;color:#3A2A22;font-size:15px;font-weight:700;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);",
+			"attributes": {}
+		},
+		{
+			"order": 31,
+			"key": "Root>SiteHeader@7#0/53#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Basket",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_53_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"53\">Basket</span>",
+			"attributes": {}
+		},
+		{
+			"order": 32,
+			"key": "Root>SiteHeader@7#0/54#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "0",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "drawerOpener",
+			"into": "Root>SiteHeader@7#0/38#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_SiteHeader_7_0_54_0@1440.png"
+			},
+			"snippet": "<span style=\"min-width:22px;height:22px;border-radius:999px;background:#EE8088;color:#3A2A22;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0 6px\" data-dc-tpl=\"54\">{{ count }}</span>",
+			"attributes": {}
+		}
+	]
+}

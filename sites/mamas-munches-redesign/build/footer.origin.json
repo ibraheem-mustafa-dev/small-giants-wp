@@ -1,0 +1,497 @@
+{
+  "cr-ref-footer-0": {
+    "tpl": "Root>SiteFooter@250#0/2#0",
+    "fingerprint": {
+      "tag": "footer",
+      "cls": "",
+      "styleHash": "e5c2f6e2",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 3
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-3": {
+    "tpl": "Root>SiteFooter@250#0/5#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e16c0349",
+      "parentTags": [
+        "footer",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 6
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-4": {
+    "tpl": "Root>SiteFooter@250#0/6#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "footer",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 7
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-5": {
+    "tpl": "Root>SiteFooter@250#0/7#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "9448f64e",
+      "parentTags": [
+        "footer",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "32d0fb0c",
+      "line": 8
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-6": {
+    "tpl": "Root>SiteFooter@250#0/8#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "f5228848",
+      "parentTags": [
+        "footer",
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "d14148fd",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-7": {
+    "tpl": "Root>SiteFooter@250#0/9#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpm",
+      "styleHash": "2c4a97cb",
+      "parentTags": [
+        "footer",
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "a9296ddf",
+      "line": 11
+    },
+    "slots": {
+      ".sgs-button__icon > svg": "Root>SiteFooter@250#0/10#0"
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-8": {
+    "tpl": "Root>SiteFooter@250#0/14#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "546172e2",
+      "parentTags": [
+        "footer",
+        "section",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 16
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-9": {
+    "tpl": "Root>SiteFooter@250#0/18#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c62cf530",
+      "parentTags": [
+        "footer"
+      ],
+      "textHash": "d3a12005",
+      "line": 26
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-10": {
+    "tpl": "Root>SiteFooter@250#0/21#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "64dfa69",
+      "parentTags": [
+        "footer",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 30
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-11": {
+    "tpl": "Root>SiteFooter@250#0/22#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "90c7514d",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 31
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-12": {
+    "tpl": "Root>SiteFooter@250#0/23#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "12343f85",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "aa74720a",
+      "line": 32
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-13": {
+    "tpl": "Root>SiteFooter@250#0/24#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpm",
+      "styleHash": "969f086d",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7a4fe9f7",
+      "line": 33
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-14": {
+    "tpl": "Root>SiteFooter@250#0/26#0",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "scpo",
+      "styleHash": "a7e1ab3f",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 35
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-15": {
+    "tpl": "Root>SiteFooter@250#0/27#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "a407114e",
+      "parentTags": [
+        "footer",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 38
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-16": {
+    "tpl": "Root>SiteFooter@250#0/28#0",
+    "fingerprint": {
+      "tag": "nav",
+      "cls": "",
+      "styleHash": "99bb8b6c",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 39
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-17": {
+    "tpl": "Root>SiteFooter@250#0/29#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7cc84a08",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "nav"
+      ],
+      "textHash": "7c79aa81",
+      "line": 40
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-18": {
+    "tpl": "Root>SiteFooter@250#0/30#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpp",
+      "styleHash": "330a228c",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "nav"
+      ],
+      "textHash": "c63e4e2a",
+      "line": 41
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-19": {
+    "tpl": "Root>SiteFooter@250#0/35#0",
+    "fingerprint": {
+      "tag": "nav",
+      "cls": "",
+      "styleHash": "99bb8b6c",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 47
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-20": {
+    "tpl": "Root>SiteFooter@250#0/36#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7cc84a08",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "nav"
+      ],
+      "textHash": "7c715c94",
+      "line": 48
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-21": {
+    "tpl": "Root>SiteFooter@250#0/37#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpp",
+      "styleHash": "330a228c",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "nav"
+      ],
+      "textHash": "7c7df400",
+      "line": 49
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-22": {
+    "tpl": "Root>SiteFooter@250#0/41#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b488f10",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 54
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-23": {
+    "tpl": "Root>SiteFooter@250#0/42#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "87863ea9",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "2a70174c",
+      "line": 55
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-24": {
+    "tpl": "Root>SiteFooter@250#0/43#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpq",
+      "styleHash": "4bcbd69f",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "40b3970d",
+      "line": 56
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-28": {
+    "tpl": "Root>SiteFooter@250#0/55#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "56d4c2a3",
+      "parentTags": [
+        "footer",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 65
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-29": {
+    "tpl": "Root>SiteFooter@250#0/56#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "b694059b",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "da571ed0",
+      "line": 66
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-30": {
+    "tpl": "Root>SiteFooter@250#0/57#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "e1faa8bf",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 67
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-31": {
+    "tpl": "Root>SiteFooter@250#0/58#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "ef1f56a3",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "span"
+      ],
+      "textHash": "cf47b943",
+      "line": 67
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-32": {
+    "tpl": "Root>SiteFooter@250#0/59#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "ef1f56a3",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div",
+        "span"
+      ],
+      "textHash": "d92b8f8",
+      "line": 67
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-footer-33": {
+    "tpl": "Root>SiteFooter@250#0/60#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scps",
+      "styleHash": "ce17cff9",
+      "parentTags": [
+        "footer",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "3acb3cac",
+      "line": 68
+    },
+    "draft": "4cd995654ff1103b"
+  }
+}

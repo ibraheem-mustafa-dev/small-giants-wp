@@ -1,0 +1,5578 @@
+{
+  "generated": "2026-10-19T00:32:01.861Z",
+  "source": "http://127.0.0.1:59472/Home.dc.html#build",
+  "root": "[data-sgs-skeleton-root=\"build-your-zookie\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/63#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Classic oat"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Vegan oat"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Milk choc"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "White choc"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Dark choc"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "No chips"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Vanilla"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Chocolate"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Strawberry"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Mango"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Banana"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Coffee"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Mint"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Caramel"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Coconut"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Pistachio"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Honey"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Your 20: 10 strawberry · 10 mango"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "8"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£9.50"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£1.19 each"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "20"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£21.50"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£1.08 each"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Most popular"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "40"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£38.00"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£0.95 each"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Best value"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "20 × Classic oat, milk choc chips, strawberry & mango"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£19.35"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£21.50"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Every 2 weeks"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Every 4 weeks"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "£21.50"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Subscribe · £19.35"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 106,
+      "768": 106,
+      "1440": 106
+    },
+    "tagAgree": 106,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/63#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 63,
+      "attrs": {
+        "style": "padding: 0px 40px 112px; scroll-margin-top: 72px;"
+      },
+      "words": "",
+      "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "membership": [],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section id=\"build\" style=\"padding:{{ L.secPadTop0 }};scroll-margin-top:72px\" data-dc-tpl=\"63\"> <div data-reveal=\"\" style=\"max-width:1240px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:36px;padding:{{ L.boxPad }};display:grid;grid-template-columns:{{ L.buildCols }};gap:{{ L.gap }}\" data-dc-tpl=\"64\"> <div style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" dat",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 1987.2,
+          "w": 375,
+          "h": 1784.4
+        },
+        "768": {
+          "x": 0,
+          "y": 1944.1,
+          "w": 768,
+          "h": 1553.5
+        },
+        "1440": {
+          "x": 0,
+          "y": 1663.9,
+          "w": 1440,
+          "h": 952.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/64#0",
+      "parentKey": "Root/63#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 64,
+      "attrs": {
+        "style": "max-width: 1240px; margin: 0px auto; background: rgb(249, 213, 211); border: 2px solid rgb(58, 42, 34); border-radius: 36px; padding: 56px; display: grid; grid-template-columns: 1.25fr 1fr; gap: 64px;"
+      },
+      "words": "",
+      "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-reveal=\"\" style=\"max-width:1240px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:36px;padding:{{ L.boxPad }};display:grid;grid-template-columns:{{ L.buildCols }};gap:{{ L.gap }}\" data-dc-tpl=\"64\"> <div style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" data-dc-tpl=\"65\"> <div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;co",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1987.2,
+          "w": 335,
+          "h": 1720.4
+        },
+        "768": {
+          "x": 32,
+          "y": 1944.1,
+          "w": 704,
+          "h": 1473.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 1663.9,
+          "w": 1240,
+          "h": 840.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/65#0",
+      "parentKey": "Root/64#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 65,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 22px; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" data-dc-tpl=\"65\"> <div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div> <h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2015.2,
+          "w": 295,
+          "h": 987.2
+        },
+        "768": {
+          "x": 70,
+          "y": 1986.1,
+          "w": 628,
+          "h": 709.9
+        },
+        "1440": {
+          "x": 158,
+          "y": 1721.9,
+          "w": 588.9,
+          "h": 724.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/66#0",
+      "parentKey": "Root/65#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 66,
+      "attrs": {},
+      "words": "",
+      "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div> <h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"68\">Build your Zookie</h2> <p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2015.2,
+          "w": 295,
+          "h": 151.2
+        },
+        "768": {
+          "x": 70,
+          "y": 1986.1,
+          "w": 628,
+          "h": 135.9
+        },
+        "1440": {
+          "x": 158,
+          "y": 1721.9,
+          "w": 588.9,
+          "h": 150.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/67#0",
+      "parentKey": "Root/66#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 67,
+      "attrs": {
+        "style": "font-family: Caveat, cursive; font-size: 28px; color: rgb(142, 52, 68); line-height: 1;"
+      },
+      "words": "your cookie, your way",
+      "allText": "your cookie, your way",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "your cookie, your way",
+      "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2015.2,
+          "w": 295,
+          "h": 28
+        },
+        "768": {
+          "x": 70,
+          "y": 1986.1,
+          "w": 628,
+          "h": 28
+        },
+        "1440": {
+          "x": 158,
+          "y": 1721.9,
+          "w": 588.9,
+          "h": 28
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/68#0",
+      "parentKey": "Root/66#0",
+      "depth": 4,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 68,
+      "attrs": {
+        "style": "margin: 4px 0px 8px; font-family: \"Young Serif\", Georgia, serif; font-weight: 400; font-size: 58px; line-height: 1.02; letter-spacing: -0.015em;"
+      },
+      "words": "Build your Zookie",
+      "allText": "Build your Zookie",
+      "membership": [],
+      "srcTag": "h2",
+      "srcOwnText": "Build your Zookie",
+      "snippet": "<h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"68\">Build your Zookie</h2>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2047.2,
+          "w": 295,
+          "h": 34.7
+        },
+        "768": {
+          "x": 70,
+          "y": 2018.1,
+          "w": 628,
+          "h": 44.9
+        },
+        "1440": {
+          "x": 158,
+          "y": 1753.9,
+          "w": 588.9,
+          "h": 59.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/69#0",
+      "parentKey": "Root/66#0",
+      "depth": 4,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 69,
+      "attrs": {
+        "style": "margin: 0px; font-size: 17px; line-height: 1.5; color: rgb(78, 60, 49); max-width: 520px;"
+      },
+      "words": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
+      "allText": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
+      "membership": [],
+      "srcTag": "p",
+      "srcOwnText": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
+      "snippet": "<p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3C31;max-width:520px\" data-dc-tpl=\"69\">Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.</p>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2089.9,
+          "w": 295,
+          "h": 76.5
+        },
+        "768": {
+          "x": 70,
+          "y": 2071,
+          "w": 520,
+          "h": 51
+        },
+        "1440": {
+          "x": 158,
+          "y": 1821.1,
+          "w": 520,
+          "h": 51
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/70#0",
+      "parentKey": "Root/65#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 70,
+      "attrs": {},
+      "words": "",
+      "allText": "1 · Base Classic oatVegan oat",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"70\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"71\">1 · Base</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"72\"><sc-for list=\"{{ bases }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"73\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;pad",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2188.4,
+          "w": 295,
+          "h": 75
+        },
+        "768": {
+          "x": 70,
+          "y": 2144,
+          "w": 628,
+          "h": 75
+        },
+        "1440": {
+          "x": 158,
+          "y": 1894.1,
+          "w": 588.9,
+          "h": 75
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/71#0",
+      "parentKey": "Root/70#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 71,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;"
+      },
+      "words": "1 · Base",
+      "allText": "1 · Base",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "1 · Base",
+      "snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"71\">1 · Base</div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2188.4,
+          "w": 295,
+          "h": 17
+        },
+        "768": {
+          "x": 70,
+          "y": 2144,
+          "w": 628,
+          "h": 17
+        },
+        "1440": {
+          "x": 158,
+          "y": 1894.1,
+          "w": 588.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/72#0",
+      "parentKey": "Root/70#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 72,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 8px;"
+      },
+      "words": "",
+      "allText": "Classic oatVegan oat",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"72\"><sc-for list=\"{{ bases }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"73\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px 0 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;alig",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2215.4,
+          "w": 295,
+          "h": 48
+        },
+        "768": {
+          "x": 70,
+          "y": 2171,
+          "w": 628,
+          "h": 48
+        },
+        "1440": {
+          "x": 158,
+          "y": 1921.1,
+          "w": 588.9,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/74#0",
+      "parentKey": "Root/72#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 74,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 18px 0px 12px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transform: translate(-2px, -2px); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Classic oat",
+      "allText": "Classic oat",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ bases }}",
+          "as": "o",
+          "tpl": "73"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px 0 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 2213.4,
+          "w": 147.8,
+          "h": 48
+        },
+        "768": {
+          "x": 68,
+          "y": 2169,
+          "w": 147.8,
+          "h": 48
+        },
+        "1440": {
+          "x": 156,
+          "y": 1919.1,
+          "w": 147.8,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/75#0",
+      "parentKey": "Root/74#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 75,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(217, 168, 108); border: 2px solid rgb(58, 42, 34);"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ bases }}",
+          "as": "o",
+          "tpl": "73"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.dot }};border:2px solid #3A2A22\" data-dc-tpl=\"75\"></span>",
+      "box": {
+        "375": {
+          "x": 52,
+          "y": 2226.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 82,
+          "y": 2182,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 170,
+          "y": 1932.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/74#1",
+      "parentKey": "Root/72#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 74,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 18px 0px 12px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Vegan oat",
+      "allText": "Vegan oat",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ bases }}",
+          "as": "o",
+          "tpl": "73"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px 0 12px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 195.8,
+          "y": 2215.4,
+          "w": 138.9,
+          "h": 48
+        },
+        "768": {
+          "x": 225.8,
+          "y": 2171,
+          "w": 138.9,
+          "h": 48
+        },
+        "1440": {
+          "x": 313.8,
+          "y": 1921.1,
+          "w": 138.9,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/75#1",
+      "parentKey": "Root/74#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 75,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(205, 170, 114); border: 2px solid rgb(58, 42, 34);"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ bases }}",
+          "as": "o",
+          "tpl": "73"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.dot }};border:2px solid #3A2A22\" data-dc-tpl=\"75\"></span>",
+      "box": {
+        "375": {
+          "x": 209.8,
+          "y": 2228.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 239.8,
+          "y": 2184,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 327.8,
+          "y": 1934.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/76#0",
+      "parentKey": "Root/65#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 76,
+      "attrs": {},
+      "words": "",
+      "allText": "2 · Chips Milk chocWhite chocDark chocNo chips",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"76\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"77\">2 · Chips</div> <div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"78\"><sc-for list=\"{{ chips }}\" as=\"o\" hint-placeholder-count=\"4\" data-dc-tpl=\"79\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;pa",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2285.4,
+          "w": 295,
+          "h": 131
+        },
+        "768": {
+          "x": 70,
+          "y": 2241,
+          "w": 628,
+          "h": 75
+        },
+        "1440": {
+          "x": 158,
+          "y": 1991.1,
+          "w": 588.9,
+          "h": 75
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/77#0",
+      "parentKey": "Root/76#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 77,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;"
+      },
+      "words": "2 · Chips",
+      "allText": "2 · Chips",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "2 · Chips",
+      "snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"77\">2 · Chips</div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2285.4,
+          "w": 295,
+          "h": 17
+        },
+        "768": {
+          "x": 70,
+          "y": 2241,
+          "w": 628,
+          "h": 17
+        },
+        "1440": {
+          "x": 158,
+          "y": 1991.1,
+          "w": 588.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/78#0",
+      "parentKey": "Root/76#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 78,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 8px;"
+      },
+      "words": "",
+      "allText": "Milk chocWhite chocDark chocNo chips",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"78\"><sc-for list=\"{{ chips }}\" as=\"o\" hint-placeholder-count=\"4\" data-dc-tpl=\"79\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2312.4,
+          "w": 295,
+          "h": 104
+        },
+        "768": {
+          "x": 70,
+          "y": 2268,
+          "w": 628,
+          "h": 48
+        },
+        "1440": {
+          "x": 158,
+          "y": 2018.1,
+          "w": 588.9,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/80#0",
+      "parentKey": "Root/78#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 80,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 18px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transform: translate(-2px, -2px); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Milk choc",
+      "allText": "Milk choc",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ chips }}",
+          "as": "o",
+          "tpl": "79"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 2310.4,
+          "w": 113.6,
+          "h": 48
+        },
+        "768": {
+          "x": 68,
+          "y": 2266,
+          "w": 113.6,
+          "h": 48
+        },
+        "1440": {
+          "x": 156,
+          "y": 2016.1,
+          "w": 113.6,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/80#1",
+      "parentKey": "Root/78#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 80,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 18px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "White choc",
+      "allText": "White choc",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ chips }}",
+          "as": "o",
+          "tpl": "79"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 161.6,
+          "y": 2312.4,
+          "w": 125.2,
+          "h": 48
+        },
+        "768": {
+          "x": 191.6,
+          "y": 2268,
+          "w": 125.2,
+          "h": 48
+        },
+        "1440": {
+          "x": 279.6,
+          "y": 2018.1,
+          "w": 125.2,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/80#2",
+      "parentKey": "Root/78#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 80,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 18px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Dark choc",
+      "allText": "Dark choc",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ chips }}",
+          "as": "o",
+          "tpl": "79"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2368.4,
+          "w": 116.1,
+          "h": 48
+        },
+        "768": {
+          "x": 324.8,
+          "y": 2268,
+          "w": 116.1,
+          "h": 48
+        },
+        "1440": {
+          "x": 412.8,
+          "y": 2018.1,
+          "w": 116.1,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/80#3",
+      "parentKey": "Root/78#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 80,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 18px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "No chips",
+      "allText": "No chips",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ chips }}",
+          "as": "o",
+          "tpl": "79"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 18px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"transform:translate(-2px",
+      "box": {
+        "375": {
+          "x": 164.1,
+          "y": 2368.4,
+          "w": 106.5,
+          "h": 48
+        },
+        "768": {
+          "x": 448.9,
+          "y": 2268,
+          "w": 106.5,
+          "h": 48
+        },
+        "1440": {
+          "x": 536.9,
+          "y": 2018.1,
+          "w": 106.5,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/81#0",
+      "parentKey": "Root/65#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 81,
+      "attrs": {},
+      "words": "",
+      "allText": "3 · FlavoursPick up to 3 and we’ll split your box between them ✓Vanilla✓Chocolate✓Strawberry✓Mango✓Banana✓Coffee✓Mint✓Ca",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"81\"><div style=\"display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px\" data-dc-tpl=\"82\"><span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span><span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span></div> <div style=\"disp",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2438.4,
+          "w": 295,
+          "h": 420
+        },
+        "768": {
+          "x": 70,
+          "y": 2338,
+          "w": 628,
+          "h": 214
+        },
+        "1440": {
+          "x": 158,
+          "y": 2088.1,
+          "w": 588.9,
+          "h": 214
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/82#0",
+      "parentKey": "Root/81#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 82,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 10px;"
+      },
+      "words": "",
+      "allText": "3 · FlavoursPick up to 3 and we’ll split your box between them",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px\" data-dc-tpl=\"82\"><span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span><span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span></div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2438.4,
+          "w": 295,
+          "h": 55
+        },
+        "768": {
+          "x": 70,
+          "y": 2338,
+          "w": 628,
+          "h": 17
+        },
+        "1440": {
+          "x": 158,
+          "y": 2088.1,
+          "w": 588.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/83#0",
+      "parentKey": "Root/82#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 83,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;"
+      },
+      "words": "3 · Flavours",
+      "allText": "3 · Flavours",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "3 · Flavours",
+      "snippet": "<span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2438.4,
+          "w": 97.1,
+          "h": 17
+        },
+        "768": {
+          "x": 70,
+          "y": 2338,
+          "w": 97.1,
+          "h": 17
+        },
+        "1440": {
+          "x": 158,
+          "y": 2088.1,
+          "w": 97.1,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/84#0",
+      "parentKey": "Root/82#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 84,
+      "attrs": {
+        "style": "font-size: 14px; color: rgb(94, 74, 61);"
+      },
+      "words": "Pick up to 3 and we’ll split your box between them",
+      "allText": "Pick up to 3 and we’ll split your box between them",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "Pick up to 3 and we’ll split your box between them",
+      "snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2459.4,
+          "w": 295,
+          "h": 34
+        },
+        "768": {
+          "x": 177.1,
+          "y": 2338,
+          "w": 318.2,
+          "h": 17
+        },
+        "1440": {
+          "x": 265.1,
+          "y": 2088.1,
+          "w": 318.2,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/85#0",
+      "parentKey": "Root/81#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 85,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; gap: 8px;"
+      },
+      "words": "",
+      "allText": "✓Vanilla✓Chocolate✓Strawberry✓Mango✓Banana✓Coffee✓Mint✓Caramel✓Coconut✓Pistachio✓Honey",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"85\"><sc-for list=\"{{ flavs }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"86\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;alig",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2503.4,
+          "w": 295,
+          "h": 328
+        },
+        "768": {
+          "x": 70,
+          "y": 2365,
+          "w": 628,
+          "h": 160
+        },
+        "1440": {
+          "x": 158,
+          "y": 2115.1,
+          "w": 588.9,
+          "h": 160
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#0",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Vanilla",
+      "allText": "✓Vanilla",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2503.4,
+          "w": 112.7,
+          "h": 48
+        },
+        "768": {
+          "x": 70,
+          "y": 2365,
+          "w": 112.7,
+          "h": 48
+        },
+        "1440": {
+          "x": 158,
+          "y": 2115.1,
+          "w": 112.7,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#0",
+      "parentKey": "Root/87#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(246, 231, 184); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 52,
+          "y": 2516.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 82,
+          "y": 2378,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 170,
+          "y": 2128.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#1",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Chocolate",
+      "allText": "✓Chocolate",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 160.7,
+          "y": 2503.4,
+          "w": 135.7,
+          "h": 48
+        },
+        "768": {
+          "x": 190.7,
+          "y": 2365,
+          "w": 135.7,
+          "h": 48
+        },
+        "1440": {
+          "x": 278.7,
+          "y": 2115.1,
+          "w": 135.7,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#1",
+      "parentKey": "Root/87#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(90, 53, 34); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 172.7,
+          "y": 2516.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 202.7,
+          "y": 2378,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 290.7,
+          "y": 2128.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#2",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transform: translate(-2px, -2px); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Strawberry",
+      "allText": "✓Strawberry",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 38,
+          "y": 2557.4,
+          "w": 143.2,
+          "h": 48
+        },
+        "768": {
+          "x": 332.4,
+          "y": 2363,
+          "w": 143.2,
+          "h": 48
+        },
+        "1440": {
+          "x": 420.4,
+          "y": 2113.1,
+          "w": 143.2,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#2",
+      "parentKey": "Root/87#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(232, 80, 91); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: rgb(255, 255, 255);"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 50,
+          "y": 2570.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 344.4,
+          "y": 2376,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 432.4,
+          "y": 2126.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#3",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transform: translate(-2px, -2px); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Mango",
+      "allText": "✓Mango",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 189.2,
+          "y": 2557.4,
+          "w": 111.7,
+          "h": 48
+        },
+        "768": {
+          "x": 483.6,
+          "y": 2363,
+          "w": 111.7,
+          "h": 48
+        },
+        "1440": {
+          "x": 571.6,
+          "y": 2113.1,
+          "w": 111.7,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#3",
+      "parentKey": "Root/87#3",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(245, 166, 35); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: rgb(255, 255, 255);"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 201.2,
+          "y": 2570.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 495.6,
+          "y": 2376,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 583.6,
+          "y": 2126.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#4",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Banana",
+      "allText": "✓Banana",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2615.4,
+          "w": 118.4,
+          "h": 48
+        },
+        "768": {
+          "x": 70,
+          "y": 2421,
+          "w": 118.4,
+          "h": 48
+        },
+        "1440": {
+          "x": 158,
+          "y": 2171.1,
+          "w": 118.4,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#4",
+      "parentKey": "Root/87#4",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(244, 211, 94); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 52,
+          "y": 2628.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 82,
+          "y": 2434,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 170,
+          "y": 2184.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#5",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Coffee",
+      "allText": "✓Coffee",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 166.4,
+          "y": 2615.4,
+          "w": 107.9,
+          "h": 48
+        },
+        "768": {
+          "x": 196.4,
+          "y": 2421,
+          "w": 107.9,
+          "h": 48
+        },
+        "1440": {
+          "x": 284.4,
+          "y": 2171.1,
+          "w": 107.9,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#5",
+      "parentKey": "Root/87#5",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(138, 90, 59); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 178.4,
+          "y": 2628.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 208.4,
+          "y": 2434,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 296.4,
+          "y": 2184.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#6",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Mint",
+      "allText": "✓Mint",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2671.4,
+          "w": 95.5,
+          "h": 48
+        },
+        "768": {
+          "x": 312.3,
+          "y": 2421,
+          "w": 95.5,
+          "h": 48
+        },
+        "1440": {
+          "x": 400.3,
+          "y": 2171.1,
+          "w": 95.5,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#6",
+      "parentKey": "Root/87#6",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(143, 209, 168); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 52,
+          "y": 2684.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 324.3,
+          "y": 2434,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 412.3,
+          "y": 2184.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#7",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Caramel",
+      "allText": "✓Caramel",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 143.5,
+          "y": 2671.4,
+          "w": 123.7,
+          "h": 48
+        },
+        "768": {
+          "x": 415.8,
+          "y": 2421,
+          "w": 123.7,
+          "h": 48
+        },
+        "1440": {
+          "x": 503.8,
+          "y": 2171.1,
+          "w": 123.7,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#7",
+      "parentKey": "Root/87#7",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(201, 138, 58); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 155.5,
+          "y": 2684.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 427.8,
+          "y": 2434,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 515.8,
+          "y": 2184.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#8",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Coconut",
+      "allText": "✓Coconut",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2727.4,
+          "w": 123,
+          "h": 48
+        },
+        "768": {
+          "x": 547.5,
+          "y": 2421,
+          "w": 123,
+          "h": 48
+        },
+        "1440": {
+          "x": 158,
+          "y": 2227.1,
+          "w": 123,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#8",
+      "parentKey": "Root/87#8",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(255, 255, 255); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 52,
+          "y": 2740.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 559.5,
+          "y": 2434,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 170,
+          "y": 2240.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#9",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Pistachio",
+      "allText": "✓Pistachio",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 171,
+          "y": 2727.4,
+          "w": 131.4,
+          "h": 48
+        },
+        "768": {
+          "x": 70,
+          "y": 2477,
+          "w": 131.4,
+          "h": 48
+        },
+        "1440": {
+          "x": 289,
+          "y": 2227.1,
+          "w": 131.4,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#9",
+      "parentKey": "Root/87#9",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(157, 191, 107); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 183,
+          "y": 2740.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 82,
+          "y": 2490,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 301,
+          "y": 2240.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/87#10",
+      "parentKey": "Root/85#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 87,
+      "attrs": {
+        "class": "scp8",
+        "style": "min-height: 48px; padding: 0px 16px 0px 10px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Honey",
+      "allText": "✓Honey",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ o.name }}",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:48px;padding:0 16px 0 10px;border-radius:999px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, backgr",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2783.4,
+          "w": 106.9,
+          "h": 48
+        },
+        "768": {
+          "x": 209.4,
+          "y": 2477,
+          "w": 106.9,
+          "h": 48
+        },
+        "1440": {
+          "x": 428.5,
+          "y": 2227.1,
+          "w": 106.9,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/88#10",
+      "parentKey": "Root/87#10",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 88,
+      "attrs": {
+        "style": "width: 22px; height: 22px; border-radius: 99px; background: rgb(232, 178, 48); border: 2px solid rgb(58, 42, 34); display: flex; align-items: center; justify-content: center; font-size: 12px; color: transparent;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ flavs }}",
+          "as": "o",
+          "tpl": "86"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "✓",
+      "snippet": "<span style=\"width:22px;height:22px;border-radius:99px;background:{{ o.c }};border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ o.tick }}\" data-dc-tpl=\"88\">✓</span>",
+      "box": {
+        "375": {
+          "x": 52,
+          "y": 2796.4,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 221.4,
+          "y": 2490,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 440.5,
+          "y": 2240.1,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/89#0",
+      "parentKey": "Root/81#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 89,
+      "attrs": {
+        "style": "margin-top: 10px; font-size: 14px; font-weight: 700;"
+      },
+      "words": "Your 20: 10 strawberry · 10 mango",
+      "allText": "Your 20: 10 strawberry · 10 mango",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "{{ split }}",
+      "snippet": "<div style=\"margin-top:10px;font-size:14px;font-weight:700\" data-dc-tpl=\"89\">{{ split }}</div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2841.4,
+          "w": 295,
+          "h": 17
+        },
+        "768": {
+          "x": 70,
+          "y": 2535,
+          "w": 628,
+          "h": 17
+        },
+        "1440": {
+          "x": 158,
+          "y": 2285.1,
+          "w": 588.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/90#0",
+      "parentKey": "Root/65#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 90,
+      "attrs": {},
+      "words": "",
+      "allText": "4 · How many 8£9.50£1.19 each20£21.50£1.08 eachMost popular40£38.00£0.95 eachBest value",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-dc-tpl=\"90\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"91\">4 · How many</div> <div style=\"display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:6px\" data-dc-tpl=\"92\"><sc-for list=\"{{ sizes }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"93\"><button sc-camel-on-click=\"{{ o.pick }}",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2880.4,
+          "w": 295,
+          "h": 122
+        },
+        "768": {
+          "x": 70,
+          "y": 2574,
+          "w": 628,
+          "h": 122
+        },
+        "1440": {
+          "x": 158,
+          "y": 2324.1,
+          "w": 588.9,
+          "h": 122
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/91#0",
+      "parentKey": "Root/90#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 91,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;"
+      },
+      "words": "4 · How many",
+      "allText": "4 · How many",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "4 · How many",
+      "snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"91\">4 · How many</div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2880.4,
+          "w": 295,
+          "h": 17
+        },
+        "768": {
+          "x": 70,
+          "y": 2574,
+          "w": 628,
+          "h": 17
+        },
+        "1440": {
+          "x": 158,
+          "y": 2324.1,
+          "w": 588.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/92#0",
+      "parentKey": "Root/90#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 92,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(3, minmax(0px, 1fr)); gap: 10px; padding-top: 6px;"
+      },
+      "words": "",
+      "allText": "8£9.50£1.19 each20£21.50£1.08 eachMost popular40£38.00£0.95 eachBest value",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:6px\" data-dc-tpl=\"92\"><sc-for list=\"{{ sizes }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"93\"><button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;c",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2907.4,
+          "w": 295,
+          "h": 95
+        },
+        "768": {
+          "x": 70,
+          "y": 2601,
+          "w": 628,
+          "h": 95
+        },
+        "1440": {
+          "x": 158,
+          "y": 2351.1,
+          "w": 588.9,
+          "h": 95
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/94#0",
+      "parentKey": "Root/92#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 94,
+      "attrs": {
+        "class": "scp8",
+        "style": "position: relative; min-height: 84px; padding: 12px 8px; border-radius: 20px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "8£9.50£1.19 each",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 2913.4,
+          "w": 91.7,
+          "h": 89
+        },
+        "768": {
+          "x": 70,
+          "y": 2607,
+          "w": 202.7,
+          "h": 89
+        },
+        "1440": {
+          "x": 158,
+          "y": 2357.1,
+          "w": 189.6,
+          "h": 89
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/95#0",
+      "parentKey": "Root/94#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 95,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 26px; line-height: 1;"
+      },
+      "words": "8",
+      "allText": "8",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.n }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:26px;line-height:1\" data-dc-tpl=\"95\">{{ o.n }}</span>",
+      "box": {
+        "375": {
+          "x": 78.6,
+          "y": 2927.4,
+          "w": 14.5,
+          "h": 26
+        },
+        "768": {
+          "x": 164.1,
+          "y": 2621,
+          "w": 14.5,
+          "h": 26
+        },
+        "1440": {
+          "x": 245.5,
+          "y": 2371.1,
+          "w": 14.5,
+          "h": 26
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/96#0",
+      "parentKey": "Root/94#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 96,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 700;"
+      },
+      "words": "£9.50",
+      "allText": "£9.50",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.priceTxt }}",
+      "snippet": "<span style=\"font-size:14px;font-weight:700\" data-dc-tpl=\"96\">{{ o.priceTxt }}</span>",
+      "box": {
+        "375": {
+          "x": 67.3,
+          "y": 2955.4,
+          "w": 37,
+          "h": 17
+        },
+        "768": {
+          "x": 152.8,
+          "y": 2649,
+          "w": 37,
+          "h": 17
+        },
+        "1440": {
+          "x": 234.3,
+          "y": 2399.1,
+          "w": 37,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/97#0",
+      "parentKey": "Root/94#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 97,
+      "attrs": {
+        "style": "font-size: 12px;"
+      },
+      "words": "£1.19 each",
+      "allText": "£1.19 each",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.each }}",
+      "snippet": "<span style=\"font-size:12px\" data-dc-tpl=\"97\">{{ o.each }}</span>",
+      "box": {
+        "375": {
+          "x": 59.4,
+          "y": 2974.4,
+          "w": 52.9,
+          "h": 14
+        },
+        "768": {
+          "x": 144.9,
+          "y": 2668,
+          "w": 52.9,
+          "h": 14
+        },
+        "1440": {
+          "x": 226.4,
+          "y": 2418.1,
+          "w": 52.9,
+          "h": 14
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/94#1",
+      "parentKey": "Root/92#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 94,
+      "attrs": {
+        "class": "scp8",
+        "style": "position: relative; min-height: 84px; padding: 12px 8px; border-radius: 20px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: rgb(58, 42, 34) 3px 3px 0px; transform: translate(-2px, -2px); transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "20£21.50£1.08 eachMost popular",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,",
+      "box": {
+        "375": {
+          "x": 139.7,
+          "y": 2911.4,
+          "w": 91.7,
+          "h": 89
+        },
+        "768": {
+          "x": 280.7,
+          "y": 2605,
+          "w": 202.7,
+          "h": 89
+        },
+        "1440": {
+          "x": 355.6,
+          "y": 2355.1,
+          "w": 189.6,
+          "h": 89
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/95#1",
+      "parentKey": "Root/94#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 95,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 26px; line-height: 1;"
+      },
+      "words": "20",
+      "allText": "20",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.n }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:26px;line-height:1\" data-dc-tpl=\"95\">{{ o.n }}</span>",
+      "box": {
+        "375": {
+          "x": 170.6,
+          "y": 2925.4,
+          "w": 29.8,
+          "h": 26
+        },
+        "768": {
+          "x": 367.1,
+          "y": 2619,
+          "w": 29.8,
+          "h": 26
+        },
+        "1440": {
+          "x": 435.5,
+          "y": 2369.1,
+          "w": 29.8,
+          "h": 26
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/96#1",
+      "parentKey": "Root/94#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 96,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 700;"
+      },
+      "words": "£21.50",
+      "allText": "£21.50",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.priceTxt }}",
+      "snippet": "<span style=\"font-size:14px;font-weight:700\" data-dc-tpl=\"96\">{{ o.priceTxt }}</span>",
+      "box": {
+        "375": {
+          "x": 164.5,
+          "y": 2953.4,
+          "w": 41.9,
+          "h": 17
+        },
+        "768": {
+          "x": 361,
+          "y": 2647,
+          "w": 41.9,
+          "h": 17
+        },
+        "1440": {
+          "x": 429.5,
+          "y": 2397.1,
+          "w": 41.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/97#1",
+      "parentKey": "Root/94#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 97,
+      "attrs": {
+        "style": "font-size: 12px;"
+      },
+      "words": "£1.08 each",
+      "allText": "£1.08 each",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.each }}",
+      "snippet": "<span style=\"font-size:12px\" data-dc-tpl=\"97\">{{ o.each }}</span>",
+      "box": {
+        "375": {
+          "x": 157.3,
+          "y": 2972.4,
+          "w": 56.4,
+          "h": 14
+        },
+        "768": {
+          "x": 353.8,
+          "y": 2666,
+          "w": 56.4,
+          "h": 14
+        },
+        "1440": {
+          "x": 422.2,
+          "y": 2416.1,
+          "w": 56.4,
+          "h": 14
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/99#0",
+      "parentKey": "Root/94#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 99,
+      "attrs": {
+        "style": "position: absolute; top: -12px; background: rgb(238, 128, 136); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 1px 9px; font-size: 11px; font-weight: 700; white-space: nowrap;"
+      },
+      "words": "Most popular",
+      "allText": "Most popular",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ o.tag }}",
+          "tpl": "98"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.tag }}",
+      "snippet": "<span style=\"position:absolute;top:-12px;background:#EE8088;border:2px solid #3A2A22;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:700;white-space:nowrap\" data-dc-tpl=\"99\">{{ o.tag }}</span>",
+      "box": {
+        "375": {
+          "x": 139.8,
+          "y": 2901.4,
+          "w": 91.4,
+          "h": 19
+        },
+        "768": {
+          "x": 336.3,
+          "y": 2595,
+          "w": 91.4,
+          "h": 19
+        },
+        "1440": {
+          "x": 404.7,
+          "y": 2345.1,
+          "w": 91.4,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/94#2",
+      "parentKey": "Root/92#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 94,
+      "attrs": {
+        "class": "scp8",
+        "style": "position: relative; min-height: 84px; padding: 12px 8px; border-radius: 20px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); color: rgb(58, 42, 34); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: rgb(58, 42, 34) 0px 0px 0px; transform: none; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "40£38.00£0.95 eachBest value",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"position:relative;min-height:84px;padding:12px 8px;border-radius:20px;border:2px solid #3A2A22;background:{{ o.bg }};color:#3A2A22;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:{{ o.shadow }};transform:{{ o.tf }};transition:transform .2s cubic-bezier(.3,1.6,.5,",
+      "box": {
+        "375": {
+          "x": 243.3,
+          "y": 2913.4,
+          "w": 91.7,
+          "h": 89
+        },
+        "768": {
+          "x": 495.3,
+          "y": 2607,
+          "w": 202.7,
+          "h": 89
+        },
+        "1440": {
+          "x": 557.3,
+          "y": 2357.1,
+          "w": 189.6,
+          "h": 89
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/95#2",
+      "parentKey": "Root/94#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 95,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 26px; line-height: 1;"
+      },
+      "words": "40",
+      "allText": "40",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.n }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:26px;line-height:1\" data-dc-tpl=\"95\">{{ o.n }}</span>",
+      "box": {
+        "375": {
+          "x": 274.4,
+          "y": 2927.4,
+          "w": 29.6,
+          "h": 26
+        },
+        "768": {
+          "x": 581.9,
+          "y": 2621,
+          "w": 29.6,
+          "h": 26
+        },
+        "1440": {
+          "x": 637.3,
+          "y": 2371.1,
+          "w": 29.6,
+          "h": 26
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/96#2",
+      "parentKey": "Root/94#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 96,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 700;"
+      },
+      "words": "£38.00",
+      "allText": "£38.00",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.priceTxt }}",
+      "snippet": "<span style=\"font-size:14px;font-weight:700\" data-dc-tpl=\"96\">{{ o.priceTxt }}</span>",
+      "box": {
+        "375": {
+          "x": 265.7,
+          "y": 2955.4,
+          "w": 46.9,
+          "h": 17
+        },
+        "768": {
+          "x": 573.2,
+          "y": 2649,
+          "w": 46.9,
+          "h": 17
+        },
+        "1440": {
+          "x": 628.6,
+          "y": 2399.1,
+          "w": 46.9,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/97#2",
+      "parentKey": "Root/94#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 97,
+      "attrs": {
+        "style": "font-size: 12px;"
+      },
+      "words": "£0.95 each",
+      "allText": "£0.95 each",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.each }}",
+      "snippet": "<span style=\"font-size:12px\" data-dc-tpl=\"97\">{{ o.each }}</span>",
+      "box": {
+        "375": {
+          "x": 259.7,
+          "y": 2974.4,
+          "w": 58.8,
+          "h": 14
+        },
+        "768": {
+          "x": 567.3,
+          "y": 2668,
+          "w": 58.8,
+          "h": 14
+        },
+        "1440": {
+          "x": 622.6,
+          "y": 2418.1,
+          "w": 58.8,
+          "h": 14
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/99#1",
+      "parentKey": "Root/94#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 99,
+      "attrs": {
+        "style": "position: absolute; top: -12px; background: rgb(238, 128, 136); border: 2px solid rgb(58, 42, 34); border-radius: 999px; padding: 1px 9px; font-size: 11px; font-weight: 700; white-space: nowrap;"
+      },
+      "words": "Best value",
+      "allText": "Best value",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ sizes }}",
+          "as": "o",
+          "tpl": "93"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ o.tag }}",
+          "tpl": "98"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ o.tag }}",
+      "snippet": "<span style=\"position:absolute;top:-12px;background:#EE8088;border:2px solid #3A2A22;border-radius:999px;padding:1px 9px;font-size:11px;font-weight:700;white-space:nowrap\" data-dc-tpl=\"99\">{{ o.tag }}</span>",
+      "box": {
+        "375": {
+          "x": 251.1,
+          "y": 2903.4,
+          "w": 76.1,
+          "h": 19
+        },
+        "768": {
+          "x": 558.6,
+          "y": 2597,
+          "w": 76.1,
+          "h": 19
+        },
+        "1440": {
+          "x": 614,
+          "y": 2347.1,
+          "w": 76.1,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/100#0",
+      "parentKey": "Root/64#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 100,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 16px; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "20 × Classic oat, milk choc chips, strawberry & mango Subscribe & save 10%Skip, swap or cancel any time£19.35£21.50 Ever",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:16px;min-width:0\" data-dc-tpl=\"100\"> <div style=\"position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden\" data-dc-tpl=\"101\"> <div style=\"position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3034.4,
+          "w": 295,
+          "h": 645.2
+        },
+        "768": {
+          "x": 70,
+          "y": 2736,
+          "w": 628,
+          "h": 639.6
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 1721.9,
+          "w": 471.1,
+          "h": 724.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/101#0",
+      "parentKey": "Root/100#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 101,
+      "attrs": {
+        "style": "position: relative; background: rgb(255, 250, 240); border: 2px solid rgb(58, 42, 34); border-radius: 28px; padding: 28px 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; overflow: hidden;"
+      },
+      "words": "",
+      "allText": "20 × Classic oat, milk choc chips, strawberry & mango",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:28px 20px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;overflow:hidden\" data-dc-tpl=\"101\"> <div style=\"position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%, transparent 35%)\" data-dc-tpl=\"102\"></div> <div ref=\"{{ cookieRef }}\" role=\"img\" aria-",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3034.4,
+          "w": 295,
+          "h": 303.2
+        },
+        "768": {
+          "x": 70,
+          "y": 2736,
+          "w": 628,
+          "h": 314.6
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 1721.9,
+          "w": 471.1,
+          "h": 363.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/102#0",
+      "parentKey": "Root/101#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 102,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(circle at 50% 42%, rgb(252, 235, 190) 0px, rgb(252, 235, 190) 34%, transparent 35%);"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%, transparent 35%)\" data-dc-tpl=\"102\"></div>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 3036.4,
+          "w": 291,
+          "h": 299.2
+        },
+        "768": {
+          "x": 72,
+          "y": 2738,
+          "w": 624,
+          "h": 310.6
+        },
+        "1440": {
+          "x": 812.9,
+          "y": 1723.9,
+          "w": 467.1,
+          "h": 359.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/103#0",
+      "parentKey": "Root/101#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 103,
+      "attrs": {
+        "aria-label": "20 × Classic oat, milk choc chips, strawberry & mango",
+        "role": "img",
+        "style": "position: relative; width: 240px; height: 240px; border-radius: 48% 52% 50% 50% / 52% 47% 53% 48%; background: radial-gradient(circle at 35% 30%, rgb(240, 207, 156), rgb(211, 155, 90) 62%, rgb(182, 122, 62)); border: 2px solid rgb(58, 42, 34); box-shadow: rgba(58, 42, 34, 0.12) -10px -12px 0px inset, rgb(58, 42, 34) 6px 6px 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div ref=\"{{ cookieRef }}\" role=\"img\" aria-label=\"{{ summary }}\" style=\"position:relative;width:{{ L.cookie }};height:{{ L.cookie }};border-radius:48% 52% 50% 50% / 52% 47% 53% 48%;background:{{ cookieBg }};border:2px solid #3A2A22;box-shadow:inset -10px -12px 0 rgba(58,42,34,.12), 6px 6px 0 #3A2A22\" data-dc-tpl=\"103\"> <sc-for list=\"{{ dots }}\" as=\"d\" hint-placeholder-count=\"0\" data-dc-tpl=\"104\"><",
+      "box": {
+        "375": {
+          "x": 97.5,
+          "y": 3064.4,
+          "w": 180,
+          "h": 180
+        },
+        "768": {
+          "x": 274,
+          "y": 2766,
+          "w": 220,
+          "h": 220
+        },
+        "1440": {
+          "x": 926.4,
+          "y": 1751.9,
+          "w": 240,
+          "h": 240
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#0",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 28%; top: 30%; width: 20px; height: 20px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 138.8,
+          "y": 3109.2,
+          "w": 20,
+          "h": 20
+        },
+        "768": {
+          "x": 326.5,
+          "y": 2822.8,
+          "w": 20,
+          "h": 20
+        },
+        "1440": {
+          "x": 984.5,
+          "y": 1814.7,
+          "w": 20,
+          "h": 20
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#1",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 55%; top: 20%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(37deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 185.1,
+          "y": 3090.3,
+          "w": 22.4,
+          "h": 22.4
+        },
+        "768": {
+          "x": 383.6,
+          "y": 2800,
+          "w": 22.4,
+          "h": 22.4
+        },
+        "1440": {
+          "x": 1047,
+          "y": 1789.9,
+          "w": 22.4,
+          "h": 22.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#2",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 72%; top: 38%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(74deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 216.3,
+          "y": 3123.3,
+          "w": 19.8,
+          "h": 19.8
+        },
+        "768": {
+          "x": 421.6,
+          "y": 2840.2,
+          "w": 19.8,
+          "h": 19.8
+        },
+        "1440": {
+          "x": 1088.4,
+          "y": 1833.7,
+          "w": 19.8,
+          "h": 19.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#3",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 38%; top: 55%; width: 20px; height: 20px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(111deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 153.5,
+          "y": 3150.2,
+          "w": 25.8,
+          "h": 25.8
+        },
+        "768": {
+          "x": 345.2,
+          "y": 2873.8,
+          "w": 25.8,
+          "h": 25.8
+        },
+        "1440": {
+          "x": 1005.2,
+          "y": 1870.8,
+          "w": 25.8,
+          "h": 25.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#4",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 62%; top: 66%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(148deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 197.6,
+          "y": 3171.5,
+          "w": 22,
+          "h": 22
+        },
+        "768": {
+          "x": 398.9,
+          "y": 2899.5,
+          "w": 22,
+          "h": 22
+        },
+        "1440": {
+          "x": 1063.7,
+          "y": 1898.6,
+          "w": 22,
+          "h": 22
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#5",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 24%; top: 70%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(185deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 133.1,
+          "y": 3180.9,
+          "w": 17.3,
+          "h": 17.3
+        },
+        "768": {
+          "x": 319.2,
+          "y": 2910.5,
+          "w": 17.3,
+          "h": 17.3
+        },
+        "1440": {
+          "x": 976.4,
+          "y": 1910.4,
+          "w": 17.3,
+          "h": 17.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#6",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 50%; top: 40%; width: 20px; height: 20px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(222deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 173.4,
+          "y": 3122.6,
+          "w": 28.2,
+          "h": 28.2
+        },
+        "768": {
+          "x": 369.9,
+          "y": 2840.2,
+          "w": 28.2,
+          "h": 28.2
+        },
+        "1440": {
+          "x": 1032.3,
+          "y": 1834.2,
+          "w": 28.2,
+          "h": 28.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#7",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 80%; top: 60%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(259deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 230.9,
+          "y": 3162.6,
+          "w": 18.8,
+          "h": 18.8
+        },
+        "768": {
+          "x": 439.4,
+          "y": 2888.2,
+          "w": 18.8,
+          "h": 18.8
+        },
+        "1440": {
+          "x": 1107.9,
+          "y": 1886.1,
+          "w": 18.8,
+          "h": 18.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#8",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 42%; top: 80%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(296deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 162.7,
+          "y": 3196.5,
+          "w": 21.4,
+          "h": 21.4
+        },
+        "768": {
+          "x": 356,
+          "y": 2930.1,
+          "w": 21.4,
+          "h": 21.4
+        },
+        "1440": {
+          "x": 1016.8,
+          "y": 1932,
+          "w": 21.4,
+          "h": 21.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#9",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 60%; top: 84%; width: 20px; height: 20px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(333deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 191.6,
+          "y": 3200.7,
+          "w": 26.9,
+          "h": 26.9
+        },
+        "768": {
+          "x": 392.1,
+          "y": 2936,
+          "w": 26.9,
+          "h": 26.9
+        },
+        "1440": {
+          "x": 1056.6,
+          "y": 1938.7,
+          "w": 26.9,
+          "h": 26.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#10",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 18%; top: 48%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(370deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 121.9,
+          "y": 3141.6,
+          "w": 18.5,
+          "h": 18.5
+        },
+        "768": {
+          "x": 305.6,
+          "y": 2862.4,
+          "w": 18.5,
+          "h": 18.5
+        },
+        "1440": {
+          "x": 961.6,
+          "y": 1857.9,
+          "w": 18.5,
+          "h": 18.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#11",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 84%; top: 44%; width: 16px; height: 16px; border-radius: 4px; background: rgb(122, 74, 46); transform: translate(-50%, -50%) rotate(407deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 236,
+          "y": 3132.5,
+          "w": 22.6,
+          "h": 22.6
+        },
+        "768": {
+          "x": 446.1,
+          "y": 2851.7,
+          "w": 22.6,
+          "h": 22.6
+        },
+        "1440": {
+          "x": 1115.4,
+          "y": 1846.4,
+          "w": 22.6,
+          "h": 22.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#12",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 38%; top: 36%; width: 17px; height: 17px; border-radius: 50%; background: rgb(232, 80, 91); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 157.9,
+          "y": 3121.2,
+          "w": 17,
+          "h": 17
+        },
+        "768": {
+          "x": 349.6,
+          "y": 2837.2,
+          "w": 17,
+          "h": 17
+        },
+        "1440": {
+          "x": 1009.6,
+          "y": 1830.4,
+          "w": 17,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#13",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 66%; top: 28%; width: 17px; height: 17px; border-radius: 50%; background: rgb(245, 166, 35); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 207.2,
+          "y": 3107.1,
+          "w": 17,
+          "h": 17
+        },
+        "768": {
+          "x": 410,
+          "y": 2819.9,
+          "w": 17,
+          "h": 17
+        },
+        "1440": {
+          "x": 1075.7,
+          "y": 1811.5,
+          "w": 17,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#14",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 52%; top: 62%; width: 17px; height: 17px; border-radius: 50%; background: rgb(232, 80, 91); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 182.5,
+          "y": 3167,
+          "w": 17,
+          "h": 17
+        },
+        "768": {
+          "x": 379.8,
+          "y": 2893.4,
+          "w": 17,
+          "h": 17
+        },
+        "1440": {
+          "x": 1042.7,
+          "y": 1891.7,
+          "w": 17,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#15",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 30%; top: 84%; width: 17px; height: 17px; border-radius: 50%; background: rgb(245, 166, 35); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 143.8,
+          "y": 3205.7,
+          "w": 17,
+          "h": 17
+        },
+        "768": {
+          "x": 332.3,
+          "y": 2940.9,
+          "w": 17,
+          "h": 17
+        },
+        "1440": {
+          "x": 990.7,
+          "y": 1943.6,
+          "w": 17,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#16",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 74%; top: 76%; width: 17px; height: 17px; border-radius: 50%; background: rgb(232, 80, 91); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 221.2,
+          "y": 3191.6,
+          "w": 17,
+          "h": 17
+        },
+        "768": {
+          "x": 427.3,
+          "y": 2923.6,
+          "w": 17,
+          "h": 17
+        },
+        "1440": {
+          "x": 1094.6,
+          "y": 1924.8,
+          "w": 17,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#17",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 82%; top: 52%; width: 17px; height: 17px; border-radius: 50%; background: rgb(245, 166, 35); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 235.3,
+          "y": 3149.4,
+          "w": 17,
+          "h": 17
+        },
+        "768": {
+          "x": 444.6,
+          "y": 2871.8,
+          "w": 17,
+          "h": 17
+        },
+        "1440": {
+          "x": 1113.5,
+          "y": 1868.1,
+          "w": 17,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/105#18",
+      "parentKey": "Root/103#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 105,
+      "attrs": {
+        "style": "position: absolute; left: 44%; top: 22%; width: 17px; height: 17px; border-radius: 50%; background: rgb(232, 80, 91); transform: translate(-50%, -50%) rotate(0deg); box-shadow: rgba(0, 0, 0, 0.15) -2px -2px 0px inset;"
+      },
+      "words": "",
+      "allText": "",
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ dots }}",
+          "as": "d",
+          "tpl": "104"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-50%,-50%) rotate({{ d.rot }});box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)\" data-dc-tpl=\"105\"></span>",
+      "box": {
+        "375": {
+          "x": 168.4,
+          "y": 3096.6,
+          "w": 17,
+          "h": 17
+        },
+        "768": {
+          "x": 362.5,
+          "y": 2807,
+          "w": 17,
+          "h": 17
+        },
+        "1440": {
+          "x": 1023.8,
+          "y": 1797.3,
+          "w": 17,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/106#0",
+      "parentKey": "Root/101#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 106,
+      "attrs": {
+        "style": "position: relative; font-family: Caveat, cursive; font-size: 26px; text-align: center; line-height: 1.1;"
+      },
+      "words": "20 × Classic oat, milk choc chips, strawberry & mango",
+      "allText": "20 × Classic oat, milk choc chips, strawberry & mango",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "{{ summary }}",
+      "snippet": "<div style=\"position:relative;font-family:'Caveat',cursive;font-size:26px;text-align:center;line-height:1.1\" data-dc-tpl=\"106\">{{ summary }}</div>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 3258.4,
+          "w": 251,
+          "h": 57.2
+        },
+        "768": {
+          "x": 143.7,
+          "y": 3000,
+          "w": 480.6,
+          "h": 28.6
+        },
+        "1440": {
+          "x": 832.9,
+          "y": 2005.9,
+          "w": 427.1,
+          "h": 57.2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/107#0",
+      "parentKey": "Root/100#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 107,
+      "attrs": {
+        "style": "display: grid; gap: 10px;"
+      },
+      "words": "",
+      "allText": "Subscribe & save 10%Skip, swap or cancel any time£19.35£21.50 Every 2 weeksEvery 4 weeks One-off box£21.50",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;gap:10px\" data-dc-tpl=\"107\"> <button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg }};box-shadow:{{ subOpt.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:box-shadow .2s, backg",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3353.5,
+          "w": 295,
+          "h": 196
+        },
+        "768": {
+          "x": 70,
+          "y": 3066.6,
+          "w": 628,
+          "h": 196
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 2101.1,
+          "w": 471.1,
+          "h": 196
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/108#0",
+      "parentKey": "Root/107#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 108,
+      "attrs": {
+        "style": "min-height: 72px; border-radius: 20px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); box-shadow: rgb(58, 42, 34) 4px 4px 0px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; text-align: left; transition: box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "Subscribe & save 10%Skip, swap or cancel any time£19.35£21.50",
+      "membership": [],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg }};box-shadow:{{ subOpt.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s\" data-dc-tpl=\"108\"><span style=\"display:flex",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3353.5,
+          "w": 295,
+          "h": 72
+        },
+        "768": {
+          "x": 70,
+          "y": 3066.6,
+          "w": 628,
+          "h": 72
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 2101.1,
+          "w": 471.1,
+          "h": 72
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/109#0",
+      "parentKey": "Root/108#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 109,
+      "attrs": {
+        "style": "display: flex; flex-direction: column;"
+      },
+      "words": "",
+      "allText": "Subscribe & save 10%Skip, swap or cancel any time",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:flex;flex-direction:column\" data-dc-tpl=\"109\"><span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"110\">Subscribe &amp; save 10%</span><span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"111\">Skip, swap or cancel any time</span></span>",
+      "box": {
+        "375": {
+          "x": 58,
+          "y": 3372.5,
+          "w": 175,
+          "h": 34
+        },
+        "768": {
+          "x": 88,
+          "y": 3085.6,
+          "w": 175,
+          "h": 34
+        },
+        "1440": {
+          "x": 828.9,
+          "y": 2120.1,
+          "w": 175,
+          "h": 34
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/110#0",
+      "parentKey": "Root/109#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 110,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 16px;"
+      },
+      "words": "Subscribe & save 10%",
+      "allText": "Subscribe & save 10%",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "Subscribe & save 10%",
+      "snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"110\">Subscribe &amp; save 10%</span>",
+      "box": {
+        "375": {
+          "x": 58,
+          "y": 3372.5,
+          "w": 175,
+          "h": 19
+        },
+        "768": {
+          "x": 88,
+          "y": 3085.6,
+          "w": 175,
+          "h": 19
+        },
+        "1440": {
+          "x": 828.9,
+          "y": 2120.1,
+          "w": 175,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/111#0",
+      "parentKey": "Root/109#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 111,
+      "attrs": {
+        "style": "font-size: 13px; color: rgb(94, 74, 61);"
+      },
+      "words": "Skip, swap or cancel any time",
+      "allText": "Skip, swap or cancel any time",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "Skip, swap or cancel any time",
+      "snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"111\">Skip, swap or cancel any time</span>",
+      "box": {
+        "375": {
+          "x": 58,
+          "y": 3391.5,
+          "w": 175,
+          "h": 15
+        },
+        "768": {
+          "x": 88,
+          "y": 3104.6,
+          "w": 175,
+          "h": 15
+        },
+        "1440": {
+          "x": 828.9,
+          "y": 2139.1,
+          "w": 175,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/112#0",
+      "parentKey": "Root/108#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 112,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; align-items: flex-end;"
+      },
+      "words": "",
+      "allText": "£19.35£21.50",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"display:flex;flex-direction:column;align-items:flex-end\" data-dc-tpl=\"112\"><span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"113\">{{ subTxt }}</span><span style=\"font-size:13px;color:#6B5646;text-decoration:line-through\" data-dc-tpl=\"114\">{{ onceTxt }}</span></span>",
+      "box": {
+        "375": {
+          "x": 250.1,
+          "y": 3366.5,
+          "w": 66.9,
+          "h": 46
+        },
+        "768": {
+          "x": 613.1,
+          "y": 3079.6,
+          "w": 66.9,
+          "h": 46
+        },
+        "1440": {
+          "x": 1197.1,
+          "y": 2114.1,
+          "w": 66.9,
+          "h": 46
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/113#0",
+      "parentKey": "Root/112#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 113,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 22px;"
+      },
+      "words": "£19.35",
+      "allText": "£19.35",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ subTxt }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"113\">{{ subTxt }}</span>",
+      "box": {
+        "375": {
+          "x": 250.1,
+          "y": 3366.5,
+          "w": 66.9,
+          "h": 31
+        },
+        "768": {
+          "x": 613.1,
+          "y": 3079.6,
+          "w": 66.9,
+          "h": 31
+        },
+        "1440": {
+          "x": 1197.1,
+          "y": 2114.1,
+          "w": 66.9,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/114#0",
+      "parentKey": "Root/112#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 114,
+      "attrs": {
+        "style": "font-size: 13px; color: rgb(107, 86, 70); text-decoration: line-through;"
+      },
+      "words": "£21.50",
+      "allText": "£21.50",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ onceTxt }}",
+      "snippet": "<span style=\"font-size:13px;color:#6B5646;text-decoration:line-through\" data-dc-tpl=\"114\">{{ onceTxt }}</span>",
+      "box": {
+        "375": {
+          "x": 280.5,
+          "y": 3397.5,
+          "w": 36.5,
+          "h": 15
+        },
+        "768": {
+          "x": 643.5,
+          "y": 3110.6,
+          "w": 36.5,
+          "h": 15
+        },
+        "1440": {
+          "x": 1227.5,
+          "y": 2145.1,
+          "w": 36.5,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/116#0",
+      "parentKey": "Root/107#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 116,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"
+      },
+      "words": "",
+      "allText": "Every 2 weeksEvery 4 weeks",
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSub }}",
+          "tpl": "115"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\" data-dc-tpl=\"116\"><sc-for list=\"{{ freqs }}\" as=\"f\" hint-placeholder-count=\"2\" data-dc-tpl=\"117\"><button sc-camel-on-click=\"{{ f.pick }}\" style=\"min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer;transition:background .2s\" data-dc-tpl=\"118\">{{ f.label }}</bu",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3435.5,
+          "w": 295,
+          "h": 44
+        },
+        "768": {
+          "x": 70,
+          "y": 3148.6,
+          "w": 628,
+          "h": 44
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 2183.1,
+          "w": 471.1,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/118#0",
+      "parentKey": "Root/116#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 118,
+      "attrs": {
+        "style": "min-height: 44px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(255, 250, 240); font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s;"
+      },
+      "words": "Every 2 weeks",
+      "allText": "Every 2 weeks",
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSub }}",
+          "tpl": "115"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ freqs }}",
+          "as": "f",
+          "tpl": "117"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ f.label }}",
+      "snippet": "<button sc-camel-on-click=\"{{ f.pick }}\" style=\"min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer;transition:background .2s\" data-dc-tpl=\"118\">{{ f.label }}</button>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3435.5,
+          "w": 143.5,
+          "h": 44
+        },
+        "768": {
+          "x": 70,
+          "y": 3148.6,
+          "w": 310,
+          "h": 44
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 2183.1,
+          "w": 231.6,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/118#1",
+      "parentKey": "Root/116#0",
+      "depth": 5,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 118,
+      "attrs": {
+        "style": "min-height: 44px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s;"
+      },
+      "words": "Every 4 weeks",
+      "allText": "Every 4 weeks",
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSub }}",
+          "tpl": "115"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ freqs }}",
+          "as": "f",
+          "tpl": "117"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "{{ f.label }}",
+      "snippet": "<button sc-camel-on-click=\"{{ f.pick }}\" style=\"min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:700;cursor:pointer;transition:background .2s\" data-dc-tpl=\"118\">{{ f.label }}</button>",
+      "box": {
+        "375": {
+          "x": 191.5,
+          "y": 3435.5,
+          "w": 143.5,
+          "h": 44
+        },
+        "768": {
+          "x": 388,
+          "y": 3148.6,
+          "w": 310,
+          "h": 44
+        },
+        "1440": {
+          "x": 1050.4,
+          "y": 2183.1,
+          "w": 231.6,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/119#0",
+      "parentKey": "Root/107#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 119,
+      "attrs": {
+        "style": "min-height: 60px; border-radius: 20px; border: 2px solid rgb(58, 42, 34); background: rgba(255, 250, 240, 0.45); box-shadow: rgb(58, 42, 34) 0px 0px 0px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; text-align: left; transition: box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "",
+      "allText": "One-off box£21.50",
+      "membership": [],
+      "srcTag": "button",
+      "srcOwnText": "",
+      "snippet": "<button sc-camel-on-click=\"{{ pickOnce }}\" aria-pressed=\"{{ isOnce }}\" style=\"min-height:60px;border-radius:20px;border:2px solid #3A2A22;background:{{ once.bg }};box-shadow:{{ once.shadow }};padding:10px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;text-align:left;transition:box-shadow .2s, background .2s\" data-dc-tpl=\"119\"><span style=\"font-weight:700;font-si",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3489.5,
+          "w": 295,
+          "h": 60
+        },
+        "768": {
+          "x": 70,
+          "y": 3202.6,
+          "w": 628,
+          "h": 60
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 2237.1,
+          "w": 471.1,
+          "h": 60
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/120#0",
+      "parentKey": "Root/119#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 120,
+      "attrs": {
+        "style": "font-weight: 700; font-size: 16px;"
+      },
+      "words": "One-off box",
+      "allText": "One-off box",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "One-off box",
+      "snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"120\">One-off box</span>",
+      "box": {
+        "375": {
+          "x": 58,
+          "y": 3510,
+          "w": 88,
+          "h": 19
+        },
+        "768": {
+          "x": 88,
+          "y": 3223.1,
+          "w": 88,
+          "h": 19
+        },
+        "1440": {
+          "x": 828.9,
+          "y": 2257.6,
+          "w": 88,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/121#0",
+      "parentKey": "Root/119#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 121,
+      "attrs": {
+        "style": "font-family: \"Young Serif\", serif; font-size: 22px;"
+      },
+      "words": "£21.50",
+      "allText": "£21.50",
+      "membership": [],
+      "srcTag": "span",
+      "srcOwnText": "{{ onceTxt }}",
+      "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"121\">{{ onceTxt }}</span>",
+      "box": {
+        "375": {
+          "x": 249.9,
+          "y": 3504,
+          "w": 67.1,
+          "h": 31
+        },
+        "768": {
+          "x": 612.9,
+          "y": 3217.1,
+          "w": 67.1,
+          "h": 31
+        },
+        "1440": {
+          "x": 1196.9,
+          "y": 2251.6,
+          "w": 67.1,
+          "h": 31
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/122#0",
+      "parentKey": "Root/100#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 122,
+      "attrs": {
+        "class": "scp0 scp1",
+        "style": "height: 64px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; font-size: 18px; cursor: pointer; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Subscribe · £19.35",
+      "allText": "Subscribe · £19.35",
+      "membership": [],
+      "srcTag": "button",
+      "srcOwnText": "{{ addLabel }}",
+      "snippet": "<button sc-camel-on-click=\"{{ add }}\" style=\"height:64px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:18px;cursor:pointer;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-3px,-3px);box-shadow:7px 7px 0 #3A2A22\" style-active=",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3565.5,
+          "w": 295,
+          "h": 64
+        },
+        "768": {
+          "x": 70,
+          "y": 3278.6,
+          "w": 628,
+          "h": 64
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 2313.1,
+          "w": 471.1,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/123#0",
+      "parentKey": "Root/100#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 123,
+      "attrs": {
+        "style": "font-size: 14px; font-weight: 600; text-align: center;"
+      },
+      "words": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+      "allText": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+      "membership": [],
+      "srcTag": "div",
+      "srcOwnText": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+      "snippet": "<div style=\"font-size:14px;font-weight:600;text-align:center\" data-dc-tpl=\"123\">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>",
+      "box": {
+        "375": {
+          "x": 40,
+          "y": 3645.5,
+          "w": 295,
+          "h": 34
+        },
+        "768": {
+          "x": 70,
+          "y": 3358.6,
+          "w": 628,
+          "h": 17
+        },
+        "1440": {
+          "x": 810.9,
+          "y": 2393.1,
+          "w": 471.1,
+          "h": 17
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    }
+  ]
+}

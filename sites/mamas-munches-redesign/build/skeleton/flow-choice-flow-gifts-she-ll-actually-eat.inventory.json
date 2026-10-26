@@ -1,0 +1,81 @@
+{
+  "generated": "2026-10-19T00:31:44.274Z",
+  "source": "http://127.0.0.1:59538/Gifts.dc.html",
+  "root": "[data-sgs-skeleton-root=\"gift-finder\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/24#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Show 4 gifts ↓"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 1,
+      "768": 1,
+      "1440": 1
+    },
+    "tagAgree": 1,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/24#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 24,
+      "attrs": {
+        "href": "#results",
+        "class": "scp1",
+        "style": "height: 56px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(249, 207, 110); color: rgb(58, 42, 34); font-weight: 700; font-size: 17px; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: rgb(58, 42, 34) 4px 4px 0px; transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s;"
+      },
+      "words": "Show 4 gifts ↓",
+      "allText": "Show 4 gifts ↓",
+      "membership": [],
+      "srcTag": "a",
+      "srcOwnText": "{{ findLabel }}",
+      "snippet": "<a href=\"#results\" style=\"height:56px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#F9D5D3;transform:translate(-3px,-3px);b",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 765.7,
+          "w": 291,
+          "h": 56
+        },
+        "768": {
+          "x": 54,
+          "y": 804.8,
+          "w": 303.8,
+          "h": 56
+        },
+        "1440": {
+          "x": 162,
+          "y": 765,
+          "w": 530.1,
+          "h": 56
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    }
+  ]
+}
