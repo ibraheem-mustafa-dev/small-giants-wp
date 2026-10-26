@@ -4,12 +4,12 @@
     "slug": "home",
     "title": "Home",
     "parent": null,
-    "template": null,
+    "template": "front-page",
     "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 104
   },
   {
     "route": "shop",
@@ -27,7 +27,7 @@
     "postType": "shop",
     "collection": "live",
     "flags": [],
-    "id": null,
+    "id": 6,
     "parts": [
       {
         "kind": "drawer",
@@ -54,7 +54,7 @@
     "slug": "prescription-lenses",
     "title": "Lenses",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "header",
@@ -70,14 +70,14 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 107
   },
   {
     "route": "about",
     "slug": "about",
     "title": "About",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "drawer-2",
@@ -88,14 +88,14 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 109
   },
   {
     "route": "help",
     "slug": "help",
     "title": "Help",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "drawer-2",
@@ -106,14 +106,14 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 111
   },
   {
     "route": "contact",
     "slug": "contact",
     "title": "Contact",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "drawer-2",
@@ -124,7 +124,7 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 113
   },
   {
     "route": "checkout",
@@ -136,27 +136,31 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null,
-    "parts": [
-      {
-        "kind": "endpoint",
-        "label": "Order confirmed",
-        "owner": "woocommerce",
-        "draftId": "Eye Care Birmingham.dc.html:1618:9 <button>"
-      }
-    ]
+    "id": 8
+  },
+  {
+    "route": "done",
+    "slug": "order-confirmation",
+    "title": "Order confirmed",
+    "parent": null,
+    "template": "order-confirmation",
+    "menus": [],
+    "postType": "template",
+    "collection": "static",
+    "flags": [],
+    "id": null
   },
   {
     "route": "signin",
     "slug": "my-account",
     "title": "Sign in / register",
     "parent": null,
-    "template": null,
+    "template": "page-my-account",
     "menus": [],
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 9,
     "parts": [
       {
         "kind": "form",
@@ -205,7 +209,7 @@
     "postType": "page",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 7,
     "parts": [
       {
         "kind": "drawer",
@@ -224,7 +228,7 @@
     "postType": "sgs_form",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 116,
     "draftId": "surfaces.json S-34"
   },
   {
@@ -272,7 +276,7 @@
     "postType": "sgs_modal",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 118,
     "draftId": "surfaces.json S-25"
   },
   {
@@ -284,7 +288,7 @@
     "postType": "sgs_choice_flow",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 120,
     "draftId": "surfaces.json S-27"
   },
   {
