@@ -17,6 +17,12 @@ const ENTRY = new Set( [ 'input', 'select', 'textarea' ] );
 const NOT_ENTRY = new Set( [ 'checkbox', 'radio', 'hidden', 'submit', 'button', 'reset', 'image', 'file', 'range', 'color' ] );
 const CONTROL = new Set( [ 'button', 'a', 'select', 'textarea', 'input' ] );
 const ORDER_REF = /(^|[^\w])([A-Z]{2,}-?\d{3,}|#\d{3,})([^\w]|$)/;
+const NOT_FOUND = /(^|[^\w])(404|not found)([^\w]|$)/i;
+const typeOf = ( t ) => String( attrOf( t, 'type' ) || '' ).toLowerCase();
+// A search field: an `<input type="search">`, or a field inside a `role="search"` landmark.
+const isSearchField = ( t ) => ( 'input' === t.name && 'search' === typeOf( t ) ) || ( 'search' === String( attrOf( t, 'role' ) || '' ).toLowerCase() && descendants( t ).some( ( x ) => 'input' === x.name ) );
+// A results loop: an `sc-for` whose items hold a link (each result leads somewhere; a loop of FAQ disclosures does not).
+const isResultsLoop = ( t ) => 'sc-for' === t.name && descendants( t ).some( ( x ) => 'a' === x.name && attrOf( x, 'href' ) );
 const strip = ( v ) => String( v || '' ).replace( /^\s*\{\{\s*|\s*\}\}\s*$/g, '' ).trim();
 const handlerOf = ( t ) => strip( attrOf( t, 'onClick' ) || attrOf( t, 'onChange' ) || attrOf( t, 'onInput' ) || '' );
 const isEntry = ( t ) => ENTRY.has( t.name ) && ! NOT_ENTRY.has( String( attrOf( t, 'type' ) || '' ).toLowerCase() );
@@ -43,15 +49,16 @@ function fnSpans( L, value ) {
 }
 
 // What each routed page of the export shows: Map( route -> { payment, orderLines, password, listing, reaches, submits,
-// orderRef } ). `reaches` are the routes the page links to; `submits` those its submit leads to (a link from a form's
+// orderRef, search, notFound } ). `reaches` are the routes the page links to; `submits` those its submit leads to (a link from a form's
 // submit, a submit button, a button beside the payment fields, or a line of the logic inside a form's submit handler;
 // never a plain link);
-// `orderRef` says the page's text shows an order reference (`EC-10482`, `#10482`).
+// `orderRef` says the page's text shows an order reference (`EC-10482`, `#10482`); `search` that it holds a search field
+// and a results loop; `notFound` that a heading (`h1`-`h3`) says "not found" or "404".
 export function commerceFacts( exp, routeKeys, links ) {
 	const facts = new Map();
 	const fact = ( route ) => {
 		if ( ! facts.has( route ) ) {
-			facts.set( route, { payment: false, orderLines: false, password: false, listing: false, reaches: new Set(), submits: new Set(), orderRef: false } );
+			facts.set( route, { payment: false, orderLines: false, password: false, listing: false, reaches: new Set(), submits: new Set(), orderRef: false, search: false, notFound: false } );
 		}
 		return facts.get( route );
 	};
@@ -81,9 +88,11 @@ export function commerceFacts( exp, routeKeys, links ) {
 		for ( const [ route, mine ] of byRoute ) {
 			const f = fact( route );
 			f.payment ||= hasPayment( mine );
-			f.password ||= mine.some( ( t ) => 'input' === t.name && 'password' === String( attrOf( t, 'type' ) || '' ).toLowerCase() );
+			f.password ||= mine.some( ( t ) => 'input' === t.name && 'password' === typeOf( t ) );
 			f.orderLines ||= mine.some( ( t ) => 'sc-for' === t.name && showsOrderLines( d.text, L, t ) );
 			f.orderRef ||= mine.some( ( t ) => /^(h[1-6]|p)$/.test( t.name ) && ORDER_REF.test( innerText( d.text, t ) ) );
+			f.search ||= mine.some( isSearchField ) && mine.some( isResultsLoop );
+			f.notFound ||= mine.some( ( t ) => /^h[1-3]$/.test( t.name ) && NOT_FOUND.test( innerText( d.text, t ) ) );
 			for ( const loop of mine.filter( ( t ) => 'sc-for' === t.name && descendants( t ).some( ( x ) => 'dc-import' === x.name && showsProducts( attrOf( x, 'name' ) ) ) ) ) {
 				const keys = selectionReads( L, strip( attrOf( loop, 'list' ) ) );
 				f.listing ||= keys.size > 0 && mine.some( ( x ) => CONTROL.has( x.name ) && x !== loop && ! ancestors( x ).includes( loop ) && handlerOf( x )

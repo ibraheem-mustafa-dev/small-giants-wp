@@ -19,14 +19,14 @@
 	},
 	{
 		"file": "lib/intake-pagemap-owners.mjs",
-		"find": "|| 'my-account' === r.slug );",
+		"find": "|| isAccount( r ) );",
 		"replace": ");",
 		"why": "my-account is not a WooCommerce page"
 	},
 	{
 		"file": "lib/intake-pagemap-owners.mjs",
-		"find": "&& accountPages.has( r.route ) ? 'my-account'",
-		"replace": "&& false ? 'my-account'",
+		"find": ": account ? 'my-account' : null;",
+		"replace": ": null;",
 		"why": "a page with a password field keeps its own slug"
 	},
 	{
@@ -49,9 +49,9 @@
 	},
 	{
 		"file": "lib/intake-pagemap-owners.mjs",
-		"find": "if ( r === checkout || r.route === home || ! r.route || ! into.length ||",
+		"find": "if ( r === checkout || r.route === home || ! r.route || 'page' !== r.postType || r.template || ! into.length ||",
 		"replace": "if ( true ||",
-		"why": "no route is an endpoint"
+		"why": "no route is the order confirmation"
 	},
 	{
 		"file": "lib/intake-pagemap-owners.mjs",

@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>About | Studio</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><h1>About us</h1><p>We make things.</p><sc-for list="{{ links }}" as="l"><a href="{{ l.href }}">{{ l.label }}</a></sc-for></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { links: [ { href: "Notes.dc.html", label: "Notes" } ] }; }
+}
+</script>
+</body></html>

@@ -49,8 +49,8 @@
 	},
 	{
 		"file": "lib/intake-run.mjs",
-		"find": ", '--page-map': 'page-map' };",
-		"replace": " };",
+		"find": ", '--page-map': 'page-map', ",
+		"replace": ", ",
 		"why": "--page-map is not a mode"
 	}
 ]

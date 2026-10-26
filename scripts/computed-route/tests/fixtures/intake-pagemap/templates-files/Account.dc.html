@@ -1,0 +1,13 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Account | Studio</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><h1>Your orders</h1><form onSubmit="{{ signIn }}"><input type="email" name="email"><input type="password" name="pw"><button>Sign in</button></form>
+<input type="search" name="find-order"><sc-for list="{{ orders }}" as="o"><a href="{{ o.href }}">{{ o.label }}</a></sc-for></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { signIn: ( e ) => e.preventDefault(), orders: [ { href: "Notes.dc.html", label: "Order 1" } ] }; }
+}
+</script>
+</body></html>

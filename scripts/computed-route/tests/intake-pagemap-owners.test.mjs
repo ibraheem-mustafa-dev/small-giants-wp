@@ -41,10 +41,11 @@ test( 'MUST FAIL (d): one mega panel per menu item that opens one, named by that
 	assert.deepEqual( state.rows.filter( ( r ) => 'sgs_mega_menu' === r.postType ).map( ( r ) => r.title ), [ 'Frames mega menu', 'Help mega menu' ] );
 } );
 
-test( 'MUST FAIL (e): a route reached only from the checkout page is its endpoint, not a page', () => {
-	assert.equal( state.rows.some( ( r ) => 'done' === r.route || 'order-received' === r.slug ), false );
-	assert.deepEqual( parts( state, 'checkout' ), [ 'endpoint:Order confirmed:woocommerce' ] );
-	assert.ok( state.linkMap.filter( ( l ) => 'row' === l.kind && /placeOrder|41:24/.test( l.from ) ).every( ( l ) => 'checkout' === l.slug ), 'its links resolve to the checkout row' );
+test( 'MUST FAIL (e): the confirmation reached only from the checkout page is its own order-confirmation template row', () => {
+	const done = state.rows.filter( ( r ) => 'done' === r.route );
+	assert.deepEqual( done.map( ( r ) => `${ r.slug }:${ r.postType }:${ r.template }:${ r.title }:${ r.parent }` ), [ 'order-confirmation:template:order-confirmation:Order confirmed:null' ] );
+	assert.deepEqual( parts( state, 'checkout' ), [], 'the checkout holds no endpoint part for it' );
+	assert.deepEqual( state.linkMap.filter( ( l ) => 'order-confirmation' === l.slug ).map( ( l ) => l.from ), [ 'Store.dc.html:42:85 <button>' ], 'Place order resolves to its own row' );
 } );
 
 test( 'MUST FAIL (f): the shop row takes WooCommerce\'s slug and the label of the menu item that links to it', () => {
@@ -56,7 +57,7 @@ test( 'MUST FAIL: a shop client always has cart, checkout and my-account rows; t
 	assert.deepEqual( [ row( state, 'cart' ).template, row( state, 'cart' ).title, row( state, 'cart' ).route ], [ 'cart', 'Your bag', undefined ] );
 	const bare = proposePageMap( { folder: FIX( 'manifest' ) } );
 	assert.deepEqual( [ 'cart', 'checkout', 'my-account' ].map( ( s ) => row( bare, s ) && `${ s }:${ row( bare, s ).template }:${ row( bare, s ).title }` ),
-		[ 'cart:cart:Cart', 'checkout:checkout:Checkout', 'my-account:null:Sign in' ] );
+		[ 'cart:cart:Cart', 'checkout:checkout:Checkout', 'my-account:page-my-account:Sign in' ] );
 	const plain = proposePageMap( { folder: FIX( 'hash' ) } );
 	assert.equal( plain.rows.some( ( r ) => [ 'cart', 'checkout', 'my-account' ].includes( r.slug ) ), false, 'a client with no shop gets none' );
 } );
@@ -68,12 +69,12 @@ test( 'MUST FAIL: a page\'s own header is that page\'s part; the site header is 
 	assert.deepEqual( parts( files, 'cart' ), [ 'drawer:Basket:block' ] );
 } );
 
-test( 'MUST FAIL: forms on a page merged into my-account are its forms; the checkout form and the confirmation page are checkout\'s', () => {
+test( 'MUST FAIL: forms on a page merged into my-account are its forms; the checkout form is checkout\'s and the confirmation its own row', () => {
 	assert.deepEqual( slugsOf( files, 'sgs_form' ), [ 'form-send' ] );
 	assert.deepEqual( parts( files, 'my-account' ), [ 'form:saveDetails:woocommerce', 'form:doSignin:woocommerce', 'form:doRegister:woocommerce' ] );
-	assert.deepEqual( parts( files, 'checkout' ), [ 'endpoint:Order confirmed:woocommerce', 'form:pay:woocommerce', 'header:Header:woocommerce' ] );
+	assert.deepEqual( parts( files, 'checkout' ), [ 'form:pay:woocommerce', 'header:Header:woocommerce' ] );
 	assert.deepEqual( files.rows.filter( ( r ) => r.route ).map( ( r ) => `${ r.route }:${ r.slug }` ),
-		[ 'Account.dc.html:my-account', 'Basket.dc.html:cart', 'Checkout.dc.html:checkout', 'Contact.dc.html:contact', 'Home.dc.html:home', 'Shop.dc.html:shop' ] );
+		[ 'Account.dc.html:my-account', 'Basket.dc.html:cart', 'Checkout.dc.html:checkout', 'Confirmation.dc.html:order-confirmation', 'Contact.dc.html:contact', 'Home.dc.html:home', 'Shop.dc.html:shop' ] );
 } );
 
 test( 'MUST FAIL: a page section of pick lists is a choice flow', () => {

@@ -73,6 +73,7 @@
           "sgs_mega_menu",
           "sgs_form",
           "sgs_choice_flow",
+          "template",
           "wp_block"
         ]
       },

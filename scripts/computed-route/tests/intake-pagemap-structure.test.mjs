@@ -25,13 +25,13 @@ test( 'MUST FAIL: the shop, cart and checkout are read from the draft structure,
 	assert.deepEqual( [ byRoute( shop, 'Bag.dc.html' ).template, byRoute( shop, 'Bag.dc.html' ).slug ], [ 'cart', 'cart' ], 'order lines and a link to checkout make the cart' );
 	assert.equal( byRoute( shop, 'Checkout.dc.html' ).template, 'checkout', 'payment fields with order lines make the checkout' );
 	assert.equal( byRoute( proposePageMap( { folder: FIX( 'shop-files' ) } ), 'Checkout.dc.html' ).template, 'checkout', 'one card autocomplete field is a payment field' );
-	assert.deepEqual( [ byRoute( shop, 'Locator.dc.html' ).postType, byRoute( shop, 'Locator.dc.html' ).template ], [ 'page', null ], '"Store locator" is a page' );
+	assert.deepEqual( [ byRoute( shop, 'Locator.dc.html' ).postType, byRoute( shop, 'Locator.dc.html' ).template ], [ 'page', 'page' ], '"Store locator" is an ordinary page' );
 	assert.ok( shop.gaps.some( ( g ) => 'Locator.dc.html' === g.draftId && /by its words alone/.test( g.error ) ), 'the word hint is a gap row' );
 	assert.equal( shop.rows.filter( ( r ) => 'cart' === r.template ).length, 1, 'no second cart row is added' );
 } );
 
-test( 'MUST FAIL: a route reached only from checkout is its endpoint only with order-confirmation evidence', () => {
-	assert.deepEqual( parts( byRoute( shop, 'Checkout.dc.html' ) ).filter( ( p ) => p.startsWith( 'endpoint:' ) ), [ 'endpoint:Thank you:woocommerce' ], 'the page its submit leads to is the endpoint' );
+test( 'MUST FAIL: a route reached only from checkout is its order confirmation only with order-confirmation evidence', () => {
+	assert.deepEqual( [ 'postType', 'template', 'title' ].map( ( k ) => byRoute( shop, 'Done.dc.html' )?.[ k ] ), [ 'template', 'order-confirmation', 'Thank you' ], 'the page its submit leads to is the confirmation row' );
 	assert.equal( byRoute( shop, 'Terms.dc.html' )?.postType, 'page', 'the terms page linked from the checkout stays a page' );
 } );
 

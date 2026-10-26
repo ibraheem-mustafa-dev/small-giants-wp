@@ -14,8 +14,9 @@ import { keyName, isThisMember, subtree, scanTags, decodeEntities } from './inta
 import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, loopEnvs } from './intake-ast-eval.mjs';
 import { codeSurfaces, KIND_POST_TYPE, kebab, stem } from './intake-pagemap-surfaces.mjs';
 import { crossCheck } from './intake-pagemap-hints.mjs';
-import { wooSlugs, shopTitle, checkoutEndpoints, wooPages, ownedSurfaces } from './intake-pagemap-owners.mjs';
+import { wooSlugs, shopTitle, orderConfirmations, wooPages, ownedSurfaces } from './intake-pagemap-owners.mjs';
 import { commerceFacts, commerceKinds, declaredKind } from './intake-pagemap-commerce.mjs';
+import { frontRoute, routerFallbacks, surfaceTemplates, genericTemplates } from './intake-pagemap-templates.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const PAGE_MAP_SCHEMA = path.join( HERE, '..', 'data', 'page-map.schema.json' );
@@ -111,7 +112,7 @@ const withoutSite = ( t, site ) => ( site ? t.split( SEP ).filter( ( x ) => x !=
 function routeRows( exp, routing, gaps, facts ) {
 	const rows = [];
 	const add = ( r ) => rows.push( { route: r.route, slug: r.slug, title: r.title, parent: r.parent ?? null, template: r.template ?? null, menus: [], postType: r.postType,
-		collection: r.collection, flags: [], id: null, ...( r.draftParent ? { draftParent: r.draftParent } : {} ), ...( r.hint ? { hint: r.hint } : {} ), ...( r.declared ? { declared: r.declared } : {} ) } );
+		collection: r.collection, flags: [], id: null, ...( r.listsPosts ? { listsPosts: true } : {} ), ...( r.draftParent ? { draftParent: r.draftParent } : {} ), ...( r.hint ? { hint: r.hint } : {} ), ...( r.declared ? { declared: r.declared } : {} ) } );
 	const manifest = exp.drafts.filter( ( d ) => exp.entries.includes( d.file ) ).map( ( d ) => ( { d, ...embeddedManifest( d.text, d.file ) } ) ).find( ( m ) => m.manifest?.pages || m.gaps.length );
 	gaps.push( ...( manifest?.gaps || [] ) );
 	if ( manifest?.manifest?.pages ) {
@@ -125,6 +126,9 @@ function routeRows( exp, routing, gaps, facts ) {
 	}
 	const data = 'hash' === routing.adapter ? pageData( exp ) : null;
 	const sources = new Set( ( data?.added || [] ).map( ( a ) => a.source ).filter( Boolean ) );
+	// The element sets the post routes are made from: a page whose data references one lists the posts.
+	const isArticle = ( a ) => [ 'date', 'body', 'content', 'excerpt' ].some( ( k ) => hasKey( data.d, a.element, k ) ) && hasKey( data.d, a.element, 'title' );
+	const postSources = new Set( ( data?.added || [] ).filter( ( a ) => a.source && ! hasKey( data.d, a.element, 'price' ) && isArticle( a ) ).map( ( a ) => a.source ) );
 	const cands = new Map( ( data ? [ ...data.values ].map( ( [ k, v ] ) => [ k, titleCandidates( data.d, v ) ] ) : [] )
 		.concat( ( data?.added || [] ).map( ( a ) => [ a.key, titleCandidates( data.d, a.value, a.env ) ] ) ) );
 	const shared = ( c ) => [ ...cands.values() ].filter( ( list ) => list.some( ( x ) => x.key === c.key && x.value === c.value ) ).length > 1;
@@ -137,12 +141,12 @@ function routeRows( exp, routing, gaps, facts ) {
 		const value = data?.values.get( r.key );
 		const c = classifyRoute( `${ stem( r.key ) } ${ title || '' }`, { prices: !! value && listsPrices( data.d, value, new Map() ) } );
 		const live = value && listsCollection( data.d, value, new Map(), sources );
-		add( { route: r.key, slug: kebab( 'files' === routing.adapter ? stem( r.key ) : r.key ) || 'home', title: title || titleCase( stem( r.key ) ), ...c, collection: live ? 'live' : c.collection } );
+		add( { route: r.key, slug: kebab( 'files' === routing.adapter ? stem( r.key ) : r.key ) || 'home', title: title || titleCase( stem( r.key ) ), ...c, collection: live ? 'live' : c.collection,
+			listsPosts: !! live && listsCollection( data.d, value, new Map(), postSources ) } );
 	}
 	for ( const a of data?.added || [] ) {
 		const title = titled( a.key );
-		const article = [ 'date', 'body', 'content', 'excerpt' ].some( ( k ) => hasKey( data.d, a.element, k ) ) && hasKey( data.d, a.element, 'title' );
-		const c = hasKey( data.d, a.element, 'price' ) ? classifyRoute( 'single product' ) : classifyRoute( article ? 'post' : a.key );
+		const c = hasKey( data.d, a.element, 'price' ) ? classifyRoute( 'single product' ) : classifyRoute( isArticle( a ) ? 'post' : a.key );
 		add( { route: a.key, slug: kebab( title || a.key ), title: title || titleCase( a.key ), ...c,
 			collection: listsCollection( data.d, a.value, a.env, sources ) ? 'live' : c.collection } );
 	}
@@ -245,6 +249,9 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	const routeOfNode = ( d, node ) => ( data && d === data.d ? [ ...data.values ].find( ( [ , v ] ) => v.start <= node.start && node.end <= v.end )?.[ 0 ] ?? null : null );
 	const code = codeSurfaces( exp, routeOfNode, new Set( route.routes.map( ( x ) => x.key ) ), route.links );
 	wooSlugs( rows, code.accountPages );
+	const routeKeys = new Set( route.routes.map( ( x ) => x.key ) );
+	const home = frontRoute( exp, route, code.surfaces, rows );
+	surfaceTemplates( rows, { facts, links: route.links, pageOfTag: code.pageOfTag, fallbacks: routerFallbacks( exp, routeKeys, home ), home, gaps } );
 	const used = new Set();
 	const routeSlug = new Map();
 	// Two manifest pages naming one WordPress slug (a signed-out and a signed-in view) are one row.
@@ -265,14 +272,13 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			routeSlug.set( r.key, twin.slug );
 		}
 	}
-	const home = route.links.find( ( l ) => /^#\/?$/.test( l.href ) && l.route )?.route || rows[ 0 ]?.route || null;
-	const endpoints = checkoutEndpoints( rows, route, code.pageOfTag, home, routeSlug, facts );
+	orderConfirmations( rows, route, code.pageOfTag, home, routeSlug, used, facts );
 	wooPages( rows, code.surfaces, used );
 	const hintFile = path.join( folder, 'surfaces.json' );
 	const hint = undefined !== surfacesHint ? surfacesHint : fs.existsSync( hintFile ) ? JSON.parse( fs.readFileSync( hintFile, 'utf8' ) ) : null;
 	const checked = crossCheck( code.surfaces, hint );
 	gaps.push( ...checked.gaps );
-	const owned = ownedSurfaces( checked.surfaces, rows, endpoints, routeSlug );
+	const owned = ownedSurfaces( checked.surfaces, rows, routeSlug );
 	const counts = ( kind ) => owned.rows.filter( ( s ) => s.kind === kind ).length;
 	// A surface row paired with a handoff/surfaces.json record names it (`draftId: 'surfaces.json <id>'`), which
 	// lib/manifest-build.mjs::matchRecord matches first.
@@ -328,7 +334,12 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 			children.filter( ( c ) => c && c !== target && ! c.parent && 'page' === c.postType ).forEach( ( c ) => { c.parent = target.slug; } );
 		}
 	}
+	// A template row (postType `template`) makes no post, so it has no parent.
 	for ( const r of rows ) {
+		if ( 'template' === r.postType ) {
+			delete r.draftParent;
+			continue;
+		}
 		if ( r.draftParent ) {
 			if ( bySlug.has( r.draftParent ) ) {
 				r.parent = r.draftParent;
@@ -343,6 +354,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 		}
 	}
 	rows.forEach( ( r ) => delete r.shopTitled );
+	genericTemplates( rows, home, gaps );
 	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps };
 }
 

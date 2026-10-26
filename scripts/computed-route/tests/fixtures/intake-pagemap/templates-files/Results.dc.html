@@ -1,0 +1,12 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Results | Studio</title></head><body>
+<x-dc>
+<dc-import name="SiteHeader"></dc-import>
+<main><h1>Results</h1><input type="search" name="q"><sc-for list="{{ hits }}" as="h"><a href="{{ h.href }}">{{ h.label }}</a></sc-for></main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return { hits: [ { href: "About.dc.html", label: "About us" }, { href: "Notes.dc.html", label: "Notes" } ] }; }
+}
+</script>
+</body></html>

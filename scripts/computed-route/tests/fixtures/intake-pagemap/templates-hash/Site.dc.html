@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Studio</title></head><body>
+<x-dc>
+<header>
+  <a href="#/">Studio</a>
+  <nav><a href="#/about">About</a><a href="#/journal">Journal</a><a href="#/team">Team</a><a href="#/find">Find</a><a href="#/help">Help</a><a href="#/search-tips">Search tips</a></nav>
+</header>
+<sc-if value="{{ isFind }}"><main><h1>Results</h1><div role="search"><input name="q"></div><sc-for list="{{ results }}" as="r"><a href="{{ r.href }}">{{ r.label }}</a></sc-for></main></sc-if>
+<sc-if value="{{ isHelp }}"><main><h1>Help</h1><input type="search" name="q"><sc-for list="{{ faqs }}" as="f"><button aria-expanded="{{ f.open }}" onClick="{{ f.toggle }}">{{ f.q }}</button></sc-for></main></sc-if>
+<sc-if value="{{ isOther }}"><main><h1>{{ title }}</h1><sc-for list="{{ cards }}" as="c"><a href="{{ c.href }}">{{ c.label }}</a></sc-for></main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', open: -1 };
+  componentDidMount() { window.addEventListener('hashchange', () => this.setState({ page: this.parseHash() })); }
+  parseHash() { return (window.location.hash || '').replace(/^#\/?/, '') || 'home'; }
+  get articles() {
+    return [ { slug: 'one', title: 'First note', date: 'May 2026', body: 'One.' }, { slug: 'two', title: 'Second note', date: 'June 2026', body: 'Two.' } ];
+  }
+  get people() {
+    return [ { slug: 'ada', name: 'Ada', role: 'Lead' }, { slug: 'bo', name: 'Bo', role: 'Maker' } ];
+  }
+  get pages() {
+    if (this._pages) return this._pages;
+    this._pages = {
+      home: { title: 'Welcome', cards: [] },
+      about: { title: 'About us', cards: [] },
+      journal: { title: 'Journal', cards: [], posts: this.articles },
+      team: { title: 'Our team', cards: [], people: this.people },
+      find: { title: 'Results', cards: [] },
+      help: { title: 'Help centre', cards: [] },
+      'search-tips': { title: 'Search tips', cards: [] },
+      'help/missing': { title: 'Oops', cards: [] }
+    };
+    this.articles.forEach((a) => { this._pages['post-' + a.slug] = { title: a.title, cards: [] }; });
+    this.people.forEach((p) => { this._pages['person-' + p.slug] = { title: p.name, cards: [] }; });
+    return this._pages;
+  }
+  renderVals() {
+    const pages = this.pages;
+    const key = pages[this.state.page] ? this.state.page : 'help/missing';
+    const page = pages[key];
+    const S = this.state;
+    return {
+      isFind: S.page === 'find',
+      isHelp: S.page === 'help',
+      isOther: S.page !== 'find' && S.page !== 'help',
+      title: page.title,
+      cards: page.cards,
+      results: [ { href: '#/about', label: 'About us' }, { href: '#/journal', label: 'Journal' } ],
+      faqs: [ 'Delivery', 'Returns' ].map((q, i) => ({ q, open: S.open === i, toggle: () => this.setState({ open: i }) }))
+    };
+  }
+}
+</script>
+</body></html>

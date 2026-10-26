@@ -202,7 +202,12 @@ test( 'real exports: Indus, Eye Care and Mama\'s page maps', { skip: ! fs.exists
 	assert.deepEqual( pageMapProblems( c.rows, ajv ), [] );
 	assert.deepEqual( linkProblems( c ), [] );
 	const m = proposePageMap( { folder: real( 'mamas-munches-redesign' ) } );
-	assert.equal( m.rows.filter( ( r ) => r.route ).length, 9, 'SignIn shares the my-account row; Confirmation is an endpoint of checkout' );
+	assert.equal( m.rows.filter( ( r ) => r.route ).length, 10, 'SignIn shares the my-account row; Confirmation is its own order-confirmation row' );
+	const tpl = ( map, route ) => map.rows.find( ( r ) => r.route === route )?.template;
+	assert.deepEqual( [ 'Home.dc.html', 'Account.dc.html', 'Basket.dc.html', 'Checkout.dc.html', 'Confirmation.dc.html', 'Contact.dc.html' ].map( ( r ) => tpl( m, r ) ),
+		[ 'front-page', 'page-my-account', 'cart', 'checkout', 'order-confirmation', 'page' ], 'FR-48-56: each of Mama\'s rows names the template it is' );
+	assert.deepEqual( [ 'home', 'blog', 'about', 'post-post-1' ].map( ( r ) => tpl( a, r ) ), [ 'front-page', 'home', 'page', 'single' ], 'FR-48-56: Indus\'s posts page is home' );
+	assert.deepEqual( [ 'home', 'signin', 'done', 'checkout' ].map( ( r ) => tpl( c, r ) ), [ 'front-page', 'page-my-account', 'order-confirmation', 'checkout' ], 'FR-48-56: Eye Care\'s rows' );
 	assert.ok( menuNames( m ).includes( 'drawer-menu-links' ), 'Mama\'s drawer menu stays' );
 	const recordOf = ( slug ) => m.rows.find( ( r ) => r.slug === slug )?.draftId;
 	assert.deepEqual( [ 'drawer-menu', 'choice-flow-build-your-zookie', 'choice-flow-gifts-she-ll-actually-eat', 'form-send' ].map( recordOf ), [ 'surfaces.json S-02', 'surfaces.json S-08', 'surfaces.json S-20', 'surfaces.json S-34' ], 'MUST FAIL: a surface row paired with a surfaces.json record names it' );
