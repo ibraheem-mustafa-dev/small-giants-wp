@@ -14,6 +14,8 @@ WHAT IT FINDS
     pair     a block.json attribute `<name>Unit` beside `<name>` (or an extension's `<name>Unit` beside
              `<name>Desktop`), outside typography: font size, line height and letter spacing keep their unit
              partner under the TypographyControls standard (plugins/sgs-blocks/CLAUDE.md)
+    orphan   a block.json `<name>Unit` outside typography with no `<name>` beside it: the unit of settings
+             named otherwise (`attributionMarginUnit` for `attributionMarginTop`); --fix leaves it to a hand edit
     reader   a mention of a pair's unit name (found now, or removed by a migration listed in MIGRATED) in the
              code, tests, scripts, theme patterns or the cloning route: an edit.js bridge, a render.php read, a
              writer that still sets it, a stored pattern that still carries it
@@ -45,7 +47,7 @@ if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
 
 PLUGIN = Path(__file__).resolve().parent.parent
 REPO = PLUGIN.parent.parent
-TYPOGRAPHY = re.compile(r'(FontSize|LineHeight|LetterSpacing)$', re.I)
+TYPOGRAPHY = re.compile(r'(FontSize|LineHeight|LetterSpacing)(Tablet|Mobile)?$', re.I)
 TIERS = ('desktop', 'tablet', 'mobile')
 
 # Where a reader can live, relative to the repo root.
@@ -68,7 +70,7 @@ SELF = {
 # reader left behind, so its absence is asserted after its pair is gone.
 MIGRATED = {
     'sgs/before-after': ['heightUnit', 'maxWidthUnit'],
-    'sgs/button': ['customWidthUnit', 'minHeightUnit'],
+    'sgs/button': ['customWidthUnit', 'minHeightUnit', 'minHeightTabletUnit', 'minHeightMobileUnit'],
     'sgs/container': ['minColumnWidthUnit'],
     'sgs/decorative-image': ['widthUnit'],
     'sgs/feature-grid': ['minItemWidthUnit'],
@@ -79,14 +81,32 @@ MIGRATED = {
     # mediaStoredAttrName()), so the bases themselves are retired too.
     'media-atom': ['HeightUnit', 'WidthUnit', 'MaxWidthUnit', 'MaxHeightUnit'],
     'sgs/modal': ['dialogWidthUnit'],
+    'sgs/quote': ['attributionMarginUnit'],
     'sgs/responsive-logo': ['shrinkWidthUnit', 'maxWidthUnit', 'maxHeightUnit'],
     'sgs/separator': ['widthUnit', 'thicknessUnit'],
     'sgs/text': ['maxWidthUnit', 'customWidthUnit'],
     'extension': ['sgsHeightUnit'],
 }
 
+# A line naming a WordPress core block's own attribute (`"core/cover::minHeightUnit"` in a role map): core's
+# attributes are not SGS settings.
+ALLOW_LINE = re.compile(r'core/[a-z0-9-]+::[A-Za-z0-9]+Unit')
+
 # (repo-relative path, unit name): the reason the mention is not a reader of an SGS pair.
-ALLOW = {}
+ALLOW = {
+    ('plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py', 'minHeightUnit'):
+        "core/cover's own attribute, read from the core block and folded into the SGS minHeight length",
+    ('plugins/sgs-blocks/scripts/feature-parity-exceptions.json', 'minHeightUnit'):
+        "core/cover's own attribute, named in sgs/hero's parity exception against core/cover",
+    ('plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py', 'widthUnit'):
+        "a synthetic sgs/plant fixture testing the role classifier's Unit-suffix rule",
+    ('plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py', 'thicknessUnit'):
+        "a synthetic sgs/plant fixture testing the role classifier's Unit-suffix rule",
+    ('plugins/sgs-blocks/scripts/inspector-scan/rules.json', 'maxWidthUnit'):
+        "rule 34's dated ratchet record: each lowering keeps the composition it enumerated that day",
+    ('plugins/sgs-blocks/scripts/survey-length-control-scale.py', 'maxWidthUnit'):
+        "a synthetic sgs/x self-test source: the survey reads the setting out of a wrapped value expression",
+}
 
 
 def block_pairs(blocks_dir):
@@ -103,6 +123,8 @@ def block_pairs(blocks_dir):
                 continue
             if base in attrs:
                 out.append((data.get('name', f.parent.name), base, name, attrs[base], attrs[name]))
+            else:
+                out.append((data.get('name', f.parent.name), base + '*', name, None, attrs[name]))
     return out
 
 
@@ -156,6 +178,8 @@ def readers(repo, units):
         for i, line in enumerate(text.splitlines(), 1):
             # A block.json key line is the pair's own declaration (counted under pairs), not a reader.
             if declares and re.match(r'\s*"[A-Za-z0-9]+Unit"\s*:', line):
+                continue
+            if ALLOW_LINE.search(line):
                 continue
             for m in pattern.finditer(line):
                 if (rel, m.group(1)) not in ALLOW:
@@ -229,7 +253,7 @@ def fix(repo, block, apply):
         name = json.loads(raw).get('name')
         if block and name != block:
             continue
-        pairs = [p for p in block_pairs(blocks) if p[0] == name]
+        pairs = [p for p in block_pairs(blocks) if p[0] == name and p[3] is not None]
         if not pairs:
             continue
         new = fix_text(raw, pairs)
@@ -289,6 +313,9 @@ def self_test():
             'capUnit': {'type': 'string', 'default': 'px'},
             'fontSize': {'type': 'number'},
             'fontSizeUnit': {'type': 'string', 'default': 'px'},
+            'fontSizeTabletUnit': {'type': 'string', 'default': 'px'},
+            'edgeTop': {'type': 'object', 'default': {}},
+            'edgeUnit': {'type': 'string', 'default': 'px'},
         }}
         b = {'name': 'sgs/b', 'attributes': {'fontSize': {'type': 'number'}, 'fontSizeUnit': {'type': 'string'}}}
         (blocks / 'a' / 'block.json').write_text(json.dumps(a, indent='\t') + '\n', encoding='utf-8')
@@ -301,7 +328,7 @@ def self_test():
         moved = {'sgs/a': ['gapUnit', 'sizeUnit', 'spanUnit', 'capUnit']}
         r = survey(tmp, migrated=moved)
         got = sorted((p['block'], p['unit']) for p in r['pairs'])
-        assert got == [('extension', 'sgsHeightUnit'), ('sgs/a', 'capUnit'), ('sgs/a', 'gapUnit'), ('sgs/a', 'sizeUnit'), ('sgs/a', 'spanUnit')], got
+        assert got == [('extension', 'sgsHeightUnit'), ('sgs/a', 'capUnit'), ('sgs/a', 'edgeUnit'), ('sgs/a', 'gapUnit'), ('sgs/a', 'sizeUnit'), ('sgs/a', 'spanUnit')], got
         assert [x['file'] for x in r['readers']['gapUnit']] == ['plugins/sgs-blocks/src/blocks/a/render.php'], r['readers']
         assert 'fontSizeUnit' not in r['readers'], 'typography partners are out of scope'
         assert check(r) == 1, 'positive: pairs and a reader fail the check'
@@ -313,6 +340,7 @@ def self_test():
         assert new['span'] == {'type': 'object', 'default': {}}, new['span']
         assert new['cap'] == {'type': 'object', 'default': {}, 'description': 'A cap.'}, new['cap']
         assert not {'gapUnit', 'sizeUnit', 'spanUnit', 'capUnit'} & set(new), 'unit partners deleted'
+        assert new['edgeUnit'] == {'type': 'string', 'default': 'px'} and new['edgeTop'] == {'type': 'object', 'default': {}}, 'an orphan is left to a hand edit'
         assert new['fontSizeUnit'] == {'type': 'string', 'default': 'px'}, 'typography partner kept'
         assert (blocks / 'b' / 'block.json').read_text(encoding='utf-8') == b_raw, 'negative control: untouched'
         once = (blocks / 'a' / 'block.json').read_text(encoding='utf-8')
@@ -321,9 +349,13 @@ def self_test():
         assert converted({'type': 'object', 'default': {'desktop': 4, 'mobile': ''}}, {'default': {'desktop': 'rem'}}) == {'type': 'object', 'default': {'desktop': '4rem'}}
 
         r = survey(tmp, 'sgs/a', moved)
-        assert not r['pairs'] and [x['file'] for x in r['readers'].get('gapUnit', [])] == ['plugins/sgs-blocks/src/blocks/a/render.php'], 'a reader outlives its pair'
-        (blocks / 'a' / 'render.php').write_text("<?php $s = $attributes['fontSizeUnit'];\n", encoding='utf-8')
-        assert check(survey(tmp, 'sgs/a', moved)) == 0, 'clean once the reader goes'
+        assert [p['unit'] for p in r['pairs']] == ['edgeUnit'], 'the orphan is still reported'
+        assert [x['file'] for x in r['readers'].get('gapUnit', [])] == ['plugins/sgs-blocks/src/blocks/a/render.php'], 'a reader outlives its pair'
+        (blocks / 'a' / 'render.php').write_text("<?php $s = $attributes['fontSizeUnit']; $m = 'core/cover::gapUnit';\n", encoding='utf-8')
+        a_now = json.loads((blocks / 'a' / 'block.json').read_text(encoding='utf-8'))
+        del a_now['attributes']['edgeUnit']
+        (blocks / 'a' / 'block.json').write_text(json.dumps(a_now, indent='\t') + '\n', encoding='utf-8')
+        assert check(survey(tmp, 'sgs/a', moved)) == 0, 'clean once the reader and the orphan go (a core attribute line is allowed)'
         assert check(survey(tmp, 'sgs/b', moved)) == 0
         print('self-test: OK')
         return 0
