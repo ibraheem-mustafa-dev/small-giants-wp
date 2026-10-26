@@ -13,6 +13,8 @@
 // Only shown elements count, so a closed panel (the header's basket drawer) never holds evidence; two candidates for one
 // role leave the surface as it is, with a note naming them. Pure: the inventory model in, the region out.
 
+import { templateKey } from './fact-key.mjs';
+
 // The commerce role of a surface, by the template it builds (surfaces.json `target.template`), and the checkout page's
 // route (a cart's region links to it).
 export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout', 'page-my-account': 'account' };
@@ -25,7 +27,7 @@ export function commerceOf( entry, rows = [] ) {
 const attr = ( e, name ) => String( e.attrs?.[ name ] ?? new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ] ?? '' );
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
 // The loop an element is an item of: its innermost sc-for, keyed by component (a tpl id is numbered per component).
-const loopOf = ( e ) => ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).map( ( x ) => `${ e.template }#${ x.tpl }` ).at( -1 ) ?? null;
+const loopOf = ( e ) => ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).map( ( x ) => templateKey( { dc: e.template, tpl: x.tpl } ) ).at( -1 ) ?? null;
 const isEntry = ( e ) => [ 'input', 'select', 'textarea' ].includes( e.tag ) && ! [ 'checkbox', 'radio', 'hidden', 'submit', 'button', 'reset', 'image', 'file', 'range', 'color' ].includes( attr( e, 'type' ).toLowerCase() );
 
 // Whether an href leads to the route `route` (a page file, `#/<route>`, `#<route>` or a path ending in it).
