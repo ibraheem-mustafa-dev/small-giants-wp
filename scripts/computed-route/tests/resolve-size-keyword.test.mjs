@@ -75,5 +75,7 @@ test( 'MUST FAIL: every size-family setting in the DB writes or refuses its keyw
 		assert.equal( !! out.writes, holds, `${ r.block_slug }.${ r.attr_name } (${ r.attr_type })` );
 		holds ? written++ : refused++;
 	}
-	assert.ok( written > 100 && refused > 20, `${ written } written, ${ refused } refused` );
+	// Both branches stay populated: the single lengths now write their keyword, and the number-typed size settings
+	// still refuse it (148 and 9 on 2026-10-26, after the length migration).
+	assert.ok( written > 140 && refused > 5, `${ written } written, ${ refused } refused` );
 } );

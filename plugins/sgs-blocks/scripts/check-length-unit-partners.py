@@ -160,30 +160,47 @@ def scan_files(repo):
                     yield p
 
 
+def candidate_lines(repo, units):
+    """(path, line_no, text) for each line that may mention a unit name. In a git checkout `git grep` reads the
+    tracked files under SCAN (fast enough for the fast gate tier); elsewhere (the self-test's tree) every file on
+    disk is read."""
+    if (Path(repo) / '.git').exists():
+        alternation = '|'.join(sorted(map(re.escape, units)))
+        res = subprocess.run(['git', '-C', str(repo), 'grep', '-n', '-I', '-w', '-E', '-e', alternation, '--', *SCAN],
+                             capture_output=True)
+        if res.returncode not in (0, 1):
+            raise RuntimeError(res.stderr.decode('utf-8', 'replace'))
+        for raw in res.stdout.decode('utf-8', 'replace').splitlines():
+            rel, line_no, text = raw.split(':', 2)
+            if Path(rel).suffix in SUFFIXES and not SKIP_DIRS & set(Path(rel).parts):
+                yield rel, int(line_no), text
+        return
+    for p in scan_files(repo):
+        try:
+            text = p.read_text(encoding='utf-8')
+        except (UnicodeDecodeError, OSError):
+            continue
+        for i, line in enumerate(text.splitlines(), 1):
+            yield p.relative_to(repo).as_posix(), i, line
+
+
 def readers(repo, units):
     """{unit: [(path, line_no, text)]} for every word-bounded mention of each unit name."""
     if not units:
         return {}
     pattern = re.compile(r'(?<![A-Za-z0-9_])(' + '|'.join(sorted(map(re.escape, units))) + r')(?![A-Za-z0-9_])')
     out = {u: [] for u in units}
-    for p in scan_files(repo):
-        rel = p.relative_to(repo).as_posix()
+    for rel, i, line in candidate_lines(repo, units):
         if rel in SELF:
             continue
-        try:
-            text = p.read_text(encoding='utf-8')
-        except (UnicodeDecodeError, OSError):
+        # A block.json key line is the pair's own declaration (counted under pairs), not a reader.
+        if rel.endswith('block.json') and re.match(r'\s*"[A-Za-z0-9]+Unit"\s*:', line):
             continue
-        declares = p.name == 'block.json'
-        for i, line in enumerate(text.splitlines(), 1):
-            # A block.json key line is the pair's own declaration (counted under pairs), not a reader.
-            if declares and re.match(r'\s*"[A-Za-z0-9]+Unit"\s*:', line):
-                continue
-            if ALLOW_LINE.search(line):
-                continue
-            for m in pattern.finditer(line):
-                if (rel, m.group(1)) not in ALLOW:
-                    out[m.group(1)].append((rel, i, line.strip()[:160]))
+        if ALLOW_LINE.search(line):
+            continue
+        for m in pattern.finditer(line):
+            if (rel, m.group(1)) not in ALLOW:
+                out[m.group(1)].append((rel, i, line.strip()[:160]))
     return out
 
 

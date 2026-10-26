@@ -1978,5 +1978,14 @@
     "added_commit": null,
     "budget_ms": 300,
     "order": 226
+  },
+  {
+    "id": "check-length-unit-partners",
+    "cmd": "python scripts/check-length-unit-partners.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 227
   }
 ]

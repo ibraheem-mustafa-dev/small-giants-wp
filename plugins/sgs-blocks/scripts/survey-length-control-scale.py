@@ -73,6 +73,7 @@ ROLE_EXCEPTIONS = {
     # Attributes a filter registers (not in block.json, so not in the DB), named by the extension that owns them.
     'extension/sgsChildWidth': ('spacing', 'extension attribute: a child width'),
     'extension/sgsChipGap': ('spacing', 'extension attribute: a gap between chips'),
+    'extension/sgsHeight': ('spacing', 'extension attribute: an image height per device'),
 }
 # Generic components whose attribute is supplied by their caller (not resolvable from the file itself).
 GENERIC_FILES = {
@@ -80,6 +81,7 @@ GENERIC_FILES = {
     'blocks/icon/icon-size-control.js': ('font-size', 'the glyph-size wrapper for sgs/icon and sgs/social-icons'),
     'components/SgsGapControl.js': ('spacing', 'the row and column gap pair: its parts are gaps, always the spacing scale'),
     'components/MediaSizingPanel.js': ('spacing', 'media height and inset boxes'),
+    'components/media/controls/MediaBoxShapeControls.js': ('spacing', "the box-shape atom's width, height, max width and max height: box lengths for its callers (sgs/hero, sgs/media)"),
     'components/motion/DistanceAtom.js': ('spacing', 'motion distance length'),
 }
 EXTENSION_ATTRS =sorted(k.split('/', 1)[1] for k in ROLE_EXCEPTIONS if k.startswith('extension/'))

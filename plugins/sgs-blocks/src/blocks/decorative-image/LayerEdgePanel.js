@@ -21,13 +21,14 @@ const EDGE_UNITS = [
  * @param {Function} props.setAttributes Block `setAttributes`.
  * @return {JSX.Element} The Position from the edges panel.
  */
+const EDGES = [
+	[ 'positionTop', __( 'Top', 'sgs-blocks' ) ],
+	[ 'positionRight', __( 'Right', 'sgs-blocks' ) ],
+	[ 'positionBottom', __( 'Bottom', 'sgs-blocks' ) ],
+	[ 'positionLeft', __( 'Left', 'sgs-blocks' ) ],
+];
+
 export default function LayerEdgePanel( { attributes, setAttributes } ) {
-	const edges = [
-		{ attr: 'positionTop', label: __( 'Top', 'sgs-blocks' ) },
-		{ attr: 'positionRight', label: __( 'Right', 'sgs-blocks' ) },
-		{ attr: 'positionBottom', label: __( 'Bottom', 'sgs-blocks' ) },
-		{ attr: 'positionLeft', label: __( 'Left', 'sgs-blocks' ) },
-	];
 	return (
 		<InspectorControls>
 			<PanelBody
@@ -40,7 +41,7 @@ export default function LayerEdgePanel( { attributes, setAttributes } ) {
 						'sgs-blocks'
 					) }
 				</p>
-				{ edges.map( ( { attr, label } ) => (
+				{ EDGES.map( ( [ attr, label ] ) => (
 					<ResponsiveOverride
 						key={ attr }
 						label={ label }

@@ -21,7 +21,7 @@
 				{
 					"id": "block-setting:behaviour:array",
 					"label": "block settings, role behaviour, array",
-					"count": 194,
+					"count": 196,
 					"examples": [
 						"sgs/accordion-item.sgsConditionDays",
 						"sgs/accordion-item.sgsConditionUserRole",
@@ -34,13 +34,13 @@
 				{
 					"id": "block-setting:behaviour:boolean",
 					"label": "block settings, role behaviour, boolean",
-					"count": 37,
+					"count": 134,
 					"examples": [
+						"sgs/accordion-item.sgsFocusRests",
 						"sgs/accordion.allowMultiple",
-						"sgs/container.bgSvgTextShadow",
-						"sgs/container.sgsBlockLinkTarget",
-						"sgs/counter.accentStroke",
-						"sgs/form-field-address.required"
+						"sgs/accordion.sgsFocusRests",
+						"sgs/account.sgsFocusRests",
+						"sgs/audio.sgsFocusRests"
 					],
 					"motion": false
 				},
@@ -95,20 +95,20 @@
 				{
 					"id": "block-setting:behaviour:object",
 					"label": "block settings, role behaviour, object",
-					"count": 13,
+					"count": 14,
 					"examples": [
+						"sgs/buybox.stickyBar",
 						"sgs/google-reviews.arrowStep",
 						"sgs/nav-bar-menu.triggerDetachAfter",
 						"sgs/nav-drawer-menu.itemOrnamentFramePlay",
-						"sgs/site-footer-row.rowHideOnScroll",
-						"sgs/site-footer-row.rowShrink"
+						"sgs/site-footer-row.rowHideOnScroll"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:behaviour:string",
 					"label": "block settings, role behaviour, string",
-					"count": 742,
+					"count": 751,
 					"examples": [
 						"sgs/accordion-item.sgsCollapseVisibility",
 						"sgs/accordion-item.sgsConditionDateEnd",
@@ -121,7 +121,7 @@
 				{
 					"id": "block-setting:behaviour:styling",
 					"label": "block settings, role behaviour, styling",
-					"count": 7,
+					"count": 6,
 					"examples": [
 						"sgs/google-reviews.scrollbarStyle",
 						"sgs/google-reviews.textClampLines",
@@ -134,13 +134,13 @@
 				{
 					"id": "block-setting:boolean-visibility:boolean",
 					"label": "block settings, role boolean-visibility, boolean",
-					"count": 273,
+					"count": 289,
 					"examples": [
 						"sgs/accordion-item.isOpen",
+						"sgs/accordion.scrollToOpened",
 						"sgs/account.showGuestLine",
 						"sgs/account.showMenuIcons",
-						"sgs/account.showOrderTracking",
-						"sgs/account.showQuickCards"
+						"sgs/account.showOrderTracking"
 					],
 					"motion": false
 				},
@@ -171,20 +171,20 @@
 				{
 					"id": "block-setting:color:string",
 					"label": "block settings, role color, string",
-					"count": 69,
+					"count": 68,
 					"examples": [
 						"sgs/accordion-item.backgroundColourHover",
 						"sgs/brand-strip.tileShadowColourHover",
+						"sgs/business-info.hoursTodayColour",
 						"sgs/business-info.openStatusClosedBackground",
-						"sgs/business-info.openStatusOpenBackground",
-						"sgs/buybox.guidedMeterColour"
+						"sgs/business-info.openStatusOpenBackground"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:color:styling",
 					"label": "block settings, role color, styling",
-					"count": 864,
+					"count": 1191,
 					"examples": [
 						"sgs/accordion-item.backgroundColour",
 						"sgs/accordion-item.borderColour",
@@ -197,26 +197,26 @@
 				{
 					"id": "block-setting:colour-gradient:string",
 					"label": "block settings, role colour-gradient, string",
-					"count": 76,
+					"count": 36,
 					"examples": [
-						"sgs/accordion-item.backgroundColourGradient",
 						"sgs/accordion-item.backgroundColourHoverGradient",
-						"sgs/brand-strip.itemBorderColourHoverGradient",
-						"sgs/breadcrumbs.currentColourGradient",
-						"sgs/breadcrumbs.separatorColourGradient"
+						"sgs/choice-flow.stageColourGradient",
+						"sgs/choice-flow.stageNoteHoverColourGradient",
+						"sgs/choice-flow.stageNoteIconColourGradient",
+						"sgs/collapsible-text.linkColourHoverGradient"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:colour-gradient:styling",
 					"label": "block settings, role colour-gradient, styling",
-					"count": 520,
+					"count": 566,
 					"examples": [
+						"sgs/accordion-item.backgroundColourGradient",
 						"sgs/accordion-item.borderColourGradient",
 						"sgs/accordion-item.textColourGradient",
 						"sgs/accordion-item.textColourHoverGradient",
-						"sgs/accordion.borderColourGradient",
-						"sgs/accordion.headerBackgroundGradient"
+						"sgs/accordion.borderColourGradient"
 					],
 					"motion": false
 				},
@@ -354,20 +354,9 @@
 					"motion": false
 				},
 				{
-					"id": "block-setting:enum-class-probe:styling",
-					"label": "block settings, role enum-class-probe, styling",
-					"count": 3,
-					"examples": [
-						"sgs/responsive-logo.logoId",
-						"sgs/responsive-logo.logoIdMobile",
-						"sgs/responsive-logo.logoIdTablet"
-					],
-					"motion": false
-				},
-				{
 					"id": "block-setting:enum-mode:mode",
 					"label": "block settings, role enum-mode, mode",
-					"count": 100,
+					"count": 109,
 					"examples": [
 						"sgs/audio.audioPreload",
 						"sgs/audio.audioSource",
@@ -380,8 +369,9 @@
 				{
 					"id": "block-setting:enum-mode:object",
 					"label": "block settings, role enum-mode, object",
-					"count": 1,
+					"count": 2,
 					"examples": [
+						"sgs/nav-drawer.closeStyle",
 						"sgs/site-header.contrastSafe"
 					],
 					"motion": false
@@ -402,13 +392,13 @@
 				{
 					"id": "block-setting:enum-mode:styling",
 					"label": "block settings, role enum-mode, styling",
-					"count": 17,
+					"count": 22,
 					"examples": [
 						"sgs/business-info.hoursRowJustify",
 						"sgs/buybox.stackBelow",
 						"sgs/card-grid.headingLevel",
-						"sgs/form-review.headingLevel",
-						"sgs/form.submitAlign"
+						"sgs/decorative-image.shape",
+						"sgs/form-review.headingLevel"
 					],
 					"motion": false
 				},
@@ -507,6 +497,17 @@
 					"motion": false
 				},
 				{
+					"id": "block-setting:image-object:number",
+					"label": "block settings, role image-object, number",
+					"count": 3,
+					"examples": [
+						"sgs/responsive-logo.logoId",
+						"sgs/responsive-logo.logoIdMobile",
+						"sgs/responsive-logo.logoIdTablet"
+					],
+					"motion": false
+				},
+				{
 					"id": "block-setting:image-object:object",
 					"label": "block settings, role image-object, object",
 					"count": 32,
@@ -569,7 +570,7 @@
 				{
 					"id": "block-setting:layout:mode",
 					"label": "block settings, role layout, mode",
-					"count": 45,
+					"count": 40,
 					"examples": [
 						"sgs/accordion.layout",
 						"sgs/brand-strip.brandOrder",
@@ -582,13 +583,13 @@
 				{
 					"id": "block-setting:layout:number",
 					"label": "block settings, role layout, number",
-					"count": 8,
+					"count": 6,
 					"examples": [
-						"sgs/feature-grid.minItemWidth",
 						"sgs/measured-diagram.drawingImageHeight",
 						"sgs/measured-diagram.drawingImageWidth",
 						"sgs/nav-bar-menu.itemTextColumns",
-						"sgs/nav-bar-menu.submenuTextColumns"
+						"sgs/nav-bar-menu.submenuTextColumns",
+						"sgs/nav-drawer-menu.itemTextColumns"
 					],
 					"motion": false
 				},
@@ -597,37 +598,37 @@
 					"label": "block settings, role layout, object",
 					"count": 29,
 					"examples": [
-						"sgs/accordion-item.contentWidth",
 						"sgs/account.contentMaxWidth",
 						"sgs/account.gap",
 						"sgs/account.navLayout",
-						"sgs/account.navWidth"
+						"sgs/account.navWidth",
+						"sgs/button.sgsChildWidth"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:string",
 					"label": "block settings, role layout, string",
-					"count": 47,
+					"count": 24,
 					"examples": [
+						"sgs/accordion.scrollToOpenedGap",
 						"sgs/account.authLayout",
-						"sgs/before-after.heightUnit",
-						"sgs/before-after.maxWidthUnit",
-						"sgs/button.minHeightMobileUnit",
-						"sgs/button.minHeightTabletUnit"
+						"sgs/form-field-address.width",
+						"sgs/form-field-checkbox.width",
+						"sgs/form-field-consent.width"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:layout:styling",
 					"label": "block settings, role layout, styling",
-					"count": 665,
+					"count": 686,
 					"examples": [
+						"sgs/accordion-item.contentWidth",
 						"sgs/accordion-item.maxWidth",
 						"sgs/accordion.alignContent",
 						"sgs/accordion.alignItems",
-						"sgs/accordion.columns",
-						"sgs/accordion.contentPadding"
+						"sgs/accordion.columns"
 					],
 					"motion": false
 				},
@@ -675,24 +676,15 @@
 				{
 					"id": "block-setting:motion:motion",
 					"label": "block settings, role motion, motion",
-					"count": 48,
+					"count": 49,
 					"examples": [
+						"sgs/business-info.openStatusDotPulseDuration",
 						"sgs/cart.freeDeliveryFillDuration",
 						"sgs/cart.freeDeliveryFillEasing",
 						"sgs/cart.panelSlideDuration",
-						"sgs/cart.panelSlideEasing",
-						"sgs/counter.duration"
+						"sgs/cart.panelSlideEasing"
 					],
 					"motion": true
-				},
-				{
-					"id": "block-setting:number-css-percent:styling",
-					"label": "block settings, role number-css-percent, styling",
-					"count": 1,
-					"examples": [
-						"sgs/decorative-image.maxWidthPercent"
-					],
-					"motion": false
 				},
 				{
 					"id": "block-setting:number-css-px:string",
@@ -795,43 +787,45 @@
 				{
 					"id": "block-setting:select-from-enum:mode",
 					"label": "block settings, role select-from-enum, mode",
-					"count": 53,
+					"count": 59,
 					"examples": [
 						"sgs/before-after.afterMediaType",
 						"sgs/before-after.beforeMediaType",
 						"sgs/brand-strip.logoLayout",
 						"sgs/business-info.displayType",
-						"sgs/buybox.framingMode"
+						"sgs/business-info.mapFilterPreset"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:select-from-enum:number",
 					"label": "block settings, role select-from-enum, number",
-					"count": 2,
+					"count": 4,
 					"examples": [
 						"sgs/form-field-file.maxSize",
-						"sgs/star-rating.starSize"
+						"sgs/star-rating.starSize",
+						"sgs/timeline.panelEdgeScale",
+						"sgs/timeline.panelFocusScale"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:select-from-enum:object",
 					"label": "block settings, role select-from-enum, object",
-					"count": 18,
+					"count": 16,
 					"examples": [
 						"sgs/button.iconShapeSize",
 						"sgs/button.iconSize",
 						"sgs/button.widthType",
-						"sgs/choice-flow.optionMediaSize",
-						"sgs/container.shapeDividerBottomScale"
+						"sgs/container.shapeDividerBottomScale",
+						"sgs/container.shapeDividerTopScale"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:select-from-enum:string",
 					"label": "block settings, role select-from-enum, string",
-					"count": 23,
+					"count": 22,
 					"examples": [
 						"sgs/accordion.iconPosition",
 						"sgs/audio.audioMimeType",
@@ -844,7 +838,7 @@
 				{
 					"id": "block-setting:select-from-enum:styling",
 					"label": "block settings, role select-from-enum, styling",
-					"count": 168,
+					"count": 175,
 					"examples": [
 						"sgs/accordion.iconSize",
 						"sgs/accordion.writingMode",
@@ -890,17 +884,16 @@
 				{
 					"id": "block-setting:styling:object",
 					"label": "block settings, role styling, object",
-					"count": 2,
+					"count": 1,
 					"examples": [
-						"sgs/decorative-image.decorMedia",
-						"sgs/nav-drawer.anchor"
+						"sgs/container.pinBelowHeader"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:styling:string",
 					"label": "block settings, role styling, string",
-					"count": 106,
+					"count": 105,
 					"examples": [
 						"sgs/accordion-item.sgsCustomCss",
 						"sgs/accordion.sgsCustomCss",
@@ -913,7 +906,7 @@
 				{
 					"id": "block-setting:styling:styling",
 					"label": "block settings, role styling, styling",
-					"count": 56,
+					"count": 54,
 					"examples": [
 						"sgs/accordion.headerFontWeightOpen",
 						"sgs/accordion.iconRotation",
@@ -1017,7 +1010,7 @@
 				{
 					"id": "block-setting:technical:string",
 					"label": "block settings, role technical, string",
-					"count": 91,
+					"count": 116,
 					"examples": [
 						"sgs/button.anchor",
 						"sgs/button.className",
@@ -1030,8 +1023,9 @@
 				{
 					"id": "block-setting:text-content:number",
 					"label": "block settings, role text-content, number",
-					"count": 1,
+					"count": 2,
 					"examples": [
+						"sgs/label.endDepth",
 						"sgs/nav-drawer-menu.itemMagnetStrength"
 					],
 					"motion": false
@@ -1050,7 +1044,7 @@
 				{
 					"id": "block-setting:text-content:string",
 					"label": "block settings, role text-content, string",
-					"count": 182,
+					"count": 184,
 					"examples": [
 						"sgs/accordion-item.title",
 						"sgs/account.guestLineText",
@@ -1072,20 +1066,30 @@
 				{
 					"id": "block-setting:typography:mode",
 					"label": "block settings, role typography, mode",
-					"count": 5,
+					"count": 15,
 					"examples": [
 						"sgs/button.textDecorationHover",
-						"sgs/nav-bar-menu.itemTextAlign",
-						"sgs/nav-bar-menu.itemTextWrap",
-						"sgs/nav-drawer-menu.itemTextAlign",
-						"sgs/nav-drawer-menu.itemTextWrap"
+						"sgs/form-field-tiles.tileDescriptionFontStyle",
+						"sgs/form-field-tiles.tileDescriptionTextAlign",
+						"sgs/form-field-tiles.tileDescriptionTextDecoration",
+						"sgs/form-field-tiles.tileDescriptionTextTransform"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:typography:object",
+					"label": "block settings, role typography, object",
+					"count": 2,
+					"examples": [
+						"sgs/form-field-tiles.tileDescriptionLetterSpacing",
+						"sgs/form-field-tiles.tileLabelLetterSpacing"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:typography:string",
 					"label": "block settings, role typography, string",
-					"count": 503,
+					"count": 519,
 					"examples": [
 						"sgs/accordion.fontSizeUnit",
 						"sgs/accordion.letterSpacingUnit",
@@ -1098,7 +1102,7 @@
 				{
 					"id": "block-setting:typography:styling",
 					"label": "block settings, role typography, styling",
-					"count": 1632,
+					"count": 1806,
 					"examples": [
 						"sgs/accordion.fontFamily",
 						"sgs/accordion.fontSize",
@@ -1136,13 +1140,13 @@
 				{
 					"id": "block-setting:unclassified:number",
 					"label": "block settings, role unclassified, number",
-					"count": 25,
+					"count": 30,
 					"examples": [
 						"sgs/audio.reactiveSensitivity",
 						"sgs/brand-strip.brandMaxItems",
+						"sgs/business-info.mapZoom",
 						"sgs/container.surfaceSaturate",
-						"sgs/diagram-dimension.extOvershoot",
-						"sgs/diagram-dimension.extReach"
+						"sgs/diagram-dimension.endX"
 					],
 					"motion": false
 				},
@@ -1162,7 +1166,7 @@
 				{
 					"id": "block-setting:unclassified:string",
 					"label": "block settings, role unclassified, string",
-					"count": 73,
+					"count": 76,
 					"examples": [
 						"sgs/account.greeting",
 						"sgs/account.latestOrderHeading",
@@ -1201,7 +1205,7 @@
 				{
 					"id": "block-setting:visual:number",
 					"label": "block settings, role visual, number",
-					"count": 16,
+					"count": 18,
 					"examples": [
 						"sgs/media.overlayOpacity",
 						"sgs/mega-panel.surfaceOpacity",
@@ -1236,7 +1240,7 @@
 				{
 					"id": "block-setting:visual:styling",
 					"label": "block settings, role visual, styling",
-					"count": 399,
+					"count": 419,
 					"examples": [
 						"sgs/accordion-item.borderRadius",
 						"sgs/accordion-item.borderStyle",
@@ -2107,9 +2111,10 @@
 				{
 					"id": "sgs-support:animationItems",
 					"label": "supports.sgs.animationItems",
-					"count": 1,
+					"count": 2,
 					"examples": [
-						"sgs/card-grid"
+						"sgs/card-grid",
+						"sgs/nav-bar-menu"
 					],
 					"motion": false
 				},
@@ -2157,7 +2162,7 @@
 				{
 					"id": "sgs-support:boxFamilies",
 					"label": "supports.sgs.boxFamilies",
-					"count": 70,
+					"count": 71,
 					"examples": [
 						"sgs/accordion",
 						"sgs/accordion-item",
@@ -2607,15 +2612,24 @@
 					"motion": false
 				},
 				{
+					"id": "extension:focusRests",
+					"label": "extension focusRests (focus-rests.js)",
+					"count": 1,
+					"examples": [
+						"sgsFocusRests"
+					],
+					"motion": false
+				},
+				{
 					"id": "extension:imageControls",
 					"label": "extension imageControls (image-controls.js)",
-					"count": 8,
+					"count": 5,
 					"examples": [
 						"sgsColourTreatment",
-						"sgsHeightDesktop",
-						"sgsHeightMobile",
-						"sgsHeightTablet",
-						"sgsHeightUnit"
+						"sgsHeight",
+						"sgsMaxWidth",
+						"sgsObjectFit",
+						"sgsObjectPosition"
 					],
 					"motion": false
 				},
@@ -3362,6 +3376,13 @@
 					"motion": false
 				},
 				{
+					"id": "snapshot-key:settings.color.defaultDuotone",
+					"label": "theme-snapshot settings.color.defaultDuotone",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
 					"id": "snapshot-key:settings.color.defaultGradients",
 					"label": "theme-snapshot settings.color.defaultGradients",
 					"count": 1,
@@ -3474,6 +3495,27 @@
 					"motion": false
 				},
 				{
+					"id": "snapshot-key:settings.custom.highlight",
+					"label": "theme-snapshot settings.custom.highlight",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.hover",
+					"label": "theme-snapshot settings.custom.hover",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.inlinePhoto",
+					"label": "theme-snapshot settings.custom.inlinePhoto",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
 					"id": "snapshot-key:settings.custom.linkSweep",
 					"label": "theme-snapshot settings.custom.linkSweep",
 					"count": 1,
@@ -3490,6 +3532,13 @@
 				{
 					"id": "snapshot-key:settings.custom.measuredDiagramPresets",
 					"label": "theme-snapshot settings.custom.measuredDiagramPresets",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.scrollbar",
+					"label": "theme-snapshot settings.custom.scrollbar",
 					"count": 1,
 					"examples": [],
 					"motion": false

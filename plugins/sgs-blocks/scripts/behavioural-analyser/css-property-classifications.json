@@ -2510,14 +2510,6 @@
     },
     {
       "slug": "sgs/button",
-      "attr": "customWidth",
-      "fields": {
-        "css_property": "width",
-        "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/button",
       "attr": "fontFamily",
       "fields": {
         "css_property": "font-family",
@@ -7658,7 +7650,7 @@
     },
     {
       "slug": "sgs/decorative-image",
-      "attr": "maxWidthPercent",
+      "attr": "maxWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "OUTER",
@@ -14274,29 +14266,9 @@
     },
     {
       "slug": "sgs/hero",
-      "attr": "splitMediaHeight",
-      "fields": {
-        "css_property": "height",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
       "attr": "splitMediaMaxHeight",
       "fields": {
-        "css_property": "max-height",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
-      }
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaMaxWidth",
-      "fields": {
-        "css_property": "max-width",
-        "css_layer": "GRID_AREA",
-        "css_element": "split-media"
+        "css_property": "max-height"
       }
     },
     {
@@ -31827,6 +31799,14 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "customWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "iconBackground",
       "fields": {
         "css_property": "background-color",
@@ -33080,6 +33060,38 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionBottom",
+      "fields": {
+        "css_property": "bottom",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionLeft",
+      "fields": {
+        "css_property": "left",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionRight",
+      "fields": {
+        "css_property": "right",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "positionTop",
+      "fields": {
+        "css_property": "top",
+        "css_element": "wrapper"
       }
     },
     {
@@ -34882,6 +34894,24 @@
         "css_layer": "GRID_AREA",
         "css_element": "split-media",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaHeight",
+      "fields": {
+        "css_property": "height",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "splitMediaMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_layer": "GRID_AREA",
+        "css_element": "split-media"
       }
     },
     {
@@ -42036,63 +42066,8 @@
       }
     },
     {
-      "slug": "sgs/before-after",
-      "attr": "heightUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "minHeightMobileUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "minHeightTabletUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/button",
-      "attr": "minHeightUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/feature-grid",
-      "attr": "minItemWidthUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaHeightUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaMaxHeightUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaMaxWidthUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/hero",
-      "attr": "splitMediaWidthUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "customWidthUnit",
-      "fields": {}
-    },
-    {
       "slug": "sgs/text",
       "attr": "firstLetterFontSizeUnit",
-      "fields": {}
-    },
-    {
-      "slug": "sgs/text",
-      "attr": "maxWidthUnit",
       "fields": {}
     },
     {
