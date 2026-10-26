@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/fill-ancestor.mjs", "find": "if ( undefined !== unknown ) {", "replace": "if ( false ) {", "why": "an unknown reached path is no longer refused" },
+	{ "file": "lib/fill-ancestor.mjs", "find": "return widths.length === Object.keys( b ).length && widths.every(", "replace": "return widths.filter( ( w ) => w in b ).every(", "why": "instances with no overlapping widths compare as the same" },
+	{ "file": "lib/fill-ancestor.mjs", "find": "return null === d || ! sameAsk( prop, d, p.draft );", "replace": "return null === d || ( Object.keys( d ).length && false );", "why": "the check never compares an instance's ask" },
+	{ "file": "lib/fill-ancestor.mjs", "find": "\t\t\tskipped( p.row, 'a size is judged", "replace": "\t\t\t0 && skipped( p.row, 'a size is judged", "why": "a size row skipped by the hop records no reason" },
+	{ "file": "lib/fill-ancestor.mjs", "find": "\t\t\tskipped( p.row, 'the element already renders", "replace": "\t\t\t0 && skipped( p.row, 'the element already renders", "why": "a held row skipped by the hop records no reason" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "...( layer ? { skipped: {", "replace": "...( false ? { skipped: {", "why": "a painted-layer row records no skipped checks" },
+	{ "file": "lib/fill-resolve-element.mjs", "find": "...( layer ? [] : [ 'calibrated-slots' ] ),", "replace": "'calibrated-slots',", "why": "a layer row claims calibrated-slots ran" },
+	{ "file": "lib/resolve.mjs", "find": "\tif ( ! db ) {\n\t\treturn null;\n\t}\n\tif ( ! slotLookups.has( db ) ) {", "replace": "\tif ( ! slotLookups.has( db ) ) {", "why": "no database throws" },
+	{ "file": "lib/resolve.mjs", "find": "return slotLookups.get( db )?.get( block, attr )?.canonical_slot ?? null;", "replace": "return db.prepare( 'SELECT canonical_slot FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr )?.canonical_slot ?? null;", "why": "a statement is prepared per lookup" }
+]
