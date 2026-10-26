@@ -224,3 +224,5 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-26 S deploy-start all (text shadow hover colour and the review fixes; --motion-qa-tier full)
 - 2026-10-26 S deployed sandybrown,indus-test,mamas-test,eye-care-clone-test,eye-care-test 361f96bcf (review fixes and the text shadow hover colour), all five DONE, gate-full 13 of 13, canary motion 19 of 19; calibrations may go ahead
 - 2026-10-26 S calibration-end local-indus (read key 42e9b83198fd: 56 of 57 Indus blocks current; sgs/account refused by the loss guard, old map kept; every Phase 3 loop 1 setting reached at 375/768/1440)
+- 2026-10-26 W walker e1eb08720 (Track S U10 re-clone pins it: scripts/parity unchanged since, only GAP-CHECKLIST.md; the first-pass walks of 2026-10-25 used it, so walk counts compare)
+- 2026-10-26 S site-run-start indus-foods (U10 re-clone at 081416aee, build 361f96bcf deployed: manifest --apply, site-build --apply, site-run.mjs every surface on indus-test; reads the framework DB, writes indus-test posts; hold reseeds, deploys and Indus calibrations until site-run-end; replaces the open 2026-10-25 site-run-start line)
