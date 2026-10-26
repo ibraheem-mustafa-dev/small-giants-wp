@@ -62,8 +62,10 @@ SKIP_PREFIXES = (
 # A client draft lives unchanged under sites/<client>/: its export (a folder starting design_handoff), its handoff folder
 # (Spec 48A) and its mockups. They are the client's input, not framework sources. A design exploration folder under
 # sites/ ("sites/<topic> design/") holds mockups too. A Claude Design component file (`*.dc.html`, a draft or a test
-# fixture copied from one) is draft markup wherever it sits: its class names are the draft's, not SGS block slugs.
-SKIP_CONTAINS = ("/design_handoff", "/handoff/", "Handoff/", "/mockups/", " design/", ".dc.html")
+# fixture copied from one) is draft markup wherever it sits: its class names are the draft's, not SGS block slugs. An
+# intake recording (sites/<client>/build/intake/) holds the draft's elements as recorded (their classes and HTML
+# snippets), so a draft class that shares a retired block's root (`sgs-mega-menu`) is the draft's too.
+SKIP_CONTAINS = ("/design_handoff", "/handoff/", "Handoff/", "/mockups/", " design/", ".dc.html", "/build/intake/")
 LIVE_ROOTS = ("plugins", "scripts", "theme", "sites", ".claude")
 TEXT_SUFFIXES = {".php", ".js", ".mjs", ".cjs", ".json", ".py", ".md", ".css", ".scss", ".html", ".txt", ".yml", ".yaml", ".sql", ".sh"}
 MAX_BYTES = 3_000_000
@@ -170,6 +172,8 @@ def self_test() -> int:
     need("does not match a live longer name", scan_text("sgs-nav-menu-panels and sgs/divider-x", rx) == [])
     need("reports each line", scan_text("a\ncta-section\nb\nsgs/cta-section", rx) == [2, 4])
     need("register has dates", all(RETIRED.values()))
+    need("skips an intake recording of a draft", not is_live("sites/acme/build/intake/intake.json"))
+    need("still reads a client build tree", is_live("sites/acme/build/home.tree.json"))
     print('{"selfTest": true, "failures": %s}' % failures)
     return 1 if failures else 0
 
