@@ -90,7 +90,8 @@ if ( ! function_exists( 'sgs_responsive_css_rule' ) ) {
 			$cast       = $spec['cast'] ?? 'float';
 			$transform = $spec['transform'] ?? null;
 
-			$unit = $spec['unit_default'] ?? '';
+			// A caller's unit_default can come from a stored attribute, so it is cleaned the same way as a unit_attr value.
+			$unit = sgs_responsive_sanitise_unit( $spec['unit_default'] ?? '' );
 			if ( ! empty( $spec['unit_attr'] ) && isset( $attributes[ $spec['unit_attr'] ] ) && '' !== $attributes[ $spec['unit_attr'] ] ) {
 				$raw_unit = (string) $attributes[ $spec['unit_attr'] ];
 				if ( isset( $spec['unitless_sentinel'] ) && $spec['unitless_sentinel'] === $raw_unit ) {

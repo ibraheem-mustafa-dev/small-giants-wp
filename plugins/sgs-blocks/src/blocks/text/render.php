@@ -148,6 +148,7 @@ if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
 // Validate unit values — only allow safe CSS units.
 $allowed_units     = array( 'px', 'em', 'rem', '%', 'vw', 'vh' );
 $custom_width_unit = in_array( $custom_width_unit, $allowed_units, true ) ? $custom_width_unit : 'px';
+$max_width_unit    = in_array( $max_width_unit, $allowed_units, true ) ? $max_width_unit : 'px';
 
 // ---------------------------------------------------------------------------
 // 4. NO-INLINE: this block emits zero inline style property declarations. Contract + mechanism: Spec 32. Enforced by scripts/audit-inline-styling.js --check.
@@ -262,7 +263,7 @@ if ( '' !== $text_colour_effective ) {
 // D971/D972 full-replacement track), not here.
 
 if ( null !== $max_width && '' !== $max_width ) {
-	$base_decls[] = 'max-width:' . floatval( $max_width ) . esc_attr( $max_width_unit );
+	$base_decls[] = 'max-width:' . floatval( $max_width ) . $max_width_unit;
 	// Pair with auto-centring (2026-09-08 fix) — mirrors sgs/quote's identical
 	// maxWidth pattern (render.php ~line 414-415) and every other block that
 	// emits a bare max-width in this codebase (before-after, option-picker,
