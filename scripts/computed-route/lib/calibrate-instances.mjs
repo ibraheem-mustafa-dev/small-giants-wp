@@ -176,6 +176,12 @@ export function planInstances( block, { rows, enumRows = [], schema, snapshot, f
 		}
 		return baseKey;
 	};
+	// A paint state (calibration-fixtures.json `paintStates`) is a way the block renders whose resting paint differs from
+	// the default instance's (an empty Floating layer is inert, a layer holding blocks takes pointer events): one more
+	// default instance each, read for its paint only, never for a setting.
+	for ( const ps of fixture.paintStates || [] ) {
+		instances.push( { key: `paint-${ ps.name }`, attrs: variantAttributes( fixture.attributes, ps.attributes || {} ), inner: ps.inner, paintState: { name: ps.name, when: ps.when || {} } } );
+	}
 	variants.forEach( ( vattrs, vi ) => {
 		instances.push( { key: `default-v${ vi }`, attrs: vattrs, variant: vi, isDefault: true } );
 		for ( const row of rows ) {

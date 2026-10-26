@@ -91,7 +91,7 @@ export const sameAsk = ( prop, a, b ) => {
 function instancesOf( st, host, home ) {
 	const found = { measured: [], unmeasured: [] };
 	for ( const rec of subtree( st, host.index ) ) {
-		const cal = st.calFor( rec.name );
+		const cal = st.calFor( rec.name, rec );
 		const parts = [ ...new Set( knownPaths( cal ).filter( ( p ) => p && ! String( p ).includes( '::' ) ) ) ].filter( ( p ) => tailOf( p, home ) );
 		if ( ! parts.length ) {
 			continue;
@@ -149,7 +149,7 @@ export function partWideWrites( st, { hop = resolveViaAncestor } = {} ) {
 		const hosts = [];
 		for ( let i = p.rec.parent; source && null !== i; i = st.nodes[ i ].parent ) {
 			const hostRec = st.nodes[ i ];
-			const homes = homesOf( partView( st, hostRec.name, st.calFor( hostRec.name ), source.slot ), source.slot );
+			const homes = homesOf( partView( st, hostRec.name, st.calFor( hostRec.name, hostRec ), source.slot ), source.slot );
 			homes.length && hosts.push( { hostRec, homes } );
 		}
 		let outcome = hosts.length ? '' : 'no enclosing block holds a setting that paints this part';
@@ -182,7 +182,7 @@ export function partWideWrites( st, { hop = resolveViaAncestor } = {} ) {
 // One host path: the hop's proof and guard, then Fill's resolver for the write. Returns { settled, reason, attr, detail } or { outcome }.
 function tryHost( st, p, source, hostRec, home, hop, done ) {
 	const host = st.flat[ hostRec.index ];
-	const hostCal = partView( st, hostRec.name, st.calFor( hostRec.name ), source.slot );
+	const hostCal = partView( st, hostRec.name, st.calFor( hostRec.name, hostRec ), source.slot );
 	const hostRef = refOf( host );
 	const key = `${ hostRec.index }|${ LOOSE( home ) }|${ p.prop }|${ json( p.draft ) }`;
 	if ( done.has( key ) ) {

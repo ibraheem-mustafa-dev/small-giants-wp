@@ -174,7 +174,7 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 	};
 	const rowCircled = Boolean( st.flat[ rowRec.index ].attributes?.[ circleAttr( st.db, rowRec.name ) ] );
 	for ( const c of copies ) {
-		const childCal = st.calFor( c.name );
+		const childCal = st.calFor( c.name, c );
 		const cref = refOf( st.flat[ c.index ] );
 		const cnode = st.flat[ c.index ];
 		if ( ! childCal ) {

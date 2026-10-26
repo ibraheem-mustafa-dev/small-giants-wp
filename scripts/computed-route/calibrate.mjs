@@ -87,6 +87,13 @@ function declaredAttrs( db, block ) {
 	return new Set( db.prepare( 'SELECT attr_name FROM block_attributes WHERE block_slug = ?' ).all( block ).map( ( r ) => r.attr_name ) );
 }
 
+// The key a site's default paint is kept under: the deployed build's md5 and the snapshot's, plus the block's paint
+// states (calibration-fixtures.json `paintStates`) where it has them, so a changed paint state is measured again.
+export function paintKeyOf( slotKey, snapshotKey, fixture ) {
+	const states = fixture?.paintStates;
+	return states?.length ? `${ slotKey }-${ snapshotKey }-${ md5( JSON.stringify( states ) ).slice( 0, 8 ) }` : `${ slotKey }-${ snapshotKey }`;
+}
+
 async function calibrateBlock( block, { site, target, env, shared, fixtures, snapshot, rawSnapshot, db, slotKey, paintKey, due, rejectedOut, image, allowLoss = {} } ) {
 	const short = block.replace( /^sgs\//, '' );
 	const fixture = fixtures[ block ];
@@ -225,6 +232,8 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	// Default paint: every variant's elements (a path seen in several variants keeps the first).
 	const elements = {};
 	instances.filter( ( i ) => i.isDefault ).forEach( ( i ) => Object.entries( defaultPaint( i.read ) ).forEach( ( [ p, v ] ) => ( elements[ p ] ??= v ) ) );
+	// Each paint state's own default paint, with the condition Fill matches a node against (lib/paint-state.mjs).
+	const paintStates = Object.fromEntries( instances.filter( ( i ) => i.paintState && i.read ).map( ( i ) => [ i.paintState.name, { when: i.paintState.when, elements: defaultPaint( i.read ) } ] ) );
 	// A block whose tiers follow its container's width (an @container rule) reaches a tier at fewer page widths by design.
 	// Either the built stylesheet holds an @container rule, or the render emits them at run time (site-footer-row's
 	// built style-index.css has none, because the wrapper writes its tier rules when it renders).
@@ -270,7 +279,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 	// FR-48-75: the Playwright and browser builds that produced this file; G0 treats a change in either as stale.
 	const playwrightVersion = createRequire( import.meta.url )( 'playwright/package.json' ).version;
 	const browserVersion = shared.context.browser()?.version() ?? null;
-	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
+	const file = { block, site, slotKey, paintKey, readKey: READ_KEY, playwrightVersion, browserVersion, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: [ ...new Set( untested ) ], rejected };
 	// The whole block is measured either way; only the output that is due is written.
 	const { slotMap, paint } = splitCalibration( file );
 	const decision = due.slotMap ? slotMapWriteDecision( readSlotMap( CACHE, block ), slotMap, allowLoss[ block ] || [], declaredAttrs( db, block ) ) : { write: false, lost: [] };
@@ -308,6 +317,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	assertWritable( { postId: target.postId }, { calibrationTargets: targets, surfaces } );
 	const snapFile = path.join( REPO, 'sites', client, 'theme-snapshot.json' );
 	const paintSuffix = md5( fs.readFileSync( snapFile ) );
+	const fixtures = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) );
 	// A deploy mismatch stops the run before any write.
 	const keys = {};
 	for ( const b of asked ) {
@@ -329,7 +339,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const due = {};
 	for ( const b of asked ) {
 		const slotWhy = slotMapSkip( CACHE, b, site, keys[ b ], recalibrate );
-		const paintWhy = paintSkip( CACHE, b, site, `${ keys[ b ] }-${ paintSuffix }`, recalibrate );
+		const paintWhy = paintSkip( CACHE, b, site, paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), recalibrate );
 		due[ b ] = dueOutputs( slotWhy, paintWhy, slotMapOnly );
 		( slotWhy || paintWhy ) && console.log( JSON.stringify( { block: b, skipped: { slotMap: slotWhy, paint: paintWhy } } ) );
 	}
@@ -339,7 +349,6 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	}
 	// Each fixture's site references resolve from this target's refs (lib/calibration-refs.mjs), and every referenced
 	// object is checked on the site first: a block whose reference is unsupplied or missing is reported and not built.
-	const fixtures = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) );
 	const refs = refsFor( targets, site );
 	const roles = [ ...new Set( dueBlocks.filter( ( b ) => fixtures[ b ] && ! resolveFixture( fixtures[ b ], refs ).missing.length ).flatMap( ( b ) => fixtureRoles( fixtures[ b ] ) ) ) ];
 	const exists = roles.length ? checkRefsExist( refs, roles, wpEvalRunner( target, site, REPO ) ) : {};
@@ -379,7 +388,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			// One block's failure (a page that never renders its instance, a host time-out) is that block's error; the
 			// rest of the run continues.
 			try {
-				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: `${ keys[ b ] }-${ paintSuffix }`, due: due[ b ], allowLoss } ) );
+				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), due: due[ b ], allowLoss } ) );
 			} catch ( e ) {
 				results.push( { block: b, error: String( e.message || e ).split( /\r?\n/ )[ 0 ] } );
 			}

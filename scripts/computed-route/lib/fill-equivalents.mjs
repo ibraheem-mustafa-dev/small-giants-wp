@@ -77,7 +77,7 @@ export function fillEquivalent( st, rec, target, prop, draft, h ) {
 			continue;
 		}
 		const at = onParent ? st.nodes[ rec.parent ] : rec;
-		const cal = st.calFor( at.name );
+		const cal = st.calFor( at.name, at );
 		if ( ! cal ) {
 			continue;
 		}

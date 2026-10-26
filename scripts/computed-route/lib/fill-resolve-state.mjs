@@ -191,7 +191,7 @@ export function ledgerView( st, rec, ref, prop, draft, pseudo ) {
 // The node's element that holds its gap: the target at the calibrated slot of the block's `gap` setting when the
 // skeleton gives one (a container's inner element), else the node's own element.
 export const gapTarget = ( st, rec ) => {
-	const slot = st.calFor( rec.name )?.settings?.gap?.slot;
+	const slot = st.calFor( rec.name, rec )?.settings?.gap?.slot;
 	return ( slot && rec.targets.find( ( t ) => t.slot === slot ) ) || rec.targets.find( ( t ) => '' === t.slot ) || null;
 };
 

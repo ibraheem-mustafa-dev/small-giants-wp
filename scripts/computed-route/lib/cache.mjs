@@ -31,7 +31,7 @@ export function paintSite( site ) {
 export const recordSite = paintSite;
 
 // The fields that make up the default paint; every other calibration field belongs to the slot map.
-export const PAINT_FIELDS = [ 'elements' ];
+export const PAINT_FIELDS = [ 'elements', 'paintStates' ];
 
 const slugOf = ( block ) => String( block ).replace( /^sgs\//, '' );
 
@@ -111,7 +111,7 @@ export function loadCalibration( dir, block, site ) {
 	if ( ! paint ) {
 		return { ...slotMap, elements: {}, paintMissing: site ? `no default paint for ${ site }; run calibrate.mjs on that site` : 'no site named, so no default paint to read' };
 	}
-	return { ...slotMap, elements: paint.elements || {}, paintKey: paint.paintKey, paintSite: paint.site, paintReadKey: paint.readKey ?? null };
+	return { ...slotMap, elements: paint.elements || {}, ...( paint.paintStates ? { paintStates: paint.paintStates } : {} ), paintKey: paint.paintKey, paintSite: paint.site, paintReadKey: paint.readKey ?? null };
 }
 
 // Why a run on `site` must leave the block's slot map alone, or null when it may write it: a slot map whose key is current

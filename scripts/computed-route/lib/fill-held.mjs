@@ -213,7 +213,7 @@ export function makeSettle( st ) {
 			if ( ! Object.keys( values ).length ) {
 				return null;
 			}
-			const cal = st.calFor( rec.name );
+			const cal = st.calFor( rec.name, rec );
 			const mine = writes.filter( ( w ) => w.node === row.node );
 			const contextAt = ( w ) => elementContext( st, rec, target, w );
 			const covered = coveredBySetting( row, values, mine, cal, contextAt, st.snapshot?.palette ) ?? coveredByMotion( row, values, mine, tokens );
@@ -252,7 +252,7 @@ export function makeSettle( st ) {
 				return snapsOf( st, `${ rec.parent }:` )[ w ]?.styles?.[ prop ];
 			}
 			const root = snapsOf( st, `${ rec.index }:` )[ w ];
-			return st.page( st.calFor( rec.name )?.elements?.[ '' ]?._tag ).value( prop, w, parseFloat( root?.styles?.[ 'font-size' ] ) || 16 );
+			return st.page( st.calFor( rec.name, rec )?.elements?.[ '' ]?._tag ).value( prop, w, parseFloat( root?.styles?.[ 'font-size' ] ) || 16 );
 		}
 	};
 }

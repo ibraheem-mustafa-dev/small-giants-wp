@@ -2298,6 +2298,48 @@
           "text": "Layer text."
         }
       }
+    ],
+    "paintStates": [
+      {
+        "name": "empty",
+        "when": {
+          "inner": false,
+          "lacks": [
+            "decorMedia",
+            "imageUrl"
+          ]
+        },
+        "attributes": {
+          "decorMedia": null,
+          "width": {
+            "desktop": "120px"
+          },
+          "height": {
+            "desktop": "120px"
+          },
+          "borderWidth": {
+            "top": "2px",
+            "right": "2px",
+            "bottom": "2px",
+            "left": "2px"
+          },
+          "borderStyle": "solid",
+          "borderColour": "#000000"
+        },
+        "inner": []
+      },
+      {
+        "name": "image",
+        "when": {
+          "inner": false,
+          "has": [
+            "decorMedia",
+            "imageUrl"
+          ]
+        },
+        "attributes": {},
+        "inner": []
+      }
     ]
   },
   "sgs/feature-grid": {

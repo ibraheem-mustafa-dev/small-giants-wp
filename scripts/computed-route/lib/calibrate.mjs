@@ -21,7 +21,7 @@ export { elementPath } from '../../parity/lib/ref-trace.mjs';
 export function buildTree( block, fixture, instances ) {
 	const short = block.replace( /^sgs\//, '' );
 	return instances.map( ( inst, n ) => {
-		let node = { name: block, attributes: { ...( inst.attrs || fixture.attributes || {} ), className: `${ CAL_PREFIX }${ n }` }, innerBlocks: structuredClone( fixture.inner || [] ) };
+		let node = { name: block, attributes: { ...( inst.attrs || fixture.attributes || {} ), className: `${ CAL_PREFIX }${ n }` }, innerBlocks: structuredClone( inst.inner ?? fixture.inner ?? [] ) };
 		for ( const p of [ ...( fixture.parents || [] ) ].reverse() ) {
 			node = { name: p.name, attributes: { ...( p.attributes || {} ) }, innerBlocks: [ node ] };
 		}
