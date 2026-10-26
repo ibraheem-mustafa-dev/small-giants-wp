@@ -3,6 +3,7 @@ import { createHash } from 'crypto';
 import { DEFAULT_PROPS, HOVER_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { REF_PROPS } from '../../parity/lib/ref-trace.mjs';
 import { modifierOf, GRADIENT_PAINTS } from './db.mjs';
+import { longhandsOf } from './css-families.mjs';
 
 export const WIDTHS = [ 375, 768, 1440 ];
 export const MARKER_HEX = '#13579b';
@@ -18,7 +19,8 @@ export const CAL_PREFIX = 'cr-ref-cal-';
 // (.claude/reports/2026-10-19-css-equivalence-audit.md), so a draft value equal to that paint is judged equal.
 export const CAL_EXTRA_PROPS = [ 'height', 'min-width', 'max-height', 'stroke', 'fill', 'grid-template-rows', 'grid-auto-columns', 'column-count', 'flex-basis', 'writing-mode', 'background-attachment', 'background-size', 'background-position', 'border-image-source', 'object-position', 'text-indent', 'border-bottom-style', 'border-left-style', 'border-right-style', 'text-decoration-style', 'animation-delay', 'mix-blend-mode', 'stroke-width', 'stroke-dasharray',
 	'right', 'bottom', 'flex-shrink', 'order', 'grid-auto-flow', 'overflow-x', 'overflow-y', 'overscroll-behavior-x', 'overscroll-behavior-y', 'resize', 'pointer-events', 'cursor', 'accent-color', 'scrollbar-width', 'background-clip', 'background-repeat', 'stroke-linecap', 'stroke-linejoin', 'box-sizing', 'scroll-behavior', 'scroll-margin-top', 'scroll-padding-top', 'scroll-padding-right', 'scroll-padding-bottom', 'scroll-padding-left', 'scroll-snap-align', 'scroll-snap-type', 'white-space', 'justify-items',
-	'position', 'z-index', 'transition-property', 'transition-behavior', 'background-origin' ];
+	'position', 'z-index', 'transition-property', 'transition-behavior', 'background-origin',
+	'font-variant-numeric', 'clip-path', 'grid-auto-rows', 'align-content', '-webkit-text-stroke-width', '-webkit-text-stroke-color', 'scrollbar-color', '-webkit-line-clamp' ];
 
 export const READ_PROPS = [ ...new Set( [ ...DEFAULT_PROPS.filter( ( p ) => ! /^icon-/.test( p ) ), ...REF_PROPS, ...HOVER_PROPS, ...CAL_EXTRA_PROPS ] ) ];
 
@@ -62,7 +64,10 @@ const ALIASES = {
 	inset: [ 'top', 'right', 'bottom', 'left' ],
 };
 
-// The longhand properties a setting's css_property covers, as calibration reads them. A modifier row
+// The longhand properties a setting's css_property covers, as calibration reads them. A property calibration reads is its
+// own longhand; any other is reached through the longhands the CSS families give it (lib/css-families.mjs::longhandsOf:
+// `overflow` through overflow-x and overflow-y, `padding-block` through padding-top and padding-bottom), so a
+// shorthand or logical spelling needs no entry here. A modifier row
 // (`grid-template-columns:count`, a track count) is read under the property it modifies (lib/db.mjs::modifierOf).
 export function longhands( cssProperty ) {
 	return [ ...new Set( cssProperty.split( ',' ).map( ( s ) => s.trim() ).map( ( p ) => modifierOf( p ) || p ).flatMap( ( p ) => {
@@ -82,6 +87,6 @@ export function longhands( cssProperty ) {
 		if ( 'text-decoration' === p ) {
 			return [ 'text-decoration-line' ];
 		}
-		return [ p ];
+		return READ_PROPS.includes( p ) ? [ p ] : longhandsOf( p );
 	} ) ) ].filter( ( p ) => READ_PROPS.includes( p ) );
 }

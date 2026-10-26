@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/calibrate-props.mjs", "find": "READ_PROPS.includes( p ) ? [ p ] : longhandsOf( p );", "replace": "[ p ];", "why": "a shorthand is no longer reached through its read longhands" },
+	{ "file": "lib/calibrate-props.mjs", "find": "\t'font-variant-numeric', 'clip-path', ", "replace": "\t", "why": "font-variant-numeric and clip-path are not read" },
+	{ "file": "lib/calibrate-props.mjs", "find": "'grid-auto-rows', 'align-content', '-webkit-text-stroke-width', '-webkit-text-stroke-color', 'scrollbar-color', '-webkit-line-clamp' ];", "replace": "];", "why": "the plain properties the detector found are not read" },
+	{ "file": "lib/calibrate-markers.mjs", "find": "\t'text-shadow': [ `${ TEXT_SHADOW_SHAPE } #13579b` ],\n", "replace": "", "why": "a free-text text-shadow gets no marker" },
+	{ "file": "lib/calibrate-markers.mjs", "find": "\t'overflow': [ 'hidden', 'clip' ],\n", "replace": "", "why": "a free-text overflow gets no marker" },
+	{ "file": "lib/calibrate-markers.mjs", "find": ", 'text-shadow-color': TEXT_SHADOW_SHAPE };", "replace": " };", "why": "a text shadow colour has no shape partner" },
+	{ "file": "lib/calibrate-markers.mjs", "find": "export const TEXT_SHADOW_SHAPE = '2px 3px 4px';", "replace": "export const TEXT_SHADOW_SHAPE = '2px 3px 4px 5px';", "why": "a text shadow marker carries a spread" }
+]
