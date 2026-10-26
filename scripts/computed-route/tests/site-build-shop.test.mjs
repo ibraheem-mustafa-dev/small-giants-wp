@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { planBuild } from '../lib/site-build-plan.mjs';
+import { planBuild, wooContentRole } from '../lib/site-build-plan.mjs';
 import { applyPhase, wpBuildPage } from '../lib/site-build-apply.mjs';
 import { ROW_META, TEMPLATE_OPTION, statePhp } from '../lib/site-build-state.mjs';
 
@@ -98,7 +98,15 @@ test( 'WooCommerce\'s own default page for a role is taken over and marked; any 
 	assert.deepEqual( ok.problems, [] );
 	assert.deepEqual( ok.actions.filter( ( a ) => 'adopt' === a.type ).map( ( a ) => [ a.key, a.id, a.mark ] ), [ [ 'page:checkout', 8, true ] ] );
 	assert.ok( ! ok.actions.some( ( a ) => 'create' === a.type && 'page:checkout' === a.key ) );
-	assert.ok( ok.actions.some( ( a ) => 'build' === a.type && 'page:checkout' === a.key ) );
+	assert.ok( ! ok.actions.some( ( a ) => 'build' === a.type && 'page:checkout' === a.key ), 'MUST FAIL: WooCommerce\'s own checkout page keeps its content; it is never rebuilt from a tree' );
+} );
+
+test( 'MUST FAIL: wooContentRole names the pages WooCommerce renders itself; the shop and ordinary pages are not', () => {
+	assert.equal( wooContentRole( row( { slug: 'basket', template: 'cart' } ) ), 'cart' );
+	assert.equal( wooContentRole( row( { slug: 'checkout', template: 'checkout' } ) ), 'checkout' );
+	assert.equal( wooContentRole( row( { slug: 'account' } ) ), 'my account' );
+	assert.equal( wooContentRole( row( { slug: 'shop', postType: 'shop', template: 'archive-product' } ) ), null );
+	assert.equal( wooContentRole( row( { slug: 'contact' } ) ), null );
 } );
 
 test( 'MUST FAIL: WooCommerce\'s stock cart page (core blocks inside its cart block) is taken over when it equals the installed WooCommerce\'s own default; one edit inside it still stops the run', () => {

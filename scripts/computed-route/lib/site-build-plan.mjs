@@ -21,15 +21,27 @@ const CREATES = [ 'create', 'menu', 'item-add' ];
 
 const shown = ( v ) => ( v && 'object' === typeof v && v.ref ? `(new ${ v.ref })` : String( v ) );
 
-// The WooCommerce page options (part 6) and the page-map row each takes: a row's template (cart, checkout), its type
-// (shop) or WooCommerce's own page name (my-account, account) says which. Each entry is [ option, role, candidate rows ].
+// WooCommerce's role for a page-map row whose page WooCommerce renders itself ('cart', 'checkout', 'my account'), else null:
+// its template (cart, checkout) or WooCommerce's own page name (my-account, account) says which.
+export function wooContentRole( row ) {
+	if ( 'page' !== row?.postType ) {
+		return null;
+	}
+	if ( [ 'cart', 'checkout' ].includes( row.template ) ) {
+		return row.template;
+	}
+	return [ 'my-account', 'account' ].includes( row.slug ) ? 'my account' : null;
+}
+
+// The WooCommerce page options (part 6) and the page-map row each takes: the shop row by its type, the others by
+// wooContentRole. Each entry is [ option, role, candidate rows ].
 function wooRoles( rows ) {
 	const pagesOf = ( test ) => rows.filter( ( r ) => hasPost( r ) && test( r ) );
 	return [
 		[ 'woocommerce_shop_page_id', 'shop', pagesOf( ( r ) => 'shop' === r.postType ) ],
-		[ 'woocommerce_cart_page_id', 'cart', pagesOf( ( r ) => 'page' === r.postType && 'cart' === r.template ) ],
-		[ 'woocommerce_checkout_page_id', 'checkout', pagesOf( ( r ) => 'page' === r.postType && 'checkout' === r.template ) ],
-		[ 'woocommerce_myaccount_page_id', 'my account', pagesOf( ( r ) => 'page' === r.postType && [ 'my-account', 'account' ].includes( r.slug ) ) ],
+		[ 'woocommerce_cart_page_id', 'cart', pagesOf( ( r ) => 'cart' === wooContentRole( r ) ) ],
+		[ 'woocommerce_checkout_page_id', 'checkout', pagesOf( ( r ) => 'checkout' === wooContentRole( r ) ) ],
+		[ 'woocommerce_myaccount_page_id', 'my account', pagesOf( ( r ) => 'my account' === wooContentRole( r ) ) ],
 	];
 }
 
@@ -142,7 +154,11 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		const p = state.posts[ String( ids[ key ] ) ];
-		if ( p.treeHash !== hash ) {
+		// WooCommerce's own cart, checkout and account pages keep WooCommerce's content (its Cart and Checkout blocks, the
+		// account shortcode or block): that content takes orders and saves accounts, so the clone styles it and never rebuilds
+		// it from a tree. The shop page's content is not shown (the shop template is), so it is built as any page.
+		const wooContent = woo.some( ( [ option, , list ] ) => 'woocommerce_shop_page_id' !== option && list[ 0 ] === row );
+		if ( p.treeHash !== hash && ! wooContent ) {
 			if ( p.builtContentHash && p.contentHash !== p.builtContentHash ) {
 				problems.push( `${ key }: post ${ p.id } was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or let the rebuild win with "wp post meta delete ${ p.id } ${ CONTENT_META }"` );
 			} else {

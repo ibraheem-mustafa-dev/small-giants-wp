@@ -25,6 +25,7 @@ import { routeHash, withRoute } from './lib/fill-open.mjs';
 import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
+import { wooContentRole } from './lib/site-build-plan.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'walk' ];
@@ -127,11 +128,20 @@ export async function main( argv ) {
 			return note( key, 'skipped', true, 0, skip );
 		}
 		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
+		// WooCommerce's own cart, checkout and account pages keep WooCommerce's content (lib/site-build-plan.mjs::wooContentRole):
+		// they are walked against the draft, never Filled or built over.
+		const wooPage = wooContentRole( row );
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
 		const liveUrl = row ? `${ base }${ permalinkOf( row, rows ) }` : `${ base }/`;
 		const step = async ( stage, fn ) => {
 			if ( ! stages.includes( stage ) ) {
 				return true;
+			}
+			// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
+			// pages itself, so neither applies until the commerce pages are styled through their own blocks' settings.
+			if ( wooPage && [ 'fill', 'build', 'walk' ].includes( stage ) ) {
+				note( key, stage, true, 0, `skipped: WooCommerce's own ${ wooPage } page keeps WooCommerce's content` );
+				return 'walk' !== stage;
 			}
 			const t = Date.now();
 			try {
