@@ -4,7 +4,7 @@
     "slug": "home",
     "title": "Home",
     "parent": null,
-    "template": null,
+    "template": "front-page",
     "menus": [
       {
         "menu": "header",
@@ -22,7 +22,7 @@
     "slug": "about",
     "title": "About Us",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "header",
@@ -40,7 +40,7 @@
     "slug": "our-story",
     "title": "Our Story",
     "parent": "about",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -52,7 +52,7 @@
     "slug": "certifications",
     "title": "Certifications",
     "parent": "about",
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "footer",
@@ -70,7 +70,7 @@
     "slug": "community",
     "title": "Community & Charity",
     "parent": "about",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -82,7 +82,7 @@
     "slug": "sustainability",
     "title": "Sustainability",
     "parent": "about",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -94,7 +94,7 @@
     "slug": "careers",
     "title": "Careers",
     "parent": "about",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -106,7 +106,7 @@
     "slug": "food-service",
     "title": "Food Service",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "header",
@@ -124,7 +124,7 @@
     "slug": "manufacturing",
     "title": "Manufacturing",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -136,7 +136,7 @@
     "slug": "retail",
     "title": "Retail",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -148,7 +148,7 @@
     "slug": "wholesale",
     "title": "Wholesale",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -160,7 +160,7 @@
     "slug": "brands",
     "title": "All Brands",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "header",
@@ -183,7 +183,7 @@
     "slug": "sanam",
     "title": "Sanam",
     "parent": "brands",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -195,7 +195,7 @@
     "slug": "shan",
     "title": "Shan",
     "parent": "brands",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -207,7 +207,7 @@
     "slug": "green-leaf",
     "title": "Green Leaf",
     "parent": "brands",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -219,7 +219,7 @@
     "slug": "lemon-tree",
     "title": "The Lemon Tree",
     "parent": "brands",
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -231,7 +231,7 @@
     "slug": "apply",
     "title": "Apply for Trade Account",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "header",
@@ -254,7 +254,7 @@
     "slug": "catalogue",
     "title": "Request Catalogue",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -266,7 +266,7 @@
     "slug": "delivery",
     "title": "Delivery & Logistics",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "footer",
@@ -284,7 +284,7 @@
     "slug": "terms",
     "title": "Terms & Conditions",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "footer",
@@ -302,7 +302,7 @@
     "slug": "blog",
     "title": "Blog",
     "parent": null,
-    "template": null,
+    "template": "home",
     "menus": [
       {
         "menu": "footer",
@@ -320,7 +320,7 @@
     "slug": "contact",
     "title": "Contact Us",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "header",
@@ -338,7 +338,7 @@
     "slug": "faqs",
     "title": "FAQs",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -350,7 +350,7 @@
     "slug": "supporting-the-trade-through-ramadan",
     "title": "Supporting the trade through Ramadan",
     "parent": null,
-    "template": null,
+    "template": "single",
     "menus": [],
     "postType": "post",
     "collection": "live",
@@ -362,7 +362,7 @@
     "slug": "falak-rice-exclusive-uk-distribution",
     "title": "Falak rice: exclusive UK distribution",
     "parent": null,
-    "template": null,
+    "template": "single",
     "menus": [],
     "postType": "post",
     "collection": "live",
@@ -374,7 +374,7 @@
     "slug": "inside-our-birmingham-packing-line",
     "title": "Inside our Birmingham packing line",
     "parent": null,
-    "template": null,
+    "template": "single",
     "menus": [],
     "postType": "post",
     "collection": "live",
@@ -386,7 +386,7 @@
     "slug": "sixty-years-in-the-balti-triangle",
     "title": "Sixty years in the Balti Triangle",
     "parent": null,
-    "template": null,
+    "template": "single",
     "menus": [],
     "postType": "post",
     "collection": "live",
@@ -398,7 +398,7 @@
     "slug": "ordering-ahead-for-eid",
     "title": "Ordering ahead for Eid",
     "parent": null,
-    "template": null,
+    "template": "single",
     "menus": [],
     "postType": "post",
     "collection": "live",
@@ -410,7 +410,7 @@
     "slug": "why-independents-still-matter",
     "title": "Why independents still matter",
     "parent": null,
-    "template": null,
+    "template": "single",
     "menus": [],
     "postType": "post",
     "collection": "live",
@@ -426,7 +426,8 @@
     "postType": "sgs_form",
     "collection": "static",
     "flags": [],
-    "id": 149
+    "id": 149,
+    "draftId": "surfaces.json S-59"
   },
   {
     "slug": "careers",
@@ -437,7 +438,8 @@
     "postType": "sgs_form",
     "collection": "static",
     "flags": [],
-    "id": 151
+    "id": 151,
+    "draftId": "surfaces.json S-48"
   },
   {
     "slug": "catalogue",
@@ -448,7 +450,8 @@
     "postType": "sgs_form",
     "collection": "static",
     "flags": [],
-    "id": 153
+    "id": 153,
+    "draftId": "surfaces.json S-50"
   },
   {
     "slug": "header",
@@ -459,7 +462,8 @@
     "postType": "sgs_header",
     "collection": "static",
     "flags": [],
-    "id": 201
+    "id": 201,
+    "draftId": "surfaces.json S-03"
   },
   {
     "slug": "site-menu",
@@ -470,7 +474,8 @@
     "postType": "sgs_drawer",
     "collection": "static",
     "flags": [],
-    "id": 203
+    "id": 203,
+    "draftId": "surfaces.json S-09"
   },
   {
     "slug": "footer",
@@ -481,7 +486,8 @@
     "postType": "sgs_footer",
     "collection": "static",
     "flags": [],
-    "id": 205
+    "id": 205,
+    "draftId": "surfaces.json S-14"
   },
   {
     "slug": "about",
@@ -498,7 +504,8 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": 155
+    "id": 155,
+    "draftId": "surfaces.json S-04"
   },
   {
     "slug": "sectors",
@@ -515,7 +522,8 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": 157
+    "id": 157,
+    "draftId": "surfaces.json S-05"
   },
   {
     "slug": "brands",
@@ -532,7 +540,8 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": 159
+    "id": 159,
+    "draftId": "surfaces.json S-06"
   },
   {
     "slug": "trade",
@@ -549,7 +558,8 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": 161
+    "id": 161,
+    "draftId": "surfaces.json S-07"
   },
   {
     "slug": "trade-application",
@@ -560,6 +570,7 @@
     "postType": "sgs_form",
     "collection": "static",
     "flags": [],
-    "id": 163
+    "id": 163,
+    "draftId": "surfaces.json S-52"
   }
 ]
