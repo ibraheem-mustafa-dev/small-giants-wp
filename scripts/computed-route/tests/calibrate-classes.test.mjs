@@ -138,3 +138,14 @@ test( 'MUST FAIL (oneWidth false positive): a container-query tier is not flagge
 	assert.equal( cq.oneWidth, false );
 	assert.equal( cq.containerTier, true );
 } );
+
+test( 'MUST FAIL (multi-button overlay hover untested): an overlay hover gets a resting overlay colour, so the wrapper prints the overlay it paints', async () => {
+	const { MARKER_HEX } = await import( '../lib/calibrate-props.mjs' );
+	const schema = { backgroundOverlayColour: { type: 'string', default: '' }, backgroundImage: { type: 'object' } };
+	const ctx = { image: { id: 7, url: 'u' } };
+	const out = preconditionsFor( row( { attr_name: 'backgroundOverlayColourHover', css_property: 'background-color', css_state: 'hover' } ), schema, {}, ctx );
+	assert.ok( out.backgroundOverlayColour, 'a resting overlay colour is set' );
+	assert.notEqual( out.backgroundOverlayColour, MARKER_HEX, 'and it is not the marker, so only the hover marker can be credited' );
+	assert.ok( preconditionsFor( row( { attr_name: 'overlayGradientHover', css_property: 'background-image', css_state: 'hover' } ), schema, {}, ctx ).backgroundOverlayColour );
+	assert.equal( preconditionsFor( row( { attr_name: 'backgroundOverlayColourHover', css_property: 'background-color', css_state: 'hover' } ), schema, { backgroundOverlayColour: '#000000' }, ctx ).backgroundOverlayColour, undefined, 'control: a resting colour already set is left alone' );
+} );

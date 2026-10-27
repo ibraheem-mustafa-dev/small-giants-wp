@@ -137,6 +137,12 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	if ( partner !== row.attr_name && schema[ partner ] && '' === ( current[ partner ] ?? schema[ partner ].default ?? '' ) ) {
 		out[ partner ] = MARKER_HEX;
 	}
+	// An overlay hover paints on the overlay the shared wrapper prints, and it prints one only under a resting overlay
+	// colour or gradient (includes/class-sgs-container-wrapper.php). The resting colour is not the marker, so only the
+	// hover marker can be credited.
+	if ( /overlay/i.test( row.attr_name ) && /Hover$/.test( row.attr_name ) && schema.backgroundOverlayColour && '' === ( current.backgroundOverlayColour ?? schema.backgroundOverlayColour.default ?? '' ) ) {
+		out.backgroundOverlayColour = OVERLAY_REST_HEX;
+	}
 	Object.assign( out, gatingToggle( row.attr_name, schema, current ) );
 	Object.assign( out, borderPartners( row.attr_name, first, schema ) );
 	Object.assign( out, shadowPartners( row.attr_name, first, schema ) );
@@ -148,6 +154,8 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	return out;
 }
 
+// The resting overlay colour an overlay hover is read over: any colour but MARKER_HEX.
+const OVERLAY_REST_HEX = '#2b2b2b';
 const IMAGE_SHAPING = /^background(Size|Position|Attachment|Repeat|Origin|Clip|Blend)/;
 const IMAGE_SHAPING_PROPS = /^background-(size|position|attachment|repeat|origin|clip|blend-mode)$/;
 
