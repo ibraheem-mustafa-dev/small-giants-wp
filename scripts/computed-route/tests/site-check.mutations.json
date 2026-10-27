@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/site-check-nav.mjs", "find": "\tif ( ! isOpen( opened ) ) {", "replace": "\tif ( false ) {", "why": "a drawer that never opens is read as open" },
+	{ "file": "lib/site-check-nav.mjs", "find": "\t\tconst hit = k && ( known.get( k ) || under.find( ( u ) => k.startsWith( u.prefix ) ) );", "replace": "\t\tconst hit = k && ( known.get( k ) || under.find( ( u ) => k.startsWith( u.prefix ) ) || { key: 'any' } );", "why": "any address on the site counts as a page-map page" },
+	{ "file": "lib/site-check-nav.mjs", "find": "\t\tif ( DRAFT_HREF.test( raw ) ) {", "replace": "\t\tif ( false ) {", "why": "a draft-file link is not reported" },
+	{ "file": "lib/site-check-nav.mjs", "find": "const isClosed = ( s ) => ! s.shown && 'true' !== s.expanded;", "replace": "const isClosed = () => true;", "why": "a panel that stays open counts as closed" },
+	{ "file": "lib/site-check-nav.mjs", "find": "\tconst burger = candidates.find( visible );", "replace": "\tconst burger = candidates[ 0 ];", "why": "a hidden burger counts as the drawer's opener" },
+	{ "file": "lib/site-check-parts.mjs", "find": "\tif ( s1.at === s0.at ) {", "replace": "\tif ( false ) {", "why": "a choice flow that never advances passes" },
+	{ "file": "lib/site-check-parts.mjs", "find": "\tif ( stored && ! stored.error && 1 !== stored.count ) {", "replace": "\tif ( false ) {", "why": "a success with no stored submission passes" },
+	{ "file": "lib/site-check-parts.mjs", "find": "\tconst hit = [ ...document.querySelectorAll( sel ) ].find( shown );", "replace": "\tconst hit = [ ...document.querySelectorAll( sel ) ].find( ( el ) => shown( el ) && el.getBoundingClientRect().top < innerHeight );", "why": "WooCommerce content below the fold reads as missing" },
+	{ "file": "lib/site-check-report.mjs", "find": "\tif ( items.some( ( i ) => ! STATUSES.includes( i.status ) || 'fail' === i.status ) ) {", "replace": "\tif ( items.some( ( i ) => 'fail' === i.status ) ) {", "why": "an unknown item status reads as a pass" }
+]

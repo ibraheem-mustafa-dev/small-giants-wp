@@ -11,7 +11,8 @@ import path from 'path';
 import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { chromium } from 'playwright';
-import { formSettingsOf, formFieldsOf, testValueFor, successVerdict, originalRecipient, targetSite, sshEndpoint, formSlug, likeLiteral } from './lib/form-submit-run.mjs';
+import { submitForm } from './lib/form-submit-page.mjs';
+import { formSettingsOf, formFieldsOf, successVerdict, originalRecipient, targetSite, sshEndpoint, formSlug, likeLiteral } from './lib/form-submit-run.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -74,47 +75,6 @@ console.log( `form ${ slug }: post ${ postId }, ${ fields.length } fields (${ fi
 
 const maxId = ( table ) => Number( sql( `SELECT COALESCE(MAX(id),0) FROM ${ prefix }${ table }` ) || 0 );
 const countAfter = ( table, after, where = '1=1' ) => Number( sql( `SELECT COUNT(*) FROM ${ prefix }${ table } WHERE id > ${ after } AND ${ where }` ) || 0 );
-
-const REQUIRED = 'form.sgs-form__inner :is(input,select,textarea)[required], form.sgs-form__inner :is(input,select,textarea)[aria-required="true"]';
-// Fills each visible required control on the current step, leaving the first `skip` empty.
-async function fillVisible( page, skip = 0 ) {
-	const controls = page.locator( REQUIRED );
-	let left = skip;
-	for ( let i = 0; i < await controls.count(); i++ ) {
-		const c = controls.nth( i );
-		if ( ! await c.isVisible() ) {
-			continue;
-		}
-		if ( left > 0 ) {
-			left--;
-			continue;
-		}
-		const info = await c.evaluate( ( el ) => ( { tag: el.tagName.toLowerCase(), type: el.type, min: el.min, options: 'SELECT' === el.tagName ? [ ...el.options ].map( ( o ) => o.value ) : [] } ) );
-		const v = testValueFor( info );
-		if ( null === v ) {
-			continue;
-		}
-		'check' === v ? await c.check( { force: true } ) : 'select' === info.tag ? await c.selectOption( v ) : await c.fill( v );
-	}
-}
-// Walks the steps: fill, then the submit button when it is showing, else the next button.
-async function submitForm( page, skip = 0 ) {
-	for ( let step = 0; step < 14; step++ ) {
-		await fillVisible( page, skip );
-		const submit = page.locator( 'form.sgs-form__inner button[type="submit"]:visible' ).first();
-		const next = page.locator( 'form.sgs-form__inner button:visible', { hasText: /^\s*(next|continue)/i } ).first();
-		if ( await submit.count() ) {
-			await submit.click();
-			return;
-		}
-		if ( ! await next.count() ) {
-			throw new Error( 'neither a submit nor a next button is visible' );
-		}
-		await next.click();
-		await page.waitForTimeout( 400 );
-	}
-	throw new Error( 'the form has more than 14 steps' );
-}
 
 const browser = await chromium.launch( { headless: true } );
 try {
