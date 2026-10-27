@@ -21,3 +21,15 @@ test( 'MUST FAIL: a seed the site refuses stops the block with the reason; no lo
 	assert.equal( calls.length, 0 );
 	assert.deepEqual( setWishlist( () => 'PHP Notice: x\n{"items":1}', 'Claude', true ), { items: 1 }, 'the reply is read by its last JSON line' );
 } );
+
+test( 'MUST FAIL: the seed prints the price-drop, stock-chip, bar and share elements and restores every key it touched', () => {
+	const on = wishlistPhp( { customer: 'Claude', on: true } );
+	assert.ok( on.includes( "'savedPrice' =>" ) && on.includes( 'get_woocommerce_currency()' ), 'a saved price above the current price' );
+	assert.ok( on.includes( "'outofstock'" ) && on.includes( "'_stock_status'" ), 'one product is out of stock for the pass' );
+	assert.ok( on.includes( "'sgs_wishlist_features'" ) && on.includes( "'sharing' => true" ), 'alerts and sharing are switched on' );
+	assert.ok( on.includes( "'_sgs_wishlist_share_on'" ) && on.includes( "'_sgs_wishlist_share_token'" ), 'the share link is on' );
+	const off = wishlistPhp( { customer: 'Claude', on: false } );
+	for ( const key of [ 'sgs_wishlist_features', '_sgs_wishlist_share_on', '_sgs_wishlist_share_token', '_stock_status', '_sgs_wishlist_calibration_state' ] ) {
+		assert.ok( off.includes( key ), `clearing restores ${ key }` );
+	}
+} );
