@@ -25,9 +25,10 @@ function lastJson( text ) {
 }
 
 // The PHP that puts the wishlist into the states that print every element a setting paints (`on`), keeping what the user
-// and the site had, or puts that back exactly (`! on`). Two published products are saved: the first has a saved price
-// above its current price (the price-drop line) and, when the site has a second one, a simple in-stock product is out of
-// stock for the pass (the stock chip). The site's alerts and sharing switches (`sgs_wishlist_features`) are switched on,
+// and the site had, or puts that back exactly (`! on`). Two published products are saved: a simple in-stock product with
+// a saved price above its current price (the price-drop line and the Move to basket button, which a product with options
+// replaces with a Choose options link) and, when the site has another in-stock product, that one out of stock for the
+// pass (the stock chip). The site's alerts and sharing switches (`sgs_wishlist_features`) are switched on,
 // and the user's share link is turned on (the alerts/share bar, the share field and its controls print). Prints
 // { items } (the list length after), or { error }.
 export function wishlistPhp( { customer, on } ) {
@@ -60,11 +61,11 @@ echo wp_json_encode( array( 'items' => count( (array) json_decode( (string) get_
 if ( ! function_exists( 'wc_get_products' ) ) { echo wp_json_encode( array( 'error' => 'WooCommerce is not active' ) ); return; }
 ${ user }$ids = wc_get_products( array( 'status' => 'publish', 'limit' => -1, 'orderby' => 'ID', 'order' => 'ASC', 'return' => 'ids' ) );
 if ( ! $ids ) { echo wp_json_encode( array( 'error' => 'the site has no published product' ) ); return; }
-$oos = 0;
-foreach ( $ids as $id ) { $pr = wc_get_product( $id ); if ( $pr && $pr->is_type( 'simple' ) && $pr->is_in_stock() ) { $oos = (int) $id; break; } }
 $drop = 0;
-foreach ( $ids as $id ) { if ( (int) $id !== $oos ) { $drop = (int) $id; break; } }
-if ( ! $drop ) { $drop = (int) $ids[0]; $oos = 0; }
+foreach ( $ids as $id ) { $pr = wc_get_product( $id ); if ( $pr && $pr->is_type( 'simple' ) && $pr->is_in_stock() ) { $drop = (int) $id; break; } }
+if ( ! $drop ) { $drop = (int) $ids[0]; }
+$oos = 0;
+foreach ( $ids as $id ) { $pr = wc_get_product( $id ); if ( (int) $id !== $drop && $pr && $pr->is_in_stock() ) { $oos = (int) $id; break; } }
 $pd = wc_get_product( $drop );
 $now = ( $pd && '' !== (string) $pd->get_price() ) ? (int) round( (float) wc_get_price_to_display( $pd ) * ( 10 ** (int) wc_get_price_decimals() ) ) : 0;
 if ( ! metadata_exists( 'user', $u->ID, '${ BACKUP }' ) ) {
