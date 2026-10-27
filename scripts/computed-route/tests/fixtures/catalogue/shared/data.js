@@ -3,9 +3,9 @@
   if (window.SHOPDATA) return;
   var A = 'assets/';
   var items = [
-    { id: 'jar', name: 'Honey Jar', kind: 'build', blurb: 'Raw honey from one valley, poured to order in the size you pick.', from: 4, label: 'from £4', img: A + 'jar.png', gallery: [A + 'jar.png', A + 'jar-side.png'], tags: ['pantry', 'sweet'], origin: 'hills' },
-    { id: 'box', name: 'Tea Box', kind: 'plain', blurb: 'Twelve loose-leaf teas in a tin box, posted through the letterbox.', from: 12, label: '£12', img: A + 'box.png', gallery: [A + 'box.png'], tags: ['gifts'], origin: 'coast' },
-    { id: 'voucher', name: 'Gift Voucher', kind: 'amount', blurb: 'A voucher the person you give it to spends when they choose to.', from: 10, label: 'from £10', img: A + 'card.png', gallery: [A + 'card.png'], tags: ['gifts'], origin: 'coast' }
+    { id: 'jar', name: 'Honey Jar', kind: 'build', blurb: 'Raw honey from one valley, poured to order in the size you pick.', from: 4, label: 'from £4', img: A + 'jar.svg', gallery: [A + 'jar.svg', A + 'jar-side.svg'], tags: ['pantry', 'sweet'], origin: 'hills' },
+    { id: 'box', name: 'Tea Box', kind: 'plain', blurb: 'Twelve loose-leaf teas in a tin box, posted through the letterbox.', from: 12, label: '£12', img: A + 'box.svg', gallery: [A + 'box.svg'], tags: ['gifts'], origin: 'coast' },
+    { id: 'voucher', name: 'Gift Voucher', kind: 'amount', blurb: 'A voucher the person you give it to spends when they choose to.', from: 10, label: 'from £10', img: A + 'card.svg', gallery: [A + 'card.svg'], tags: ['gifts'], origin: 'coast' }
   ];
   var reviews = [
     { id: 'r1', name: 'Ann', stars: 5 },

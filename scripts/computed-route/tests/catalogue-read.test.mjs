@@ -24,7 +24,7 @@ test( 'shared script: the looked-up, priced list is the catalogue; a list with n
 	const box = byId( catalogue, 'box' );
 	assert.deepEqual( [ box.type, box.price, box.rrp, box.sku, box.slug, box.name ], [ 'simple', 12, null, 'sgs-draft-box', 'tea-box', 'Tea Box' ] );
 	assert.equal( box.shortDescription, 'Twelve loose-leaf teas in a tin box, posted through the letterbox.' );
-	assert.deepEqual( box.image, { asset: 'sites/demo/handoff/assets/box.png' } );
+	assert.deepEqual( box.image, { asset: 'sites/demo/handoff/assets/box.svg' } );
 	assert.equal( byId( catalogue, 'jar' ).gallery.length, 2 );
 	assert.deepEqual( catalogueProblems( catalogue ), [] );
 } );

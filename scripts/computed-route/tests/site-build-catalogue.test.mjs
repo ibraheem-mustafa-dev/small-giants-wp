@@ -71,8 +71,8 @@ test( 'the product base the catalogue names is planned when the site differs; pl
 test( 'the read PHP writes nothing; the apply PHP publishes last and writes the pack meta', () => {
 	const { repo, catalogue } = setup();
 	const images = catalogueImages( repo, catalogue );
-	assert.deepEqual( Object.keys( images ).sort(), [ 'sites/demo/handoff/assets/box.png', 'sites/demo/handoff/assets/card.png', 'sites/demo/handoff/assets/jar-side.png', 'sites/demo/handoff/assets/jar.png' ] );
-	assert.equal( images[ 'sites/demo/handoff/assets/jar.png' ].sha.length, 64 );
+	assert.deepEqual( Object.keys( images ).sort(), [ 'sites/demo/handoff/assets/box.svg', 'sites/demo/handoff/assets/card.svg', 'sites/demo/handoff/assets/jar-side.svg', 'sites/demo/handoff/assets/jar.svg' ] );
+	assert.equal( images[ 'sites/demo/handoff/assets/jar.svg' ].sha.length, 64 );
 	const read = catalogueStatePhp( catalogue.products.map( ( p ) => ( { draftId: p.draftId, sku: p.sku, slug: p.slug } ) ), images );
 	assert.doesNotMatch( read, /update_|wp_insert|wp_set_|->save\(|delete_|wp_update|set_post_thumbnail|media_sideload/ );
 	const write = catalogueApplyPhp( [], images, {}, null );
