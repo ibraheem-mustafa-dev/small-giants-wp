@@ -11,6 +11,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { openDb } from './db.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REGISTRY_FILE = path.resolve( HERE, '../../../plugins/sgs-blocks/includes/data/brand-registry.json' );
@@ -55,9 +56,30 @@ export function brandNames( brand ) {
 // The brand a colour token is named for (`--social-facebook`, `--fb-blue`, `--brand-youtube`), or null: a brand that
 // carries a colour, one of whose names is a whole word of the token name. A contact entry (phone, email, address)
 // carries no colour and is never matched.
-export function brandOfToken( name, brands = brandRegistry() ) {
+export function brandOfToken( name, brands = paletteBrands() ) {
 	const words = String( name ?? '' ).replace( /^--/, '' ).toLowerCase().split( /[-_]+/ ).filter( Boolean );
-	return brands.find( ( b ) => b.colour && brandNames( b ).some( ( n ) => words.includes( n ) ) ) ?? null;
+	return brands.find( ( b ) => ( b.colour || b.reviewBlock ) && brandNames( b ).some( ( n ) => words.includes( n ) ) ) ?? null;
+}
+
+// The review-platform blocks in the framework DB (`sgs/<brand>-reviews`, FP-1: the roster is read, never listed here).
+export function reviewPlatformBlocks( db = null ) {
+	const own = ! db;
+	const conn = db || openDb();
+	try {
+		return conn.prepare( "SELECT slug FROM blocks WHERE slug LIKE 'sgs/%-reviews' ORDER BY slug" ).all().map( ( r ) => r.slug );
+	} finally {
+		own && conn.close();
+	}
+}
+
+// The brands a palette token can be named for: the registry's, and one per review-platform block whose brand the
+// registry lacks (sgs/trustpilot-reviews names Trustpilot; Google is already a registry brand). A block brand carries
+// `reviewBlock`, the block that paints its colour itself.
+export function paletteBrands( brands = brandRegistry(), blocks = reviewPlatformBlocks() ) {
+	const known = new Set( brands.flatMap( ( b ) => brandNames( b ) ) );
+	const fromBlocks = blocks.map( ( slug ) => /^sgs\/([a-z0-9]+)-reviews$/.exec( slug )?.[ 1 ] ).filter( ( n ) => n && ! known.has( n ) )
+		.map( ( n ) => ( { slug: n, label: n[ 0 ].toUpperCase() + n.slice( 1 ), colour: '', reviewBlock: `sgs/${ n }-reviews` } ) );
+	return [ ...brands, ...fromBlocks ];
 }
 
 // Whether an address is the given brand's own (see the file header). A brand with no siteInfoKey owns nothing.

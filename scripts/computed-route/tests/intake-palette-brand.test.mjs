@@ -52,3 +52,16 @@ test( 'negative control: an unnamed colour with no role still becomes a custom t
 	assert.equal( row.role, 'custom-mystery' );
 	assert.equal( row.brand, undefined );
 } );
+
+test( 'MUST FAIL: a review-platform block in the framework DB names a brand the registry lacks (sgs/<brand>-reviews)', async () => {
+	const { paletteBrands } = await import( '../lib/brand-registry.mjs' );
+	const brands = paletteBrands( brandRegistry(), [ 'sgs/google-reviews', 'sgs/trustpilot-reviews', 'sgs/acme-reviews' ] );
+	assert.equal( brandOfToken( '--trustpilot-green', brands )?.reviewBlock, 'sgs/trustpilot-reviews' );
+	assert.equal( brandOfToken( '--acme', brands )?.slug, 'acme' );
+	assert.equal( brands.filter( ( b ) => 'google' === b.slug ).length, 1, 'a block brand the registry already holds is not added twice' );
+	assert.equal( brandOfToken( '--trustpilot-green', brandRegistry() ), null, 'negative control: the registry alone has no Trustpilot' );
+} );
+
+test( 'the live framework DB names Trustpilot through its reviews block', () => {
+	assert.equal( brandOfToken( '--trustpilot-green' )?.slug, 'trustpilot' );
+} );
