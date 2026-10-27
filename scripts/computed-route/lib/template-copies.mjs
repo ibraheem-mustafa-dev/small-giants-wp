@@ -140,8 +140,9 @@ export function themeContent( slug, dir = THEME_TEMPLATES ) {
 	return main ? main.innerBlocks || [] : tree.filter( ( n ) => 'core/template-part' !== n.name );
 }
 
-// The inner block a shell holds for a template.
-export const innerOf = ( slug, dir = THEME_TEMPLATES ) => ( PAGE_CONTENT.includes( slug ) ? [ POST_CONTENT ] : themeContent( slug, dir ) );
+// The inner block a shell holds for a template: the page's own content for a page template or one the theme ships no
+// file for (page-my-account), else the theme template's own content.
+export const innerOf = ( slug, dir = THEME_TEMPLATES ) => ( PAGE_CONTENT.includes( slug ) || ! fs.existsSync( path.join( dir, `${ slug }.html` ) ) ? [ POST_CONTENT ] : themeContent( slug, dir ) );
 
 // `inner` inside the shell `chain`, inside the theme's `<main>` unless the shell's outer wrapper is the main itself.
 function wrap( chain, inner ) {

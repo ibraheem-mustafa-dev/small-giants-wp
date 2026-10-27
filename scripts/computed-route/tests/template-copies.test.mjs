@@ -240,3 +240,17 @@ test( "MUST FAIL: a WooCommerce page's copy Filled at its page is its whole tree
 	assert.equal( out.cart.shell, null );
 	assert.ok( find( out.cart.tree, 'sgs/heading' ), "the draft's heading beside the region stays in the copy" );
 } );
+
+test( 'MUST FAIL: a WooCommerce template whose page has no draft surface is built from the page copy, holding the theme\u2019s own content', () => {
+	const noCart = manifest( SHOP ).entries;
+	assert.deepEqual( noCart[ 'template-cart' ].copy, { from: 'fill', row: 'page:cart' }, 'a cart page the draft has keeps its own Fill' );
+	const drawerOnly = buildManifest( { client: 'c', site: 's', rows: SHOP, records: records.filter( ( r ) => 'cart' !== r.page_key ), target, entryFile: 'Site.dc.html', vocab: [ { state: 'hover' } ] } ).entries;
+	assert.deepEqual( drawerOnly[ 'template-cart' ].copy, { from: 'page', unplayed: 'page:cart' } );
+	assert.equal( 'draftIndex' in drawerOnly[ 'template-cart' ], false, 'no draft is read for it' );
+	const buildDir = fs.mkdtempSync( path.join( os.tmpdir(), 'copies-' ) );
+	fs.mkdirSync( path.join( buildDir, 'trees', 'template' ), { recursive: true } );
+	fs.writeFileSync( path.join( buildDir, 'trees', 'template', 'page.shell.json' ), JSON.stringify( { chain: [ BG ] } ) );
+	const out = copyTrees( { surfaces: drawerOnly, keys: [ 'template-cart' ], filled: {}, buildDir } );
+	assert.deepEqual( out.cart.tree, copyTree( { slug: 'cart', chain: [ BG ] } ) );
+	assert.deepEqual( copyTree( { slug: 'page-my-account', chain: [] } )[ 1 ].innerBlocks, [ POST_CONTENT ], 'a template the theme ships no file for holds the page content' );
+} );
