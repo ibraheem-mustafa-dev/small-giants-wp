@@ -12,3 +12,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-27 S site-run-start indus-foods (Wave B re-clone on 1157da6bb: refresh local-indus from indus-test, site-run --jobs 3)
 - 2026-10-27 S site-run-start mamas-munches-redesign (Wave B re-clone on 1157da6bb: refresh local-mamas from mamas-test, site-run --jobs 3)
 - 2026-10-27 S site-run-start eye-care-ward-end (Wave B re-clone on 1157da6bb: push local-eye-care to eye-care-clone-test, site-run --jobs 3)
+- 2026-10-27 S site-run-end mamas-munches-redesign (24 surfaces, 0 failed; status sites/mamas-munches-redesign/build/qa/site-run/2026-10-27T15-53-15/status.json)
+- 2026-10-27 S site-run-end eye-care-ward-end (29 surfaces, 2 failed stages: cart no draft page, S-27 fill opener - both fixed on fix/post-reclone)
