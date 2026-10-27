@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 869 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 800 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 1136 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 806 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -191,17 +191,20 @@ Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution
 | 157 | `check-tap-floors.py` | "a tap area fits its own shape; 44px is only the default". |
 | 158 | `check-row-flex-wrap.py` | a row of items the block authors has a wrap control. |
 | 159 | `check-focus-rests-static.py` | a static stylesheet hover look keeps the resting look on keyboard focus when asked. |
-| 160 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
-| 161 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
-| 162 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
-| 163 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
-| 164 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
-| 165 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
-| 166 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
-| 167 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
-| 168 | `tap-area-fits-shape.check.mjs` | Computed-size check for ruling 11 (Bean, 2026-10-23): a block's own size setting overrules the 44px house tap floor, so the tap area fits the shape; with… |
+| 160 | `generate-motion-base-transitions.py` | the stylesheet transition entries a hover state would otherwise replace. |
+| 161 | `check-font-weight-allowlist.py` | Gate: every font-weight a PHP file prints is allowlisted, never stripped or only escaped. |
+| 162 | `check-length-unit-partners.py` | Gate: no single length setting stores a bare number beside a `<name>Unit` attribute. |
+| 163 | `check-dead-api-calls.py` | STRUCTURAL GUARD — catches a call to a PHP/WordPress/WooCommerce function |
+| 164 | `check-render-undefined-vars.py` | Undefined-variable gate for block render templates (PHPStan level 1). |
+| 165 | `run.js` | GROUND-TRUTH: spec=.claude/reports/2026-08-03-spec35-scanner/02-scanner-architecture.md source=spec evidence=this is the entry point described in… |
+| 166 | `audit-block-file-consistency.py` | WHOLE-BLOCK CROSS-FILE CONSISTENCY CHECKER. |
+| 167 | `prove_rules_can_fail.py` | Prove every link and bug-class rule can fail: disable one rule at a time in a |
+| 168 | `survey-spacing-defaults.py` | census of the Spacing control's untouched sides. |
+| 169 | `run-motion-gates.py` | run every motion gate and print one table (Spec 38A phase M1). |
+| 170 | `fx-off-switch-css.check.mjs` | Computed-style check for the per-device off switch in the fx-*.css stylesheets (Spec 38A FR-38A-23). |
+| 171 | `tap-area-fits-shape.check.mjs` | Computed-size check for ruling 11 (Bean, 2026-10-23): a block's own size setting overrules the 44px house tap floor, so the tap area fits the shape; with… |
 
-**168 gating scripts.** Regenerate this whole section with:
+**171 gating scripts.** Regenerate this whole section with:
 
 ```bash
 python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
@@ -209,7 +212,7 @@ python plugins/sgs-blocks/scripts/generate-tooling-catalogue.py
 
 ### I/O inventory — what each prebuild + commit-gate script reads/writes
 
-Scope: every script actually executed by the **prebuild chain** (168 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 168 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
+Scope: every script actually executed by the **prebuild chain** (171 resolved scripts) and the **commit-gate chain** (`.githooks/sgs-gates.sh`, 0 resolved scripts) — 171 unique scripts after de-duplication (2 run in both chains). This is the set that runs automatically, so it is the set documented with inputs/outputs first; the other ~450 scripts in the full library below are NOT covered here.
 
 Every field below is extracted from the script's own executable code (regex over `open()`/`.read_text()`/`.write_text()`/`fs.readFileSync`/`fs.writeFileSync`/`sqlite3.connect()`/SQL keywords/argparse/`sys.exit()`/`process.exitCode`) — **never from a docstring or comment**, per this generator's own stale-header finding above. A script with no recognised call shape (e.g. I/O built dynamically, or delegated to a helper module) shows **UNVERIFIED** rather than an invented mechanism. `Read-only` is stated explicitly whenever no write call site was found at all.
 
@@ -420,6 +423,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `tmp`
 - Non-zero exit sites found: exitCode=2
 
+**`plugins/sgs-blocks/scripts/check-font-weight-allowlist.py`** (build)
+- Path constants: `ROOT` = Path(__file__).resolve().parent.parent
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: **read-only** — no write call site found in source
+- CLI flags read: `--check`, `--fix`, `--json`, `--self-test`, `--survey`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/check-fx-registration.py`** (build)
 - Reads: `schema_path`, `sqlite3:f"file:{db.as_posix(`, `target_path`
 - Writes: **read-only** — no write call site found in source
@@ -458,6 +468,13 @@ Every field below is extracted from the script's own executable code (regex over
 - Reads: `fixture`
 - Writes: `tmp_path`
 - CLI flags read: `--check`, `--self-test`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
+**`plugins/sgs-blocks/scripts/check-length-unit-partners.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parent.parent; `REPO` = PLUGIN.parent.parent
+- Reads: UNVERIFIED (no recognised read call site found)
+- Writes: `tmp`
+- CLI flags read: `--apply`, `--block`, `--check`, `--fix`, `--json`, `--self-test`, `--survey`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
 **`plugins/sgs-blocks/scripts/check-link-source-adoption.py`** (build)
@@ -871,6 +888,12 @@ Every field below is extracted from the script's own executable code (regex over
 - Writes: `OUT`
 - Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
 
+**`plugins/sgs-blocks/scripts/generate-motion-base-transitions.py`** (build)
+- Path constants: `PLUGIN` = Path(__file__).resolve().parents[1]
+- Reads: `OUT`, `block_json_path`, `css_path`
+- Writes: `OUT`
+- Non-zero exit sites: UNVERIFIED (none found by regex — may exit via an uncaught exception, or always exit 0)
+
 **`plugins/sgs-blocks/scripts/generate-motion-stagger-columns.py`** (build)
 - Path constants: `SCRIPTS_DIR` = Path(__file__).resolve().parent; `PLUGIN_DIR` = SCRIPTS_DIR.parent
 - Reads: `php`, `sqlite3:f"file:{path}?mode=ro"`
@@ -1243,7 +1266,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 730 scripts
+#### `plugins/sgs-blocks/scripts/` — 734 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1313,6 +1336,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-extension-roster.js` | manifest+script-call | Fails when src/blocks/extensions/extension-roster.json drifts from the code it describes. The roster feeds… |
 | `check-focus-rests-static.py` | manifest | a static stylesheet hover look keeps the resting look on keyboard focus when asked. |
 | `check-focus-system.js` | manifest+npm+script-call | .claude/plans/archive/2026-10-17-unified-focus-system.md §3). One focus system file |
+| `check-font-weight-allowlist.py` | manifest+npm | Gate: every font-weight a PHP file prints is allowlisted, never stripped or only escaped. |
 | `check-fx-registration.py` | manifest+script-call | every shipped fx module is registered everywhere it must be. |
 | `check-hardcoded-render-defaults.js` | manifest+npm+script-call | STRUCTURAL GUARD (Gate B) — stops the "hardcoded render default" class of bug (F3) from regressing. An F3 violation occurs when a block declares an… |
 | `check-hover-state-classification.py` | manifest+script-call | Compatibility entry point: the hover-only gate became the general states gate, scripts/check-state-classification.py. |
@@ -1322,6 +1346,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-interaction-only-css.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-jsonld-flags.py` | manifest+npm | guard the ONE json_encode flag combination that is unsafe. |
 | `check-ksort-before-hash.py` | manifest+npm+script-call | STOP-NO-KSORT gate — never reorder $attributes before it is hashed into a uid. |
+| `check-length-unit-partners.py` | manifest+npm | Gate: no single length setting stores a bare number beside a `<name>Unit` attribute. |
 | `check-link-source-adoption.py` | manifest | every shared link field offers the link source choice. |
 | `check-markup-neutral.py` | manifest+script-call | visual-diff-gate helper. |
 | `check-media-atom-purity.js` | manifest+npm+script-call | Gate: a media atom's LOGIC module must be importable by plain Node. |
@@ -1373,7 +1398,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-snapshot-palette-roster.py` | manifest+npm+script-call | : every client snapshot carries the whole framework palette roster |
 | `check-snapshot-scrollbar-tokens.py` | npm+script-call | : a hand-run check (in no gate tier; contrast warns only) for `settings.custom.scrollbar` (Spec 32 FR-32-26). |
 | `check-state-classification.py` | manifest+npm+script-call | Gate: a setting painted under a state selector MUST carry a `css_state` in the derived layer. |
-| `check-style-blob-sanitisation.py` | manifest+npm | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
+| `check-style-blob-sanitisation.py` | manifest+npm+script-call | Gate: every render.php `<style>` blob echo must pass through wp_strip_all_tags(). |
 | `check-tap-floors.py` | manifest | "a tap area fits its own shape; 44px is only the default". |
 | `check-text-colour-defaults.py` | manifest | : no SGS text defaults to the brand colour. |
 | `check-text-gradient-companion.js` | manifest+npm | THE TRAP THIS GATE CATCHES. `sgs_text_decls()` (`includes/helpers-colour- variants.php`) returns `color:` DECLARATIONS ONLY. When a text GRADIENT is… |
@@ -1510,6 +1535,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `generate-markup-examples.py` | manifest+script-call | Generate markup examples for all 69 SGS blocks with block.json files. |
 | `generate-media-attributes.mjs` | manifest+npm+script-call | Single source of truth for the media attribute TYPE map, JS -> PHP. |
 | `generate-media-stylesheet.mjs` | manifest+npm+script-call | Concatenate the media-atom CSS partials into the one enqueued stylesheet. |
+| `generate-motion-base-transitions.py` | manifest | the stylesheet transition entries a hover state would otherwise replace. |
 | `generate-motion-editor-defs.py` | script-call | - writes src/components/motion/generated-motion-defs.json. |
 | `generate-motion-presets-json.py` | script-call | - writes src/components/motion/generated-motion-presets.json. |
 | `generate-motion-stagger-columns.py` | manifest+npm | - writes the grid-columns attribute map the stagger helper reads (FR-38A-24). |
@@ -1876,7 +1902,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `snapshot_selection_tokens.py` | script-call | : the optional text-selection tokens a client snapshot may carry (Spec 32 FR-32-26a). |
 | `stage8-audit.js` | manifest+npm+script-call | ONE Lighthouse run. ⚠ **header disputes this — it IS wired** |
 | `survey-border-control-migration.py` | manifest+npm+script-call | Classify every block's border UI against the SgsBorderControl target shape. |
-| `survey-length-control-scale.py` | manifest+npm | Classify every <SgsLengthControl> mount by the scale its ROLE needs ("spacing" or "font-size"). |
+| `survey-length-control-scale.py` | manifest+npm+script-call | Classify every <SgsLengthControl> mount by the scale its ROLE needs ("spacing" or "font-size"). |
 | `survey-link-underline-family.js` | manifest | link-underline setting set, wires it into its inspector and its canvas preview, and is registered (Spec 32 FR-32-24). |
 | `survey-rich-text-formats.js` | manifest | render that prints one sanitises it without inline style (Spec 02 FR-2-4, FR-2-5). |
 | `survey-spacing-defaults.py` | manifest | census of the Spacing control's untouched sides. |
@@ -1929,6 +1955,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `theme-extractor/palette.py` | manifest+script-call+test-import | build the theme colour palette from draft tokens (Spec 33 FR-33-1/2/9). |
 | `theme-extractor/palette_refs.py` | manifest+script-call | Spec 33: route palette colours into buttons and the page base. |
 | `theme-extractor/palette_vocab.py` | manifest+script-call | Spec 33 declared-design vocabulary: every role word and threshold as DATA, in one place. |
+| `theme-extractor/patch_merge.py` | script-call | lay a Fill snapshot patch over an extracted snapshot (FR-33-1). |
 | `theme-extractor/presets.py` | manifest+script-call | button presets, layout, and font families for the Spec 33 extractor. |
 | `theme-extractor/role_defaults.py` | script-call | Role defaults: a framework slug the draft gives no colour follows the client's own colours (Spec 48 FR-33-2). |
 | `theme-extractor/roles.py` | manifest+script-call+test-import | colour ROLE inference by usage-context (Spec 33 FR-33-2). |
@@ -1978,7 +2005,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_scan.py` | manifest+script-call | The scan: every SGS block attribute (DB `source='sgs'`) through the paint |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 427 scripts
+#### `scripts/` — 457 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1997,6 +2024,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/check-approved.mjs` | script-call | The skeleton standing rules measured against the client's approved review outcomes (Spec 48 FR-48-6): node scripts/computed-route/check-approved.mjs… |
 | `computed-route/check-refs.mjs` | — | Checks that every draft link of a skeleton names exactly one draft element (Spec 48 §3.4, R-47-4). |
 | `computed-route/confirm-canvas.mjs` | script-call | Live confirmation of lib/triage.mjs::canvasSettable's claims, BY FAMILY, read-only. |
+| `computed-route/content-sync.mjs` | — | Copies a client's built surfaces from its local mirror to the test site it mirrors (lib/content-sync.mjs): node… |
 | `computed-route/data/runtimes/8fe7df74405f.support.js` | manifest | GENERATED from dc-runtime/src/*.ts — do not edit. Rebuild with `cd dc-runtime && bun run build`. |
 | `computed-route/data/runtimes/c60c49083997.support.js` | manifest | GENERATED from dc-runtime/src/*.ts — do not edit. Rebuild with `cd dc-runtime && bun run build`. |
 | `computed-route/delivery-map.mjs` | manifest | Checks a client's delivery map against its intake review, handoff animations and surfaces, the plan the map names and the coverage map… |
@@ -2018,11 +2046,13 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/brand-registry.mjs` | script-call | The brand and contact registry (plugins/sgs-blocks/includes/data/brand-registry.json, FP-1): read from the one file, never copied into a table here.… |
 | `computed-route/lib/browser-close.mjs` | script-call | Closing a Chromium browser without waiting on a page that cannot answer. A graceful close waits on every page's main thread (Playwright's own bound… |
 | `computed-route/lib/cache.mjs` | manifest+script-call | The calibration cache (§3.2). A calibration has two outputs: |
+| `computed-route/lib/calibrate-basket.mjs` | manifest+script-call | A fixture's `basket` (calibration-fixtures.json): a WooCommerce basket line some of a block's settings need to paint. |
 | `computed-route/lib/calibrate-chunk.mjs` | script-call | How calibration builds a block's page in pieces (FR-47-2): the child process that saves a calibration page, the size of each piece, and halving a… |
 | `computed-route/lib/calibrate-container.mjs` | script-call | What a block's source says about how it renders, for calibration to act on before any browser opens (FR-47-2): whether its tiers follow its… |
 | `computed-route/lib/calibrate-content.mjs` | script-call | The content side of calibration (FR-47-2, Spec 48 §3.2): which elements a setting makes appear or disappear |
 | `computed-route/lib/calibrate-instances.mjs` | script-call | Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked instance per setting and marker, each… |
 | `computed-route/lib/calibrate-markers.mjs` | script-call | The marker values calibration writes into one setting (Spec 48 §3.2 marker table). Each marker: { label, attrs, expect: { width: value } \| null… |
+| `computed-route/lib/calibrate-open.mjs` | script-call | The Open state of a calibration instance (css_state 'open'): a disclosure the instance owns shown open. A fixture that renders the state at rest (an… |
 | `computed-route/lib/calibrate-probe.mjs` | script-call | Calibration's probe trigger (Spec 48 FR-48-81): how to enter a setting state that has no dedicated trigger (disabled, closed and the rest the… |
 | `computed-route/lib/calibrate-props.mjs` | manifest+script-call | What calibration reads and how a setting's css_property maps onto it (FR-47-2). |
 | `computed-route/lib/calibrate-read.mjs` | script-call | The browser side of calibration: reads every element of each calibration instance at each width, at rest and under its state trigger. Element keys… |
@@ -2030,7 +2060,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/calibration-lock.mjs` | script-call | One calibration per calibration page (R-47-11). Every run on a site builds its instances onto that site's one calibration page with the same instance… |
 | `computed-route/lib/calibration-refs.mjs` | script-call | Site references in calibration fixtures (Spec 48 §3.2). A fixture names a WordPress object it needs (a menu, a menu item, a drawer post, an… |
 | `computed-route/lib/capabilities.mjs` | manifest+script-call+skill | The capability inventory (clone coverage plan Phase 1, steps 1.1 and 1.2): everything the SGS framework offers and everything a draft can hold, as… |
-| `computed-route/lib/census-conservation.mjs` | script-call | The conservation check of a Fill run (plan register R7): every property the draft's code declares on a paired part |
+| `computed-route/lib/census-conservation.mjs` | manifest+script-call | The conservation check of a Fill run (plan register R7): every property the draft's code declares on a paired part |
 | `computed-route/lib/census-drops-report.mjs` | script-call | The conservation drops of Fill runs as one markdown document: a status table of every run folder given, then, for the newest run of each client and… |
 | `computed-route/lib/census-gap-class.mjs` | script-call | FR-48-65 classes for census rows. A row's base class is its Fill reason's (data/census-classes.json `frClass`, the resolver-gap reading of… |
 | `computed-route/lib/census-mechanism.mjs` | manifest+script-call | The mechanism census: reads one surface's walker report and Fill run into rows and gives each row a mechanism signature, so rows with one cause group… |
@@ -2038,10 +2068,12 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/cite-emission.mjs` | script-call | FR-48-15: a canvas citation is `canvas-settable` only when the cited attribute is shown to emit CSS on the cited element, by one of two proofs: the… |
 | `computed-route/lib/clone-coverage.mjs` | script-call | The clone coverage map (clone coverage plan Phase 1, steps 1.3 and 1.4): for every capability ID in data/capabilities.json, how the route recognises… |
 | `computed-route/lib/confirm-live.mjs` | manifest+script-call | The rendered-live half of the confirm record (Spec 48 FR-48-36). Fill writes the record with the declared and rendered-draft values (D–R) before the… |
+| `computed-route/lib/content-sync.mjs` | script-call | Copying a mirror's built content to the site it mirrors (Spec 48 FR-48-55, Bean 2026-10-26): a client's surfaces are built and walked on its local… |
 | `computed-route/lib/coverage-register.mjs` | script-call | The coverage map as a register of solved gaps: worked examples for a new gap (--like), the gaps a draft's review reports (--drafts) and the one-off… |
 | `computed-route/lib/css-equivalence/effect.mjs` | manifest+script-call | Layer 4 of the equivalence engine (Spec 48 FR-48-86): the setting's measured effect replaces its declared name. |
 | `computed-route/lib/css-equivalence/index.mjs` | manifest+script-call+skill+test-import | The equivalence engine (Spec 48 FR-48-86): consulted before any "no setting" verdict, so a draft declaration reaches every setting that paints the… |
 | `computed-route/lib/css-equivalence/inert.mjs` | script-call | Layer 3 of the equivalence engine (Spec 48 FR-48-86): values that paint nothing. A draft value is inert at a width when the property does not apply… |
+| `computed-route/lib/css-equivalence/keywords.mjs` | manifest+script-call | Layer 2 of the equivalence engine (Spec 48 FR-48-86), alignment keywords: `flex-start` and `start`, and `flex-end` and `end`, align an item to the… |
 | `computed-route/lib/css-equivalence/tolerance.mjs` | manifest+script-call | The one rule two computed values compare by (Spec 48 FR-48-86), shared by the equivalence engine (./values.mjs), Fill's tier comparison… |
 | `computed-route/lib/css-equivalence/values.mjs` | manifest+script-call+skill | Layer 2 of the equivalence engine (Spec 48 FR-48-86): canonical values. Two CSS values paint the same when their canonical forms are equal: a timing… |
 | `computed-route/lib/css-families.mjs` | script-call | CSS shorthand families, derived from mdn-data and @webref/css (FP-1: no hand-written property lists). A family is a shorthand whose longhands differ… |
@@ -2060,6 +2092,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/entrance.mjs` | manifest+script-call | Entrance start (Spec 38A): a block with an entrance that the draft shows at rest while live still holds it hidden is one whose draft plays its… |
 | `computed-route/lib/fact-key.mjs` | script-call | The two key levels of a draft element, built and read here and nowhere else (tests/fact-key.test.mjs refuses a key built from a template literal in… |
 | `computed-route/lib/fact-record.mjs` | script-call | The shared fact record (Spec 48 FR-48-7, Spec 48A §3): the template, logic and surfaces readers joined into `sites/<client>/build/intake/facts.json`… |
+| `computed-route/lib/fill-ancestor.mjs` | script-call | A host's part-wide setting written once (Spec 48 FR-48-14b), Fill's side of the ancestor hop. A block that holds other blocks can own one setting… |
 | `computed-route/lib/fill-behaviour.mjs` | manifest+script-call | Writes the recognised script-driven effects of one skeleton node (Spec 48 FR-48-77; lib/motion-behaviours.mjs recognises them… |
 | `computed-route/lib/fill-binding-group.mjs` | script-call | Binding grouping (Spec 48 FR-48-41, row 5): elements that share one `{{ }}` binding in their style attribute share one setting. The fact record… |
 | `computed-route/lib/fill-census.mjs` | script-call | The Fill census: every UNMAPPED row of a Fill run (and every already-held row) belongs to a named cause. |
@@ -2084,8 +2117,11 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/fill-media.mjs` | manifest+script-call+settings | Images for Fill (FR-48-39, the image part): a draft <img> (or the <figure> / <picture> holding one) reaches the image settings of the block that… |
 | `computed-route/lib/fill-motion-account.mjs` | script-call | The never-silent check of the motion writer (Spec 48 FR-48-78): every record of the animation inventory whose element is on the surface ends as a… |
 | `computed-route/lib/fill-motion-element.mjs` | script-call | The motion layers one draft element makes on one target (Spec 48 FR-48-78, FR-48-47; Spec 38A FR-38A-33), for lib/fill-motion.mjs::motionWrites: its… |
+| `computed-route/lib/fill-motion-settle.mjs` | manifest+script-call | The resting rows a motion part's hover state holds (Spec 48 FR-48-78). A draft element whose width eases on its parent's hover (a burger bar: `width… |
 | `computed-route/lib/fill-motion-stagger.mjs` | script-call | The stagger a draft's list entrance makes (Spec 38A §8 container helper; Spec 48 FR-48-47): a one-shot entrance the draft plays on each item of a… |
 | `computed-route/lib/fill-motion.mjs` | manifest+script-call | The motion cloning writer (Spec 48 FR-48-78, FR-48-47; Spec 38A FR-38A-33, §14): each skeleton node's draft element and its slots take their motion… |
+| `computed-route/lib/fill-open.mjs` | script-call | Fill's state opener (FR-48-13, FR-48-34): a surface that exists only while a draft state holds (a drawer, a mega-menu panel) is opened before it is… |
+| `computed-route/lib/fill-opener-refusals.mjs` | script-call | The state refusals a Fill run raises beyond the opener's own (lib/fill-open.mjs::stateOpener `refused`): a state that opened at some read widths and… |
 | `computed-route/lib/fill-page.mjs` | manifest+script-call | The page baseline for inherited properties (R-47-5). Calibration records no default for an inherited property |
 | `computed-route/lib/fill-part-pairing.mjs` | script-call | Part pairing (Spec 48 FR-48-3, "code first, render confirms"): a setting the framework DB places on a part of a block |
 | `computed-route/lib/fill-presence.mjs` | manifest+script-call | Presence and content for Fill (FR-47-4): which elements a block shows, and the draft's words and links, decided from calibration's `presence`, `text`… |
@@ -2104,14 +2140,17 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/fill-same-box.mjs` | script-call | Two elements of one block that are the same box (Spec 48 FR-48-8), for the Fill post-passes. A block's root and its content band (`sgs/container` and… |
 | `computed-route/lib/fill-scrollbar.mjs` | manifest+script-call | Scrollbar colours for Fill (FR-48-8, the scrollbar part): the draft's scrollbar colours (a scroller's `scrollbar-color`, and the… |
 | `computed-route/lib/fill-shop-parts.mjs` | script-call | Fill's reader of the shop parts record (Spec 48 FR-48-60 to FR-48-62): `sites/<client>/build/shop-parts.json`, written by shop-parts.mjs, maps each… |
+| `computed-route/lib/fill-shop-targets.mjs` | script-call | The draft elements of the shop parts (Spec 48 FR-48-60 to FR-48-62), found by their locators and given to Fill to read. |
 | `computed-route/lib/fill-skeleton.mjs` | script-call | The Fill skeleton (FR-47-4): a normal block tree whose nodes also carry `draftRef` (the walker finder of the draft element the block copies) and… |
 | `computed-route/lib/fill-spacing.mjs` | script-call+settings | Spacing ownership (Spec 48 §3.4 step 3). Who owns the space between a parent's children is decided per tier, from the draft's code first: a flex or… |
 | `computed-route/lib/fill-state-apply.mjs` | script-call | In-page helpers of the state reader (Spec 48 FR-48-81, lib/fill-state-read.mjs::readStates): entering and leaving one state token on its host, and… |
 | `computed-route/lib/fill-state-code.mjs` | script-call | The code read of a state look (Spec 48 FR-48-81, R-47-4): a state the browser cannot be put into for a test (:visited, which scripts and DevTools… |
+| `computed-route/lib/fill-state-combos.mjs` | script-call | The state combinations a draft's stylesheets hold (Spec 48 FR-48-81, split from lib/fill-state-read.mjs): which vocabulary tokens a selector carries… |
 | `computed-route/lib/fill-state-defect.mjs` | script-call | A state rule the draft declares and never paints, built from the code (Spec 48 FR-48-69, FR-48-34 test 1, FR-48-73): intake lists a `style-hover`… |
 | `computed-route/lib/fill-state-focus.mjs` | script-call | Keyboard focus beside a written hover look (Spec 48 FR-48-81, plan decisions 1 and 6 of 2026-10-24). Every SGS hover setting also paints… |
 | `computed-route/lib/fill-state-motion.mjs` | script-call | A hover (or state) transform read from the draft's state looks, as the hover record the motion writer takes |
 | `computed-route/lib/fill-state-pseudo.mjs` | script-call | A state look on a pseudo-element (`.card:hover::after`, Spec 48 FR-48-81): the state tokens enter on the element that carries them as for any look… |
+| `computed-route/lib/fill-state-reach.mjs` | script-call | Where a state look of a target comes from (Spec 48 FR-48-81): the draft's state looks per target (stateDrafts), the ancestor whose pointer-state look… |
 | `computed-route/lib/fill-state-read.mjs` | manifest+script-call | The draft's state looks (Spec 48 FR-48-81, the states wave): what each target's code declares while a state holds, beside FR-48-8's resting read… |
 | `computed-route/lib/fill-state-reason.mjs` | script-call | Why the page cannot be put into a state combination (lib/fill-state-read.mjs): the first token that has no host or is never exposed to scripts. |
 | `computed-route/lib/fill-state-script.mjs` | script-call | The looks a draft sets from its script (Spec 48 FR-48-81, plan decision 6): a draft's template binds an element's style to state through `{{ }}`… |
@@ -2127,7 +2166,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/form-submit-run.mjs` | script-call | The pure parts of the live form submission check (Spec 48 FR-48-57; form-submit-check.mjs drives them): reading a form post's settings and field… |
 | `computed-route/lib/framework-backlog.mjs` | script-call | The cross-client framework backlog (Spec 48 FR-48-68): every F-class row of every client's gaps.json, merged into one file… |
 | `computed-route/lib/freshness.mjs` | script-call | Whether a record the route saved (intake.json, a saved inventory) still describes the export on disk. Intake writes a `sources` object into each… |
-| `computed-route/lib/gap-classes.mjs` | script-call | The one place that turns a finding into one of FR-48-65's classes. Three inputs reach it: a triage verdict (lib/triage.mjs: class W, F, T, U or L and… |
+| `computed-route/lib/gap-classes.mjs` | manifest+script-call | The one place that turns a finding into one of FR-48-65's classes. Three inputs reach it: a triage verdict (lib/triage.mjs: class W, F, T, U or L and… |
 | `computed-route/lib/gap-input.mjs` | script-call | One chain output row (the input lib/gaps-file.mjs::gapRow reads) from one Solve issue and its chain result. Every field comes from the row's own… |
 | `computed-route/lib/gaps-file.mjs` | script-call | gaps.json (Spec 48 FR-48-66): sites/<client>/build/qa/gaps.json holds one row per open item, written from the gate chain's output (gate-chain.mjs). A… |
 | `computed-route/lib/gate-chain.mjs` | manifest+script-call | The gate chain G0 to G7 (Spec 48 FR-48-64): the checks a Solve row passes, in order, before it may be called a framework gap. A row stops at the… |
@@ -2184,6 +2223,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/intake-pagemap-owners.mjs` | script-call | Which surfaces of a Claude Design export become page-map rows (Spec 48 FR-48-30): each is classified by what it is, read from the draft code.… |
 | `computed-route/lib/intake-pagemap-regen.mjs` | script-call | `intake.mjs --page-map <client>` (Spec 48 FR-48-30): rebuilds only sites/<client>/build/page-map.json, offline, from the export… |
 | `computed-route/lib/intake-pagemap-surfaces.mjs` | script-call | The CPT surfaces and menus of one Claude Design export for the page map (Spec 48 FR-48-30, §2 Surface manifest): header, footer, drawers, mega-menu… |
+| `computed-route/lib/intake-pagemap-templates.mjs` | script-call | The theme template each page-map row names (Spec 48 FR-48-30, FR-48-56), by what the surface is, read from the draft code. A word in a route's name… |
 | `computed-route/lib/intake-pagemap.mjs` | script-call | The page map proposal (Spec 48 FR-48-30, Spec 48A FR-48A-9): one row per route and one per CPT surface, in the Appendix C "Page map row" shape that… |
 | `computed-route/lib/intake-palette-declared.mjs` | manifest+script-call | The palette roles the draft's author declares (Spec 48 FR-48-31, Bean 2026-10-24: the handoff files are the primary source, the painted result the… |
 | `computed-route/lib/intake-palette-grounds.mjs` | script-call | The ground each colour sits on, read in the page beside the 1440 rest reading (lib/intake-reading.mjs::readSurface's `probe`) for the palette… |
@@ -2198,7 +2238,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/intake-reading.mjs` | script-call | The reading record (Spec 48 FR-48-28, Appendix C "Reading"): one JSON record per stamped element, width, state and sample time, read under the… |
 | `computed-route/lib/intake-record.mjs` | script-call | Recording the replay file (Spec 48 FR-48-23). Pass 1 renders the draft in the sandbox with the network closed and lists the URLs it asks for on a… |
 | `computed-route/lib/intake-registry.mjs` | script-call | The construct registry (Spec 48 FR-48-24, Appendix C): data/construct-registry.json maps each construct kind to the reader that consumes it ({… |
-| `computed-route/lib/intake-review-carry.mjs` | script-call | Bean's marks across a re-run (Spec 48 FR-48-17): carryOver carries the previous intake.json's marks to the new review rows, and withUnappliedMarks… |
+| `computed-route/lib/intake-review-carry.mjs` | manifest+script-call | Bean's marks across a re-run (Spec 48 FR-48-17): carryOver carries the previous intake.json's marks to the new review rows, and withUnappliedMarks… |
 | `computed-route/lib/intake-review.mjs` | manifest+script-call | Bean's one batched intake review (Spec 48 FR-48-17, Appendix C "Intake record" `review` and "Review marks"). |
 | `computed-route/lib/intake-routing.mjs` | script-call | Intake routing (Spec 48 FR-48-26): the three routing adapters a Claude Design export can use, the precedence rule that picks one from the code, and… |
 | `computed-route/lib/intake-run-collapse.mjs` | script-call | Shaping the intake record (Spec 48 FR-48-17, FR-48-35) so Bean's one review stays about half an hour: repeated skeleton rows that are copies of one… |
@@ -2218,7 +2258,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/key-space.mjs` | script-call | The two key spaces of a draft's elements (Spec 48 §3.4). Intake's harness names the entry draft's root host after its component… |
 | `computed-route/lib/ledger.mjs` | manifest+script-call+skill | Divergence ledger library (FR-47-5): the rules an entry may name, matching a row, finding stale entries, migrating walker accepts, and building a new… |
 | `computed-route/lib/loop-body.mjs` | script-call | Parent writes over one loop body (Spec 48 FR-48-14): the ancestor hop (lib/resolve.mjs::resolveViaAncestor) writes a parent setting whose paint… |
-| `computed-route/lib/manifest-build.mjs` | script-call+settings | The surfaces manifest builder (Spec 48 section 2): one sites/<client>/build/surfaces.json entry per confirmed page-map row that has a post id, and… |
+| `computed-route/lib/manifest-build.mjs` | script-call+settings | The surfaces manifest builder (Spec 48 section 2): one sites/<client>/build/surfaces.json entry per confirmed page-map row that has a post id, one… |
 | `computed-route/lib/media-stock.mjs` | script-call | Stock previews for the media upload (Spec 48 FR-48-58, FR-48-33): the stock-host images a draft paints are found in the draft's own source… |
 | `computed-route/lib/media-upload.mjs` | manifest+script-call+settings | Media upload to an ID map (Spec 48 FR-48-58): every image under the export's `assets/` and the client's own images under `sites/<client>/assets/`… |
 | `computed-route/lib/motion-behaviour-settings.mjs` | script-call | The settings behaviours (Spec 48 FR-48-77): a draft's script behaviours that SGS expresses as block settings rather than motion layers (the header's… |
@@ -2247,10 +2287,12 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/origin-file.mjs` | script-call | The export an origin file belongs to (Spec 48 FR-48-10 item 3). A `<surface>.origin.json` names each block's draft element by the runtime's tpl… |
 | `computed-route/lib/origin-pairs.mjs` | script-call | The walker pairs a skeleton's own draft identities give (lib/fill-config.mjs::walkerPairs; the config text is lib/pairs.mjs::configText's). One pair… |
 | `computed-route/lib/page-map-names.mjs` | script-call | The page map's naming conventions, shared by intake (lib/intake-pagemap-surfaces.mjs writes them) and the site build |
+| `computed-route/lib/paint-state.mjs` | script-call | A block's paint states (calibration-fixtures.json `paintStates`, measured by calibrate.mjs into the default paint file): ways the block renders whose… |
 | `computed-route/lib/pair-scope.mjs` | script-call | Twin containment: whether a hand pair's two elements hold the same words (scripts/computed-route/pairs.mjs). |
 | `computed-route/lib/pairs-page.mjs` | script-call | In-page collectors for scripts/computed-route/pairs.mjs (block pairing, plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md). |
 | `computed-route/lib/pairs-recheck.mjs` | script-call | The width re-check of a pairing run (pairs.mjs): each kept draft finder is read again at the re-check widths, and a block whose finder fails at one… |
 | `computed-route/lib/pairs.mjs` | manifest+script-call | Block pairing for full coverage (plan .claude/plans/archive/2026-10-04-spec47-full-coverage.md): every block of a surface is paired with its draft… |
+| `computed-route/lib/provision-product.mjs` | manifest+script-call | The calibration product (the fixtures' `{{product}}` role) that provision-calibration-refs.mjs finds or completes on a site: a published VARIABLE… |
 | `computed-route/lib/provision-refs.mjs` | manifest+script-call | What provision-calibration-refs.mjs creates on a test site so every calibration-fixture role resolves there |
 | `computed-route/lib/read-animations.mjs` | script-call | The animations reader (Spec 48 FR-48-7, Spec 48A §3): for each template element, the `animations.json` records that target it or a descendant. A… |
 | `computed-route/lib/read-assets.mjs` | script-call | The assets reader (Spec 48 FR-48-7, Spec 48A §3): the files under the handoff's `assets/` (intrinsic ratio, sha256, whether an SVG animates, its… |
@@ -2263,6 +2305,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/references.mjs` | script-call+skill | Blocks that render another post (Spec 48 §3.3, reference blocks), found by reading each block's render.php, never listed by hand, so a new block is… |
 | `computed-route/lib/register-sweep.mjs` | script-call | Register <-> sweep (A4): gives every fix-register item exactly one sweep status. |
 | `computed-route/lib/resolve-declared.mjs` | script-call | The declared value a confirmed row writes (Spec 48 FR-48-36, "What is written"): where the draft's code and its render agree, the setting is written… |
+| `computed-route/lib/resolve-nearest.mjs` | script-call | The tie rule for settings that all paint one property on one element (lib/resolve.mjs::resolve). Calibration lists every element a setting's marker… |
 | `computed-route/lib/resolve.mjs` | manifest+script-call | The one property-to-setting engine (FR-47-1, R-47-3). Given a block, the rendered element (slot) a difference sits on, a CSS property, a state and… |
 | `computed-route/lib/rule-origin.mjs` | manifest+script-call | Where a CSS rule the live probes read came from: `inline` (the element's style attribute), `custom-css` (a block's sgsCustomCss residual, the route's… |
 | `computed-route/lib/runtime-probe.mjs` | manifest+script-call | The runtime probe (FR-48A-5): renders the checked-in fixture draft with a given support.js in headless Chromium and reads the data-dc-tpl numbering… |
@@ -2275,15 +2318,19 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/site-build-map.mjs` | script-call | The page map as the site build reads and writes it (Spec 48 FR-48-55 over FR-48-30's confirmed sites/<client>/build/page-map.json): row keys, the… |
 | `computed-route/lib/site-build-menus.mjs` | script-call | The menus the page map asks for (Spec 48 FR-48-55 part 3), as ordered item lists the planner matches against a site's classic menus. A row's `menus`… |
 | `computed-route/lib/site-build-options.mjs` | script-call | The site options the site build applies (Spec 48 FR-48-55): the draft's behaviours that belong to the whole site (the route fade is… |
-| `computed-route/lib/site-build-plan.mjs` | script-call | The site build's plan (Spec 48 FR-48-55): the page map compared with a site's state (lib/site-build-state.mjs), as the actions that would make the… |
+| `computed-route/lib/site-build-plan.mjs` | manifest+script-call | The site build's plan (Spec 48 FR-48-55): the page map compared with a site's state (lib/site-build-state.mjs), as the actions that would make the… |
 | `computed-route/lib/site-build-state.mjs` | script-call | What a site holds that the site build compares with the page map (Spec 48 FR-48-55), read in one `wp eval-file`: the posts the rows' ids name (a mega… |
 | `computed-route/lib/skeleton-carried.mjs` | script-call | Carried IDs (Spec 48 FR-48-58): an attachment or menu id the skeleton takes from what was built, never from a hand-set decision. A logo block's… |
 | `computed-route/lib/skeleton-child-slots.mjs` | script-call+settings | What a block that draws the draft's children itself still needs from them (Spec 48 FR-48-6): the draft elements its calibrated child slots are… |
 | `computed-route/lib/skeleton-classify.mjs` | script-call | Skeleton writer step 2a (Spec 48 §3.4): which block each draft element becomes, as scored candidates with their evidence. |
+| `computed-route/lib/skeleton-commerce-region.mjs` | manifest+script-call | The commerce region of a WooCommerce page surface (Spec 48 FR-48-87, Bean 2026-10-26): the part of the draft that WooCommerce's working piece draws… |
 | `computed-route/lib/skeleton-context.mjs` | script-call | The proposal context a surface's skeleton is proposed with (lib/skeleton-propose.mjs::proposeSkeleton): the surface's handoff states, the draft's… |
 | `computed-route/lib/skeleton-facts.mjs` | manifest+script-call | The facts the skeleton writer reasons from, all read from data (FP-1): the framework database (read-only), the brand registry, the client's Site Info… |
 | `computed-route/lib/skeleton-finalise.mjs` | script-call | Skeleton writer, decisions and the finaliser (Spec 48 §3.4). Two files beside a surface's inventory hold choices: decisions.json          Bean's… |
 | `computed-route/lib/skeleton-footer-slots.mjs` | script-call | The footer's three slotted rows (Spec 48 §3.4, rules.footerSlots): a footer block always holds exactly three row blocks, `top`, `columns` and… |
+| `computed-route/lib/skeleton-form-host.mjs` | script-call | The form host of a draft form that has no <form> element (Spec 48 FR-48-57). A <form> element is the `sgs/form` block by the rules.formHost rule… |
+| `computed-route/lib/skeleton-form-link.mjs` | script-call | A form on a page is a link to its saved form (Spec 48 FR-48-57, §3.3 reference blocks). Every draft form is one saved post cloned once as its own… |
+| `computed-route/lib/skeleton-form-slots.mjs` | script-call | The input part of a form field in the skeleton (Spec 48 FR-48-6). The form block's settings paint every field's input part |
 | `computed-route/lib/skeleton-form-steps.mjs` | script-call | The steps of a multi-step draft form in the skeleton (Spec 48 FR-48-57, FR-48-83 §10.1). The inventory of a form surface is the rendered page, which… |
 | `computed-route/lib/skeleton-header-slots.mjs` | script-call | The header's three slotted rows (Spec 48 §3.4, rules.headerSlots): the pure part of the rule, over an inventory and what the fact record says of its… |
 | `computed-route/lib/skeleton-inventory.mjs` | manifest+script-call+settings | Skeleton writer step 1 (Spec 48 §3.4): the inventory of a draft surface. Every element the draft runtime stamped |
@@ -2296,6 +2343,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/skeleton-rerun.mjs` | script-call | The skeleton step again, offline (Spec 48 FR-48-6): every surface proposed afresh from the inventories the last intake run saved… |
 | `computed-route/lib/skeleton-review.mjs` | script-call | Skeleton writer step 3 (Spec 48 §3.4): the review table Bean reads. One row per draft element: its key, tag and attributes, words, the draft's own… |
 | `computed-route/lib/skeleton-rules.mjs` | manifest+script-call+settings | Skeleton writer step 2a, the standing rules (Spec 48 FR-48-6, the rules from Bean's review of 2026-10-13): framework-wide verdicts that settle an… |
+| `computed-route/lib/skeleton-saved-inventory.mjs` | script-call | The inventory of a surface from the one intake saved (`sites/<client>/build/intake/inventories/<intakeSurface>.json`), in the served draft's key… |
 | `computed-route/lib/skeleton-write-content.mjs` | script-call | The settings one element's block takes from the draft element (Spec 48 §3.4, split out of lib/skeleton-propose.mjs::proposeSkeleton): `contentAttrs`… |
 | `computed-route/lib/skeleton-write-record.mjs` | script-call | The proposal's row book and the subtrees a block draws itself (the writer's step 2 of Spec 48 §3.4, split out of… |
 | `computed-route/lib/skeleton-write-slots.mjs` | script-call | The header's three rows, the footer's three rows and the host slot of an unwrapped element (Spec 48 §3.4, split out of… |
@@ -2314,9 +2362,11 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/state-live.mjs` | manifest+script-call | The live side of the state check (Spec 48 FR-48-81, FR-48-46): the draft and the live page are opened as the pairing command opens them… |
 | `computed-route/lib/state-map-io.mjs` | script-call | The files the generated state map reads (Spec 48 FR-48-13): the committed reasons, a client's surfaces.json and its intake record. The map itself is… |
 | `computed-route/lib/state-map.mjs` | manifest+script-call+settings | The state map generated from the draft (Spec 48 FR-48-13): for one surface, every `sc-if` of the draft template is mapped to a way of reaching it or… |
+| `computed-route/lib/state-route.mjs` | script-call | Reaching a state-page draft's routes (Spec 48 FR-48-26, the `state-page` adapter): such a draft's router is a logic method (`go(page, extra)`) that… |
 | `computed-route/lib/state-vocab.mjs` | script-call | The state vocabulary as the route's intake and calibration use it (Spec 48 FR-48-81, FP-1): read once from the framework DB's `states` table… |
 | `computed-route/lib/svg-screen.mjs` | script-call | The SVG safety screen for handoff assets (Spec 48A FR-48A-10). Parses the SVG as namespace-aware XML (saxes, from the route's own pinned install) and… |
 | `computed-route/lib/sweep.mjs` | manifest+script-call+skill | The whole-site sweep (FR-47-3): every surface's latest Solve report as one row per distinct open issue. An issue is solve-report.mjs::wholePage's: a… |
+| `computed-route/lib/template-copies.mjs` | script-call | The site's own template copies (Spec 48 FR-48-56, Bean 2026-10-26): every theme template a site serves is the site's own copy, cloned from the draft… |
 | `computed-route/lib/tokens.mjs` | manifest+script-call+skill | Declared design tokens from a Claude Design export's tokens/*.css, read with no render (Spec 48 FR-48-31, §11). |
 | `computed-route/lib/trace-match.mjs` | script-call | How trace-check.mjs matches a logged animation event to an animations.json record. Kept apart from trace-check.mjs because that script runs a browser… |
 | `computed-route/lib/tree.mjs` | script-call | Layout trees: read, write, ref classes, setting writes, and the live-site safety guard (R-47-11). |
@@ -2328,6 +2378,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/walk-lint-gate.mjs` | manifest+script-call | FR-48-12 for the gate chain's own walks: a walker config that fails its lint (lib/walker-lint.mjs) is not walked. The guard lints the config for the… |
 | `computed-route/lib/walker-lint.mjs` | script-call | FR-48-12 item 1: the walker config's lint as a route gate. Each surface's generated walker config (walkerFull, else the hand walker) is linted with… |
 | `computed-route/lib/winning-rule.mjs` | script-call | Names the CSS rule that wins for a row whose setting already holds the draft value (Hardcode rows the tree holds): the rule that paints the live… |
+| `computed-route/lib/wp-run-session.mjs` | script-call | One logged-in browser for a run that builds pages on a site (scripts/lib/wp-session.js): the run launches it once, every scripts/wp-build-page.js… |
 | `computed-route/lint.mjs` | manifest+script-call+skill | The route's own gate (R-47-1, R-47-10). |
 | `computed-route/manifest.mjs` | manifest+script-call | The surfaces manifest generator (Spec 48 section 2): sites/<client>/build/surfaces.json from the confirmed page map. |
 | `computed-route/media-upload.mjs` | manifest+script-call+settings | Media upload to an ID map (Spec 48 FR-48-58): lib/media-upload.mjs over one client and one site. |
@@ -2338,6 +2389,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/shop-fixtures.mjs` | — | Spec 48 section 16, "Minimum fixture products": creates a simple and a variable WooCommerce product (price, stock, image) on a test site for the shop… |
 | `computed-route/shop-parts.mjs` | manifest+script-call | Spec 48 FR-48-60, FR-48-61, FR-48-62: maps a client's draft shop surfaces (buy box, filter, basket drawer) to their framework homes and prints the… |
 | `computed-route/site-build.mjs` | script-call | The site build (Spec 48 FR-48-55): every row of the confirmed sites/<client>/build/page-map.json made on one site once, with its menus, front and… |
+| `computed-route/site-run.mjs` | manifest+script-call | Phase 2 site run (Spec 48, plan 2026-10-23-cloning-tool-completion, Phase 2 step 4 and 5): every surface of one client through inventory, skeleton… |
 | `computed-route/skeleton.mjs` | manifest+script-call | Skeleton writer (Spec 48 §3.4): turns a Claude Design draft's own elements into an SGS block skeleton with exact draft links, plus a review table.… |
 | `computed-route/solve.mjs` | script-call+skill | Solve (FR-47-3): compare a built surface with its draft, turn each open style or hover difference into a setting write through the resolver, rebuild… |
 | `computed-route/stage0.mjs` | script-call | Stage 0 command (Spec 48 FR-48-3, FR-48-16): a current export and a calibrated block set. |
@@ -2346,8 +2398,10 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/tools/compare-intake.mjs` | — | Compares two intake runs of one export (Spec 48 FR-48-28: identical input gives identical output), for proving a speed change byte-identical against… |
 | `computed-route/tools/fixture-completeness.mjs` | — | Calibration fixture completeness: a setting calibration marks `dead` is often a fixture gap, because the calibration fixture never renders the… |
 | `computed-route/tools/mutate.mjs` | — | Mutation check for a MUST FAIL test (a delivery plan's closing standard): node scripts/computed-route/tools/mutate.mjs <route dir> <mutations.json>… |
+| `computed-route/tools/no-setting-count.mjs` | — | Counts the `no-setting` rows of a client's Fill runs by the cause signatures of .claude/reports/2026-10-25-no-setting-diagnosis.md, so every route… |
 | `computed-route/tools/palette-keys.mjs` | — | A client's palette answer key for tests/palette-keys.test.mjs (Spec 48 FR-48-31): each colour token → the slugs it holds, read from its source and… |
 | `computed-route/tools/presentational-hints.mjs` | — | Derives data/presentational-hints.json from the WHATWG HTML Rendering section (clone coverage plan step 1.6): every HTML attribute the browser turns… |
+| `computed-route/tools/probe-openers.mjs` | — | Read-only proof of the state opener: for each surface state of an export, in intake's sandbox, applies the keys with… |
 | `computed-route/trace-check.mjs` | script-call | node scripts/computed-route/trace-check.mjs <handoff folder> [entry .dc.html] [--shift=<ms>] Loads the entry page at 1440, scrolls it, and logs every… |
 | `computed-route/triage.mjs` | manifest+script-call+skill | Triage command (Spec 48, Session B1): a candidate class (W, F, T, U, L) with its evidence for every distinct open issue of a surface's Solve report… |
 | `computed-route/trial.mjs` | manifest+script-call | Try-before-write replay (Spec 48 route-accuracy R6). |
@@ -2361,6 +2415,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `lint-patterns-for-personal-data.py` | manifest+npm+test-import | Lint SGS pattern PHP files for hardcoded personal data. |
 | `local-wp/mirror_theme_json.py` | script-call | : write the theme.json a local mirror must run, the same bytes a deploy ships to the test site it copies. |
 | `local-wp/refresh-from-remote.sh` | script-call | Refreshes a local WSL mirror's database and uploads from its Hostinger test site, so measurements run on the local copy see the same content… |
+| `local-wp/reset-login.mjs` | — | Sets a local mirror's WordPress login to the password its secrets file holds, after refresh-from-remote.sh has copied the test site's users over it… |
 | `local-wp/sync-build.sh` | script-call | Copies the repo's built plugins and theme into the local WSL mirror sites. |
 | `md_wrap_blocks.py` | script-call | The block reader behind scripts/check-md-wrap.py: joins the lines of each paragraph and list item, copies the rest. |
 | `parity/benchmark/cases.mjs` | manifest+script-call+test-import | The walker's catch-rate benchmark: six optician-client gaps the walker passed and Bean found by eye |
@@ -2385,10 +2440,11 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `parity/lib/chrome-walk.mjs` | script-call | Full-check glue for draft-live-walk.mjs: samples motion after each action, collects each pair's painted ground, text inset and (for `inventory: true`… |
 | `parity/lib/chrome.mjs` | manifest+script-call | Full-check in-page collectors for draft-live-walk.mjs. Each is passed to page.evaluate(), so each is self-contained. GAP-CHECKLIST.md section 11 says… |
 | `parity/lib/collect.mjs` | manifest+script-call | In-page collectors for draft-live-walk.mjs. Every function here is passed to page.evaluate(), so each one is self-contained (no closures over module… |
-| `parity/lib/compare-state.mjs` | script-call | One state's comparison for draft-live-walk.mjs: every named pair, the drive log, the automatic check, load entrances and links, each difference… |
+| `parity/lib/compare-state.mjs` | manifest+script-call | One state's comparison for draft-live-walk.mjs: every named pair, the drive log, the automatic check, load entrances and links, each difference… |
 | `parity/lib/compare.mjs` | manifest+script-call | Compares one pair's draft and live snapshots and returns the differences. |
 | `parity/lib/devtools.mjs` | manifest+script-call | What DevTools reads, through the Chrome DevTools Protocol, for draft-live-walk.mjs (Spec 48 A-1, GAP-CHECKLIST.md section 19): the page read once its… |
 | `parity/lib/divergences.mjs` | script-call | Divergence ledger (GAP-CHECKLIST.md section 16, Spec 48 FR-47-5). A config may name a site's divergences.json |
+| `parity/lib/draft-cache.mjs` | manifest+script-call | The key a draft walk is cached under (draft-live-walk.mjs `--draft-cache`): the config, width, states walked, lean and self flags, and the snapshot… |
 | `parity/lib/entrances.mjs` | script-call | The load-entrance check for draft-live-walk.mjs (GAP-CHECKLIST.md section 15). What moves or fades in as a page loads, judged by what paints, not by… |
 | `parity/lib/focus.mjs` | manifest+script-call+skill+test-import | The keyboard focus pass for draft-live-walk.mjs (GAP-CHECKLIST.md section 13). A scripted el.focus() after mouse clicks never matches :focus-visible… |
 | `parity/lib/helpers.mjs` | script-call+skill | The helpers handed to a config's open() and state actions, and the anchor-offset check, for draft-live-walk.mjs. |
@@ -2401,11 +2457,12 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `parity/lib/ref-trace.mjs` | script-call | Ref tracing (GAP-CHECKLIST.md section 16). A config with `refPrefix` (e.g. 'cr-ref-') gets, on every style, hover and box row, the measured live… |
 | `parity/lib/report.mjs` | manifest+script-call | Writes the parity report: report.json (everything), report.md (the differences), and one side-by-side screenshot per state and width (draft left… |
 | `parity/lib/review.mjs` | manifest+script-call+skill+test-import | The screenshot review gate for draft-live-walk.mjs. Writes contact.md: every state x width side-by-side shot, full size, with the config's review… |
+| `parity/lib/state-changes.mjs` | manifest+script-call | The properties a pair's element moves in any state walked at one width, on either side: what a transition there can animate, and the properties the… |
 | `parity/lib/state-passes.mjs` | manifest+script-call | The per-state passes of draft-live-walk.mjs that move the page: scroll-in reveals, the reveal sweep before a full-page shot, hover end states and… |
 | `parity/lib/state-rest.mjs` | manifest+script-call | Every state of draft-live-walk.mjs starts from the page's rest (GAP-CHECKLIST.md section 30). The page at rest is read once, just before the first… |
 | `parity/lib/structure.mjs` | manifest+script-call+skill | Structure and drive checks for draft-live-walk.mjs: where each pair sits relative to the other pairs (inside which, in whose row), and how each state… |
 | `parity/lib/transform.mjs` | manifest+script-call+skill+test-import | One element's effective 2D transform: the individual translate, rotate and scale properties and transform composed in the CSS Transforms 2 order… |
-| `parity/lib/transitions.mjs` | script-call+skill | Transitions matched by the property they animate, read from the computed `transition` shorthand |
+| `parity/lib/transitions.mjs` | manifest+script-call+skill | Transitions matched by the property they animate, read from the computed `transition` shorthand |
 | `render-mobile-override-audit.js` | — | Render.php inline-vs-media audit. |
 | `wc-pages-responsive-audit.js` | manifest+script-call | FR-30-11 — WooCommerce page-type responsive + budget verification gate. |
 | `wp-build-page.js` | manifest+script-call+skill | Builds a whole page (or header, footer, drawer, modal, mega menu) through the real block editor from a JSON block tree, so every block is serialised… |
