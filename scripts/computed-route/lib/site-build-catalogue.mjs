@@ -9,26 +9,40 @@
 //     must plan nothing, and records each draft id's product id and permalink in catalogue.json's `sites.<site>`;
 //   - the product base the draft's manifest declares is set when the site's differs; a product's address is then the
 //     one the link resolver writes (lib/draft-link.mjs);
-//   - a product dropped in the intake review is skipped; the page map is never read or written.
+//   - a product dropped in the intake review is skipped; the page map is never read or written;
+//   - a product that would otherwise have no image (the draft gives none and the product found has none, or the draft's
+//     image cannot be added) gets the "photo to come" image (data/photo-to-come.png, Bean 2026-10-27), so WooCommerce's
+//     product checks let it publish: one attachment per site (found by its file's sha or name on a re-run, never
+//     uploaded twice), `_sgs_photo_to_come` on each product carrying it, and `photoToCome` in catalogue.json's
+//     `sites.<site>` record; an image the product already has is never replaced by it, a draft image replaces it, and
+//     the marker is cleared once the product shows another image. The product card shows it as the product's photo.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { catalogueFile, loadCatalogue, productAddress } from './catalogue-read.mjs';
 import { catalogueProblems } from './intake-catalogue-run.mjs';
-import { catalogueApplyPhp, catalogueStatePhp } from './site-build-catalogue-php.mjs';
+import { PHOTO_TO_COME, catalogueApplyPhp, catalogueStatePhp } from './site-build-catalogue-php.mjs';
+
+export { PHOTO_TO_COME };
 
 // The plugins whose presence settles a gap kind: a recurring order (switch gaps) and a gift card (open-amount gaps).
 export const GAP_PLUGINS = { switch: /subscriptions/i, 'open-amount': /gift-?cards?/i };
 
-// The images the catalogue names, keyed by asset path or address: { key: { name, sha } | { url } }.
+// The "photo to come" image's file (the tool's own, not a client's).
+export const PHOTO_TO_COME_FILE = fileURLToPath( new URL( '../data/photo-to-come.png', import.meta.url ) );
+const sha256 = ( file ) => crypto.createHash( 'sha256' ).update( fs.readFileSync( file ) ).digest( 'hex' );
+
+// The images the catalogue names, keyed by asset path or address: { key: { name, sha } | { url } }, and the photo-to-come
+// image under PHOTO_TO_COME.
 export function catalogueImages( repo, catalogue ) {
-	const out = {};
+	const out = { [ PHOTO_TO_COME ]: { name: path.basename( PHOTO_TO_COME_FILE ), sha: sha256( PHOTO_TO_COME_FILE ) } };
 	for ( const p of catalogue.products ) {
 		for ( const img of [ p.image, ...p.gallery ].filter( Boolean ) ) {
 			if ( img.url ) {
 				out[ img.url ] = { url: img.url };
 			} else if ( ! out[ img.asset ] && fs.existsSync( path.join( repo, img.asset ) ) ) {
-				out[ img.asset ] = { name: path.basename( img.asset ), sha: crypto.createHash( 'sha256' ).update( fs.readFileSync( path.join( repo, img.asset ) ) ).digest( 'hex' ) };
+				out[ img.asset ] = { name: path.basename( img.asset ), sha: sha256( path.join( repo, img.asset ) ) };
 			}
 		}
 	}
@@ -45,8 +59,13 @@ function missing( p, s, state ) {
 	if ( 'simple' === p.type && '' === s.price ) {
 		out.push( `price ${ p.price }` );
 	}
-	if ( p.image && ! s.image ) {
-		out.push( 'image' );
+	const onPlaceholder = Boolean( s.image ) && s.image === ( state.images[ PHOTO_TO_COME ] || 0 );
+	if ( ! s.image ) {
+		out.push( p.image ? 'image' : 'the photo-to-come image' );
+	} else if ( p.image && onPlaceholder ) {
+		out.push( 'image (in place of the photo-to-come image)' );
+	} else if ( Boolean( s.photoToCome ) !== onPlaceholder ) {
+		out.push( onPlaceholder ? 'its photo-to-come marker' : 'its photo-to-come marker cleared (it has its own image)' );
 	}
 	if ( p.gallery.length && ! s.gallery ) {
 		out.push( `gallery of ${ p.gallery.length }` );
@@ -85,11 +104,11 @@ export function planCatalogue( catalogue, state ) {
 	const actions = [];
 	for ( const p of products( catalogue ) ) {
 		const s = state.products.find( ( x ) => x.draftId === p.draftId ) || { id: 0 };
-		const step = { draftId: p.draftId, product: p, image: keyOf( p.image ), gallery: p.gallery.map( keyOf ) };
+		const step = { draftId: p.draftId, product: p, image: keyOf( p.image ) || PHOTO_TO_COME, photoToCome: ! p.image, gallery: p.gallery.map( keyOf ) };
 		const address = productAddress( catalogue, p );
 		if ( ! s.id ) {
 			const imgs = [ p.image, ...p.gallery ].filter( Boolean ).filter( ( i ) => ! state.images[ keyOf( i ) ] ).length;
-			actions.push( { ...step, action: 'create', say: `create ${ p.draftId } (${ p.sku }) ${ p.type } "${ p.name }" at ${ address }: price ${ p.price }${ p.rrp ? `, RRP ${ p.rrp }` : '' }${ p.variations.length ? `, ${ p.variations.length } variations of ${ p.attributes.map( ( a ) => `${ a.label } (${ a.options.map( ( o ) => o.term ).join( '/' ) })` ).join( ' x ' ) }` : '' }${ p.categories.length ? `, categories ${ p.categories.join( ', ' ) }` : '' }${ p.brand ? `, brand ${ p.brand }` : '' }${ p.image ? `, image ${ state.images[ keyOf( p.image ) ] ? `attachment ${ state.images[ keyOf( p.image ) ] }` : p.image.url ? 'to fetch' : 'to upload' }` : ', no image' }${ imgs ? ` (${ imgs } image file(s) to add)` : '' }` } );
+			actions.push( { ...step, action: 'create', placeholder: step.photoToCome, say: `create ${ p.draftId } (${ p.sku }) ${ p.type } "${ p.name }" at ${ address }: price ${ p.price }${ p.rrp ? `, RRP ${ p.rrp }` : '' }${ p.variations.length ? `, ${ p.variations.length } variations of ${ p.attributes.map( ( a ) => `${ a.label } (${ a.options.map( ( o ) => o.term ).join( '/' ) })` ).join( ' x ' ) }` : '' }${ p.categories.length ? `, categories ${ p.categories.join( ', ' ) }` : '' }${ p.brand ? `, brand ${ p.brand }` : '' }${ p.image ? `, image ${ state.images[ keyOf( p.image ) ] ? `attachment ${ state.images[ keyOf( p.image ) ] }` : p.image.url ? 'to fetch' : 'to upload' }` : `, image photo to come (${ state.images[ PHOTO_TO_COME ] ? `attachment ${ state.images[ PHOTO_TO_COME ] }` : 'to upload' })` }${ imgs ? ` (${ imgs } image file(s) to add)` : '' }` } );
 			continue;
 		}
 		if ( s.fixture ) {
@@ -104,7 +123,7 @@ export function planCatalogue( catalogue, state ) {
 		if ( s.permalink && ! s.permalink.endsWith( address ) && ! productBase ) {
 			notes.push( `${ p.draftId }: product ${ s.id } is at ${ s.permalink }, not ${ address }, so draft links to it miss` );
 		}
-		actions.push( { ...step, action: lack.length ? 'complete' : 'exists', id: s.id, say: lack.length ? `complete ${ p.draftId }: product ${ s.id } (found by ${ s.how }) lacks ${ lack.join( ', ' ) }` : `exists ${ p.draftId }: product ${ s.id }` } );
+		actions.push( { ...step, action: lack.length ? 'complete' : 'exists', placeholder: step.photoToCome && ! s.image, id: s.id, say: lack.length ? `complete ${ p.draftId }: product ${ s.id } (found by ${ s.how }) lacks ${ lack.join( ', ' ) }` : `exists ${ p.draftId }: product ${ s.id }` } );
 	}
 	for ( const [ kind, re ] of Object.entries( GAP_PLUGINS ) ) {
 		const gaps = catalogue.gaps.filter( ( g ) => g.kind === kind );
@@ -113,9 +132,12 @@ export function planCatalogue( catalogue, state ) {
 			notes.push( plugin ? `${ plugin } is active: the ${ kind } gap(s) of ${ gaps.map( ( g ) => g.draftId ).join( ', ' ) } can be built on it (not done by this step)` : `no ${ 'switch' === kind ? 'subscriptions' : 'gift-card' } plugin is active (wp option active_plugins), so the ${ kind } gap(s) of ${ gaps.map( ( g ) => g.draftId ).join( ', ' ) } stand` );
 		}
 	}
-	const bare = actions.filter( ( a ) => 'create' === a.action && 'variable' === a.product.type && ! a.product.image ).map( ( a ) => a.draftId );
+	const bare = actions.filter( ( a ) => a.placeholder ).map( ( a ) => a.draftId );
 	if ( bare.length ) {
-		notes.push( `the draft shows no image for variable product(s) ${ bare.join( ', ' ) }; the product preflight gate keeps a variable product without one in draft, so --apply reports each as not published until an image is set` );
+		notes.push( `${ bare.length } product(s) the draft gives no image get the photo-to-come image: ${ bare.join( ', ' ) }` );
+	}
+	if ( bare.length && false === state.photoToComeShows ) {
+		notes.push( `the product card treats the photo-to-come image as no photo on this site (attachment ${ state.images[ PHOTO_TO_COME ] } is, or shares its file name with, WooCommerce's placeholder image), so cards show their no-photo box` );
 	}
 	if ( catalogue.products.some( ( p ) => p.brand ) && ! state.brandTaxonomy ) {
 		notes.push( 'the site has no product_brand taxonomy (WooCommerce Brands), so brands are not written' );
@@ -138,14 +160,14 @@ export const readCatalogueState = ( runPhp, catalogue, images ) => parseJson( ru
 
 // The uploads an apply needs: every image the site does not hold, with its bytes (an asset) or address.
 function uploadsFor( repo, images, state ) {
-	return Object.fromEntries( Object.entries( images ).filter( ( [ k ] ) => ! state.images[ k ] ).map( ( [ k, v ] ) => [ k, v.url ? { url: v.url } : { ...v, data: fs.readFileSync( path.join( repo, k ) ).toString( 'base64' ) } ] ) );
+	return Object.fromEntries( Object.entries( images ).filter( ( [ k ] ) => ! state.images[ k ] ).map( ( [ k, v ] ) => [ k, v.url ? { url: v.url } : { ...v, data: fs.readFileSync( PHOTO_TO_COME === k ? PHOTO_TO_COME_FILE : path.join( repo, k ) ).toString( 'base64' ) } ] ) );
 }
 
 // Writes `sites.<site>` into catalogue.json (validated first; refused when the file changed shape).
 export function recordSite( repo, client, site, state, catalogue ) {
 	const file = catalogueFile( repo, client );
 	const record = JSON.parse( fs.readFileSync( file, 'utf8' ) );
-	const made = Object.fromEntries( state.products.filter( ( s ) => s.id && ! s.fixture ).map( ( s ) => [ s.draftId, { id: s.id, permalink: s.permalink, variations: s.variations.length } ] ) );
+	const made = Object.fromEntries( state.products.filter( ( s ) => s.id && ! s.fixture ).map( ( s ) => [ s.draftId, { id: s.id, permalink: s.permalink, variations: s.variations.length, ...( s.photoToCome ? { photoToCome: true } : {} ) } ] ) );
 	const next = { ...record, sites: { ...( record.sites || {} ), [ site ]: { builtAt: new Date().toISOString(), products: made } } };
 	const problems = catalogueProblems( next );
 	if ( problems.length ) {
@@ -193,6 +215,8 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 	const left = again.actions.filter( ( a ) => 'create' === a.action || 'complete' === a.action );
 	const recorded = recordSite( repo, client, site, after, catalogue );
 	log( `catalogue.json: ${ recorded } product id(s) recorded for ${ site }` );
+	const placeholders = after.products.filter( ( s ) => s.id && ! s.fixture && s.photoToCome ).map( ( s ) => s.draftId );
+	placeholders.length && log( `${ placeholders.length } product(s) carry the photo-to-come image (a real photo replaces it): ${ placeholders.join( ', ' ) }` );
 	if ( done.issues.length || left.length || again.productBase ) {
 		error( `FAILED: a fresh read still plans ${ left.length } product step(s)${ again.productBase ? ' and the product base' : '' }: ${ left.map( ( a ) => a.say ).join( '; ' ) }` );
 		return 1;
