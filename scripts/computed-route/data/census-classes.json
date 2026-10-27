@@ -3,6 +3,25 @@
 		"purpose": "The named causes of a Fill run's UNMAPPED rows (unmapped.json) and already-held rows (fill-report.json alreadyHeld). Rules are tried in order and the first pattern that matches the row's reason wins; a row no rule matches is a new gap kind and fails census.mjs --check. Patterns are case-insensitive regular expressions over the reason text.",
 		"owner_note": "owner names the Spec 48 item (.claude/specs/48-CLONING-SYSTEM.md) that owns closing the class."
 	},
+	"classes": {
+		"F-setting": { "meaning": "no setting reaches a property the block paints", "owner": "owning framework spec" },
+		"F-hardcode": { "meaning": "a setting holds the draft value and a named framework rule still wins", "owner": "owning framework spec" },
+		"F-block": { "meaning": "no block or composition can hold the element", "owner": "Spec 02" },
+		"F-vocabulary": { "meaning": "the token or preset vocabulary lacks the value kind (a slug, shadow role, fluid size)", "owner": "Spec 32" },
+		"F-behaviour": { "meaning": "an SGS feature lacks the behaviour (a seen-but-unsupported row, FR-48-34)", "owner": "owning feature spec" },
+		"W-walker": { "meaning": "a measuring artefact (mispair, unmeasured side, consequence of another row)", "owner": "Spec 48 §3.6" },
+		"W-route": { "meaning": "a setting exists that the route did not find, calibrate or write", "owner": "Spec 48" },
+		"W-unchecked": { "meaning": "a no-setting row that does not record every check as run, or comes from a run that records none: not a framework gap until they have", "owner": "Spec 48" },
+		"I-stale": { "meaning": "the DB or a cache is older than the code", "owner": "sgs-update-v2.py, calibration" },
+		"I-unrouted": { "meaning": "a fitting setting has a NULL css_property", "owner": "sgs-update-v2.py" },
+		"I-mistag": { "meaning": "a setting carries the wrong role", "owner": "sgs-update-v2.py" },
+		"I-calibration": { "meaning": "dead, noMarker, untested or absent calibration", "owner": "calibration (Spec 48 §3.2)" },
+		"draft-defect": { "meaning": "FR-48-34's closed list of defects in the draft itself", "owner": "Claude Design, or B5 for Eye Care" },
+		"render-wins": { "meaning": "the draft's code and render disagree and the rendered value is the target (FR-48-36); reported, never a gap", "owner": "the surface report; Claude Design when the code is the error" },
+		"CLIENT": { "meaning": "a recorded deliberate difference or a client decision", "owner": "the client's ledger" },
+		"held": { "meaning": "a row already held and judged live: the equivalence engine found the value inert, covered, inherited or the block's default, or a reduced-motion record the motion model removes itself; not a gap", "owner": "FR-48-65" },
+		"unassessed": { "meaning": "a walker row that no Fill row and no triage verdict covers, so no class has judged it yet", "owner": "FR-48-65" }
+	},
 	"unmapped": [
 		{ "class": "reduced-motion", "pattern": "^a reduced-motion rule: the motion model removes motion", "owner": "Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)", "frClass": "held" },
 		{ "class": "reduced-motion", "pattern": "; the record is also skipped: a reduced-motion rule", "owner": "Spec 38A §12 (a reduced-motion record on a block with no motion part: the motion model removes motion itself, so nothing needs writing; held)", "frClass": "held" },
