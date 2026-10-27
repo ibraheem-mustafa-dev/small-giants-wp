@@ -1,7 +1,7 @@
 // The site build's plan (Spec 48 FR-48-55): the page map compared with a site's state (lib/site-build-state.mjs),
 // as the actions that would make the site match, in four phases run in order: `posts` (every content row, parents
 // first, mega-menu panels before the menus that point at them, then each panel's section page), `menus` (part 3), `layout` (the header, drawer and
-// footer posts, whose trees bind their menus), and `site` (parts 4, 5 and 7). Pure: no site access.
+// footer posts, whose trees bind their menus), and `site` (parts 4 to 7; part 6 also switches WooCommerce's coming-soon mode off). Pure: no site access.
 // A value that names something not built yet is a ref ({ ref: 'post:<row key>' | 'menu:<name>' | 'item:<menu>:<key>' })
 // the executor resolves. The run only ever changes what it made: a stored id must name a post carrying that row's key
 // (`_sgs_site_build_row`), a menu it reuses must carry its own mark, and an item no row asks for is reported, never
@@ -15,6 +15,7 @@ import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, isAccountRow, orderRows, 
 import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
+import { comingSoonAction, COMING_SOON_OPTION } from './site-build-store-visible.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
@@ -343,6 +344,12 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			if ( was && '0' !== was && String( ids[ rowKey( list[ 0 ] ) ] ) !== was ) {
 				notes.push( `post ${ was }, which ${ name } named, is left in place (WooCommerce's earlier ${ role } page); unpublish or delete it if it is no longer wanted` );
 			}
+		}
+		// WooCommerce's coming-soon mode serves visitors a holding page in place of the site; switched off when on.
+		const visible = comingSoonAction( state.options[ COMING_SOON_OPTION ] );
+		if ( visible ) {
+			options.push( { name: COMING_SOON_OPTION, before: String( state.options[ COMING_SOON_OPTION ] ), after: visible.value } );
+			actions.push( visible );
 		}
 	}
 	if ( state.options.permalink_structure !== PERMALINKS ) {
