@@ -71,6 +71,47 @@ test( 'a surface that is not state-driven has no opener, and a record or state t
 	assert.equal( closedOnly.state, null, 'a closed state is never an opener' );
 } );
 
+// A drawer kept in the page off-canvas while closed: intake found its root without opening it (no viaState), and the
+// surface's states name the open state by its walker key (surfaces.json), never by the record's prose name.
+const DRAWER = [ { name: 'closed', state_keys: { nav: false }, how_to_reach: 'Default' }, { name: 'open: drawer slides in, contents stagger in from the left', state_keys: { nav: true }, how_to_reach: 'dcLogic(\'Header\').setState({ nav: true })' } ];
+const DRAWER_FACTS = { state: { Header: { keys: [ 'nav', 'signed' ], widthKeys: [] } } };
+const drawerEntry = { states: { 'open-drawer-slides-in-contents-stagger-in-from-the-left': null } };
+const kinded = ( kind, dc, states ) => ( { ...record( dc, states ), kind } );
+
+test( 'MUST FAIL: a drawer whose root renders closed opens by its record\'s open state, named by its walker key', () => {
+	const o = stateOpener( { entry: drawerEntry, skeleton: skeleton( { root: { viaCondition: false } } ), record: kinded( 'drawer', 'Header', DRAWER ), facts: DRAWER_FACTS, rootComponent: 'Home' } );
+	assert.ok( o, 'the surface is state-driven' );
+	assert.equal( o.state, DRAWER[ 1 ].name );
+	assert.deepEqual( o.keys, { nav: true } );
+	assert.equal( o.component, 'Header' );
+	assert.equal( o.ways[ 0 ].via, 'state', 'plain keys are set first' );
+	assert.deepEqual( o.refused, [] );
+} );
+
+test( 'MUST FAIL: a state-driven root\'s open state is found by its walker key too', () => {
+	const o = stateOpener( { entry: drawerEntry, skeleton: skeleton(), record: record( 'Header', DRAWER ), facts: DRAWER_FACTS } );
+	assert.equal( o.state, DRAWER[ 1 ].name );
+} );
+
+test( 'every open-able kind whose root renders closed opens; a menu panel, a modal and an accordion too', () => {
+	for ( const kind of [ 'menu', 'modal', 'accordion' ] ) {
+		assert.equal( stateOpener( { entry: drawerEntry, skeleton: skeleton( { root: {} } ), record: kinded( kind, 'Header', DRAWER ), facts: DRAWER_FACTS } )?.state, DRAWER[ 1 ].name, kind );
+	}
+} );
+
+test( 'negative controls: a root that renders without a state has no opener unless it is an open-able surface named open', () => {
+	const shown = skeleton( { root: { viaCondition: false } } );
+	assert.equal( stateOpener( { entry: { states: { resting: null } }, skeleton: shown, record: kinded( 'drawer', 'Header', DRAWER ), facts: DRAWER_FACTS } ), null, 'a surface naming no record state is not state-driven (no refusal row)' );
+	assert.equal( stateOpener( { entry: { states: { closed: null } }, skeleton: shown, record: kinded( 'drawer', 'Header', DRAWER ), facts: DRAWER_FACTS } ), null, 'naming only the closed state opens nothing' );
+	assert.equal( stateOpener( { entry: { states: { default: null } }, skeleton: shown, record: kinded( 'modal', 'Header', [ { name: 'default', state_keys: {} }, { name: 'open', state_keys: { nav: true } } ] ), facts: DRAWER_FACTS } ), null, 'naming only the default state opens nothing' );
+	const hours = [ { name: 'open now', state_keys: { openNow: true } }, { name: 'closed', state_keys: { openNow: false } } ];
+	assert.equal( stateOpener( { entry: { states: { 'open-now': null } }, skeleton: shown, record: kinded( 'footer', 'Footer', hours ), facts: null } ), null, 'a footer showing opening hours is shown at rest, whatever its states are called' );
+	for ( const kind of [ 'page', 'global', 'header', 'panel', 'form', undefined ] ) {
+		assert.equal( stateOpener( { entry: drawerEntry, skeleton: shown, record: kinded( kind, 'Header', DRAWER ), facts: DRAWER_FACTS } ), null, `${ kind } is not an open-able kind` );
+	}
+	assert.equal( stateOpener( { entry: drawerEntry, skeleton: null, record: kinded( 'drawer', 'Header', DRAWER ), facts: DRAWER_FACTS } ), null, 'no skeleton, no opener' );
+} );
+
 test( 'the first usable state opens the surface; a state refused before it is listed', () => {
 	const states = [ { name: 'open', state_keys: { _closing: true } }, { name: 'open wide', state_keys: { active: 2 }, sc_if_tpl_ids: [ '9' ] } ];
 	const o = stateOpener( { entry: { states: { open: null, 'open wide': null } }, skeleton: skeleton(), record: record( 'Site', states ), facts: FACTS } );

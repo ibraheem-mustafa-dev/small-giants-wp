@@ -13,10 +13,17 @@
 // A component a route mounts has no live instance until the route loads, so the record's route is loaded first. A state
 // whose listed `sc_if_tpl_ids` did not render is refused (a gap row naming the state and the reason), never read as a
 // closed surface.
+// A surface is state-driven when its intake skeleton's root does not exist without a state (`root.viaState`), or when its
+// root renders closed (a drawer kept in the page off-canvas) and its handoff record is an open-able kind
+// (lib/manifest-build.mjs::OPENABLE: menu, drawer, modal, accordion) whose states the surface's states name one of, other
+// than closed or default. A surface's states name a record state by the state's name or its walker key
+// (lib/manifest-build.mjs::walkerKey, the key surfaces.json writes for it).
+// The walker config's live side opens the same surface through the control that owns it (liveOpenerSource).
 import { setDraftState, reachDraftState, logicState } from './intake-state.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
 import { plainState, widthBounds, fitsWidth, waysHeldAt } from './state-reach.mjs';
 import { ROOT_HOST, isStatePage, stateRouteHash } from './state-route.mjs';
+import { walkerKey, OPENABLE } from './manifest-build.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
 
 // The property an UNMAPPED row names for a refused state: no one property was read.
@@ -90,16 +97,20 @@ export function readUrlOf( { url, opener, record, routing } ) {
 // open first, each state's two ways in plainState's order); `state`, `keys`, `calls`, `dropped` and `expect` are the
 // first way's. `state` is null when no candidate state has a way (each is refused with its reason).
 export function stateOpener( { entry, skeleton, record, facts, rootComponent = null } ) {
-	if ( ! skeleton?.root?.viaState ) {
+	const named = new Set( Object.keys( entry?.states || {} ).map( lower ) );
+	const names = ( s ) => named.has( lower( s.name ) ) || named.has( walkerKey( s.name || '' ) );
+	// A root that renders closed is state-driven only when its record is an open-able surface and the surface names one of
+	// its states other than the closed one.
+	const shut = OPENABLE.includes( record?.kind ) && ( record?.states || [] ).some( ( s ) => ! CLOSED.test( s.name || '' ) && names( s ) );
+	if ( ! skeleton?.root || ! ( skeleton.root.viaState || shut ) ) {
 		return null;
 	}
 	const base = { id: skeleton.id ?? null, component: record && record.dc === rootComponent ? ROOT_HOST : record?.dc ?? null, dc: record?.dc ?? null, route: record?.route ?? null, state: null, keys: {}, dropped: [], expect: [], refused: [] };
 	if ( ! record ) {
 		return { ...base, refused: [ { state: null, reason: `no handoff record ${ skeleton.id } in surfaces.json, so no state is known` } ] };
 	}
-	const named = new Set( Object.keys( entry?.states || {} ).map( lower ) );
 	const pool = ( record.states || [] ).filter( ( s ) => ! CLOSED.test( s.name || '' ) );
-	let candidates = pool.filter( ( s ) => named.has( lower( s.name ) ) );
+	let candidates = pool.filter( names );
 	if ( ! candidates.length && skeleton.opened?.state ) {
 		candidates = pool.filter( ( s ) => lower( s.name ) === lower( skeleton.opened.state ) );
 	}
@@ -207,17 +218,61 @@ async function openWay( page, opener, way ) {
 // through lib/intake-state.mjs::logicState carried as source text (keys set, or setState calls run with the width-bound
 // keys kept), then waits for the re-render.
 export function openerSource( opener ) {
-	const ways = ( opener.ways || waysAt( opener, null ) ).map( ( w ) => ( { op: 'reach' === w.via ? 'reach' : 'set', patch: 'reach' === w.via ? { calls: w.calls, keep: w.bounds.map( ( b ) => b.key ) } : w.keys, bounds: w.bounds || [] } ) );
 	return `async ( h ) => {
-		const ways = ${ JSON.stringify( ways ) };
-		const at = ${ JSON.stringify( opener.openedAt || {} ) };
-		const width = h.page.viewportSize?.()?.width ?? null;
-		const fits = ${ fitsWidth.toString() };
-		const way = ways[ at[ width ] ] || ways.find( ( w ) => fits( w.bounds, width ) );
+		${ waySource( opener ) }
 		if ( way ) {
 			await h.page.evaluate( ${ logicState.toString() }, { comp: ${ JSON.stringify( opener.component ) }, op: way.op, patch: way.patch } );
 		}
 		await h.page.waitForTimeout( 900 );
+	}`;
+}
+
+// The way openerSource applies at the page's width, as source text declaring `width` and `way` (undefined when no way is
+// offered there).
+function waySource( opener ) {
+	const ways = ( opener.ways || waysAt( opener, null ) ).map( ( w ) => ( { op: 'reach' === w.via ? 'reach' : 'set', patch: 'reach' === w.via ? { calls: w.calls, keep: w.bounds.map( ( b ) => b.key ) } : w.keys, bounds: w.bounds || [] } ) );
+	return `const ways = ${ JSON.stringify( ways ) };
+		const at = ${ JSON.stringify( opener.openedAt || {} ) };
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ${ fitsWidth.toString() };
+		const way = ways[ at[ width ] ] || ways.find( ( w ) => fits( w.bounds, width ) );`;
+}
+
+// In-page: opens the surface at `root` (a selector) through the control that owns it: the nearest of the root and its
+// ancestors with an id that a control outside it names in aria-controls (a nav drawer's <dialog> and the header burger, a
+// mega panel and its trigger). The shown control is clicked, else the first one (its own handler runs though the control
+// is hidden at this width); a surface already open (a dialog's open, a control already expanded) is left as it is.
+// Returns { clicked, id, why } (why: null when clicked).
+export function openOwner( root ) {
+	const el = document.querySelector( root );
+	if ( ! el ) {
+		return { clicked: false, id: null, why: `no ${ root } on the page` };
+	}
+	for ( let a = el; a && a !== document.documentElement; a = a.parentElement ) {
+		const controls = a.id ? [ ...document.querySelectorAll( '[aria-controls]' ) ].filter( ( b ) => ! a.contains( b ) && b.getAttribute( 'aria-controls' ).split( /\s+/ ).includes( a.id ) ) : [];
+		if ( ! controls.length ) {
+			continue;
+		}
+		if ( a.open || controls.some( ( b ) => 'true' === b.getAttribute( 'aria-expanded' ) ) ) {
+			return { clicked: false, id: a.id, why: `#${ a.id } is open already` };
+		}
+		( controls.find( ( b ) => b.getClientRects().length ) || controls[ 0 ] ).click();
+		return { clicked: true, id: a.id, why: null };
+	}
+	return { clicked: false, id: null, why: `nothing on the page controls ${ root } or an element around it` };
+}
+
+// The walker config's live `open` function text for an opener: the live surface at `root` (the surface's live root,
+// lib/fill-config.mjs::surfaceRoots) opened through its own control (openOwner), at the widths the draft side opens at (the
+// way openerSource takes there), so both sides of a pair show the same state. What kept it shut is printed.
+export function liveOpenerSource( opener, root ) {
+	return `async ( h ) => {
+		${ waySource( opener ) }
+		if ( way ) {
+			const r = await h.page.evaluate( ${ openOwner.toString() }, ${ JSON.stringify( root ) } );
+			r.why && console.log( \`live open at \${ width }px: \${ r.why }\` );
+			await h.page.waitForTimeout( 900 );
+		}
 	}`;
 }
 

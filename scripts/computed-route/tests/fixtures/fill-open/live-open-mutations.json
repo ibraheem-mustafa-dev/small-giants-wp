@@ -1,0 +1,14 @@
+[
+ {"file": "lib/fill-config.mjs", "find": "${ opener?.state && roots?.live ? `, open: ${ liveOpenerSource( opener, roots.live ) }` : '' }", "replace": "", "why": "a state-driven surface's live side opens too"},
+ {"file": "lib/fill-config.mjs", "find": "opener?.state && roots?.live ?", "replace": "roots?.live ?", "why": "only a surface with an opening state opens its live side"},
+ {"file": "lib/fill-config.mjs", "find": "opener?.state && roots?.live ?", "replace": "opener?.state ?", "why": "no live root, no live open"},
+ {"file": "lib/fill-open.mjs", "find": "! a.contains( b ) && ", "replace": "", "why": "a control inside the surface (its close button) never opens it"},
+ {"file": "lib/fill-open.mjs", "find": "( controls.find( ( b ) => b.getClientRects().length ) || controls[ 0 ] ).click();", "replace": "controls[ 0 ].click();", "why": "the shown control is clicked first"},
+ {"file": "lib/fill-open.mjs", "find": "( controls.find( ( b ) => b.getClientRects().length ) || controls[ 0 ] ).click();", "replace": "controls.find( ( b ) => b.getClientRects().length )?.click();", "why": "a control hidden at this width still opens the surface"},
+ {"file": "lib/fill-open.mjs", "find": "if ( a.open || controls.some( ( b ) => 'true' === b.getAttribute( 'aria-expanded' ) ) ) {", "replace": "if ( false ) {", "why": "an open surface is never toggled shut"},
+ {"file": "lib/fill-open.mjs", "find": "if ( a.open || controls", "replace": "if ( controls", "why": "a dialog open already counts as open"},
+ {"file": "lib/fill-open.mjs", "find": "if ( ! controls.length ) {\n\t\t\tcontinue;", "replace": "if ( ! controls.length ) {\n\t\t\tbreak;", "why": "the ancestors of the root are searched for the controlled element"},
+ {"file": "lib/fill-open.mjs", "find": "const way = ways[ at[ width ] ] || ways.find", "replace": "const way = ways.find", "why": "a width Fill opened at takes that way"},
+ {"file": "lib/fill-open.mjs", "find": "ways.find( ( w ) => fits( w.bounds, width ) );`", "replace": "ways.find( ( w ) => true );`", "why": "a way is offered only at the widths inside its bounds"},
+ {"file": "lib/fill-open.mjs", "find": "if ( way ) {\n\t\t\tconst r = await", "replace": "if ( true ) {\n\t\t\tconst r = await", "why": "the live side opens only where the draft side has a way"}
+]
