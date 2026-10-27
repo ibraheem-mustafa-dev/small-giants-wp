@@ -30,6 +30,7 @@ import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
 import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
+import { plainState } from './state-reach.mjs';
 import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
@@ -223,20 +224,18 @@ export { reachCalls };
 // first, one with a key holding a JS literal ("{open:true}", "[]") or a comparison (">= 768", "768–1023") tries `reach`
 // first. Then each template handler of the surface's component whose method `opened_by` names.
 const IDENT = /^[A-Za-z_$][\w$]*$/;
-const NOT_A_VALUE = /^\s*(?:[[{].*[\]}]|[<>]=?\s*-?\d.*|-?\d+(?:\.\d+)?\s*[–-]\s*-?\d.*|<.*>)\s*$/;
 export function openers( s, census = null ) {
 	const shut = ( st ) => /^(closed|default)$/i.test( st.name || '' );
 	const concrete = ( st ) => {
 		const keys = Object.entries( st.state_keys || {} );
 		return keys.length && keys.every( ( [ n, v ] ) => IDENT.test( n ) && ! ( 'string' === typeof v && /^<.*>$/.test( v ) ) );
 	};
-	const plain = ( st ) => Object.values( st.state_keys || {} ).every( ( v ) => ! ( 'string' === typeof v && NOT_A_VALUE.test( v ) ) );
 	const states = ( s.states || [] ).filter( ( st ) => ! shut( st ) ).sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );
 	const out = states.flatMap( ( st ) => {
 		const set = concrete( st ) ? [ { via: 'state', state: st.name, keys: st.state_keys } ] : [];
 		const calls = reachCalls( st.how_to_reach );
 		const reach = calls.length ? [ { via: 'reach', state: st.name, calls } ] : [];
-		return plain( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
+		return plainState( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
 	} );
 	const named = new Set( String( s.openedBy || '' ).match( /[A-Za-z_$][\w$]*(?=\s*\()|\b[a-z]+[A-Z][\w$]*\b/g ) || [] );
 	for ( const r of census?.rows || [] ) {
