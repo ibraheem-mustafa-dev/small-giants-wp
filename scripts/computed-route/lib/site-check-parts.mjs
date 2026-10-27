@@ -43,7 +43,7 @@ export function readPartsInPage( mark ) {
 	const forms = [ ...document.querySelectorAll( '.sgs-form' ) ].filter( ( w ) => w.querySelector( 'form.sgs-form__inner' ) ).map( ( w, i ) => {
 		w.setAttribute( mark, `form-${ i }` );
 		const c = ctx( w.querySelector( 'form.sgs-form__inner' ) );
-		return { i, formId: c.formId || '', successMessage: c.successMessage || '', successRedirect: c.successRedirect || '', fields: w.querySelectorAll( 'input:not([type=hidden]),select,textarea' ).length };
+		return { i, formId: c.formId || '', successMessage: c.successMessage || '', successRedirect: c.successRedirect || '', store: 'false' !== w.getAttribute( 'data-store-submissions' ), fields: w.querySelectorAll( 'input:not([type=hidden]),select,textarea' ).length };
 	} );
 	return { modals, flows, forms };
 }
@@ -129,19 +129,24 @@ const successTextOf = async ( page, scope ) => {
 // One form, submitted once with a marked test entry on the page that renders it: the success verdict is
 // lib/form-submit-run.mjs::successVerdict on the form's own successMessage / successRedirect (read from its rendered
 // context). `rowsSince` (optional) counts the stored submissions for the form since the run began: it returns
-// { count } or { error } (the site's wp-cli unreachable), and a reachable count other than 1 fails.
+// { count } or { error } (the site's wp-cli unreachable). A form that stores its submissions (its wrapper's
+// data-store-submissions is not "false", form/render.php) must store exactly 1; a form set not to store passes on its
+// success state and a 200 from the submit endpoint, says so, and fails if anything was stored. A visible button reading
+// Next or Continue that is not the form's own control (a draft control that does nothing) is named in the detail.
 export async function formItem( page, form, { url, shoot, marker, rowsSince = null } ) {
 	const subject = `form "${ form.formId || `#${ form.i }` }"`;
 	const scope = `[${ MARK }="form-${ form.i }"]`;
 	const selector = `.sgs-form form.sgs-form__inner (formId ${ form.formId })`;
+	const shotName = `form-${ form.formId || form.i }`;
 	const posts = [];
-	const onResponse = ( r ) => 'POST' === r.request().method() && r.url().includes( '/wp-json/' ) && posts.push( `${ r.status() } ${ new URL( r.url() ).pathname }` );
+	const onResponse = ( r ) => 'POST' === r.request().method() && r.url().includes( '/wp-json/' ) && posts.push( { status: r.status(), path: new URL( r.url() ).pathname } );
 	page.on( 'response', onResponse );
+	let walked;
 	try {
-		await submitForm( page, 0, { marker, form: `${ scope } form.sgs-form__inner` } );
+		walked = await submitForm( page, 0, { marker, form: `${ scope } form.sgs-form__inner` } );
 	} catch ( e ) {
 		page.off( 'response', onResponse );
-		return { status: 'fail', subject, url, selector, screenshot: await shoot( `form-${ form.i }-not-submitted` ), error: `could not submit: ${ e.message }` };
+		return { status: 'fail', subject, url, selector, screenshot: await shoot( `${ shotName }-not-submitted` ), error: `could not submit: ${ e.message }` };
 	}
 	const startUrl = url;
 	let successText = '';
@@ -154,13 +159,22 @@ export async function formItem( page, form, { url, shoot, marker, rowsSince = nu
 	}
 	page.off( 'response', onResponse );
 	const v = successVerdict( { settings: form, finalUrl: page.url(), successText } );
-	const screenshot = await shoot( `form-${ form.i }-${ v.ok ? 'success' : 'no-success' }` );
+	const screenshot = await shoot( `${ shotName }-${ v.ok ? 'success' : 'no-success' }` );
 	const stored = rowsSince ? await rowsSince( form.formId ) : null;
+	const store = false !== form.store;
+	const submitted = posts.some( ( p ) => 200 === p.status && /\/sgs-forms\/v1\/submit$/.test( p.path ) );
 	const storedText = ! stored ? 'stored row not read (no wp-cli for this site)' : stored.error ? `stored row not read: ${ stored.error }` : `${ stored.count } stored submission(s) since the run began`;
-	const detail = `${ v.why }; requests: ${ posts.join( ', ' ) || 'none' }; ${ storedText }; test entry marked "${ marker }"`;
+	const decoys = walked?.decoys?.length ? `; the form also shows ${ walked.decoys.map( ( d ) => `"${ d }"` ).join( ', ' ) }, a button that is not its own step or submit control` : '';
+	const detail = `${ v.why }; requests: ${ posts.map( ( p ) => `${ p.status } ${ p.path }` ).join( ', ' ) || 'none' }; ${ storedText }${ store ? '' : '; the form is set not to store submissions (data-store-submissions="false")' }; test entry marked "${ marker }"${ decoys }`;
 	if ( ! v.ok ) {
 		const shownError = await page.locator( `${ scope } .sgs-form__message--error:visible, ${ scope } .sgs-form-field__error:visible` ).allInnerTexts().catch( () => [] );
 		return { status: 'fail', subject, url, selector, screenshot, error: `${ v.why }${ shownError.length ? `; the form shows: ${ shownError.join( ' | ' ).trim() }` : '' }`, detail };
+	}
+	if ( ! store ) {
+		if ( stored && ! stored.error && 0 !== stored.count ) {
+			return { status: 'fail', subject, url, selector, screenshot, error: `the form is set not to store submissions but ${ stored.count } were stored`, detail };
+		}
+		return submitted ? { status: 'pass', subject, url, selector, screenshot, detail } : { status: 'fail', subject, url, selector, screenshot, error: 'the success state showed but the submit endpoint never answered 200 (the form is set not to store, so the answer is the only proof it was sent)', detail };
 	}
 	if ( stored && ! stored.error && 1 !== stored.count ) {
 		return { status: 'fail', subject, url, selector, screenshot, error: `the success state showed but ${ stored.count } submissions were stored`, detail };
