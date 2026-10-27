@@ -93,6 +93,8 @@ studio/
 *.png
 # Shipped plugin brand assets (the coloured Google Maps logo) are PNGs the block serves.
 !plugins/sgs-blocks/assets/*.png
+# The "photo to come" image the cloning tool's catalogue step gives a product the draft shows no image for.
+!scripts/computed-route/data/photo-to-come.png
 *.jpg
 *.webp
 !theme/sgs-theme/**/*.png

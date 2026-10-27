@@ -1,9 +1,10 @@
 // What a site holds that the site build compares with the page map (Spec 48 FR-48-55), read in one `wp eval-file`:
 // the posts the rows' ids name (a mega panel's with its section page), every post carrying a row key, the posts already holding an unbuilt row's type and
 // slug, the classic menus with each one's site-build mark and each item's stored title, the theme's menu locations and
-// page templates per post type, the front-page, posts-page and permalink options, and the three
+// page templates per post type, the front-page, posts-page, permalink and WooCommerce coming-soon options, and the three
 // active-layout pointers (read only; they are written through `wp sgs <area> set-active`).
 import { hasPost, rowKey, wpType } from './site-build-map.mjs';
+import { COMING_SOON_OPTION } from './site-build-store-visible.mjs';
 
 export const ROW_META = '_sgs_site_build_row';
 export const TREE_META = '_sgs_site_build_tree';
@@ -119,7 +120,7 @@ foreach ( $types as $t ) {
 	$out['templates'][ $t ] = array_values( array_unique( array_merge( array_keys( wp_get_theme()->get_page_templates( null, $t ) ), wp_list_pluck( get_block_templates( array( 'post_type' => $t ), 'wp_template' ), 'slug' ) ) ) );
 }
 $out['options'] = array();
-foreach ( array( 'show_on_front', 'page_on_front', 'page_for_posts', 'permalink_structure', ${ WOO_OPTIONS.map( ( o ) => `'${ o }'` ).join( ', ' ) } ) as $o ) {
+foreach ( array( 'show_on_front', 'page_on_front', 'page_for_posts', 'permalink_structure', '${ COMING_SOON_OPTION }', ${ WOO_OPTIONS.map( ( o ) => `'${ o }'` ).join( ', ' ) } ) as $o ) {
 	$out['options'][ $o ] = (string) get_option( $o );
 }
 // The page contents the installed WooCommerce's page creation writes, by role, after its woocommerce_create_pages

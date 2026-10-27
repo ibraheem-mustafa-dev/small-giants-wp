@@ -44,7 +44,9 @@ export function specBlock( specText, label ) {
 	}
 }
 
-// The intake record's top-level keys: the backticked names in the first column of the table under **Intake record:**.
+// The intake record's top-level keys: the backticked names in the first column of the table under **Intake record:**,
+// each { key, optional }: a key whose description opens a sentence with "Optional:" may be absent from a record (one
+// written before the key existed), so the schema lists it in its properties but not in its required.
 function intakeKeys( specText ) {
 	const text = appendix( specText );
 	const at = text.indexOf( '**Intake record:**' );
@@ -65,7 +67,8 @@ function intakeKeys( specText ) {
 		if ( 'Key' === first || /^-+$/.test( first ) ) {
 			continue;
 		}
-		keys.push( ...[ ...first.matchAll( /`([^`]+)`/g ) ].map( ( k ) => k[ 1 ] ) );
+		const optional = /(^|[.;]\s+)Optional:/.test( line.split( '|' ).slice( 2 ).join( '|' ) );
+		keys.push( ...[ ...first.matchAll( /`([^`]+)`/g ) ].map( ( k ) => ( { key: k[ 1 ], optional } ) ) );
 	}
 	return keys;
 }
@@ -141,13 +144,18 @@ export function syncProblems( specText, label, schema ) {
 // Readable disagreements between the intake record's key table and a parsed intake.schema.json: its top-level required
 // must equal the key set, and properties must hold each key.
 export function intakeProblems( specText, schema ) {
-	const keys = intakeKeys( specText );
+	const entries = intakeKeys( specText );
+	const keys = entries.map( ( e ) => e.key );
 	const want = new Set( keys );
+	const optional = new Set( entries.filter( ( e ) => e.optional ).map( ( e ) => e.key ) );
 	const required = new Set( schema?.required || [] );
 	const out = [];
 	for ( const k of keys ) {
-		if ( ! required.has( k ) ) {
+		if ( ! optional.has( k ) && ! required.has( k ) ) {
 			out.push( `Intake record: ${ k } is in Appendix C but not in the schema's required` );
+		}
+		if ( optional.has( k ) && required.has( k ) ) {
+			out.push( `Intake record: ${ k } is optional in Appendix C but the schema requires it` );
 		}
 		if ( ! schema?.properties || ! ( k in schema.properties ) ) {
 			out.push( `Intake record: ${ k } is in Appendix C but not in the schema's properties` );

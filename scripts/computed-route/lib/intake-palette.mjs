@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import { colourHex } from './tokens.mjs';
 import { usageRoles, isBorder, SATURATED_C } from './intake-palette-usage.mjs';
 import { declarations, declaredRoles } from './intake-palette-declared.mjs';
+import { paletteBrands, brandOfToken } from './brand-registry.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const THEME_JSON = path.resolve( HERE, '../../../theme/sgs-theme/theme.json' );
@@ -237,7 +238,7 @@ function evidence( s, role ) {
 // by, why }]). `usage` is [{ hex (any colour form), property, draftId, count, tag?, ground?, text? }] (lib/intake-run-
 // collapse.mjs::paletteUsage plus lib/intake-palette-grounds.mjs::groundUsage); `slugs` is [{ slug, name }] (theme.json's
 // by default); `problems` carries lib/tokens.mjs's problems through.
-export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [], folder = null } = {} ) {
+export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [], folder = null, brands = paletteBrands() } = {} ) {
 	const vocab = new Set( slugs.map( ( s ) => s.slug ) );
 	const problems = [ ...carried ];
 	const uses = usage.map( ( u ) => ( { ...u, hex: colourHex( u.hex ), ...( u.ground ? { ground: colourHex( u.ground ) } : {} ) } ) ).filter( ( u, k ) => u.hex ||
@@ -365,6 +366,12 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 			return { ...row, role: null, roles: [], confidence: 0, why: 'unused: no element in the draft uses this value', by: 'none' };
 		}
 		if ( ! list.length && ! wanted.has( g ) ) {
+			// A token named for a registry brand is that brand's colour, which the brand-aware blocks paint themselves
+			// (plugins/sgs-blocks/includes/data/brand-registry.json): no palette slot and no custom token (Bean, 2026-10-27).
+			const brand = brandOfToken( t.name, brands );
+			if ( brand ) {
+				return { ...row, role: null, roles: [], brand: brand.slug, confidence: 0.9, why: `brand colour: ${ brand.label } (the brand registry names it), painted by the brand's own setting, so no palette slot`, by: 'brand' };
+			}
 			const hit = hintOf.get( t.name );
 			const why = lost.get( t.name ) || ( hit && ! hit.role ? hit.why : 'no rendered fact or name gives it a slug; stays a custom colour (FR-33-2)' );
 			return { ...row, role: custom( t.name ), roles: [ custom( t.name ) ], confidence: hit && ! hit.role ? 0.8 : 0.3, why, by: hit && ! hit.role ? 'name' : 'none' };

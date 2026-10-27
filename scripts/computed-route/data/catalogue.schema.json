@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://smallgiantsstudio.co.uk/schemas/sgs/catalogue.schema.json",
+  "title": "Draft catalogue (Spec 48 FR-48-92): sites/<client>/build/catalogue.json",
+  "description": "The products a client draft's shop, product cards and product page draw, read from the draft code by lib/catalogue-read.mjs (intake.mjs --catalogue), and per site the WooCommerce product each became (site-build.mjs --catalogue --apply).",
+  "type": "object",
+  "required": ["schemaVersion", "client", "productBase", "source", "products", "gaps"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "client": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "productBase": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "The single-product permalink base: the draft manifest's product route, else WooCommerce's default 'product'." },
+    "source": {
+      "description": "Where the records were read: the files holding the record lists, the product row's draft and the record field compared in the code's id lookups. Null when the page map has no live product row or no records were found.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["files", "productPage", "idKey"],
+          "additionalProperties": false,
+          "properties": {
+            "files": { "type": "array", "items": { "type": "string" } },
+            "productPage": { "type": ["string", "null"] },
+            "idKey": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "products": { "type": "array", "items": { "$ref": "#/$defs/product" } },
+    "gaps": { "type": "array", "items": { "$ref": "#/$defs/gap" } },
+    "dropped": { "type": "array", "items": { "type": "string" }, "description": "Draft ids Bean dropped in the intake review (a catalogue row marked drop): the site build makes nothing for them and links to them keep the product-data handover." },
+    "sites": {
+      "type": "object",
+      "description": "Per site (secrets name), what the last applied site build made: draft id to product id and permalink.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["builtAt", "products"],
+        "additionalProperties": false,
+        "properties": {
+          "builtAt": { "type": "string" },
+          "products": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["id", "permalink"],
+              "additionalProperties": false,
+              "properties": {
+                "id": { "type": "integer", "minimum": 1 },
+                "permalink": { "type": "string" },
+                "variations": { "type": "integer", "minimum": 0 },
+                "photoToCome": { "const": true, "description": "The product carries the photo-to-come image (the draft gave none): `_sgs_photo_to_come` on the product; a real photo replaces it." }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "image": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "object", "required": ["asset"], "additionalProperties": false, "properties": { "asset": { "type": "string", "description": "Repo-relative path of a draft asset." } } },
+        { "type": "object", "required": ["url"], "additionalProperties": false, "properties": { "url": { "type": "string", "pattern": "^https?://" } } }
+      ]
+    },
+    "product": {
+      "type": "object",
+      "required": ["draftId", "sku", "slug", "name", "type", "price", "rrp", "shortDescription", "image", "gallery", "categories", "brand", "facets", "attributes", "variations"],
+      "additionalProperties": false,
+      "properties": {
+        "draftId": { "type": "string", "minLength": 1 },
+        "sku": { "type": "string", "pattern": "^sgs-draft-[a-z0-9-]+$" },
+        "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["simple", "variable"] },
+        "price": { "type": "number", "minimum": 0 },
+        "rrp": { "type": ["number", "null"], "minimum": 0 },
+        "shortDescription": { "type": ["string", "null"] },
+        "image": { "$ref": "#/$defs/image" },
+        "gallery": { "type": "array", "items": { "$ref": "#/$defs/image" } },
+        "categories": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "brand": { "type": ["string", "null"] },
+        "facets": { "type": "object", "description": "Filter fields with no WooCommerce home yet (a facet gap row names them), as the draft holds them." },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "label", "slug", "packSize", "options", "default"],
+            "additionalProperties": false,
+            "properties": {
+              "key": { "type": "string", "description": "The draft state key the shopper's choice is kept in." },
+              "label": { "type": "string" },
+              "slug": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "The global attribute slug, without pa_." },
+              "packSize": { "type": "boolean", "description": "A pack-size axis (Spec 27 Part 2): _sgs_pack_size_axis on the product, _sgs_unit_divisor and _sgs_discount_label on each variation." },
+              "options": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "object",
+                  "required": ["value", "term", "price", "swatch", "badge"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "value": { "type": ["string", "number", "boolean"] },
+                    "term": { "type": "string", "minLength": 1 },
+                    "price": { "type": ["number", "null"] },
+                    "swatch": { "type": ["string", "null"], "pattern": "^#[0-9a-fA-F]{3,8}$" },
+                    "badge": { "type": ["string", "null"] }
+                  }
+                }
+              },
+              "default": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "variations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sku", "options", "price"],
+            "additionalProperties": false,
+            "properties": {
+              "sku": { "type": "string", "pattern": "^sgs-draft-[a-z0-9-]+$" },
+              "options": { "type": "object", "additionalProperties": { "type": "string" } },
+              "price": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "gap": {
+      "type": "object",
+      "required": ["draftId", "kind", "detail"],
+      "additionalProperties": false,
+      "properties": {
+        "draftId": { "type": "string", "description": "The product's draft id, or * for the whole catalogue." },
+        "kind": { "enum": ["no-records", "price", "basket-line", "switch", "multi-choice", "gated-choice", "unread-choice", "priced-choices", "open-amount", "too-many-variations", "facet", "slug"] },
+        "detail": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

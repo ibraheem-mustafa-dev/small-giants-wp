@@ -4,7 +4,7 @@
 // copy, lib/template-copies.mjs). Pure functions over parsed files; manifest.mjs reads and writes them.
 import { builtTemplate, rowKey } from './site-build-map.mjs';
 import { WHOLE_TREE, copySource, rowsOf, servedTemplates } from './template-copies.mjs';
-import { keepsWooContent } from './site-build-plan.mjs';
+import { keepsWooContent, wooContentRole } from './site-build-plan.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
 export const PREFIXES = { sgs_mega_menu: 'mega-', sgs_drawer: 'drawer-', sgs_modal: 'modal-', sgs_form: 'form-', sgs_choice_flow: 'flow-' };
 // Post type -> handoff record kind.
@@ -236,7 +236,11 @@ export function templateSurfaces( rows ) {
 
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFiles` the export's entry drafts
 // (`entryFile` for an export with one); each surface takes the draft draftFor names.
-// `only` limits the run to those keys. `facts` is the client's fact record (`state[<dc>]` gives statesOf its context). Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake, noFacts }; throws when two rows give one key.
+// `only` limits the run to those keys. `facts` is the client's fact record (`state[<dc>]` gives statesOf its context). Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake, noFacts, noDraft }; throws when two rows give one key.
+// A row that is one of WooCommerce's own pages (cart, checkout, my account: lib/site-build-plan.mjs::wooContentRole) and
+// that the draft has no page for (no route, no record) is `noDraft`: WooCommerce's working block stays (FR-48-87), so
+// nothing is cloned there and nothing failed. Its entry carries the reason as `noDraft` (site-run skips it); a drafted
+// WooCommerce page that matches no record is still unresolved.
 export function buildManifest( { client, site, rows, records, intake = null, facts = null, target, entryFile = null, entryFiles = null, vocab = [], existing = {}, only = null } ) {
 	const isPlain = ( v ) => null !== v && 'object' === typeof v && ! Array.isArray( v );
 	if ( ! isPlain( existing ) || Object.values( existing ).some( ( v ) => ! isPlain( v ) ) ) {
@@ -245,7 +249,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	const drafts = entryFiles || [ entryFile ];
 	const entries = {};
 	const owner = new Map();
-	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], matched: {} };
+	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], noDraft: [], matched: {} };
 	const copies = templateSurfaces( rows );
 	// A copy Filled at its row needs that row's draft surface: one the handoff has no record for (a draft whose basket is
 	// a drawer has no cart page surface) is built as the derived copies are, from the page copy's shell around the theme
@@ -292,6 +296,8 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		const handSet = !! have && Object.hasOwn( have, 'states' );
 		const mine = { unresolved: [], pointer: [], dropped: [], disagree: [] };
 		const match = matchRecord( row, records );
+		const woo = ! isTemplate && ! match.record && null == row.route ? wooContentRole( row ) : null;
+		const noDraft = woo ? `no draft page: WooCommerce's own ${ woo } page keeps its block` : null;
 		let states = { resting: null };
 		if ( ! match.record && ! KINDS[ row.postType ] ) {
 			out.unmatched.push( { key, reason: 'states-unmatched', why: `no match rule for post type ${ row.postType }` } );
@@ -306,13 +312,15 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			if ( theirs && nameSet( theirs ).join( '\n' ) !== nameSet( match.record ).join( '\n' ) ) {
 				mine.disagree.push( { key, handoff: nameSet( match.record ), intake: nameSet( theirs ) } );
 			}
+		} else if ( noDraft ) {
+			out.noDraft.push( { key, why: noDraft } );
 		} else {
 			mine.unresolved.push( { key, reason: 'states-unresolved', why: match.reason || `record ${ match.record.id } has no states` } );
 		}
 		match.record && ( out.matched[ key ] = match.record.id );
 		// The entry's link to its intake skeleton, through the handoff record both carry; none when intake has no skeleton for it.
 		const intakeSurface = intakeSurfaceOf( match.record, intake );
-		null === intakeSurface && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
+		null === intakeSurface && ! noDraft && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
 		const entry = {
 			tree: isTemplate ? `trees/template/${ row.templateOf.slug }.json` : `trees/${ row.postType }/${ row.slug }.json`,
 			...( intakeSurface ? { intakeSurface } : {} ),
@@ -331,6 +339,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			states,
 			...( isTemplate && 'post' === row.postType ? { fromPost: surfaceKey( row ) } : ! isTemplate && 'post' === row.postType ? { contentOnly: true } : {} ),
 			...( PROVIDES[ row.postType ] ? { provides: PROVIDES[ row.postType ]( row ) } : {} ),
+			...( noDraft ? { noDraft } : {} ),
 		};
 		if ( ! handSet ) {
 			Object.keys( mine ).forEach( ( list ) => out[ list ].push( ...mine[ list ] ) );
@@ -343,7 +352,9 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		if ( have ) {
 			const added = Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) );
 			added.length && ( out.added[ key ] = added );
-			entries[ key ] = { ...entry, ...have };
+			// The skip is generated truth, never a kept field: it follows the draft.
+			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ) };
+			noDraft || delete entries[ key ].noDraft;
 		} else {
 			entries[ key ] = entry;
 		}

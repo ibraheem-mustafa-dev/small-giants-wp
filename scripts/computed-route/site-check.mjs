@@ -7,7 +7,9 @@
 // choice flow the pages render opens from its trigger and closes (a page-map flow or form no page renders fails); every
 // form submits once to its success state with a test entry marked "SGS site-check test"; the client's scripted flows in
 // scripts/parity/flows pass (n-a for a client that has none); and cart, checkout and my-account show WooCommerce's
-// working forms. A failed check never stops the run. The only write to the site is one submission per form (and, with
+// working forms. Before them the home page is loaded as a visitor: when WooCommerce's coming-soon holding page stands in
+// place of the site (lib/site-check-coming-soon.mjs), the run reports that one failure with the fix command and marks
+// every other check n-a with the reason. A failed check never stops the run. The only write to the site is one submission per form (and, with
 // --with-cart, one basket line in this run's own WooCommerce session).
 // `--site` is a calibration-targets.json key (a local-* mirror shares its test site's page-map ids through `mirrorOf`)
 // or any `.claude/secrets/<site>.env`; only its WP_URL_* is read.
@@ -20,6 +22,7 @@ import { CHECKS, parseOnly, checkRecord, skippedRecord, exitCodeOf, renderMarkdo
 import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient } from './lib/site-check-site.mjs';
 import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, megaItems, drawerItem, pathKey } from './lib/site-check-nav.mjs';
 import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine } from './lib/site-check-parts.mjs';
+import { COMING_SOON_ROOT, comingSoonChecks, comingSoonInPage } from './lib/site-check-coming-soon.mjs';
 import { isAccountRow } from './lib/site-build-map.mjs';
 import { wpCommand } from './lib/calibration-refs.mjs';
 import { formSlug } from './lib/form-submit-run.mjs';
@@ -122,6 +125,15 @@ async function main() {
 		return { context, page, shoot };
 	};
 
+	const finish = () => {
+		const ordered = CHECKS.map( ( c ) => checks[ c.id ] || skippedRecord( c.id ) );
+		const result = { client: args.client, site: args.site, base, startedAt, finishedAt: new Date().toISOString(), only: only.ids, marker: MARKER, checks: ordered, notes, exitCode: exitCodeOf( ordered ) };
+		fs.writeFileSync( path.join( dir, 'result.json' ), `${ JSON.stringify( result, null, '\t' ) }\n` );
+		fs.writeFileSync( path.join( dir, 'result.md' ), renderMarkdown( result ) );
+		console.log( `site check ${ args.client } on ${ args.site }: ${ ordered.filter( ( c ) => 'fail' === c.status ).length } failed. ${ rel( path.join( dir, 'result.md' ) ) }` );
+		return result.exitCode;
+	};
+
 	try {
 		// The sweep: every page-map page at 1440, read once; the page check is judged from it and the later checks use
 		// its final addresses and the parts each page renders.
@@ -130,6 +142,13 @@ async function main() {
 		if ( reach instanceof Error ) {
 			console.error( `STOP ${ base } is unreachable: ${ reach.message.split( '\n' )[ 0 ] }` );
 			return 2;
+		}
+		// WooCommerce's coming-soon mode: the holding page in place of the site would make every other check's verdict false.
+		if ( await sweep.page.evaluate( comingSoonInPage, COMING_SOON_ROOT ).catch( () => false ) ) {
+			Object.assign( checks, comingSoonChecks( { ids: only.ids, url: sweep.page.url(), client: args.client, site: args.site, screenshot: await sweep.shoot( 'coming-soon' ) } ) );
+			CHECKS.forEach( ( c ) => console.log( `${ String( checks[ c.id ].status ).toUpperCase().padEnd( 5 ) } ${ c.id }: ${ checks[ c.id ].summary }` ) );
+			await sweep.context.close();
+			return finish();
 		}
 		for ( const ex of targetsOf.examples ) {
 			const res = await sweep.page.request.get( ex.url ).catch( () => null );
@@ -332,13 +351,7 @@ async function main() {
 	} finally {
 		await closeBrowser( browser, pid );
 	}
-
-	const ordered = CHECKS.map( ( c ) => checks[ c.id ] || skippedRecord( c.id ) );
-	const result = { client: args.client, site: args.site, base, startedAt, finishedAt: new Date().toISOString(), only: only.ids, marker: MARKER, checks: ordered, notes, exitCode: exitCodeOf( ordered ) };
-	fs.writeFileSync( path.join( dir, 'result.json' ), `${ JSON.stringify( result, null, '\t' ) }\n` );
-	fs.writeFileSync( path.join( dir, 'result.md' ), renderMarkdown( result ) );
-	console.log( `site check ${ args.client } on ${ args.site }: ${ ordered.filter( ( c ) => 'fail' === c.status ).length } failed. ${ rel( path.join( dir, 'result.md' ) ) }` );
-	return result.exitCode;
+	return finish();
 }
 
 main().then( ( code ) => {

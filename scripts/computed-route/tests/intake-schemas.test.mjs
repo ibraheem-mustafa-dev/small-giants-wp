@@ -132,10 +132,13 @@ test( 'MUST FAIL (page map): an array schema whose items differ from the row, or
 
 test( 'MUST FAIL (intake): a schema missing one Appendix C key, or requiring an extra one, is reported', () => {
 	const keys = [ 'schemaVersion', 'client', 'takenOn', 'manifest', 'tools', 'harness', 'census', 'inventory', 'routing',
-		'breakpoints', 'pageMap', 'palette', 'siteInfo', 'flags', 'draftDefects', 'notDefects', 'missingFeatures', 'skeletons', 'notices', 'gaps', 'review' ];
-	const good = { type: 'object', required: keys, properties: Object.fromEntries( keys.map( ( k ) => [ k, {} ] ) ) };
+		'breakpoints', 'pageMap', 'palette', 'siteInfo', 'flags', 'draftDefects', 'notDefects', 'missingFeatures', 'catalogue', 'skeletons', 'notices', 'gaps', 'review' ];
+	const good = { type: 'object', required: keys.filter( ( k ) => 'catalogue' !== k ), properties: Object.fromEntries( keys.map( ( k ) => [ k, {} ] ) ) };
 	assert.deepEqual( intakeProblems( spec, good ), [] );
-	const bad = { ...good, required: [ ...keys.filter( ( k ) => 'review' !== k ), 'extra' ] };
+	assert.deepEqual( intakeProblems( spec, { ...good, required: keys } ), [ 'Intake record: catalogue is optional in Appendix C but the schema requires it' ], 'an Optional: key the schema requires is refused' );
+	const noProp = { ...good, properties: Object.fromEntries( keys.filter( ( k ) => 'catalogue' !== k ).map( ( k ) => [ k, {} ] ) ) };
+	assert.deepEqual( intakeProblems( spec, noProp ), [ "Intake record: catalogue is in Appendix C but not in the schema's properties" ], 'an optional key still needs its schema property' );
+	const bad = { ...good, required: [ ...good.required.filter( ( k ) => 'review' !== k ), 'extra' ] };
 	assert.deepEqual( intakeProblems( spec, bad ), [
 		'Intake record: review is in Appendix C but not in the schema\'s required',
 		'Intake record: extra is required by the schema but not in Appendix C',
