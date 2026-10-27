@@ -5,10 +5,12 @@
 // the attachment id setting is that URL setting with `Url` changed to `Id` (else `Id` appended), kept only when the
 // block.json declares it; a block with a `caption` string setting takes the figcaption's words.
 // The draft's own address is never written: an image the media map does not hold is a named gap row, and a block with
-// no image setting (or several, which Fill cannot choose between) is a gap too.
+// no image setting (or several, which Fill cannot choose between) is a gap too. A stock preview the draft paints from a
+// stock host (lib/media-stock.mjs::stockKey) is the map's `stock: true` entry for its address without the query.
 // Returns { writes: [{ attr, value, merge }], unmapped: [{ property, value, slot, reason }], notes }.
 import fs from 'fs';
 import { paintedAsset } from './media-upload.mjs';
+import { stockKey } from './media-stock.mjs';
 import { templateKeyOf } from './fact-key.mjs';
 import { recordSite } from './cache.mjs';
 
@@ -67,6 +69,12 @@ export function draftPath( src, origin = '' ) {
 // folder boundary (sites/<client>/handoff/assets/x.png for the draft's assets/x.png).
 export function mapEntries( map, site, p ) {
 	return ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( e ) => e.asset === p || String( e.asset ).endsWith( `/${ p }` ) );
+}
+
+// The media-map entries a stock preview names: the `stock: true` files of `site` whose asset is the preview's address
+// without the query (lib/media-stock.mjs::stockKey, the key media-upload.mjs uploads it under).
+export function stockEntries( map, site, key ) {
+	return ( map?.sites?.[ recordSite( site ) ]?.files || [] ).filter( ( e ) => e.stock && e.asset === key );
 }
 
 // The setting that holds the attachment id for a URL setting, or null when the block declares none.
@@ -130,18 +138,20 @@ export function mediaDecisions( { slots, schema, attributes = {}, img, media = {
 		return out;
 	}
 	const [ slot ] = slots;
-	const p = draftPath( img.src, media.origin );
-	if ( null === p ) {
+	const file = draftPath( img.src, media.origin );
+	const stock = null === file ? stockKey( img.src ) : null;
+	if ( null === file && null === stock ) {
 		gap( `the draft image "${ img.src }" is not a file of the draft, so it has no uploaded copy; add it to sites/<client>/assets and run media-upload` );
 		return out;
 	}
+	const p = file ?? stock;
 	if ( ! media.map ) {
 		gap( `no media map: run media-upload.mjs for the site before Fill, so "${ p }" has an attachment` );
 		return out;
 	}
-	const hits = mapEntries( media.map, media.site, p );
+	const hits = null === file ? stockEntries( media.map, media.site, stock ) : mapEntries( media.map, media.site, p );
 	if ( ! hits.length ) {
-		gap( `"${ p }" is not in the media map for ${ media.site }: run media-upload.mjs so it has an attachment` );
+		gap( `${ null === file ? 'the stock preview ' : '' }"${ p }" is not in the media map for ${ media.site }: run media-upload.mjs so it has an attachment` );
 		return out;
 	}
 	if ( new Set( hits.map( ( h ) => h.id ) ).size > 1 ) {
