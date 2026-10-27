@@ -1,0 +1,545 @@
+{
+  "checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 34,
+      "detail": "116 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "83 nodes, 26 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own checkout page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own checkout page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own checkout page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    }
+  },
+  "my-account": {
+    "inventory": {
+      "ok": true,
+      "seconds": 45,
+      "detail": "203 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "118 nodes, 29 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 205,
+      "detail": "fill my-account: 854 settings written, 358 UNMAPPED, 9 handover, 2 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\my-account\\2026-10-27T01-17-08\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 28,
+      "detail": "{\"ok\":true,\"id\":103,\"link\":\"http://localhost:8084/my-account/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-103-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1329,
+      "detail": "report written (exit 1: my-account: 3858 open, 228 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\my-account\\repor)"
+    }
+  },
+  "cart": {
+    "inventory": {
+      "ok": true,
+      "seconds": 56,
+      "detail": "285 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "190 nodes, 58 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own cart page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own cart page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own cart page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    }
+  },
+  "contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 52,
+      "detail": "256 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "133 nodes, 32 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 236,
+      "detail": "fill contact: 1013 settings written, 411 UNMAPPED, 11 handover, 2 fluid, 167 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\contact\\2026-10-27T01-17-49\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 31,
+      "detail": "{\"ok\":true,\"id\":148,\"link\":\"http://localhost:8084/contact/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-148-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1667,
+      "detail": "report written (exit 1: contact: 4353 open, 268 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\contact\\report.md, )"
+    }
+  },
+  "gifts": {
+    "inventory": {
+      "ok": true,
+      "seconds": 63,
+      "detail": "317 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "214 nodes, 60 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 319,
+      "detail": "fill gifts: 1552 settings written, 670 UNMAPPED, 13 handover, 2 fluid, 402 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\gifts\\2026-10-27T01-18-24\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 34,
+      "detail": "{\"ok\":true,\"id\":150,\"link\":\"http://localhost:8084/gifts/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-150-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 2609,
+      "detail": "report written (exit 1: gifts: 7005 open, 256 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\gifts\\report.md, cont)"
+    }
+  },
+  "help": {
+    "inventory": {
+      "ok": true,
+      "seconds": 60,
+      "detail": "336 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "237 nodes, 69 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 308,
+      "detail": "fill help: 1713 settings written, 560 UNMAPPED, 10 handover, 2 fluid, 202 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\help\\2026-10-27T01-21-34\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 30,
+      "detail": "{\"ok\":true,\"id\":152,\"link\":\"http://localhost:8084/help/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-152-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 2100,
+      "detail": "report written (exit 1: help: 6219 open, 200 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\help\\report.md, contac)"
+    }
+  },
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 100,
+      "detail": "562 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 2,
+      "detail": "393 nodes, 116 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 1042,
+      "detail": "fill home: 2801 settings written, 901 UNMAPPED, 12 handover, 1 fluid, 786 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\home\\2026-10-27T01-23-27\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 37,
+      "detail": "{\"ok\":true,\"id\":154,\"link\":\"http://localhost:8084/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-154-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 3883,
+      "detail": "report written (exit 1: home: 11273 open, 490 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\home\\report.md, conta)"
+    }
+  },
+  "product": {
+    "inventory": {
+      "ok": true,
+      "seconds": 76,
+      "detail": "382 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "220 nodes, 54 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 317,
+      "detail": "fill product: 1721 settings written, 765 UNMAPPED, 9 handover, 1 fluid, 296 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\product\\2026-10-27T01-24-59\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 51,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//single-product\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1423,
+      "detail": "report written (exit 1: product: 2021 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\product\\report.md, co)"
+    }
+  },
+  "shop": {
+    "inventory": {
+      "ok": true,
+      "seconds": 60,
+      "detail": "303 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "141 nodes, 38 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 270,
+      "detail": "fill shop: 1039 settings written, 449 UNMAPPED, 10 handover, 1 fluid, 199 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\shop\\2026-10-27T01-27-43\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 55,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//archive-product\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1087,
+      "detail": "report written (exit 1: shop: 1647 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\shop\\report.md, contact )"
+    }
+  },
+  "form-send": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "20 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "11 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 359,
+      "detail": "fill form-send: 45 settings written, 99 UNMAPPED, 0 handover, 0 fluid, 24 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\form-send\\2026-10-27T01-30-17\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 20,
+      "detail": "{\"ok\":true,\"id\":157,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 212,
+      "detail": "report written (exit 1: form-send: 346 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\form-send\\report.md,)"
+    }
+  },
+  "flow-choice-flow-gifts-she-ll-actually-eat": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "1 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "1 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 66,
+      "detail": "fill flow-choice-flow-gifts-she-ll-actually-eat: 13 settings written, 8 UNMAPPED, 0 handover, 0 fluid, 1 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\flow-choice-flow-gifts-she-ll-actually-eat\\2026-10-27T01-32-13\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 21,
+      "detail": "{\"ok\":true,\"id\":159,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 334,
+      "detail": "report written (exit 1: flow-choice-flow-gifts-she-ll-actually-eat: 102 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\q)"
+    }
+  },
+  "flow-choice-flow-build-your-zookie": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "106 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "41 nodes, 12 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 108,
+      "detail": "fill flow-choice-flow-build-your-zookie: 289 settings written, 180 UNMAPPED, 0 handover, 0 fluid, 62 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\flow-choice-flow-build-your-zookie\\2026-10-27T01-33-19\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":161,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 580,
+      "detail": "report written (exit 1: flow-choice-flow-build-your-zookie: 276 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity)"
+    }
+  },
+  "footer": {
+    "inventory": {
+      "ok": true,
+      "seconds": 30,
+      "detail": "68 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "33 nodes, 5 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 232,
+      "detail": "fill footer: 270 settings written, 162 UNMAPPED, 5 handover, 1 fluid, 55 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\footer\\2026-10-27T01-35-37\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 29,
+      "detail": "{\"ok\":true,\"id\":176,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-176-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 621,
+      "detail": "report written (exit 1: footer: 2349 open, 52 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\footer\\report.md, con)"
+    }
+  },
+  "header": {
+    "inventory": {
+      "ok": true,
+      "seconds": 34,
+      "detail": "45 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "17 nodes, 8 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 155,
+      "detail": "fill header: 120 settings written, 76 UNMAPPED, 2 handover, 0 fluid, 24 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\header\\2026-10-27T01-36-50\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 24,
+      "detail": "{\"ok\":true,\"id\":178,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 285,
+      "detail": "report written (exit 1: header: 267 open, 16 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\header\\report.md, cont)"
+    }
+  },
+  "drawer-menu": {
+    "inventory": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "61 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "28 nodes, 8 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 120,
+      "detail": "fill drawer-menu: 189 settings written, 84 UNMAPPED, 1 handover, 0 fluid, 3 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\drawer-menu\\2026-10-27T01-39-52\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 42,
+      "detail": "{\"ok\":true,\"id\":180,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-180-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 428,
+      "detail": "report written (exit 1: drawer-menu: 237 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\drawer-menu\\report)"
+    }
+  },
+  "template-cart": {
+    "inventory": {
+      "ok": true,
+      "seconds": 54,
+      "detail": "285 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "143 nodes, 41 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 228,
+      "detail": "fill template-cart: 1043 settings written, 440 UNMAPPED, 8 handover, 1 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\template-cart\\2026-10-27T01-40-24\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//cart\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1598,
+      "detail": "report written (exit 1: template-cart: 5082 open, 260 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\template-cart)"
+    }
+  },
+  "template-checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 34,
+      "detail": "116 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "11 nodes, 4 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 49,
+      "detail": "fill template-checkout: 73 settings written, 16 UNMAPPED, 1 handover, 0 fluid, 6 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\fill\\template-checkout\\2026-10-27T01-41-23\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 58,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//checkout\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 220,
+      "detail": "report written (exit 1: template-checkout: 184 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\mamas-munches-redesign\\build\\qa\\parity\\out\\template-che)"
+    }
+  },
+  "template-front-page": {
+    "build": {
+      "ok": true,
+      "seconds": 24,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//front-page\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (home)"
+    }
+  },
+  "template-page": {
+    "build": {
+      "ok": true,
+      "seconds": 43,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//page\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (my-account, contact, gifts, help)"
+    }
+  },
+  "template-search": {
+    "build": {
+      "ok": true,
+      "seconds": 60,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//search\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-404": {
+    "build": {
+      "ok": true,
+      "seconds": 59,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//404\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-product-search-results": {
+    "build": {
+      "ok": true,
+      "seconds": 56,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//product-search-results\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-taxonomy-product_attribute": {
+    "build": {
+      "ok": true,
+      "seconds": 57,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//taxonomy-product_attribute\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-order-confirmation": {
+    "build": {
+      "ok": true,
+      "seconds": 51,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//order-confirmation\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  }
+}

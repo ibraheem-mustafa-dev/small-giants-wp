@@ -1,0 +1,3765 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "main",
+      "contentWidth": {
+        "desktop": "full"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "className": "cr-ref-shop-0",
+          "backgroundColour": "surface",
+          "minHeight": {
+            "mobile": "812px",
+            "desktop": "900px"
+          },
+          "textColourHover": "primary-text",
+          "backgroundColourHover": "surface"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "className": "cr-ref-shop-1",
+              "textColourHover": "primary-text"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "className": "cr-ref-shop-2",
+                  "textColourHover": "primary-text"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-shop-3",
+                      "backgroundColour": "primary",
+                      "alignItems": "center",
+                      "minHeight": {
+                        "desktop": "32px"
+                      },
+                      "textColourHover": "primary-text",
+                      "backgroundColourHover": "primary",
+                      "padding": {
+                        "desktop": {
+                          "right": "12px",
+                          "left": "12px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "flex",
+                          "className": "cr-ref-shop-4",
+                          "fontSize": {
+                            "desktop": 13
+                          },
+                          "fontWeight": "700",
+                          "borderWidth": {
+                            "right": "0px",
+                            "bottom": "1.5px",
+                            "left": "0px",
+                            "top": "1.5px"
+                          },
+                          "borderColour": "custom-mm-rule",
+                          "gap": {
+                            "desktop": "22.8px"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "maxWidth": {
+                            "desktop": "1240px"
+                          },
+                          "textWrap": "nowrap",
+                          "textColourHover": "primary-text",
+                          "borderColourHover": "custom-mm-rule"
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "✦ Baked fresh when you order",
+                              "className": "cr-ref-shop-5",
+                              "lineHeight": {
+                                "desktop": 1.154
+                              },
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "With you in 3–5 days",
+                              "className": "cr-ref-shop-6",
+                              "lineHeight": {
+                                "desktop": 1.154
+                              },
+                              "textColourHover": "primary-text",
+                              "sgsHideOnMobile": true,
+                              "sgsHideOnTablet": true
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Free UK delivery over £35",
+                              "className": "cr-ref-shop-7",
+                              "lineHeight": {
+                                "desktop": 1.154
+                              },
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "header",
+                      "className": "cr-ref-shop-8",
+                      "backgroundColour": "surface",
+                      "borderWidth": {
+                        "top": "0px",
+                        "right": "0px",
+                        "left": "0px",
+                        "bottom": "1px"
+                      },
+                      "borderColour": "border-light",
+                      "textColourHover": "primary-text",
+                      "borderColourHover": "border-light",
+                      "backgroundColourHover": "surface"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "grid",
+                          "className": "cr-ref-shop-9",
+                          "gridTemplateColumns": {
+                            "mobile": "minmax(0, 1fr) minmax(0, 1.34fr) minmax(0, 1fr)",
+                            "tablet": "minmax(0, 1.67fr) minmax(0, 1fr) minmax(0, 1.67fr)"
+                          },
+                          "alignItems": "center",
+                          "maxWidth": {
+                            "tablet": "1240px"
+                          },
+                          "minHeight": {
+                            "tablet": "64px"
+                          },
+                          "textColourHover": "primary-text",
+                          "padding": {
+                            "tablet": "20px",
+                            "mobile": "8px"
+                          },
+                          "sgsHideOnDesktop": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "className": "cr-ref-shop-10",
+                              "alignItems": "center",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-11",
+                                  "ariaLabel": "Open menu",
+                                  "textAlign": "center",
+                                  "borderRadius": {
+                                    "tablet": {
+                                      "topLeft": "999px",
+                                      "topRight": "999px",
+                                      "bottomRight": "999px",
+                                      "bottomLeft": "999px"
+                                    }
+                                  },
+                                  "gap": {
+                                    "tablet": "5px"
+                                  },
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "minHeight": {
+                                    "tablet": "48px"
+                                  },
+                                  "backgroundColourHover": "section",
+                                  "textColourHover": "primary-text",
+                                  "sgsFocusRests": true
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "className": "cr-ref-shop-12",
+                              "ariaLabel": "Mama's Munches home",
+                              "textColour": "link",
+                              "textDecoration": "underline",
+                              "textColourHover": "primary-text",
+                              "sgsFocusRests": true
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/responsive-logo",
+                                "attributes": {
+                                  "logoId": 91,
+                                  "className": "cr-ref-shop-13",
+                                  "logoUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+                                  "alt": "Mama's Munches",
+                                  "maxHeight": {
+                                    "mobile": "48px",
+                                    "tablet": "56px"
+                                  }
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/social-icons",
+                            "attributes": {
+                              "className": "cr-ref-shop-14",
+                              "ariaLabel": "Sign in or create an account",
+                              "gap": {
+                                "tablet": "0px"
+                              },
+                              "rowAlign": "end",
+                              "flexWrap": "nowrap"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/icon",
+                                "attributes": {
+                                  "linkUrl": "SignIn.dc.html",
+                                  "className": "cr-ref-shop-15",
+                                  "ariaLabel": "Sign in or create an account",
+                                  "iconSource": "custom",
+                                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></circle><path d=\"M4 21a8 8 0 0 1 16 0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>",
+                                  "borderRadius": {
+                                    "topLeft": "999px",
+                                    "topRight": "999px",
+                                    "bottomRight": "999px",
+                                    "bottomLeft": "999px"
+                                  },
+                                  "iconColourHover": "primary-text",
+                                  "backgroundColourHover": "section"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/icon",
+                                "attributes": {
+                                  "className": "cr-ref-shop-16",
+                                  "ariaLabel": "Open basket",
+                                  "iconSource": "custom",
+                                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><path d=\"M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path><path d=\"M9 10V7a3 3 0 0 1 6 0v3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>",
+                                  "borderRadius": {
+                                    "topLeft": "999px",
+                                    "topRight": "999px",
+                                    "bottomRight": "999px",
+                                    "bottomLeft": "999px"
+                                  },
+                                  "iconColourHover": "primary-text",
+                                  "textAlign": "center",
+                                  "backgroundColourHover": "section"
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "grid",
+                          "className": "cr-ref-shop-17",
+                          "gridTemplateColumns": {
+                            "desktop": "minmax(0, 1fr) minmax(0, 4.07fr) minmax(0, 1.11fr)"
+                          },
+                          "gap": {
+                            "desktop": "24px"
+                          },
+                          "alignItems": "center",
+                          "maxWidth": {
+                            "desktop": "1240px"
+                          },
+                          "minHeight": {
+                            "desktop": "84px"
+                          },
+                          "textColourHover": "primary-text",
+                          "padding": {
+                            "desktop": {
+                              "right": "40px",
+                              "left": "40px"
+                            }
+                          },
+                          "sgsHideOnMobile": true,
+                          "sgsHideOnTablet": true
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "className": "cr-ref-shop-18",
+                              "ariaLabel": "Mama's Munches home",
+                              "textColour": "link",
+                              "textDecoration": "underline",
+                              "textColourHover": "primary-text",
+                              "sgsFocusRests": true
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/responsive-logo",
+                                "attributes": {
+                                  "logoId": 91,
+                                  "className": "cr-ref-shop-19",
+                                  "logoUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+                                  "alt": "Mama's Munches",
+                                  "maxHeight": {
+                                    "desktop": "60px"
+                                  }
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/multi-button",
+                            "attributes": {
+                              "layout": "flex",
+                              "className": "cr-ref-shop-20",
+                              "gap": {
+                                "desktop": "2px"
+                              },
+                              "justifyContent": {
+                                "desktop": "center",
+                                "tablet": "center",
+                                "mobile": "center"
+                              },
+                              "alignItems": {
+                                "desktop": "stretch",
+                                "tablet": "normal",
+                                "mobile": "normal"
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "Shop",
+                                  "url": "Shop.dc.html",
+                                  "className": "cr-ref-shop-21",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "colourBackground": "section",
+                                  "borderWidth": {
+                                    "right": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "top": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "12px",
+                                      "right": "16px",
+                                      "bottom": "12px",
+                                      "left": "16px"
+                                    }
+                                  },
+                                  "minHeight": {
+                                    "desktop": "auto"
+                                  },
+                                  "colourBackgroundHover": "section",
+                                  "colourTextHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "Gifts",
+                                  "url": "Gifts.dc.html",
+                                  "className": "cr-ref-shop-22",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "colourBackground": "#00000000",
+                                  "borderWidth": {
+                                    "right": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "top": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "12px",
+                                      "right": "16px",
+                                      "bottom": "12px",
+                                      "left": "16px"
+                                    }
+                                  },
+                                  "minHeight": {
+                                    "desktop": "auto"
+                                  },
+                                  "colourBackgroundHover": "section",
+                                  "colourTextHover": "primary-text",
+                                  "sgsFocusRests": true
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "Subscribe & save",
+                                  "url": "Product.dc.html?id=zookies&sub=1",
+                                  "className": "cr-ref-shop-23",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "colourBackground": "#00000000",
+                                  "borderWidth": {
+                                    "right": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "top": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "12px",
+                                      "right": "16px",
+                                      "bottom": "12px",
+                                      "left": "16px"
+                                    }
+                                  },
+                                  "minHeight": {
+                                    "desktop": "auto"
+                                  },
+                                  "colourBackgroundHover": "section",
+                                  "colourTextHover": "primary-text",
+                                  "sgsFocusRests": true
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "Help",
+                                  "url": "Help.dc.html",
+                                  "className": "cr-ref-shop-24",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "colourBackground": "#00000000",
+                                  "borderWidth": {
+                                    "right": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "top": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "12px",
+                                      "right": "16px",
+                                      "bottom": "12px",
+                                      "left": "16px"
+                                    }
+                                  },
+                                  "minHeight": {
+                                    "desktop": "auto"
+                                  },
+                                  "colourBackgroundHover": "section",
+                                  "colourTextHover": "primary-text",
+                                  "sgsFocusRests": true
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "Contact",
+                                  "url": "Contact.dc.html",
+                                  "className": "cr-ref-shop-25",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "colourBackground": "#00000000",
+                                  "borderWidth": {
+                                    "right": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "top": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "12px",
+                                      "right": "16px",
+                                      "bottom": "12px",
+                                      "left": "16px"
+                                    }
+                                  },
+                                  "minHeight": {
+                                    "desktop": "auto"
+                                  },
+                                  "colourBackgroundHover": "section",
+                                  "colourTextHover": "primary-text",
+                                  "sgsFocusRests": true
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "className": "cr-ref-shop-26",
+                              "gap": {
+                                "desktop": "6px"
+                              },
+                              "alignItems": "center",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/icon",
+                                "attributes": {
+                                  "linkUrl": "SignIn.dc.html",
+                                  "className": "cr-ref-shop-27",
+                                  "ariaLabel": "Sign in or create an account",
+                                  "iconSource": "custom",
+                                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"8\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></circle><path d=\"M4 21a8 8 0 0 1 16 0\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8px\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>",
+                                  "borderRadius": {
+                                    "topLeft": "999px",
+                                    "topRight": "999px",
+                                    "bottomRight": "999px",
+                                    "bottomLeft": "999px"
+                                  },
+                                  "iconSize": {
+                                    "desktop": "24px"
+                                  },
+                                  "iconColourHover": "primary-text",
+                                  "backgroundColourHover": "section"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "layout": "flex",
+                                  "className": "cr-ref-shop-28",
+                                  "fontSize": {
+                                    "desktop": 15
+                                  },
+                                  "fontWeight": "700",
+                                  "textAlign": "center",
+                                  "backgroundColour": "surface-alt",
+                                  "borderWidth": {
+                                    "right": "2px",
+                                    "bottom": "2px",
+                                    "left": "2px",
+                                    "top": "2px"
+                                  },
+                                  "borderStyle": "solid",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "999px",
+                                      "topRight": "999px",
+                                      "bottomRight": "999px",
+                                      "bottomLeft": "999px"
+                                    }
+                                  },
+                                  "shadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+                                  "gap": {
+                                    "desktop": "8px"
+                                  },
+                                  "alignItems": "center",
+                                  "minHeight": {
+                                    "desktop": "48px"
+                                  },
+                                  "backgroundColourHover": "primary",
+                                  "shadowHover": "rgb(58, 42, 34) 5px 5px 0px 0px",
+                                  "textColourHover": "primary-text",
+                                  "borderColourHover": "primary-text",
+                                  "sgsFocusRests": true,
+                                  "padding": {
+                                    "desktop": {
+                                      "right": "18px",
+                                      "left": "14px"
+                                    }
+                                  },
+                                  "sgsMotion": {
+                                    "v": 1,
+                                    "elements": {
+                                      "root": {
+                                        "hover": {
+                                          "state": {
+                                            "values": {
+                                              "translateX": "-token:distance.xs",
+                                              "translateY": "-token:distance.xs",
+                                              "duration": "token:duration.fast",
+                                              "easing": "token:easing.ease"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "Basket",
+                                      "className": "cr-ref-shop-29",
+                                      "lineHeight": {
+                                        "desktop": 1.2
+                                      },
+                                      "textColourHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "0",
+                                      "className": "cr-ref-shop-30",
+                                      "fontSize": {
+                                        "desktop": 12
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.167
+                                      },
+                                      "borderRadius": {
+                                        "desktop": {
+                                          "topLeft": "999px",
+                                          "topRight": "999px",
+                                          "bottomRight": "999px",
+                                          "bottomLeft": "999px"
+                                        }
+                                      },
+                                      "padding": {
+                                        "desktop": {
+                                          "right": "6px",
+                                          "left": "6px"
+                                        }
+                                      },
+                                      "textColourHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "aside",
+                      "layout": "stack",
+                      "className": "cr-ref-shop-31",
+                      "ariaLabel": "Menu",
+                      "backgroundColour": "surface",
+                      "textColourHover": "primary-text",
+                      "backgroundColourHover": "surface"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "flex",
+                          "className": "cr-ref-shop-32",
+                          "borderWidth": {
+                            "top": "0px",
+                            "right": "0px",
+                            "left": "0px",
+                            "bottom": "1px"
+                          },
+                          "borderColour": "border-light",
+                          "gap": {
+                            "mobile": "118px",
+                            "desktop": "188px"
+                          },
+                          "justifyContent": "space-between",
+                          "alignItems": "center",
+                          "textColourHover": "primary-text",
+                          "borderColourHover": "border-light",
+                          "padding": {
+                            "desktop": {
+                              "top": "10px",
+                              "right": "12px",
+                              "bottom": "10px",
+                              "left": "20px"
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/responsive-logo",
+                            "attributes": {
+                              "logoId": 91,
+                              "className": "cr-ref-shop-33",
+                              "logoUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+                              "alt": "Mama's Munches",
+                              "maxHeight": {
+                                "desktop": "44px"
+                              }
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/button",
+                            "attributes": {
+                              "label": "×",
+                              "className": "cr-ref-shop-34",
+                              "ariaLabel": "Close menu",
+                              "fontSize": {
+                                "desktop": 28
+                              },
+                              "fontWeight": "400",
+                              "lineHeight": {
+                                "desktop": 1
+                              },
+                              "lineHeightUnit": "",
+                              "colourBackground": "#00000000",
+                              "borderWidth": {
+                                "right": "0px",
+                                "bottom": "0px",
+                                "left": "0px",
+                                "top": "0px"
+                              },
+                              "borderStyle": "none",
+                              "padding": {
+                                "desktop": {
+                                  "top": "1px",
+                                  "right": "6px",
+                                  "bottom": "1px",
+                                  "left": "6px"
+                                }
+                              },
+                              "minHeight": {
+                                "desktop": "auto"
+                              },
+                              "colourBackgroundHover": "section",
+                              "colourTextHover": "primary-text",
+                              "sgsFocusRests": true
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Who are you shopping for?",
+                          "className": "cr-ref-shop-35",
+                          "fontSize": {
+                            "desktop": 13
+                          },
+                          "fontWeight": "700",
+                          "lineHeight": {
+                            "desktop": 1.154
+                          },
+                          "letterSpacing": {
+                            "desktop": 0.08
+                          },
+                          "textTransform": "uppercase",
+                          "textColour": "link",
+                          "margin": {
+                            "desktop": {
+                              "bottom": "10px"
+                            }
+                          },
+                          "textColourHover": "link"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "grid",
+                          "className": "cr-ref-shop-36",
+                          "gridTemplateColumns": {
+                            "desktop": "repeat(2, minmax(0, 1fr))"
+                          },
+                          "gap": {
+                            "desktop": "10px"
+                          },
+                          "minHeight": {
+                            "desktop": "0px"
+                          },
+                          "textColourHover": "primary-text"
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "stack",
+                              "sgsBlockLink": "Shop.dc.html",
+                              "className": "cr-ref-shop-37",
+                              "backgroundColour": "section",
+                              "borderWidth": {
+                                "right": "2px",
+                                "bottom": "2px",
+                                "left": "2px",
+                                "top": "2px"
+                              },
+                              "borderStyle": "solid",
+                              "borderRadius": {
+                                "desktop": {
+                                  "topLeft": "18px",
+                                  "topRight": "18px",
+                                  "bottomRight": "18px",
+                                  "bottomLeft": "18px"
+                                }
+                              },
+                              "shadowHover": "rgb(58, 42, 34) 5px 5px 0px 0px",
+                              "textColourHover": "primary-text",
+                              "borderColourHover": "primary-text",
+                              "backgroundColourHover": "section",
+                              "sgsFocusRests": true,
+                              "sgsMotion": {
+                                "v": 1,
+                                "elements": {
+                                  "root": {
+                                    "hover": {
+                                      "state": {
+                                        "values": {
+                                          "translateX": "-token:distance.sm",
+                                          "translateY": "-token:distance.sm",
+                                          "duration": "token:duration.medium",
+                                          "easing": "cubic-bezier(.3,1.4,.5,1)",
+                                          "paintDuration": "token:duration.medium",
+                                          "paintEasing": "token:easing.ease"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/media",
+                                "attributes": {
+                                  "className": "cr-ref-shop-38",
+                                  "imageUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-bags-pink.jpg",
+                                  "imageId": 93,
+                                  "captionColourHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-39",
+                                  "gap": {
+                                    "desktop": "2px"
+                                  },
+                                  "textColourHover": "primary-text",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "10px",
+                                      "right": "12px",
+                                      "bottom": "12px",
+                                      "left": "12px"
+                                    }
+                                  }
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/heading",
+                                    "attributes": {
+                                      "content": "For me",
+                                      "className": "cr-ref-shop-40",
+                                      "fontSize": {
+                                        "desktop": 18
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.444
+                                      },
+                                      "margin": {
+                                        "desktop": {
+                                          "bottom": "0px"
+                                        }
+                                      },
+                                      "textWrap": "wrap",
+                                      "textColourHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "Zookies & trial packs",
+                                      "className": "cr-ref-shop-41",
+                                      "fontSize": {
+                                        "desktop": 13
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.154
+                                      },
+                                      "textColour": "text-muted",
+                                      "textColourHover": "text-muted"
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "stack",
+                              "sgsBlockLink": "Gifts.dc.html",
+                              "className": "cr-ref-shop-42",
+                              "backgroundColour": "custom-mm-yellow-soft",
+                              "borderWidth": {
+                                "right": "2px",
+                                "bottom": "2px",
+                                "left": "2px",
+                                "top": "2px"
+                              },
+                              "borderStyle": "solid",
+                              "borderRadius": {
+                                "desktop": {
+                                  "topLeft": "18px",
+                                  "topRight": "18px",
+                                  "bottomRight": "18px",
+                                  "bottomLeft": "18px"
+                                }
+                              },
+                              "shadowHover": "rgb(58, 42, 34) 5px 5px 0px 0px",
+                              "textColourHover": "primary-text",
+                              "borderColourHover": "primary-text",
+                              "backgroundColourHover": "custom-mm-yellow-soft",
+                              "sgsFocusRests": true,
+                              "sgsMotion": {
+                                "v": 1,
+                                "elements": {
+                                  "root": {
+                                    "hover": {
+                                      "state": {
+                                        "values": {
+                                          "translateX": "-token:distance.sm",
+                                          "translateY": "-token:distance.sm",
+                                          "duration": "token:duration.medium",
+                                          "easing": "cubic-bezier(.3,1.4,.5,1)",
+                                          "paintDuration": "token:duration.medium",
+                                          "paintEasing": "token:easing.ease"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/media",
+                                "attributes": {
+                                  "className": "cr-ref-shop-43",
+                                  "imageUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/photo-gift-heart-1.jpg",
+                                  "imageId": 95,
+                                  "captionColourHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-44",
+                                  "gap": {
+                                    "desktop": "2px"
+                                  },
+                                  "textColourHover": "primary-text",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "10px",
+                                      "right": "12px",
+                                      "bottom": "12px",
+                                      "left": "12px"
+                                    }
+                                  }
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/heading",
+                                    "attributes": {
+                                      "content": "For a new mum",
+                                      "className": "cr-ref-shop-45",
+                                      "fontSize": {
+                                        "desktop": 18
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.444
+                                      },
+                                      "margin": {
+                                        "desktop": {
+                                          "bottom": "0px"
+                                        }
+                                      },
+                                      "textWrap": "wrap",
+                                      "textColourHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "Gift boxes & cards",
+                                      "className": "cr-ref-shop-46",
+                                      "fontSize": {
+                                        "desktop": 13
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.154
+                                      },
+                                      "textColour": "text-muted",
+                                      "textColourHover": "text-muted"
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/icon-list",
+                        "attributes": {
+                          "items": [
+                            {
+                              "text": "Shop all",
+                              "url": "Shop.dc.html"
+                            },
+                            {
+                              "text": "Zookies",
+                              "url": "Product.dc.html?id=zookies"
+                            },
+                            {
+                              "text": "Taster Trio",
+                              "url": "Product.dc.html?id=trial"
+                            },
+                            {
+                              "text": "Gifts",
+                              "url": "Gifts.dc.html"
+                            },
+                            {
+                              "text": "Subscribe & save",
+                              "url": "Product.dc.html?id=zookies&sub=1"
+                            },
+                            {
+                              "text": "Help & FAQs",
+                              "url": "Help.dc.html"
+                            },
+                            {
+                              "text": "Contact",
+                              "url": "Contact.dc.html"
+                            }
+                          ],
+                          "className": "cr-ref-shop-47",
+                          "borderWidth": {
+                            "top": "0px",
+                            "right": "0px",
+                            "left": "0px",
+                            "bottom": "1.5px"
+                          },
+                          "borderColour": "custom-mm-line-dashed",
+                          "gap": "12px",
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "hover": {
+                                  "state": {
+                                    "values": {
+                                      "indent": 8,
+                                      "duration": 250,
+                                      "easing": "cubic-bezier(.3,1.4,.5,1)"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "stack",
+                          "className": "cr-ref-shop-48",
+                          "gap": {
+                            "desktop": "16px"
+                          },
+                          "margin": {
+                            "desktop": {
+                              "right": "20px",
+                              "left": "20px"
+                            }
+                          },
+                          "textColourHover": "primary-text",
+                          "padding": {
+                            "desktop": {
+                              "top": "20px",
+                              "bottom": "24px"
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "className": "cr-ref-shop-49",
+                              "layout": "grid",
+                              "gridTemplateColumns": {
+                                "desktop": "repeat(2, minmax(0, 1fr))"
+                              },
+                              "gap": {
+                                "desktop": "10px"
+                              },
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/icon-list",
+                                "attributes": {
+                                  "items": [
+                                    {
+                                      "text": "Sign in",
+                                      "url": "SignIn.dc.html"
+                                    },
+                                    {
+                                      "text": "Create account",
+                                      "url": "SignIn.dc.html?mode=register"
+                                    }
+                                  ],
+                                  "className": "cr-ref-shop-50",
+                                  "backgroundColour": "primary",
+                                  "borderWidth": {
+                                    "right": "2px",
+                                    "bottom": "2px",
+                                    "left": "2px",
+                                    "top": "2px"
+                                  },
+                                  "borderStyle": "solid",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "999px",
+                                      "topRight": "999px",
+                                      "bottomRight": "999px",
+                                      "bottomLeft": "999px"
+                                    }
+                                  },
+                                  "backgroundColourHover": "surface-alt",
+                                  "sgsFocusRests": true,
+                                  "sgsMotion": {
+                                    "v": 1,
+                                    "elements": {
+                                      "root": {
+                                        "hover": {
+                                          "state": {
+                                            "values": {
+                                              "translateX": "-token:distance.xs",
+                                              "translateY": "-token:distance.xs",
+                                              "duration": "token:duration.fast",
+                                              "easing": "token:easing.spring"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "className": "cr-ref-shop-51",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "say hello",
+                                  "className": "cr-ref-shop-52",
+                                  "fontFamily": "caveat",
+                                  "fontSize": {
+                                    "desktop": 24
+                                  },
+                                  "lineHeight": {
+                                    "desktop": 1
+                                  },
+                                  "lineHeightUnit": "",
+                                  "textColour": "custom-mm-script",
+                                  "textColourHover": "custom-mm-script"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/icon-list",
+                                "attributes": {
+                                  "items": [
+                                    {
+                                      "text": "WhatsApp",
+                                      "url": "Contact.dc.html"
+                                    },
+                                    {
+                                      "text": "",
+                                      "siteInfoSource": "email"
+                                    },
+                                    {
+                                      "text": "Instagram",
+                                      "url": "https://www.instagram.com/mamasmunches/"
+                                    }
+                                  ],
+                                  "className": "cr-ref-shop-53",
+                                  "backgroundColour": "surface-alt",
+                                  "borderWidth": {
+                                    "right": "2px",
+                                    "bottom": "2px",
+                                    "left": "2px",
+                                    "top": "2px"
+                                  },
+                                  "borderStyle": "solid",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "18px",
+                                      "topRight": "18px",
+                                      "bottomRight": "18px",
+                                      "bottomLeft": "18px"
+                                    }
+                                  },
+                                  "gap": "6px",
+                                  "backgroundColourHover": "section",
+                                  "sgsFocusRests": true,
+                                  "sgsMotion": {
+                                    "v": 1,
+                                    "elements": {
+                                      "root": {
+                                        "hover": {
+                                          "state": {
+                                            "values": {
+                                              "translateX": "-token:distance.xs",
+                                              "translateY": "-token:distance.xs",
+                                              "duration": "token:duration.fast",
+                                              "easing": "token:easing.spring"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "sgsBlockLink": "https://uk.trustpilot.com/review/mamasmunches.com",
+                              "className": "cr-ref-shop-54",
+                              "borderWidth": {
+                                "right": "2px",
+                                "bottom": "2px",
+                                "left": "2px",
+                                "top": "2px"
+                              },
+                              "borderStyle": "dashed",
+                              "borderRadius": {
+                                "desktop": {
+                                  "topLeft": "18px",
+                                  "topRight": "18px",
+                                  "bottomRight": "18px",
+                                  "bottomLeft": "18px"
+                                }
+                              },
+                              "gap": {
+                                "desktop": "14px"
+                              },
+                              "alignItems": "center",
+                              "backgroundColourHover": "surface-alt",
+                              "textColourHover": "primary-text",
+                              "borderColourHover": "primary-text",
+                              "sgsFocusRests": true,
+                              "padding": {
+                                "desktop": {
+                                  "top": "12px",
+                                  "right": "16px",
+                                  "bottom": "12px",
+                                  "left": "16px"
+                                }
+                              },
+                              "sgsMotion": {
+                                "v": 1,
+                                "elements": {
+                                  "root": {
+                                    "hover": {
+                                      "state": {
+                                        "values": {
+                                          "translateX": "-token:distance.xs",
+                                          "translateY": "-token:distance.xs",
+                                          "duration": "token:duration.fast",
+                                          "easing": "token:easing.spring"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/heading",
+                                "attributes": {
+                                  "content": "4.3",
+                                  "className": "cr-ref-shop-55",
+                                  "fontSize": {
+                                    "desktop": 32
+                                  },
+                                  "lineHeight": {
+                                    "desktop": 1
+                                  },
+                                  "lineHeightUnit": "",
+                                  "margin": {
+                                    "desktop": {
+                                      "bottom": "0px"
+                                    }
+                                  },
+                                  "textWrap": "wrap",
+                                  "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-56",
+                                  "gap": {
+                                    "desktop": "2px"
+                                  },
+                                  "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/label",
+                                    "attributes": {
+                                      "text": "★★★★★",
+                                      "className": "cr-ref-shop-57",
+                                      "fontSize": {
+                                        "desktop": 16
+                                      },
+                                      "fontWeight": "400",
+                                      "letterSpacing": 2,
+                                      "letterSpacingUnit": "px",
+                                      "textTransform": "none",
+                                      "textColourHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "8 reviews on Trustpilot ↗",
+                                      "className": "cr-ref-shop-58",
+                                      "fontSize": {
+                                        "desktop": 13
+                                      },
+                                      "fontWeight": "700",
+                                      "lineHeight": {
+                                        "desktop": 1.154
+                                      },
+                                      "textColourHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "aside",
+                      "layout": "stack",
+                      "className": "cr-ref-shop-59",
+                      "ariaLabel": "Basket",
+                      "backgroundColour": "surface",
+                      "maxWidth": {
+                        "mobile": "375px",
+                        "tablet": "768px",
+                        "desktop": "1440px"
+                      },
+                      "textColourHover": "primary-text",
+                      "backgroundColourHover": "surface"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "flex",
+                          "className": "cr-ref-shop-60",
+                          "borderWidth": {
+                            "top": "0px",
+                            "right": "0px",
+                            "left": "0px",
+                            "bottom": "1px"
+                          },
+                          "borderColour": "border-light",
+                          "gap": {
+                            "mobile": "126.78px",
+                            "desktop": "191.78px"
+                          },
+                          "justifyContent": "space-between",
+                          "alignItems": "center",
+                          "minHeight": {
+                            "desktop": "64px"
+                          },
+                          "textColourHover": "primary-text",
+                          "borderColourHover": "border-light",
+                          "padding": {
+                            "desktop": {
+                              "top": "10px",
+                              "right": "12px",
+                              "bottom": "10px",
+                              "left": "20px"
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "className": "cr-ref-shop-61",
+                              "fontFamily": "heading",
+                              "fontSize": {
+                                "desktop": 24
+                              },
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "( 0 )",
+                                  "className": "cr-ref-shop-62",
+                                  "fontFamily": "body",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "lineHeight": {
+                                    "desktop": 1.188
+                                  },
+                                  "textColour": "custom-mm-muted-2",
+                                  "textColourHover": "custom-mm-muted-2"
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/button",
+                            "attributes": {
+                              "label": "×",
+                              "className": "cr-ref-shop-63",
+                              "ariaLabel": "Close basket",
+                              "fontSize": {
+                                "desktop": 28
+                              },
+                              "fontWeight": "400",
+                              "lineHeight": {
+                                "desktop": 1
+                              },
+                              "lineHeightUnit": "",
+                              "colourBackground": "#00000000",
+                              "borderWidth": {
+                                "right": "0px",
+                                "bottom": "0px",
+                                "left": "0px",
+                                "top": "0px"
+                              },
+                              "borderStyle": "none",
+                              "padding": {
+                                "desktop": {
+                                  "top": "1px",
+                                  "right": "6px",
+                                  "bottom": "1px",
+                                  "left": "6px"
+                                }
+                              },
+                              "minHeight": {
+                                "desktop": "auto"
+                              },
+                              "colourBackgroundHover": "section",
+                              "colourTextHover": "primary-text",
+                              "sgsFocusRests": true
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "stack",
+                          "className": "cr-ref-shop-64",
+                          "textAlign": "center",
+                          "gap": {
+                            "desktop": "14px"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "sgsChildSizing": {
+                            "desktop": "fill"
+                          },
+                          "textColourHover": "primary-text",
+                          "padding": {
+                            "desktop": {
+                              "top": "32px",
+                              "right": "28px",
+                              "bottom": "32px",
+                              "left": "28px"
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/responsive-logo",
+                            "attributes": {
+                              "logoId": 92,
+                              "className": "cr-ref-shop-65",
+                              "logoUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+                              "width": 120
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Your basket is empty",
+                              "className": "cr-ref-shop-66",
+                              "fontFamily": "heading",
+                              "fontSize": {
+                                "desktop": 26
+                              },
+                              "lineHeight": {
+                                "desktop": 1.423
+                              },
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "New to Zookies? The Taster Trio is 3 cookies for £5, postage included.",
+                              "className": "cr-ref-shop-67",
+                              "lineHeight": {
+                                "desktop": 1.5
+                              },
+                              "lineHeightUnit": "",
+                              "textColour": "custom-mm-muted-2",
+                              "maxWidth": {
+                                "desktop": "300px"
+                              },
+                              "textColourHover": "custom-mm-muted-2"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/button",
+                            "attributes": {
+                              "label": "Add a Taster Trio · £5",
+                              "className": "cr-ref-shop-68",
+                              "colourBackground": "accent",
+                              "borderWidth": {
+                                "right": "0px",
+                                "bottom": "0px",
+                                "left": "0px",
+                                "top": "0px"
+                              },
+                              "borderStyle": "none",
+                              "padding": {
+                                "desktop": {
+                                  "right": "28px",
+                                  "left": "28px"
+                                }
+                              },
+                              "minHeight": {
+                                "desktop": "56px"
+                              },
+                              "colourBackgroundHover": "primary-text",
+                              "colourTextHover": "surface-alt",
+                              "sgsFocusRests": true
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/button",
+                            "attributes": {
+                              "label": "Browse the shop",
+                              "url": "Shop.dc.html",
+                              "className": "cr-ref-shop-69",
+                              "fontSize": {
+                                "desktop": 16
+                              },
+                              "colourBackground": "#00000000",
+                              "borderWidth": {
+                                "right": "0px",
+                                "bottom": "0px",
+                                "left": "0px",
+                                "top": "0px"
+                              },
+                              "borderStyle": "none",
+                              "borderRadius": {
+                                "desktop": {
+                                  "topLeft": "0px",
+                                  "topRight": "0px",
+                                  "bottomRight": "0px",
+                                  "bottomLeft": "0px"
+                                }
+                              },
+                              "padding": {
+                                "desktop": {
+                                  "top": "10px",
+                                  "right": "10px",
+                                  "bottom": "10px",
+                                  "left": "10px"
+                                }
+                              },
+                              "minHeight": {
+                                "desktop": "auto"
+                              },
+                              "textDecoration": "underline",
+                              "colourBackgroundHover": "#00000000",
+                              "colourTextHover": "primary-text"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "main",
+              "className": "cr-ref-shop-70",
+              "textColourHover": "primary-text"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/hero",
+                "attributes": {
+                  "className": "cr-ref-shop-71",
+                  "backgroundColour": "custom-mm-pink-band",
+                  "borderWidth": {
+                    "top": "0px",
+                    "right": "0px",
+                    "left": "0px",
+                    "bottom": "2px"
+                  },
+                  "minHeight": {
+                    "mobile": "0px"
+                  },
+                  "flexDirection": "row",
+                  "textColourHover": "primary-text",
+                  "borderColourHover": "primary-text",
+                  "backgroundColourHover": "custom-mm-pink-band"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "grid",
+                      "className": "cr-ref-shop-72",
+                      "gridTemplateColumns": {
+                        "mobile": "repeat(1, minmax(0, 1fr))",
+                        "tablet": "minmax(0, 2.05fr) minmax(0, 1fr)",
+                        "desktop": "minmax(0, 4.46fr) minmax(0, 1fr)"
+                      },
+                      "gap": {
+                        "mobile": "24px",
+                        "tablet": "63.86px",
+                        "desktop": "497px"
+                      },
+                      "alignItems": "end",
+                      "maxWidth": {
+                        "desktop": "1240px"
+                      },
+                      "textColourHover": "primary-text"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "fresh from Zainab’s kitchen",
+                          "className": "cr-ref-shop-73",
+                          "fontFamily": "caveat",
+                          "fontSize": {
+                            "desktop": 28
+                          },
+                          "lineHeight": {
+                            "desktop": 1
+                          },
+                          "lineHeightUnit": "",
+                          "textColour": "custom-mm-script",
+                          "textColourHover": "custom-mm-script"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/heading",
+                        "attributes": {
+                          "content": "The shop",
+                          "className": "cr-ref-shop-74",
+                          "fontSize": {
+                            "mobile": 48,
+                            "tablet": 64,
+                            "desktop": 84
+                          },
+                          "lineHeight": {
+                            "mobile": 1,
+                            "tablet": 1,
+                            "desktop": 1
+                          },
+                          "lineHeightUnit": "",
+                          "letterSpacing": {
+                            "mobile": -0.025,
+                            "tablet": -0.025,
+                            "desktop": -0.025
+                          },
+                          "margin": {
+                            "desktop": {
+                              "top": "6px",
+                              "bottom": "10px"
+                            }
+                          },
+                          "textWrap": "wrap",
+                          "textColourHover": "primary-text",
+                          "sgsCustomCss": "@media (prefers-reduced-motion: no-preference){ & { animation: sgs-loop-a-02 2.4s linear infinite; } } @keyframes sgs-loop-a-02 { 0%{transform:scale(1) rotate(0deg)} 8.33%{transform:scale(1.0095) rotate(2.45deg)} 16.67%{transform:scale(1.0393) rotate(10.1deg)} 25%{transform:scale(1.0904) rotate(23.25deg)} 33.33%{transform:scale(1.1622) rotate(41.72deg)} 41.67%{transform:scale(1.2512) rotate(64.59deg)} 50%{transform:scale(1.35) rotate(90deg)} 58.33%{transform:scale(1.2512) rotate(115.41deg)} 66.67%{transform:scale(1.1622) rotate(138.28deg)} 75%{transform:scale(1.0904) rotate(156.75deg)} 83.33%{transform:scale(1.0393) rotate(169.9deg)} 91.67%{transform:scale(1.0095) rotate(177.55deg)} 100%{transform:scale(1) rotate(180deg)} }",
+                          "sgsCustomCssId": "loopa02",
+                          "sgsCustomCssNote": "Loop A-02: Web Animation in motion on [data-twinkle]"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35.",
+                          "className": "cr-ref-shop-75",
+                          "fontSize": {
+                            "mobile": 17,
+                            "tablet": 18,
+                            "desktop": 19
+                          },
+                          "textColour": "custom-mm-body",
+                          "maxWidth": {
+                            "desktop": "560px"
+                          },
+                          "textColourHover": "custom-mm-body"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-select",
+                        "attributes": {
+                          "label": "Sort",
+                          "helpText": "fresh from Zainab’s kitchen The shop Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35.",
+                          "className": "cr-ref-shop-76",
+                          "options": [
+                            {
+                              "value": "featured",
+                              "label": "Featured"
+                            },
+                            {
+                              "value": "low",
+                              "label": "Price: low to high"
+                            },
+                            {
+                              "value": "high",
+                              "label": "Price: high to low"
+                            }
+                          ]
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/option-picker",
+                    "attributes": {
+                      "className": "cr-ref-shop-77",
+                      "borderColourGradient": "none",
+                      "borderWidth": {
+                        "top": "0px",
+                        "bottom": "0px",
+                        "left": "0px",
+                        "right": "0px"
+                      },
+                      "borderStyle": "none",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "0px",
+                          "topRight": "0px",
+                          "bottomRight": "0px",
+                          "bottomLeft": "0px"
+                        }
+                      },
+                      "padding": {
+                        "desktop": {
+                          "top": "4px",
+                          "right": "0px",
+                          "bottom": "8px",
+                          "left": "0px"
+                        },
+                        "mobile": {
+                          "right": "20px",
+                          "left": "20px"
+                        }
+                      },
+                      "margin": {
+                        "desktop": {
+                          "top": "0px",
+                          "bottom": "0px"
+                        },
+                        "mobile": {
+                          "right": "-20px",
+                          "left": "-20px"
+                        }
+                      },
+                      "maxWidth": "1240px",
+                      "labelColourHover": "primary-text",
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "hover": {
+                              "state": {
+                                "values": {
+                                  "translateX": "-token:distance.sm",
+                                  "translateY": "-token:distance.sm",
+                                  "duration": "token:duration.fast",
+                                  "easing": "token:easing.spring"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "className": "cr-ref-shop-78",
+                  "maxWidth": {
+                    "desktop": "1240px"
+                  },
+                  "textColourHover": "primary-text"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "5 treats to choose from",
+                      "className": "cr-ref-shop-79",
+                      "fontSize": {
+                        "desktop": 15
+                      },
+                      "fontWeight": "700",
+                      "lineHeight": {
+                        "desktop": 1.2
+                      },
+                      "margin": {
+                        "desktop": {
+                          "bottom": "18px"
+                        }
+                      },
+                      "textColourHover": "primary-text"
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "name": "woocommerce/product-collection",
+                    "attributes": {
+                      "queryId": 0,
+                      "query": {
+                        "inherit": true,
+                        "perPage": 24,
+                        "isProductCollectionBlock": true
+                      },
+                      "tagName": "div",
+                      "displayLayout": {
+                        "type": "flex",
+                        "columns": 3,
+                        "shrinkColumns": true
+                      },
+                      "queryContextIncludes": [
+                        "collection"
+                      ],
+                      "className": "cr-ref-shop-80"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "woocommerce/product-template",
+                        "attributes": {
+                          "className": "cr-ref-shop-81"
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/product-card",
+                            "attributes": {
+                              "sourceMode": "wc-product",
+                              "className": "cr-ref-shop-82",
+                              "variantStyle": "trial",
+                              "borderStyle": "none",
+                              "borderRadius": {
+                                "desktop": {
+                                  "topLeft": "0px",
+                                  "topRight": "0px",
+                                  "bottomRight": "0px",
+                                  "bottomLeft": "0px"
+                                }
+                              },
+                              "cardMaxWidth": "none",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "grid",
+                      "className": "cr-ref-shop-83",
+                      "gridTemplateColumns": {
+                        "mobile": "repeat(1, minmax(0, 1fr))",
+                        "desktop": "repeat(2, minmax(0, 1fr))"
+                      },
+                      "gap": {
+                        "desktop": "20px"
+                      },
+                      "margin": {
+                        "mobile": {
+                          "top": "48px"
+                        },
+                        "tablet": {
+                          "top": "64px"
+                        },
+                        "desktop": {
+                          "top": "88px"
+                        }
+                      },
+                      "textColourHover": "primary-text",
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "hover": {
+                              "state": {
+                                "values": {
+                                  "rotate": 3,
+                                  "translateX": 0.63,
+                                  "translateY": -11.98,
+                                  "restRotate": 8,
+                                  "duration": 450,
+                                  "easing": "cubic-bezier(.3,1.4,.5,1)"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "stack",
+                          "className": "cr-ref-shop-84",
+                          "backgroundColour": "section",
+                          "borderWidth": {
+                            "right": "2px",
+                            "bottom": "2px",
+                            "left": "2px",
+                            "top": "2px"
+                          },
+                          "borderStyle": "solid",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "28px",
+                              "topRight": "28px",
+                              "bottomRight": "28px",
+                              "bottomLeft": "28px"
+                            }
+                          },
+                          "gap": {
+                            "desktop": "10px"
+                          },
+                          "shadowHover": "rgb(58, 42, 34) 8px 8px 0px 0px",
+                          "textColourHover": "primary-text",
+                          "borderColourHover": "primary-text",
+                          "backgroundColourHover": "section",
+                          "sgsFocusRests": true,
+                          "padding": {
+                            "desktop": "40px",
+                            "tablet": "32px",
+                            "mobile": "22px"
+                          },
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "hover": {
+                                  "state": {
+                                    "values": {
+                                      "translateX": -4,
+                                      "translateY": -4,
+                                      "duration": "token:duration.medium",
+                                      "easing": "cubic-bezier(0.3, 1.4, 0.5, 1)",
+                                      "paintDuration": "token:duration.medium",
+                                      "paintEasing": "token:easing.ease"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "your cookie, your way ✦",
+                              "className": "cr-ref-shop-85",
+                              "fontFamily": "caveat",
+                              "fontSize": {
+                                "desktop": 26
+                              },
+                              "lineHeight": {
+                                "desktop": 1
+                              },
+                              "lineHeightUnit": "",
+                              "textColour": "custom-mm-script",
+                              "textColourHover": "custom-mm-script"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Build your own box",
+                              "className": "cr-ref-shop-86",
+                              "fontFamily": "heading",
+                              "fontSize": {
+                                "mobile": 26,
+                                "tablet": 30,
+                                "desktop": 34
+                              },
+                              "lineHeight": {
+                                "mobile": 1.05,
+                                "tablet": 1.05,
+                                "desktop": 1.05
+                              },
+                              "lineHeightUnit": "",
+                              "textColourHover": "primary-text",
+                              "sgsMotion": {
+                                "v": 1,
+                                "elements": {
+                                  "root": {
+                                    "hover": {
+                                      "state": {
+                                        "values": {
+                                          "rotate": 1,
+                                          "translateX": 0.17,
+                                          "translateY": "-token:distance.md",
+                                          "restRotate": -1.5,
+                                          "duration": 450,
+                                          "easing": "cubic-bezier(.3,1.4,.5,1)"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Pick a base, chips and up to three of Zainab’s 11 flavours.",
+                              "className": "cr-ref-shop-87",
+                              "lineHeight": {
+                                "desktop": 1.5
+                              },
+                              "lineHeightUnit": "",
+                              "textColour": "custom-mm-body",
+                              "maxWidth": {
+                                "desktop": "380px"
+                              },
+                              "textColourHover": "custom-mm-body"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "className": "cr-ref-shop-88",
+                              "fontWeight": "700",
+                              "gap": {
+                                "desktop": "8px"
+                              },
+                              "alignItems": "center",
+                              "margin": {
+                                "desktop": {
+                                  "top": "6px"
+                                }
+                              },
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "→",
+                                  "url": "Home.dc.html#build",
+                                  "className": "cr-ref-shop-89",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "colourText": "section",
+                                  "colourBackground": "primary-text",
+                                  "borderWidth": {
+                                    "right": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "top": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "padding": {
+                                    "desktop": {
+                                      "right": "0px",
+                                      "left": "0px"
+                                    }
+                                  },
+                                  "minHeight": {
+                                    "desktop": "34px"
+                                  },
+                                  "colourBackgroundHover": "primary-text",
+                                  "colourTextHover": "section"
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "stack",
+                          "sgsBlockLink": "Product.dc.html?id=zookies&sub=1",
+                          "className": "cr-ref-shop-90",
+                          "backgroundColour": "custom-mm-yellow-soft",
+                          "borderWidth": {
+                            "right": "2px",
+                            "bottom": "2px",
+                            "left": "2px",
+                            "top": "2px"
+                          },
+                          "borderStyle": "solid",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "28px",
+                              "topRight": "28px",
+                              "bottomRight": "28px",
+                              "bottomLeft": "28px"
+                            }
+                          },
+                          "gap": {
+                            "desktop": "10px"
+                          },
+                          "shadowHover": "rgb(58, 42, 34) 8px 8px 0px 0px",
+                          "textColourHover": "primary-text",
+                          "borderColourHover": "primary-text",
+                          "backgroundColourHover": "custom-mm-yellow-soft",
+                          "sgsFocusRests": true,
+                          "padding": {
+                            "desktop": "40px",
+                            "tablet": "32px",
+                            "mobile": "22px"
+                          },
+                          "sgsMotion": {
+                            "v": 1,
+                            "elements": {
+                              "root": {
+                                "hover": {
+                                  "state": {
+                                    "values": {
+                                      "translateX": -4,
+                                      "translateY": -4,
+                                      "duration": "token:duration.medium",
+                                      "easing": "cubic-bezier(0.3, 1.4, 0.5, 1)",
+                                      "paintDuration": "token:duration.medium",
+                                      "paintEasing": "token:easing.ease"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/heading",
+                            "attributes": {
+                              "content": "never run out",
+                              "className": "cr-ref-shop-91",
+                              "fontFamily": "caveat",
+                              "fontSize": {
+                                "desktop": 26
+                              },
+                              "lineHeight": {
+                                "desktop": 1
+                              },
+                              "lineHeightUnit": "",
+                              "textColour": "custom-mm-script-gold",
+                              "margin": {
+                                "desktop": {
+                                  "bottom": "0px"
+                                }
+                              },
+                              "textWrap": "wrap",
+                              "textColourHover": "custom-mm-script-gold"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Subscribe & save 10%",
+                              "className": "cr-ref-shop-92",
+                              "fontFamily": "heading",
+                              "fontSize": {
+                                "mobile": 26,
+                                "tablet": 30,
+                                "desktop": 34
+                              },
+                              "lineHeight": {
+                                "mobile": 1.05,
+                                "tablet": 1.05,
+                                "desktop": 1.05
+                              },
+                              "lineHeightUnit": "",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "className": "cr-ref-shop-93",
+                              "gap": {
+                                "desktop": "8px"
+                              },
+                              "margin": {
+                                "desktop": {
+                                  "top": "4px"
+                                }
+                              },
+                              "flexWrap": "wrap",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/label",
+                                "attributes": {
+                                  "text": "10% off every box",
+                                  "className": "cr-ref-shop-94",
+                                  "fontSize": {
+                                    "desktop": 14
+                                  },
+                                  "fontWeight": "700",
+                                  "textTransform": "none",
+                                  "borderWidth": {
+                                    "right": "2px",
+                                    "bottom": "2px",
+                                    "left": "2px",
+                                    "top": "2px"
+                                  },
+                                  "borderStyle": "solid",
+                                  "borderRadius": "999px",
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "6px",
+                                      "right": "12px",
+                                      "bottom": "6px",
+                                      "left": "12px"
+                                    }
+                                  },
+                                  "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Free delivery on 20 and 40 packs",
+                                  "className": "cr-ref-shop-95",
+                                  "fontSize": {
+                                    "desktop": 14
+                                  },
+                                  "fontWeight": "700",
+                                  "lineHeight": {
+                                    "desktop": 1.214
+                                  },
+                                  "borderWidth": {
+                                    "right": "2px",
+                                    "bottom": "2px",
+                                    "left": "2px",
+                                    "top": "2px"
+                                  },
+                                  "borderStyle": "solid",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "999px",
+                                      "topRight": "999px",
+                                      "bottomRight": "999px",
+                                      "bottomLeft": "999px"
+                                    }
+                                  },
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "6px",
+                                      "right": "12px",
+                                      "bottom": "6px",
+                                      "left": "12px"
+                                    }
+                                  },
+                                  "textColourHover": "primary-text",
+                                  "borderColourHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "A guaranteed slot in every bake",
+                                  "className": "cr-ref-shop-96",
+                                  "fontSize": {
+                                    "desktop": 14
+                                  },
+                                  "fontWeight": "700",
+                                  "lineHeight": {
+                                    "desktop": 1.214
+                                  },
+                                  "borderWidth": {
+                                    "right": "2px",
+                                    "bottom": "2px",
+                                    "left": "2px",
+                                    "top": "2px"
+                                  },
+                                  "borderStyle": "solid",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "999px",
+                                      "topRight": "999px",
+                                      "bottomRight": "999px",
+                                      "bottomLeft": "999px"
+                                    }
+                                  },
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "6px",
+                                      "right": "12px",
+                                      "bottom": "6px",
+                                      "left": "12px"
+                                    }
+                                  },
+                                  "textColourHover": "primary-text",
+                                  "borderColourHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Skip, swap flavours or cancel online",
+                                  "className": "cr-ref-shop-97",
+                                  "fontSize": {
+                                    "desktop": 14
+                                  },
+                                  "fontWeight": "700",
+                                  "lineHeight": {
+                                    "desktop": 1.214
+                                  },
+                                  "borderWidth": {
+                                    "right": "2px",
+                                    "bottom": "2px",
+                                    "left": "2px",
+                                    "top": "2px"
+                                  },
+                                  "borderStyle": "solid",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "999px",
+                                      "topRight": "999px",
+                                      "bottomRight": "999px",
+                                      "bottomLeft": "999px"
+                                    }
+                                  },
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "6px",
+                                      "right": "12px",
+                                      "bottom": "6px",
+                                      "left": "12px"
+                                    }
+                                  },
+                                  "textColourHover": "primary-text",
+                                  "borderColourHover": "primary-text"
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "grid",
+                      "sgsBlockLink": "Gifts.dc.html",
+                      "className": "cr-ref-shop-98",
+                      "backgroundColour": "surface-alt",
+                      "borderWidth": {
+                        "right": "2px",
+                        "bottom": "2px",
+                        "left": "2px",
+                        "top": "2px"
+                      },
+                      "borderStyle": "solid",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "28px",
+                          "topRight": "28px",
+                          "bottomRight": "28px",
+                          "bottomLeft": "28px"
+                        }
+                      },
+                      "gridTemplateColumns": {
+                        "mobile": "repeat(1, minmax(0, 1fr))",
+                        "tablet": "minmax(0, 1.4fr) minmax(0, 1fr)",
+                        "desktop": "minmax(0, 1.6fr) minmax(0, 1fr)"
+                      },
+                      "alignItems": "center",
+                      "margin": {
+                        "desktop": {
+                          "top": "20px"
+                        }
+                      },
+                      "shadowHover": "rgb(58, 42, 34) 8px 8px 0px 0px",
+                      "textColourHover": "primary-text",
+                      "borderColourHover": "primary-text",
+                      "backgroundColourHover": "surface-alt",
+                      "sgsFocusRests": true,
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "hover": {
+                              "state": {
+                                "values": {
+                                  "translateX": -4,
+                                  "translateY": -4,
+                                  "duration": "token:duration.medium",
+                                  "easing": "cubic-bezier(0.3, 1.4, 0.5, 1)",
+                                  "paintDuration": "token:duration.medium",
+                                  "paintEasing": "token:easing.ease"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "layout": "stack",
+                          "className": "cr-ref-shop-99",
+                          "gap": {
+                            "desktop": "8px"
+                          },
+                          "textColourHover": "primary-text",
+                          "padding": {
+                            "desktop": "40px",
+                            "tablet": "32px",
+                            "mobile": "22px"
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/heading",
+                            "attributes": {
+                              "content": "buying for someone?",
+                              "className": "cr-ref-shop-100",
+                              "fontFamily": "caveat",
+                              "fontSize": {
+                                "desktop": 26
+                              },
+                              "lineHeight": {
+                                "desktop": 1
+                              },
+                              "lineHeightUnit": "",
+                              "textColour": "custom-mm-script",
+                              "margin": {
+                                "desktop": {
+                                  "bottom": "0px"
+                                }
+                              },
+                              "textWrap": "wrap",
+                              "textColourHover": "custom-mm-script",
+                              "sgsMotion": {
+                                "v": 1,
+                                "elements": {
+                                  "root": {
+                                    "hover": {
+                                      "state": {
+                                        "values": {
+                                          "translateX": -4,
+                                          "translateY": -4,
+                                          "rotate": -0.5,
+                                          "duration": "token:duration.medium",
+                                          "easing": "cubic-bezier(.3,1.4,.5,1)"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Find a gift by moment or budget",
+                              "className": "cr-ref-shop-101",
+                              "fontFamily": "heading",
+                              "fontSize": {
+                                "mobile": 26,
+                                "tablet": 30,
+                                "desktop": 34
+                              },
+                              "lineHeight": {
+                                "mobile": 1.05,
+                                "tablet": 1.05,
+                                "desktop": 1.05
+                              },
+                              "lineHeightUnit": "",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": []
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Baby showers, new arrivals and the first 40 days.",
+                              "className": "cr-ref-shop-102",
+                              "lineHeight": {
+                                "desktop": 1.188
+                              },
+                              "textColour": "custom-mm-body",
+                              "textColourHover": "custom-mm-body"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/media",
+                        "attributes": {
+                          "className": "cr-ref-shop-103",
+                          "captionColourHover": "primary-text",
+                          "sgsCustomCss": "@media (max-width: 767px) { & { border-left-width: 0px; } } @media (min-width: 768px) { & { border-left-width: 2px; } } @media (max-width: 767px) { & { border-left-style: none; } } @media (min-width: 768px) { & { border-left-style: solid; } }",
+                          "sgsCustomCssId": "wgate103",
+                          "sgsCustomCssNote": "Width ladder border-left-width: 0-767px 0px, 768px and up 2px; Width ladder border-left-style: 0-767px none, 768px and up solid"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "className": "cr-ref-shop-104",
+              "textColourHover": "primary-text"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "footer",
+                  "className": "cr-ref-shop-105",
+                  "textColourHover": "primary-text"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "section",
+                      "className": "cr-ref-shop-106",
+                      "ariaLabel": "Instagram",
+                      "backgroundColour": "surface",
+                      "textColourHover": "primary-text",
+                      "backgroundColourHover": "surface",
+                      "padding": {
+                        "desktop": "40px",
+                        "tablet": "32px",
+                        "mobile": "20px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "className": "cr-ref-shop-107",
+                          "maxWidth": {
+                            "desktop": "1240px"
+                          },
+                          "textColourHover": "primary-text"
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "className": "cr-ref-shop-108",
+                              "gap": {
+                                "desktop": "24px"
+                              },
+                              "justifyContent": "space-between",
+                              "alignItems": "flex-end",
+                              "flexWrap": "wrap",
+                              "textColourHover": "primary-text"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "className": "cr-ref-shop-109",
+                                  "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "fresh out the oven…",
+                                      "className": "cr-ref-shop-110",
+                                      "fontFamily": "caveat",
+                                      "fontSize": {
+                                        "desktop": 26
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.269
+                                      },
+                                      "textColour": "link",
+                                      "textColourHover": "link"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/heading",
+                                    "attributes": {
+                                      "content": "@mamasmunches",
+                                      "className": "cr-ref-shop-111",
+                                      "fontSize": {
+                                        "mobile": 34,
+                                        "tablet": 42,
+                                        "desktop": 52
+                                      },
+                                      "margin": {
+                                        "desktop": {
+                                          "bottom": "0px"
+                                        }
+                                      },
+                                      "textWrap": "wrap",
+                                      "textColourHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "sgs/button",
+                                "attributes": {
+                                  "label": "Follow along",
+                                  "url": "https://www.instagram.com/mamasmunches/",
+                                  "className": "cr-ref-shop-112",
+                                  "iconSvg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2px\"></rect><circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2px\"></circle><circle cx=\"17.5\" cy=\"6.5\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\" stroke-width=\"2px\"></circle></svg>",
+                                  "iconPosition": "before",
+                                  "fontSize": {
+                                    "desktop": 16
+                                  },
+                                  "colourBackground": "surface-alt",
+                                  "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+                                  "padding": {
+                                    "desktop": {
+                                      "right": "22px",
+                                      "left": "22px"
+                                    }
+                                  },
+                                  "iconGap": {
+                                    "desktop": "10px"
+                                  },
+                                  "minHeight": {
+                                    "desktop": "52px"
+                                  },
+                                  "colourBackgroundHover": "primary",
+                                  "boxShadowHover": "rgb(58, 42, 34) 6px 6px 0px 0px",
+                                  "borderColourHover": "primary-text",
+                                  "colourTextHover": "primary-text",
+                                  "iconColourHover": "primary-text",
+                                  "sgsFocusRests": true,
+                                  "sgsMotion": {
+                                    "v": 1,
+                                    "elements": {
+                                      "root": {
+                                        "hover": {
+                                          "state": {
+                                            "values": {
+                                              "translateX": "-token:distance.xs",
+                                              "translateY": "-token:distance.xs",
+                                              "duration": "token:duration.fast",
+                                              "easing": "token:easing.ease"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/gallery",
+                            "attributes": {
+                              "className": "cr-ref-shop-113",
+                              "columns": {
+                                "mobile": "44%",
+                                "tablet": "repeat(3, minmax(0, 1fr))",
+                                "desktop": "auto"
+                              },
+                              "gap": {
+                                "desktop": "14px"
+                              },
+                              "margin": {
+                                "mobile": {
+                                  "right": "-20px",
+                                  "left": "-20px"
+                                }
+                              },
+                              "captionColourHover": "primary-text",
+                              "sgsCustomCss": "@media (max-width: 767px) { & { padding-top: 8px; } } @media (min-width: 768px) { & { padding-top: 0px; } } @media (max-width: 767px) { & { padding-right: 20px; } } @media (min-width: 768px) { & { padding-right: 0px; } } @media (max-width: 767px) { & { padding-bottom: 12px; } } @media (min-width: 768px) { & { padding-bottom: 0px; } } @media (max-width: 767px) { & { padding-left: 20px; } } @media (min-width: 768px) { & { padding-left: 0px; } }",
+                              "sgsCustomCssId": "wgate113",
+                              "sgsCustomCssNote": "Width ladder padding-top: 0-767px 8px, 768px and up 0px; Width ladder padding-right: 0-767px 20px, 768px and up 0px; Width ladder padding-bottom: 0-767px 12px, 768px and up 0px; Width ladder padding-left: 0-767px 20px, 768px and up 0px"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/trust-bar",
+                    "attributes": {
+                      "title": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦",
+                      "className": "cr-ref-shop-114",
+                      "backgroundColour": "primary",
+                      "borderWidth": {
+                        "right": "0px",
+                        "bottom": "2px",
+                        "left": "0px",
+                        "top": "2px"
+                      },
+                      "gap": {
+                        "desktop": "0px"
+                      },
+                      "alignItems": "normal",
+                      "backgroundColourHover": "primary",
+                      "textColourHover": "primary-text",
+                      "sgsCustomCss": "@media (max-width: 767px) { & { line-height: 34px; } } @media (min-width: 768px) { & { line-height: 45px; } }",
+                      "sgsCustomCssId": "wgate114",
+                      "sgsCustomCssNote": "Width ladder line-height: 0-767px 34px, 768px and up 45px",
+                      "gridTemplateColumns": {
+                        "desktop": "none",
+                        "tablet": "none",
+                        "mobile": "none"
+                      }
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-shop-115",
+                      "backgroundColour": "custom-mm-pink-band",
+                      "textColourHover": "primary-text",
+                      "backgroundColourHover": "custom-mm-pink-band",
+                      "padding": {
+                        "desktop": "40px",
+                        "tablet": "32px",
+                        "mobile": "20px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "className": "cr-ref-shop-116",
+                          "maxWidth": {
+                            "desktop": "1240px"
+                          },
+                          "textColourHover": "primary-text"
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "grid",
+                              "className": "cr-ref-shop-117",
+                              "borderWidth": {
+                                "top": "0px",
+                                "right": "0px",
+                                "left": "0px",
+                                "bottom": "2px"
+                              },
+                              "borderColour": "custom-mm-rule-soft",
+                              "gridTemplateColumns": {
+                                "mobile": "repeat(1, minmax(0, 1fr))",
+                                "tablet": "minmax(0, 3.51fr) minmax(0, 1fr)",
+                                "desktop": "minmax(0, 5.38fr) minmax(0, 1fr)"
+                              },
+                              "gap": {
+                                "mobile": "28px",
+                                "tablet": "18.79px",
+                                "desktop": "16.34px"
+                              },
+                              "alignItems": "center",
+                              "textColourHover": "primary-text",
+                              "borderColourHover": "custom-mm-rule-soft",
+                              "padding": {
+                                "desktop": "56px",
+                                "tablet": "44px",
+                                "mobile": "36px"
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-118",
+                                  "gap": {
+                                    "desktop": "18px"
+                                  },
+                                  "textColourHover": "primary-text",
+                                  "sgsCustomCss": "@media (max-width: 767px) { & { text-align: center; } } @media (min-width: 768px) { & { text-align: left; } } @media (max-width: 767px) { & .sgs-container__inner { align-items: center; } } @media (min-width: 768px) { & .sgs-container__inner { align-items: flex-start; } }",
+                                  "sgsCustomCssId": "wgate118",
+                                  "sgsCustomCssNote": "Width ladder text-align: 0-767px center, 768px and up left; Width ladder align-items: 0-767px center, 768px and up flex-start"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/heading",
+                                    "attributes": {
+                                      "content": "Hungry? Of course you are.",
+                                      "className": "cr-ref-shop-119",
+                                      "fontSize": {
+                                        "mobile": 40,
+                                        "tablet": 56,
+                                        "desktop": 80
+                                      },
+                                      "lineHeight": {
+                                        "mobile": 1,
+                                        "tablet": 1,
+                                        "desktop": 1
+                                      },
+                                      "lineHeightUnit": "",
+                                      "letterSpacing": {
+                                        "desktop": "clamp(-1.6px, -0.052vw - 0.606px, -0.8px)"
+                                      },
+                                      "margin": {
+                                        "desktop": {
+                                          "bottom": "0px"
+                                        }
+                                      },
+                                      "textColourHover": "primary-text",
+                                      "sgsCustomCss": "@media (max-width: 767px) { & { text-align: center; } } @media (min-width: 768px) { & { text-align: left; } }",
+                                      "sgsCustomCssId": "wgate119",
+                                      "sgsCustomCssNote": "Width ladder text-align: 0-767px center, 768px and up left"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/button",
+                                    "attributes": {
+                                      "label": "Build your box →",
+                                      "className": "cr-ref-shop-120",
+                                      "colourBackground": "accent",
+                                      "boxShadow": "rgb(58, 42, 34) 4px 4px 0px 0px",
+                                      "iconGap": {
+                                        "desktop": "10px"
+                                      },
+                                      "minHeight": {
+                                        "desktop": "60px"
+                                      },
+                                      "colourBackgroundHover": "primary",
+                                      "boxShadowHover": "rgb(58, 42, 34) 6px 6px 0px 0px",
+                                      "borderColourHover": "primary-text",
+                                      "colourTextHover": "primary-text",
+                                      "sgsFocusRests": true,
+                                      "sgsCustomCss": "@media (max-width: 767px) { & { text-align: center; } } @media (min-width: 768px) { & { text-align: left; } }",
+                                      "sgsCustomCssId": "wgate120",
+                                      "sgsCustomCssNote": "Width ladder text-align: 0-767px center, 768px and up left",
+                                      "sgsMotion": {
+                                        "v": 1,
+                                        "elements": {
+                                          "root": {
+                                            "hover": {
+                                              "state": {
+                                                "values": {
+                                                  "translateX": "-token:distance.xs",
+                                                  "translateY": "-token:distance.xs",
+                                                  "duration": "token:duration.fast",
+                                                  "easing": "token:easing.ease"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "sgs/responsive-logo",
+                                "attributes": {
+                                  "logoId": 92,
+                                  "className": "cr-ref-shop-121",
+                                  "logoUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-round.png",
+                                  "alt": "Mama's Munches",
+                                  "maxWidth": {
+                                    "desktop": "213px",
+                                    "tablet": "168px",
+                                    "mobile": "157px"
+                                  },
+                                  "sgsMotion": {
+                                    "v": 1,
+                                    "elements": {
+                                      "root": {
+                                        "hover": {
+                                          "state": {
+                                            "values": {
+                                              "rotate": 6,
+                                              "scale": 1.05,
+                                              "restRotate": -8,
+                                              "duration": 600,
+                                              "easing": "token:easing.spring"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "grid",
+                              "className": "cr-ref-shop-122",
+                              "gridTemplateColumns": {
+                                "mobile": "repeat(2, minmax(0, 1fr))",
+                                "desktop": "minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.3fr)"
+                              },
+                              "gap": {
+                                "mobile": "20px",
+                                "tablet": "32px",
+                                "desktop": "48px"
+                              },
+                              "textColourHover": "primary-text",
+                              "padding": {
+                                "desktop": "40px",
+                                "tablet": "32px",
+                                "mobile": "28px"
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "nav",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-123",
+                                  "ariaLabel": "Shop",
+                                  "gap": {
+                                    "desktop": "2px"
+                                  },
+                                  "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/heading",
+                                    "attributes": {
+                                      "content": "shop",
+                                      "className": "cr-ref-shop-124",
+                                      "fontFamily": "caveat",
+                                      "fontSize": {
+                                        "desktop": 24
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.25
+                                      },
+                                      "textColour": "custom-mm-script",
+                                      "margin": {
+                                        "desktop": {
+                                          "bottom": "0px"
+                                        }
+                                      },
+                                      "textWrap": "wrap",
+                                      "textColourHover": "custom-mm-script"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/icon-list",
+                                    "attributes": {
+                                      "items": [
+                                        {
+                                          "text": "All Zookies",
+                                          "url": "Shop.dc.html"
+                                        },
+                                        {
+                                          "text": "Build your box",
+                                          "url": "Home.dc.html#build"
+                                        },
+                                        {
+                                          "text": "Subscribe & save",
+                                          "url": "Product.dc.html?id=zookies&sub=1"
+                                        },
+                                        {
+                                          "text": "Gifts",
+                                          "url": "Gifts.dc.html"
+                                        },
+                                        {
+                                          "text": "Taster Trio",
+                                          "url": "Product.dc.html?id=trial"
+                                        }
+                                      ],
+                                      "className": "cr-ref-shop-125",
+                                      "padding": {
+                                        "desktop": {
+                                          "top": "6px",
+                                          "bottom": "6px"
+                                        }
+                                      },
+                                      "sgsMotion": {
+                                        "v": 1,
+                                        "elements": {
+                                          "root": {
+                                            "hover": {
+                                              "state": {
+                                                "values": {
+                                                  "translateX": 4,
+                                                  "duration": "token:duration.fast",
+                                                  "easing": "token:easing.ease"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "nav",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-126",
+                                  "ariaLabel": "Help",
+                                  "gap": {
+                                    "desktop": "2px"
+                                  },
+                                  "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/heading",
+                                    "attributes": {
+                                      "content": "help",
+                                      "className": "cr-ref-shop-127",
+                                      "fontFamily": "caveat",
+                                      "fontSize": {
+                                        "desktop": 24
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.25
+                                      },
+                                      "textColour": "custom-mm-script",
+                                      "margin": {
+                                        "desktop": {
+                                          "bottom": "0px"
+                                        }
+                                      },
+                                      "textWrap": "wrap",
+                                      "textColourHover": "custom-mm-script"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/icon-list",
+                                    "attributes": {
+                                      "items": [
+                                        {
+                                          "text": "FAQs",
+                                          "url": "Help.dc.html"
+                                        },
+                                        {
+                                          "text": "Delivery",
+                                          "url": "Help.dc.html#delivery"
+                                        },
+                                        {
+                                          "text": "Allergens",
+                                          "url": "Help.dc.html#allergens"
+                                        },
+                                        {
+                                          "text": "Contact",
+                                          "url": "Contact.dc.html"
+                                        }
+                                      ],
+                                      "className": "cr-ref-shop-128",
+                                      "padding": {
+                                        "desktop": {
+                                          "top": "6px",
+                                          "bottom": "6px"
+                                        }
+                                      },
+                                      "sgsMotion": {
+                                        "v": 1,
+                                        "elements": {
+                                          "root": {
+                                            "hover": {
+                                              "state": {
+                                                "values": {
+                                                  "translateX": 4,
+                                                  "duration": "token:duration.fast",
+                                                  "easing": "token:easing.ease"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "sgs/container",
+                                "attributes": {
+                                  "tagName": "div",
+                                  "layout": "stack",
+                                  "className": "cr-ref-shop-129",
+                                  "gap": {
+                                    "desktop": "12px"
+                                  },
+                                  "textColourHover": "primary-text"
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/text",
+                                    "attributes": {
+                                      "text": "say hello",
+                                      "className": "cr-ref-shop-130",
+                                      "fontFamily": "caveat",
+                                      "fontSize": {
+                                        "desktop": 24
+                                      },
+                                      "lineHeight": {
+                                        "desktop": 1.25
+                                      },
+                                      "textColour": "custom-mm-script",
+                                      "textColourHover": "custom-mm-script"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/button",
+                                    "attributes": {
+                                      "label": "Zainab@mamasmunches.com",
+                                      "url": "mailto:Zainab@mamasmunches.com",
+                                      "linkSource": "email",
+                                      "labelFromSiteInfo": true,
+                                      "className": "cr-ref-shop-131",
+                                      "colourBackground": "#00000000",
+                                      "borderWidth": {
+                                        "right": "0px",
+                                        "bottom": "0px",
+                                        "left": "0px",
+                                        "top": "0px"
+                                      },
+                                      "borderStyle": "none",
+                                      "borderRadius": {
+                                        "desktop": {
+                                          "topLeft": "8px",
+                                          "topRight": "8px",
+                                          "bottomRight": "8px",
+                                          "bottomLeft": "8px"
+                                        }
+                                      },
+                                      "padding": {
+                                        "desktop": {
+                                          "top": "2px",
+                                          "right": "6px",
+                                          "bottom": "2px",
+                                          "left": "6px"
+                                        }
+                                      },
+                                      "minHeight": {
+                                        "desktop": "auto"
+                                      },
+                                      "textDecoration": "underline",
+                                      "margin": {
+                                        "desktop": {
+                                          "left": "-6px"
+                                        }
+                                      },
+                                      "colourBackgroundHover": "surface-alt",
+                                      "colourTextHover": "primary-text",
+                                      "sgsFocusRests": true
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/social-icons",
+                                    "attributes": {
+                                      "className": "cr-ref-shop-132",
+                                      "gap": {
+                                        "desktop": "10px"
+                                      },
+                                      "flexWrap": "nowrap"
+                                    },
+                                    "innerBlocks": [
+                                      {
+                                        "name": "sgs/icon",
+                                        "attributes": {
+                                          "iconSource": "brand",
+                                          "brandName": "instagram",
+                                          "metadata": {
+                                            "bindings": {
+                                              "linkUrl": {
+                                                "source": "sgs/site-info",
+                                                "args": {
+                                                  "key": "socials.instagram"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "className": "cr-ref-shop-133",
+                                          "linkUrl": "https://www.instagram.com/mamasmunches/",
+                                          "ariaLabel": "Instagram",
+                                          "backgroundColourGradient": "radial-gradient(circle at 30% 107%, rgb(253, 244, 151) 0%, rgb(253, 89, 73) 45%, rgb(214, 36, 159) 60%, rgb(40, 90, 235) 90%)",
+                                          "borderWidth": {
+                                            "right": "2px",
+                                            "bottom": "2px",
+                                            "left": "2px",
+                                            "top": "2px"
+                                          },
+                                          "borderStyle": "solid",
+                                          "borderRadius": {
+                                            "topLeft": "999px",
+                                            "topRight": "999px",
+                                            "bottomRight": "999px",
+                                            "bottomLeft": "999px"
+                                          },
+                                          "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+                                          "iconColour": "custom-mm-white",
+                                          "iconSize": {
+                                            "desktop": "20px"
+                                          },
+                                          "iconColourHover": "custom-mm-white",
+                                          "boxShadowHover": "rgb(58, 42, 34) 5px 5px 0px 0px",
+                                          "sgsMotion": {
+                                            "v": 1,
+                                            "elements": {
+                                              "root": {
+                                                "hover": {
+                                                  "state": {
+                                                    "values": {
+                                                      "translateX": "-token:distance.xs",
+                                                      "translateY": "-token:distance.xs",
+                                                      "rotate": -8,
+                                                      "duration": "token:duration.fast",
+                                                      "easing": "token:easing.ease"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "innerBlocks": []
+                                      },
+                                      {
+                                        "name": "sgs/icon",
+                                        "attributes": {
+                                          "iconSource": "brand",
+                                          "brandName": "whatsapp",
+                                          "metadata": {
+                                            "bindings": {
+                                              "linkUrl": {
+                                                "source": "sgs/site-info",
+                                                "args": {
+                                                  "key": "socials.whatsapp"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "className": "cr-ref-shop-134",
+                                          "ariaLabel": "WhatsApp",
+                                          "backgroundColour": "whatsapp",
+                                          "borderWidth": {
+                                            "right": "2px",
+                                            "bottom": "2px",
+                                            "left": "2px",
+                                            "top": "2px"
+                                          },
+                                          "borderStyle": "solid",
+                                          "borderRadius": {
+                                            "topLeft": "999px",
+                                            "topRight": "999px",
+                                            "bottomRight": "999px",
+                                            "bottomLeft": "999px"
+                                          },
+                                          "boxShadow": "rgb(58, 42, 34) 3px 3px 0px 0px",
+                                          "iconColour": "custom-mm-white",
+                                          "iconSize": {
+                                            "desktop": "20px"
+                                          },
+                                          "iconColourHover": "custom-mm-white",
+                                          "backgroundColourHover": "whatsapp",
+                                          "boxShadowHover": "rgb(58, 42, 34) 5px 5px 0px 0px",
+                                          "sgsMotion": {
+                                            "v": 1,
+                                            "elements": {
+                                              "root": {
+                                                "hover": {
+                                                  "state": {
+                                                    "values": {
+                                                      "translateX": "-token:distance.xs",
+                                                      "translateY": "-token:distance.xs",
+                                                      "rotate": -8,
+                                                      "duration": "token:duration.fast",
+                                                      "easing": "token:easing.ease"
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "innerBlocks": []
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "grid",
+                              "className": "cr-ref-shop-135",
+                              "fontSize": {
+                                "desktop": 14
+                              },
+                              "textAlign": "center",
+                              "borderWidth": {
+                                "right": "0px",
+                                "bottom": "0px",
+                                "left": "0px",
+                                "top": "2px"
+                              },
+                              "borderColour": "custom-mm-rule-soft",
+                              "gridTemplateColumns": {
+                                "tablet": "repeat(1, minmax(0, 1fr))",
+                                "desktop": "minmax(0, 5.33fr) minmax(0, 1fr) minmax(0, 5.34fr)"
+                              },
+                              "gap": {
+                                "tablet": "24px"
+                              },
+                              "alignItems": "center",
+                              "textColourHover": "primary-text",
+                              "borderColourHover": "custom-mm-rule-soft",
+                              "padding": {
+                                "desktop": {
+                                  "top": "18px"
+                                }
+                              }
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/business-info",
+                                "attributes": {
+                                  "displayType": "address",
+                                  "copyrightPrefix": "",
+                                  "className": "cr-ref-shop-136",
+                                  "lineHeight": {
+                                    "desktop": 1.214
+                                  },
+                                  "borderWidth": {
+                                    "top": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "right": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "0px",
+                                      "topRight": "0px",
+                                      "bottomRight": "0px",
+                                      "bottomLeft": "0px"
+                                    }
+                                  },
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "0px",
+                                      "right": "0px",
+                                      "bottom": "0px",
+                                      "left": "0px"
+                                    }
+                                  },
+                                  "textDecoration": "none",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "0px",
+                                      "right": "0px",
+                                      "bottom": "0px",
+                                      "left": "0px"
+                                    }
+                                  }
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/multi-button",
+                                "attributes": {
+                                  "layout": "flex",
+                                  "className": "cr-ref-shop-137",
+                                  "gap": {
+                                    "mobile": "18px",
+                                    "desktop": "18px"
+                                  },
+                                  "justifyContent": {
+                                    "desktop": "center",
+                                    "tablet": "center",
+                                    "mobile": "center"
+                                  },
+                                  "alignItems": {
+                                    "desktop": "stretch",
+                                    "tablet": "stretch"
+                                  },
+                                  "flexDirection": {
+                                    "desktop": "row",
+                                    "mobile": "row"
+                                  }
+                                },
+                                "innerBlocks": [
+                                  {
+                                    "name": "sgs/button",
+                                    "attributes": {
+                                      "label": "Privacy",
+                                      "url": "Help.dc.html#legal",
+                                      "className": "cr-ref-shop-138",
+                                      "fontSize": {
+                                        "desktop": 14
+                                      },
+                                      "fontWeight": "400",
+                                      "colourBackground": "#00000000",
+                                      "borderWidth": {
+                                        "right": "0px",
+                                        "bottom": "0px",
+                                        "left": "0px",
+                                        "top": "0px"
+                                      },
+                                      "borderStyle": "none",
+                                      "borderRadius": {
+                                        "desktop": {
+                                          "topLeft": "0px",
+                                          "topRight": "0px",
+                                          "bottomRight": "0px",
+                                          "bottomLeft": "0px"
+                                        }
+                                      },
+                                      "padding": {
+                                        "desktop": {
+                                          "right": "0px",
+                                          "left": "0px"
+                                        }
+                                      },
+                                      "minHeight": {
+                                        "desktop": "auto"
+                                      },
+                                      "textDecoration": "underline",
+                                      "colourBackgroundHover": "#00000000",
+                                      "colourTextHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  },
+                                  {
+                                    "name": "sgs/button",
+                                    "attributes": {
+                                      "label": "Terms",
+                                      "url": "Help.dc.html#legal",
+                                      "className": "cr-ref-shop-139",
+                                      "fontSize": {
+                                        "desktop": 14
+                                      },
+                                      "fontWeight": "400",
+                                      "colourBackground": "#00000000",
+                                      "borderWidth": {
+                                        "right": "0px",
+                                        "bottom": "0px",
+                                        "left": "0px",
+                                        "top": "0px"
+                                      },
+                                      "borderStyle": "none",
+                                      "borderRadius": {
+                                        "desktop": {
+                                          "topLeft": "0px",
+                                          "topRight": "0px",
+                                          "bottomRight": "0px",
+                                          "bottomLeft": "0px"
+                                        }
+                                      },
+                                      "padding": {
+                                        "desktop": {
+                                          "right": "0px",
+                                          "left": "0px"
+                                        }
+                                      },
+                                      "minHeight": {
+                                        "desktop": "auto"
+                                      },
+                                      "textDecoration": "underline",
+                                      "colourBackgroundHover": "#00000000",
+                                      "colourTextHover": "primary-text"
+                                    },
+                                    "innerBlocks": []
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "sgs/business-info",
+                                "attributes": {
+                                  "displayType": "address",
+                                  "className": "cr-ref-shop-140",
+                                  "fontWeight": "700",
+                                  "lineHeight": {
+                                    "desktop": 1.214
+                                  },
+                                  "borderWidth": {
+                                    "top": "0px",
+                                    "bottom": "0px",
+                                    "left": "0px",
+                                    "right": "0px"
+                                  },
+                                  "borderStyle": "none",
+                                  "borderRadius": {
+                                    "desktop": {
+                                      "topLeft": "0px",
+                                      "topRight": "0px",
+                                      "bottomRight": "0px",
+                                      "bottomLeft": "0px"
+                                    }
+                                  },
+                                  "padding": {
+                                    "desktop": {
+                                      "top": "0px",
+                                      "right": "0px",
+                                      "bottom": "0px",
+                                      "left": "0px"
+                                    }
+                                  },
+                                  "textDecoration": "none",
+                                  "margin": {
+                                    "desktop": {
+                                      "top": "0px",
+                                      "right": "0px",
+                                      "bottom": "0px",
+                                      "left": "0px"
+                                    }
+                                  },
+                                  "textWrap": "nowrap"
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

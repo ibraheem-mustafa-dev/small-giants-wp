@@ -1,0 +1,122 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "main",
+      "contentWidth": {
+        "desktop": "full"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "404",
+          "textAlign": "center",
+          "textColour": "text-muted",
+          "fontSize": {
+            "desktop": 120,
+            "tablet": 80,
+            "mobile": 56
+          },
+          "lineHeight": {
+            "desktop": "0.85"
+          }
+        }
+      },
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "content": "Page not found",
+          "textAlign": "center",
+          "level": "h1",
+          "fontSize": {
+            "desktop": "xx-large"
+          }
+        }
+      },
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "The page you're looking for doesn't exist or has been moved. Try searching or head back to the homepage.",
+          "textAlign": "center",
+          "textColour": "text-muted"
+        }
+      },
+      {
+        "name": "core/search",
+        "attributes": {
+          "label": "Search",
+          "showLabel": false,
+          "placeholder": "Search this site…",
+          "buttonText": "Search",
+          "buttonPosition": "button-inside",
+          "buttonUseIcon": true,
+          "style": {
+            "border": {
+              "radius": "8px"
+            },
+            "spacing": {
+              "margin": {
+                "top": "var:preset|spacing|40"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "sgs/multi-button",
+        "attributes": {
+          "justifyContent": {
+            "desktop": "center"
+          },
+          "margin": {
+            "top": "var:preset|spacing|40"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/button",
+            "attributes": {
+              "label": "Back to Homepage",
+              "url": "/",
+              "inheritStyle": "primary",
+              "borderRadius": {
+                "desktop": "8px"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/text",
+        "attributes": {
+          "text": "Status code: 404",
+          "textAlign": "center",
+          "textColour": "text-muted",
+          "fontSize": {
+            "desktop": "small"
+          },
+          "margin": {
+            "top": "var:preset|spacing|50"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

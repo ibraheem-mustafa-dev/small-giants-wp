@@ -1,0 +1,184 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "main",
+      "contentWidth": {
+        "desktop": "full"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "contentWidth": {
+            "desktop": "normal"
+          },
+          "padding": {
+            "top": "var:preset|spacing|50",
+            "bottom": "var:preset|spacing|30",
+            "left": "var:preset|spacing|40",
+            "right": "var:preset|spacing|40"
+          },
+          "flexWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "woocommerce/breadcrumbs"
+          },
+          {
+            "name": "core/query-title",
+            "attributes": {
+              "type": "search",
+              "showPrefix": false
+            }
+          }
+        ]
+      },
+      {
+        "name": "woocommerce/store-notices"
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "flexDirection": "column",
+          "padding": {
+            "top": "var:preset|spacing|40",
+            "bottom": "var:preset|spacing|60"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "woocommerce/product-collection",
+            "attributes": {
+              "queryId": 0,
+              "query": {
+                "woocommerceAttributes": [],
+                "woocommerceStockStatus": [
+                  "instock",
+                  "outofstock",
+                  "onbackorder"
+                ],
+                "taxQuery": [],
+                "isProductCollectionBlock": true,
+                "perPage": 10,
+                "pages": 0,
+                "offset": 0,
+                "postType": "product",
+                "order": "asc",
+                "orderBy": "title",
+                "author": "",
+                "search": "",
+                "exclude": [],
+                "sticky": "",
+                "inherit": true
+              },
+              "tagName": "div",
+              "dimensions": {
+                "widthType": "fill",
+                "fixedWidth": ""
+              },
+              "displayLayout": {
+                "type": "flex",
+                "columns": 3,
+                "shrinkColumns": true
+              },
+              "convertedFromProducts": false,
+              "queryContextIncludes": [
+                "collection"
+              ],
+              "align": "wide"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "className": "sgs-shop-toolbar",
+                  "layout": "flex",
+                  "justifyContent": "space-between",
+                  "alignItems": "center",
+                  "flexWrap": "wrap",
+                  "contentWidth": {
+                    "desktop": "full"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "woocommerce/product-results-count"
+                  },
+                  {
+                    "name": "woocommerce/catalog-sorting"
+                  }
+                ]
+              },
+              {
+                "name": "woocommerce/product-template",
+                "innerBlocks": [
+                  {
+                    "name": "sgs/product-card",
+                    "attributes": {
+                      "sourceMode": "wc-product",
+                      "showPickers": false,
+                      "ctaBehaviour": "learn-more",
+                      "showLadder": false
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "core/query-pagination",
+                "attributes": {
+                  "layout": {
+                    "type": "flex",
+                    "justifyContent": "center"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "core/query-pagination-previous"
+                  },
+                  {
+                    "name": "core/query-pagination-numbers"
+                  },
+                  {
+                    "name": "core/query-pagination-next"
+                  }
+                ]
+              },
+              {
+                "name": "woocommerce/product-collection-no-results",
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "No products matched that search. Try a different term or browse the full shop.",
+                      "textAlign": "center"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

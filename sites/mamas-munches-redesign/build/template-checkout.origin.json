@@ -1,0 +1,158 @@
+{
+  "cr-ref-template-checkout-0": {
+    "tpl": "Root/6#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "36f1ce99",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 9
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-1": {
+    "tpl": "Root/7#0",
+    "fingerprint": {
+      "tag": "header",
+      "cls": "",
+      "styleHash": "3a84cc93",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 10
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-2": {
+    "tpl": "Root/8#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f2a35d20",
+      "parentTags": [
+        "div",
+        "header"
+      ],
+      "textHash": "1505",
+      "line": 11
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-3": {
+    "tpl": "Root/9#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "6fb1f72c",
+      "parentTags": [
+        "div",
+        "header",
+        "div"
+      ],
+      "textHash": "de0f445f",
+      "line": 12
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-4": {
+    "tpl": "Root/10#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "header",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-5": {
+    "tpl": "Root/11#0",
+    "fingerprint": {
+      "tag": "img",
+      "cls": "",
+      "styleHash": "9b41e79e",
+      "parentTags": [
+        "div",
+        "header",
+        "div",
+        "a"
+      ],
+      "textHash": "1505",
+      "line": 13
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-6": {
+    "tpl": "Root/12#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f51d6702",
+      "parentTags": [
+        "div",
+        "header",
+        "div"
+      ],
+      "textHash": "65f725da",
+      "line": 14
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-8": {
+    "tpl": "Root/19#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "642cdeb",
+      "parentTags": [
+        "div",
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 20
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-9": {
+    "tpl": "Root/20#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "main",
+        "div",
+        "button"
+      ],
+      "textHash": "b178e25a",
+      "line": 20
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-template-checkout-10": {
+    "tpl": "Root/21#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "fe6e953a",
+      "parentTags": [
+        "div",
+        "main",
+        "div",
+        "button"
+      ],
+      "textHash": "9856b6ea",
+      "line": 20
+    },
+    "draft": "4cd995654ff1103b"
+  }
+}

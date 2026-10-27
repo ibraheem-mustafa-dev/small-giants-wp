@@ -4,7 +4,7 @@
     "slug": "my-account",
     "title": "My account",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -100,12 +100,6 @@
     "id": 102,
     "parts": [
       {
-        "kind": "endpoint",
-        "label": "Order confirmed",
-        "owner": "woocommerce",
-        "draftId": "Checkout.dc.html:172 (logic) location.href = 'Confirmation.dc.html'"
-      },
-      {
         "kind": "form",
         "label": "pay",
         "owner": "woocommerce",
@@ -120,11 +114,23 @@
     ]
   },
   {
+    "route": "Confirmation.dc.html",
+    "slug": "order-confirmation",
+    "title": "Order confirmed",
+    "parent": null,
+    "template": "order-confirmation",
+    "menus": [],
+    "postType": "template",
+    "collection": "static",
+    "flags": [],
+    "id": null
+  },
+  {
     "route": "Contact.dc.html",
     "slug": "contact",
     "title": "Contact",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "footer-help",
@@ -152,7 +158,7 @@
     "slug": "gifts",
     "title": "Gifts for new mums",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "footer-shop",
@@ -188,7 +194,7 @@
     "slug": "help",
     "title": "Help & FAQs",
     "parent": null,
-    "template": null,
+    "template": "page",
     "menus": [
       {
         "menu": "footer-help",
@@ -224,7 +230,7 @@
     "slug": "home",
     "title": "Handmade lactation cookies",
     "parent": null,
-    "template": null,
+    "template": "front-page",
     "menus": [
       {
         "menu": "footer-shop",

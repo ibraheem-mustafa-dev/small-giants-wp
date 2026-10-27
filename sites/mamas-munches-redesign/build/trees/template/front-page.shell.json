@@ -1,0 +1,36 @@
+{
+  "chain": [
+    {
+      "name": "sgs/container",
+      "attributes": {
+        "tagName": "div",
+        "className": "cr-ref-home-0",
+        "backgroundColour": "surface",
+        "minHeight": {
+          "mobile": "812px",
+          "desktop": "900px"
+        },
+        "textColourHover": "primary-text",
+        "backgroundColourHover": "surface"
+      }
+    }
+  ],
+  "surfaces": {
+    "home": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "className": "cr-ref-home-0",
+          "backgroundColour": "surface",
+          "minHeight": {
+            "mobile": "812px",
+            "desktop": "900px"
+          },
+          "textColourHover": "primary-text",
+          "backgroundColourHover": "surface"
+        }
+      }
+    ]
+  }
+}

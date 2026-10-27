@@ -1,4 +1,126 @@
 {
+  "template-front-page": {
+    "tree": "trees/template/front-page.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "front-page"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "home"
+      ]
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-page": {
+    "tree": "trees/template/page.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "page"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "my-account",
+        "contact",
+        "gifts",
+        "help"
+      ]
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-search": {
+    "tree": "trees/template/search.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "search"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-404": {
+    "tree": "trees/template/404.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "404"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-product-search-results": {
+    "tree": "trees/template/product-search-results.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "product-search-results"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-taxonomy-product_attribute": {
+    "tree": "trees/template/taxonomy-product_attribute.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "taxonomy-product_attribute"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-order-confirmation": {
+    "tree": "trees/template/order-confirmation.json",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "order-confirmation"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page",
+      "unplayed": "template:order-confirmation"
+    },
+    "states": {
+      "resting": null
+    }
+  },
   "my-account": {
     "tree": "trees/page/my-account.json",
     "intakeSurface": "page-account-dc-html",
@@ -8,6 +130,7 @@
     "target": {
       "postId": 103
     },
+    "shell": "page",
     "walker": "qa/parity/my-account.fill-base.mjs",
     "walkerFull": "qa/parity/my-account.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
@@ -68,6 +191,7 @@
     "target": {
       "postId": 148
     },
+    "shell": "page",
     "walker": "qa/parity/contact.fill-base.mjs",
     "walkerFull": "qa/parity/contact.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
@@ -87,6 +211,7 @@
     "target": {
       "postId": 150
     },
+    "shell": "page",
     "walker": "qa/parity/gifts.fill-base.mjs",
     "walkerFull": "qa/parity/gifts.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
@@ -106,6 +231,7 @@
     "target": {
       "postId": 152
     },
+    "shell": "page",
     "walker": "qa/parity/help.fill-base.mjs",
     "walkerFull": "qa/parity/help.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
@@ -125,6 +251,7 @@
     "target": {
       "postId": 154
     },
+    "shell": "front-page",
     "walker": "qa/parity/home.fill-base.mjs",
     "walkerFull": "qa/parity/home.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
@@ -146,6 +273,9 @@
       "template": "single-product"
     },
     "canvas": true,
+    "copy": {
+      "from": "whole"
+    },
     "walker": "qa/parity/product.fill-base.mjs",
     "walkerFull": "qa/parity/product.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
@@ -171,6 +301,9 @@
       "template": "archive-product"
     },
     "canvas": true,
+    "copy": {
+      "from": "whole"
+    },
     "walker": "qa/parity/shop.fill-base.mjs",
     "walkerFull": "qa/parity/shop.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
@@ -194,10 +327,13 @@
     "walker": "qa/parity/form-send.fill-base.mjs",
     "walkerFull": "qa/parity/form-send.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
-    "draftIndex": "Home.dc.html",
+    "draftIndex": "Contact.dc.html",
     "draftRoute": "Contact.dc.html",
     "states": {
-      "resting": null
+      "topic-my-order": null,
+      "topic-baby-shower-or-event": null,
+      "other-topics": null,
+      "editing": null
     },
     "provides": [
       "sgs/form:form-send"
@@ -216,9 +352,9 @@
     "walker": "qa/parity/flow-choice-flow-gifts-she-ll-actually-eat.fill-base.mjs",
     "walkerFull": "qa/parity/flow-choice-flow-gifts-she-ll-actually-eat.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
-    "draftIndex": "Home.dc.html",
+    "draftIndex": "Gifts.dc.html",
     "states": {
-      "resting": null
+      "moment-budget": null
     }
   },
   "flow-choice-flow-build-your-zookie": {
@@ -236,7 +372,11 @@
     "draftDir": "sites/mamas-munches-redesign/handoff",
     "draftIndex": "Home.dc.html",
     "states": {
-      "resting": null
+      "default": null,
+      "subscribe-frequency-row": null,
+      "one-off": null,
+      "pack-size-tag-chip": null,
+      "added": null
     }
   },
   "footer": {
@@ -303,7 +443,57 @@
     "draftDir": "sites/mamas-munches-redesign/handoff",
     "draftIndex": "Home.dc.html",
     "states": {
-      "resting": null
+      "open-drawer-slides-in-contents-stagger-in-from-the-left": null
+    }
+  },
+  "template-cart": {
+    "tree": "trees/template/cart.json",
+    "intakeSurface": "page-basket-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "cart"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "fill",
+      "row": "page:cart"
+    },
+    "walker": "qa/parity/template-cart.fill-base.mjs",
+    "walkerFull": "qa/parity/template-cart.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Basket.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null,
+      "empty": null,
+      "has-items": null
+    }
+  },
+  "template-checkout": {
+    "tree": "trees/template/checkout.json",
+    "intakeSurface": "page-checkout-dc-html",
+    "envFile": ".claude/secrets/local-mamas.env",
+    "envKey": "LOCALMAMAS",
+    "site": "local-mamas",
+    "target": {
+      "template": "checkout"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "fill",
+      "row": "page:checkout"
+    },
+    "walker": "qa/parity/template-checkout.fill-base.mjs",
+    "walkerFull": "qa/parity/template-checkout.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Checkout.dc.html",
+    "states": {
+      "mobile": null,
+      "tablet": null,
+      "desktop": null
     }
   }
 }

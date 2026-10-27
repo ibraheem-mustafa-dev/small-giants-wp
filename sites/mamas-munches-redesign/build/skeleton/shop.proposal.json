@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-26T17:27:31.797Z",
-	"inventory": "2026-10-26T17:27:30.276Z",
-	"source": "http://127.0.0.1:51331/",
+	"generated": "2026-10-27T01:27:43.321Z",
+	"inventory": "2026-10-27T01:27:42.360Z",
+	"source": "http://127.0.0.1:57939/",
 	"surface": "page-shop-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -37,14 +37,19 @@
 		"logo": 0.5,
 		"rule": 1
 	},
+	"commerceRegion": {
+		"key": "Root/28#0",
+		"role": "shop",
+		"block": "woocommerce/product-collection"
+	},
 	"counts": {
 		"inventoryElements": 303,
 		"parts": 37,
 		"rows": 266,
-		"skeletonNodes": 194,
-		"expandedNodes": 194,
-		"low": 48,
-		"removed": 52,
+		"skeletonNodes": 141,
+		"expandedNodes": 141,
+		"low": 38,
+		"removed": 107,
 		"unresolved": 4,
 		"byRule": {
 			"typedDivider": 2,
@@ -59,10 +64,11 @@
 			"heroInner": 1,
 			"formControl": 3,
 			"optionSetFilter": 15,
-			"pillButton": 12,
+			"commerceRegion": 61,
 			"cardAction": 1,
 			"logoGrid": 13,
 			"marqueeCodeItems": 1,
+			"pillButton": 2,
 			"siteInfoLink": 1
 		}
 	},
@@ -4221,23 +4227,21 @@
 			"tag": "div",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
+			"block": "woocommerce/product-collection",
 			"action": null,
-			"reason": null,
-			"source": null,
+			"reason": "WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built eye-care-test archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 5 mounted cards showing a price)",
+			"source": "rule commerceRegion",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "commerceRegion",
 			"candidates": [
 				{
-					"block": "sgs/container",
+					"block": "woocommerce/product-collection",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+						"rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built eye-care-test archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 5 mounted cards showing a price)"
 					]
 				}
 			],
@@ -4248,8 +4252,21 @@
 			},
 			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }}\" data-dc-tpl=\"28\"> <sc-for list=\"{{ list }}\" as=\"p\" hint-placeholder-count=\"0\" data-dc-tpl=\"29\"> <div style=\"min-width:0\" data-dc-tpl=\"30\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import></div> </sc-for> </div>",
 			"attributes": {
+				"queryId": 0,
+				"query": {
+					"inherit": true,
+					"perPage": 24,
+					"isProductCollectionBlock": true
+				},
 				"tagName": "div",
-				"layout": "grid"
+				"displayLayout": {
+					"type": "flex",
+					"columns": 3,
+					"shrinkColumns": true
+				},
+				"queryContextIncludes": [
+					"collection"
+				]
 			}
 		},
 		{
@@ -4258,34 +4275,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_0@375.png",
 				"1440": "shots/Root_30_0@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"30\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import></div>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 128,
@@ -4293,34 +4299,23 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_0@375.png",
 				"1440": "shots/Root_31_0@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 129,
@@ -4328,36 +4323,23 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_0_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 130,
@@ -4365,33 +4347,23 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/button",
-			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_1_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {
-				"label": "Build your own"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 131,
@@ -4401,13 +4373,13 @@
 			"words": "Build your own",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root>ProductCard@31#0/1#0",
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -4423,36 +4395,23 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_4_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 133,
@@ -4460,35 +4419,23 @@
 			"tag": "a",
 			"depth": 9,
 			"words": "Zookies",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_5_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {
-				"label": "Zookies",
-				"url": "Product.dc.html?id=zookies"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 134,
@@ -4496,33 +4443,22 @@
 			"tag": "p",
 			"depth": 9,
 			"words": "Our giant lactation cookie, baked to order in the flavour you pick.",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
-						"block_composition: sgs/text is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_31_0_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {
-				"text": "Our giant lactation cookie, baked to order in the flavour you pick."
-			}
+			"attributes": {}
 		},
 		{
 			"order": 135,
@@ -4530,36 +4466,23 @@
 			"tag": "div",
 			"depth": 9,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_8_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 136,
@@ -4567,33 +4490,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "from £9.50",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_9_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {
-				"text": "from £9.50"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 137,
@@ -4601,33 +4514,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "£1.19 a cookie",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_10_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {
-				"text": "£1.19 a cookie"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 138,
@@ -4635,34 +4538,23 @@
 			"tag": "button",
 			"depth": 9,
 			"words": "Build your box",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_0_11_0@375.png",
 				"1440": "shots/Root_ProductCard_31_0_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {
-				"label": "Build your box"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 139,
@@ -4670,34 +4562,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_1@375.png",
 				"1440": "shots/Root_30_1@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"30\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import></div>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 140,
@@ -4705,34 +4586,23 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_1@375.png",
 				"1440": "shots/Root_31_1@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 141,
@@ -4740,36 +4610,23 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_0_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 142,
@@ -4777,33 +4634,23 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/button",
-			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_1_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {
-				"label": "New? Start here"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 143,
@@ -4813,13 +4660,13 @@
 			"words": "New? Start here",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root>ProductCard@31#1/1#0",
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -4835,36 +4682,23 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_4_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 145,
@@ -4872,35 +4706,23 @@
 			"tag": "a",
 			"depth": 9,
 			"words": "Taster Trio",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_5_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {
-				"label": "Taster Trio",
-				"url": "Product.dc.html?id=trial"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 146,
@@ -4908,33 +4730,22 @@
 			"tag": "p",
 			"depth": 9,
 			"words": "3 Classic Zookies to try. Postage included, fits through the letterbox.",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
-						"block_composition: sgs/text is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_31_1_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {
-				"text": "3 Classic Zookies to try. Postage included, fits through the letterbox."
-			}
+			"attributes": {}
 		},
 		{
 			"order": 147,
@@ -4942,36 +4753,23 @@
 			"tag": "div",
 			"depth": 9,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_8_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 148,
@@ -4979,33 +4777,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "£5",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_9_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {
-				"text": "£5"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 149,
@@ -5013,33 +4801,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "postage included",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_10_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {
-				"text": "postage included"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 150,
@@ -5047,34 +4825,23 @@
 			"tag": "button",
 			"depth": 9,
 			"words": "Add to basket",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_1_11_0@375.png",
 				"1440": "shots/Root_ProductCard_31_1_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {
-				"label": "Add to basket"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 151,
@@ -5082,34 +4849,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_2@375.png",
 				"1440": "shots/Root_30_2@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"30\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import></div>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 152,
@@ -5117,34 +4873,23 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_2@375.png",
 				"1440": "shots/Root_31_2@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 153,
@@ -5152,36 +4897,23 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_0_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 154,
@@ -5189,33 +4921,23 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/button",
-			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_1_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {
-				"label": "Gift favourite"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 155,
@@ -5225,13 +4947,13 @@
 			"words": "Gift favourite",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root>ProductCard@31#2/1#0",
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -5247,36 +4969,23 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_4_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 157,
@@ -5284,35 +4993,23 @@
 			"tag": "a",
 			"depth": 9,
 			"words": "New Baby Gift Box",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_5_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {
-				"label": "New Baby Gift Box",
-				"url": "Product.dc.html?id=giftbox"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 158,
@@ -5320,33 +5017,22 @@
 			"tag": "p",
 			"depth": 9,
 			"words": "A mix of Zookies in a gift box, sent with your message.",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
-						"block_composition: sgs/text is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_31_2_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {
-				"text": "A mix of Zookies in a gift box, sent with your message."
-			}
+			"attributes": {}
 		},
 		{
 			"order": 159,
@@ -5354,36 +5040,23 @@
 			"tag": "div",
 			"depth": 9,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_8_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 160,
@@ -5391,33 +5064,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "£15",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_9_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {
-				"text": "£15"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 161,
@@ -5425,33 +5088,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "gift-boxed",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_10_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {
-				"text": "gift-boxed"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 162,
@@ -5459,34 +5112,23 @@
 			"tag": "button",
 			"depth": 9,
 			"words": "Add to basket",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_2_11_0@375.png",
 				"1440": "shots/Root_ProductCard_31_2_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {
-				"label": "Add to basket"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 163,
@@ -5494,34 +5136,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_3@375.png",
 				"1440": "shots/Root_30_3@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"30\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import></div>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 164,
@@ -5529,34 +5160,23 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_3@375.png",
 				"1440": "shots/Root_31_3@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 165,
@@ -5564,36 +5184,23 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_0_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 166,
@@ -5601,33 +5208,23 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/button",
-			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_1_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {
-				"label": "Most thoughtful"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 167,
@@ -5637,13 +5234,13 @@
 			"words": "Most thoughtful",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root>ProductCard@31#3/1#0",
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -5659,36 +5256,23 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_4_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 169,
@@ -5696,35 +5280,23 @@
 			"tag": "a",
 			"depth": 9,
 			"words": "40-Day Care Bundle",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_5_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {
-				"label": "40-Day Care Bundle",
-				"url": "Product.dc.html?id=care40"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 170,
@@ -5732,33 +5304,22 @@
 			"tag": "p",
 			"depth": 9,
 			"words": "Six weekly deliveries for the 40-day postnatal window.",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
-						"block_composition: sgs/text is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_31_3_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {
-				"text": "Six weekly deliveries for the 40-day postnatal window."
-			}
+			"attributes": {}
 		},
 		{
 			"order": 171,
@@ -5766,36 +5327,23 @@
 			"tag": "div",
 			"depth": 9,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_8_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 172,
@@ -5803,33 +5351,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "£42",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_9_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {
-				"text": "£42"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 173,
@@ -5837,33 +5375,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "6 deliveries",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_10_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {
-				"text": "6 deliveries"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 174,
@@ -5871,34 +5399,23 @@
 			"tag": "button",
 			"depth": 9,
 			"words": "Add to basket",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_3_11_0@375.png",
 				"1440": "shots/Root_ProductCard_31_3_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {
-				"label": "Add to basket"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 175,
@@ -5906,34 +5423,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_30_4@375.png",
 				"1440": "shots/Root_30_4@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"30\"><dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import></div>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 176,
@@ -5941,34 +5447,23 @@
 			"tag": "div",
 			"depth": 6,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_4@375.png",
 				"1440": "shots/Root_31_4@1440.png"
 			},
 			"snippet": "<dc-import product=\"{{ p }}\" size=\"{{ cardSize }}\" hint-size=\"100%,440px\" data-dc-tpl=\"31\"></dc-import>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 177,
@@ -5976,36 +5471,23 @@
 			"tag": "div",
 			"depth": 7,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_0_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_0_0@1440.png"
 			},
 			"snippet": "<div style=\"height:100%;display:flex;flex-direction:column;background:#FFFAF0;border:2px solid #3A2A22;border-radius:24px;overflow:hidden;font-family:'Karla',system-ui,sans-serif;color:#3A2A22;transform:rotate({{ rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translate(-4px,-6px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"0\"> <a hr",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 178,
@@ -6013,33 +5495,23 @@
 			"tag": "a",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/button",
-			"action": null,
-			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
-			"source": "rule pillButton",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_1_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_1_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"position:relative;display:block;aspect-ratio:1 / 1;background-color:{{ imgBg }};background-image:{{ bgImg }};background-size:{{ bgSize }};background-position:center;background-repeat:no-repeat;border-bottom:2px solid #3A2A22\" aria-label=\"{{ name }}\" data-dc-tpl=\"1\"> <sc-if value=\"{{ hasBadge }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"2\"> <span style=\"position:a",
-			"attributes": {
-				"label": "For baby showers"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 179,
@@ -6049,13 +5521,13 @@
 			"words": "For baby showers",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/button: rule pillButton",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "pillButton",
-			"into": "Root>ProductCard@31#4/1#0",
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -6071,36 +5543,23 @@
 			"tag": "div",
 			"depth": 8,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_4_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_4_0@1440.png"
 			},
 			"snippet": "<div style=\"padding:{{ pad }};display:flex;flex-direction:column;gap:6px;flex:1\" data-dc-tpl=\"4\"> <a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a> <sc-if value=\"{{ showShort }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"6\"> <p style=\"margin:0;font-size:15px;line-heig",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 181,
@@ -6108,35 +5567,23 @@
 			"tag": "a",
 			"depth": 9,
 			"words": "Baby Shower Gift Card",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_5_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_5_0@1440.png"
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
-			"attributes": {
-				"label": "Baby Shower Gift Card",
-				"url": "Product.dc.html?id=giftcard"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 182,
@@ -6144,33 +5591,22 @@
 			"tag": "p",
 			"depth": 9,
 			"words": "Give it at the shower. She redeems it once baby arrives, so every cookie is fresh.",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
-						"block_composition: sgs/text is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_ProductCard_31_4_7_0@1440.png"
 			},
 			"snippet": "<p style=\"margin:0;font-size:15px;line-height:1.45;color:#5E4A3D\" data-dc-tpl=\"7\">{{ short }}</p>",
-			"attributes": {
-				"text": "Give it at the shower. She redeems it once baby arrives, so every cookie is fresh."
-			}
+			"attributes": {}
 		},
 		{
 			"order": 183,
@@ -6178,36 +5614,23 @@
 			"tag": "div",
 			"depth": 9,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_8_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_8_0@1440.png"
 			},
 			"snippet": "<div style=\"margin-top:auto;padding-top:6px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap\" data-dc-tpl=\"8\"> <span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span> <span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span> </div>",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 184,
@@ -6215,33 +5638,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "from £15",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_9_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_9_0@1440.png"
 			},
 			"snippet": "<span style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ priceSize }}\" data-dc-tpl=\"9\">{{ priceLabel }}</span>",
-			"attributes": {
-				"text": "from £15"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 185,
@@ -6249,33 +5662,23 @@
 			"tag": "span",
 			"depth": 10,
 			"words": "£15 · £25 · £40",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_10_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_10_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"10\">{{ unit }}</span>",
-			"attributes": {
-				"text": "£15 · £25 · £40"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 186,
@@ -6283,34 +5686,23 @@
 			"tag": "button",
 			"depth": 9,
 			"words": "Choose amount",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by woocommerce/product-collection: rule commerceRegion",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
+			"rule": "commerceRegion",
+			"into": "Root/28#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_ProductCard_31_4_11_0@375.png",
 				"1440": "shots/Root_ProductCard_31_4_11_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ act }}\" style=\"margin-top:8px;height:{{ btnH }};border-radius:999px;border:2px solid #3A2A22;background:{{ btnBg }};color:#3A2A22;font-weight:700;font-size:{{ btnFont }};cursor:pointer;width:100%;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#FFFAF0;transform:translate(-2px,-2px",
-			"attributes": {
-				"label": "Choose amount"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 187,

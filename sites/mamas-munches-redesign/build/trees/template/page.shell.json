@@ -1,0 +1,69 @@
+{
+  "chain": [],
+  "surfaces": {
+    "my-account": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "className": "cr-ref-my-account-0",
+          "backgroundColour": "surface",
+          "minHeight": {
+            "mobile": "812px",
+            "desktop": "900px"
+          },
+          "textColourHover": "primary-text",
+          "backgroundColourHover": "surface"
+        }
+      }
+    ],
+    "contact": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "className": "cr-ref-contact-0",
+          "backgroundColour": "surface",
+          "minHeight": {
+            "mobile": "812px",
+            "desktop": "900px"
+          },
+          "textColourHover": "primary-text",
+          "backgroundColourHover": "surface"
+        }
+      }
+    ],
+    "gifts": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "className": "cr-ref-gifts-0",
+          "backgroundColour": "surface",
+          "minHeight": {
+            "mobile": "812px",
+            "desktop": "900px"
+          },
+          "textColourHover": "primary-text",
+          "backgroundColourHover": "surface"
+        }
+      }
+    ],
+    "help": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "className": "cr-ref-help-0",
+          "backgroundColour": "surface",
+          "minHeight": {
+            "mobile": "812px",
+            "desktop": "900px"
+          },
+          "textColourHover": "primary-text",
+          "backgroundColourHover": "surface"
+        }
+      }
+    ]
+  }
+}

@@ -1118,5 +1118,90 @@
       "tier": 1024,
       "distance": 16
     }
+  },
+  {
+    "id": "D-68",
+    "scope": "home",
+    "node": "cr-ref-home-333",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 736px snapped to the 768px tier (distance 32px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 736,
+      "tier": 768,
+      "distance": 32
+    }
+  },
+  {
+    "id": "D-69",
+    "scope": "home",
+    "node": "cr-ref-home-333",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 752px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 752,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-70",
+    "scope": "home",
+    "node": "cr-ref-home-333",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1040px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1040,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-71",
+    "scope": "home",
+    "node": "cr-ref-home-334",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 736px snapped to the 768px tier (distance 32px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 736,
+      "tier": 768,
+      "distance": 32
+    }
+  },
+  {
+    "id": "D-72",
+    "scope": "home",
+    "node": "cr-ref-home-334",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 752px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 752,
+      "tier": 768,
+      "distance": 16
+    }
   }
 ]

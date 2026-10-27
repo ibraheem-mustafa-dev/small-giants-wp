@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-19T00:32:01.861Z",
-  "source": "http://127.0.0.1:59472/Home.dc.html#build",
+  "generated": "2026-10-26T22:15:06.491Z",
+  "source": "http://127.0.0.1:55213/Home.dc.html#build",
   "root": "[data-sgs-skeleton-root=\"build-your-zookie\"]",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -216,6 +216,7 @@
       },
       "words": "",
       "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "srcLine": 68,
       "membership": [],
       "srcTag": "section",
       "srcOwnText": "",
@@ -246,6 +247,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -262,6 +268,7 @@
       },
       "words": "",
       "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "srcLine": 69,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -292,6 +299,11 @@
         "1440": true
       },
       "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -308,6 +320,7 @@
       },
       "words": "",
       "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "srcLine": 70,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -338,6 +351,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {}
@@ -352,6 +370,7 @@
       "attrs": {},
       "words": "",
       "allText": "your cookie, your way Build your Zookie Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes y",
+      "srcLine": 71,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -382,6 +401,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -398,6 +422,7 @@
       },
       "words": "your cookie, your way",
       "allText": "your cookie, your way",
+      "srcLine": 72,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "your cookie, your way",
@@ -428,6 +453,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -444,6 +474,7 @@
       },
       "words": "Build your Zookie",
       "allText": "Build your Zookie",
+      "srcLine": 73,
       "membership": [],
       "srcTag": "h2",
       "srcOwnText": "Build your Zookie",
@@ -474,6 +505,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -490,6 +526,7 @@
       },
       "words": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
       "allText": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
+      "srcLine": 74,
       "membership": [],
       "srcTag": "p",
       "srcOwnText": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
@@ -520,6 +557,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -534,6 +576,7 @@
       "attrs": {},
       "words": "",
       "allText": "1 · Base Classic oatVegan oat",
+      "srcLine": 76,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -564,6 +607,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -580,6 +628,7 @@
       },
       "words": "1 · Base",
       "allText": "1 · Base",
+      "srcLine": 76,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "1 · Base",
@@ -610,6 +659,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -626,6 +680,7 @@
       },
       "words": "",
       "allText": "Classic oatVegan oat",
+      "srcLine": 77,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -656,6 +711,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -673,6 +733,7 @@
       },
       "words": "Classic oat",
       "allText": "Classic oat",
+      "srcLine": 77,
       "membership": [
         {
           "kind": "sc-for",
@@ -710,6 +771,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -726,6 +792,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 77,
       "membership": [
         {
           "kind": "sc-for",
@@ -763,6 +830,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -780,6 +852,7 @@
       },
       "words": "Vegan oat",
       "allText": "Vegan oat",
+      "srcLine": 77,
       "membership": [
         {
           "kind": "sc-for",
@@ -817,6 +890,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -833,6 +911,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 77,
       "membership": [
         {
           "kind": "sc-for",
@@ -870,6 +949,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -884,6 +968,7 @@
       "attrs": {},
       "words": "",
       "allText": "2 · Chips Milk chocWhite chocDark chocNo chips",
+      "srcLine": 78,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -914,6 +999,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -930,6 +1020,7 @@
       },
       "words": "2 · Chips",
       "allText": "2 · Chips",
+      "srcLine": 78,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "2 · Chips",
@@ -960,6 +1051,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -976,6 +1072,7 @@
       },
       "words": "",
       "allText": "Milk chocWhite chocDark chocNo chips",
+      "srcLine": 79,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -1006,6 +1103,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1023,6 +1125,7 @@
       },
       "words": "Milk choc",
       "allText": "Milk choc",
+      "srcLine": 79,
       "membership": [
         {
           "kind": "sc-for",
@@ -1060,6 +1163,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1077,6 +1185,7 @@
       },
       "words": "White choc",
       "allText": "White choc",
+      "srcLine": 79,
       "membership": [
         {
           "kind": "sc-for",
@@ -1114,6 +1223,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1131,6 +1245,7 @@
       },
       "words": "Dark choc",
       "allText": "Dark choc",
+      "srcLine": 79,
       "membership": [
         {
           "kind": "sc-for",
@@ -1168,6 +1283,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1185,6 +1305,7 @@
       },
       "words": "No chips",
       "allText": "No chips",
+      "srcLine": 79,
       "membership": [
         {
           "kind": "sc-for",
@@ -1222,6 +1343,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1236,6 +1362,7 @@
       "attrs": {},
       "words": "",
       "allText": "3 · FlavoursPick up to 3 and we’ll split your box between them ✓Vanilla✓Chocolate✓Strawberry✓Mango✓Banana✓Coffee✓Mint✓Ca",
+      "srcLine": 80,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -1266,6 +1393,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1282,6 +1414,7 @@
       },
       "words": "",
       "allText": "3 · FlavoursPick up to 3 and we’ll split your box between them",
+      "srcLine": 80,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -1312,6 +1445,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1328,6 +1466,7 @@
       },
       "words": "3 · Flavours",
       "allText": "3 · Flavours",
+      "srcLine": 80,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "3 · Flavours",
@@ -1358,6 +1497,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1374,6 +1518,7 @@
       },
       "words": "Pick up to 3 and we’ll split your box between them",
       "allText": "Pick up to 3 and we’ll split your box between them",
+      "srcLine": 80,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Pick up to 3 and we’ll split your box between them",
@@ -1404,6 +1549,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1420,6 +1570,7 @@
       },
       "words": "",
       "allText": "✓Vanilla✓Chocolate✓Strawberry✓Mango✓Banana✓Coffee✓Mint✓Caramel✓Coconut✓Pistachio✓Honey",
+      "srcLine": 81,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -1450,6 +1601,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1467,6 +1623,7 @@
       },
       "words": "Vanilla",
       "allText": "✓Vanilla",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1504,6 +1661,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1520,6 +1682,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1557,6 +1720,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1574,6 +1742,7 @@
       },
       "words": "Chocolate",
       "allText": "✓Chocolate",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1611,6 +1780,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1627,6 +1801,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1664,6 +1839,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1681,6 +1861,7 @@
       },
       "words": "Strawberry",
       "allText": "✓Strawberry",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1718,6 +1899,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1734,6 +1920,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1771,6 +1958,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1788,6 +1980,7 @@
       },
       "words": "Mango",
       "allText": "✓Mango",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1825,6 +2018,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1841,6 +2039,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1878,6 +2077,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -1895,6 +2099,7 @@
       },
       "words": "Banana",
       "allText": "✓Banana",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1932,6 +2137,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -1948,6 +2158,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -1985,6 +2196,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -2002,6 +2218,7 @@
       },
       "words": "Coffee",
       "allText": "✓Coffee",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2039,6 +2256,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2055,6 +2277,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2092,6 +2315,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -2109,6 +2337,7 @@
       },
       "words": "Mint",
       "allText": "✓Mint",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2146,6 +2375,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2162,6 +2396,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2199,6 +2434,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -2216,6 +2456,7 @@
       },
       "words": "Caramel",
       "allText": "✓Caramel",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2253,6 +2494,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2269,6 +2515,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2306,6 +2553,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -2323,6 +2575,7 @@
       },
       "words": "Coconut",
       "allText": "✓Coconut",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2360,6 +2613,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2376,6 +2634,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2413,6 +2672,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -2430,6 +2694,7 @@
       },
       "words": "Pistachio",
       "allText": "✓Pistachio",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2467,6 +2732,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2483,6 +2753,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2520,6 +2791,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -2537,6 +2813,7 @@
       },
       "words": "Honey",
       "allText": "✓Honey",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2574,6 +2851,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2590,6 +2872,7 @@
       },
       "words": "✓",
       "allText": "✓",
+      "srcLine": 81,
       "membership": [
         {
           "kind": "sc-for",
@@ -2627,6 +2910,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -2643,6 +2931,7 @@
       },
       "words": "Your 20: 10 strawberry · 10 mango",
       "allText": "Your 20: 10 strawberry · 10 mango",
+      "srcLine": 82,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "{{ split }}",
@@ -2673,6 +2962,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2687,6 +2981,7 @@
       "attrs": {},
       "words": "",
       "allText": "4 · How many 8£9.50£1.19 each20£21.50£1.08 eachMost popular40£38.00£0.95 eachBest value",
+      "srcLine": 83,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -2717,6 +3012,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2733,6 +3033,7 @@
       },
       "words": "4 · How many",
       "allText": "4 · How many",
+      "srcLine": 83,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "4 · How many",
@@ -2763,6 +3064,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2779,6 +3085,7 @@
       },
       "words": "",
       "allText": "8£9.50£1.19 each20£21.50£1.08 eachMost popular40£38.00£0.95 eachBest value",
+      "srcLine": 84,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -2809,6 +3116,11 @@
         "1440": true
       },
       "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2826,6 +3138,7 @@
       },
       "words": "",
       "allText": "8£9.50£1.19 each",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -2863,6 +3176,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
       "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2879,6 +3197,7 @@
       },
       "words": "8",
       "allText": "8",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -2916,6 +3235,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2932,6 +3256,7 @@
       },
       "words": "£9.50",
       "allText": "£9.50",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -2969,6 +3294,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -2985,6 +3315,7 @@
       },
       "words": "£1.19 each",
       "allText": "£1.19 each",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3022,6 +3353,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3039,6 +3375,7 @@
       },
       "words": "",
       "allText": "20£21.50£1.08 eachMost popular",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3076,6 +3413,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
       "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3092,6 +3434,7 @@
       },
       "words": "20",
       "allText": "20",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3129,6 +3472,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3145,6 +3493,7 @@
       },
       "words": "£21.50",
       "allText": "£21.50",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3182,6 +3531,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3198,6 +3552,7 @@
       },
       "words": "£1.08 each",
       "allText": "£1.08 each",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3235,6 +3590,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3251,6 +3611,7 @@
       },
       "words": "Most popular",
       "allText": "Most popular",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3293,6 +3654,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3310,6 +3676,7 @@
       },
       "words": "",
       "allText": "40£38.00£0.95 eachBest value",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3347,6 +3714,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
       "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3363,6 +3735,7 @@
       },
       "words": "40",
       "allText": "40",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3400,6 +3773,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3416,6 +3794,7 @@
       },
       "words": "£38.00",
       "allText": "£38.00",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3453,6 +3832,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3469,6 +3853,7 @@
       },
       "words": "£0.95 each",
       "allText": "£0.95 each",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3506,6 +3891,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3522,6 +3912,7 @@
       },
       "words": "Best value",
       "allText": "Best value",
+      "srcLine": 84,
       "membership": [
         {
           "kind": "sc-for",
@@ -3564,6 +3955,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3580,6 +3976,7 @@
       },
       "words": "",
       "allText": "20 × Classic oat, milk choc chips, strawberry & mango Subscribe & save 10%Skip, swap or cancel any time£19.35£21.50 Ever",
+      "srcLine": 86,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -3610,6 +4007,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3626,6 +4028,7 @@
       },
       "words": "",
       "allText": "20 × Classic oat, milk choc chips, strawberry & mango",
+      "srcLine": 87,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -3656,6 +4059,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
       "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3672,6 +4080,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 88,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -3702,6 +4111,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3720,6 +4134,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 89,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -3750,6 +4165,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3766,6 +4186,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -3803,6 +4224,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3819,6 +4245,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -3856,6 +4283,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3872,6 +4304,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -3909,6 +4342,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3925,6 +4363,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -3962,6 +4401,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -3978,6 +4422,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4015,6 +4460,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4031,6 +4481,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4068,6 +4519,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4084,6 +4540,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4121,6 +4578,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4137,6 +4599,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4174,6 +4637,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4190,6 +4658,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4227,6 +4696,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4243,6 +4717,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4280,6 +4755,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4296,6 +4776,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4333,6 +4814,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4349,6 +4835,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4386,6 +4873,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4402,6 +4894,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4439,6 +4932,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4455,6 +4953,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4492,6 +4991,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4508,6 +5012,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4545,6 +5050,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4561,6 +5071,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4598,6 +5109,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4614,6 +5130,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4651,6 +5168,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4667,6 +5189,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4704,6 +5227,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4720,6 +5248,7 @@
       },
       "words": "",
       "allText": "",
+      "srcLine": 90,
       "membership": [
         {
           "kind": "sc-for",
@@ -4757,6 +5286,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4773,6 +5307,7 @@
       },
       "words": "20 × Classic oat, milk choc chips, strawberry & mango",
       "allText": "20 × Classic oat, milk choc chips, strawberry & mango",
+      "srcLine": 92,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "{{ summary }}",
@@ -4803,6 +5338,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4819,6 +5359,7 @@
       },
       "words": "",
       "allText": "Subscribe & save 10%Skip, swap or cancel any time£19.35£21.50 Every 2 weeksEvery 4 weeks One-off box£21.50",
+      "srcLine": 94,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "",
@@ -4849,6 +5390,11 @@
         "1440": true
       },
       "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4865,6 +5411,7 @@
       },
       "words": "",
       "allText": "Subscribe & save 10%Skip, swap or cancel any time£19.35£21.50",
+      "srcLine": 95,
       "membership": [],
       "srcTag": "button",
       "srcOwnText": "",
@@ -4895,6 +5442,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -4911,6 +5463,7 @@
       },
       "words": "",
       "allText": "Subscribe & save 10%Skip, swap or cancel any time",
+      "srcLine": 95,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "",
@@ -4941,6 +5494,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "column",
       "layoutChanged375": false,
       "screenshots": {}
@@ -4957,6 +5515,7 @@
       },
       "words": "Subscribe & save 10%",
       "allText": "Subscribe & save 10%",
+      "srcLine": 95,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Subscribe & save 10%",
@@ -4987,6 +5546,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -5003,6 +5567,7 @@
       },
       "words": "Skip, swap or cancel any time",
       "allText": "Skip, swap or cancel any time",
+      "srcLine": 95,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "Skip, swap or cancel any time",
@@ -5033,6 +5598,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -5049,6 +5619,7 @@
       },
       "words": "",
       "allText": "£19.35£21.50",
+      "srcLine": 95,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "",
@@ -5079,6 +5650,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "column",
       "layoutChanged375": true,
       "screenshots": {}
@@ -5095,6 +5671,7 @@
       },
       "words": "£19.35",
       "allText": "£19.35",
+      "srcLine": 95,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "{{ subTxt }}",
@@ -5125,6 +5702,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -5141,6 +5723,7 @@
       },
       "words": "£21.50",
       "allText": "£21.50",
+      "srcLine": 95,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "{{ onceTxt }}",
@@ -5171,6 +5754,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -5187,6 +5775,7 @@
       },
       "words": "",
       "allText": "Every 2 weeksEvery 4 weeks",
+      "srcLine": 97,
       "membership": [
         {
           "kind": "sc-if",
@@ -5223,6 +5812,11 @@
         "1440": true
       },
       "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -5239,6 +5833,7 @@
       },
       "words": "Every 2 weeks",
       "allText": "Every 2 weeks",
+      "srcLine": 97,
       "membership": [
         {
           "kind": "sc-if",
@@ -5281,6 +5876,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -5297,6 +5897,7 @@
       },
       "words": "Every 4 weeks",
       "allText": "Every 4 weeks",
+      "srcLine": 97,
       "membership": [
         {
           "kind": "sc-if",
@@ -5339,6 +5940,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -5355,6 +5961,7 @@
       },
       "words": "",
       "allText": "One-off box£21.50",
+      "srcLine": 99,
       "membership": [],
       "srcTag": "button",
       "srcOwnText": "",
@@ -5385,6 +5992,11 @@
         "1440": true
       },
       "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -5401,6 +6013,7 @@
       },
       "words": "One-off box",
       "allText": "One-off box",
+      "srcLine": 99,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "One-off box",
@@ -5431,6 +6044,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": false,
       "screenshots": {}
@@ -5447,6 +6065,7 @@
       },
       "words": "£21.50",
       "allText": "£21.50",
+      "srcLine": 99,
       "membership": [],
       "srcTag": "span",
       "srcOwnText": "{{ onceTxt }}",
@@ -5477,6 +6096,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -5494,6 +6118,7 @@
       },
       "words": "Subscribe · £19.35",
       "allText": "Subscribe · £19.35",
+      "srcLine": 101,
       "membership": [],
       "srcTag": "button",
       "srcOwnText": "{{ addLabel }}",
@@ -5524,6 +6149,11 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
@@ -5540,6 +6170,7 @@
       },
       "words": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
       "allText": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+      "srcLine": 102,
       "membership": [],
       "srcTag": "div",
       "srcOwnText": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
@@ -5570,9 +6201,51 @@
         "1440": true
       },
       "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
       "flexDirection": "row",
       "layoutChanged375": true,
       "screenshots": {}
     }
-  ]
+  ],
+  "sources": {
+    "files": {
+      "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
+      "Basket.dc.html": "f4520e82997834a44f5c99b456e3b9ca4a9fcdab575314d4b266bb2c8945bb8e",
+      "Checkout.dc.html": "19b5c1fec140b77d22c72b5110d1a675f2aa985330b72803e5cd3a7570d8891b",
+      "Confirmation.dc.html": "ddfcd751828e19d938d173826d514e40830a97221e4c6fa19e03c7836053f046",
+      "Contact.dc.html": "7044b48beb77c75507cebaf71ef867ca65e3301bb5463b3c96ffa1fc20107572",
+      "Gifts.dc.html": "c653d9aa8ca4475d3f1cfc45bd1f691341abd57ed56bedf07ee3cbfde2e227a9",
+      "Help.dc.html": "e705fc78ad76548eada464f2feee868d8ae5a40a8632c0e7f13a841f87bb55d6",
+      "Home.dc.html": "c25fa7cf4d35f8a68895902d7413f0534c7932cb3d8ca0bab692843bdf0282ca",
+      "Product.dc.html": "8100f5944df6e5191dc960779a192e7b5116417ffefc39270247c08b04936960",
+      "ProductCard.dc.html": "2f393444d81d0d03701e01e790a5aa5a49e0ecb46ba8ab2071f7193e34211f30",
+      "README.md": "68ecf2bfb10c99e8ebfe9f85d5f094d51b0b0f114c650e861a05951e69cb7bf7",
+      "Shop.dc.html": "0dabe1dff85052f3258910eca5f86e3d0aa23746907450bf855912fd2c378a80",
+      "SignIn.dc.html": "df5318346b9d9c84d026ea73bd034cd4a83dd5fe71fd3abd0e6f32cd716c1926",
+      "SiteFooter.dc.html": "7a3f377969e9e4c48d67080bdf5aed13509e7b583de0e0deed71f81b49b45b9b",
+      "SiteHeader.dc.html": "46e9c1365470b53cd9f3c8577f48ff93e97b663ae70a736af1eeb3ae9f02d0f2",
+      "animations.json": "2fa588d44cb089f53d1beeb0159ec3c1d9d2066b60da5f66c6e574c7ef4b7a82",
+      "assets/logo-horizontal.png": "55fd2eef5bfbd2ae7aa067b3cfdfd5f0c2170185540935d152cac25bd8dad49c",
+      "assets/logo-round.png": "d1c039733af429dcaf0b2c8a051248cc1702c9501db1fcaf44d58eb427ce7815",
+      "assets/photo-bags-pink.jpg": "3aee33ac0ff61ff2005175c225879567d0591a9180a22e71543fc72e72179334",
+      "assets/photo-bun-case.jpg": "9875e09f8751f4f974025ad72aee8a773fec2262646e302d59a05209b197335d",
+      "assets/photo-gift-heart.jpg": "7825c0c1f5aaaf160cd0c4b4aab58b0824f99cfa9b927ca5f96fad2f308e3479",
+      "assets/photo-hero-mug.jpg": "6f5411ae2730cd6edf90b6a2c71e5714f6f6d9b4dcedf778a083a4538afa7cdf",
+      "assets/photo-pair-love.jpg": "c100f3ec56b7133a8ec26bb64dfa09d10f6dbc4499468ceabaf4acbeb2ced6f0",
+      "assets/photo-tray-love.jpg": "dc2306611ac203dbef6579eee755cf0d4bb6fb250f25216fd88caf17c423f63c",
+      "store.js": "5136ec82d5671747da32799d692b6c4ff5a39c2f0514e2398cc0a1a7a1545179",
+      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+      "surfaces.json": "cdfd32645458176d39be7a1306c23c4a58d74f6e837d0948fd9a2900820361c2",
+      "tokens/colors.css": "ef63ad226532ea7fac236ae01c9f0ab6afe09766644ec6eb64048c19b2ebf899",
+      "tokens/spacing.css": "f2ee00b6ce5813407d7938c18ad869209a6c92bb861a56355f540a66399bf5fa",
+      "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
+    },
+    "route": {
+      "commit": "e868a2d5a75ce6d4b617e0430dbed8ebcd506d99"
+    }
+  }
 }

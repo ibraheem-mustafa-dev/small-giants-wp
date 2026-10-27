@@ -1,0 +1,290 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "main",
+      "contentWidth": {
+        "desktop": "full"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "className": "cr-ref-template-checkout-0",
+          "backgroundColour": "surface",
+          "minHeight": {
+            "mobile": "812px",
+            "desktop": "900px"
+          },
+          "textDecoration": "underline",
+          "textColourHover": "primary-text",
+          "backgroundColourHover": "surface"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "header",
+              "className": "cr-ref-template-checkout-1",
+              "backgroundColour": "custom-mm-pink-band",
+              "borderWidth": {
+                "top": "0px",
+                "right": "0px",
+                "left": "0px",
+                "bottom": "2px"
+              },
+              "textDecoration": "underline",
+              "textColourHover": "primary-text",
+              "borderColourHover": "primary-text",
+              "backgroundColourHover": "custom-mm-pink-band"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "grid",
+                  "className": "cr-ref-template-checkout-2",
+                  "gridTemplateColumns": {
+                    "mobile": "minmax(0, 1fr) minmax(0, 1.12fr) minmax(0, 1fr)",
+                    "tablet": "minmax(0, 1.93fr) minmax(0, 1fr) minmax(0, 1.93fr)",
+                    "desktop": "minmax(0, 3.23fr) minmax(0, 1fr) minmax(0, 3.23fr)"
+                  },
+                  "alignItems": "center",
+                  "textDecoration": "underline",
+                  "maxWidth": {
+                    "desktop": "1160px"
+                  },
+                  "minHeight": {
+                    "desktop": "72px"
+                  },
+                  "textColourHover": "primary-text",
+                  "padding": {
+                    "desktop": {
+                      "right": "20px",
+                      "left": "20px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "← Basket",
+                      "url": "Basket.dc.html",
+                      "className": "cr-ref-template-checkout-3",
+                      "fontSize": {
+                        "desktop": 15
+                      },
+                      "colourBackground": "#00000000",
+                      "borderWidth": {
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px",
+                        "top": "0px"
+                      },
+                      "borderStyle": "none",
+                      "borderRadius": {
+                        "desktop": {
+                          "topLeft": "0px",
+                          "topRight": "0px",
+                          "bottomRight": "0px",
+                          "bottomLeft": "0px"
+                        }
+                      },
+                      "padding": {
+                        "desktop": {
+                          "right": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": "44px"
+                      },
+                      "textDecoration": "underline",
+                      "colourBackgroundHover": "#00000000",
+                      "colourTextHover": "primary-text"
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "className": "cr-ref-template-checkout-4",
+                      "ariaLabel": "Mama's Munches home",
+                      "textColour": "link",
+                      "textDecoration": "underline",
+                      "textColourHover": "primary-text",
+                      "sgsFocusRests": true
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/responsive-logo",
+                        "attributes": {
+                          "logoId": 91,
+                          "className": "cr-ref-template-checkout-5",
+                          "logoUrl": "https://lightsalmon-tarsier-683012.hostingersite.com/wp-content/uploads/2026/10/logo-horizontal.png",
+                          "alt": "Mama's Munches",
+                          "maxHeight": {
+                            "mobile": "40px",
+                            "desktop": "50px"
+                          }
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Secure checkout",
+                      "className": "cr-ref-template-checkout-6",
+                      "fontSize": {
+                        "desktop": 14
+                      },
+                      "fontWeight": "700",
+                      "lineHeight": {
+                        "desktop": 1.214
+                      },
+                      "textColourHover": "primary-text"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "core/post-content",
+            "attributes": {
+              "className": "cr-ref-template-checkout-7",
+              "sgsCustomCss": "@media (max-width: 767px) { & { display: none; } }",
+              "sgsCustomCssId": "wgate7",
+              "sgsCustomCssNote": "Width gate a width variant is shown at 375px: hidden at 0-767px"
+            },
+            "innerBlocks": [],
+            "widthVariants": [
+              {
+                "key": "Root/19#0",
+                "shown": [
+                  375
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "flex",
+              "className": "cr-ref-template-checkout-8",
+              "fontWeight": "700",
+              "textAlign": "center",
+              "backgroundColour": "section",
+              "borderWidth": {
+                "right": "2px",
+                "bottom": "2px",
+                "left": "2px",
+                "top": "2px"
+              },
+              "borderStyle": "solid",
+              "borderRadius": {
+                "mobile": {
+                  "topLeft": "20px",
+                  "topRight": "20px",
+                  "bottomRight": "20px",
+                  "bottomLeft": "20px"
+                }
+              },
+              "gap": {
+                "mobile": "60.17px"
+              },
+              "justifyContent": "space-between",
+              "alignItems": "center",
+              "minHeight": {
+                "mobile": "60px"
+              },
+              "textColourHover": "primary-text",
+              "borderColourHover": "primary-text",
+              "backgroundColourHover": "section",
+              "padding": {
+                "desktop": {
+                  "right": "18px",
+                  "left": "18px"
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Show order summary ▾",
+                  "className": "cr-ref-template-checkout-9",
+                  "lineHeight": {
+                    "mobile": 1.188
+                  },
+                  "textColourHover": "primary-text"
+                },
+                "innerBlocks": []
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "£30.45",
+                  "className": "cr-ref-template-checkout-10",
+                  "fontFamily": "heading",
+                  "fontSize": {
+                    "mobile": 20
+                  },
+                  "lineHeight": {
+                    "mobile": 1.4
+                  },
+                  "textColourHover": "primary-text",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "hover": {
+                          "state": {
+                            "values": {
+                              "translateX": "-token:distance.sm",
+                              "translateY": "-token:distance.sm",
+                              "duration": "token:duration.fast",
+                              "easing": "token:easing.spring"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": []
+              }
+            ],
+            "widthShown": [
+              375
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

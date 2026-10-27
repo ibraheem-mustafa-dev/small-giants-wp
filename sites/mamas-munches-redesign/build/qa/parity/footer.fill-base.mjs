@@ -9,7 +9,7 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"SiteFooter\"][data-dc-tpl=\"250\"] [data-dc-tpl=\"2\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-footer-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"SiteFooter\"][data-dc-tpl=\"250\"] [data-dc-tpl=\"2\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-footer-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:63654/" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:59886/" },
 	live: { url: "http://localhost:8084/" },
 	states: [ { name: "mobile", fullPage: true } ],
 	pairs: [],
