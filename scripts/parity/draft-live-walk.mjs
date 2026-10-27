@@ -172,7 +172,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 	await h.goto( cfg[ side ].url );
 	// Load entrances (GAP-CHECKLIST.md section 15): the page reloaded and sampled as it paints in.
 	const firstState = cfg.states[ 0 ]?.name;
-	const entrances = header && ! lean && false !== cfg.entrances && ( ! onlyStates || onlyStates.includes( firstState ) ) ? await sampleEntrances( page, side, cfg ) : null;
+	const entrances = header && ! lean && false !== cfg.entrances && ( ! onlyStates || onlyStates.includes( firstState ) ) ? await sampleEntrances( page, side, cfg, { route: h.routed ? h.route : null } ) : null;
 	if ( cfg[ side ].open ) {
 		await cfg[ side ].open( h );
 	}

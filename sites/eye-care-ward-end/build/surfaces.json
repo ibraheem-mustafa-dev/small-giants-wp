@@ -449,10 +449,7 @@
     "draftDir": "sites/eye-care-ward-end/handoff",
     "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "sunglasses": null,
-      "brands": null,
-      "lenses": null,
-      "help": null
+      "sunglasses": null
     }
   },
   "mega-menu-brands": {
@@ -470,10 +467,7 @@
     "draftDir": "sites/eye-care-ward-end/handoff",
     "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "sunglasses": null,
-      "brands": null,
-      "lenses": null,
-      "help": null
+      "brands": null
     }
   },
   "mega-menu-lenses": {
@@ -491,10 +485,7 @@
     "draftDir": "sites/eye-care-ward-end/handoff",
     "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "sunglasses": null,
-      "brands": null,
-      "lenses": null,
-      "help": null
+      "lenses": null
     }
   },
   "mega-menu-help": {
@@ -512,9 +503,6 @@
     "draftDir": "sites/eye-care-ward-end/handoff",
     "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "sunglasses": null,
-      "brands": null,
-      "lenses": null,
       "help": null
     }
   },
