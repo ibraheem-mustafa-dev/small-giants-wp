@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-read-collect.mjs", "find": "const shadowImgs = ( n ) => ( n.shadowRoot ? ", "replace": "const shadowImgs = ( n ) => ( false ? ", "why": "open shadow roots are not looked into: an image placeholder element holds no image" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "const drawn = [ el, ...el.querySelectorAll( '*' ) ].flatMap( shadowImgs )", "replace": "const drawn = [ el ].flatMap( shadowImgs )", "why": "a wrapper's descendant placeholder element is not looked into" },
+	{ "file": "lib/fill-read-collect.mjs", "find": ".filter( ( i ) => '' !== imgSrc( i ) );", "replace": ";", "why": "an empty placeholder's address-less copies read as one image" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "...drawn.filter( ( i, n ) => drawn.findIndex( ( j ) => imgSrc( j ) === imgSrc( i ) ) === n )", "replace": "...drawn", "why": "the placeholder's editing copy of its picture counts as a second image" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "[ ...el.querySelectorAll( 'img' ), ...drawn", "replace": "[ ...drawn", "why": "light-DOM images are no longer read" }
+]
