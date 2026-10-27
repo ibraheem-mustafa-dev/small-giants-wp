@@ -13,13 +13,16 @@
 //     `no-variesby` gap row, because SGS's product preflight keeps such a product a draft;
 //   - a multi-choice, a switch (and the choices it gates), a choice whose options cannot be read, an amount the shopper
 //     picks as the price itself, more than one priced choice, too many variations and every filter field with no
-//     WooCommerce home are gap rows (`kind`, `detail`), never silent drops.
+//     WooCommerce home are gap rows (`kind`, `detail`), never silent drops;
+//   - every other filter field is a facet (lib/catalogue-facets.mjs): a global attribute with its terms, and each
+//     product's terms in its `facets`.
 import fs from 'node:fs';
 import path from 'node:path';
 import { embeddedManifest } from './intake-routing.mjs';
 import { UNREAD, catalogueSources, valueOf } from './catalogue-source.mjs';
 import { descriptionField, facetFields, imageFields, recordLists } from './catalogue-records.mjs';
 import { basketLines, keyOptions, lineFor, lineKeys } from './catalogue-options.mjs';
+import { readFacets, settleFacets } from './catalogue-facets.mjs';
 
 export const MAX_VARIATIONS = 100;
 export const SKU_PREFIX = 'sgs-draft-';
@@ -202,7 +205,7 @@ const imageOf = ( v, roles, repo, folder ) => {
 // The catalogue of a client: { catalogue (catalogue.json's shape, without `sites`), notes }.
 export function readCatalogue( { repo, client, rows } ) {
 	const folder = path.join( repo, 'sites', client, 'handoff' );
-	const base = { schemaVersion: 1, client, productBase: 'product', source: null, products: [], gaps: [] };
+	const base = { schemaVersion: 1, client, productBase: 'product', source: null, facets: [], products: [], gaps: [] };
 	const notes = [];
 	if ( ! rows.some( ( r ) => 'product' === r.postType && 'live' === r.collection ) ) {
 		notes.push( 'the page map has no live product row, so the draft sells nothing through WooCommerce and has no catalogue' );
@@ -232,9 +235,9 @@ export function readCatalogue( { repo, client, rows } ) {
 		const brandField = facets.find( ( f ) => 'brand' === f.field && list.records.every( ( r ) => 'string' === typeof r.brand ) )?.field || null;
 		const catLabels = catField ? labelsFor( ctx, [ ...new Set( list.records.flatMap( ( r ) => r[ catField ] ) ) ] ) : new Map();
 		const loose = facets.filter( ( f ) => f.field !== catField && f.field !== brandField );
-		if ( loose.length ) {
-			out.gaps.push( { draftId: '*', kind: 'facet', detail: `the shop filters on ${ loose.map( ( f ) => `"${ f.field }"` ).join( ', ' ) } (${ loose.map( ( f ) => f.files.join( ' ' ) ).filter( ( v, i, a ) => a.indexOf( v ) === i ).join( '; ' ) }); the catalogue writes ${ [ catField && 'categories', brandField && 'brands' ].filter( Boolean ).join( ' and ' ) || 'no filter field' } only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet` } );
-		}
+		const facetRead = readFacets( ctx, list, loose.map( ( f ) => f.field ), { slugify, human } );
+		out.facets.push( ...facetRead.facets );
+		out.gaps.push( ...facetRead.gaps );
 		const lines = basketLines( ctx, list, file );
 		for ( const r of list.records ) {
 			const draftId = String( r[ list.key ] );
@@ -251,12 +254,13 @@ export function readCatalogue( { repo, client, rows } ) {
 				gallery: img.gallery && Array.isArray( r[ img.gallery ] ) ? r[ img.gallery ].map( ( g ) => imageOf( g, { table: null }, repo, folder ) ).filter( Boolean ) : [],
 				categories: catField ? r[ catField ].map( ( c ) => String( catLabels.get( c ) ?? c ) ) : [],
 				brand: brandField ? r[ brandField ] : null,
-				facets: Object.fromEntries( loose.filter( ( f ) => null != r[ f.field ] && UNREAD !== r[ f.field ] ).map( ( f ) => [ f.field, r[ f.field ] ] ) ),
+				facets: facetRead.termsOf( r ),
 				attributes: attributes.map( ( { priced, ...a } ) => a ),
 				variations,
 			} );
 		}
 	}
+	settleFacets( out );
 	const seen = new Map();
 	for ( const p of out.products ) {
 		if ( seen.has( p.slug ) ) {

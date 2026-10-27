@@ -20,7 +20,7 @@ const setup = () => {
 	return { repo, catalogue };
 };
 const site = ( products = [], extra = {} ) => ( { woocommerce: true, products, images: {}, productBase: 'product', brandTaxonomy: true, plugins: [], ...extra } );
-const found = ( p, extra = {} ) => ( { draftId: p.draftId, id: 40, how: 'sku', fixture: false, type: p.type, status: 'publish', sku: p.sku, price: String( p.price ), image: 7, gallery: p.gallery.length, categories: p.categories, brand: p.brand ? [ p.brand ] : [], rrp: null === p.rrp ? '' : String( p.rrp ), draftMeta: p.draftId, attributes: [], variations: p.variations.map( ( v ) => v.sku ), permalink: `https://x.test/product/${ p.slug }/`, ...extra } );
+const found = ( p, extra = {} ) => ( { draftId: p.draftId, id: 40, how: 'sku', fixture: false, type: p.type, status: 'publish', sku: p.sku, price: String( p.price ), image: 7, gallery: p.gallery.length, categories: p.categories, brand: p.brand ? [ p.brand ] : [], rrp: null === p.rrp ? '' : String( p.rrp ), draftMeta: p.draftId, attributes: Object.keys( p.facets ).map( ( k ) => `pa_${ k }` ), facets: p.facets, variations: p.variations.map( ( v ) => v.sku ), permalink: `https://x.test/product/${ p.slug }/`, ...extra } );
 
 test( 'an empty site plans a create per product; a complete one plans nothing to make', () => {
 	const { catalogue } = setup();
@@ -241,9 +241,9 @@ test( 'variesBy: a found product whose axis terms lack the mapping is completed 
 	const { catalogue } = setup();
 	const jar = catalogue.products[ 0 ];
 	const lacking = planCatalogue( catalogue, site( [ found( jar, { attributes: [ 'pa_pack-size', 'pa_grain' ], variesBy: { 'pa_pack-size': [ 'size', '' ], 'pa_grain': [ '', '' ] } } ) ] ) );
-	assert.match( lacking.actions[ 0 ].say, /lacks variesBy size on pa_pack-size$/ );
+	assert.match( lacking.actions[ 0 ].say, /lacks variesBy size on pa_pack-size(,| *$)/ );
 	const mapped = planCatalogue( catalogue, site( [ found( jar, { attributes: [ 'pa_pack-size', 'pa_grain' ], variesBy: { 'pa_pack-size': [ 'size', 'size' ], 'pa_grain': [ '', '' ] } } ) ] ) );
-	assert.equal( mapped.actions[ 0 ].action, 'exists' );
+	assert.doesNotMatch( mapped.actions[ 0 ].say || '', /variesBy/, 'a mapped axis is never demanded (the product may still lack its filter terms)' );
 } );
 
 test( 'variesBy: a product with no variesBy axis is made and kept a draft, noted, and its publishing never planned', () => {

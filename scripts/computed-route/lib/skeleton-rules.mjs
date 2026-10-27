@@ -14,6 +14,7 @@ import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
+import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
@@ -597,6 +598,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
+	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
+	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
@@ -620,6 +623,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
+		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
+		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason } ) : null ),
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {
@@ -742,5 +747,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
 }

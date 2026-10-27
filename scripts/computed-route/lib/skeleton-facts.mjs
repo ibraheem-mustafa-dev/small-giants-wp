@@ -108,6 +108,17 @@ export function decisionsProblems( facts ) {
 			}
 		}
 	}
+	// The filter rail (lib/skeleton-filter-rail.mjs): WooCommerce's own blocks or known SGS blocks with the settings it writes.
+	if ( r.filterRail ) {
+		const f = r.filterRail;
+		const names = JSON.stringify( [ f.filters, f.groups, Object.values( f.displayStyles || {} ).map( ( name ) => ( { name } ) ) ] ).match( /"name":"[^"]+"/g )?.map( ( x ) => x.slice( 8, -1 ) ) || [];
+		[ f.block, f.heading?.block, ...names ].filter( ( slug ) => ! slug?.startsWith( 'woocommerce/' ) ).forEach( ( slug ) => known( slug, 'rules.filterRail' ) );
+		// `className` and `anchor` are WordPress block supports, never framework-database settings.
+		const supports = new Set( [ 'className', 'anchor' ] );
+		[ [ f.block, Object.keys( f.attributes || {} ) ], [ f.heading?.block, [ 'content', ...Object.keys( f.heading?.attributes || {} ) ] ] ].forEach( ( [ block, attrs ] ) => attrs.filter( ( a ) => block && ! supports.has( a ) && ! facts.attr( block, a ) ).forEach( ( a ) => problems.push( `rules.filterRail writes ${ a } on ${ block }, a setting it does not have` ) ) );
+		[ 'facet', 'price', 'brand', 'category' ].filter( ( k ) => ! f.groups?.[ k ]?.name ).forEach( ( k ) => problems.push( `rules.filterRail.groups.${ k } must name its block` ) );
+		[ 'choice', 'checkbox' ].filter( ( k ) => ! f.displayStyles?.[ k ] ).forEach( ( k ) => problems.push( `rules.filterRail.displayStyles.${ k } must name a block` ) );
+	}
 	if ( r.commerceRegion ) {
 		try {
 			new RegExp( r.commerceRegion.money );

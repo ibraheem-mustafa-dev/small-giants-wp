@@ -4,7 +4,10 @@
 // `{ square: './assets/logo-square.svg' }` in its script), the file that script's source map names for that value.
 // The entry is chosen by the local sha256 of the draft's own file against the media map's source `sha256` (not
 // `storedSha256`, the bytes WordPress kept). A navigation block's `ref` is the id of the menu site-build made for the
-// surface, recorded by name in `sites/<client>/build/menu-map.json` ({ sites: { <site>: { menus: { <name>: <id> } } } }).
+// surface, recorded by name in `sites/<client>/build/menu-map.json` ({ sites: { <site>: { menus: { <name>: <id> } } } }). A shop
+// filter's `attributeId` (lib/skeleton-filter-rail.mjs) is the global attribute the catalogue step made for the facet on the
+// site, recorded by facet slug in `sites/<client>/build/catalogue.json` (`sites.<site>.attributes`, Spec 48 FR-48-92): the
+// site's own record, else the record of the test site a mirror copies.
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -75,12 +78,15 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 	return { reason: ids.size ? `${ file } matches different attachments (${ [ ...ids ].join( ', ' ) })` : `${ file } (sha256 ${ want.slice( 0, 8 ) }) is not in the media map for ${ recordSite( site ) }` };
 }
 
-// What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset } | { reason } | null, menu( kind ) -> id | null }.
+// What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset } | { reason } | null, menu( kind ) -> id | null,
+// attribute( slug ) -> { id } | { reason } | null (null when no site is named) }.
 export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const folder = path.join( repo, 'sites', client, 'handoff' );
 	const map = readJson( path.join( build, 'media-map.json' ) );
 	const menus = readJson( path.join( build, 'menu-map.json' ) )?.sites?.[ recordSite( site ) ]?.menus || {};
+	const sites = readJson( path.join( build, 'catalogue.json' ) )?.sites || {};
+	const records = site ? [ ...new Set( [ site, recordSite( site ) ] ) ].map( ( x ) => sites[ x ]?.attributes ).filter( Boolean ) : [];
 	let maps = null;
 	return {
 		logo: ( e, view = null ) => {
@@ -94,6 +100,14 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 		menu: ( kind ) => {
 			const id = menus[ boundMenu( kind, Object.keys( menus ) ) ];
 			return Number.isInteger( id ) && id > 0 ? id : null;
+		},
+		attribute: ( slug ) => {
+			if ( ! site ) {
+				return null;
+			}
+			const id = records.map( ( r ) => r[ slug ] ).find( ( x ) => Number.isInteger( x ) && x > 0 );
+			const where = [ ...new Set( [ site, recordSite( site ) ] ) ].join( ' or ' );
+			return id ? { id } : { reason: records.length ? `catalogue.json records no attribute for ${ slug } on ${ where }` : `catalogue.json records no attributes for ${ where } (run site-build.mjs --catalogue --apply on it)` };
 		},
 	};
 }

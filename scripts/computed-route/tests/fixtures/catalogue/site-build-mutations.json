@@ -8,7 +8,7 @@
 	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( ! state.woocommerce ) {", "replace": "if ( false ) {", "why": "a site without WooCommerce is planned" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "const productBase = ( state.productBase || 'product' ) !== want ? { from: state.productBase || 'product', to: want } : null;", "replace": "const productBase = null;", "why": "the manifest's product base is never set" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "notes.push( plugin ? ", "replace": "plugin && notes.push( plugin ? ", "why": "a standing gap is not said" },
-	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( ! apply ) {\n\t\tlog(", "replace": "if ( false ) {\n\t\tlog(", "why": "a dry run writes" },
+	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( ! apply ) {\n\t\trunToggle(", "replace": "if ( false ) {\n\t\trunToggle(", "why": "a dry run writes" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "if ( done.issues.length || left.length || again.productBase ) {", "replace": "if ( done.issues.length ) {", "why": "an apply that leaves work reports success" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "state.products.filter( ( s ) => s.id && ! s.fixture )", "replace": "state.products.filter( ( s ) => s.id )", "why": "a fixture product's id is recorded as the catalogue product" },
 	{ "file": "lib/site-build-catalogue.mjs", "find": "} else if ( ! out[ img.asset ] && fs.existsSync( path.join( repo, img.asset ) ) ) {", "replace": "} else if ( false ) {", "why": "draft asset images are never uploaded or found" },
