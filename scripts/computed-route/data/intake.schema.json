@@ -19,7 +19,7 @@
     "flags",
     "draftDefects",
     "notDefects",
-    "missingFeatures",
+    "missingFeatures", "catalogue",
     "skeletons",
     "notices",
     "gaps",
