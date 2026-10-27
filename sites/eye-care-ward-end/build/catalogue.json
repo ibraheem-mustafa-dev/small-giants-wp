@@ -1,0 +1,1374 @@
+{
+  "schemaVersion": 1,
+  "client": "eye-care-ward-end",
+  "productBase": "frames",
+  "source": {
+    "files": [
+      "Eye Care Birmingham.dc.html"
+    ],
+    "productPage": "Eye Care Birmingham.dc.html",
+    "idKey": "id"
+  },
+  "products": [
+    {
+      "draftId": "1",
+      "sku": "sgs-draft-1",
+      "slug": "ray-ban-aviator-classic",
+      "name": "Aviator Classic",
+      "type": "variable",
+      "price": 139,
+      "rrp": 171,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Ray-Ban",
+      "facets": {
+        "shape": "Pilot",
+        "cols": [
+          "gold",
+          "blk",
+          "gun",
+          "silver"
+        ],
+        "mat": "Metal",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Adjustable pads",
+        "eye": 58,
+        "pol": false,
+        "gender": "Unisex"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-1-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 139
+        }
+      ]
+    },
+    {
+      "draftId": "2",
+      "sku": "sgs-draft-2",
+      "slug": "gucci-oversized-cat-eye",
+      "name": "Oversized Cat-Eye",
+      "type": "variable",
+      "price": 289,
+      "rrp": 340,
+      "shortDescription": null,
+      "image": {
+        "url": "https://images.unsplash.com/photo-1508296695146-257a814070b4"
+      },
+      "gallery": [],
+      "categories": [],
+      "brand": "Gucci",
+      "facets": {
+        "shape": "Cat-eye",
+        "cols": [
+          "ivory",
+          "blk",
+          "hav"
+        ],
+        "mat": "Acetate",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Moulded bridge",
+        "eye": 56,
+        "pol": false,
+        "gender": "Women"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-2-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 289
+        }
+      ]
+    },
+    {
+      "draftId": "3",
+      "sku": "sgs-draft-3",
+      "slug": "oakley-holbrook",
+      "name": "Holbrook",
+      "type": "variable",
+      "price": 119,
+      "rrp": 146,
+      "shortDescription": null,
+      "image": {
+        "url": "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a"
+      },
+      "gallery": [],
+      "categories": [],
+      "brand": "Oakley",
+      "facets": {
+        "shape": "Square",
+        "cols": [
+          "blk",
+          "gun",
+          "brown"
+        ],
+        "mat": "O-Matter",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Unobtainium grip",
+        "eye": 55,
+        "pol": true,
+        "gender": "Men"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-3-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 119
+        }
+      ]
+    },
+    {
+      "draftId": "4",
+      "sku": "sgs-draft-4",
+      "slug": "prada-symbole",
+      "name": "Symbole",
+      "type": "variable",
+      "price": 239,
+      "rrp": 296,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Prada",
+      "facets": {
+        "shape": "Cat-eye",
+        "cols": [
+          "ivory",
+          "blk",
+          "hav"
+        ],
+        "mat": "Acetate",
+        "ftype": "Full rim",
+        "hinge": "Sprung",
+        "nose": "Moulded bridge",
+        "eye": 51,
+        "pol": false,
+        "gender": "Women"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-4-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 239
+        }
+      ]
+    },
+    {
+      "draftId": "5",
+      "sku": "sgs-draft-5",
+      "slug": "ray-ban-original-wayfarer",
+      "name": "Original Wayfarer",
+      "type": "variable",
+      "price": 129,
+      "rrp": 159,
+      "shortDescription": null,
+      "image": {
+        "url": "https://images.unsplash.com/photo-1572635196237-14b3f281503f"
+      },
+      "gallery": [],
+      "categories": [],
+      "brand": "Ray-Ban",
+      "facets": {
+        "shape": "Wayfarer",
+        "cols": [
+          "blk",
+          "hav",
+          "tort",
+          "crys",
+          "navy",
+          "gold"
+        ],
+        "mat": "Acetate",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Moulded bridge",
+        "eye": 50,
+        "pol": false,
+        "gender": "Unisex"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-5-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 129
+        }
+      ]
+    },
+    {
+      "draftId": "6",
+      "sku": "sgs-draft-6",
+      "slug": "ray-ban-round-metal",
+      "name": "Round Metal",
+      "type": "variable",
+      "price": 135,
+      "rrp": 164,
+      "shortDescription": null,
+      "image": {
+        "url": "https://images.unsplash.com/photo-1511499767150-a48a237f0083"
+      },
+      "gallery": [],
+      "categories": [],
+      "brand": "Ray-Ban",
+      "facets": {
+        "shape": "Round",
+        "cols": [
+          "gold",
+          "gun",
+          "silver"
+        ],
+        "mat": "Metal",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Adjustable pads",
+        "eye": 50,
+        "pol": false,
+        "gender": "Unisex"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-6-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 135
+        }
+      ]
+    },
+    {
+      "draftId": "7",
+      "sku": "sgs-draft-7",
+      "slug": "versace-medusa-biggie",
+      "name": "Medusa Biggie",
+      "type": "variable",
+      "price": 199,
+      "rrp": 246,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Versace",
+      "facets": {
+        "shape": "Round",
+        "cols": [
+          "blk",
+          "gold",
+          "hav"
+        ],
+        "mat": "Metal",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Adjustable pads",
+        "eye": 53,
+        "pol": false,
+        "gender": "Unisex"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-7-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 199
+        }
+      ]
+    },
+    {
+      "draftId": "8",
+      "sku": "sgs-draft-8",
+      "slug": "polaroid-pld-6003-n",
+      "name": "PLD 6003/N",
+      "type": "variable",
+      "price": 59,
+      "rrp": 75,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Polaroid",
+      "facets": {
+        "shape": "Round",
+        "cols": [
+          "hav",
+          "blk"
+        ],
+        "mat": "Plastic",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Moulded bridge",
+        "eye": 49,
+        "pol": true,
+        "gender": "Unisex"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-8-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-8-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-8-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 59
+        }
+      ]
+    },
+    {
+      "draftId": "9",
+      "sku": "sgs-draft-9",
+      "slug": "carrera-carrera-1055-s",
+      "name": "Carrera 1055/S",
+      "type": "variable",
+      "price": 109,
+      "rrp": 139,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Carrera",
+      "facets": {
+        "shape": "Pilot",
+        "cols": [
+          "blk",
+          "gun",
+          "gold"
+        ],
+        "mat": "Metal",
+        "ftype": "Semi-rimless",
+        "hinge": "Sprung",
+        "nose": "Adjustable pads",
+        "eye": 57,
+        "pol": false,
+        "gender": "Men"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-9-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 109
+        }
+      ]
+    },
+    {
+      "draftId": "10",
+      "sku": "sgs-draft-10",
+      "slug": "ferrari-scuderia-fz6001",
+      "name": "FZ6001",
+      "type": "variable",
+      "price": 169,
+      "rrp": 205,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Ferrari Scuderia",
+      "facets": {
+        "shape": "Pilot",
+        "cols": [
+          "blk",
+          "red"
+        ],
+        "mat": "Nylon",
+        "ftype": "Full rim",
+        "hinge": "Sprung",
+        "nose": "Rubber pads",
+        "eye": 59,
+        "pol": false,
+        "gender": "Men"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-10-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 169
+        },
+        {
+          "sku": "sgs-draft-10-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 169
+        },
+        {
+          "sku": "sgs-draft-10-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 169
+        }
+      ]
+    },
+    {
+      "draftId": "11",
+      "sku": "sgs-draft-11",
+      "slug": "superdry-sds-shockwave",
+      "name": "SDS Shockwave",
+      "type": "variable",
+      "price": 59,
+      "rrp": 69,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Superdry",
+      "facets": {
+        "shape": "Rectangle",
+        "cols": [
+          "tort",
+          "blk",
+          "crys"
+        ],
+        "mat": "Plastic",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Moulded bridge",
+        "eye": 54,
+        "pol": false,
+        "gender": "Unisex"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-11-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 59
+        }
+      ]
+    },
+    {
+      "draftId": "12",
+      "sku": "sgs-draft-12",
+      "slug": "balenciaga-shield",
+      "name": "Shield",
+      "type": "variable",
+      "price": 339,
+      "rrp": 400,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Balenciaga",
+      "facets": {
+        "shape": "Shield",
+        "cols": [
+          "blk",
+          "silver"
+        ],
+        "mat": "Acetate",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Moulded bridge",
+        "eye": 99,
+        "pol": false,
+        "gender": "Women"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-12-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 339
+        },
+        {
+          "sku": "sgs-draft-12-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 339
+        },
+        {
+          "sku": "sgs-draft-12-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 339
+        }
+      ]
+    },
+    {
+      "draftId": "13",
+      "sku": "sgs-draft-13",
+      "slug": "police-lewis-10",
+      "name": "Lewis 10",
+      "type": "variable",
+      "price": 99,
+      "rrp": 125,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Police",
+      "facets": {
+        "shape": "Pilot",
+        "cols": [
+          "gun",
+          "blk",
+          "navy"
+        ],
+        "mat": "Metal",
+        "ftype": "Full rim",
+        "hinge": "Sprung",
+        "nose": "Adjustable pads",
+        "eye": 58,
+        "pol": true,
+        "gender": "Men"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-13-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 99
+        }
+      ]
+    },
+    {
+      "draftId": "14",
+      "sku": "sgs-draft-14",
+      "slug": "dolce-and-gabbana-dg4268",
+      "name": "DG4268",
+      "type": "variable",
+      "price": 215,
+      "rrp": 265,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Dolce & Gabbana",
+      "facets": {
+        "shape": "Butterfly",
+        "cols": [
+          "blk",
+          "hav",
+          "ivory"
+        ],
+        "mat": "Acetate",
+        "ftype": "Full rim",
+        "hinge": "Standard barrel",
+        "nose": "Moulded bridge",
+        "eye": 56,
+        "pol": false,
+        "gender": "Women"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-14-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 215
+        }
+      ]
+    },
+    {
+      "draftId": "15",
+      "sku": "sgs-draft-15",
+      "slug": "michael-kors-chelsea",
+      "name": "Chelsea",
+      "type": "variable",
+      "price": 109,
+      "rrp": 139,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Michael Kors",
+      "facets": {
+        "shape": "Pilot",
+        "cols": [
+          "rose",
+          "gold",
+          "silver"
+        ],
+        "mat": "Metal",
+        "ftype": "Rimless",
+        "hinge": "Standard barrel",
+        "nose": "Adjustable pads",
+        "eye": 56,
+        "pol": false,
+        "gender": "Women"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-15-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 109
+        }
+      ]
+    },
+    {
+      "draftId": "16",
+      "sku": "sgs-draft-16",
+      "slug": "emporio-armani-ea4033",
+      "name": "EA4033",
+      "type": "variable",
+      "price": 115,
+      "rrp": 145,
+      "shortDescription": null,
+      "image": null,
+      "gallery": [],
+      "categories": [],
+      "brand": "Emporio Armani",
+      "facets": {
+        "shape": "Oval",
+        "cols": [
+          "blk",
+          "hav",
+          "navy"
+        ],
+        "mat": "Acetate",
+        "ftype": "Full rim",
+        "hinge": "Sprung",
+        "nose": "Moulded bridge",
+        "eye": 56,
+        "pol": true,
+        "gender": "Men"
+      },
+      "attributes": [
+        {
+          "key": "curSize",
+          "label": "Size",
+          "slug": "size",
+          "packSize": false,
+          "options": [
+            {
+              "value": "S",
+              "term": "S",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "M",
+              "term": "M",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "L",
+              "term": "L",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "M"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-16-s",
+          "options": {
+            "size": "S"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-m",
+          "options": {
+            "size": "M"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-l",
+          "options": {
+            "size": "L"
+          },
+          "price": 115
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "draftId": "*",
+      "kind": "facet",
+      "detail": "the shop filters on \"shape\", \"cols\", \"mat\", \"ftype\", \"hinge\", \"nose\", \"eye\", \"pol\", \"gender\" (Eye Care Birmingham.dc.html); the catalogue writes brands only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet"
+    }
+  ]
+}

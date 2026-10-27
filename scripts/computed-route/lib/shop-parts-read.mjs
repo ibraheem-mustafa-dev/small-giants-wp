@@ -23,6 +23,8 @@ const decode = ( s ) => s.replace( /&(?:amp|lt|gt|quot|nbsp|#39);/g, ( m ) => EN
 const squash = ( s ) => decode( s ).replace( /\s+/g, ' ' ).trim();
 const stripExpr = ( v ) => String( v ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim();
 const bindingsOf = ( text ) => [ ...String( text || '' ).matchAll( BINDING ) ].map( ( m ) => m[ 1 ] );
+// The first name a condition reads (`it` in `!it.done`, `it.open && x`).
+const leadName = ( expr ) => /^[\s!(]*([A-Za-z_$][\w$]*)/.exec( expr )?.[ 1 ] ?? '';
 
 function attrsOf( rest ) {
 	const out = {};
@@ -248,9 +250,12 @@ function routeOf( href, sources ) {
 // expanded), the loop it repeats in, its heading level, whether it is part of a stepper, the region part it sits in
 // (`bar` for a sticky bar), the handler's effect, whether its bound value is a currency amount or a collection count,
 // whether a condition above it tests a collection is empty or discloses a control's expanded content, the route a link
-// opens, whether the handler narrows the product listing (`listingKeys`) and whether it edits the basket without adding
-// to it (it writes an outside store or a key in `addKeys`).
-export function unitsOf( region, { file, dc = null, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set() } ) {
+// opens, whether the handler narrows the product listing (`listingKeys`), whether it edits the basket without adding
+// to it (it writes an outside store or a key in `addKeys`), and for a control in a loop: whether its handler is the loop
+// item's own (`itemBound`), whether a condition inside the loop reads the item (`itemCond`: it shows on some items only),
+// and whether its handler leaves the surface for somewhere else (`leaves`: it sets to false a key the surface's handoff
+// record opens it with, `openKeys`, and sets another key besides).
+export function unitsOf( region, { file, dc = null, L = null, sources = {}, listingKeys = new Set(), addKeys = new Set(), openKeys = new Set() } ) {
 	const out = [];
 	const expanded = new Set( elements( region ).filter( ( e ) => e.attrs[ 'aria-expanded' ] ).map( ( e ) => stripExpr( e.attrs[ 'aria-expanded' ] ) ) );
 	const visit = ( node, ctx ) => {
@@ -273,6 +278,7 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 			const next = { ...ctx, stepper };
 			if ( 'sc-if' === c.tag ) {
 				next.conds = [ ...ctx.conds, value ];
+				next.itemCond = ctx.itemCond || ( !! ctx.loopAs && ctx.loopAs === leadName( value ) );
 				next.empty = ctx.empty || emptinessBinding( L, value );
 				next.disclosed = ctx.disclosed || expanded.has( value );
 			} else if ( 'sc-for' === c.tag ) {
@@ -289,7 +295,8 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 			} else if ( isControl( c ) ) {
 				const label = 'input' === c.tag ? '' : textOf( c );
 				const on = handlerOf( c );
-				const effect = effectOf( L, on, ctx.loopAs && on.split( '.' )[ 0 ] === ctx.loopAs ? ctx.loop : null );
+				const itemBound = !! ctx.loopAs && on.split( '.' )[ 0 ] === ctx.loopAs;
+				const effect = effectOf( L, on, itemBound ? ctx.loop : null );
 				out.push( { ...base, kind: 'control', tag: c.tag, text: label, aria: c.attrs[ 'aria-label' ] || '', placeholder: c.attrs.placeholder || '', type: c.attrs.type || c.attrs.role || '', on, href: c.attrs.href || '', facts: {
 					...facts,
 					role: c.attrs.role || '',
@@ -301,13 +308,16 @@ export function unitsOf( region, { file, dc = null, L = null, sources = {}, list
 					narrows: effect.sets.some( ( k ) => listingKeys.has( k ) ),
 					editsBasket: ! effect.appends && ( effect.writesStore || effect.sets.some( ( k ) => addKeys.has( k ) ) ),
 					money: bindingsOf( label ).some( ( x ) => moneyBinding( L, x ) ),
+					itemBound,
+					itemCond: !! ctx.itemCond,
+					leaves: effect.off.some( ( k ) => openKeys.has( k ) ) && effect.sets.some( ( k ) => ! openKeys.has( k ) ),
 				} } );
 			} else {
 				visit( c, next );
 			}
 		}
 	};
-	const start = { conds: [], loop: null, loopAs: '', heading: 0, stepper: false, empty: false, disclosed: false };
+	const start = { conds: [], loop: null, loopAs: '', heading: 0, stepper: false, empty: false, disclosed: false, itemCond: false };
 	if ( 'sc-if' === region.tag ) {
 		start.conds = [ stripExpr( region.attrs.value || '' ) ];
 	}
@@ -321,6 +331,9 @@ const NAMES = {
 	filter: [ /filter/i ],
 	drawer: [ /(?:basket|bag).*drawer|drawer.*(?:basket|bag)/i ],
 };
+
+// The keys a handoff surface record's states set to true: what opens the surface (`bagOpen` in `{ bagOpen: true }`).
+const openKeysOf = ( rec ) => new Set( ( rec.states || [] ).flatMap( ( st ) => Object.entries( st?.state_keys || {} ).filter( ( [ , v ] ) => true === v ).map( ( [ k ] ) => k ) ) );
 
 // Every shop surface of a draft: for each kind, the first name pattern that some handoff surface record matches picks
 // the draft file (`dc`) to read, and the region reader finds the surface in it. `sources` maps a draft file name to its
@@ -343,6 +356,7 @@ export function readShopSurfaces( { records, sources } ) {
 		}
 		const listingKeys = 'filter' === kind ? listing( root, L )?.keys || new Set() : new Set();
 		const addKeys = basketKeys( root, L );
-		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys } ) ), problem: null };
+		const openKeys = openKeysOf( rec );
+		return { kind, record: rec.name, file, units: regions.flatMap( ( r ) => unitsOf( r, { file, dc: rec.dc, L, sources, listingKeys, addKeys, openKeys } ) ), problem: null };
 	} );
 }

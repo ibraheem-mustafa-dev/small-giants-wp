@@ -84,6 +84,11 @@ export function decisionsProblems( facts ) {
 		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ),
 		...[ 'block', 'step', 'question', 'result' ].map( ( k ) => [ `rules.choiceFlow.${ k }`, r.choiceFlow?.[ k ] ] ),
 		...Object.entries( r.blockOwnedPart?.byTemplate || {} ).map( ( [ k, x ] ) => [ `rules.blockOwnedPart.byTemplate.${ k }`, x.block ] ) ].forEach( ( [ where, slug ] ) => known( slug, where ) );
+	// A block-owned part's trigger names settings its owning block has (the control that opens the part writes them).
+	for ( const [ k, x ] of Object.entries( r.blockOwnedPart?.byTemplate || {} ) ) {
+		[ 'style', 'label', 'countStyle', 'showZero', 'ariaLabel' ].filter( ( f ) => x.trigger && ! ( x.trigger[ f ] && facts.attr( x.block, x.trigger[ f ] ) ) )
+			.forEach( ( f ) => problems.push( `rules.blockOwnedPart.byTemplate.${ k }.trigger.${ f } must name a setting ${ x.block } has` ) );
+	}
 	if ( r.choiceFlow && [ 'block', 'step', 'question', 'result' ].some( ( k ) => ! r.choiceFlow[ k ] ) ) {
 		problems.push( 'rules.choiceFlow must name its block, step, question and result blocks' );
 	}
