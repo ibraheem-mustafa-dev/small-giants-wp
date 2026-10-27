@@ -105,7 +105,9 @@ export function surfaceRoots( { folder, census, records = null } ) {
 // In-page: finds a surface's root element and marks it with ROOT_MARK. A rendered template element is its own root (the
 // first copy whose nearest import host is the component); a non-rendering one (sc-if, sc-for, sc-else) is the nearest
 // element holding every outermost element it stamps. A page surface's root is then the route's main content root: the
-// nearest enclosing <main> (a page record may name only the page's first block, such as its hero). Returns
+// nearest enclosing <main> (a page record may name only the page's first block, such as its hero), else the one <main>
+// the named element holds (a page-file draft's record may name the file's outer wrapper, which also holds the site
+// header and footer imports; those are surfaces of their own, so the page's tree never repeats them). Returns
 // { copies, tag, viaCondition, viaMain } or { error }.
 function markRoot( [ component, tpl, mark, attr, isPage ] ) {
 	const hostName = ( e ) => e.parentElement?.closest( '.sc-host' )?.dataset.scName;
@@ -132,7 +134,8 @@ function markRoot( [ component, tpl, mark, attr, isPage ] ) {
 			root = root.parentElement;
 		}
 	}
-	const main = isPage ? root.closest( 'main' ) : null;
+	const held = isPage ? root.querySelectorAll( 'main' ) : [];
+	const main = isPage ? root.closest( 'main' ) || ( 1 === held.length ? held[ 0 ] : null ) : null;
 	const viaMain = !! main && main !== root;
 	root = main || root;
 	document.querySelectorAll( `[${ attr }="${ mark }"]` ).forEach( ( e ) => e.removeAttribute( attr ) );

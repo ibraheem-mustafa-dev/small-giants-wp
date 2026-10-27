@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/manifest-build.mjs", "find": ", sgs_choice_flow: ( row ) => [ `sgs/choice-flow:${ row.slug }` ] };", "replace": " };", "why": "a choice flow provides no linked block, so no page places it" },
+	{ "file": "lib/manifest-build.mjs", "find": "sgs_choice_flow: ( row ) => [ `sgs/choice-flow:${ row.slug }` ]", "replace": "sgs_choice_flow: ( row ) => [ `sgs/form:${ row.slug }` ]", "why": "a choice flow is linked as a form" }
+]

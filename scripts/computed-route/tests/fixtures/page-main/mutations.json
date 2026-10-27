@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/intake-skeletons.mjs", "find": "root.closest( 'main' ) || ( 1 === held.length ? held[ 0 ] : null )", "replace": "root.closest( 'main' )", "why": "a page record naming the outer wrapper keeps the header and footer in the page" },
+	{ "file": "lib/intake-skeletons.mjs", "find": "const main = isPage ? root.closest( 'main' )", "replace": "const main = true ? root.closest( 'main' )", "why": "a surface of another kind is moved to the main it holds" }
+]

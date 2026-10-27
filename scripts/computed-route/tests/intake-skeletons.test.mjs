@@ -121,6 +121,18 @@ test( 'an sc-for root resolves to the element holding its copies; a root id the 
 	assert.equal( g.gaps.length, 1 );
 } );
 
+test( 'MUST FAIL: a page record naming the outer wrapper that also holds the header and footer reads only the <main> it holds', async () => {
+	// Template 0 is the draft's outer <div>: the header, the main and the footer are all inside it.
+	const outer = { ...roots.surfaces[ 2 ], rootTpl: '0' };
+	const p = await proposeSkeletons( { folder: FIXTURE, harPath, surfaces: [ outer, { ...outer, kind: 'global', slug: 'outer', selector: '[data-sgs-skeleton-root="outer"]' } ], client: CLIENT } );
+	const page = of( p, 'page-home' );
+	assert.deepEqual( [ page.root.tag, page.root.viaMain ], [ 'main', true ] );
+	assert.equal( page.rows.some( ( r ) => 'Fixture Foods' === r.words ), false, 'the header is its own surface, never a row of the page' );
+	assert.ok( page.rows.some( ( r ) => 'Fresh food for busy kitchens' === r.words ) );
+	// Another kind keeps the element its record names (the negative control).
+	assert.equal( of( p, 'outer' ).root.tag, 'div' );
+} );
+
 test( 'unresolvedRows lists unresolved rows and kept rows with no candidate, not removed ones', () => {
 	const rows = [
 		{ key: 'a', action: 'unresolved', candidates: [] }, { key: 'b', action: null, candidates: [] },
