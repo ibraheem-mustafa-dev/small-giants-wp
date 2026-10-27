@@ -29001,15 +29001,17 @@
       "slug": "sgs/timeline",
       "attr": "descriptionLinkColour",
       "fields": {
-        "css_property": "color-link",
-        "css_element": "entry"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "description"
       }
     },
     {
       "slug": "sgs/timeline",
       "attr": "descriptionLinkColourHover",
       "fields": {
-        "css_property": "background-image,color",
+        "css_property": "color",
+        "role": "color",
         "css_element": "description",
         "css_state": "hover"
       }
@@ -41664,6 +41666,23 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "descriptionLinkColourGradient",
+      "fields": {
+        "css_property": "color-link-gradient",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "descriptionLinkColourHoverGradient",
+      "fields": {
+        "css_property": "color-link-gradient",
+        "css_element": "description",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
@@ -42376,23 +42395,6 @@
       "fields": {
         "css_property": "color-gradient",
         "css_element": "first-letter"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "descriptionLinkColourGradient",
-      "fields": {
-        "css_property": "color-gradient",
-        "css_element": "entry-link"
-      }
-    },
-    {
-      "slug": "sgs/timeline",
-      "attr": "descriptionLinkColourHoverGradient",
-      "fields": {
-        "css_property": "color-gradient",
-        "css_element": "description",
-        "css_state": "hover"
       }
     },
     {
