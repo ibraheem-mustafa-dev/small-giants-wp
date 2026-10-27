@@ -4,14 +4,17 @@
 // `--apply` creates it, then reads each product back. A rerun creates nothing twice. Test sites only.
 //   node scripts/computed-route/shop-fixtures.mjs <client> --site <secrets name> [--apply] [--repo <root>]
 // Exit 0 done, 1 failure, 2 usage.
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { siteCredentials } from './lib/media-upload.mjs';
-import { ShopFixturesError, applyFixtures, imageChoice, planFixtures } from './lib/shop-fixtures.mjs';
+import { wpCommand } from './lib/calibration-refs.mjs';
+import { ShopFixturesError, applyFixtures, imageChoice, planFixtureVariesBy, planFixtures } from './lib/shop-fixtures.mjs';
+import { VariesByError } from './lib/shop-fixtures-variesby.mjs';
+import { wpFetch } from './lib/shop-fixtures-wp.mjs';
 
 // The sites the fixtures may be written to: fresh test sites that hold no client content.
-export const FIXTURE_SITES = [ 'mamas-test', 'eye-care-clone-test' ];
+export const FIXTURE_SITES = [ 'mamas-test', 'eye-care-clone-test', 'local-mamas', 'local-eye-care' ];
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -36,21 +39,32 @@ const secretsRepo = opt( '--secrets' ) || ( () => {
 	return dir;
 } )();
 
+// The site's calibration target: a local mirror's names its WSL docroot (`pluginDir`), so wp-cli runs there instead of over
+// SSH. A mirror keeps no application password, so its REST requests are dispatched in-process through wp-cli; a hosted test
+// site is reached over REST with its application password.
+const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
+const target = ( existsSync( targetsFile ) ? JSON.parse( readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
+const wp = wpCommand( target, site, repo );
+const mirror = /^\/\/wsl\.localhost\//.test( target.pluginDir || '' );
+
 try {
-	const creds = siteCredentials( secretsRepo, site );
+	const creds = mirror ? { url: 'http://localhost', auth: 'wp-cli' } : siteCredentials( secretsRepo, site );
+	const fetchImpl = mirror ? wpFetch( wp ) : fetch;
 	if ( args.includes( '--apply' ) ) {
-		const r = await applyFixtures( { repo, client, site, creds } );
+		const r = await applyFixtures( { repo, client, site, creds, fetchImpl, wp } );
 		console.log( r.created.length ? `created: ${ r.created.join( ', ' ) }${ r.imageUploaded ? ' (image uploaded)' : '' }` : 'nothing to create: every fixture already exists' );
+		r.variesBy.forEach( ( v ) => console.log( `variesBy: ${ v.taxonomy } ${ v.term } (term ${ v.termId }) ${ 'write' === v.action ? `set to ${ v.axis }` : `kept ${ v.current }` }` ) );
 		r.products.forEach( ( p ) => console.log( `read back: ${ p.kind } id ${ p.id } ${ p.type } ${ p.status } price ${ p.price } stock ${ p.stock } image ${ p.image }${ p.variations.length ? ` variations ${ JSON.stringify( p.variations ) }` : '' }` ) );
 	} else {
-		const plan = await planFixtures( { client, creds } );
+		const plan = await planFixtures( { client, creds, fetchImpl } );
 		const choice = imageChoice( repo, client, site );
-		plan.forEach( ( p ) => console.log( `${ p.action }: ${ p.kind } (${ p.sku })${ p.id ? ` id ${ p.id }` : '' }${ p.missingVariations.length ? ` missing variations ${ p.missingVariations.join( ', ' ) }` : '' }` ) );
+		plan.forEach( ( p ) => console.log( `${ p.action }: ${ p.kind } (${ p.sku })${ p.id ? ` id ${ p.id }` : '' }${ p.convert ? ' choice product-local, becomes the global attribute' : '' }${ p.missingVariations.length ? ` missing variations ${ p.missingVariations.join( ', ' ) }` : '' }` ) );
+		planFixtureVariesBy( client, wp ).forEach( ( v ) => console.log( `variesBy: ${ v.taxonomy } ${ v.term } ${ 'missing' === v.action ? 'has no term yet' : 'write' === v.action ? `no value, would set ${ v.axis }` : `has ${ v.current }` }` ) );
 		console.log( `image: ${ choice ? `${ choice.source } ${ choice.asset }${ choice.id ? ` id ${ choice.id }` : '' }` : 'none found' }` );
 		console.log( 'dry run: nothing written (re-run with --apply)' );
 	}
 } catch ( e ) {
-	if ( ! ( e instanceof ShopFixturesError ) && ! /no secrets file|lacks WP_/.test( e.message ) ) {
+	if ( ! ( e instanceof ShopFixturesError || e instanceof VariesByError ) && ! /no secrets file|lacks WP_/.test( e.message ) ) {
 		throw e;
 	}
 	console.error( e.message );
