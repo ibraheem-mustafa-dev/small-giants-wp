@@ -185,6 +185,18 @@
 					"selector": ".sgs-timeline__description a",
 					"motion": false,
 					"label": "Description links",
+					"attrMap": {
+						"css:color-link": "descriptionLinkColour",
+						"css:color-link-gradient": "descriptionLinkColourGradient"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color-link": "descriptionLinkColourHover",
+								"css:color-link-gradient": "descriptionLinkColourHoverGradient"
+							}
+						}
+					},
 					"order": 1,
 					"clusters": [
 						"text"
@@ -224,8 +236,7 @@
 						"css:text-decoration-color-link": "descriptionLinkUnderlineColour",
 						"css:text-decoration-offset-link": "descriptionLinkUnderlineOffset",
 						"css:min-height": "milestoneMinHeight",
-						"css:margin-bottom": "entryGap",
-						"css:color-link": "descriptionLinkColour"
+						"css:margin-bottom": "entryGap"
 					},
 					"states": {
 						"hover": {
