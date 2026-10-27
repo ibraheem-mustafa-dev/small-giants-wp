@@ -278,3 +278,4 @@ The signal between the cloning tool plan's two orchestrator sessions (`.claude/p
 - 2026-10-27 F mirror-sync-end local-eye-care, local-indus, local-mamas (build of 622c74b68). Track F is done for the session; nothing of F's is running
 - 2026-10-27 F calibration-start local-indus (diagnosis: sgs/feature-grid and sgs/gallery loss-guard refusals, --recalibrate; writes cache/<block>.json only if accepted)
 - 2026-10-27 F calibration-end local-indus (sgs/feature-grid 26 settings and sgs/gallery 40 re-measured and accepted with no --allow-loss: their hover settings measure alive; the 2026-10-26 refusals do not reproduce). F calibration-start local-mamas (sgs/account loss-guard diagnosis)
+- 2026-10-27 F calibration-end local-mamas (sgs/account accepted, 96 settings, no --allow-loss: the fixture holds a test order for the logged-in user, deleted after; menuLink and contentLink name their real selectors). Track F's calibrations are done; local-indus and local-mamas free

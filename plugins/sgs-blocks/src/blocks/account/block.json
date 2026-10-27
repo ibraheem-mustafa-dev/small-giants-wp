@@ -58,6 +58,8 @@
 					"_note": "The latest-order links row: a flex row; the wrap setting chooses between one line and wrapping onto further rows."
 				},
 				"menuLink": {
+					"selector": ".woocommerce-MyAccount-navigation-link:not(.is-active) > a",
+					"_note": "WooCommerce's own menu markup: the links menuTextColour paints. The active link takes the menuActive colours, which beat hover, so the hoverable links are the others.",
 					"motion": false,
 					"label": "Menu links",
 					"order": 1,
@@ -187,6 +189,8 @@
 					}
 				},
 				"contentLink": {
+					"selector": ".sgs-account__wc a:not(nav *, .button, .wp-element-button, .sgs-account__quick-card)",
+					"_note": "The links contentLinkColour paints: the account content's plain links, never the menu, buttons or quick cards.",
 					"motion": false,
 					"label": "Content links",
 					"order": 10,

@@ -73,15 +73,20 @@ export const TEST_ORDER_META = '_sgs_site_run_test_order';
 
 // The PHP making one order with the site's first published product, so the order confirmation template has an order to
 // show: status `pending`, which sends no customer or admin email (WooCommerce mails on the move to processing, on-hold
-// or completed), marked with TEST_ORDER_META. Prints { id, url } (the order-received address with its key), or
-// { error } when the site has no WooCommerce or no product.
-export function testOrderPhp() {
+// or completed), marked with TEST_ORDER_META. With `customer` (a login) the order is that user's own, as the account
+// block's latest-order card needs (lib/calibrate-order.mjs); without it the order is a guest's. Prints { id, url } (the
+// order-received address with its key), or { error } when the site has no WooCommerce, no product or no such user.
+export function testOrderPhp( { customer = null } = {} ) {
+	const login = null === customer ? null : `'${ String( customer ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;
 	return `<?php
 if ( ! function_exists( 'wc_create_order' ) ) { echo wp_json_encode( array( 'error' => 'WooCommerce is not active' ) ); return; }
 $p = wc_get_products( array( 'status' => 'publish', 'limit' => 1, 'orderby' => 'ID', 'order' => 'ASC' ) );
 if ( ! $p ) { echo wp_json_encode( array( 'error' => 'the site has no published product' ) ); return; }
-$o = wc_create_order( array( 'status' => 'pending' ) );
-$o->add_product( $p[0], 1 );
+${ null === login ? '' : `$u = get_user_by( 'login', ${ login } );
+if ( ! $u ) { echo wp_json_encode( array( 'error' => 'no user with the login the order is for' ) ); return; }
+` }$o = wc_create_order( array( 'status' => 'pending' ) );
+${ null === login ? '' : `$o->set_customer_id( $u->ID );
+` }$o->add_product( $p[0], 1 );
 $o->set_billing_first_name( 'Test' );
 $o->set_billing_last_name( 'Order' );
 $o->set_billing_email( 'test-order@example.invalid' );

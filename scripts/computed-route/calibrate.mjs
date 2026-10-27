@@ -37,6 +37,7 @@ import { isContainerQueryBlock, renderedNothingReason } from './lib/calibrate-co
 import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longhands, discoverEffects, triggerFor, planInstances, instanceCtx, stateTarget, readAll, missedReason } from './lib/calibrate.mjs';
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
+import { withTestOrder } from './lib/calibrate-order.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { openRunSession, closeStrayTabs, readEnv } from './lib/wp-run-session.mjs';
 
@@ -408,7 +409,8 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			// One block's failure (a page that never renders its instance, a host time-out) is that block's error; the
 			// rest of the run continues.
 			try {
-				results.push( await calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), due: due[ b ], allowLoss } ) );
+				// A fixture's `order` (lib/calibrate-order.mjs): the block is read holding a test order for the logged-in user.
+				results.push( await withTestOrder( fixtures[ b ], { runPhp: wpEvalRunner( target, site, REPO ), customer: env.user }, () => calibrateBlock( b, { ...ctx, slotKey: keys[ b ], paintKey: paintKeyOf( keys[ b ], paintSuffix, fixtures[ b ] ), due: due[ b ], allowLoss } ) ) );
 			} catch ( e ) {
 				results.push( { block: b, error: String( e.message || e ).split( /\r?\n/ )[ 0 ] } );
 			}
