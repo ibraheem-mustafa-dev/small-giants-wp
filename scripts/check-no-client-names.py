@@ -97,6 +97,7 @@ EXEMPT_PREFIXES: Tuple[str, ...] = (
     "plugins/sgs-blocks/scripts/nav-qa/",
     "plugins/sgs-blocks/scripts/parity/",
     "scripts/tests/",
+    "scripts/computed-route/tests/",
     ".gitignore",  # repo config: names the client folders it ignores
     "tools/qc-prevention/",
     ".claude/test/",

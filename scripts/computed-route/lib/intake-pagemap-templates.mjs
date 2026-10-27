@@ -40,7 +40,7 @@ const plainPage = ( r, home ) => !! r.route && r.route !== home && 'page' === r.
 // The routes the draft's router shows for an unknown route key, other than the home route: the literal in
 // `pages[ key ] ? key : '<route>'` or `pages[ key ] || pages.<route>` (also `??` and `pages[ '<route>' ]`), wherever the
 // export's logic reads a computed member of its page data. A router that falls back to the home route redirects an
-// unknown address home (Indus's `this.pages[ h ] ? h : 'home'`), which is no not-found page, so home is never returned.
+// unknown address home (e.g. `this.pages[ h ] ? h : 'home'`), which is no not-found page, so home is never returned.
 export function routerFallbacks( exp, routeKeys, home ) {
 	const out = new Set();
 	const named = ( n ) => ( 'StringLiteral' === n?.type ? n.value : 'MemberExpression' === n?.type ? ( n.computed ? ( 'StringLiteral' === n.property.type ? n.property.value : null ) : n.property.name ) : null );

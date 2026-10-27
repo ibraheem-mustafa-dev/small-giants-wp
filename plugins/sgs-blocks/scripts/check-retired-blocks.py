@@ -111,6 +111,16 @@ def is_live(rel: str) -> bool:
     return not (any(rel.startswith(p) for p in SKIP_PREFIXES) or any(c in rel for c in SKIP_CONTAINS))
 
 
+# A route output under sites/ (an element inventory, a proposal, a skeleton, an origin record) records the draft's own
+# markup under these keys: a draft class that shares a retired block's root (`sgs-mega-menu`) is the draft's, while the
+# same file naming a block (`"name": "sgs/mega-menu"`) is still a trace.
+DRAFT_RECORD = re.compile(r'^\s*"(cls|class|snippet)"\s*:')
+
+
+def draft_record_line(rel: str, text: str) -> bool:
+    return rel.startswith("sites/") and bool(DRAFT_RECORD.search(text))
+
+
 def file_traces() -> list[str]:
     """Traces in what git will commit (the index), so a local run matches the deploy's clean checkout: a tracked file that is
     deleted only in the working tree still counts until the deletion is committed."""
@@ -128,7 +138,9 @@ def file_traces() -> list[str]:
         raise SystemExit(f"[check-retired-blocks] git grep failed: {found.stderr.decode('utf-8', errors='replace')[:300]}")
     for line in found.stdout.decode("utf-8", errors="replace").splitlines():
         rel, _, rest = line.partition(":")
-        number = rest.partition(":")[0]
+        number, _, text = rest.partition(":")
+        if draft_record_line(rel, text):
+            continue
         if is_live(rel) and rel != "plugins/sgs-blocks/scripts/check-retired-blocks.py" and Path(rel).suffix.lower() in TEXT_SUFFIXES:
             out.append(f"{rel}:{number}")
     return out
@@ -173,6 +185,9 @@ def self_test() -> int:
     need("reports each line", scan_text("a\ncta-section\nb\nsgs/cta-section", rx) == [2, 4])
     need("register has dates", all(RETIRED.values()))
     need("skips an intake recording of a draft", not is_live("sites/acme/build/intake/intake.json"))
+    need("skips a draft class a route output records", draft_record_line("sites/acme/build/skeleton/x.skeleton.json", '			"cls": "sgs-mega-menu",'))
+    need("still reads a block a route output names", not draft_record_line("sites/acme/build/skeleton/x.skeleton.json", '"name": "sgs/mega-menu",'))
+    need("reads a draft-record key outside sites/", not draft_record_line("plugins/sgs-blocks/x.json", '"cls": "sgs-mega-menu"'))
     need("still reads a client build tree", is_live("sites/acme/build/home.tree.json"))
     print('{"selfTest": true, "failures": %s}' % failures)
     return 1 if failures else 0

@@ -246,8 +246,8 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	const owner = new Map();
 	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], matched: {} };
 	const copies = templateSurfaces( rows );
-	// A copy Filled at its row needs that row's draft surface: one the handoff has no record for (Eye Care's basket is a
-	// drawer, so its cart page has none) is built as the derived copies are, from the page copy's shell around the theme
+	// A copy Filled at its row needs that row's draft surface: one the handoff has no record for (a draft whose basket is
+	// a drawer has no cart page surface) is built as the derived copies are, from the page copy's shell around the theme
 	// template's own content.
 	copies.filter( ( c ) => 'fill' === c.copy.from && ! matchRecord( c.row, records ).record ).forEach( ( c ) => {
 		c.copy = { from: 'page', unplayed: rowKey( c.row ) };
