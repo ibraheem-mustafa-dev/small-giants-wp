@@ -2993,7 +2993,6 @@
   },
   "sgs/timeline": {
     "attributes": {
-      "connectorProgressFill": true,
       "rowStripes": true,
       "entries": [
         {
@@ -3018,7 +3017,13 @@
           "image": 0
         }
       ]
-    }
+    },
+    "variants": [
+      {},
+      {
+        "connectorProgressFill": true
+      }
+    ]
   },
   "sgs/trustpilot-reviews": {
     "attributes": {

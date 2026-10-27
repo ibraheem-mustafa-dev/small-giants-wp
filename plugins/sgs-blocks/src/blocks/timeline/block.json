@@ -181,6 +181,36 @@
 					},
 					"_note": "dateColour drives `--sgs-date-colour`, applied via a `:not([style*='color'])` CSS fallback on `.sgs-timeline__date` (style.scss:358-360) so an inline colour override always wins. Resolves via default convention (`date`+`Colour`). dateColourGradient/Hover/HoverGradient (2026-09-07, colour-conformance TEXT closeout, corrected same session) are routed through the standard text-colour trio in render.php, scoped to `.sgs-timeline__date` directly — NOT the sgs_custom_property_gradient_decls() background-image chain a first pass mistakenly copied from connectorColour (a FILL/background attribute) — dateColour paints text (color:), which that mechanism cannot express."
 				},
+				"description": {
+					"selector": ".sgs-timeline__description a",
+					"motion": false,
+					"label": "Description links",
+					"order": 1,
+					"clusters": [
+						"text"
+					],
+					"_note": "The links inside each entry's description: descriptionLinkColourHover and its gradient paint them on hover (the DB names their element `description`). The resting link colour and underline sit on the `entry` element's link members. The selector is the element calibration hovers."
+				},
+				"entry-odd": {
+					"selector": ".sgs-timeline__entry:nth-child(odd)",
+					"motion": false,
+					"label": "Odd entries (row stripe A)",
+					"order": 1,
+					"clusters": [
+						"fill"
+					],
+					"_note": "The odd rows the row stripes band (style.scss .sgs-timeline--row-stripes .sgs-timeline__entry:nth-child(odd)); rowStripeColourA and its hover are custom properties on the root, so no attrMap here. The selector is the element calibration hovers for the stripe A hover."
+				},
+				"entry-even": {
+					"selector": ".sgs-timeline__entry:nth-child(even)",
+					"motion": false,
+					"label": "Even entries (row stripe B)",
+					"order": 1,
+					"clusters": [
+						"fill"
+					],
+					"_note": "The even rows the row stripes band (style.scss .sgs-timeline--row-stripes .sgs-timeline__entry:nth-child(even)); rowStripeColourB and its hover are custom properties on the root, so no attrMap here. The selector is the element calibration hovers for the stripe B hover."
+				},
 				"entry": {
 					"label": "Each timeline entry",
 					"order": 1,
