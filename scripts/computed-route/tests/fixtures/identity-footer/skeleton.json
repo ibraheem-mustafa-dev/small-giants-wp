@@ -1,0 +1,33 @@
+[
+	{
+		"name": "sgs/site-footer",
+		"attributes": {},
+		"draftRef": { "tpl": "Root/10#0" },
+		"draftFingerprint": { "tag": "footer", "cls": "", "styleHash": "1", "parentTags": [], "textHash": "1", "line": 1 },
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": {},
+				"draftRef": { "tpl": "Root/11#0" },
+				"draftFingerprint": { "tag": "div", "cls": "", "styleHash": "2", "parentTags": [ "footer" ], "textHash": "2", "line": 2 },
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {},
+						"draftRef": { "tpl": "Root/12#0" },
+						"draftFingerprint": { "tag": "div", "cls": "", "styleHash": "3", "parentTags": [ "footer", "div" ], "textHash": "3", "line": 3 },
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/icon-list",
+						"attributes": {},
+						"draftRef": { "tpl": "Root/13#0" },
+						"draftFingerprint": { "tag": "a", "cls": "", "styleHash": "4", "parentTags": [ "footer", "div" ], "textHash": "4", "line": 4 },
+						"innerBlocks": []
+					}
+				]
+			},
+			{ "name": "sgs/social-icons", "attributes": {}, "innerBlocks": [] }
+		]
+	}
+]

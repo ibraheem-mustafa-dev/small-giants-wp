@@ -1,0 +1,18 @@
+[
+	{
+		"name": "sgs/site-footer",
+		"attributes": { "className": "cr-ref-footer-0" },
+		"innerBlocks": [
+			{
+				"name": "sgs/container",
+				"attributes": { "className": "cr-ref-footer-1" },
+				"innerBlocks": [
+					{ "name": "sgs/heading", "attributes": { "className": "cr-ref-footer-8" }, "innerBlocks": [] },
+					{ "name": "sgs/icon-list", "attributes": { "className": "cr-ref-footer-9" }, "innerBlocks": [] }
+				]
+			},
+			{ "name": "sgs/social-icons", "attributes": { "className": "cr-ref-footer-6" }, "innerBlocks": [] },
+			{ "name": "sgs/text", "attributes": { "className": "cr-ref-footer-30" }, "innerBlocks": [] }
+		]
+	}
+]
