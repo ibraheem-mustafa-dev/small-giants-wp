@@ -194,7 +194,7 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 	plan.facets.forEach( ( a ) => log( `  ${ a.say }` ) );
 	plan.actions.forEach( ( a ) => log( `  ${ a.say }` ) );
 	const t = tallyCatalogue( plan );
-	const ft = tallyFacets( plan );
+	const ft = tallyFacets( plan.facets );
 	if ( ! apply ) {
 		log( `${ t.create } to create, ${ t.complete } to complete, ${ t.exists } existing, ${ t.left } left; filter attributes ${ ft.create } to create, ${ ft.complete } to complete, ${ ft.exists } existing (dry run: re-run with --apply)` );
 		return 0;

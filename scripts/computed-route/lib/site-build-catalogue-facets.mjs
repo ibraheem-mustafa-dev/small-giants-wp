@@ -66,7 +66,7 @@ export const facetSay = ( catalogue, p ) => {
 	return parts.length ? `; filters ${ parts.join( ', ' ) }` : '';
 };
 
-export const tallyFacets = ( plan ) => Object.fromEntries( [ 'create', 'complete', 'exists' ].map( ( k ) => [ k, plan.actions.filter( ( a ) => a.action === k ).length ] ) );
+export const tallyFacets = ( actions ) => Object.fromEntries( [ 'create', 'complete', 'exists' ].map( ( k ) => [ k, actions.filter( ( a ) => a.action === k ).length ] ) );
 
 // The read's PHP: `$facets` (per slug: id, label, reserved, terms name -> swatch) and `$sgs_product_facets( $id )`
 // (per slug: the product's term names).

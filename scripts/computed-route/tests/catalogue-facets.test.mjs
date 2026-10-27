@@ -27,17 +27,19 @@ const byId = ( cat, id ) => cat.products.find( ( p ) => p.draftId === id );
 test( 'every held filter field is a facet labelled by the group drawing its state key, with its terms in the code list\'s order', () => {
 	const cat = read();
 	assert.deepEqual( cat.facets.map( ( f ) => [ f.field, f.key, f.label, f.slug, f.kind ] ), [
-		[ 'kind', 'kinds', 'Kind', 'kind', 'value' ], [ 'tones', 'tones', 'Tone', 'tone', 'multi' ], [ 'girth', 'band', 'Size', 'size-filter', 'derived' ],
+		[ 'kind', 'kinds', 'Kind', 'kind', 'value' ], [ 'tones', 'tones', 'Shade', 'shade', 'multi' ], [ 'girth', 'band', 'Size', 'size-filter', 'derived' ],
 		[ 'lined', 'lined', 'Lined', 'lined', 'boolean' ], [ 'fitFor', 'fitFor', 'Fits', 'fits', 'value' ], [ 'theme', 'theme', 'Pick a theme', 'pick-a-theme', 'value' ],
 	] );
+	// Named by the [ value, label ] pairs that list every kind, not the shorter list holding two of them.
 	assert.deepEqual( terms( facet( cat, 'kind' ) ), [ 'Cap', 'Beanie', 'Hood' ] );
+	assert.deepEqual( cat.products.map( ( p ) => p.facets.kind ), [ [ 'Cap' ], [ 'Beanie' ], [ 'Hood' ] ] );
 	assert.deepEqual( catalogueProblems( cat ), [] );
 } );
 
 test( 'a list field keyed into an object names its terms from the object and carries each colour as the swatch', () => {
 	const tone = facet( read(), 'tones' );
 	assert.deepEqual( tone.terms, [ { name: 'Ink', swatch: '#101820' }, { name: 'Sand', swatch: '#d8c3a5' }, { name: 'Moss', swatch: '#4a5d23' } ] );
-	assert.deepEqual( byId( read(), '1' ).facets.tone, [ 'Ink', 'Sand' ] );
+	assert.deepEqual( read().products.map( ( p ) => p.facets.shade ), [ [ 'Ink', 'Sand', 'Moss' ], [ 'Moss' ], [ 'Ink' ] ] );
 } );
 
 test( 'a value a local function works out is evaluated per product; its slug, taken by a different variation attribute, becomes -filter', () => {
@@ -66,15 +68,16 @@ test( 'a value matching every choice carries every other term; the "all" choice 
 	const strict = read( edited( " || p.fitFor === 'Anyone')", ')' ) );
 	assert.equal( facet( strict, 'fitFor' ).wildcard, null );
 	assert.deepEqual( strict.products.map( ( p ) => p.facets.fits || null ), [ null, [ 'Adults' ], [ 'Children' ] ] );
+	// A literal compared on its own, with no live comparison beside it, matches no choice.
+	assert.equal( facet( read( edited( ' || p.fitFor === f.fitFor', '' ) ), 'fitFor' ).wildcard, null );
 } );
 
 test( 'with no group naming its key a facet takes the template text before its control, else the field name', () => {
 	assert.equal( facet( read(), 'theme' ).label, 'Pick a theme' );
 	const bare = read( edited( 'themes: C.THEMES.map(t => ({ name: t.name, on: f.theme === t.id,', 'themes: C.THEMES.map(t => ({ name: t.name, on: false,' ) );
 	assert.equal( facet( bare, 'theme' ).label, 'Theme' );
-	const noGroup = read( edited( "group('kind', 'Kind', { items: chips('kinds', C.KINDS) }),", '' ) );
-	assert.equal( facet( noGroup, 'kind' ).label, 'Kind' );
-	assert.equal( facet( read( edited( "group('tone', 'Tone',", "group('tone', 'Shade'," ) ), 'tones' ).label, 'Shade' );
+	assert.equal( facet( read( edited( "group('tone', 'Shade',", "group('tone', 'Hue'," ) ), 'tones' ).label, 'Hue' );
+	assert.equal( facet( read( edited( "group('tone', 'Shade', ", '(' ) ), 'tones' ).label, 'Tone' );
 } );
 
 test( 'terms are named by the filter\'s own list, never a product\'s values; a value the list lacks is left out and a gap row', () => {
@@ -103,7 +106,7 @@ test( 'a facet a variation attribute already holds is that axis; one whose terms
 } );
 
 test( 'two facets labelled alike are numbered as they are read, each product keeping its terms under its own facet', () => {
-	const cat = read( edited( "group('tone', 'Tone',", "group('tone', 'Kind'," ) );
+	const cat = read( edited( "group('tone', 'Shade',", "group('tone', 'Kind'," ) );
 	assert.deepEqual( [ facet( cat, 'kind' ).slug, facet( cat, 'tones' ).slug ], [ 'kind', 'kind-2' ] );
-	assert.deepEqual( [ byId( cat, '1' ).facets.kind, byId( cat, '1' ).facets[ 'kind-2' ] ], [ [ 'Cap' ], [ 'Ink', 'Sand' ] ] );
+	assert.deepEqual( [ byId( cat, '1' ).facets.kind, byId( cat, '1' ).facets[ 'kind-2' ] ], [ [ 'Cap' ], [ 'Ink', 'Sand', 'Moss' ] ] );
 } );

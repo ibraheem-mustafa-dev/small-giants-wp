@@ -15,13 +15,14 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
-  static TONES = { ink: ['Ink', '#101820'], sand: ['Sand', '#d8c3a5'], moss: ['Moss', '#4a5d23'] };
-  static KINDS = ['Cap', 'Beanie', 'Hood'];
+  static TONES = { ink: ['Ink', '#101820'], sand: ['Sand', '#d8c3a5'], moss: ['Moss', '#4a5d23'], rust: ['Rust', '#8a3b12'] };
+  static PICKS = ['cap', 'hood'];
+  static KINDS = [['cap', 'Cap'], ['beanie', 'Beanie'], ['hood', 'Hood']];
   static THEMES = [{ id: 'sea', name: 'By the sea' }, { id: 'hill', name: 'Up the hill' }];
   static GOODS = [
-    { id: 1, name: 'Ridge Cap', price: 30, kind: 'Cap', tones: ['ink', 'sand'], girth: 54, lined: true, fitFor: 'Anyone', weight: 80, make: 'a', season: 'b', theme: 'sea' },
-    { id: 2, name: 'Fold Beanie', price: 20, kind: 'Beanie', tones: ['moss'], girth: 58, lined: false, fitFor: 'Adults', weight: 60, make: 'c', season: 'd', theme: 'dune' },
-    { id: 3, name: 'Storm Hood', price: 45, kind: 'Hood', tones: ['ink'], girth: 62, lined: false, fitFor: 'Children', weight: 120, make: 'e', season: 'f', theme: 'hill' }
+    { id: 1, name: 'Ridge Cap', price: 30, kind: 'cap', tones: ['ink', 'sand', 'moss'], girth: 54, lined: true, fitFor: 'Anyone', weight: 80, make: 'a', season: 'b', theme: 'sea' },
+    { id: 2, name: 'Fold Beanie', price: 20, kind: 'beanie', tones: ['moss'], girth: 58, lined: false, fitFor: 'Adults', weight: 60, make: 'c', season: 'd', theme: 'dune' },
+    { id: 3, name: 'Storm Hood', price: 45, kind: 'hood', tones: ['ink'], girth: 62, lined: false, fitFor: 'Children', weight: 120, make: 'e', season: 'f', theme: 'hill' }
   ];
   state = { page: 'shop', curId: 1, curSize: 'M', bag: [], f: { kinds: [], tones: [], band: [], lined: false, fitFor: 'All', maxWeight: 200, combo: '', theme: 'sea' } };
   gbp(n) { return '£' + n.toFixed(2); }
@@ -39,25 +40,27 @@ class Component extends DCLogic {
     const fitList = ['All', 'Adults', 'Children'].map(g => ({ name: g, on: f.fitFor === g, set: () => setF({ fitFor: g }) }));
     const results = goods.filter(p =>
       (!f.kinds.length || f.kinds.includes(p.kind)) &&
-      (!f.tones.length || p.tones.some(t => f.tones.includes(t))) &&
+      (!f.tones.length || p.tones.some(t => f.tones.includes(t.trim()))) &&
       (!f.band.length || f.band.includes(band(p))) &&
       (!f.lined || p.lined) &&
       (f.fitFor === 'All' || p.fitFor === f.fitFor || p.fitFor === 'Anyone') &&
       p.weight <= f.maxWeight &&
       (!f.combo || p.make + p.season === f.combo) &&
-      p.theme === f.theme);
+      p.theme === S.f.theme);
+    const related = goods.filter(p => p.kind === cur.kind);
     const chipsOn = [];
+    if (f.combo) chipsOn.push({ label: 'Combo', remove: () => setF({ combo: '' }) });
     if (f.lined) chipsOn.push({ label: 'Lined', remove: () => setF({ lined: false }) });
     const groups = [
       group('fit', 'Fits', { items: fitList }),
-      group('kind', 'Kind', { items: chips('kinds', C.KINDS) }),
-      group('tone', 'Tone', { items: Object.keys(C.TONES).map(k => ({ name: C.TONES[k][0], toggle: () => multi('tones', k) })) }),
+      group('kind', 'Kind', { items: chips('kinds', C.KINDS.map(k => k[0])) }),
+      group('tone', 'Shade', { items: Object.keys(C.TONES).map(k => ({ name: C.TONES[k][0], toggle: () => multi('tones', k) })) }),
       group('size', 'Size', { items: chips('band', ['Small', 'Medium', 'Large']) })
     ];
     const sizeDefs = [['S', -2], ['M', 0], ['L', 2]];
     const sizes = sizeDefs.map(s => ({ name: s[0], pick: () => this.setState({ curSize: s[0] }) }));
     return {
-      isShop: S.page === 'shop', isProduct: S.page === 'product', groups, chipsOn, results, cur, sizes,
+      isShop: S.page === 'shop', isProduct: S.page === 'product', groups, chipsOn, results, related, cur, sizes,
       lined: f.lined, toggleLined: () => setF({ lined: !f.lined }),
       themes: C.THEMES.map(t => ({ name: t.name, on: f.theme === t.id, pick: () => setF({ theme: t.id }) })),
       addPlain: () => this.addToBag(cur)

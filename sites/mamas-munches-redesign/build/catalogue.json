@@ -9,6 +9,39 @@
     "productPage": "Product.dc.html",
     "idKey": "id"
   },
+  "facets": [
+    {
+      "field": "occ",
+      "key": "occ",
+      "label": "What’s the moment?",
+      "slug": "what-s-the-moment",
+      "kind": "multi",
+      "terms": [
+        {
+          "name": "Baby shower",
+          "swatch": null
+        },
+        {
+          "name": "Just had a baby",
+          "swatch": null
+        },
+        {
+          "name": "Sending love from afar",
+          "swatch": null
+        },
+        {
+          "name": "The first 40 days",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Gifts.dc.html"
+      ]
+    }
+  ],
   "products": [
     {
       "draftId": "zookies",
@@ -43,10 +76,10 @@
       ],
       "brand": null,
       "facets": {
-        "occ": [
-          "born",
-          "far",
-          "forty"
+        "what-s-the-moment": [
+          "Just had a baby",
+          "Sending love from afar",
+          "The first 40 days"
         ]
       },
       "attributes": [
@@ -385,9 +418,9 @@
       ],
       "brand": null,
       "facets": {
-        "occ": [
-          "far",
-          "born"
+        "what-s-the-moment": [
+          "Sending love from afar",
+          "Just had a baby"
         ]
       },
       "attributes": [],
@@ -421,11 +454,10 @@
       ],
       "brand": null,
       "facets": {
-        "occ": [
-          "born",
-          "hospital",
-          "far",
-          "shower"
+        "what-s-the-moment": [
+          "Just had a baby",
+          "Sending love from afar",
+          "Baby shower"
         ]
       },
       "attributes": [],
@@ -457,10 +489,10 @@
       ],
       "brand": null,
       "facets": {
-        "occ": [
-          "forty",
-          "born",
-          "far"
+        "what-s-the-moment": [
+          "The first 40 days",
+          "Just had a baby",
+          "Sending love from afar"
         ]
       },
       "attributes": [],
@@ -488,8 +520,8 @@
       ],
       "brand": null,
       "facets": {
-        "occ": [
-          "shower"
+        "what-s-the-moment": [
+          "Baby shower"
         ]
       },
       "attributes": [
@@ -553,7 +585,7 @@
     {
       "draftId": "*",
       "kind": "facet",
-      "detail": "the shop filters on \"occ\" (Gifts.dc.html); the catalogue writes categories only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet"
+      "detail": "the filter on \"occ\" meets \"hospital\" on products, which the filter's own list offers no choice for; it is not written as terms"
     },
     {
       "draftId": "zookies",
