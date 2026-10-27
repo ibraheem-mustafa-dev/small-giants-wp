@@ -11,6 +11,8 @@
 //   sits, `msgInvalid` from the schema's validation copy, `msgRequired` and `msgTooLong` from the copy the draft's own validation
 //   shows for an empty or too-long field (lib/fill-form-schema.mjs::requiredCopyOf; a field the draft gives no copy writes nothing), `valueFromParam` where a link of the draft carries the control's name
 //   as a query parameter, and `conditionalField` / `conditionalOperator` / `conditionalValue` from the draft's `show` test.
+// A field node the skeleton built from the schema (a step the page never rendered, lib/skeleton-form-steps.mjs) has no draft
+// control; its `fieldName` names the schema field, and the same settings come from that field (schemaControl).
 // A form, its steps and its review step get theirs on the nodes the skeleton names as those blocks: `savedProgress`, each
 // step's `label` and the review's `intro` and Edit label, from the schema of the surface's own component. A button is
 // `isSubmit` when the draft's is `type="submit"`. A linked reference block (a page's `sgs/form` with `formIsLinked`) renders the
@@ -18,7 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { setAttr } from './tree.mjs';
-import { formSchemaOf, schemaFieldOf, schemaChipsOf, conditionsFromSource, linkParams, savesProgress, requiredCopyOf, copyFor } from './fill-form-schema.mjs';
+import { formSchemaOf, schemaFieldOf, schemaFieldByName, schemaChipsOf, conditionsFromSource, linkParams, savesProgress, requiredCopyOf, copyFor } from './fill-form-schema.mjs';
 import { parseTplKey } from './fill-skeleton.mjs';
 import { detectReferences, referenceOf } from './references.mjs';
 import { walk } from './tree.mjs';
@@ -191,6 +193,20 @@ export function formReadback( { writes, el, field = null, copy = {} } ) {
 	return bad;
 }
 
+// The control a schema field stands for when the page never rendered it, in the shape of the draft read's `snap.form`: its name,
+// its autocomplete token, and its options as the block takes them (choices for a block holding `tiles`, else options whose value
+// and label are the draft's option). The placeholder, a ticked start, a multiple choice and the validation copy come from the
+// schema field itself in formFieldWrites.
+export function schemaControl( db, block, f ) {
+	const el = { name: f.name };
+	set( f.ac ) && ( el.autocomplete = String( f.ac ) );
+	if ( Array.isArray( f.options ) && f.options.length ) {
+		const options = f.options.map( String );
+		attrDef( db, block, 'tiles' ) ? ( el.chips = options.map( ( label ) => ( { label } ) ) ) : ( el.options = options.map( ( o ) => ( { value: o, label: o } ) ) );
+	}
+	return el;
+}
+
 // A single node's write: the attribute onto the tree node and a content write record for the report.
 function apply( out, node, ref, rec, w ) {
 	if ( same( w.value, node.attributes?.[ w.attr ] ) ) {
@@ -246,13 +262,17 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			out.unmapped.push( ...r.unmapped.map( ( u ) => ( { node: ref, block: rec.name, ...u } ) ) );
 			out.notes.push( ...r.notes.map( ( n ) => `${ ref } ${ rec.name }: ${ n }` ) );
 		};
-		if ( /^sgs\/form-field-/.test( rec.name ) && el ) {
-			const hit = ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
-			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ el.name, el.id, hit?.field?.name ], hit?.field || null );
-			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null, copy } );
+		// A field the page never rendered (a later step's, built from the schema by lib/skeleton-form-steps.mjs) is the schema
+		// field its `fieldName` names, and the control it stands for is read from that field (schemaControl).
+		const built = /^sgs\/form-field-/.test( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
+		const control = el || ( built ? schemaControl( db, rec.name, built.field ) : null );
+		if ( /^sgs\/form-field-/.test( rec.name ) && control ) {
+			const hit = built || ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
+			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ control.name, control.id, hit?.field?.name ], hit?.field || null );
+			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el: control, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null, copy } );
 			take( made );
 			// The read-back: every value written must be the draft fact it came from; a disagreement is a named problem in the report.
-			out.unmapped.push( ...readback( { writes: made.writes, el, field: hit, copy } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );
+			out.unmapped.push( ...readback( { writes: made.writes, el: control, field: hit, copy } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );
 		} else if ( 'sgs/button' === rec.name && el && 'button' === el.tag && 'submit' === el.type && attrDef( db, 'sgs/button', 'isSubmit' ) ) {
 			apply( out, node, ref, rec, { attr: 'isSubmit', value: true, merge: 'replace' } );
 		} else if ( 'sgs/form' === rec.name && schema && savesProgress( flags, schema.component ) ) {
