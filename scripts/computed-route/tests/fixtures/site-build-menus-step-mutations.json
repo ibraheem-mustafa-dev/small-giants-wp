@@ -1,0 +1,20 @@
+[
+	{"file": "lib/site-build-menus-step.mjs", "find": "m.slug === name && m.owner === name", "replace": "m.slug === name", "why": "a person's menu is pruned"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "'post_type' === e.type && ", "replace": "", "why": "a custom item is pruned"},
+	{"file": "lib/site-build-menus-step.mjs", "find": " && ! asked.has( e.objectId )", "replace": "", "why": "a page the map asks the menu for is removed"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "...plan.actions.filter( ( a ) => 'section' === a.type ),", "replace": "", "why": "the section pages are not set"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "\t\t...superseded,\n", "replace": "", "why": "a superseded item is never removed"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "...plan.actions.filter( ( a ) => 'menus' === a.phase ),", "replace": "...plan.actions.filter( ( a ) => 'site' !== a.phase ),", "why": "post rebuilds join the menus step"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "[ a.id, a.page, a.object ]", "replace": "[ a.object ]", "why": "a section page naming a post with no id is not caught"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "o.name.startsWith( 'nav_menu_locations[' )", "replace": "true", "why": "site options join the menus step"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "\t\treturn 1;\n\t}\n\tconst step", "replace": "\t}\n\tconst step", "why": "a plan problem does not stop the step"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "\t\terror( 'FAILED: nothing was written' );\n\t\treturn 1;", "replace": "\t\terror( 'FAILED: nothing was written' );", "why": "an unresolved post does not stop the step"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "\tif ( ! apply ) {\n\t\tlog( `${ step.actions.length } menu step(s) to run (dry run: re-run with --apply)` );\n\t\treturn 0;\n\t}", "replace": "", "why": "a dry run writes"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "\t\tthrow new Error( 'the menus step makes no post' );\n", "replace": "", "why": "the step could create a post or write the page map"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "\twp( [ 'menu', 'item', 'delete', String( a.id ) ] );", "replace": "\tvoid a;", "why": "a removal is printed, not run"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "'menus' === a.phase && 'item-delete' !== a.type ), 'menus'", "replace": "'menus' === a.phase ), 'menus'", "why": "a removal is sent to applyPhase as well"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "again.plan.problems.length || left.actions.length", "replace": "left.actions.length", "why": "a re-read with a problem passes"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "\t\treturn 1;\n\t}\n\tlog( `${ step.actions.length } menu step(s) run; a fresh read plans 0` );", "replace": "\t}\n\tlog( `${ step.actions.length } menu step(s) run; a fresh read plans 0` );", "why": "a re-read that still plans a step passes"},
+	{"file": "lib/site-build-menus-step.mjs", "find": ".filter( isRef )", "replace": "", "why": "a resolved post id counts as unresolved"},
+	{"file": "lib/site-build-menus-step.mjs", "find": "[ byKey.get( wanted.sections[ it.rowKey ] )?.id, it.label ]", "replace": "[ byKey.get( it.rowKey )?.id, it.label ]", "why": "the mega post, not its section page, is looked for"}
+]

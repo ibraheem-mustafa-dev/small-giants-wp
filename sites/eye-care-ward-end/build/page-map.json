@@ -99,6 +99,11 @@
     "template": "page",
     "menus": [
       {
+        "menu": "header",
+        "position": 4,
+        "parentItem": null
+      },
+      {
         "menu": "drawer-2",
         "position": 2,
         "parentItem": null
@@ -297,7 +302,13 @@
     "title": "Sunglasses mega menu",
     "parent": null,
     "template": null,
-    "menus": [],
+    "menus": [
+      {
+        "menu": "header",
+        "position": 1,
+        "parentItem": null
+      }
+    ],
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
@@ -309,7 +320,13 @@
     "title": "Brands mega menu",
     "parent": null,
     "template": null,
-    "menus": [],
+    "menus": [
+      {
+        "menu": "header",
+        "position": 2,
+        "parentItem": null
+      }
+    ],
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
@@ -320,7 +337,13 @@
     "title": "Lenses mega menu",
     "parent": null,
     "template": null,
-    "menus": [],
+    "menus": [
+      {
+        "menu": "header",
+        "position": 3,
+        "parentItem": null
+      }
+    ],
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
@@ -331,7 +354,13 @@
     "title": "Help mega menu",
     "parent": null,
     "template": null,
-    "menus": [],
+    "menus": [
+      {
+        "menu": "header",
+        "position": 4,
+        "parentItem": null
+      }
+    ],
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
