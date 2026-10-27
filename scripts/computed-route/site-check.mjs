@@ -20,7 +20,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { CHECKS, parseOnly, checkRecord, skippedRecord, exitCodeOf, renderMarkdown } from './lib/site-check-report.mjs';
 import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient } from './lib/site-check-site.mjs';
-import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, megaItems, drawerItem, pathKey } from './lib/site-check-nav.mjs';
+import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, megaItems, markMegaInPage, drawerItem, pathKey } from './lib/site-check-nav.mjs';
 import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine } from './lib/site-check-parts.mjs';
 import { COMING_SOON_ROOT, comingSoonChecks, comingSoonInPage } from './lib/site-check-coming-soon.mjs';
 import { isAccountRow } from './lib/site-build-map.mjs';
@@ -201,10 +201,11 @@ async function main() {
 			const { page, context } = await newPage();
 			await page.goto( homeUrl, LOAD );
 			const read = await page.evaluate( readHeaderLinksInPage );
+			const megaTriggers = await page.evaluate( markMegaInPage, MARK );
 			await context.close();
 			const headerRows = rows.filter( ( r ) => ( r.menus || [] ).some( ( m ) => 'header' === m.menu ) ).map( ( r ) => {
 				const hit = loaded.find( ( p ) => p.row === r );
-				return { key: `${ r.postType }:${ r.slug }`, title: r.title, url: hit?.finalUrl && ! hit.example ? hit.finalUrl : null };
+				return { key: `${ r.postType }:${ r.slug }`, title: r.title, postType: r.postType, id: r.id ?? null, url: hit?.finalUrl && ! hit.example ? hit.finalUrl : null };
 			} );
 			const draftLinks = new Map();
 			for ( const p of loaded ) {
@@ -214,7 +215,7 @@ async function main() {
 					draftLinks.set( d.href, entry );
 				}
 			}
-			return checkRecord( 'menu', menuItems( { ...read, pages: loaded.filter( ( p ) => ! p.example ), examples: loaded.filter( ( p ) => p.example ), headerRows, draftLinks: [ ...draftLinks.values() ], base, url: homeUrl } ) );
+			return checkRecord( 'menu', menuItems( { ...read, pages: loaded.filter( ( p ) => ! p.example ), examples: loaded.filter( ( p ) => p.example ), headerRows, draftLinks: [ ...draftLinks.values() ], megaTriggers, base, url: homeUrl } ) );
 		} );
 
 		await guard( 'mega', async () => {

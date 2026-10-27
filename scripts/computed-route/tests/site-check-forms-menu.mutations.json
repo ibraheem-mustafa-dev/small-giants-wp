@@ -1,0 +1,16 @@
+[
+	{ "file": "lib/form-submit-page.mjs", "find": "\t\tconst next = await own.count() ? own : page.locator(", "replace": "\t\tconst next = false ? own : page.locator(", "why": "the first button reading Continue is clicked instead of the form's own Next" },
+	{ "file": "lib/form-submit-page.mjs", "find": "\t\tif ( info.trap || ( ! shows && ! info.label ) ) {", "replace": "\t\tif ( info.trap || ! shows ) {", "why": "a visually hidden tile group is skipped" },
+	{ "file": "lib/form-submit-page.mjs", "find": "\t\tif ( ! info.trap && await c.isVisible() && '' === info.value ) {", "replace": "\t\tif ( await c.isVisible() && '' === info.value ) {", "why": "the honeypot is filled with the marker" },
+	{ "file": "lib/form-submit-page.mjs", "find": "const markedIn = ( form ) => `${ form } :is(input[type=\"text\"],input:not([type]),textarea):not([pattern]):not([readonly]):not([disabled])`;", "replace": "const markedIn = ( form ) => `${ form } :is(input[type=\"text\"],input:not([type]),textarea):is([name*=\"name\" i],[name*=\"message\" i])`;", "why": "an unnamed free-text field is left unmarked" },
+	{ "file": "lib/form-submit-page.mjs", "find": "\t\tif ( before.at >= 0 && after.at === before.at ) {", "replace": "\t\tif ( false ) {", "why": "a stuck step runs to the step cap" },
+	{ "file": "lib/form-submit-page.mjs", "find": "\tconst decoys = root ? [ ...root.querySelectorAll( 'button' ) ].filter( ( b ) => seen( b ) && ! b.matches( '.sgs-form__button--next, [type=\"submit\"]' ) &&", "replace": "\tconst decoys = root ? [ ...root.querySelectorAll( 'button' ) ].filter( ( b ) => seen( b ) &&", "why": "the form's own Next is named as a dead button" },
+	{ "file": "lib/site-check-parts.mjs", "find": "\tif ( ! store ) {", "replace": "\tif ( false ) {", "why": "a form set not to store fails for storing nothing" },
+	{ "file": "lib/site-check-parts.mjs", "find": "\t\tif ( stored && ! stored.error && 0 !== stored.count ) {", "replace": "\t\tif ( false ) {", "why": "a form set not to store that stored a row passes" },
+	{ "file": "lib/site-check-parts.mjs", "find": "store: 'false' !== w.getAttribute( 'data-store-submissions' ),", "replace": "store: true,", "why": "the form's store switch is not read" },
+	{ "file": "lib/site-check-parts.mjs", "find": "\tconst shotName = `form-${ form.formId || form.i }`;", "replace": "\tconst shotName = `form-${ form.i }`;", "why": "every form's screenshot shares one name and overwrites the last" },
+	{ "file": "lib/site-check-nav.mjs", "find": "\t\tif ( 'sgs_mega_menu' === r.postType ) {", "replace": "\t\tif ( false ) {", "why": "a mega menu row is looked for as a link" },
+	{ "file": "lib/site-check-nav.mjs", "find": "\tconst hit = triggers.find( ( t ) => String( t.panelId || '' ).endsWith( suffix ) );", "replace": "\tconst hit = triggers[ 0 ];", "why": "any mega trigger reaches every mega row" },
+	{ "file": "lib/site-check-nav.mjs", "find": "\tif ( hit?.hasPanel ) {", "replace": "\tif ( hit ) {", "why": "a trigger whose panel is missing reaches its row" },
+	{ "file": "lib/site-check-nav.mjs", "find": "\tif ( null == r.id ) {", "replace": "\tif ( false ) {", "why": "a row with no id is matched by a null suffix" }
+]
