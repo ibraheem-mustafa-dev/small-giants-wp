@@ -236,7 +236,10 @@ function callRefs( idx, r, depth, stack ) {
 			return [ { node: null, items, env } ];
 		}
 		if ( 'find' === m || 'findLast' === m ) {
-			return elementsOf( idx, ref( n.callee.object, env ), depth + 1, stack );
+			// The elements the predicate does not rule out (an element it cannot judge stays, as filter keeps it).
+			const els = elementsOf( idx, ref( n.callee.object, env ), depth + 1, stack );
+			const pred = fnOf( idx, n.arguments[ 0 ], env, depth, stack );
+			return pred && 'BlockStatement' !== pred.body.type ? els.filter( ( el ) => false !== staticTruth( idx, pred.body, bind( env, pred, [ el ] ) ) ) : els;
 		}
 		if ( 'assign' === m && 'Object' === n.callee.object.name ) {
 			return [ { node: null, merge: args.flatMap( ( a ) => resolveRefs( idx, a, depth + 1, stack ) ), env } ];
