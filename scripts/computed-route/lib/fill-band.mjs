@@ -3,12 +3,16 @@
 // has no such element, so no finder reads it and the band would keep the setting's default (the theme content size), capping
 // a full-bleed draft section. The draft's render states the band instead (R-47-4: the render is the source for a value the
 // draft's code never states): the draft element is both the block's root and its band, so the band is the element's padding
-// box, and its children are laid out in its content box. At each read width (375, 768, 1440, and 1920 confirming desktop):
+// box, and its children are laid out in its content box. Only a child that would otherwise stretch to the content box can
+// show a cap: a block-level child in block flow, or in a flex column whose cross axis stretches. At each read width (375, 768,
+// 1440: the widths every layout property is read at; 1024 and 1920 read lengths only, so they cannot tell a child sized by
+// itself from a capped one):
 //   - spans  the children's horizontal extent fills the content box, or every child narrower than it is held there by its own
-//            declared width or ceiling (its own setting carries that), or the element lays its children out in a flex row
-//            (their extent is the row's layout, not a cap). The band must be at least the element's padding box.
-//   - capped the children (none of them sized by itself) take a narrower extent centred in the content box: the band is that
-//            extent plus the element's horizontal padding (the band is border-box and carries the padding).
+//            declared width or ceiling or does not stretch (its own setting or layout carries that), or the element lays its
+//            children out in a flex row, an aligned flex column or a grid (their extent is that layout, not a cap). The band
+//            must be at least the element's padding box.
+//   - capped the stretching children take a narrower extent centred in the content box: the band is that extent plus the
+//            element's horizontal padding (the band is border-box and carries the padding).
 // A child that is not drawn, or is out of flow, says nothing. The band setting's value is chosen from what holds every
 // width's need: the value the node already holds (its default included) when that holds them all, so nothing is written;
 // otherwise `full` where the band spans and the cap where it is capped, a cap equal to the theme's content or wide size
@@ -22,7 +26,9 @@ import { resolve, blockSchema, LOOSE } from './resolve.mjs';
 import { setAttr } from './tree.mjs';
 
 const TOL = 1;
-const TIERS = [ [ 'desktop', [ 1440, 1920 ] ], [ 'tablet', [ 768 ] ], [ 'mobile', [ 375 ] ] ];
+const TIERS = [ [ 'desktop', [ 1440 ] ], [ 'tablet', [ 768 ] ], [ 'mobile', [ 375 ] ] ];
+// A child's display that fills its container's inline size in block flow.
+const BLOCK_LEVEL = /^(block|flow-root|flex|grid|list-item|table)$/;
 const CASCADE = { desktop: [ 'desktop' ], tablet: [ 'tablet', 'desktop' ], mobile: [ 'mobile', 'tablet', 'desktop' ] };
 const NO_SIZE = new Set( [ '', 'auto', 'none', 'normal', 'initial', 'unset', 'revert' ] );
 const px = ( v ) => {
@@ -91,17 +97,24 @@ export function bandNeed( own, kids, declaredOf = () => ( {} ) ) {
 	if ( ! drawn.length ) {
 		return null;
 	}
-	if ( /flex/.test( s.display ?? '' ) && /^row/.test( s[ 'flex-direction' ] ?? 'row' ) ) {
+	const display = s.display ?? '';
+	if ( /flex/.test( display ) && /^row/.test( s[ 'flex-direction' ] ?? 'row' ) ) {
 		return { min: box, why: 'a flex row' };
+	}
+	if ( /flex/.test( display ) && ! [ 'normal', 'stretch' ].includes( s[ 'align-items' ] ?? 'normal' ) ) {
+		return { min: box, why: `a flex column aligned ${ s[ 'align-items' ] }` };
+	}
+	if ( /grid/.test( display ) ) {
+		return { min: box, why: 'a grid' };
 	}
 	const sizedBySelf = ( k ) => {
 		const d = declaredOf( k ) || {};
 		const cap = px( k.styles?.[ 'max-width' ] );
-		return ( null !== cap && k.rect.w >= cap - TOL ) || [ 'width', 'max-width' ].some( ( p ) => undefined !== d[ p ] && ! NO_SIZE.has( String( d[ p ] ).trim() ) );
+		return ! BLOCK_LEVEL.test( k.styles?.display ?? 'block' ) || ( null !== cap && k.rect.w >= cap - TOL ) || [ 'width', 'max-width' ].some( ( p ) => undefined !== d[ p ] && ! NO_SIZE.has( String( d[ p ] ).trim() ) );
 	};
 	const free = drawn.filter( ( k ) => ! sizedBySelf( k ) );
 	if ( ! free.length ) {
-		return { min: box, why: 'each child narrower than the content box is sized by itself' };
+		return { min: box, why: 'each child narrower than the content box is sized by itself or does not stretch' };
 	}
 	const l = Math.min( ...free.map( ( k ) => k.rect.x ) );
 	const r = Math.max( ...free.map( ( k ) => k.rect.x + k.rect.w ) );

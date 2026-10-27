@@ -14,6 +14,7 @@ const db = openDb();
 const SIZES = { normal: 1080, wide: 1400 };
 const RAW = { settings: { layout: { contentSize: '1080px', wideSize: '1400px' } } };
 const FOUR = [ 375, 768, 1440, 1920 ];
+const THREE_W = [ 375, 768, 1440 ];
 
 // One draft element read: x 0, `w` wide, horizontal padding `pad` each side, display and direction.
 const own = ( w, pad = 0, extra = {} ) => ( { rect: { x: 0, y: 0, w, h: 200 }, inFlow: true, styles: { display: 'block', 'flex-direction': 'row', 'padding-left': `${ pad }px`, 'padding-right': `${ pad }px`, 'border-left-width': '0px', 'border-right-width': '0px', 'max-width': 'none', ...extra } } );
@@ -62,20 +63,27 @@ test( 'negative controls: a child sized by itself, an off-centre child, a flex r
 	assert.equal( bandNeed( own( 1440, 40, { display: 'flex', 'flex-direction': 'column' } ), [ centred( 1440, 40, 600 ) ] ).exact, 680, 'a flex column is a cap' );
 	assert.equal( bandNeed( own( 1440, 40 ), [ { ...kid( 40, 1360 ), inFlow: false }, centred( 1440, 40, 600 ) ] ).exact, 680, 'an out-of-flow child says nothing' );
 	assert.equal( bandNeed( own( 1440, 40 ), [ kid( 40, 0 ), centred( 1440, 40, 600 ) ] ).exact, 680, 'a zero-width child says nothing' );
+	assert.equal( bandNeed( own( 1440, 40 ), [ centred( 1440, 40, 300, { display: 'inline-block' } ) ] ).min, 1440, 'a child that does not stretch' );
+	assert.equal( bandNeed( own( 1440, 40 ), [ centred( 1440, 40, 300, { display: 'flex' } ) ] ).exact, 380, 'a block-level flex child stretches' );
+	assert.equal( bandNeed( own( 1440, 40 ), [ centred( 1440, 40, 300, { display: 'inline-block' } ), centred( 1440, 40, 600 ) ] ).exact, 680, 'the stretching child is the column' );
+	assert.equal( bandNeed( own( 1440, 40, { display: 'flex', 'flex-direction': 'column', 'align-items': 'center' } ), [ centred( 1440, 40, 600 ) ] ).min, 1440, 'an aligned flex column' );
+	assert.equal( bandNeed( own( 1440, 40, { display: 'flex', 'flex-direction': 'column', 'align-items': 'stretch' } ), [ centred( 1440, 40, 600 ) ] ).exact, 680, 'a stretching flex column' );
+	assert.equal( bandNeed( own( 1440, 40, { display: 'grid' } ), [ centred( 1440, 40, 600 ) ] ).min, 1440, 'a grid' );
 } );
 
 const spanNeeds = ( widths ) => Object.fromEntries( widths.map( ( w ) => [ w, { min: w } ] ) );
 
 test( 'MUST FAIL: bandValue writes full where a full-bleed band is wider than the theme content size, held where it is not', () => {
-	assert.deepEqual( bandValue( spanNeeds( FOUR ), { desktop: 'normal' }, SIZES ), { value: { desktop: 'full' } } );
+	assert.deepEqual( bandValue( spanNeeds( THREE_W ), { desktop: 'normal' }, SIZES ), { value: { desktop: 'full' } } );
 	assert.deepEqual( bandValue( spanNeeds( [ 375, 768 ] ), { desktop: 'normal' }, SIZES ), { held: true }, 'every width fits the content size' );
-	assert.deepEqual( bandValue( { 375: { min: 375 }, 768: { min: 768 }, 1440: { min: 1080 }, 1920: { min: 1080 } }, { desktop: 'normal' }, SIZES ), { held: true }, 'a theme-width element stays normal' );
+	assert.deepEqual( bandValue( { 375: { min: 375 }, 768: { min: 768 }, 1440: { min: 1080 } }, { desktop: 'normal' }, SIZES ), { held: true }, 'a theme-width element stays normal' );
 	assert.deepEqual( bandValue( { 1440: { min: 1081.5 } }, { desktop: 'normal' }, SIZES ), { value: { desktop: 'full' } }, 'past the tolerance' );
-	assert.deepEqual( bandValue( spanNeeds( FOUR ), {}, SIZES ), { held: true }, 'a block with no band cap by default' );
+	assert.deepEqual( bandValue( spanNeeds( THREE_W ), {}, SIZES ), { held: true }, 'a block with no band cap by default' );
+	assert.deepEqual( bandValue( { 1440: { min: 1440 }, 1920: { exact: 300 } }, { desktop: 'normal' }, SIZES ), { value: { desktop: 'full' } }, '1920 reads lengths only and is not judged' );
 } );
 
 test( 'MUST FAIL: bandValue writes a cap as its px length, or as the preset it equals', () => {
-	const capped = ( cap ) => ( { 375: { min: 375 }, 768: { min: 768 }, 1440: { exact: cap }, 1920: { exact: cap } } );
+	const capped = ( cap ) => ( { 375: { min: 375 }, 768: { min: 768 }, 1440: { exact: cap } } );
 	assert.deepEqual( bandValue( capped( 1280 ), { desktop: 'normal' }, SIZES ), { value: { desktop: '1280px' } } );
 	assert.deepEqual( bandValue( capped( 1400 ), { desktop: 'normal' }, SIZES ), { value: { desktop: 'wide' } } );
 	assert.deepEqual( bandValue( capped( 1080 ), { desktop: 'normal' }, SIZES ), { held: true }, 'a cap equal to the content size is the default' );
@@ -83,12 +91,11 @@ test( 'MUST FAIL: bandValue writes a cap as its px length, or as the preset it e
 	assert.match( bandValue( capped( 1280 ), { desktop: 'normal' }, SIZES, () => '80%' ).conflict, /desktop: no one value gives/, 'a cap the formatter cannot hold as a length is refused' );
 } );
 
-test( 'bandValue writes a narrower tier only where the wider tier does not give it, and refuses a tier no value gives', () => {
+test( 'bandValue writes a narrower tier only where the wider tier does not give it', () => {
 	const needs = { 375: { min: 375 }, 768: { exact: 600 }, 1440: { exact: 1200 } };
 	assert.deepEqual( bandValue( needs, { desktop: 'normal' }, SIZES ), { value: { desktop: '1200px', tablet: '600px' } } );
 	assert.deepEqual( bandValue( { 375: { exact: 300 }, 1440: { min: 1440 } }, { desktop: 'normal' }, SIZES ), { value: { desktop: 'full', mobile: '300px' } } );
 	assert.deepEqual( bandValue( { 768: { exact: 600 } }, { desktop: 'normal' }, SIZES ), { value: { desktop: 'normal', tablet: '600px' } }, 'an unread desktop keeps the value it has' );
-	assert.match( bandValue( { 1440: { exact: 1200 }, 1920: { exact: 1300 } }, { desktop: 'normal' }, SIZES ).conflict, /desktop: no one value gives 1200px and 1300px/ );
 	assert.deepEqual( bandValue( { 375: { exact: 300 }, 768: { exact: 600 } }, { desktop: '600px' }, SIZES ), { value: { desktop: '600px', mobile: '300px' } }, 'the value an unread desktop holds is carried down' );
 } );
 

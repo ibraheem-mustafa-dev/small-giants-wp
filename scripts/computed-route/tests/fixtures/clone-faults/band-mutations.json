@@ -13,10 +13,10 @@
 	{ "file": "lib/fill-band.mjs", "find": "&& false !== k.inFlow );", "replace": " );", "why": "an out-of-flow child counts" },
 	{ "file": "lib/fill-band.mjs", "find": "k?.rect?.w > 0 &&", "replace": "k?.rect &&", "why": "a zero-width child counts" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( ! drawn.length ) {\n\t\treturn null;", "replace": "if ( ! drawn.length ) {\n\t\treturn { min: box, why: 'none' };", "why": "no drawn child is taken as evidence" },
-	{ "file": "lib/fill-band.mjs", "find": "if ( /flex/.test( s.display ?? '' ) && /^row/.test( s[ 'flex-direction' ] ?? 'row' ) ) {", "replace": "if ( false ) {", "why": "a flex row's layout is read as a cap" },
+	{ "file": "lib/fill-band.mjs", "find": "if ( /flex/.test( display ) && /^row/.test( s[ 'flex-direction' ] ?? 'row' ) ) {", "replace": "if ( false ) {", "why": "a flex row's layout is read as a cap" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( ! own?.rect ) {", "replace": "if ( ! own ) {", "why": "an element read with no box is measured" },
 	{ "file": "lib/fill-band.mjs", "find": "&& /^row/.test( s[ 'flex-direction' ] ?? 'row' ) ) {", "replace": ") {", "why": "a flex column is taken for a row" },
-	{ "file": "lib/fill-band.mjs", "find": "return ( null !== cap && k.rect.w >= cap - TOL ) ||", "replace": "return ( false ) ||", "why": "a child at its own ceiling is read as a band cap" },
+	{ "file": "lib/fill-band.mjs", "find": "|| ( null !== cap && k.rect.w >= cap - TOL ) ||", "replace": "|| ( false ) ||", "why": "a child at its own ceiling is read as a band cap" },
 	{ "file": "lib/fill-band.mjs", "find": "[ 'width', 'max-width' ].some( ( p ) => undefined !== d[ p ] && ! NO_SIZE.has( String( d[ p ] ).trim() ) );", "replace": "false;", "why": "a child's declared width is read as a band cap" },
 	{ "file": "lib/fill-band.mjs", "find": "&& ! NO_SIZE.has( String( d[ p ] ).trim() ) );", "replace": " );", "why": "a declared auto width counts as the child's own size" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( ! free.length ) {\n\t\treturn { min: box,", "replace": "if ( ! free.length ) {\n\t\treturn { exact: box,", "why": "children sized by themselves are read as a cap" },
@@ -38,5 +38,11 @@
 	{ "file": "lib/fill-band.mjs", "find": "if ( attr !== band.attr ) {", "replace": "if ( ! attr ) {", "why": "a setting the resolver does not confirm is written" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( ! Object.values( needs ).some( Boolean ) ) {\n\t\treturn null;", "replace": "if ( false ) {\n\t\treturn null;", "why": "a node with no evidence is judged" },
 	{ "file": "lib/fill-band.mjs", "find": "\t\treturn { attr: band.attr };\n\t}\n\tconst { before, after }", "replace": "\t\treturn null;\n\t}\n\tconst { before, after }", "why": "a held band is left unread" },
-	{ "file": "lib/fill-band.mjs", "find": "how: 'band', note: evidence } );", "replace": "how: 'resolve', note: evidence } );", "why": "the band write is not marked as the band pass's" }
+	{ "file": "lib/fill-band.mjs", "find": "how: 'band', note: evidence } );", "replace": "how: 'resolve', note: evidence } );", "why": "the band write is not marked as the band pass's" },
+	{ "file": "lib/fill-band.mjs", "find": "const TIERS = [ [ 'desktop', [ 1440 ] ],", "replace": "const TIERS = [ [ 'desktop', [ 1440, 1920 ] ],", "why": "1920, read for lengths only, is judged" },
+	{ "file": "lib/fill-band.mjs", "find": "if ( /flex/.test( display ) && ! [ 'normal', 'stretch' ].includes( s[ 'align-items' ] ?? 'normal' ) ) {", "replace": "if ( false ) {", "why": "an aligned flex column's children are read as a cap" },
+	{ "file": "lib/fill-band.mjs", "find": "! [ 'normal', 'stretch' ].includes( s[ 'align-items' ] ?? 'normal' )", "replace": "! [ 'normal' ].includes( s[ 'align-items' ] ?? 'normal' )", "why": "a stretching flex column is taken for an aligned one" },
+	{ "file": "lib/fill-band.mjs", "find": "if ( /grid/.test( display ) ) {", "replace": "if ( false ) {", "why": "a grid's children are read as a cap" },
+	{ "file": "lib/fill-band.mjs", "find": "return ! BLOCK_LEVEL.test( k.styles?.display ?? 'block' ) ||", "replace": "return", "why": "a child that does not stretch is read as a cap" },
+	{ "file": "lib/fill-band.mjs", "find": "const BLOCK_LEVEL = /^(block|flow-root|flex|grid|list-item|table)$/;", "replace": "const BLOCK_LEVEL = /^(block|flow-root|list-item|table)$/;", "why": "a block-level flex child is taken as not stretching" }
 ]
