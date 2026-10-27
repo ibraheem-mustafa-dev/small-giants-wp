@@ -30,9 +30,9 @@
   "why": "a width equal to the lower bound is outside it"
  },
  {
-  "file": "lib/fill-open.mjs",
-  "find": ".filter( ( w ) => fitsWidth( w.bounds, width ) );",
-  "replace": ".filter( () => true );",
+  "file": "lib/state-reach.mjs",
+  "find": "( ways || [] ).filter( ( w ) => fitsWidth( w.bounds, width ) );",
+  "replace": "( ways || [] ).filter( () => true );",
   "why": "every state is offered at every width"
  },
  {

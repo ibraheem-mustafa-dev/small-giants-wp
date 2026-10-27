@@ -296,7 +296,15 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const flowNode = cls.choiceFlow && nodeOfKey[ m.root.key ]?.name === R.choiceFlow?.block ? nodeOfKey[ m.root.key ] : null;
 	const flowSides = { before: [], after: [] };
 	if ( flowNode ) {
-		flowNode.innerBlocks = flowNodes( { model: cls.choiceFlow, R: R.choiceFlow, m, view, finder } );
+		// Each step, question, result and field reads its rendered draft element, and the flow's own pieces are its slots
+		// (lib/skeleton-choice-flow-refs.mjs).
+		const made = flowNodes( { model: cls.choiceFlow, R: R.choiceFlow, m, view, finder, calSettings, inputSlot: ( block ) => fieldInputSlot( { db, rules: R.formControl, block, calSettings, calKeys } ) } );
+		flowNode.innerBlocks = made.nodes;
+		if ( Object.keys( made.slots ).length ) {
+			flowNode.draftSlots = { ...flowNode.draftSlots, ...made.slots };
+			rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slots = { ...rowOf[ m.root.key ].slots, ...made.slots } );
+		}
+		made.notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...made.notes ] );
 		// The words the flow holds no setting for are the flow post's own blocks beside it, built by the ordinary rules.
 		Object.assign( flowSides, canvasSiblings( { model: cls.choiceFlow, m, view, rows, rowOf, build: ( e ) => buildNode( e, null ) } ) );
 		settleFlowRows( { model: cls.choiceFlow, R: R.choiceFlow, rows, root: m.root, block: flowNode.name, m, view } );

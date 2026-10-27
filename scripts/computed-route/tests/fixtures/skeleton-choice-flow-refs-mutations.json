@@ -1,0 +1,134 @@
+[
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "\t\tObject.assign( node, { draftRef: finder( e ), draftFingerprint: m.fingerprint( e ) } );",
+  "replace": "\t\tObject.assign( node, { draftFingerprint: m.fingerprint( e ) } );",
+  "why": "a node read at a rendered element carries no draftRef"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "\t\tObject.keys( slots ).length && ( node.draftSlots = slots );",
+  "replace": "\t\tObject.keys( slots ).length && ( node.draftSlots = {} );",
+  "why": "the pieces' slots are dropped"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "\t\treturn read( { name: R.step, attributes: { label: s.label }, innerBlocks: inner }, at( s.wrapper ) );",
+  "replace": "\t\treturn read( { name: R.step, attributes: { label: s.label }, innerBlocks: inner }, at( s.key ) );",
+  "why": "a step reads its question's container (two nodes on one element) or the panel's condition"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "\t\t\tconst slot = e ? inputSlot( f.block ) : null;",
+  "replace": "\t\t\tconst slot = null;",
+  "why": "a field's control is not its input part"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "\t\t\treturn read( { name: f.block, attributes: f.label ? { label: f.label } : {}, innerBlocks: [] }, e, slot ? { [ slot ]: finder( e ) } : {} );",
+  "replace": "\t\t\treturn read( { name: f.block, attributes: f.label ? { label: f.label } : {}, innerBlocks: [] }, undefined, slot ? { [ slot ]: finder( e ) } : {} );",
+  "why": "a field reads nothing"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "at( s.key ), partsOf( R.question, s.parts || {}, R.slots?.question ) ) : null;",
+  "replace": "at( s.key ), {} ) : null;",
+  "why": "a question's heading, intro and description are not read"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "\tconst help = model.steps.find( ( s ) => at( s.parts?.toggle ) )?.parts.toggle ?? null;",
+  "replace": "\tconst help = null;",
+  "why": "the help toggle is not read"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-tree.mjs",
+  "find": "\tconst at = ( k ) => ( null == k ? undefined : rendered.get( k ) );",
+  "replace": "\tconst at = ( k ) => ( null == k ? undefined : rendered.get( k ) ?? m.els[ 0 ] );",
+  "why": "an unrendered element is given another element"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "\t\tif ( 'string' !== typeof slot || ! slot ) {",
+  "replace": "\t\tif ( false ) {",
+  "why": "a setting the calibration lacks still makes a slot"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "\tconst logo = inHead.find( ( k ) => 'img' === rec( k ).realTag ) ?? null;",
+  "replace": "\tconst logo = null;",
+  "why": "the header logo is not found"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "\tconst eyebrow = inHead.find( ( k ) => 'img' !== rec( k ).realTag && ( literal( k ) || BOUND.test( rec( k ).words || '' ) ) ) ?? null;",
+  "replace": "\tconst eyebrow = inHead.find( ( k ) => 'img' !== rec( k ).realTag && literal( k ) ) ?? null;",
+  "why": "a bound eyebrow is missed"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "\tconst inHead = head ? [ head, ...t.desc( head ) ].filter( ( k ) => real( k ) && ! close.has( k ) ) : [];",
+  "replace": "\tconst inHead = head ? [ head, ...t.desc( head ) ].filter( ( k ) => real( k ) ) : [];",
+  "why": "the Close button is read as the eyebrow"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "\tconst actions = pieces.next && pieces.add ? up( pieces.next ).find( ( p ) => up( pieces.add ).includes( p ) ) ?? null : null;",
+  "replace": "\tconst actions = pieces.add ? up( pieces.add )[ 0 ] ?? null : null;",
+  "why": "the actions box is the add button's parent alone"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "\treturn { logo, eyebrow, back: pieces.back ?? null, actions, note, noteCopy };",
+  "replace": "\treturn { logo, eyebrow, back: null, actions, note, noteCopy };",
+  "why": "the Back button is not read"
+ },
+ {
+  "file": "lib/skeleton-choice-flow.mjs",
+  "find": "\t\tconst toggle = t.desc( q.loop.k ).find( ( k ) => ! inButton.has( k ) && control( k ) && handler( k ).startsWith( `${ q.loop.as }.` ) ) ?? null;",
+  "replace": "\t\tconst toggle = t.desc( q.loop.k ).find( ( k ) => control( k ) ) ?? null;",
+  "why": "the option button is read as the help toggle"
+ },
+ {
+  "file": "lib/skeleton-choice-flow.mjs",
+  "find": "\t\tconst parts = { heading: heading ?? null, intro: q.texts[ at + 1 ] ?? null, description: description?.k ?? null, badge: badges[ 0 ] ?? null, toggle };",
+  "replace": "\t\tconst parts = { heading: heading ?? null, intro: q.texts[ at ] ?? null, description: description?.k ?? null, badge: badges[ 0 ] ?? null, toggle };",
+  "why": "the heading is read as the intro"
+ },
+ {
+  "file": "lib/skeleton-choice-flow.mjs",
+  "find": "\t\tconst own = real( p ) ? [ p ] : t.kids( p ).filter( real );",
+  "replace": "\t\tconst own = [ p ];",
+  "why": "a panel's step reads the condition, which draws nothing"
+ },
+ {
+  "file": "lib/skeleton-choice-flow.mjs",
+  "find": "\t\t\tout.noteKey = link;",
+  "replace": "",
+  "why": "the summary's stage note is not read"
+ },
+ {
+  "file": "lib/skeleton-propose.mjs",
+  "find": "\t\t\tflowNode.draftSlots = { ...flowNode.draftSlots, ...made.slots };",
+  "replace": "",
+  "why": "the flow root drops its pieces' slots"
+ },
+ {
+  "file": "lib/skeleton-propose.mjs",
+  "find": "\t\tmade.notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...made.notes ] );",
+  "replace": "",
+  "why": "a piece with no calibrated slot is dropped silently"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "\tconst noteCopy = matches.find( ( k ) => ! matches.some( ( o ) => o !== k && t.desc( o ).includes( k ) ) ) ?? null;",
+  "replace": "\tconst noteCopy = matches.at( -1 ) ?? null;",
+  "why": "the copy's innermost element is read in place of the copy itself"
+ },
+ {
+  "file": "lib/skeleton-choice-flow-refs.mjs",
+  "find": "real( k ) && ! inAside.has( k ) && k !== note && words( k ) === copy.words",
+  "replace": "real( k ) && k !== note && words( k ) === copy.words",
+  "why": "the summary's own note is read as its copy"
+ }
+]
