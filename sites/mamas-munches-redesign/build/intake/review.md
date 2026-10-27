@@ -1,10 +1,10 @@
 # Intake review: mamas-munches-redesign
 
-Taken on 2026-10-26T22:25:10.523Z; manifest 1.0, files hash d5ed630059b071ef.
+Taken on 2026-10-27T14:05:00.529Z; manifest 1.0, files hash d5ed630059b071ef.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1632; 819 need reading, 813 are confident proposals that Accept all covers (skeleton block choices 786, missing features 27).
+Rows: 1640; 827 need reading, 813 are confident proposals that Accept all covers (skeleton block choices 786, missing features 27).
 
 Not defects counted, not listed: breakpoint 6, reached-when-forced 204, render-wins 713.
 
@@ -23,17 +23,17 @@ Marks per section (first value = Accept all):
 
 ## Page map (page-map)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `page:page:contact` | **changed** Contact.dc.html → Contact (page, static, page) | contact | footer-help #4, header #5, drawer-menu-links #7 |  |
-| `page:page:gifts` | **changed** Gifts.dc.html → Gifts for new mums (page, static, page) | gifts | footer-shop #4, header #2, drawer-menu-links #4 |  |
-| `page:page:help` | **changed** Help.dc.html → Help & FAQs (page, static, page) | help | footer-help #1, header #4, drawer-menu-links #6 |  |
-| `page:page:home` | **changed** Home.dc.html → Handmade lactation cookies (page, static, front-page) | home | footer-shop #2 |  |
-| `page:page:my-account` | **changed** Account.dc.html → My account (page, static, page) | my-account |  |  |
 | `page:page:cart` | Basket.dc.html → Your basket (page, static, cart) | cart |  | accept |
 | `page:page:checkout` | Checkout.dc.html → Checkout (page, static, checkout) | checkout |  | accept |
+| `page:page:contact` | Contact.dc.html → Contact (page, static, page) | contact | footer-help #4, header #5, drawer-menu-links #7 |  |
+| `page:page:gifts` | Gifts.dc.html → Gifts for new mums (page, static, page) | gifts | footer-shop #4, header #2, drawer-menu-links #4 |  |
+| `page:page:help` | Help.dc.html → Help & FAQs (page, static, page) | help | footer-help #1, header #4, drawer-menu-links #6 |  |
+| `page:page:home` | Home.dc.html → Handmade lactation cookies (page, static, front-page) | home | footer-shop #2 |  |
+| `page:page:my-account` | Account.dc.html → My account (page, static, page) | my-account |  |  |
 | `page:product:product` | Product.dc.html → Product (product, live, single-product) | product | footer-shop #3, header #3, drawer-menu-links #2 | accept |
 | `page:sgs_choice_flow:choice-flow-build-your-zookie` | (no route) → Build your Zookie (sgs_choice_flow, static) | choice-flow-build-your-zookie |  | accept |
 | `page:sgs_choice_flow:choice-flow-gifts-she-ll-actually-eat` | (no route) → Gifts she’ll actually eat (sgs_choice_flow, static) | choice-flow-gifts-she-ll-actually-eat |  | accept |
@@ -46,7 +46,7 @@ Accept all: [ ]
 
 ## Palette roles (palette-role)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -90,7 +90,7 @@ Accept all: [ ]
 
 ## Site Info (site-info)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -102,7 +102,7 @@ Accept all: [ ]
 
 ## Flags (flag)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -113,15 +113,10 @@ Accept all: [ ]
 
 ## Missing features (missing-feature)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:Product:148` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/container |
-| `missing:SiteFooter:54` | <div>: no SGS block fits it | no block proposed | no block fits this element: decide it with skeleton.mjs decide | map:sgs/container |
-| `missing:SiteHeader:18` | <span>: no SGS block fits it | no block proposed | 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | map:sgs/nav-bar-menu |
-| `missing:SiteHeader:19` | <span>: no SGS block fits it | no block proposed | 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | map:sgs/nav-bar-menu |
-| `missing:SiteHeader:20` | <span>: no SGS block fits it | no block proposed | 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | map:sgs/nav-bar-menu |
 | `missing:handler@Home:132/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | difference |
 | `missing:handler@Home:222/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | gap:behaviour |
 
@@ -159,17 +154,30 @@ Accept all: [ ]
 
 ## Skeleton block choices (skeleton-block)
 
-Accept all: [ ]
+Accept all: [x]
 
-### Needs a decision (unresolved): no block (5)
+### Changed since the last export (18)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/18#0` | page-home-dc-html Home>SiteHeader@7#0/18#0 <span> | no block | 0: 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | remove |
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/19#0` | page-home-dc-html Home>SiteHeader@7#0/19#0 <span> | no block | 0: 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | remove |
-| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/20#0` | page-home-dc-html Home>SiteHeader@7#0/20#0 <span> | no block | 0: 9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide | remove |
-| `skeleton:page-product-dc-html-id-zookies:Product/148#0` | page-product-dc-html-id-zookies Product/148#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | block:sgs/container |
-| `skeleton:page-product-dc-html-id-zookies:Product>SiteFooter@146#0/54#0` | page-product-dc-html-id-zookies Product>SiteFooter@146#0/54#0 <div> | no block | 0: no block fits this element: decide it with skeleton.mjs decide | block:sgs/container |
+| `skeleton:page-contact-dc-html:Contact/45#0` | **changed** page-contact-dc-html Contact/45#0 <h2> "Send a message" | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/46#0` | **changed** page-contact-dc-html Contact/46#0 <div> | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/47#0` | **changed** page-contact-dc-html Contact/47#0 <div> "What’s it about?" | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/48#0` | **changed** page-contact-dc-html Contact/48#0 <div> | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/51#0` | **changed** page-contact-dc-html Contact/51#0 <div> | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/52#0` | **changed** page-contact-dc-html Contact/52#0 <label> "Your name" | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/53#0` | **changed** page-contact-dc-html Contact/53#0 <input> | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/54#0` | **changed** page-contact-dc-html Contact/54#0 <label> "Email" | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/55#0` | **changed** page-contact-dc-html Contact/55#0 <input> | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/57#0` | **changed** page-contact-dc-html Contact/57#0 <label> "Order number (if you have it)" | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/58#0` | **changed** page-contact-dc-html Contact/58#0 <input> | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/65#0` | **changed** page-contact-dc-html Contact/65#0 <label> "Message" | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/66#0` | **changed** page-contact-dc-html Contact/66#0 <textarea> | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-contact-dc-html:Contact/67#0` | **changed** page-contact-dc-html Contact/67#0 <button> "Send message →" | absorbed | 1: drawn by sgs/form: rule formLink |  |
+| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/18#0` | **changed** page-home-dc-html Home>SiteHeader@7#0/18#0 <span> | remove | 1: 9 copies of one template element on 9 surfaces; Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block |  |
+| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/19#0` | **changed** page-home-dc-html Home>SiteHeader@7#0/19#0 <span> | remove | 1: 9 copies of one template element on 9 surfaces; Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block |  |
+| `skeleton:page-home-dc-html:Home>SiteHeader@7#0/20#0` | **changed** page-home-dc-html Home>SiteHeader@7#0/20#0 <span> | remove | 1: 9 copies of one template element on 9 surfaces; Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block |  |
+| `skeleton:page-product-dc-html-id-zookies:Product/148#0` | **changed** page-product-dc-html-id-zookies Product/148#0 <div> | block:sgs/container | 1 |  |
 
 ### Needs a decision (low): block:sgs/business-info (1)
 
@@ -247,6 +255,7 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/131#0` | basket-drawer-right Home>SiteHeader@7#0/131#0 <span> "( 0 )" | block:sgs/text | 0.25: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/178#0` | basket-drawer-right Home>SiteHeader@7#0/178#0 <div> "Your basket is empty" | block:sgs/text | 0.25: 9 copies of one template element on 9 surfaces | accept |
+| `skeleton:contact-form:Contact/47#0` | contact-form Contact/47#0 <div> "What’s it about?" | block:sgs/text | 0.25 |  |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/105#0` | nav-drawer-left Home>SiteHeader@7#0/105#0 <div> "say hello" | block:sgs/text | 0.25: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/127#0` | nav-drawer-left Home>SiteHeader@7#0/127#0 <span> "8 reviews on Trustpilot ↗" | block:sgs/text | 0.25: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/61#0` | nav-drawer-left Home>SiteHeader@7#0/61#0 <div> "Who are you shopping for?" | block:sgs/text | 0.25: 10 copies of one template element on 10 surfaces | accept |
@@ -299,7 +308,6 @@ Accept all: [ ]
 | `skeleton:page-contact-dc-html:Contact/12#0` | page-contact-dc-html Contact/12#0 <div> "pop the kettle on ☕" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-contact-dc-html:Contact/25#0` | page-contact-dc-html Contact/25#0 <span> "The quickest way to reach Zainab. Number to be added." | block:sgs/text | 0.25 | accept |
 | `skeleton:page-contact-dc-html:Contact/33#0` | page-contact-dc-html Contact/33#0 <span> "DM @mamasmunches and see what’s baking." | block:sgs/text | 0.25 | accept |
-| `skeleton:page-contact-dc-html:Contact/47#0` | page-contact-dc-html Contact/47#0 <div> "What’s it about?" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-contact-dc-html:Contact/75#0` | page-contact-dc-html Contact/75#0 <div> "quick answers" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-contact-dc-html:Contact/79#0` | page-contact-dc-html Contact/79#0 <div> "Handmade in Birmingham by a registered food business. No shop to visit, but you’ll sometimes find Zainab at local markets and events." | block:sgs/text | 0.25 | accept |
 | `skeleton:page-gifts-dc-html:Gifts/12#0` | page-gifts-dc-html Gifts/12#0 <div> "for the mum-to-be & the brand new mum ♥" | block:sgs/text | 0.25 | accept |
@@ -527,6 +535,14 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:contact-form:Contact/52#0` | contact-form Contact/52#0 <label> "Your name" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:contact-form:Contact/53#0` | contact-form Contact/53#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:contact-form:Contact/54#0` | contact-form Contact/54#0 <label> "Email" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:contact-form:Contact/55#0` | contact-form Contact/55#0 <input> | block:sgs/form-field-email | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:contact-form:Contact/57#0` | contact-form Contact/57#0 <label> "Order number (if you have it)" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:contact-form:Contact/58#0` | contact-form Contact/58#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:contact-form:Contact/65#0` | contact-form Contact/65#0 <label> "Message" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
+| `skeleton:contact-form:Contact/66#0` | contact-form Contact/66#0 <textarea> | block:sgs/form-field-textarea | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) |  |
 | `skeleton:create-account:SignIn/42#0` | create-account SignIn/42#0 <label> "First name" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
 | `skeleton:create-account:SignIn/43#0` | create-account SignIn/43#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
 | `skeleton:create-account:SignIn/44#0` | create-account SignIn/44#0 <label> "Last name" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
@@ -567,14 +583,6 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/95#0` | page-checkout-dc-html Checkout/95#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
 | `skeleton:page-checkout-dc-html:Checkout/96#0` | page-checkout-dc-html Checkout/96#0 <label> "Town or city" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
 | `skeleton:page-checkout-dc-html:Checkout/97#0` | page-checkout-dc-html Checkout/97#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/52#0` | page-contact-dc-html Contact/52#0 <label> "Your name" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/53#0` | page-contact-dc-html Contact/53#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/54#0` | page-contact-dc-html Contact/54#0 <label> "Email" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/55#0` | page-contact-dc-html Contact/55#0 <input> | block:sgs/form-field-email | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/57#0` | page-contact-dc-html Contact/57#0 <label> "Order number (if you have it)" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/58#0` | page-contact-dc-html Contact/58#0 <input> | block:sgs/form-field-text | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/65#0` | page-contact-dc-html Contact/65#0 <label> "Message" | unwrap | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
-| `skeleton:page-contact-dc-html:Contact/66#0` | page-contact-dc-html Contact/66#0 <textarea> | block:sgs/form-field-textarea | 1: 2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
 | `skeleton:page-gifts-dc-html:Gifts/60#0` | page-gifts-dc-html Gifts/60#0 <label> "To" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
 | `skeleton:page-gifts-dc-html:Gifts/61#0` | page-gifts-dc-html Gifts/61#0 <input> | block:sgs/form-field-text | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
 | `skeleton:page-gifts-dc-html:Gifts/62#0` | page-gifts-dc-html Gifts/62#0 <label> "Your message" | unwrap | 1: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19) | accept |
@@ -596,7 +604,7 @@ Accept all: [ ]
 | `skeleton:product-gift-note:Product/101#0` | product-gift-note Product/101#0 <div> "200 characters left" | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) | accept |
 | `skeleton:product-gift-note:Product/96#0` | product-gift-note Product/96#0 <span> | remove | 1: the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19) | accept |
 
-### Settled by rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part (11)
+### Settled by rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part (10)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -607,10 +615,16 @@ Accept all: [ ]
 | `skeleton:gift-note-preview:Gifts/61#0` | gift-note-preview Gifts/61#0 <input> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
 | `skeleton:help-search-category-chips:Help/18#0` | help-search-category-chips Help/18#0 <input> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
 | `skeleton:page-checkout-dc-html:Checkout/31#0` | page-checkout-dc-html Checkout/31#0 <form> | block:sgs/form | 1: 2 copies of one template element on 2 surfaces; a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
-| `skeleton:page-contact-dc-html:Contact/44#0` | page-contact-dc-html Contact/44#0 <form> | block:sgs/form | 1: 2 copies of one template element on 2 surfaces; a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
 | `skeleton:page-signin-dc-html:SignIn/27#0` | page-signin-dc-html SignIn/27#0 <form> | block:sgs/form | 1: 2 copies of one template element on 2 surfaces; a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
 | `skeleton:product-buy-box:Product/108#0` | product-buy-box Product/108#0 <button> "Add to basket · £21.50" | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
 | `skeleton:product-gift-note:Product/93#0` | product-gift-note Product/93#0 <div> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
+
+### Settled by rule formLink: a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25) (2)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:page-contact-dc-html:Contact/44#0` | page-contact-dc-html Contact/44#0 <form> | block:sgs/form | 1: 2 copies of one template element on 2 surfaces; a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25) | accept |
+| `skeleton:page-contact-dc-html:Contact/50` | page-contact-dc-html Contact/50 <button> "My order" | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/form: rule formLink | accept |
 
 ### Settled by rule headerSlots: a strip above the header's main bar is its top row (1)
 
@@ -790,10 +804,11 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop/23` | page-shop-dc-html Shop/23 <button> "All" | absorbed | 1: 14 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSetFilter | accept |
 | `skeleton:page-shop-dc-html:Shop/24` | page-shop-dc-html Shop/24 <span> "5" | absorbed | 1: 14 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSetFilter | accept |
 
-### Settled by rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) (14)
+### Settled by rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) (13)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:contact-form:Contact/48#0` | contact-form Contact/48#0 <div> | block:sgs/form-field-tiles | 1: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) |  |
 | `skeleton:page-checkout-dc-html:Checkout/100` | page-checkout-dc-html Checkout/100 <button> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm | accept |
 | `skeleton:page-checkout-dc-html:Checkout/101` | page-checkout-dc-html Checkout/101 <span> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm | accept |
 | `skeleton:page-checkout-dc-html:Checkout/102` | page-checkout-dc-html Checkout/102 <span> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm | accept |
@@ -806,8 +821,6 @@ Accept all: [ ]
 | `skeleton:page-checkout-dc-html:Checkout/76#0` | page-checkout-dc-html Checkout/76#0 <button> "Send to someone else" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm | accept |
 | `skeleton:page-checkout-dc-html:Checkout/77#0` | page-checkout-dc-html Checkout/77#0 <span> "it’s a gift ♥" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm | accept |
 | `skeleton:page-checkout-dc-html:Checkout/98#0` | page-checkout-dc-html Checkout/98#0 <div> | block:sgs/form-field-tiles | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) | accept |
-| `skeleton:page-contact-dc-html:Contact/48#0` | page-contact-dc-html Contact/48#0 <div> | block:sgs/form-field-tiles | 1: 2 copies of one template element on 2 surfaces; a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21) | accept |
-| `skeleton:page-contact-dc-html:Contact/50` | page-contact-dc-html Contact/50 <button> "My order" | absorbed | 1: 10 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm | accept |
 
 ### Settled by rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link (12)
 
@@ -899,6 +912,10 @@ Accept all: [ ]
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/179#0` | basket-drawer-right Home>SiteHeader@7#0/179#0 <p> "New to Zookies? The Taster Trio is 3 cookies for £5, postage included." | block:sgs/text | 0.75: 9 copies of one template element on 9 surfaces | accept |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/180#0` | basket-drawer-right Home>SiteHeader@7#0/180#0 <button> "Add a Taster Trio · £5" | block:sgs/button | 0.75: 9 copies of one template element on 9 surfaces | accept |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/181#0` | basket-drawer-right Home>SiteHeader@7#0/181#0 <a> "Browse the shop" | block:sgs/button | 0.75: 9 copies of one template element on 9 surfaces | accept |
+| `skeleton:contact-form:Contact/45#0` | contact-form Contact/45#0 <h2> "Send a message" | block:sgs/heading | 0.75 |  |
+| `skeleton:contact-form:Contact/46#0` | contact-form Contact/46#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:contact-form:Contact/51#0` | contact-form Contact/51#0 <div> | block:sgs/container | 1 |  |
+| `skeleton:contact-form:Contact/67#0` | contact-form Contact/67#0 <button> "Send message →" | block:sgs/button | 0.75 |  |
 | `skeleton:create-account:SignIn/41#0` | create-account SignIn/41#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:create-account:SignIn/58#0` | create-account SignIn/58#0 <button> "Create account →" | block:sgs/button | 0.75 | accept |
 | `skeleton:forgotten-password-flow:SignIn/61#0` | forgotten-password-flow SignIn/61#0 <button> "← Back to sign in" | block:sgs/button | 0.75 | accept |
@@ -1035,11 +1052,7 @@ Accept all: [ ]
 | `skeleton:page-contact-dc-html:Contact/40#0` | page-contact-dc-html Contact/40#0 <span> "Zainab@mamasmunches.com" | block:sgs/business-info | 0.8 | accept |
 | `skeleton:page-contact-dc-html:Contact/41#0` | page-contact-dc-html Contact/41#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-contact-dc-html:Contact/42#0` | page-contact-dc-html Contact/42#0 <div> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-contact-dc-html:Contact/45#0` | page-contact-dc-html Contact/45#0 <h2> "Send a message" | block:sgs/heading | 0.75: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-contact-dc-html:Contact/46#0` | page-contact-dc-html Contact/46#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-contact-dc-html:Contact/51#0` | page-contact-dc-html Contact/51#0 <div> | block:sgs/container | 1: 2 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-contact-dc-html:Contact/6#0` | page-contact-dc-html Contact/6#0 <div> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-contact-dc-html:Contact/67#0` | page-contact-dc-html Contact/67#0 <button> "Send message →" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-contact-dc-html:Contact/7#0` | page-contact-dc-html Contact/7#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-contact-dc-html:Contact/74#0` | page-contact-dc-html Contact/74#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-contact-dc-html:Contact/77` | page-contact-dc-html Contact/77 <a> "When will my order arrive?" | block:sgs/icon-list | 0.7: 4 copies of one template element | accept |
@@ -1334,7 +1347,7 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250#0/41#0` | site-footer Home>SiteFooter@250#0/41#0 <div> | block:sgs/container | 1: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/44#0` | site-footer Home>SiteFooter@250#0/44#0 <div> | block:sgs/social-icons | 0.74: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/5#0` | site-footer Home>SiteFooter@250#0/5#0 <div> | block:sgs/container | 1: 10 copies of one template element on 10 surfaces | accept |
-| `skeleton:site-footer:Home>SiteFooter@250#0/54#0` | site-footer Home>SiteFooter@250#0/54#0 <div> | block:sgs/container | 1: 9 copies of one template element on 9 surfaces | accept |
+| `skeleton:site-footer:Home>SiteFooter@250#0/54#0` | site-footer Home>SiteFooter@250#0/54#0 <div> | block:sgs/container | 1: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/55#0` | site-footer Home>SiteFooter@250#0/55#0 <div> | block:sgs/container | 1: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/56#0` | site-footer Home>SiteFooter@250#0/56#0 <span> "© 2026 Mama’s Munches · Registered food business" | block:sgs/business-info | 0.8: 10 copies of one template element on 10 surfaces | accept |
 | `skeleton:site-footer:Home>SiteFooter@250#0/58#0` | site-footer Home>SiteFooter@250#0/58#0 <a> "Privacy" | block:sgs/button | 0.75: 10 copies of one template element on 10 surfaces | accept |
@@ -1352,7 +1365,7 @@ Accept all: [ ]
 
 ## Inventory diffs (inventory-diff)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|

@@ -1,7 +1,7 @@
 {
  "schemaVersion": "1",
  "client": "mamas-munches-redesign",
- "takenOn": "2026-10-26T22:25:10.523Z",
+ "takenOn": "2026-10-27T14:05:00.529Z",
  "sources": {
   "files": {
    "Account.dc.html": "569c41da66b4296faa81347c53f0d5d922d7bca67aed70fdb23df5efee8d01b5",
@@ -36,7 +36,7 @@
    "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
   },
   "route": {
-   "commit": "e868a2d5a75ce6d4b617e0430dbed8ebcd506d99"
+   "commit": "5892ce78973c218d477af956c380a4d83e583f7f"
   }
  },
  "manifest": {
@@ -36553,7 +36553,7 @@
   "animations": {
    "schema_version": "1.0",
    "project": "Mama's Munches ecommerce",
-   "generated": "2026-10-26",
+   "generated": "2026-10-27",
    "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
    "drafts": [
     {
@@ -46836,7 +46836,7 @@
   "surfaces": {
    "schema_version": "1.0",
    "project": "Mama's Munches ecommerce",
-   "generated": "2026-10-26",
+   "generated": "2026-10-27",
    "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
    "records": [
     {
@@ -71658,56 +71658,6 @@
  ],
  "missingFeatures": [
   {
-   "rowId": "missing:SiteHeader:18",
-   "draftId": "SiteHeader:18",
-   "construct": "element <span>",
-   "from": "skeleton",
-   "key": "Home>SiteHeader@7#0/18#0",
-   "line": "<span>: no SGS block fits it",
-   "mainFlow": null,
-   "why": "9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide"
-  },
-  {
-   "rowId": "missing:SiteHeader:19",
-   "draftId": "SiteHeader:19",
-   "construct": "element <span>",
-   "from": "skeleton",
-   "key": "Home>SiteHeader@7#0/19#0",
-   "line": "<span>: no SGS block fits it",
-   "mainFlow": null,
-   "why": "9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide"
-  },
-  {
-   "rowId": "missing:SiteHeader:20",
-   "draftId": "SiteHeader:20",
-   "construct": "element <span>",
-   "from": "skeleton",
-   "key": "Home>SiteHeader@7#0/20#0",
-   "line": "<span>: no SGS block fits it",
-   "mainFlow": null,
-   "why": "9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide"
-  },
-  {
-   "rowId": "missing:SiteFooter:54",
-   "draftId": "SiteFooter:54",
-   "construct": "element <div>",
-   "from": "skeleton",
-   "key": "Product>SiteFooter@146#0/54#0",
-   "line": "<div>: no SGS block fits it",
-   "mainFlow": null,
-   "why": "no block fits this element: decide it with skeleton.mjs decide"
-  },
-  {
-   "rowId": "missing:Product:148",
-   "draftId": "Product:148",
-   "construct": "element <div>",
-   "from": "skeleton",
-   "key": "Product/148#0",
-   "line": "<div>: no SGS block fits it",
-   "mainFlow": null,
-   "why": "no block fits this element: decide it with skeleton.mjs decide"
-  },
-  {
    "rowId": "missing:handler@Home:132/template:onPointerMove",
    "draftId": "Home:132",
    "construct": "handler onPointerMove (pointer-tracking)",
@@ -87922,7 +87872,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "9 copies of one template element on 9 surfaces",
+     "reason": "10 copies of one template element on 10 surfaces",
      "rule": null,
      "candidates": [
       {
@@ -87994,6 +87944,12 @@
        ]
       },
       {
+       "surface": "page-product-dc-html-id-zookies",
+       "keys": [
+        "Product>SiteFooter@146#0/54#0"
+       ]
+      },
+      {
        "surface": "page-gifts-dc-html",
        "keys": [
         "Gifts>SiteFooter@83#0/54#0"
@@ -88030,7 +87986,7 @@
        ]
       }
      ],
-     "copies": 9
+     "copies": 10
     },
     {
      "rowId": "skeleton:site-footer:Home>SiteFooter@250#0/55#0",
@@ -89761,12 +89717,12 @@
      "tag": "span",
      "words": "",
      "block": null,
-     "confidence": 0,
-     "low": true,
-     "reason": "9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide",
+     "confidence": 1,
+     "low": false,
+     "reason": "9 copies of one template element on 9 surfaces; Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block",
      "rule": null,
      "candidates": [],
-     "action": "unresolved",
+     "action": "remove",
      "snippet": "<span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data-dc-tpl=\"18\"></span>",
      "parent": {
       "draftId": "SiteHeader:17",
@@ -89877,12 +89833,12 @@
      "tag": "span",
      "words": "",
      "block": null,
-     "confidence": 0,
-     "low": true,
-     "reason": "9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide",
+     "confidence": 1,
+     "low": false,
+     "reason": "9 copies of one template element on 9 surfaces; Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block",
      "rule": null,
      "candidates": [],
-     "action": "unresolved",
+     "action": "remove",
      "snippet": "<span style=\"display:block;width:22px;height:2px;background:#3A2A22;border-radius:2px\" data-dc-tpl=\"19\"></span>",
      "parent": {
       "draftId": "SiteHeader:17",
@@ -89993,12 +89949,12 @@
      "tag": "span",
      "words": "",
      "block": null,
-     "confidence": 0,
-     "low": true,
-     "reason": "9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide",
+     "confidence": 1,
+     "low": false,
+     "reason": "9 copies of one template element on 9 surfaces; Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block",
      "rule": null,
      "candidates": [],
-     "action": "unresolved",
+     "action": "remove",
      "snippet": "<span style=\"display:block;width:16px;height:2px;background:#3A2A22;border-radius:2px;margin-right:6px\" data-dc-tpl=\"20\"></span>",
      "parent": {
       "draftId": "SiteHeader:17",
@@ -110767,8 +110723,8 @@
     "skeletonNodes": 394,
     "expandedNodes": 394,
     "low": 116,
-    "removed": 115,
-    "unresolved": 3,
+    "removed": 118,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "solitaryIcon": 1,
@@ -115219,8 +115175,8 @@
     "skeletonNodes": 195,
     "expandedNodes": 195,
     "low": 48,
-    "removed": 52,
-    "unresolved": 3,
+    "removed": 55,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "solitaryIcon": 1,
@@ -115437,7 +115393,7 @@
       {
        "draftId": "Product:148",
        "tag": "div",
-       "block": null
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 4,
@@ -115513,7 +115469,7 @@
       {
        "draftId": "Product:148",
        "tag": "div",
-       "block": null
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 4,
@@ -122852,7 +122808,7 @@
       {
        "draftId": "Product:148",
        "tag": "div",
-       "block": null
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 4,
@@ -123138,7 +123094,7 @@
       {
        "draftId": "Product:148",
        "tag": "div",
-       "block": null
+       "block": "sgs/container"
       }
      ],
      "siblingCount": 4,
@@ -123168,81 +123124,6 @@
      "draftId": "Product:146"
     },
     {
-     "rowId": "skeleton:page-product-dc-html-id-zookies:Product>SiteFooter@146#0/54#0",
-     "key": "Product>SiteFooter@146#0/54#0",
-     "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "9caa892b",
-      "parentTags": [
-       "div",
-       "div",
-       "footer",
-       "div",
-       "div"
-      ],
-      "textHash": "1505",
-      "line": 64
-     },
-     "tag": "div",
-     "words": "",
-     "block": null,
-     "confidence": 0,
-     "low": true,
-     "reason": "no block fits this element: decide it with skeleton.mjs decide",
-     "rule": null,
-     "candidates": [],
-     "action": "unresolved",
-     "snippet": "<div style=\"height:8px\" data-dc-tpl=\"54\"></div>",
-     "parent": {
-      "draftId": "SiteFooter:20",
-      "tag": "div",
-      "block": "sgs/container"
-     },
-     "siblings": [
-      {
-       "draftId": "SiteFooter:21",
-       "tag": "div",
-       "block": "sgs/container"
-      },
-      {
-       "draftId": "SiteFooter:27",
-       "tag": "div",
-       "block": "sgs/container"
-      },
-      {
-       "draftId": "SiteFooter:55",
-       "tag": "div",
-       "block": "sgs/container"
-      }
-     ],
-     "siblingCount": 3,
-     "boxes": [
-      {
-       "width": 1440,
-       "x": 100,
-       "y": 4441,
-       "w": 1240,
-       "h": 8
-      },
-      {
-       "width": 768,
-       "x": 32,
-       "y": 4872.9,
-       "w": 704,
-       "h": 8
-      },
-      {
-       "width": 375,
-       "x": 20,
-       "y": 5038.8,
-       "w": 335,
-       "h": 8
-      }
-     ],
-     "draftId": "SiteFooter:54"
-    },
-    {
      "rowId": "skeleton:page-product-dc-html-id-zookies:Product/148#0",
      "key": "Product/148#0",
      "fingerprint": {
@@ -123257,13 +123138,19 @@
      },
      "tag": "div",
      "words": "",
-     "block": null,
-     "confidence": 0,
-     "low": true,
-     "reason": "no block fits this element: decide it with skeleton.mjs decide",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
      "rule": null,
-     "candidates": [],
-     "action": "unresolved",
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
      "snippet": "<div style=\"height:84px;background:#F5C2C8\" data-dc-tpl=\"148\"></div>",
      "parent": {
       "draftId": "Product:5",
@@ -123309,11 +123196,11 @@
     "inventoryElements": 382,
     "parts": 34,
     "rows": 348,
-    "skeletonNodes": 219,
-    "expandedNodes": 219,
+    "skeletonNodes": 221,
+    "expandedNodes": 221,
     "low": 54,
-    "removed": 108,
-    "unresolved": 5,
+    "removed": 111,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 4,
      "solitaryIcon": 1,
@@ -129473,8 +129360,8 @@
     "skeletonNodes": 215,
     "expandedNodes": 215,
     "low": 60,
-    "removed": 49,
-    "unresolved": 3,
+    "removed": 52,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "solitaryIcon": 1,
@@ -136089,8 +135976,8 @@
     "skeletonNodes": 191,
     "expandedNodes": 191,
     "low": 58,
-    "removed": 40,
-    "unresolved": 3,
+    "removed": 43,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "alignWrapper": 2,
@@ -146322,8 +146209,8 @@
      "block": "sgs/form",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
-     "rule": "formHost",
+     "reason": "2 copies of one template element on 2 surfaces; a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25)",
+     "rule": "formLink",
      "candidates": [
       {
        "block": "sgs/form",
@@ -146395,19 +146282,14 @@
      },
      "tag": "h2",
      "words": "Send a message",
-     "block": "sgs/heading",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/heading",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2>",
      "parent": {
       "draftId": "Contact:44",
@@ -146418,12 +146300,12 @@
       {
        "draftId": "Contact:46",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:51",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:57",
@@ -146438,7 +146320,7 @@
       {
        "draftId": "Contact:67",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 5,
@@ -146465,16 +146347,7 @@
        "h": 31.5
       }
      ],
-     "draftId": "Contact:45",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/45#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:45"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/46#0",
@@ -146497,19 +146370,14 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"display:flex;flex-wrap:",
      "parent": {
       "draftId": "Contact:44",
@@ -146520,12 +146388,12 @@
       {
        "draftId": "Contact:45",
        "tag": "h2",
-       "block": "sgs/heading"
+       "block": null
       },
       {
        "draftId": "Contact:51",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:57",
@@ -146540,7 +146408,7 @@
       {
        "draftId": "Contact:67",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 5,
@@ -146567,16 +146435,7 @@
        "h": 174
       }
      ],
-     "draftId": "Contact:46",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/46#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:46"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/47#0",
@@ -146600,30 +146459,25 @@
      },
      "tag": "div",
      "words": "What’s it about?",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div>",
      "parent": {
       "draftId": "Contact:46",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Contact:48",
        "tag": "div",
-       "block": "sgs/form-field-tiles"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -146650,16 +146504,7 @@
        "h": 18
       }
      ],
-     "draftId": "Contact:47",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/47#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:47"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/48#0",
@@ -146683,30 +146528,25 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/form-field-tiles",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)",
-     "rule": "optionSetForm",
-     "candidates": [
-      {
-       "block": "sgs/form-field-tiles",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"b",
      "parent": {
       "draftId": "Contact:46",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Contact:47",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -146733,16 +146573,7 @@
        "h": 148
       }
      ],
-     "draftId": "Contact:48",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/48#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:48"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/50",
@@ -146770,16 +146601,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "10 copies of one template element on 2 surfaces; drawn by sgs/form-field-tiles: rule optionSetForm",
-     "rule": "optionSetForm",
-     "into": "Contact/48#0",
+     "reason": "10 copies of one template element on 2 surfaces; drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
      "candidates": [],
      "action": "absorbed",
      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ o.pick }}\" aria-pressed=\"{{ o.on }}\" style=\"min-height:44px;padding:0 16px;border-radius:999px;border:2px solid #3A2",
      "parent": {
       "draftId": "Contact:48",
       "tag": "div",
-      "block": "sgs/form-field-tiles"
+      "block": null
      },
      "siblings": [
       {
@@ -146836,7 +146667,7 @@
       "Contact/50#3",
       "Contact/50#4"
      ],
-     "proposalReason": "drawn by sgs/form-field-tiles: rule optionSetForm",
+     "proposalReason": "drawn by sgs/form: rule formLink",
      "otherWords": [
       "A gift",
       "Allergens",
@@ -146877,19 +146708,14 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.two }};gap:14px\" data-dc-tpl=\"51\"> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;",
      "parent": {
       "draftId": "Contact:44",
@@ -146900,12 +146726,12 @@
       {
        "draftId": "Contact:45",
        "tag": "h2",
-       "block": "sgs/heading"
+       "block": null
       },
       {
        "draftId": "Contact:46",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:57",
@@ -146920,7 +146746,7 @@
       {
        "draftId": "Contact:67",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 5,
@@ -146947,16 +146773,7 @@
        "h": 170
       }
      ],
-     "draftId": "Contact:51",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/51#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:51"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/52#0",
@@ -146983,15 +146800,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
      "candidates": [],
-     "action": "unwrap",
+     "action": "absorbed",
      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"52\">Your name<input required=\"{{ true }}\" autocomplete=\"na",
      "parent": {
       "draftId": "Contact:51",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
@@ -147024,16 +146842,7 @@
        "h": 78
       }
      ],
-     "draftId": "Contact:52",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/52#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:52"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/53#0",
@@ -147058,19 +146867,14 @@
      },
      "tag": "input",
      "words": "",
-     "block": "sgs/form-field-text",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
-     "candidates": [
-      {
-       "block": "sgs/form-field-text",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0",
      "parent": {
       "draftId": "Contact:52",
@@ -147102,16 +146906,7 @@
        "h": 54
       }
      ],
-     "draftId": "Contact:53",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/53#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:53"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/54#0",
@@ -147138,15 +146933,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
      "candidates": [],
-     "action": "unwrap",
+     "action": "absorbed",
      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"54\">Email<input type=\"email\" required=\"{{ true }}\" autocom",
      "parent": {
       "draftId": "Contact:51",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
@@ -147179,16 +146975,7 @@
        "h": 78
       }
      ],
-     "draftId": "Contact:54",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/54#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:54"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/55#0",
@@ -147213,19 +147000,14 @@
      },
      "tag": "input",
      "words": "",
-     "block": "sgs/form-field-email",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
-     "candidates": [
-      {
-       "block": "sgs/form-field-email",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<input type=\"email\" required=\"{{ true }}\" autocomplete=\"email\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;back",
      "parent": {
       "draftId": "Contact:54",
@@ -147257,16 +147039,7 @@
        "h": 54
       }
      ],
-     "draftId": "Contact:55",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/55#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:55"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/57#0",
@@ -147292,10 +147065,11 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
      "candidates": [],
-     "action": "unwrap",
+     "action": "absorbed",
      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"57\">Order number (if you have it)<input placeholder=\"MM-10",
      "parent": {
       "draftId": "Contact:44",
@@ -147306,17 +147080,17 @@
       {
        "draftId": "Contact:45",
        "tag": "h2",
-       "block": "sgs/heading"
+       "block": null
       },
       {
        "draftId": "Contact:46",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:51",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:65",
@@ -147326,7 +147100,7 @@
       {
        "draftId": "Contact:67",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 5,
@@ -147353,16 +147127,7 @@
        "h": 78
       }
      ],
-     "draftId": "Contact:57",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/57#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:57"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/58#0",
@@ -147386,19 +147151,14 @@
      },
      "tag": "input",
      "words": "",
-     "block": "sgs/form-field-text",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
-     "candidates": [
-      {
-       "block": "sgs/form-field-text",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<input placeholder=\"MM-1042\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-widt",
      "parent": {
       "draftId": "Contact:57",
@@ -147430,16 +147190,7 @@
        "h": 54
       }
      ],
-     "draftId": "Contact:58",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/58#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:58"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/65#0",
@@ -147465,10 +147216,11 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
      "candidates": [],
-     "action": "unwrap",
+     "action": "absorbed",
      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"65\">Message<textarea required=\"{{ true }}\" rows=\"5\" style=",
      "parent": {
       "draftId": "Contact:44",
@@ -147479,17 +147231,17 @@
       {
        "draftId": "Contact:45",
        "tag": "h2",
-       "block": "sgs/heading"
+       "block": null
       },
       {
        "draftId": "Contact:46",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:51",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:57",
@@ -147499,7 +147251,7 @@
       {
        "draftId": "Contact:67",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 5,
@@ -147526,16 +147278,7 @@
        "h": 147
       }
      ],
-     "draftId": "Contact:65",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/65#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:65"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/66#0",
@@ -147559,19 +147302,14 @@
      },
      "tag": "textarea",
      "words": "",
-     "block": "sgs/form-field-textarea",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
-     "rule": "formControl",
-     "candidates": [
-      {
-       "block": "sgs/form-field-textarea",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<textarea required=\"{{ true }}\" rows=\"5\" style=\"border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical\"",
      "parent": {
       "draftId": "Contact:65",
@@ -147603,16 +147341,7 @@
        "h": 123
       }
      ],
-     "draftId": "Contact:66",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/66#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:66"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/67#0",
@@ -147635,19 +147364,14 @@
      },
      "tag": "button",
      "words": "Send message →",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/form: rule formLink",
+     "rule": "formLink",
+     "into": "Contact/44#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<button type=\"submit\" style=\"align-self:flex-start;height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;fo",
      "parent": {
       "draftId": "Contact:44",
@@ -147658,17 +147382,17 @@
       {
        "draftId": "Contact:45",
        "tag": "h2",
-       "block": "sgs/heading"
+       "block": null
       },
       {
        "draftId": "Contact:46",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:51",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Contact:57",
@@ -147705,16 +147429,7 @@
        "h": 60
       }
      ],
-     "draftId": "Contact:67",
-     "alsoIn": [
-      {
-       "surface": "contact-form",
-       "keys": [
-        "Contact/67#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Contact:67"
     },
     {
      "rowId": "skeleton:page-contact-dc-html:Contact/74#0",
@@ -148229,11 +147944,11 @@
     "inventoryElements": 256,
     "parts": 44,
     "rows": 212,
-    "skeletonNodes": 144,
-    "expandedNodes": 144,
-    "low": 33,
-    "removed": 46,
-    "unresolved": 3,
+    "skeletonNodes": 134,
+    "expandedNodes": 134,
+    "low": 32,
+    "removed": 59,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "solitaryIcon": 4,
@@ -148245,9 +147960,7 @@
      "label": 1,
      "hero": 1,
      "heroInner": 3,
-     "formHost": 1,
-     "optionSetForm": 6,
-     "formControl": 8,
+     "formLink": 20,
      "logoGrid": 13,
      "marqueeCodeItems": 1,
      "pillButton": 2,
@@ -148289,7 +148002,1028 @@
      "screenshotSkips": 0
     }
    },
-   "rows": [],
+   "rows": [
+    {
+     "rowId": "skeleton:contact-form:Contact/45#0",
+     "key": "Contact/45#0",
+     "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "b9644c69",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "526ea6f3",
+      "line": 47
+     },
+     "tag": "h2",
+     "words": "Send a message",
+     "block": "sgs/heading",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/heading",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<h2 style=\"margin:0;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.05\" data-dc-tpl=\"45\">Send a message</h2>",
+     "parent": {
+      "draftId": "Contact:44",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:46",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:51",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:57",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:65",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:67",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 849,
+       "w": 631.2,
+       "h": 44.1
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 804.2,
+       "w": 636,
+       "h": 37.8
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1277.3,
+       "w": 295,
+       "h": 31.5
+      }
+     ],
+     "draftId": "Contact:45"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/46#0",
+     "key": "Contact/46#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 48
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div data-dc-tpl=\"46\"> <div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div> <div style=\"display:flex;flex-wrap:",
+     "parent": {
+      "draftId": "Contact:44",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:45",
+       "tag": "h2",
+       "block": "sgs/heading"
+      },
+      {
+       "draftId": "Contact:51",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:57",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:65",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:67",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 909.1,
+       "w": 631.2,
+       "h": 122
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 858,
+       "w": 636,
+       "h": 122
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1324.8,
+       "w": 295,
+       "h": 174
+      }
+     ],
+     "draftId": "Contact:46"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/47#0",
+     "key": "Contact/47#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7035c876",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "df5d6caa",
+      "line": 49
+     },
+     "tag": "div",
+     "words": "What’s it about?",
+     "block": "sgs/text",
+     "confidence": 0.25,
+     "low": true,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/text",
+       "score": 0.25,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div>",
+     "parent": {
+      "draftId": "Contact:46",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:48",
+       "tag": "div",
+       "block": "sgs/form-field-tiles"
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 909.1,
+       "w": 631.2,
+       "h": 18
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 858,
+       "w": 636,
+       "h": 18
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1324.8,
+       "w": 295,
+       "h": 18
+      }
+     ],
+     "draftId": "Contact:47"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/48#0",
+     "key": "Contact/48#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 50
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/form-field-tiles",
+     "confidence": 1,
+     "low": false,
+     "reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)",
+     "rule": "optionSetForm",
+     "candidates": [
+      {
+       "block": "sgs/form-field-tiles",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"48\"><sc-for list=\"{{ topics }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"49\"><button type=\"b",
+     "parent": {
+      "draftId": "Contact:46",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:47",
+       "tag": "div",
+       "block": "sgs/text"
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 935.1,
+       "w": 631.2,
+       "h": 96
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 884,
+       "w": 636,
+       "h": 96
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1350.8,
+       "w": 295,
+       "h": 148
+      }
+     ],
+     "draftId": "Contact:48"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/51#0",
+     "key": "Contact/51#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "89270990",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "1505",
+      "line": 52
+     },
+     "tag": "div",
+     "words": "",
+     "block": "sgs/container",
+     "confidence": 1,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/container",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<div style=\"display:grid;grid-template-columns:{{ L.two }};gap:14px\" data-dc-tpl=\"51\"> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;",
+     "parent": {
+      "draftId": "Contact:44",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:45",
+       "tag": "h2",
+       "block": "sgs/heading"
+      },
+      {
+       "draftId": "Contact:46",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:57",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:65",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:67",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1047.1,
+       "w": 631.2,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 996,
+       "w": 636,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1514.8,
+       "w": 295,
+       "h": 170
+      }
+     ],
+     "draftId": "Contact:51"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/52#0",
+     "key": "Contact/52#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "aed356f3",
+      "line": 53
+     },
+     "tag": "label",
+     "words": "Your name",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"52\">Your name<input required=\"{{ true }}\" autocomplete=\"na",
+     "parent": {
+      "draftId": "Contact:51",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:54",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1047.1,
+       "w": 308.6,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 996,
+       "w": 311,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1514.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Contact:52"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/53#0",
+     "key": "Contact/53#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "13953aa4",
+      "parentTags": [
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 53
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input required=\"{{ true }}\" autocomplete=\"name\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0",
+     "parent": {
+      "draftId": "Contact:52",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1071.1,
+       "w": 308.6,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 1020,
+       "w": 311,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1538.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Contact:53"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/54#0",
+     "key": "Contact/54#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form",
+       "div"
+      ],
+      "textHash": "bfda129",
+      "line": 54
+     },
+     "tag": "label",
+     "words": "Email",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"54\">Email<input type=\"email\" required=\"{{ true }}\" autocom",
+     "parent": {
+      "draftId": "Contact:51",
+      "tag": "div",
+      "block": "sgs/container"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:52",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 464.6,
+       "y": 1047.1,
+       "w": 308.6,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 996,
+       "w": 311,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1606.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Contact:54"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/55#0",
+     "key": "Contact/55#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "13953aa4",
+      "parentTags": [
+       "form",
+       "div",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 54
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-email",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-email",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input type=\"email\" required=\"{{ true }}\" autocomplete=\"email\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;back",
+     "parent": {
+      "draftId": "Contact:54",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 464.6,
+       "y": 1071.1,
+       "w": 308.6,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 391,
+       "y": 1020,
+       "w": 311,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1630.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Contact:55"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/57#0",
+     "key": "Contact/57#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "419b2fa2",
+      "line": 56
+     },
+     "tag": "label",
+     "words": "Order number (if you have it)",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"57\">Order number (if you have it)<input placeholder=\"MM-10",
+     "parent": {
+      "draftId": "Contact:44",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:45",
+       "tag": "h2",
+       "block": "sgs/heading"
+      },
+      {
+       "draftId": "Contact:46",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:51",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:65",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:67",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1141.1,
+       "w": 631.2,
+       "h": 78
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 1090,
+       "w": 636,
+       "h": 78
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1700.8,
+       "w": 295,
+       "h": 78
+      }
+     ],
+     "draftId": "Contact:57"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/58#0",
+     "key": "Contact/58#0",
+     "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "13953aa4",
+      "parentTags": [
+       "form",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 56
+     },
+     "tag": "input",
+     "words": "",
+     "block": "sgs/form-field-text",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-text",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<input placeholder=\"MM-1042\" style=\"height:54px;border:2px solid #3A2A22;border-radius:14px;padding:0 16px;font-size:16px;background:#FFFAF0;width:100%;min-widt",
+     "parent": {
+      "draftId": "Contact:57",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1165.1,
+       "w": 631.2,
+       "h": 54
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 1114,
+       "w": 636,
+       "h": 54
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1724.8,
+       "w": 295,
+       "h": 54
+      }
+     ],
+     "draftId": "Contact:58"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/65#0",
+     "key": "Contact/65#0",
+     "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "cd0df356",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "589b9c8e",
+      "line": 58
+     },
+     "tag": "label",
+     "words": "Message",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [],
+     "action": "unwrap",
+     "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc-tpl=\"65\">Message<textarea required=\"{{ true }}\" rows=\"5\" style=",
+     "parent": {
+      "draftId": "Contact:44",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:45",
+       "tag": "h2",
+       "block": "sgs/heading"
+      },
+      {
+       "draftId": "Contact:46",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:51",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:57",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:67",
+       "tag": "button",
+       "block": "sgs/button"
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1235.1,
+       "w": 631.2,
+       "h": 147
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 1184,
+       "w": 636,
+       "h": 147
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1794.8,
+       "w": 295,
+       "h": 147
+      }
+     ],
+     "draftId": "Contact:65"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/66#0",
+     "key": "Contact/66#0",
+     "fingerprint": {
+      "tag": "textarea",
+      "cls": "",
+      "styleHash": "9bde55ea",
+      "parentTags": [
+       "form",
+       "label"
+      ],
+      "textHash": "1505",
+      "line": 58
+     },
+     "tag": "textarea",
+     "words": "",
+     "block": "sgs/form-field-textarea",
+     "confidence": 1,
+     "low": false,
+     "reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+     "rule": "formControl",
+     "candidates": [
+      {
+       "block": "sgs/form-field-textarea",
+       "score": 1,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<textarea required=\"{{ true }}\" rows=\"5\" style=\"border:2px solid #3A2A22;border-radius:14px;padding:12px 16px;font-size:16px;background:#FFFAF0;resize:vertical\"",
+     "parent": {
+      "draftId": "Contact:65",
+      "tag": "label",
+      "block": null
+     },
+     "siblings": [],
+     "siblingCount": 0,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1259.1,
+       "w": 631.2,
+       "h": 123
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 1208,
+       "w": 636,
+       "h": 123
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1818.8,
+       "w": 295,
+       "h": 123
+      }
+     ],
+     "draftId": "Contact:66"
+    },
+    {
+     "rowId": "skeleton:contact-form:Contact/67#0",
+     "key": "Contact/67#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "scp3 scp4",
+      "styleHash": "702f534",
+      "parentTags": [
+       "form"
+      ],
+      "textHash": "57421940",
+      "line": 59
+     },
+     "tag": "button",
+     "words": "Send message →",
+     "block": "sgs/button",
+     "confidence": 0.75,
+     "low": false,
+     "reason": null,
+     "rule": null,
+     "candidates": [
+      {
+       "block": "sgs/button",
+       "score": 0.75,
+       "share": 1
+      }
+     ],
+     "action": null,
+     "snippet": "<button type=\"submit\" style=\"align-self:flex-start;height:60px;padding:0 30px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;font-weight:700;fo",
+     "parent": {
+      "draftId": "Contact:44",
+      "tag": "form",
+      "block": "sgs/form"
+     },
+     "siblings": [
+      {
+       "draftId": "Contact:45",
+       "tag": "h2",
+       "block": "sgs/heading"
+      },
+      {
+       "draftId": "Contact:46",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:51",
+       "tag": "div",
+       "block": "sgs/container"
+      },
+      {
+       "draftId": "Contact:57",
+       "tag": "label",
+       "block": null
+      },
+      {
+       "draftId": "Contact:65",
+       "tag": "label",
+       "block": null
+      }
+     ],
+     "siblingCount": 5,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 142,
+       "y": 1398.1,
+       "w": 200.1,
+       "h": 60
+      },
+      {
+       "width": 768,
+       "x": 66,
+       "y": 1347,
+       "w": 200.1,
+       "h": 60
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 1957.8,
+       "w": 200.1,
+       "h": 60
+      }
+     ],
+     "draftId": "Contact:67"
+    }
+   ],
    "counts": {
     "inventoryElements": 20,
     "parts": 0,
@@ -148305,10 +149039,7 @@
      "formControl": 8
     }
    },
-   "problems": [],
-   "rowsIn": [
-    "page-contact-dc-html"
-   ]
+   "problems": []
   },
   "page-help-dc-html": {
    "id": "S-36",
@@ -153894,8 +154625,8 @@
     "skeletonNodes": 238,
     "expandedNodes": 238,
     "low": 69,
-    "removed": 38,
-    "unresolved": 3,
+    "removed": 41,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "solitaryIcon": 2,
@@ -156443,8 +157174,8 @@
     "skeletonNodes": 143,
     "expandedNodes": 143,
     "low": 40,
-    "removed": 33,
-    "unresolved": 3,
+    "removed": 36,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "solitaryIcon": 1,
@@ -159169,8 +159900,8 @@
     "skeletonNodes": 119,
     "expandedNodes": 119,
     "low": 29,
-    "removed": 31,
-    "unresolved": 3,
+    "removed": 34,
+    "unresolved": 0,
     "byRule": {
      "typedDivider": 2,
      "solitaryIcon": 1,
@@ -160819,10 +161550,9 @@
    "rowId": "page:page:my-account",
    "rowType": "page-map",
    "contentHash": "34ed1e32d11df53f822f2b445de0bebf7ae2db9f6850e5cdcb43560eacaee566",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:cart",
@@ -160844,45 +161574,41 @@
    "rowId": "page:template:order-confirmation",
    "rowType": "page-map",
    "contentHash": "ad12d09e85acce7a057e375a84a69ba4605974877776c0de25ffe6822d5940e1",
-   "mark": null,
-   "markedOn": null,
+   "mark": "accept",
+   "markedOn": "2026-10-27",
    "carriedFrom": null
   },
   {
    "rowId": "page:page:contact",
    "rowType": "page-map",
    "contentHash": "c4d3fe232a2bf47652dba2fe929fe61c96c991a769274af9dc206a5ff32e445b",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:gifts",
    "rowType": "page-map",
    "contentHash": "2722264b6b068fca44ed3c64f18511c2d91bb0de8bb758bcf174737d94d9235c",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:help",
    "rowType": "page-map",
    "contentHash": "a26623a52b6d258a41d949f6485d0388dfeefdd20b05b322557b3ea9b90b22b9",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:home",
    "rowType": "page-map",
    "contentHash": "289f29ed0213116514c8d5798faaaae0c17993ba63fe8d6be111163c550584e4",
-   "mark": null,
-   "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "page:product:product",
@@ -161315,46 +162041,6 @@
    "mark": "accept-flagged",
    "markedOn": "2026-10-26",
    "carriedFrom": "2026-10-19T01:02:50.451Z"
-  },
-  {
-   "rowId": "missing:SiteHeader:18",
-   "rowType": "missing-feature",
-   "contentHash": "d8d5aac4f0dab29197ab5eaec8a08d7932c1f3c48c382e6b3d7a76e2829d0562",
-   "mark": "map:sgs/nav-bar-menu",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
-  },
-  {
-   "rowId": "missing:SiteHeader:19",
-   "rowType": "missing-feature",
-   "contentHash": "0a6def5a6fe084452d934478767b26376a79b5bcf965f0a1e8edf81dd2f4a092",
-   "mark": "map:sgs/nav-bar-menu",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
-  },
-  {
-   "rowId": "missing:SiteHeader:20",
-   "rowType": "missing-feature",
-   "contentHash": "37bdc2ff1fa1cff7c96c0bc73bb00c0c51f8fed7de999123c864804876907300",
-   "mark": "map:sgs/nav-bar-menu",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
-  },
-  {
-   "rowId": "missing:SiteFooter:54",
-   "rowType": "missing-feature",
-   "contentHash": "89ad964d6d0646fc65b91f16d9f36c90a5478d0262a900f4656b424c2efe8b9f",
-   "mark": "map:sgs/container",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
-  },
-  {
-   "rowId": "missing:Product:148",
-   "rowType": "missing-feature",
-   "contentHash": "4b0fd23d0e023d81e3d3bc99b69d2b1e1d3e56108b5643043ca48951175d5840",
-   "mark": "map:sgs/container",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
   },
   {
    "rowId": "missing:handler@Home:132/template:onPointerMove",
@@ -162794,26 +163480,29 @@
   {
    "rowId": "skeleton:page-home-dc-html:Home>SiteHeader@7#0/18#0",
    "rowType": "skeleton-block",
-   "contentHash": "918140324e824e7a726ff6c071bf69dccd7704693a20960a6b8a27edf9d8c0d6",
-   "mark": "remove",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
+   "contentHash": "1b17bd06ea1c19fb0c25022b339021a70386ddbf8e344f3c85e997c3a756bdc5",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home>SiteHeader@7#0/19#0",
    "rowType": "skeleton-block",
-   "contentHash": "58897327ab86dd965e7e69bdafb744148c5c6229d9e72b9adff52d7b9790b243",
-   "mark": "remove",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
+   "contentHash": "2cb94dd07386a48d908c3c3a85c01a326a4a7a99229578e3ab0914d87f717020",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home>SiteHeader@7#0/20#0",
    "rowType": "skeleton-block",
-   "contentHash": "0b011733c6a3265a104093c734a13456c069cba013bbe7491b84af572370001a",
-   "mark": "remove",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
+   "contentHash": "f07db795de164bb46529f1713bf2aab99f31b097e9d3c62a6bd130c2170fe31c",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-home-dc-html:Home>SiteHeader@7#0/23#0",
@@ -166048,20 +166737,13 @@
    "carriedFrom": "2026-10-26T22:25:10.523Z"
   },
   {
-   "rowId": "skeleton:page-product-dc-html-id-zookies:Product>SiteFooter@146#0/54#0",
-   "rowType": "skeleton-block",
-   "contentHash": "6739d2bbd08399f2e59cd0e60682dc818682f65b847047e3a8942f175d0f8e80",
-   "mark": "block:sgs/container",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
-  },
-  {
    "rowId": "skeleton:page-product-dc-html-id-zookies:Product/148#0",
    "rowType": "skeleton-block",
-   "contentHash": "4a11a4e6365b3df531ad2917168aabbc99f882a249822f72c43a9272e24e9e02",
-   "mark": "block:sgs/container",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T22:25:10.523Z"
+   "contentHash": "26572fe4a0e8ebedc269f2ddee5b0bbe535727c3ee6aff56ca73ee7dc77af007",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:product-buy-box:Product/108#0",
@@ -168378,34 +169060,38 @@
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/45#0",
    "rowType": "skeleton-block",
-   "contentHash": "d81febc70344f0e51487cbe92df58ad05ecca0f559bf7a2a13d8c4b18ba3e718",
+   "contentHash": "56976522b473a7fe655852fce8bfdf6487c5a0e3135f213e6dfe1b5fbab0bc92",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/46#0",
    "rowType": "skeleton-block",
-   "contentHash": "096be7da94e3e50626245430a71dd82250d971a9392c30f9933b336a7f42a7a7",
+   "contentHash": "eb91da925da5290deea266942fd0713dcc490f0e1d7b299a25ee06c886538edb",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/47#0",
    "rowType": "skeleton-block",
-   "contentHash": "d3596a4d966feac7cc7ca8281518dc1d9cc1056720568f85a1ceaf1a06418db2",
+   "contentHash": "058577b35f41f6a3331e021c6d2e301a969132cf85b58c49489bd7ff4347503d",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/48#0",
    "rowType": "skeleton-block",
-   "contentHash": "4d7a19c7b1c2cfa2fda48a6b6ae492512fa019b76969b54d170f6f29a7d47b68",
+   "contentHash": "290c491d4981f0d98a40076759a3b2d781c3a986dab50c18a55f3c9c6d759ce7",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/50",
@@ -168418,82 +169104,92 @@
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/51#0",
    "rowType": "skeleton-block",
-   "contentHash": "e14eee4db1aed82f819303b915d424e117fe8269699e540f97e9701414b3f448",
+   "contentHash": "1de1554b0da8d732c1f011823856fcbc680c831d0dcd9bda2fe894a77d994f0f",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/52#0",
    "rowType": "skeleton-block",
-   "contentHash": "42388a2654fabf52ae890f2da2454f3029d3459461ae7a99caa39577b71a705c",
+   "contentHash": "315954ff4dec2e3e5f26af90697a2ecc608449064a91b8da6643fff4fd091813",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/53#0",
    "rowType": "skeleton-block",
-   "contentHash": "4afda3ae3933eedccfee2b63502c12e49187155c8ceed72d939b204007dce93e",
+   "contentHash": "384718b96d6f5544388fe80f30097efa241bd1801d10b26fc7147181fe49639f",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/54#0",
    "rowType": "skeleton-block",
-   "contentHash": "31faf9438b2ac20e4e76691981aad7b6dfefb8efa27fcbf035f515ec53116693",
+   "contentHash": "4a5bd8418e7ac10a6c5168be2f8433899854728a500ca4d3782e27cc87b2a089",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/55#0",
    "rowType": "skeleton-block",
-   "contentHash": "a4d4f230c36e3a89c67b093cd8b0559c0aad5eb909bb9dd8775521b27f40df4f",
+   "contentHash": "e867f5788b5b701ee8688c356316c8d8f6f607343e6a3df3d73ccaf3335e3978",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/57#0",
    "rowType": "skeleton-block",
-   "contentHash": "7e28885511fad64dea19fc046dc06f2a3a8546fc4786eb118f762644aeca7f64",
+   "contentHash": "cc1dc7661b7151c63af3697ca314e84f9b62b23f1a165cbc36f91f0fbf9967c5",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/58#0",
    "rowType": "skeleton-block",
-   "contentHash": "5dfa895609dcdf85d57d1d4b2c223c489da8adf2b47dfd365e7bf11ce7d978a1",
+   "contentHash": "f58e25ff16c494f0ae3f0a353cdc61c53a84a1c31de60f340d6be17515f9eaed",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/65#0",
    "rowType": "skeleton-block",
-   "contentHash": "b1134a9db41f844e9673bd06d25329dbbdee54ab8e620a5eefe3498147770543",
+   "contentHash": "977c38738681d74480d5a0dea4cf051bca92909ca5d484148c48ecf15311be00",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/66#0",
    "rowType": "skeleton-block",
-   "contentHash": "54fec021be9082e515e5bb477a0b5e7e42a0a3167493c90468b57aa99239da9f",
+   "contentHash": "d709a29d960efa2d3668cae7870e0357e4ab1c32c91143101bda5dee7d271f20",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/67#0",
    "rowType": "skeleton-block",
-   "contentHash": "88005df6ace6672f3c58095c66eb536134fa33db1a363988c89637664d9d8584",
+   "contentHash": "f9b0d01dfe61805867f116c35a1f2cce59c3f734d71bd22cef99baf37c2f0c3e",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "skeleton:page-contact-dc-html:Contact/74#0",
@@ -168542,6 +169238,118 @@
    "mark": "accept",
    "markedOn": "2026-10-26",
    "carriedFrom": "2026-10-19T01:02:50.451Z"
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/45#0",
+   "rowType": "skeleton-block",
+   "contentHash": "ba6fd505226c5e380a56f0e5832ce1363c3c236ba795933a27ab8ec27e59ba53",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/46#0",
+   "rowType": "skeleton-block",
+   "contentHash": "161c99779e805d294fb9e6a19325f4bad181778268a89fc247b2b69a5349db17",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/47#0",
+   "rowType": "skeleton-block",
+   "contentHash": "e69ee3aa040cfab0e0f247661bf58021edf168bfd4e8faeb196ae93b09c7fd8d",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/48#0",
+   "rowType": "skeleton-block",
+   "contentHash": "faec3b439896169c39ead6a6a598a0083e2c75cd4115d768d4ad4d7b8b6b3efc",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/51#0",
+   "rowType": "skeleton-block",
+   "contentHash": "29dbd0044b34a675270e7aa2869afe79d510370f0df670bd6028ed41e7fb323c",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/52#0",
+   "rowType": "skeleton-block",
+   "contentHash": "0793b96984713cb196e196dba53c84bb59a2375c5c31b1a74224f2f2539a8c7f",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/53#0",
+   "rowType": "skeleton-block",
+   "contentHash": "534962403d113e87bad88a8e3000c7124157947ec97ed09bf57f956334779199",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/54#0",
+   "rowType": "skeleton-block",
+   "contentHash": "72af78a622364f880a72908548b0d3a8595682569c30d480007a0264bc11b839",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/55#0",
+   "rowType": "skeleton-block",
+   "contentHash": "52fc54b7898eaa1269773dc027ccbdd46fa0ed91a98c923909d084414ed0e07e",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/57#0",
+   "rowType": "skeleton-block",
+   "contentHash": "33fac1a9f0f06610bc7d153391427ba463c653529f71a328f1e9ed95349970e5",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/58#0",
+   "rowType": "skeleton-block",
+   "contentHash": "f922612f054a31fa9cc3ed1489de47ae5e3473fc35dea7b7539d7bf8eca17269",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/65#0",
+   "rowType": "skeleton-block",
+   "contentHash": "7a1aa7a4b5113f46c693bcc353e93c522376935cf10c0885db37154b263f7ce8",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/66#0",
+   "rowType": "skeleton-block",
+   "contentHash": "da46962fa9e32f855b702b7570401d08fc57fce3675e3f13dab7f7729ac1df70",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:contact-form:Contact/67#0",
+   "rowType": "skeleton-block",
+   "contentHash": "d341278e45e4ef8d9d3cd8638629228137cb1b99d4edccaa9935ebd0a9393603",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-help-dc-html:Help/6#0",
