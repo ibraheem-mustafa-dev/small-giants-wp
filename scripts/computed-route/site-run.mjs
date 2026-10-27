@@ -15,6 +15,8 @@
 // page's template at that page, a `template` row) from its own Fill, a shop row (`'whole'`) from its whole Filled tree, and
 // a `'page'` surface (404, search, archive) from the page copy's shell. Each builds through `wp-build-page.js --template` and
 // is recorded as the site build records its own copies; a page whose template has a shell builds only what sits below it.
+// A built header, footer or drawer (a page-map layout row) becomes its area's active layout, whatever the pointer named
+// before (lib/site-run-layout.mjs, FR-48-55); a run whose `--only` leaves it out changes no pointer.
 //   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b] [--skip-stages inventory,walk]
 //        [--stages inventory,propose,fill,build,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
@@ -34,7 +36,8 @@ import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { keepsWooContent, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
-import { wpEvalRunner } from './lib/calibration-refs.mjs';
+import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
+import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
@@ -344,7 +347,10 @@ export async function main( argv ) {
 			const said = await exec( 'build', 'node', builder );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
-			return said;
+			// A built header, footer or drawer becomes the site's active one (lib/site-run-layout.mjs).
+			const pointed = slug ? null : pointAfterBuild( { entry, rows, wp } );
+			pointed && console.log( `${ key } ${ pointed }` );
+			return pointed ? `${ said }; ${ pointed }` : said;
 		} ) ) ) {
 			return;
 		}
@@ -362,9 +368,12 @@ export async function main( argv ) {
 		} ) );
 	}
 
-	// The site's wp-cli for recording template copies (a local mirror's runs in WSL, calibration-targets.json `pluginDir`).
+	// The site's wp-cli for recording template copies and setting the active layouts (a local mirror's runs in WSL,
+	// calibration-targets.json `pluginDir`).
 	const targetsFile = path.join( REPO, 'scripts', 'computed-route', 'calibration-targets.json' );
-	const runPhp = wpEvalRunner( ( fs.existsSync( targetsFile ) ? readJson( targetsFile )[ site ] : null ) || {}, site, REPO );
+	const target = ( fs.existsSync( targetsFile ) ? readJson( targetsFile )[ site ] : null ) || {};
+	const runPhp = wpEvalRunner( target, site, REPO );
+	const wp = wpCommand( target, site, REPO );
 	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );
 
 	const pool = async ( list, fn ) => {

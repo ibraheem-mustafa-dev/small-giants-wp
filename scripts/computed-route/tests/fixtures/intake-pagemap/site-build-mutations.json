@@ -7,8 +7,26 @@
 	},
 	{
 		"file": "lib/site-build-plan.mjs",
-		"find": "if ( current && ! state.pointerKeys?.[ area ] ) {",
+		"find": "if ( built && current === built ) {",
+		"replace": "if ( current ) {",
+		"why": "a stale pointer is left again (the removed guard)"
+	},
+	{
+		"file": "lib/site-build-plan.mjs",
+		"find": "if ( built && current === built ) {",
 		"replace": "if ( false ) {",
-		"why": "a foreign pointer is overwritten"
+		"why": "a pointer already on the row's post is planned again"
+	},
+	{
+		"file": "lib/site-build-plan.mjs",
+		"find": "say: `active ${ area }: ${ current || 'none' } -> ${ shown( id ) }`",
+		"replace": "say: `active ${ area } -> ${ shown( id ) }`",
+		"why": "the plan line no longer shows the previous value"
+	},
+	{
+		"file": "lib/site-build-plan.mjs",
+		"find": "options.push( { name: `sgs_active_${ area }_cpt_id`, before: String( current ), after: shown( id ) } );",
+		"replace": "",
+		"why": "the option table no longer lists the pointer change"
 	}
 ]
