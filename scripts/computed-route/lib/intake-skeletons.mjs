@@ -28,7 +28,9 @@ import { readRouting } from './intake-routing.mjs';
 import { stateRouteHash } from './state-route.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
+import { reachCalls } from './intake-reach-calls.mjs';
 import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
+import { plainState } from './state-reach.mjs';
 import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
@@ -212,37 +214,8 @@ const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows
 	...contextOf( inventory, proposal, r.key ),
 } ) );
 
-// The `<ident>.setState(<args>)` calls of a surfaces.json state's how_to_reach, in order: [{ ident, args }] (the args'
-// source with its brackets and quotes balanced; a call whose parentheses never close is left out).
-export function reachCalls( text ) {
-	const out = [];
-	const re = /(?<![\w$.])([A-Za-z_$][\w$]*)\s*\.\s*setState\s*\(/g;
-	for ( let m; ( m = re.exec( String( text || '' ) ) ); ) {
-		const src = m.input;
-		const close = { '(': ')', '[': ']', '{': '}' };
-		const stack = [ ')' ];
-		let i = re.lastIndex;
-		for ( ; i < src.length && stack.length; i++ ) {
-			const c = src[ i ];
-			if ( '\'' === c || '"' === c || '`' === c ) {
-				for ( i++; i < src.length && src[ i ] !== c; i++ ) {
-					'\\' === src[ i ] && i++;
-				}
-			} else if ( close[ c ] ) {
-				stack.push( close[ c ] );
-			} else if ( c === stack.at( -1 ) ) {
-				stack.pop();
-			} else if ( /[)\]}]/.test( c ) ) {
-				break;
-			}
-		}
-		if ( ! stack.length ) {
-			out.push( { ident: m[ 1 ], args: src.slice( re.lastIndex, i - 1 ).trim() } );
-			re.lastIndex = i;
-		}
-	}
-	return out;
-}
+// The `<ident>.setState(<args>)` calls of a surfaces.json state's how_to_reach, in order (lib/intake-reach-calls.mjs).
+export { reachCalls };
 
 // State-driven surfaces (a drawer, a mega-menu panel, a modal) render only when their state opens. The ways to open one,
 // in order: each surfaces.json state (a state named "open" first; "closed" and "default" never) by its plain state keys
@@ -251,20 +224,18 @@ export function reachCalls( text ) {
 // first, one with a key holding a JS literal ("{open:true}", "[]") or a comparison (">= 768", "768–1023") tries `reach`
 // first. Then each template handler of the surface's component whose method `opened_by` names.
 const IDENT = /^[A-Za-z_$][\w$]*$/;
-const NOT_A_VALUE = /^\s*(?:[[{].*[\]}]|[<>]=?\s*-?\d.*|-?\d+(?:\.\d+)?\s*[–-]\s*-?\d.*|<.*>)\s*$/;
 export function openers( s, census = null ) {
 	const shut = ( st ) => /^(closed|default)$/i.test( st.name || '' );
 	const concrete = ( st ) => {
 		const keys = Object.entries( st.state_keys || {} );
 		return keys.length && keys.every( ( [ n, v ] ) => IDENT.test( n ) && ! ( 'string' === typeof v && /^<.*>$/.test( v ) ) );
 	};
-	const plain = ( st ) => Object.values( st.state_keys || {} ).every( ( v ) => ! ( 'string' === typeof v && NOT_A_VALUE.test( v ) ) );
 	const states = ( s.states || [] ).filter( ( st ) => ! shut( st ) ).sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );
 	const out = states.flatMap( ( st ) => {
 		const set = concrete( st ) ? [ { via: 'state', state: st.name, keys: st.state_keys } ] : [];
 		const calls = reachCalls( st.how_to_reach );
 		const reach = calls.length ? [ { via: 'reach', state: st.name, calls } ] : [];
-		return plain( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
+		return plainState( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
 	} );
 	const named = new Set( String( s.openedBy || '' ).match( /[A-Za-z_$][\w$]*(?=\s*\()|\b[a-z]+[A-Z][\w$]*\b/g ) || [] );
 	for ( const r of census?.rows || [] ) {
