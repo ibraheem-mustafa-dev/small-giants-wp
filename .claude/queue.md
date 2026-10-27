@@ -13,3 +13,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-27 F reseed-done (main 558517e5c: info-box scaleHover element wrapper; no unexpected seed change). F calibration-start local-eye-care (8 blocks: multi-button, physics-canvas, site-header, site-footer, trust-bar, heading, text, info-box - shared state elements)
 - 2026-10-27 F probe local-indus calibration page 15 (wishlist-panel tree rebuilt to read sgsHideOnDesktop; emptied after)
 - 2026-10-27 F calibration-end all mirrors (24 blocks accepted today with no --allow-loss beyond timeline's one named false reading; form 309 settings, mega-panel 78, social-icons 40, nav-drawer 71, text 52, multi-button 36, wishlist-panel 9). Track F is done for the session; nothing of F's is running; local-eye-care, local-indus, local-mamas, local-sandybrown free
+- 2026-10-27 F calibration-start local-mamas (sgs/wishlist-panel row settings, diagnosis)
