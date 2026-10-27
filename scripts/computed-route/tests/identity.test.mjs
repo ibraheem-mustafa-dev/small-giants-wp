@@ -10,8 +10,7 @@ import { fileURLToPath } from 'url';
 import { alignByName, originFromSkeleton, identityAgrees, mispairWhy } from '../lib/identity.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const BUILD = path.resolve( HERE, '../../../sites/eye-care-ward-end/build' );
-const read = ( f ) => JSON.parse( fs.readFileSync( path.join( BUILD, f ), 'utf8' ) );
+const read = ( f ) => JSON.parse( fs.readFileSync( path.join( HERE, 'fixtures', 'identity-footer', f ), 'utf8' ) );
 
 test( 'alignByName keeps order and skips a block the other side lacks', () => {
 	assert.deepEqual( alignByName( [ 'a', 'b', 'c' ], [ 'a', 'x', 'c' ] ), [ [ 0, 0 ], [ 2, 2 ] ] );
@@ -19,9 +18,11 @@ test( 'alignByName keeps order and skips a block the other side lacks', () => {
 } );
 
 test( 'the committed footer aligns with its skeleton by structure; a different block or a non-tpl finder is listed, never guessed', () => {
-	const { origin, unaligned } = originFromSkeleton( read( 'skeleton/footer.skeleton.json' ), read( 'footer.tree.json' ) );
-	assert.equal( origin[ 'cr-ref-footer-0' ].tpl, 'Root/844#0' );
-	assert.equal( origin[ 'cr-ref-footer-9' ].tpl, 'Root/872#0' );
+	// A small committed pair (tests/fixtures/identity-footer): the mechanism is alignment by structure, not a client's real export,
+	// whose element numbering and shape change with every fresh intake.
+	const { origin, unaligned } = originFromSkeleton( read( 'skeleton.json' ), read( 'tree.json' ) );
+	assert.equal( origin[ 'cr-ref-footer-0' ].tpl, 'Root/10#0' );
+	assert.equal( origin[ 'cr-ref-footer-9' ].tpl, 'Root/13#0' );
 	const why = Object.fromEntries( unaligned.map( ( u ) => [ u.ref, u.why ] ) );
 	assert.match( why[ 'cr-ref-footer-30' ], /no skeleton node of the same block/ );
 	assert.match( why[ 'cr-ref-footer-6' ], /names no tpl finder/ );

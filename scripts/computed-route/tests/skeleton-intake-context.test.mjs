@@ -16,6 +16,11 @@ const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..
 const CLIENT = 'eye-care-ward-end';
 const footer = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', CLIENT, 'build', 'skeleton', 'footer.inventory.json' ), 'utf8' ) );
 const ROOT = 'Eye Care Site';
+// A re-export renumbers the draft's elements, so the key under test is found by a stable property: the first root-host
+// paragraph that carries words, never a literal number.
+const SIG = footer.elements.find( ( e ) => /^Root\/\d+#0$/.test( e.key ) && e.words.trim() && 'p' === e.tag );
+const KEY = SIG.key;
+const KEY_PATH = KEY.replace( /^Root/, '' );
 const db = openDb();
 
 // A temp repo holding one surface: the manifest entry, intake.json, the inventory and the saved files.
@@ -64,21 +69,21 @@ test( 'propose passes the intake skeleton kind, name, built post and looping tem
 } );
 
 test( 'a served inventory applies decisions saved in intake space; an import chain key is not rewritten', () => {
-	const sig = footer.elements.find( ( e ) => 'Root/848#0' === e.key );
+	const sig = SIG;
 	const own = { block: 'sgs/heading', signature: `${ sig.tag }|${ sig.words.replace( /\s+/g, ' ' ).trim() }` };
 	const chain = `${ ROOT }>Child@5#0/3#0`;
 	const seen = [];
-	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }/848#0` ]: own, [ chain ]: own } } } } );
+	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: own, [ chain ]: own } } } } );
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
-	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ 'Root/848#0', chain ] );
+	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ KEY, chain ] );
 	const real = proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db } );
-	assert.equal( real.proposal.rows.find( ( r ) => 'Root/848#0' === r.key ).source, 'client decision' );
+	assert.equal( real.proposal.rows.find( ( r ) => KEY === r.key ).source, 'client decision' );
 	f.done();
 } );
 
 test( 'the review shows a decision saved under the intake slug in intake key space, for a served inventory', () => {
 	const marker = 'sgs/review-marker-block';
-	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }/848#0` ]: { block: marker } } } } } );
+	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: { block: marker } } } } } );
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } );
 	assert.ok( reviewSurface( { client: CLIENT, surface: 'footer', repo: f.repo } ).includes( marker ) );
 	f.done();
@@ -86,7 +91,7 @@ test( 'the review shows a decision saved under the intake slug in intake key spa
 
 test( 'decide refuses without an intakeSurface, as propose does', async () => {
 	const f = fixture( { entry: { site: 'x' } } );
-	await assert.rejects( () => main( [ 'decide', '--client', CLIENT, '--surface', 'footer', '--key', 'Root/848#0', '--block', 'sgs/heading' ], { repo: f.repo } ), /no intakeSurface/ );
+	await assert.rejects( () => main( [ 'decide', '--client', CLIENT, '--surface', 'footer', '--key', KEY, '--block', 'sgs/heading' ], { repo: f.repo } ), /no intakeSurface/ );
 	assert.equal( fs.readFileSync( path.join( f.repo, 'sites', CLIENT, 'build', 'skeleton', 'decisions.json' ), 'utf8' ), '{"surfaces":{}}' );
 	f.done();
 } );
@@ -139,7 +144,7 @@ test( 'MUST FAIL: decide with --block validates the block against the given repo
 	const log = console.log;
 	console.log = () => {};
 	try {
-		await main( [ 'decide', '--client', other, '--surface', 'footer', '--key', 'Root/848#0', '--block', 'sgs/heading' ], { repo: f.repo } );
+		await main( [ 'decide', '--client', other, '--surface', 'footer', '--key', KEY, '--block', 'sgs/heading' ], { repo: f.repo } );
 	} finally {
 		console.log = log;
 	}
