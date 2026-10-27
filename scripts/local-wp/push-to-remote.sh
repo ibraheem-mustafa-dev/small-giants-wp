@@ -123,6 +123,40 @@ else
   echo "remote backup: $BACKUP ($( rsh "wc -c < $BACKUP" ) bytes)"
 fi
 
+# The test site keeps its own logins: the mirror's passwords are set by reset-login.mjs from the mirror's secrets file,
+# so each remote user's password hash and application passwords are saved on the server (never fetched here) and put
+# back by login name after the import.
+LOGINS="~/backups/push-to-remote/${HOST}-logins.json"
+SAVE_LOGINS_PHP='<?php
+$out = array();
+foreach ( get_users( array( "fields" => "all" ) ) as $u ) {
+	$out[] = array( "login" => $u->user_login, "pass" => $u->user_pass, "app" => get_user_meta( $u->ID, "_application_passwords", true ) );
+}
+$f = $args[0];
+file_put_contents( $f, wp_json_encode( $out ) );
+chmod( $f, 0600 );
+echo count( $out ) . " login(s) saved\n";'
+RESTORE_LOGINS_PHP='<?php
+global $wpdb;
+$rows = json_decode( (string) file_get_contents( $args[0] ), true );
+if ( ! is_array( $rows ) ) { fwrite( STDERR, "No saved logins\n" ); exit( 1 ); }
+$n = 0;
+foreach ( $rows as $r ) {
+	$u = get_user_by( "login", $r["login"] );
+	if ( ! $u ) { continue; }
+	$wpdb->update( $wpdb->users, array( "user_pass" => $r["pass"] ), array( "ID" => $u->ID ) );
+	if ( $r["app"] ) { update_user_meta( $u->ID, "_application_passwords", $r["app"] ); } else { delete_user_meta( $u->ID, "_application_passwords" ); }
+	clean_user_cache( $u->ID );
+	$n++;
+}
+echo "$n login(s) restored\n";'
+step "save the test site's logins"
+if [ "$DRY" = 1 ]; then
+  would "save each remote user's password hash and application passwords to $LOGINS on the server (mode 600)"
+else
+  printf '%s' "$SAVE_LOGINS_PHP" | "${SSH[@]}" "cd $RROOT && wp eval-file - $LOGINS" | tr -d '\r'
+fi
+
 # 4. Uploads: additive, nothing on the server is deleted.
 step "uploads"
 if [ "$DRY" = 1 ]; then
@@ -152,6 +186,13 @@ else
   for i in "${!FROMS[@]}"; do
     rsh "wp search-replace '${FROMS[$i]}' '${TOS[$i]}' --all-tables-with-prefix --skip-columns=guid --report-changed-only"
   done
+fi
+
+step "restore the test site's logins"
+if [ "$DRY" = 1 ]; then
+  would "put back each saved login's password hash and application passwords, by login name"
+else
+  printf '%s' "$RESTORE_LOGINS_PHP" | "${SSH[@]}" "cd $RROOT && wp eval-file - $LOGINS" | tr -d '\r'
 fi
 
 # 7. Caches.
