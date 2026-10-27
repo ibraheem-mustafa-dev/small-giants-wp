@@ -4,7 +4,7 @@
 //     calls it), whether every key it sets is a literal (`closes` when all are `false`, `resets` when two or more are
 //     literals, counting an object handed to a local setter), whether it toggles a key, whether it appends a record to
 //     a collection (an array `push`/`unshift` of an object, or a call into a store outside the component with an object
-//     argument), and whether it writes such a store at all.
+//     argument), whether it writes such a store at all, and the keys it sets to a literal `false` (`off`).
 //   - money: a bound value built by a function that formats currency (a currency sign joined to a number, `toFixed(2)`,
 //     `Intl.NumberFormat` or `toLocaleString` with a currency style).
 //   - emptiness: a bound value that tests a collection is empty (`!x.length`, `x.length === 0`, `x.length < 1`).
@@ -144,7 +144,7 @@ function writtenObject( arg ) {
 
 const isSetState = ( call ) => 'MemberExpression' === call.callee.type && ! call.callee.computed && 'setState' === call.callee.property.name;
 
-// The effect of a handler: { sets, closes, resets, toggles, appends, writesStore }. `scope` is the list a
+// The effect of a handler: { sets, closes, resets, toggles, appends, writesStore, off }. `scope` is the list a
 // loop variable in the handler comes from (valuesOf). When the logic gives the handler's name several functions, `sets`
 // is every key any of them sets and each yes-or-no effect holds only when it holds for all of them.
 const memo = new WeakMap();
@@ -168,14 +168,14 @@ export function effectOf( L, expr, scope = null ) {
 function effectOfAll( L, expr, scope ) {
 	const each = L ? valuesOf( L, expr, scope ).map( ( v ) => effectOfFn( L, fnOf( L, v ) ) ) : [];
 	if ( ! each.length ) {
-		return finish( { sets: new Set(), literal: [], passed: [], toggles: false, appends: false, writesStore: false } );
+		return finish( { sets: new Set(), literal: [], passed: [], toggles: false, appends: false, writesStore: false, off: new Set() } );
 	}
 	const all = ( k ) => each.every( ( e ) => e[ k ] );
-	return { sets: [ ...new Set( each.flatMap( ( e ) => e.sets ) ) ], closes: all( 'closes' ), resets: all( 'resets' ), toggles: all( 'toggles' ), appends: all( 'appends' ), writesStore: all( 'writesStore' ) };
+	return { sets: [ ...new Set( each.flatMap( ( e ) => e.sets ) ) ], closes: all( 'closes' ), resets: all( 'resets' ), toggles: all( 'toggles' ), appends: all( 'appends' ), writesStore: all( 'writesStore' ), off: each[ 0 ].off.filter( ( k ) => each.every( ( e ) => e.off.includes( k ) ) ) };
 }
 
 function effectOfFn( L, start ) {
-	const out = { sets: new Set(), literal: [], passed: [], toggles: false, appends: false, writesStore: false };
+	const out = { sets: new Set(), literal: [], passed: [], toggles: false, appends: false, writesStore: false, off: new Set() };
 	const seen = new Set();
 	const visit = ( fn, depth ) => {
 		if ( ! fn || seen.has( fn ) || depth > DEPTH ) {
@@ -195,6 +195,7 @@ function effectOfFn( L, start ) {
 					const k = keyName( p );
 					out.sets.add( k );
 					out.literal.push( isLiteral( p.value ) ? p.value : null );
+					'BooleanLiteral' === p.value.type && false === p.value.value && out.off.add( k );
 					if ( 'UnaryExpression' === p.value.type && '!' === p.value.operator ) {
 						out.toggles = true;
 					}
@@ -242,6 +243,7 @@ function finish( out ) {
 		toggles: out.toggles,
 		appends: out.appends,
 		writesStore: out.writesStore || out.appends,
+		off: [ ...out.off ],
 	};
 }
 

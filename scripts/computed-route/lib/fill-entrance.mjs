@@ -161,7 +161,7 @@ export async function sampleEntrances( { url, jobs, open = null, opener = null, 
 		if ( open ) {
 			await h.clickText( open, { wait: 50 } );
 		}
-		const verdict = opener?.state ? await openWith( page, opener ) : null;
+		const verdict = opener?.state ? await openWith( page, opener, width ) : null;
 		verdict && onOpen?.( verdict );
 		const raw = await page.evaluate( () => window.__fillProbe );
 		await settleAnimations( page, { floor: 0 } );
