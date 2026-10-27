@@ -20,7 +20,7 @@
 	{ "file": "lib/fill-band.mjs", "find": "[ 'width', 'max-width' ].some( ( p ) => undefined !== d[ p ] && ! NO_SIZE.has( String( d[ p ] ).trim() ) );", "replace": "false;", "why": "a child's declared width is read as a band cap" },
 	{ "file": "lib/fill-band.mjs", "find": "&& ! NO_SIZE.has( String( d[ p ] ).trim() ) );", "replace": " );", "why": "a declared auto width counts as the child's own size" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( ! free.length ) {\n\t\treturn { min: box,", "replace": "if ( ! free.length ) {\n\t\treturn { exact: box,", "why": "children sized by themselves are read as a cap" },
-	{ "file": "lib/fill-band.mjs", "find": "if ( r - l >= inner - TOL ) {", "replace": "if ( r - l >= inner + TOL ) {", "why": "a column that spans the content box is read as a cap" },
+	{ "file": "lib/fill-band.mjs", "find": "if ( r - l >= inner - 2 * TOL ) {", "replace": "if ( r - l >= inner + TOL ) {", "why": "a column that spans the content box is read as a cap" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( Math.abs( ( l - left ) - ( left + inner - r ) ) > 2 * TOL ) {", "replace": "if ( false ) {", "why": "an off-centre child is read as a centred cap" },
 	{ "file": "lib/fill-band.mjs", "find": "const l = Math.min( ...free.map( ( k ) => k.rect.x ) );", "replace": "const l = Math.min( ...free.slice( 0, 1 ).map( ( k ) => k.rect.x ) );", "why": "only the first child is measured" },
 	{ "file": "lib/fill-band.mjs", "find": "const r = Math.max( ...free.map( ( k ) => k.rect.x + k.rect.w ) );", "replace": "const r = Math.max( ...free.slice( 0, 1 ).map( ( k ) => k.rect.x + k.rect.w ) );", "why": "the widest child is not the column" },
@@ -44,5 +44,6 @@
 	{ "file": "lib/fill-band.mjs", "find": "! [ 'normal', 'stretch' ].includes( s[ 'align-items' ] ?? 'normal' )", "replace": "! [ 'normal' ].includes( s[ 'align-items' ] ?? 'normal' )", "why": "a stretching flex column is taken for an aligned one" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( /grid/.test( display ) ) {", "replace": "if ( false ) {", "why": "a grid's children are read as a cap" },
 	{ "file": "lib/fill-band.mjs", "find": "return ! BLOCK_LEVEL.test( k.styles?.display ?? 'block' ) ||", "replace": "return", "why": "a child that does not stretch is read as a cap" },
-	{ "file": "lib/fill-band.mjs", "find": "const BLOCK_LEVEL = /^(block|flow-root|flex|grid|list-item|table)$/;", "replace": "const BLOCK_LEVEL = /^(block|flow-root|list-item|table)$/;", "why": "a block-level flex child is taken as not stretching" }
+	{ "file": "lib/fill-band.mjs", "find": "const BLOCK_LEVEL = /^(block|flow-root|flex|grid|list-item|table)$/;", "replace": "const BLOCK_LEVEL = /^(block|flow-root|list-item|table)$/;", "why": "a block-level flex child is taken as not stretching" },
+	{ "file": "lib/fill-band.mjs", "find": "if ( r - l >= inner - 2 * TOL ) {", "replace": "if ( r - l >= inner - TOL ) {", "why": "a sub-pixel shortfall of a spanning column is read as a cap" }
 ]

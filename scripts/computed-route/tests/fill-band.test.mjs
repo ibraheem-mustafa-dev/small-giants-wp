@@ -41,6 +41,8 @@ test( 'capOf: no value, full and an empty string are no cap; the presets are the
 
 test( 'bandNeed: children spanning the content box need a band at least the padding box', () => {
 	assert.deepEqual( bandNeed( own( 1440, 40 ), [ kid( 40, 1360 ) ] ).min, 1440 );
+	assert.equal( bandNeed( own( 305.34, 0 ), [ kid( 0.5, 304.3 ) ] ).min, 305.34, 'a column a sub-pixel layout leaves 1.04px short spans' );
+	assert.equal( bandNeed( own( 305.34, 0 ), [ kid( 1.67, 302 ) ] ).exact, 302, 'one 3.34px short is a cap' );
 	assert.equal( bandNeed( own( 1440, 40 ), [] ), null, 'no drawn child, no evidence' );
 	assert.equal( bandNeed( own( 1440, 40 ), [ { missing: true } ] ), null );
 	assert.equal( bandNeed( { missing: true }, [ kid( 40, 1360 ) ] ), null );

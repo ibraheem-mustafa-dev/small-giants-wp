@@ -118,7 +118,8 @@ export function bandNeed( own, kids, declaredOf = () => ( {} ) ) {
 	}
 	const l = Math.min( ...free.map( ( k ) => k.rect.x ) );
 	const r = Math.max( ...free.map( ( k ) => k.rect.x + k.rect.w ) );
-	if ( r - l >= inner - TOL ) {
+	// Sub-pixel layout (fractional borders, margins and rounding) leaves a spanning column up to 2px short.
+	if ( r - l >= inner - 2 * TOL ) {
 		return { min: box, why: 'the children span the content box' };
 	}
 	if ( Math.abs( ( l - left ) - ( left + inner - r ) ) > 2 * TOL ) {
