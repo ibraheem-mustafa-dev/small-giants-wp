@@ -55,6 +55,7 @@
           "label": "Pack size",
           "slug": "pack-size",
           "packSize": true,
+          "variesBy": "size",
           "options": [
             {
               "value": 8,
@@ -85,6 +86,7 @@
           "label": "Base",
           "slug": "base",
           "packSize": false,
+          "variesBy": null,
           "options": [
             {
               "value": "oat",
@@ -108,6 +110,7 @@
           "label": "Chip",
           "slug": "chip",
           "packSize": false,
+          "variesBy": null,
           "options": [
             {
               "value": "milk",
@@ -498,6 +501,7 @@
           "label": "Amount",
           "slug": "amount",
           "packSize": false,
+          "variesBy": null,
           "options": [
             {
               "value": 15,
@@ -569,6 +573,43 @@
       "draftId": "giftcard",
       "kind": "open-amount",
       "detail": "the shopper picks the amount paid (£15, £25, £40): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have"
+    },
+    {
+      "draftId": "giftcard",
+      "kind": "no-variesby",
+      "detail": "no choice (\"amount\") is one of Google's variesBy axes (color, size, material, pattern, suggestedAge, suggestedGender), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft"
     }
-  ]
+  ],
+  "sites": {
+    "local-mamas": {
+      "builtAt": "2026-10-27T19:34:57.907Z",
+      "products": {
+        "zookies": {
+          "id": 257,
+          "permalink": "http://localhost:8084/product/zookies/",
+          "variations": 24
+        },
+        "trial": {
+          "id": 282,
+          "permalink": "http://localhost:8084/product/taster-trio/",
+          "variations": 0
+        },
+        "giftbox": {
+          "id": 283,
+          "permalink": "http://localhost:8084/product/new-baby-gift-box/",
+          "variations": 0
+        },
+        "care40": {
+          "id": 284,
+          "permalink": "http://localhost:8084/product/40-day-care-bundle/",
+          "variations": 0
+        },
+        "giftcard": {
+          "id": 285,
+          "permalink": "http://localhost:8084/?post_type=product&p=285",
+          "variations": 3
+        }
+      }
+    }
+  }
 }

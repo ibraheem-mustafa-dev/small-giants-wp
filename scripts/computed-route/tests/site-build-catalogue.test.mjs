@@ -220,3 +220,76 @@ test( 'photo to come: a fixture is left; the apply PHP sets and clears the marke
 	const hidden = planCatalogue( cat, site( [ { draftId: 'jar', id: 0 } ], { images: { [ PHOTO_TO_COME ]: PTC_ID }, photoToComeShows: false } ) );
 	assert.ok( hidden.notes.some( ( n ) => /product card treats the photo-to-come image as no photo/.test( n ) ) );
 } );
+
+// SGS's product preflight publishes a variable product only when one of its variation terms carries a Google variesBy
+// value (`_sgs_variesby_value`, no_variesby); the catalogue writes each attribute's axis and keeps a product with none a
+// draft.
+const writeOf = ( repo, cat ) => {
+	let write = null;
+	runCatalogue( { repo, client: 'demo', site: 's', apply: true, log: () => {}, error: () => {}, runPhp: ( php ) => {
+		if ( /\$steps =/.test( php ) ) {
+			write = php;
+			return JSON.stringify( { done: [], issues: [] } );
+		}
+		return JSON.stringify( site( cat.products.map( ( p ) => ( { draftId: p.draftId, id: 0 } ) ) ) );
+	} } );
+	return write;
+};
+const decoded = ( write, name ) => JSON.parse( Buffer.from( new RegExp( `\\$${ name } = json_decode\\( base64_decode\\( '([^']+)'` ).exec( write )[ 1 ], 'base64' ).toString() );
+
+test( 'variesBy: a found product whose axis terms lack the mapping is completed with it; an unmapped axis is never demanded', () => {
+	const { catalogue } = setup();
+	const jar = catalogue.products[ 0 ];
+	const lacking = planCatalogue( catalogue, site( [ found( jar, { attributes: [ 'pa_pack-size', 'pa_grain' ], variesBy: { 'pa_pack-size': [ 'size', '' ], 'pa_grain': [ '', '' ] } } ) ] ) );
+	assert.match( lacking.actions[ 0 ].say, /lacks variesBy size on pa_pack-size$/ );
+	const mapped = planCatalogue( catalogue, site( [ found( jar, { attributes: [ 'pa_pack-size', 'pa_grain' ], variesBy: { 'pa_pack-size': [ 'size', 'size' ], 'pa_grain': [ '', '' ] } } ) ] ) );
+	assert.equal( mapped.actions[ 0 ].action, 'exists' );
+} );
+
+test( 'variesBy: a product with no variesBy axis is made and kept a draft, noted, and its publishing never planned', () => {
+	const { repo, catalogue } = setup();
+	const [ jar, box, voucher ] = catalogue.products;
+	const plan = planCatalogue( catalogue, site( [ found( jar, { status: 'draft' } ), found( box ), found( voucher, { status: 'draft' } ) ] ) );
+	assert.deepEqual( plan.actions.map( ( a ) => [ a.draftId, a.action, a.hold ] ), [ [ 'jar', 'complete', false ], [ 'box', 'exists', false ], [ 'voucher', 'exists', true ] ] );
+	assert.match( plan.actions[ 0 ].say, /lacks publishing \(now draft\)$/ );
+	assert.ok( plan.notes.some( ( n ) => /1 product\(s\) are made and kept a draft.*no_variesby.*: voucher$/.test( n ) ) );
+	// A create carries the hold to the write, and the write skips publishing it.
+	const write = writeOf( repo, catalogue );
+	const steps = decoded( write, 'steps' );
+	assert.deepEqual( steps.map( ( s ) => [ s.draftId, s.hold ] ), [ [ 'jar', false ], [ 'box', false ], [ 'voucher', true ] ] );
+	assert.deepEqual( steps[ 0 ].product.attributes.map( ( a ) => a.variesBy ), [ 'size', null ] );
+	const hold = write.indexOf( "if ( ! empty( $s['hold'] ) ) {" );
+	assert.ok( hold > 0 && hold < write.indexOf( "'post_status' => 'publish'" ) );
+} );
+
+test( 'variesBy: the write sets each axis on the product\'s terms that have none, before publishing; the read reports each term\'s value', () => {
+	const write = catalogueApplyPhp( [], {}, {}, null );
+	assert.match( write, /if \( '' === \$sgs_variesby\( get_term_meta\( \$tid, '_sgs_variesby_value', true \) \) \) \{\n\t\t\t\tupdate_term_meta\( \$tid, '_sgs_variesby_value', \$sgs_variesby\( \$a\['variesBy'\] \) \);/ );
+	assert.match( write, /if \( empty\( \$a\['variesBy'\] \) \|\| ! taxonomy_exists\( \$tax \) \) \{ continue; \}\n\t\tforeach \( wc_get_product_terms\( \$id, \$tax, array\( 'fields' => 'ids' \) \) as \$tid \) \{/ );
+	assert.ok( write.indexOf( "update_term_meta( $tid, '_sgs_variesby_value'" ) < write.indexOf( "'post_status' => 'publish'" ) );
+	assert.match( write, /Configurator_Meta::sanitize_variesby/ );
+	const read = catalogueStatePhp( [], {} );
+	assert.match( read, /\$vb\[ \$tax \]\[\] = \$sgs_variesby\( get_term_meta\( \$tid, '_sgs_variesby_value', true \) \);/ );
+	assert.match( read, /'variesBy' => \(object\) \$vb,/ );
+	assert.doesNotMatch( read, /update_|delete_/ );
+} );
+
+test( 'address images: a stock photo is found by the media upload\'s file name and fetched under it; any address is downloaded and typed by its bytes, never by its extension', () => {
+	const { repo, catalogue } = setup();
+	const stock = 'https://images.unsplash.com/photo-1508296695146-257a814070b4';
+	const other = 'https://images.example.test/a.jpg';
+	const cat = { ...catalogue, products: catalogue.products.map( ( p, i ) => ( 0 === i ? { ...p, image: { url: stock }, gallery: [] } : 1 === i ? { ...p, image: { url: other }, gallery: [] } : p ) ) };
+	const images = catalogueImages( repo, cat );
+	assert.deepEqual( images[ stock ], { url: stock, stem: 'stock-1508296695146-257a814070b4' } );
+	assert.deepEqual( images[ other ], { url: other } );
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'catalogue.json' ), `${ JSON.stringify( cat, null, 2 ) }\n` );
+	const write = writeOf( repo, cat );
+	assert.deepEqual( decoded( write, 'uploads' )[ stock ], { url: stock, stem: 'stock-1508296695146-257a814070b4' } );
+	assert.doesNotMatch( write, /media_sideload_image\( \$/ );
+	assert.match( write, /\$tmp = download_url\( \$u\['url'\] \);/ );
+	assert.match( write, /\$mime = wp_get_image_mime\( \$tmp \);\n\t\t\$ext = \$mime \? wp_get_default_extension_for_mime_type\( \$mime \) : '';/ );
+	assert.match( write, /\$stem = ! empty\( \$u\['stem'\] \) \? \$u\['stem'\] : pathinfo/ );
+	assert.match( write, /media_handle_sideload\( array\( 'name' => sanitize_file_name\( \( '' !== \$stem \? \$stem : 'draft-image' \) \. '\.' \. \$ext \), 'tmp_name' => \$tmp \), 0 \)/ );
+	assert.match( write, /if \( ! \$id && ! empty\( \$img\['stem'\] \) \) \{\n\t\t\t\$stem = \$wpdb->esc_like\( \$img\['stem'\] \) \. '\.%';/ );
+	assert.match( catalogueStatePhp( [], images ), /meta_value LIKE %s OR meta_value LIKE %s \) ORDER BY post_id ASC LIMIT 1", \$stem, '%\/' \. \$stem \)/ );
+} );
