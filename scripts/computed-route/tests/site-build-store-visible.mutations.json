@@ -1,0 +1,16 @@
+[
+	{ "file": "lib/site-build-store-visible.mjs", "find": "\tif ( ! isShopClient( rows ) ) {", "replace": "\tif ( false ) {", "why": "the narrow step switches a client with no shop rows" },
+	{ "file": "lib/site-build-plan.mjs", "find": "\tconst shopClient = rows.some( ( r ) => SHOP_TYPES.includes( r.postType ) );", "replace": "\tconst shopClient = true;", "why": "the whole build switches a client with no shop rows" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "\tif ( 'yes' !== String( value ?? '' ) ) {", "replace": "\tif ( 'no' === String( value ?? '' ) ) {", "why": "an unset option plans a change" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "\tif ( 'yes' !== String( value ?? '' ) ) {", "replace": "\tif ( false ) {", "why": "a site already visible plans a change" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "name: COMING_SOON_OPTION, value: 'no', say:", "replace": "name: COMING_SOON_OPTION, value: '', say:", "why": "the planned value is not no" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "export const isShopClient = ( rows ) => rows.some( ( r ) => SHOP_TYPES.includes( r.postType ) );", "replace": "export const isShopClient = ( rows ) => rows.length > 0;", "why": "every client counts as a shop client" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "const writePhp = () => `update_option( '${ COMING_SOON_OPTION }', 'no' ); echo 'ok';`;", "replace": "const writePhp = () => `update_option( '${ COMING_SOON_OPTION }', 'no' ); update_option( '${ STORE_PAGES_ONLY_OPTION }', 'no' ); echo 'ok';`;", "why": "the narrow step also writes store pages only" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "\tif ( ! apply ) {", "replace": "\tif ( false ) {", "why": "a dry run writes" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "\tif ( 'no' !== after.comingSoon ) {", "replace": "\tif ( false ) {", "why": "a write that did not stick reads as done" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "\t\tplan.options.forEach( ( o ) => log( `${ o.name } | ${ o.before } | ${ o.after }` ) );", "replace": "", "why": "the dry run does not print the change" },
+	{ "file": "lib/site-build-store-visible.mjs", "find": "'comingSoon' => (string) get_option( '${ COMING_SOON_OPTION }' )", "replace": "'comingSoon' => 'no'", "why": "the narrow read does not read the option" },
+	{ "file": "lib/site-build-plan.mjs", "find": "\t\tif ( visible ) {", "replace": "\t\tif ( false ) {", "why": "the whole build never plans the switch" },
+	{ "file": "lib/site-build-plan.mjs", "find": "\t\t\toptions.push( { name: COMING_SOON_OPTION, before: String( state.options[ COMING_SOON_OPTION ] ), after: visible.value } );", "replace": "", "why": "the switch is missing from the option table" },
+	{ "file": "lib/site-build-state.mjs", "find": "'permalink_structure', '${ COMING_SOON_OPTION }', ", "replace": "'permalink_structure', ", "why": "the state read does not read the option" }
+]
