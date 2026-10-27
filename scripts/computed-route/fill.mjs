@@ -23,7 +23,7 @@ import { assertDraftPage, draftPageProblem, serveDraft } from './lib/draft.mjs';
 import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originMap } from './lib/fill-skeleton.mjs';
 import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
-import { stateOpener, readUrlOf, refusalRows } from './lib/fill-open.mjs';
+import { stateOpener, readUrlOf, refusalRows, openedAt, describeWays } from './lib/fill-open.mjs';
 import { openerRefusals } from './lib/fill-opener-refusals.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
@@ -182,7 +182,7 @@ export async function fillSurface( o ) {
 		const opener = stateOpener( { entry, skeleton: skeletonRecord, record: handoffRecord, facts, rootComponent: intakeParts.rootComponent } );
 		// A page surface or a state-driven surface is read at its route; a state-page draft opens it by state (lib/state-route.mjs).
 		const readUrl = readUrlOf( { url, opener, record: skeletonRecord, routing: intakeData?.routing } );
-		opener && log( opener.state ? `state opener: "${ opener.state }" ${ JSON.stringify( opener.keys ) } on ${ opener.component }${ opener.route && '*' !== opener.route ? ` at ${ opener.route }` : '' }${ opener.dropped.length ? ` (not offered: ${ opener.dropped.map( ( d ) => d.key ).join( ', ' ) })` : '' }` : `state opener refused: ${ opener.refused.map( ( r ) => r.reason ).join( '; ' ) }` );
+		opener && log( opener.state ? `state opener: ${ describeWays( opener ) } on ${ opener.component }${ opener.route && '*' !== opener.route ? ` at ${ opener.route }` : '' }${ opener.dropped.length ? ` (not offered: ${ opener.dropped.map( ( d ) => d.key ).join( ', ' ) })` : '' }` : `state opener refused: ${ opener.refused.map( ( r ) => r.reason ).join( '; ' ) }` );
 		// FR-48-60 to FR-48-62: the draft elements of the shop parts (build/shop-parts.json locators) are measured at their parts' slots.
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const shopRecord = loadShopParts( buildDir );
@@ -323,7 +323,7 @@ export async function fillSurface( o ) {
 		// The skeleton inventory beside the skeleton places each slot's draft element (a part drawn outside its block's).
 		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
 		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
-		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: opener?.state ? opener : null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
+		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: opener?.state ? { ...opener, openedAt: openedAt( opener, reads.opener?.widths ) } : null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		writeOrigin();
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
@@ -335,7 +335,7 @@ export async function fillSurface( o ) {
 ` );
 		}
 		put( 'unmapped.json', JSON.stringify( unmappedList( result.unmapped ), null, 1 ) );
-		opener && put( 'opener.json', `${ JSON.stringify( { surface: o.surface, id: opener.id, component: opener.component, route: opener.route, state: opener.state, keys: opener.keys, dropped: opener.dropped, expect: opener.expect, widths: reads.opener?.widths || {}, widthsOpen, refused }, null, 1 ) }
+		opener && put( 'opener.json', `${ JSON.stringify( { surface: o.surface, id: opener.id, component: opener.component, route: opener.route, state: opener.state, keys: opener.keys, dropped: opener.dropped, expect: opener.expect, ways: opener.ways, widths: reads.opener?.widths || {}, widthsOpen, refused }, null, 1 ) }
 ` );
 		put( 'binding-groups.json', JSON.stringify( bound, null, 1 ) );
 		put( 'handover.json', JSON.stringify( result.handover, null, 1 ) );

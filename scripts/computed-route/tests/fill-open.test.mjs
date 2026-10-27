@@ -97,7 +97,8 @@ test( 'the walker config carries the same opener as source text that evaluates',
 	const src = openerSource( { component: 'Root', keys: { active: 1 } } );
 	const fn = new Function( `return ( ${ src } );` )();
 	assert.equal( typeof fn, 'function' );
-	assert.match( src, /"component":"Root","keys":\{"active":1\}/ );
+	assert.match( src, /"op":"set","patch":\{"active":1\}/ );
+	assert.match( src, /comp: "Root"/ );
 } );
 
 // A page whose in-page calls answer by function name: the instance count of setDraftState, the animation count, and how
