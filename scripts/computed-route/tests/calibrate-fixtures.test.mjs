@@ -110,9 +110,12 @@ test( 'every fixture variant names only attributes its block declares (or an ext
 			continue;
 		}
 		const declared = new Set( Object.keys( JSON.parse( fs.readFileSync( file, 'utf8' ) ).attributes || {} ) );
+		// WordPress registers `metadata` and `lock` on every block, so no block.json declares them (the mega-panel drawer
+		// variants name the calibration context through metadata.name).
+		const universal = new Set( [ 'metadata', 'lock' ] );
 		for ( const v of fx.variants || [] ) {
 			for ( const k of Object.keys( v ) ) {
-				assert.ok( declared.has( k ) || /^sgs[A-Z]/.test( k ), `${ block } variant names undeclared attribute ${ k }` );
+				assert.ok( declared.has( k ) || universal.has( k ) || /^sgs[A-Z]/.test( k ), `${ block } variant names undeclared attribute ${ k }` );
 			}
 		}
 		// A per-setting precondition names a declared setting and declared attributes only.
