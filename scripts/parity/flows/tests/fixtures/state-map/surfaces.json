@@ -1,0 +1,22 @@
+{
+	"home": {
+		"walker": "walkers/home.mjs",
+		"states": { "opening": null, "reviews-next": null, "filter-open": "open" }
+	},
+	"shop": {
+		"walker": "walkers/shop.mjs",
+		"states": { "opening": null, "brand-picked": null, "panel-open": "open", "price-moved": null }
+	},
+	"faq": {
+		"walker": "walkers/faq.mjs",
+		"states": { "opening": null, "item2-open": "open", "item3-open": "open", "item4-open": "open" }
+	},
+	"contact": {
+		"walker": "walkers/contact.mjs",
+		"walkStates": [ "opening", "field-focused", "form-submitted-empty" ],
+		"states": { "opening": null, "field-focused": "focus", "form-submitted-empty": null }
+	},
+	"footer": {
+		"states": { "opening": null }
+	}
+}
