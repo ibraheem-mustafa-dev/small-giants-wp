@@ -10,6 +10,12 @@
 //   - the product base the draft's manifest declares is set when the site's differs; a product's address is then the
 //     one the link resolver writes (lib/draft-link.mjs);
 //   - a product dropped in the intake review is skipped; the page map is never read or written;
+//   - each attribute's `variesBy` is written as `_sgs_variesby_value` on its terms that have none (an existing value is
+//     never replaced), so SGS's product preflight publishes the product; a product with no variesBy axis (heldDraft) is
+//     made and kept a draft, and the plan notes it;
+//   - an address image is found by `_sgs_draft_image_source`, or for a stock photo by the media upload's file name, else
+//     fetched once whatever its address looks like (the file named from its stock name or address, its extension from
+//     the image's own type);
 //   - a product that would otherwise have no image (the draft gives none and the product found has none, or the draft's
 //     image cannot be added) gets the "photo to come" image (data/photo-to-come.png, Bean 2026-10-27), so WooCommerce's
 //     product checks let it publish: one attachment per site (found by its file's sha or name on a re-run, never
@@ -23,6 +29,7 @@ import { fileURLToPath } from 'node:url';
 import { catalogueFile, loadCatalogue, productAddress } from './catalogue-read.mjs';
 import { catalogueProblems } from './intake-catalogue-run.mjs';
 import { PHOTO_TO_COME, catalogueApplyPhp, catalogueStatePhp } from './site-build-catalogue-php.mjs';
+import { stockFileName, stockKey } from './media-stock.mjs';
 
 export { PHOTO_TO_COME };
 
@@ -33,14 +40,17 @@ export const GAP_PLUGINS = { switch: /subscriptions/i, 'open-amount': /gift-?car
 export const PHOTO_TO_COME_FILE = fileURLToPath( new URL( '../data/photo-to-come.png', import.meta.url ) );
 const sha256 = ( file ) => crypto.createHash( 'sha256' ).update( fs.readFileSync( file ) ).digest( 'hex' );
 
-// The images the catalogue names, keyed by asset path or address: { key: { name, sha } | { url } }, and the photo-to-come
-// image under PHOTO_TO_COME.
+// The images the catalogue names, keyed by asset path or address: { key: { name, sha } | { url, stem? } }, and the
+// photo-to-come image under PHOTO_TO_COME. A stock-host address carries `stem`, the file name without its extension the
+// media upload gives that photo (lib/media-stock.mjs::stockFileName), so the catalogue finds the attachment the media
+// upload made for it and names a photo it fetches itself the same way.
 export function catalogueImages( repo, catalogue ) {
 	const out = { [ PHOTO_TO_COME ]: { name: path.basename( PHOTO_TO_COME_FILE ), sha: sha256( PHOTO_TO_COME_FILE ) } };
 	for ( const p of catalogue.products ) {
 		for ( const img of [ p.image, ...p.gallery ].filter( Boolean ) ) {
 			if ( img.url ) {
-				out[ img.url ] = { url: img.url };
+				const stock = stockKey( img.url );
+				out[ img.url ] = stock ? { url: img.url, stem: stockFileName( stock, '' ) } : { url: img.url };
 			} else if ( ! out[ img.asset ] && fs.existsSync( path.join( repo, img.asset ) ) ) {
 				out[ img.asset ] = { name: path.basename( img.asset ), sha: sha256( path.join( repo, img.asset ) ) };
 			}
@@ -50,6 +60,10 @@ export function catalogueImages( repo, catalogue ) {
 }
 
 const keyOf = ( img ) => ( img ? img.url || img.asset : null );
+
+// A variable product SGS's product preflight will not publish: none of its attributes is a Google variesBy axis (the
+// catalogue's `no-variesby` gap row). It is made and kept a draft.
+export const heldDraft = ( p ) => 'variable' === p.type && p.attributes.length > 0 && ! p.attributes.some( ( a ) => a.variesBy );
 const products = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 
 // What one found product lacks of its catalogue record (names, for the plan line).
@@ -86,7 +100,13 @@ function missing( p, s, state ) {
 		const lack = p.variations.filter( ( v ) => ! s.variations.includes( v.sku ) );
 		lack.length && out.push( `${ lack.length } of ${ p.variations.length } variations` );
 	}
-	if ( 'publish' !== s.status ) {
+	for ( const a of p.attributes.filter( ( x ) => x.variesBy ) ) {
+		const terms = ( s.variesBy || {} )[ `pa_${ a.slug }` ];
+		if ( terms && terms.some( ( v ) => '' === v ) ) {
+			out.push( `variesBy ${ a.variesBy } on pa_${ a.slug }` );
+		}
+	}
+	if ( 'publish' !== s.status && ! heldDraft( p ) ) {
 		out.push( `publishing (now ${ s.status })` );
 	}
 	return out;
@@ -104,7 +124,7 @@ export function planCatalogue( catalogue, state ) {
 	const actions = [];
 	for ( const p of products( catalogue ) ) {
 		const s = state.products.find( ( x ) => x.draftId === p.draftId ) || { id: 0 };
-		const step = { draftId: p.draftId, product: p, image: keyOf( p.image ) || PHOTO_TO_COME, photoToCome: ! p.image, gallery: p.gallery.map( keyOf ) };
+		const step = { draftId: p.draftId, product: p, image: keyOf( p.image ) || PHOTO_TO_COME, photoToCome: ! p.image, gallery: p.gallery.map( keyOf ), hold: heldDraft( p ) };
 		const address = productAddress( catalogue, p );
 		if ( ! s.id ) {
 			const imgs = [ p.image, ...p.gallery ].filter( Boolean ).filter( ( i ) => ! state.images[ keyOf( i ) ] ).length;
@@ -131,6 +151,10 @@ export function planCatalogue( catalogue, state ) {
 			const plugin = state.plugins.find( ( x ) => re.test( x ) );
 			notes.push( plugin ? `${ plugin } is active: the ${ kind } gap(s) of ${ gaps.map( ( g ) => g.draftId ).join( ', ' ) } can be built on it (not done by this step)` : `no ${ 'switch' === kind ? 'subscriptions' : 'gift-card' } plugin is active (wp option active_plugins), so the ${ kind } gap(s) of ${ gaps.map( ( g ) => g.draftId ).join( ', ' ) } stand` );
 		}
+	}
+	const held = actions.filter( ( a ) => a.hold && 'left' !== a.action ).map( ( a ) => a.draftId );
+	if ( held.length ) {
+		notes.push( `${ held.length } product(s) are made and kept a draft, since no choice of theirs is a Google variesBy axis and SGS's product preflight (no_variesby) refuses to publish them: ${ held.join( ', ' ) }` );
 	}
 	const bare = actions.filter( ( a ) => a.placeholder ).map( ( a ) => a.draftId );
 	if ( bare.length ) {
@@ -160,7 +184,7 @@ export const readCatalogueState = ( runPhp, catalogue, images ) => parseJson( ru
 
 // The uploads an apply needs: every image the site does not hold, with its bytes (an asset) or address.
 function uploadsFor( repo, images, state ) {
-	return Object.fromEntries( Object.entries( images ).filter( ( [ k ] ) => ! state.images[ k ] ).map( ( [ k, v ] ) => [ k, v.url ? { url: v.url } : { ...v, data: fs.readFileSync( PHOTO_TO_COME === k ? PHOTO_TO_COME_FILE : path.join( repo, k ) ).toString( 'base64' ) } ] ) );
+	return Object.fromEntries( Object.entries( images ).filter( ( [ k ] ) => ! state.images[ k ] ).map( ( [ k, v ] ) => [ k, v.url ? { ...v } : { ...v, data: fs.readFileSync( PHOTO_TO_COME === k ? PHOTO_TO_COME_FILE : path.join( repo, k ) ).toString( 'base64' ) } ] ) );
 }
 
 // Writes `sites.<site>` into catalogue.json (validated first; refused when the file changed shape).
