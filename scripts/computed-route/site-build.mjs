@@ -2,13 +2,17 @@
 // once, with its menus, front and posts page, permalinks and active header, drawer and footer.
 //   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--templates-only] [--only <row key,...>] [--repo <root>]
 //   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
+//   node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
 // each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
 // beside the map (page-map.site); a run against another site that shares the client plans from the map without those ids
 // (a post carrying a row key is adopted) and its write-back replaces them. The site phase also sets the site options the
 // draft's behaviours need (the route fade) from sites/<client>/build/site-options.json, which --promote-options fills from a
-// Fill run (lib/site-build-options.mjs). Exit 0 done, 1 failure or a stopped run, 2 usage.
+// Fill run (lib/site-build-options.mjs). --catalogue runs only the draft catalogue (lib/site-build-catalogue.mjs, FR-48-92):
+// every product of sites/<client>/build/catalogue.json planned by SKU (create, complete, exists, or left when it is a
+// fixture), made or completed with --apply, read back, and its product id and permalink recorded in catalogue.json's
+// `sites.<site>`; the page map is neither read nor written. Exit 0 done, 1 failure or a stopped run, 2 usage.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -20,6 +24,7 @@ import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
+import { runCatalogue } from './lib/site-build-catalogue.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -29,6 +34,7 @@ const promote = opt( '--promote-options' );
 if ( ! client || ( ! site && ! promote ) ) {
 	console.error( 'usage: node site-build.mjs <client> --site <site> [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --promote-options <Fill run folder or file> [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]' );
 	process.exit( 2 );
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -44,6 +50,17 @@ if ( promote ) {
 }
 const mapFile = path.join( repo, 'sites', client, 'build', 'page-map.json' );
 const apply = args.includes( '--apply' );
+if ( args.includes( '--catalogue' ) ) {
+	// The site's calibration target: a local mirror's names its WSL docroot, so its wp-cli runs there instead of over SSH.
+	const catTargets = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
+	const catTarget = ( fs.existsSync( catTargets ) ? JSON.parse( fs.readFileSync( catTargets, 'utf8' ) )[ site ] : null ) || {};
+	try {
+		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( catTarget, site, repo ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
 // --templates-only plans and runs the template copies alone (FR-48-56), leaving every post, menu and option as it is.
 const templatesOnly = args.includes( '--templates-only' );
 // --only <row keys> plans and runs those rows' own steps alone (post:<slug>, page:<slug>), leaving every other post, menu,

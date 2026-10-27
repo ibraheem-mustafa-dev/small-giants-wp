@@ -6,7 +6,11 @@
 //     `#fragment` kept (`Home.dc.html#build` gives `/#build`) and its query dropped (`dropped` names it);
 //   - `external` (a scheme or `//` link), `site` (already root-relative) and `anchor` (an in-page `#part`): the href as it is;
 //   - `none`: a bare `#` or empty href whose click handler reaches no single page (url left empty, as before);
-//   - `unresolved`: a draft route no row holds, a product the page map has no product for, or a row that makes no page (the
+//   - a product link (the page map's `product` row) whose `?id=` is a product of the client's draft catalogue
+//     (sites/<client>/build/catalogue.json, FR-48-92, not dropped in the review): that product's address
+//     (`/<product base>/<slug>/`, the slug the site build gives it); a query key that names one of its choices with one
+//     of that choice's values becomes WooCommerce's own `attribute_pa_<slug>=<term>` preselection, any other is dropped;
+//   - `unresolved`: a draft route no row holds, a product the catalogue does not hold, or a row that makes no page (the
 //     order confirmation): never written; `owner` and `why` make the handover row;
 //   - `other`: a relative link that is no draft route (an asset path), as it is.
 // `draftLinksFor` reads the client's context once: the confirmed page map, the routing intake recorded, and the page map's
@@ -18,6 +22,7 @@ import { resolveRef } from './handoff.mjs';
 import { permalinkOf } from './fill-route.mjs';
 import { PERMALINKS } from './site-build-plan.mjs';
 import { proposePageMap } from './intake-pagemap.mjs';
+import { loadCatalogue, productAddress, slugify } from './catalogue-read.mjs';
 
 const EXTERNAL = /^([a-z][a-z0-9+.-]*:|\/\/)/i;
 const FILE = /^(.+?\.dc\.html):\d+/;
@@ -36,7 +41,8 @@ export const elementFile = ( e ) => ( e?.template ? `${ e.template }.dc.html` : 
 // { route: slug } the page map's matching and `proposed` the proposed rows it names slugs from. A route the confirmed map
 // holds is its row; a route the proposal folded into another row (routeSlug names that row's slug) is the confirmed row of
 // the same route, else of the same slug. `goRoutes` maps `<file>\0<handler>` to the routes the handler reaches.
-export function linkContext( { rows = [], routing = null, routeSlug = {}, proposed = [] } ) {
+// `catalogue` is the client's draft catalogue (null: none), whose products a product link resolves to.
+export function linkContext( { rows = [], routing = null, routeSlug = {}, proposed = [], catalogue = null } ) {
 	const routeRow = new Map( rows.filter( ( r ) => r.route ).map( ( r ) => [ r.route, r ] ) );
 	for ( const [ route, slug ] of Object.entries( routeSlug || {} ) ) {
 		if ( routeRow.has( route ) ) {
@@ -55,14 +61,40 @@ export function linkContext( { rows = [], routing = null, routeSlug = {}, propos
 			goRoutes.set( k, new Set( [ ...( goRoutes.get( k ) || [] ), l.route ?? null ] ) );
 		}
 	}
-	return { adapter: routing?.adapter ?? null, rows, routeRow, goRoutes };
+	return { adapter: routing?.adapter ?? null, rows, routeRow, goRoutes, catalogue };
 }
 
-// The site address of one row, or { owner, why } when the row makes no page.
-function rowAddress( row, rows, query ) {
+// A catalogue product link: { address, query (the query left to drop) } or null when the catalogue has no such product.
+// The `id` is consumed; a key naming one of the product's choices with one of its values becomes the WooCommerce
+// preselection `attribute_pa_<slug>=<term slug>`.
+function productLink( catalogue, id, query ) {
+	const p = catalogue && null != id ? ( catalogue.products || [] ).find( ( x ) => x.draftId === id && ! ( catalogue.dropped || [] ).includes( id ) ) : null;
+	if ( ! p ) {
+		return null;
+	}
+	const pick = new URLSearchParams();
+	const rest = new URLSearchParams();
+	for ( const [ k, v ] of query ) {
+		if ( 'id' === k ) {
+			continue;
+		}
+		const a = ( p.attributes || [] ).find( ( x ) => x.key === k );
+		const o = a?.options.find( ( x ) => String( x.value ) === v );
+		( o ? pick : rest ).append( o ? `attribute_pa_${ a.slug }` : k, o ? slugify( o.term ) : v );
+	}
+	return { address: `${ productAddress( catalogue, p ) }${ [ ...pick.keys() ].length ? `?${ pick.toString() }` : '' }`, query: rest };
+}
+
+// The site address of one row, or { owner, why } when the row makes no page. `query` is what the address leaves
+// unexpressed (dropped), when the row consumes part of it.
+function rowAddress( row, rows, query, catalogue = null ) {
 	if ( 'product' === row.postType ) {
 		const id = query.get( 'id' );
-		return { owner: 'product-data', why: `the draft product ${ id ? `"${ id }"` : 'with no id' } has no product in the page map (its ${ row.slug } row is WooCommerce's single-product template; products are WooCommerce data)` };
+		const hit = productLink( catalogue, id, query );
+		if ( hit ) {
+			return hit;
+		}
+		return { owner: 'product-data', why: `the draft product ${ id ? `"${ id }"` : 'with no id' } is no product of the draft catalogue (sites/<client>/build/catalogue.json; its ${ row.slug } row is WooCommerce's single-product template; products are WooCommerce data)` };
 	}
 	if ( 'post' === row.postType ) {
 		return { address: PERMALINKS.replace( '%postname%', row.slug ) };
@@ -79,11 +111,12 @@ function toRow( route, ctx, { query = new URLSearchParams(), fragment = '' } = {
 	if ( ! row ) {
 		return { kind: 'unresolved', route, owner: 'content-page', why: `no page-map row holds the draft route "${ route }"` };
 	}
-	const at = rowAddress( row, ctx.rows, query );
+	const at = rowAddress( row, ctx.rows, query, ctx.catalogue );
 	if ( ! at.address ) {
 		return { kind: 'unresolved', route, owner: at.owner, why: at.why };
 	}
-	const dropped = [ ...query.keys() ].length ? `?${ query.toString() }` : null;
+	const left = at.query || query;
+	const dropped = [ ...left.keys() ].length ? `?${ left.toString() }` : null;
 	return { kind: 'address', value: `${ at.address }${ fragment ? `#${ fragment }` : '' }`, route, ...( dropped ? { dropped } : {} ) };
 }
 
@@ -138,8 +171,9 @@ const memo = new Map();
 
 // The resolver context of one client, read once per process: the confirmed page map (sites/<client>/build/page-map.json,
 // else `proposedRows`, the page map the caller's own intake run just proposed, else intake.json's), the routing the caller
-// holds (else intake.json's) and the page map's route-to-row matching, proposed again from the handoff folder (offline and
-// static, as the intake run proposes it). Null when the client has no page map.
+// holds (else intake.json's), the page map's route-to-row matching, proposed again from the handoff folder (offline and
+// static, as the intake run proposes it), and the draft catalogue (catalogue.json, FR-48-92). Null when the client has no
+// page map.
 export function draftLinksFor( { repo, client, routing = null, proposedRows = null } ) {
 	const key = `${ repo }\u0000${ client }`;
 	const given = routing || proposedRows;
@@ -151,7 +185,7 @@ export function draftLinksFor( { repo, client, routing = null, proposedRows = nu
 	const map = readJson( path.join( build, 'page-map.json' ) ) || proposedRows || intake?.pageMap || null;
 	const folder = path.join( repo, 'sites', client, 'handoff' );
 	const proposal = Array.isArray( map ) && fs.existsSync( folder ) ? proposePageMap( { folder } ) : { rows: [], routeSlug: {} };
-	const ctx = Array.isArray( map ) ? linkContext( { rows: map, routing: routing || intake?.routing || null, routeSlug: proposal.routeSlug, proposed: proposal.rows } ) : null;
+	const ctx = Array.isArray( map ) ? linkContext( { rows: map, routing: routing || intake?.routing || null, routeSlug: proposal.routeSlug, proposed: proposal.rows, catalogue: loadCatalogue( repo, client ) } ) : null;
 	! given && memo.set( key, ctx );
 	return ctx;
 }
