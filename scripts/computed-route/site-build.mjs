@@ -4,6 +4,7 @@
 //   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
 //   node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
 // each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
@@ -16,7 +17,10 @@
 // --templates-only nor --only) runs the same step after its four phases. --catalogue runs only the draft catalogue
 // (lib/site-build-catalogue.mjs, FR-48-92): every product of sites/<client>/build/catalogue.json planned by SKU (create,
 // complete, exists, or left when it is a fixture), made or completed with --apply, read back, and its product id and
-// permalink recorded in catalogue.json's `sites.<site>`; the page map is neither read nor written.
+// permalink recorded in catalogue.json's `sites.<site>`; the page map is neither read nor written. --menus runs only
+// the menus and their mega-menu bindings (lib/site-build-menus-step.mjs): the menu, item and theme-location steps, each
+// mega panel's section page, and the removal of an item a mega item took over, on a site that is already built; it
+// reads the page map and never writes it (it makes no post), and records the site's menu ids in menu-map.json.
 // Exit 0 done, 1 failure or a stopped run, 2 usage.
 import fs from 'fs';
 import path from 'path';
@@ -31,6 +35,8 @@ import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
+import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
+import { readSurfaces } from './lib/site-build-labels.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -42,6 +48,7 @@ if ( ! client || ( ! site && ! promote ) ) {
 	console.error( '       node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --promote-options <Fill run folder or file> [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]' );
 	process.exit( 2 );
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -72,6 +79,27 @@ if ( args.includes( '--catalogue' ) ) {
 if ( args.includes( '--flow-links' ) ) {
 	try {
 		process.exit( runFlowLinks( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
+if ( args.includes( '--menus' ) ) {
+	try {
+		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
+		const runPhp = wpEvalRunner( target, site, repo );
+		const planFor = () => {
+			const link = readLinkTextReport( { repo, client } );
+			const state = readState( runPhp, rows );
+			const plan = planBuild( { rows, state, repo, client, linkText: link.text } );
+			plan.notes.push( ...link.conflicts );
+			return { plan, superseded: supersededItems( rows, state, link.text, readSurfaces( repo, client ) ), state };
+		};
+		const code = runMenus( { planFor, apply, wp: wpCommand( target, site, repo ), applyPhase } );
+		if ( 0 === code && apply ) {
+			writeMenuMap( path.join( repo, 'sites', client, 'build', 'menu-map.json' ), site, readState( runPhp, rows ).menus );
+		}
+		process.exit( code );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
