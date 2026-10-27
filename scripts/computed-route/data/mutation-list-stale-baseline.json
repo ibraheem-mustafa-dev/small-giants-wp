@@ -1,0 +1,224 @@
+{
+	"tests/calibrate-basket.mutations.json": [
+		"const shows = ( r ) => ! r.hoverMissed.includes( n ) && markerShows( r, n, d );"
+	],
+	"tests/census-classes.mutations.json": [
+		"\"frClass\": \"held\" },\n\t\t{ \"class\": \"timing-no-home\""
+	],
+	"tests/fill-entrance-opener.mutations.json": [
+		"opener?.state && await openWith( page, opener );",
+		"opener?.state && await openWith( page, opener );"
+	],
+	"tests/fill-motion-reporting.mutations.json": [
+		"( 'string' === typeof r ? r : r.text )"
+	],
+	"tests/fixtures/calibrate-structure/mutations.json": [
+		"structure: rowsOf( STRUCTURE_ROLES, ' AND css_property IS NULL AND enum_values IS NOT NULL' ),",
+		" AND css_property IS NULL AND enum_values IS NOT NULL' ),"
+	],
+	"tests/fixtures/delivery-map-evidence/mutations.json": [
+		".filter( ( e ) => ! facts.effects.has( e ) )",
+		".filter( ( f ) => ! facts.flags.has( f ) )",
+		"facts.nodes.some( ( n ) => effects.every( ( e ) => n.effects.has( e ) ) && flags.every( ( f ) => n.flags.has( f ) ) )",
+		"want.every( ( e ) => names( r.live ).includes( e ) )"
+	],
+	"tests/fixtures/equivalence-tolerance/mutations.json": [
+		"\treturn samePaint( prop, a, b );"
+	],
+	"tests/fixtures/fill-ancestor/mutations.json": [
+		"return null === d || ( Object.keys( d ).length && ! sameAsk( prop, d, p.draft ) );",
+		"p.prop in SIZE_FAMILY || "
+	],
+	"tests/fixtures/fill-census/mutations.json": [
+		"if ( args.includes( '--check' ) && result.unclassified.length ) process.exit( 1 );"
+	],
+	"tests/fixtures/fill-child-setting/mutations.json": [
+		".filter( ( p ) => ! reachesChildBlock( p ) );"
+	],
+	"tests/fixtures/fill-conservation-classes/mutations.json": [
+		"\tfor ( const s of report.settled || [] ) {\n\t\t// A settled row",
+		"...( undefined === o.readSlot ? [] : [ at( o.node, o.readSlot ) ] )",
+		"export const FILL_READS = new Set( FILL_PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) ) );"
+	],
+	"tests/fixtures/fill-ctx/mutations.json": [
+		"...( own ? { ...ownOf( el, style ), ...contextOf( el, style ) } : {} )",
+		"...SIDE_STYLES, ...FLEX_ITEM_PROPS ]",
+		"\tif ( fluid.length ) {\n\t\treturn { raise: NATURAL_SIZE };\n\t}",
+		"const fluid = fixedAt.filter( ( w ) => null === pxOf( reads.declared?.[ w ]?.[ target.id ]?.width ?? '' ) );"
+	],
+	"tests/fixtures/fill-held/mutations.json": [
+		"calFor: ( block ) => withFamilies( opts.calFor( block ) )"
+	],
+	"tests/fixtures/fill-motion-carries/mutations.json": [
+		"declaredAt.length ? declaredAt : READ_WIDTHS"
+	],
+	"tests/fixtures/fill-not-painted-rows/mutations.json": [
+		"\t\tsettled( st, rec, ref, { slot, property: p, value: String( valueAt( snaps[ w ], p ) ), reason: 'not-painted'"
+	],
+	"tests/fixtures/fill-prop-tiers/mutations.json": [
+		"const shown = painted ? painted.value : baseline( w );",
+		"( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf );"
+	],
+	"tests/fixtures/fill-read-child-size/mutations.json": [
+		"null !== kw && null !== kh && Math.abs( kr.width - r.width ) <= 1 && Math.abs( kr.height - r.height ) <= 1 ?",
+		"( /^\\d+(\\.\\d+)?(px)?$/.test("
+	],
+	"tests/fixtures/fill-read-owner/mutations.json": [
+		"resolve( j.finder )?.setAttribute( 'data-fill-owner', String( j.owner ) );"
+	],
+	"tests/fixtures/fill-reads/mutations.json": [
+		"snap.styles.color = srgb( getComputedStyle( el ).color );",
+		"snap.position = getComputedStyle( el ).position;",
+		"slot: u.slot ?? '', state: u.state ?? null } ) );"
+	],
+	"tests/fixtures/fill-settled/mutations.json": [
+		"( canon( prop, a ) !== a ) === ( canon( prop, b ) !== b ) ? PX_TOL : 0",
+		"( canon( prop, a ) !== a ) === ( canon( prop, b ) !== b ) ? PX_TOL : 0",
+		"\t\t\tsettled( st, rec, ref, { slot, property: prop, value: json( w.value ), reason: 'already-set'"
+	],
+	"tests/fixtures/fill-state-motion/mutations.json": [
+		"targetName( n, t, targets, home ) && ! own.some(",
+		".find( ( v ) => undefined !== v ) ?? '0px' );"
+	],
+	"tests/fixtures/fill-state-script/mutations.json": [
+		"\t\t\t\tlook.script && ( e.script = look.script );\n"
+	],
+	"tests/fixtures/fill-transition-list/mutations.json": [
+		"const key = `${ t.id }|${ prop }|${ o.settle ?? o.reason }`;"
+	],
+	"tests/fixtures/fill-width-gate/mutations.json": [
+		"const css = hidden.map( mediaRule ).join( ' ' );",
+		"put( 'sgsCustomCssNote',"
+	],
+	"tests/fixtures/fill-wire/mutations.json": [
+		"const own = PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) );",
+		"( layer ? ids : [ ...new Set( [ ...ids, ...CONTEXT_PROPS ] ) ] ).map("
+	],
+	"tests/fixtures/fixture-completeness/mutations.json": [
+		"for ( const key of Object.keys( paint.elements || {} ) ) for ( const c of classesOf( key ) ) set.add( c );"
+	],
+	"tests/fixtures/form-fix/mutations.json": [
+		"walk( [ node ], ( n ) => linked.add( n ) );",
+		"'linked' === referenceOf( node, refs )?.kind",
+		"formLinks: formLinks(), refs, db: theDb"
+	],
+	"tests/fixtures/gaps-file/mutations.json": [
+		"const bare = r.gates.find( ( g ) => 'not-reached' !== g.status && ! text( g.evidence ) );"
+	],
+	"tests/fixtures/gate-probes/mutations.json": [
+		"const own = found.hits.filter( ( h ) => belongsTo( h.selector, setting.block ) );",
+		"const sgs = live.hits.filter( ( h ) => ownRule( h.selector ) );",
+		"after !== before && winners.push( name );",
+		"const own = w.winners.find( ( n ) => 'element.style' !== n && ownRule( n ) );",
+		"if ( ! report.runs.some( ( r ) => r.state === row.state && r.width === row.width ) ) {"
+	],
+	"tests/fixtures/held-live/mutations.json": [
+		"if ( 'agree' !== rl ) {",
+		"canon( row.property, value ), canon( row.property, live )"
+	],
+	"tests/fixtures/identity-pairing/mutations.json": [
+		"return skeletonPairs( nodes, flat.map( ( n ) => refOf( n ) ) ).pairs;"
+	],
+	"tests/fixtures/intake-inventory-helper/mutations.json": [
+		"\t\tif ( tracksNew( p, a, node ) ) {",
+		"reads.has( n.right.name );\n\t} );\n\treturn hit;",
+		" && reads.has( n.right.name );"
+	],
+	"tests/fixtures/intake-pagemap/structure-mutations.json": [
+		"return { label: 1 === opens.length ? attrOf( opens[ 0 ], 'aria-label' ) || innerText( d.text, opens[ 0 ] ) : `Mega menu ${ i + 1 }`, node: g };"
+	],
+	"tests/fixtures/layout-tie-break/mutations.json": [
+		"fits( props[ p2 ].values[ value ] || defaultPaint( calibration, slot, p2, ( a, b ) => lp( a ) === lp( b ) ), atRow( pw ) )"
+	],
+	"tests/fixtures/manifest-build/mutations.json": [
+		"product_cat: 'page', post: 'page' };",
+		"target: isTemplate ? { template: POST_TEMPLATE } :",
+		"source && claim( POST_TEMPLATE,",
+		"...( source ? [ { ...source, templateOf: source } ] : [] ) ] ) {"
+	],
+	"tests/fixtures/motion-behaviours/mutations.json": [
+		"if ( 'hover.effects' === w.list ) {"
+	],
+	"tests/fixtures/motion-settings/mutations.json": [
+		"applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr } );"
+	],
+	"tests/fixtures/palette-into-mutations.json": [
+		"if ( ! sameSet( named, rowRoles( row ) ) ) {"
+	],
+	"tests/fixtures/read-readme/mutations.json": [
+		"! isNone( text ) && items.push( { kind, item: { text,",
+		"template && LIST_OF[ template ] && out[ kind ].push( item );",
+		"! template && PLATFORM.test( s.heading ) && ! BLOCK_HINT.test( s.heading ) && out.platformIntent.push( ...items.map( ( x ) => x.item ) );",
+		"BLOCK_HINT.test( s.heading ) && out.blockHints.push( ...items.map( ( { item: { flagged, ...it } } ) => it ) );",
+		"BLOCK_HINT.test( s.heading ) && out.blockHints.push( ...items.map( ( { item: { flagged, ...it } } ) => it ) );",
+		"const row = ! m && /^\\s*\\|.*\\|\\s*$/.test( l.text )"
+	],
+	"tests/fixtures/review-fill/mutations.json": [
+		"...readback( { writes: made.writes, el, field: hit } ).map(",
+		"return Math.abs( dx ) >= Math.abs( dy ) ? dx > 0 : dy > 0;",
+		"ahead.every( Boolean ) ? 'before'",
+		"mdb: motionDb( db ), db,"
+	],
+	"tests/fixtures/size-keyword/mutations.json": [
+		"const keyword = sizeKeyword( { prop, raw, def, unit } );\n\tif ( keyword ) {",
+		"if ( undefined !== unit ) {\n\t\treturn { error: `${ raw } cannot be held (the setting stores a number beside a unit"
+	],
+	"tests/fixtures/skeleton-footer-slots/mutations.json": [
+		"\t\t\trow.innerBlocks.push( ...floated() );\n"
+	],
+	"tests/fixtures/skeleton-form-link/mutations.json": [
+		"if ( 'formLink' === r.rule ) {"
+	],
+	"tests/fixtures/skeleton-width-only/mutations-propose.json": [
+		"m.widthKids( e ).forEach( ( k ) => {\n\t\t\tconst at",
+		".split( /[^\\w$]+/ ).includes( h ) );"
+	],
+	"tests/fixtures/state-look-wire/mutations.json": [
+		"const look = defaultStateLook( cal, state, rest );",
+		"undefined === own( w ) && same("
+	],
+	"tests/fixtures/state-route-mutations.json": [
+		"const at = ( r ) => ( isStatePage( routing ) ? ",
+		"if ( 'draft' === side && String( url ).includes( '#@state/' ) ) {"
+	],
+	"tests/fixtures/t2a-planted-draft/mutations.json": [
+		"const holdsOther = ( s ) => ( strips?.exclude || [] ).some(",
+		"[ s, ...s.querySelectorAll( `[data-dc-tpl=\"${ tpl }\"]` ) ].some(",
+		"if ( open[ side ] && ! [ 'fixed', 'absolute' ].includes( position ) && renders ) {"
+	],
+	"tests/fixtures/t3-planted-draft/mutations.json": [
+		"put( 'sgsCustomCss', [ had( 'sgsCustomCss' ), css ].filter( Boolean ).join( ' ' ),"
+	],
+	"tests/fixtures/transition-split/mutations.json": [
+		"( x ) => sameTiming( prop, x.value, e[ prop ] ) ?? x.value === e[ prop ]"
+	],
+	"tests/fixtures/u6-icons/mutations.json": [
+		"const brand = brandSignatures().bySig.get( sig );",
+		"if ( 'brand' === attributes.iconSource ) {"
+	],
+	"tests/fixtures/u6-icons/read-mutations.json": [
+		"c.setAttribute( p, v === own ? 'currentColor' : v );",
+		"if ( drawn.test( o.localName ) ) {",
+		"snap.svg = { markup: new XMLSerializer().serializeToString( copy ) };",
+		"filter: getComputedStyle( frames[ 0 ] ).filter,",
+		"h: frames[ 0 ].getBoundingClientRect().height }",
+		"const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ) ];"
+	],
+	"tests/fixtures/u8-writers/mutations.json": [
+		"'width' === row.property && GAP.test( row.reason ?? '' ) && '' === ( row.slot ?? '' )"
+	],
+	"tests/fixtures/u8-writers/read-mutations.json": [
+		"const scroller = [ el, ...[ ...el.querySelectorAll( '*' ) ].slice( 0, 400 ) ].find(",
+		"ground = getComputedStyle( a ).backgroundColor;",
+		"snap.scrollbar = { color: sc.scrollbarColor, width: sc.scrollbarWidth,"
+	],
+	"tests/fixtures/u9-planted/mutations.json": [
+		"if ( ! same( value, def.default ) && ! same( value, attributes[ attr ] ) ) {",
+		"f.counterMax = m ? Number( m[ 1 ] ) : null;",
+		"f.checked = 'true' === el.getAttribute( 'aria-checked' );"
+	],
+	"tests/site-build-single.mutations.json": [
+		"...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] )",
+		"...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] )"
+	]
+}

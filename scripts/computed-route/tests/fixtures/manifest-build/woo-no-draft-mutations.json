@@ -7,7 +7,7 @@
 	{"file": "lib/manifest-build.mjs", "find": "} else if ( noDraft ) {\n\t\t\tout.noDraft.push( { key, why: noDraft } );\n\t\t} else {", "replace": "} else if ( noDraft ) {\n\t\t} else {", "why": "the skip is not named"},
 	{"file": "lib/manifest-build.mjs", "find": "null === intakeSurface && ! noDraft && ! ( have", "replace": "null === intakeSurface && ! ( have", "why": "the skip is still listed as a missing intake surface"},
 	{"file": "lib/manifest-build.mjs", "find": "\t\t\t...( noDraft ? { noDraft } : {} ),\n\t\t};", "replace": "\t\t};", "why": "the entry does not carry the skip for site-run"},
-	{"file": "lib/manifest-build.mjs", "find": "entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ) };", "replace": "entries[ key ] = { ...entry, ...have };", "why": "an existing entry's stale skip outranks the generated one"},
+	{"file": "lib/manifest-build.mjs", "find": "entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };", "replace": "entries[ key ] = { ...entry, ...have, ...( stale ? { intakeSurface } : {} ) };", "why": "an existing entry's stale skip outranks the generated one"},
 	{"file": "lib/manifest-build.mjs", "find": "noDraft || delete entries[ key ].noDraft;", "replace": "", "why": "a stale skip stays once the draft has the page"},
 	{"file": "manifest.mjs", "find": "result.noDraft.forEach( ( u ) => console.log( `no-draft-page ${ u.key }: ${ u.why }` ) );", "replace": "", "why": "the command does not name the skip"}
 ]
