@@ -20,6 +20,7 @@
 import { specHit } from './skeleton-facts.mjs';
 import { brandOwnsAddress } from './brand-registry.mjs';
 import { toggleGroups, summaryOf as summaryLine, stageNoteOf, canvasOf } from './skeleton-choice-flow-canvas.mjs';
+import { flowPieces } from './skeleton-choice-flow-refs.mjs';
 
 const HEADING = /^h[1-6]$/;
 const FIELD_TAGS = new Set( [ 'input', 'select', 'textarea', 'sc-raw-select' ] );
@@ -45,8 +46,11 @@ function recordTree( els, rootKey ) {
 
 // o: { view (lib/skeleton-record.mjs::recordView), rootKey (the flow root's record key), R (rules.choiceFlow), formControl
 // (rules.formControl), brands (lib/brand-registry.mjs), surfaceKind, parts (the surface's surfaces.json parts, from
-// surfaceContext) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields, result? }], covered
-// (record key -> what draws it), copies [{ words, reason }], handovers, notes }.
+// surfaceContext) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields [{ block, label, key }],
+// result?, parts? (the record keys of the question's own pieces: heading, intro, description, badge, toggle), wrapper? (the
+// record key of the step's own element: a panel's), resultAt? (the record key a result part's result is drawn from) }], covered (record key -> what draws it), copies
+// [{ words, reason }], pieces (lib/skeleton-choice-flow-refs.mjs::flowPieces: the record keys of the flow's own pieces),
+// handovers, notes }.
 export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [] } ) {
 	const els = view.elements || {};
 	const out = { attributes: {}, steps: [], covered: new Map(), copies: [], handovers: [], notes: [] };
@@ -196,7 +200,11 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		badgeWords.length && out.handovers.push( { owner: 'content-page', kind: 'text', detail: `${ name }: the badge "${ badgeWords.join( ', ' ) }" shows on some options: set it on those options` } );
 		cover( q.box, `${ name }, sgs/choice-flow-question` );
 		q.lead.forEach( ( s ) => cover( s, `${ name }'s words, sgs/choice-flow-question` ) );
-		const step = { key: q.box, label: stripped, question, fields: [] };
+		// The question's own pieces where the draft draws them: its heading, the intro after it, the first option's description
+		// and badge, and the control beside the option button that binds the item (its help toggle).
+		const toggle = t.desc( q.loop.k ).find( ( k ) => ! inButton.has( k ) && control( k ) && handler( k ).startsWith( `${ q.loop.as }.` ) ) ?? null;
+		const parts = { heading: heading ?? null, intro: q.texts[ at + 1 ] ?? null, description: description?.k ?? null, badge: badges[ 0 ] ?? null, toggle };
+		const step = { key: q.box, label: stripped, question, fields: [], parts };
 		out.steps.push( step );
 
 		// The steps the panels open underneath, paired with the options in order.
@@ -218,7 +226,9 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		const paras = t.desc( p ).filter( ( k ) => 'p' === rec( k ).realTag && literal( k ) ).map( literal );
 		const result = fields.length ? { heading: '', ...( paras.length ? { body: paras.join( ' ' ) } : {} ) } : { heading: texts[ 0 ] || '', ...( texts.length > 1 ? { body: texts.slice( 1 ).join( ' ' ) } : {} ) };
 		cover( p, why );
-		return { key: p, label, fields, result: { ...result, action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) } };
+		// The panel's own element: the condition's one element (a condition draws nothing of its own).
+		const own = real( p ) ? [ p ] : t.kids( p ).filter( real );
+		return { key: p, label, fields, result: { ...result, action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) }, wrapper: 1 === own.length ? own[ 0 ] : null };
 	}
 	// A choice between pressable buttons: one option per button; the revealing option opens what it reveals underneath and
 	// every other option goes past it.
@@ -230,7 +240,9 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		g.options.some( ( o ) => ! o.label ) && out.notes.push( `${ name }: an option has no words: write its label in the editor` );
 		g.prices.length && out.handovers.push( { owner: 'product-data', kind: 'text', detail: `${ name }: the option prices (${ g.prices.join( ', ' ) }) are the product's own prices (FR-43-10): set them on the product` } );
 		g.buttons.forEach( ( b ) => cover( b, `${ name }, sgs/choice-flow-question` ) );
-		out.steps.push( { key: g.parent, label: '', question, fields: [] } );
+		// The first option's description is its button's second plain text (toggleGroups' reading).
+		const plain = [ g.buttons[ 0 ], ...t.desc( g.buttons[ 0 ] ) ].filter( ( k ) => real( k ) && literal( k ) && ! price( literal( k ) ) );
+		out.steps.push( { key: g.parent, label: '', question, fields: [], parts: { description: question.options[ 0 ]?.description ? plain[ 1 ] ?? null : null } } );
 		if ( ! g.reveal ) {
 			return;
 		}
@@ -266,7 +278,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 			'label' === rec( p ).realTag && ( wrap = p );
 		}
 		const label = ( aria && ! BOUND.test( aria ) ? aria : '' ) || ( wrap ? t.desc( wrap ).map( literal ).find( Boolean ) : '' ) || t.desc( panel ).map( literal ).find( Boolean ) || '';
-		return { block, label };
+		return { block, label, key: k };
 	}
 
 	// Result parts of the surface (surfaces.json kind result) are result steps.
@@ -274,7 +286,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		const roots = ( part.roots || [] ).filter( ( k ) => els[ k ] );
 		const texts = roots.flatMap( ( k ) => [ k, ...t.desc( k ) ] ).filter( ( k ) => literal( k ) ).map( literal );
 		roots.forEach( ( k ) => cover( k, `the result "${ part.name }", sgs/choice-flow-result` ) );
-		out.steps.push( { key: roots[ 0 ] ?? null, label: part.name || '', fields: [], result: { heading: texts[ 0 ] || '', ...( texts.length > 1 ? { body: texts.slice( 1 ).join( ' ' ) } : {} ), action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) } } );
+		out.steps.push( { key: roots[ 0 ] ?? null, resultAt: roots[ 0 ] ?? null, label: part.name || '', fields: [], result: { heading: texts[ 0 ] || '', ...( texts.length > 1 ? { body: texts.slice( 1 ).join( ' ' ) } : {} ), action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) } } );
 	}
 	// The add-to-bag control ends the flow: with no result step yet, it is one.
 	if ( pieces.add && ! out.steps.some( ( s ) => s.result ) ) {
@@ -333,12 +345,14 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		cover( summary.panel, 'the flow summary (sgs/choice-flow showPricePanel, FR-43-19): its live line of the picks; Fill reads its look' );
 	}
 	const note = A.showPricePanel && ! A.stageNote ? stageNoteOf( x, { covered: out.covered } ) : null;
-	note && ( A.stageNote = words( note ), cover( note, 'the note after the flow\'s last control (sgs/choice-flow stageNote, shown in the summary)' ) );
+	note && ( A.stageNote = words( note ), out.noteKey = note, cover( note, 'the note after the flow\'s last control (sgs/choice-flow stageNote, shown in the summary)' ) );
 	const firstStep = Math.min( Infinity, ...out.steps.filter( ( s ) => s.question && els[ s.key ] ).map( ( s ) => t.num( s.key ) ) );
 	const canvas = canvasOf( x, { covered: out.covered, firstStep } );
 	canvas.title && ( A.title = literal( canvas.title ), cover( canvas.titleGroup, 'the flow title (sgs/choice-flow title)' ) );
 	canvas.canvas.forEach( ( c ) => cover( c.key, `a block of the flow post ${ c.at } sgs/choice-flow (Spec 48 R-47-12)` ) );
 	out.canvas = canvas.canvas;
+	out.pieces = flowPieces( x, { pieces, head: pieces.close ? bar( pieces.close ) : null, aside, note: out.noteKey ?? null, copies: out.copies } );
+	delete out.noteKey;
 
 	// The summary's running lines (its base row and the placeholder row before the first choice) and its help note.
 	function summaryOf( k ) {
@@ -349,6 +363,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		}
 		const link = t.desc( k ).find( ( d ) => 'a' === rec( d ).realTag && /^(?!#|\{\{)\S/.test( rec( d ).attrs?.href ?? '' ) );
 		if ( link ) {
+			out.noteKey = link;
 			const texts = [ link, ...t.desc( link ) ].map( literal ).filter( Boolean );
 			const href = rec( link ).attrs.href;
 			const brand = brands.find( ( b ) => brandOwnsAddress( b, href ) )?.slug ?? null;
