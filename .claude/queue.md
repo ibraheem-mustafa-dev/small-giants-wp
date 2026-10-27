@@ -8,3 +8,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-27 S intake-end eye-care-ward-end (83 min, 1504 rows; S-27 and the bag drawer reached via reach with roots; review held until the choice-flow skeleton rule lands, then --rerun-skeletons and apply)
 - 2026-10-27 S intake-end indus-foods (85 min, 1258 rows, 1031 carried, 122 changed; palette marks restored from the 2026-10-19 review; 4 brand slugs, 4 sector titles and the blog parent kept as confirmed; page map unchanged; check-approved 157/0)
 - 2026-10-27 S intake-start mamas-munches-redesign (re-run for the page-root fix ce4772bc7)
+- 2026-10-27 S intake-end mamas-munches-redesign (11 min; every page root is main; review applied, page map and decisions unchanged)
