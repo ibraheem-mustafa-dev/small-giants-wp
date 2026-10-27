@@ -22,9 +22,9 @@ import { isUnwiredEntry } from './intake-defects-static.mjs';
 import { effectRows } from './motion-behaviours.mjs';
 import { skeletonMissing } from './intake-missing.mjs';
 
-export const ROW_TYPES = [ 'page-map', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'effect', 'skeleton-block', 'inventory-diff', 'notice' ];
+export const ROW_TYPES = [ 'page-map', 'catalogue', 'palette-role', 'site-info', 'flag', 'draft-defect', 'not-a-defect', 'missing-feature', 'effect', 'skeleton-block', 'inventory-diff', 'notice' ];
 export const SECTION_TITLES = {
-	'page-map': 'Page map', 'palette-role': 'Palette roles', 'site-info': 'Site Info', flag: 'Flags', 'draft-defect': 'Draft defects', 'not-a-defect': 'Not defects: unwired code',
+	'page-map': 'Page map', catalogue: 'Draft catalogue', 'palette-role': 'Palette roles', 'site-info': 'Site Info', flag: 'Flags', 'draft-defect': 'Draft defects', 'not-a-defect': 'Not defects: unwired code',
 	'missing-feature': 'Missing features', effect: 'Script effects', 'skeleton-block': 'Skeleton block choices', 'inventory-diff': 'Inventory diffs', notice: 'Notices',
 };
 
@@ -56,6 +56,8 @@ export const MARKS = {
 		const twice = parts.find( ( s, i ) => parts.indexOf( s ) !== i );
 		return undefined === twice ? null : `"${ twice }" is named twice`;
 	} }, { value: 'one-off' } ],
+	// A draft catalogue row (FR-48-92): a product the site build makes (`drop` keeps it off the site) or a gap row, read and accepted.
+	catalogue: [ { value: 'accept' }, { value: 'drop' } ],
 	'site-info': [ { value: 'accept' }, { shape: 'edit:<value>', re: /^edit:(.*)$/, check: ( m ) => ( m[ 1 ].trim() ? null : 'the edited value is empty' ) }, { value: 'drop' } ],
 	flag: [ { value: 'accept-flagged' }, { value: 'not-flagged' } ],
 	'draft-defect': [ { value: 'accept' }, { value: 'render-wins' } ],
@@ -90,6 +92,7 @@ export function markProblem( rowType, mark ) {
 
 export const HASH_FIELDS = {
 	'page-map': [ 'route', 'slug', 'title', 'parent', 'template', 'postType', 'collection', 'menus', 'flags' ],
+	catalogue: [ 'draftId', 'name', 'type', 'price', 'variations', 'address', 'kind', 'detail' ],
 	'palette-role': [ 'token', 'hex', 'role', 'roles' ],
 	'site-info': [ 'key', 'value', 'normalised' ],
 	flag: [ 'kind', 'text', 'url' ],
@@ -199,6 +202,9 @@ export function reviewRows( intake ) {
 		`${ r.route ?? '(no route)' } → ${ r.title } (${ r.postType }, ${ r.collection }${ r.template ? `, ${ r.template }` : '' })`,
 		`${ r.parent ? `${ r.parent }/` : '' }${ r.slug }`,
 		[ ...( r.menus || [] ).map( ( m ) => `${ m.menu } #${ m.position }` ), ...( r.flags || [] ) ].join( ', ' ) ) );
+	// FR-48-92: one row per draft catalogue product and one per catalogue gap.
+	( intake.catalogue?.products || [] ).forEach( ( r ) => add( 'catalogue', { ...r, rowId: `catalogue:${ r.draftId }` }, r.draftId, `${ r.name } (${ r.type }, from £${ r.price }${ r.variations ? `, ${ r.variations } variations` : '' }${ r.image ? '' : ', no image' })`, r.address ) );
+	( intake.catalogue?.gaps || [] ).forEach( ( g, i ) => add( 'catalogue', { ...g, rowId: `catalogue-gap:${ g.draftId }:${ g.kind }:${ i + 1 }` }, g.draftId, `gap (${ g.kind }) ${ g.draftId }`, 'recorded, not built', g.detail ) );
 	( intake.palette?.rows || [] ).forEach( ( r ) => add( 'palette-role', r, r.token, `${ r.token } ${ r.hex }`, r.roles?.length > 1 ? `role:${ r.roles.join( ',' ) }` : r.role ? `role:${ r.role }` : 'no slug (one-off)', [ r.confidence, r.why ].filter( Boolean ).join( ': ' ) ) );
 	( intake.siteInfo?.rows || [] ).forEach( ( r ) => add( 'site-info', r, r.key, `${ r.key }: ${ text( r.value ) }`, text( r.normalised ), ( r.sources || [] ).map( ( s ) => s.draftId || s.location ).filter( Boolean ).join( ', ' ) ) );
 	( intake.flags || [] ).forEach( ( r ) => add( 'flag', r, r.draftId, `${ r.kind }: ${ r.text ?? r.url ?? '' }`, 'accept-flagged', r.why || '' ) );

@@ -47,6 +47,7 @@ const fixture = ( over = {} ) => ( {
 	],
 	skeletons: { header: { rows: [ { rowId: 'skeleton:header:logo', key: 'logo', tag: 'a', words: 'Acme', block: 'sgs/site-logo', confidence: 0.9, reason: 'logo link' } ] },
 		footer: { rows: [ { rowId: 'skeleton:footer:copy', key: 'copy', tag: 'p', words: '© Acme', block: 'sgs/text', confidence: 0.7, reason: 'paragraph' } ] } },
+	catalogue: { products: [ { draftId: 'jar', name: 'Jar', type: 'simple', price: 4, variations: 0, address: '/product/jar/', image: true } ], gaps: [ { draftId: 'jar', kind: 'switch', detail: 'choice "sub" is an on/off switch' } ], notes: [] },
 	gaps: [], review: [],
 	notices: { prose: [ { rowId: 'prose:README.md:7', file: 'README.md', line: 7, text: 'run npm install', why: 'starts with npm' } ],
 		blockedHosts: [ { url: 'https://cdn.evil.test/a.js', host: 'cdn.evil.test', reason: 'unlisted-host', draftId: null } ] },
@@ -159,7 +160,7 @@ test( 'MUST FAIL an unknown row ID, a row in the wrong section and a malformed l
 	assert.ok( r.problems.some( ( p ) => /row palette:ink is not in review\.md/.test( p ) ) );
 	const moved = applyReview( fixture(), renderReview( fixture() ).replace( /(\| `palette:ink` \|[^\n]*\n)/, '' ).replace( '| `page:page:home` |', '| `palette:ink` | x | y | z | |\n| `page:page:home` |' ), { today: TODAY } );
 	assert.ok( moved.problems.some( ( p ) => /palette:ink sits in the page-map section but is a palette-role row/.test( p ) ) );
-	assert.deepEqual( parseReview( '## Odd heading\n' ).problems, [ 'line 1: section heading "## Odd heading" names no row type (page-map, palette-role, site-info, flag, draft-defect, not-a-defect, missing-feature, effect, skeleton-block, inventory-diff, notice)' ] );
+	assert.deepEqual( parseReview( '## Odd heading\n' ).problems, [ 'line 1: section heading "## Odd heading" names no row type (page-map, catalogue, palette-role, site-info, flag, draft-defect, not-a-defect, missing-feature, effect, skeleton-block, inventory-diff, notice)' ] );
 } );
 
 test( 'MUST FAIL carry-over keeps a mark when draft ID and hash match, drops it (changed, listed first) when the hash changes', () => {

@@ -1,0 +1,50 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "shop", "label": "Shop", "kind": "product archive", "route": "/goods", "wp": { "slug": "goods", "parent": null, "type": "product archive" } },
+  { "id": "product", "label": "Product", "kind": "single product", "route": "/goods/{product-slug}", "wp": { "slug": "{product-slug}", "parent": "goods", "type": "product single" } }
+] }
+</script>
+<x-dc>
+<sc-if value="{{ isShop }}"><main><h1>Goods</h1><sc-for list="{{ results }}" as="p"><a href="#" onClick="{{ p.open }}">{{ p.name }} {{ p.priceLabel }} {{ p.rrpLabel }}</a></sc-for></main></sc-if>
+<sc-if value="{{ isProduct }}"><main>
+  <h1>{{ cur.name }}</h1><p>{{ cur.code }}</p>
+  <sc-for list="{{ sizes }}" as="s"><button onClick="{{ s.pick }}">{{ s.name }}</button></sc-for>
+  <button onClick="{{ addPlain }}">Add</button>
+</main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static PICS = { a: 'https://images.example.test/a.jpg', b: 'https://images.example.test/b.jpg' };
+  static SWATCH = { blk: ['Black', '#111111'], red: ['Red', '#aa2222'] };
+  static GOODS = [
+    { id: 1, brand: 'Northline', name: 'Ridge Cap', code: 'NL-1', price: 30, rrp: 40, img: 'a', fit: 'Snug', cols: ['blk', 'red'] },
+    { id: 2, brand: 'Northline', name: 'Ridge Cap', code: 'NL-2', price: 32, rrp: 32, img: null, fit: 'Loose', cols: ['blk'] },
+    { id: 3, brand: 'Saltway', name: 'Harbour Hat', code: 'SW-3', price: 45, rrp: 60, img: 'b', fit: 'Snug', cols: ['red'] }
+  ];
+  state = { page: 'shop', curId: 1, curSize: 'M', bag: [], f: { brands: [], fit: 'All' } };
+  gbp(n) { return '£' + n.toFixed(2); }
+  go(page, extra) { this.setState(Object.assign({ page }, extra || {})); }
+  renderVals() {
+    const S = this.state, C = Component;
+    const deco = p => Object.assign({}, p, {
+      img: p.img ? C.PICS[p.img] : null,
+      priceLabel: this.gbp(p.price), rrpLabel: this.gbp(p.rrp),
+      colours: (p.cols || []).map(k => C.SWATCH[k][0]),
+      open: () => this.go('product', { curId: p.id })
+    });
+    const goods = C.GOODS.map(deco);
+    const cur = goods.find(p => p.id === S.curId) || goods[0];
+    const results = goods.filter(p => (!S.f.brands.length || S.f.brands.includes(p.brand)) && (S.f.fit === 'All' || p.fit === S.f.fit) && p.cols.some(c => c));
+    const sizeDefs = [['S', -2], ['M', 0], ['L', 2]];
+    const sizes = sizeDefs.map(s => ({ name: s[0], pick: () => this.setState({ curSize: s[0] }) }));
+    return { isShop: S.page === 'shop', isProduct: S.page === 'product', results, cur, sizes, addPlain: () => this.addToBag(cur) };
+  }
+  addToBag(p) {
+    const item = { pid: p.id, size: this.state.curSize };
+    this.setState(s => { const bag = s.bag.slice(); bag.push(item); return { bag }; });
+  }
+}
+</script>
+</body></html>

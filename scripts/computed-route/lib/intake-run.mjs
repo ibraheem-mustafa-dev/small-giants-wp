@@ -23,6 +23,7 @@ import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } f
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
 import { openDb } from './db.mjs';
 import { sourcesOf } from './freshness.mjs';
+import { writeCatalogue } from './intake-catalogue-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -32,11 +33,11 @@ const WIDTHS = [ 375, 768, 1440 ];
 export const USAGE = [
 	'usage: node scripts/computed-route/intake.mjs <client> [--record] [--widths 375,768,1440] [--surfaces a,b] [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --apply-review <client> [--section <row type>[,<row type>...]] [--repo <path>]',
-	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> | --page-map <client> [--repo <path>]',
+	'       node scripts/computed-route/intake.mjs --finalise <client> | --apply-picks <client> | --render <client> | --rerun-skeletons <client> | --facts <client> | --page-map <client> | --catalogue <client> [--repo <path>]',
 	'       node scripts/computed-route/intake.mjs --palette-only <client> [--record] [--into-intake] [--repo <path>]',
 ].join( '\n' );
 
-const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons', '--facts': 'facts', '--page-map': 'page-map', '--palette-only': 'palette-only' };
+const MODES = { '--apply-review': 'apply', '--finalise': 'finalise', '--apply-picks': 'apply-picks', '--render': 'render', '--rerun-skeletons': 'rerun-skeletons', '--facts': 'facts', '--page-map': 'page-map', '--palette-only': 'palette-only', '--catalogue': 'catalogue' };
 
 // argv (after the script) to { mode: 'run'|'apply'|'finalise'|'apply-picks'|'render'|'rerun-skeletons'|'facts'|'page-map'|'palette-only', client, record, widths, surfaces,
 // repo } or { error }.
@@ -251,6 +252,12 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 			say( `review.md: Accept all was ticked in ${ kept.acceptAll.join( ', ' ) }; a tick is not carried, so tick it again in the new review.md` );
 		}
 	}
+	// The draft catalogue (FR-48-92) from the page map this run proposed: catalogue.json, and its summary for the review.
+	const cat = writeCatalogue( { repo: o.repo, client: o.client, rows: record.pageMap, intake: previous, log: say } );
+	if ( cat.code ) {
+		return 1;
+	}
+	record.catalogue = cat.summary;
 	const carried = carryOver( previous, record );
 	record.review = carried.review;
 	carried.realigned.length && say( `review: ${ carried.realigned.length } mark(s) followed their element to a renumbered row: ${ carried.realigned.slice( 0, 5 ).join( '; ' ) }${ carried.realigned.length > 5 ? '; ...' : '' }` );
