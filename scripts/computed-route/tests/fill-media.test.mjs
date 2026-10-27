@@ -140,3 +140,32 @@ test( 'MUST FAIL: factImage reads the placeholder (never a {{ }} hole) and the f
 	assert.equal( nestedImage( { '': { img: null }, '.inner': { img } } ).slot, '.inner' );
 	assert.equal( nestedImage( { '': {}, '.a': { img }, '.b': { img } } ), null );
 } );
+
+// A stock preview the draft paints from a stock host is uploaded as a `stock: true` entry keyed by its address without
+// the query (lib/media-upload.mjs::uploadMedia); Fill maps the painted address to it.
+const STOCK_MAP = { sites: { 'acme-test': { files: [
+	...MAP.sites[ 'acme-test' ].files,
+	{ asset: 'https://images.unsplash.com/photo-1501-abc', source: 'https://images.unsplash.com/photo-1501-abc?w=1600&q=80', id: 201, url: 'https://acme.test/wp-content/uploads/stock-1501-abc.jpg', stock: true },
+	{ asset: 'https://images.unsplash.com/photo-1502-def', id: 202, url: 'https://acme.test/wp-content/uploads/stock-1502-def.jpg', stock: false },
+] } } };
+
+test( 'MUST FAIL: a stock preview the draft paints maps to its stock entry whatever width the draft asks for', () => {
+	const r = run( { tag: 'image-slot', src: 'https://images.unsplash.com/photo-1501-abc?w=1200&q=70&auto=format&fit=crop', alt: '' }, { media: { ...media, map: STOCK_MAP }, fact: { alt: 'Spices in bowls', ratio: null, asset: null } } );
+	assert.equal( val( r, 'imageId' ), 201 );
+	assert.equal( val( r, 'imageUrl' ), 'https://acme.test/wp-content/uploads/stock-1501-abc.jpg' );
+	assert.equal( val( r, 'imageAlt' ), 'Spices in bowls' );
+	assert.deepEqual( r.unmapped, [] );
+	assert.deepEqual( r.checks.map( ( c ) => [ c.id, c.asset ] ), [ [ 201, 'https://images.unsplash.com/photo-1501-abc' ] ] );
+} );
+
+test( 'MUST FAIL: a stock address the map lacks, or holds only as a non-stock entry, is a named gap; another host stays not a draft file', () => {
+	const missing = run( { tag: 'img', src: 'https://images.unsplash.com/photo-1999-zzz?w=800', alt: 'x' }, { media: { ...media, map: STOCK_MAP } } );
+	assert.equal( missing.writes.length, 0 );
+	assert.match( missing.unmapped[ 0 ].reason, /the stock preview "https:\/\/images\.unsplash\.com\/photo-1999-zzz" is not in the media map for acme-test/ );
+	const notStock = run( { tag: 'img', src: 'https://images.unsplash.com/photo-1502-def?w=800', alt: 'x' }, { media: { ...media, map: STOCK_MAP } } );
+	assert.equal( notStock.writes.length, 0, 'only a stock: true entry stands for a stock preview' );
+	const elsewhere = run( { tag: 'img', src: 'https://cdn.example.com/photo-1501-abc', alt: 'x' }, { media: { ...media, map: STOCK_MAP } } );
+	assert.match( elsewhere.unmapped[ 0 ].reason, /not a file of the draft/ );
+	const noMap = run( { tag: 'img', src: 'https://images.unsplash.com/photo-1501-abc?w=800', alt: 'x' }, { media: { ...media, map: null } } );
+	assert.match( noMap.unmapped[ 0 ].reason, /no media map: .*"https:\/\/images\.unsplash\.com\/photo-1501-abc"/ );
+} );

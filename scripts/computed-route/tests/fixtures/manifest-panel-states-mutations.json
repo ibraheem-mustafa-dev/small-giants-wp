@@ -1,0 +1,7 @@
+[
+ {"file": "lib/manifest-build.mjs", "find": "states = panelStates( row, got.states );", "replace": "states = got.states;", "why": "the row's states are narrowed to its panel"},
+ {"file": "lib/manifest-build.mjs", "find": "const key = 'menu' === KINDS[ row.postType ] && Object.keys( states ).length > 1 ?", "replace": "const key = Object.keys( states ).length > 1 ?", "why": "only a mega menu panel row is narrowed (a drawer titled after a state is not)"},
+ {"file": "lib/manifest-build.mjs", "find": "walkerKey( megaPanelLabel( row.title ?? '' ) )", "replace": "walkerKey( row.title ?? '' )", "why": "the panel label is the title without its mega menu suffix"},
+ {"file": "lib/manifest-build.mjs", "find": "return key && Object.hasOwn( states, key ) ? { [ key ]: states[ key ] } : states;", "replace": "return key ? { [ key ]: states[ key ] } : states;", "why": "a label naming no state keeps every state"},
+ {"file": "lib/manifest-build.mjs", "find": "return key && Object.hasOwn( states, key ) ? { [ key ]: states[ key ] } : states;", "replace": "return key && Object.hasOwn( states, key ) ? states : states;", "why": "the named state is the only one kept"}
+]

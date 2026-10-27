@@ -20,7 +20,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { CHECKS, parseOnly, checkRecord, skippedRecord, exitCodeOf, renderMarkdown } from './lib/site-check-report.mjs';
 import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient } from './lib/site-check-site.mjs';
-import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, megaItems, drawerItem, pathKey } from './lib/site-check-nav.mjs';
+import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, megaItems, markMegaInPage, drawerItem, pathKey } from './lib/site-check-nav.mjs';
 import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine } from './lib/site-check-parts.mjs';
 import { COMING_SOON_ROOT, comingSoonChecks, comingSoonInPage } from './lib/site-check-coming-soon.mjs';
 import { isAccountRow } from './lib/site-build-map.mjs';
@@ -153,15 +153,16 @@ async function main() {
 		for ( const ex of targetsOf.examples ) {
 			const res = await sweep.page.request.get( ex.url ).catch( () => null );
 			const first = res?.ok() ? ( await res.json() )[ 0 ] : null;
-			first?.permalink ? targetsOf.pages.push( { ...ex, url: first.permalink, example: first.name } ) : notes.push( `page map ${ ex.key }: the Store API lists no ${ ex.kind } to open (${ res ? res.status() : 'no answer' })` );
+			first?.permalink ? targetsOf.pages.push( { ...ex, url: first.permalink, permalink: first.permalink, example: first.name } ) : notes.push( `page map ${ ex.key }: the Store API lists no ${ ex.kind } to open (${ res ? res.status() : 'no answer' })` );
 		}
 		// A page row's permalink from the public REST API (wp/v2), so the page loads at the address a visitor uses (a
 		// `?page_id=` address of WooCommerce's shop page is redirected elsewhere); the `?page_id=` address stands when
-		// the API does not answer.
+		// the API does not answer. The permalink is also the address the menu check matches a link against, whatever the
+		// page then redirects to (an empty basket's checkout loads the cart).
 		for ( const p of targetsOf.pages.filter( ( x ) => x.row && ! x.example && null != x.row.id ) ) {
 			const res = await sweep.page.request.get( `${ base }/wp-json/wp/v2/${ 'post' === p.row.postType ? 'posts' : 'pages' }/${ p.row.id }?_fields=link` ).catch( () => null );
 			const link = res?.ok() ? ( await res.json() ).link : null;
-			link && ( p.url = link );
+			link && Object.assign( p, { url: link, permalink: link } );
 		}
 		const loaded = [];
 		for ( const p of targetsOf.pages ) {
@@ -201,10 +202,12 @@ async function main() {
 			const { page, context } = await newPage();
 			await page.goto( homeUrl, LOAD );
 			const read = await page.evaluate( readHeaderLinksInPage );
+			const megaTriggers = await page.evaluate( markMegaInPage, MARK );
 			await context.close();
 			const headerRows = rows.filter( ( r ) => ( r.menus || [] ).some( ( m ) => 'header' === m.menu ) ).map( ( r ) => {
 				const hit = loaded.find( ( p ) => p.row === r );
-				return { key: `${ r.postType }:${ r.slug }`, title: r.title, url: hit?.finalUrl && ! hit.example ? hit.finalUrl : null };
+				const at = hit?.permalink || hit?.finalUrl;
+				return { key: `${ r.postType }:${ r.slug }`, title: r.title, postType: r.postType, id: r.id ?? null, url: at && ! hit.example ? at : null };
 			} );
 			const draftLinks = new Map();
 			for ( const p of loaded ) {
@@ -214,7 +217,7 @@ async function main() {
 					draftLinks.set( d.href, entry );
 				}
 			}
-			return checkRecord( 'menu', menuItems( { ...read, pages: loaded.filter( ( p ) => ! p.example ), examples: loaded.filter( ( p ) => p.example ), headerRows, draftLinks: [ ...draftLinks.values() ], base, url: homeUrl } ) );
+			return checkRecord( 'menu', menuItems( { ...read, pages: loaded.filter( ( p ) => ! p.example ), examples: loaded.filter( ( p ) => p.example ), headerRows, draftLinks: [ ...draftLinks.values() ], megaTriggers, base, url: homeUrl } ) );
 		} );
 
 		await guard( 'mega', async () => {

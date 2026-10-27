@@ -67,7 +67,7 @@
  },
  {
   "file": "lib/fill-open.mjs",
-  "find": "if ( ! skeleton?.root?.viaState ) {\n\t\treturn null;\n\t}",
+  "find": "if ( ! skeleton?.root || ! ( skeleton.root.viaState || shut ) ) {\n\t\treturn null;\n\t}",
   "replace": "",
   "why": "a surface that is not state-driven gets an opener"
  },
@@ -79,8 +79,8 @@
  },
  {
   "file": "lib/fill-open.mjs",
-  "find": "if ( Object.keys( keys ).length ) {\n\t\t\treturn { ...base, state: s.name,",
-  "replace": "if ( true ) {\n\t\t\treturn { ...base, state: s.name,",
+  "find": "const set = Object.keys( keys ).length ? [ { via: 'state', ...common, keys } ] : [];",
+  "replace": "const set = [ { via: 'state', ...common, keys } ];",
   "why": "a state with no usable key is opened anyway"
  },
  {
@@ -103,8 +103,8 @@
  },
  {
   "file": "lib/fill-open.mjs",
-  "find": "if ( ! reached ) {\n\t\tconst where",
-  "replace": "if ( false ) {\n\t\tconst where",
+  "find": "if ( ! reached ) {\n\t\treturn { ...head, reached: 0,",
+  "replace": "if ( false ) {\n\t\treturn { ...head, reached: 0,",
   "why": "a missing instance is not refused"
  }
 ]

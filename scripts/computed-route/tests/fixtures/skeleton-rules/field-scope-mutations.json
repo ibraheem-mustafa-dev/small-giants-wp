@@ -1,0 +1,10 @@
+[
+ { "file": "lib/skeleton-rules.mjs", "find": " && 1 === desc( p ).filter( visibleControl ).length;", "replace": ";", "why": "an element holding several controls counts as a field's wrapper" },
+ { "file": "lib/skeleton-rules.mjs", "find": "1 === desc( p ).filter( visibleControl ).length", "replace": "1 <= desc( p ).filter( visibleControl ).length", "why": "the one-control test admits a wrapper of many" },
+ { "file": "lib/skeleton-rules.mjs", "find": "const scope = [ up, p ].find( holdsControl ) || null;", "replace": "const scope = up || p;", "why": "the label's parent is the wrapper whatever it holds (the old scope)" },
+ { "file": "lib/skeleton-rules.mjs", "find": "const scope = [ up, p ].find( holdsControl ) || null;", "replace": "const scope = p;", "why": "the wrapper never climbs past the label" },
+ { "file": "lib/skeleton-rules.mjs", "find": "const scope = [ up, p ].find( holdsControl ) || null;", "replace": "const scope = [ up, p ].find( holdsControl ) || p;", "why": "a parent holding other controls is still read when no wrapper qualifies" },
+ { "file": "lib/skeleton-rules.mjs", "find": "( k !== scope || 'label' === k.tag ) && m.words( k )", "replace": "k !== scope && m.words( k )", "why": "a label's own words are not read when the label is the wrapper" },
+ { "file": "lib/skeleton-rules.mjs", "find": "( k !== scope || 'label' === k.tag ) && m.words( k )", "replace": "m.words( k )", "why": "any wrapper's own words are read as field text" },
+ { "file": "lib/skeleton-rules.mjs", "find": "return holdsControl( p ) || ( !! p && 'label' === p.tag && holdsControl( m.byKey[ p.parentKey ] ) ) || ( 'label' === e.tag && holdsControl( p ) );", "replace": "return !! p && ( m.blockKids( p ).some( visibleControl ) || ( 'label' === p.tag && m.blockKids( m.byKey[ p.parentKey ] || p ).some( visibleControl ) ) || ( 'label' === e.tag && m.blockKids( p ).some( visibleControl ) ) );", "why": "the removal of field text ignores the one-control wrapper test" }
+]

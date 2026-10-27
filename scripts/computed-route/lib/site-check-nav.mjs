@@ -72,22 +72,34 @@ export function readDraftLinksInPage() {
 const DRAFT_HREF = /\.dc\.html\b/i;
 
 // The menu check's items, from the header's links and the resolved pages:
-//   pages: [{ key, finalUrl }] (page-map pages as they loaded); examples: [{ key, finalUrl }] (a product or category
-//   row's example: any link under the same parent path reaches that row); headerRows: [{ key, title, url|null }]
-//   (page-map rows the draft puts in the header menu); draftLinks: [{ href, text, pages: [key] }] (every checked page's
-//   links to a draft file). A link passes when its address is a page-map page; a draft-file link, `#`, an empty href or
-//   any other address on the site fails, as does an off-site link in the menu bar; a `#` disclosure trigger and an
-//   off-site, mailto or tel link outside the menu bar are n-a. A header row no link reaches (by address, else by its
-//   title as the link text) fails as missing; each draft-file address any page links to fails once.
-export function menuItems( { header, links, pages, examples = [], headerRows, draftLinks = [], base, url } ) {
+//   pages: [{ key, permalink, finalUrl }] (page-map pages: the row's own permalink, and the address it loaded at,
+//   which a redirect can change: WooCommerce sends an empty basket's checkout to the cart); examples: [{ key,
+//   permalink, finalUrl }] (a product or category row's example: any link under the same parent path reaches that row);
+//   headerRows: [{ key, title, url|null }] (page-map rows the draft puts in the header menu, each with its postType and
+//   id); draftLinks: [{ href, text, pages: [key] }] (every checked page's links to a draft file); megaTriggers: [{ text,
+//   panelId, hasPanel }] (the header's visible mega triggers, markMegaInPage, the mega check's own detection). A link
+//   passes when its address is a page-map row's permalink (the address it loaded at only when the permalink is not
+//   known); a draft-file link, `#`, an empty href or any other address on the site fails, as does an off-site link in the
+//   menu bar; a `#` disclosure trigger and an off-site, mailto or tel link outside the menu bar are n-a. A header row no
+//   link reaches (by address, else by its title as the link text) fails as missing; each draft-file address any page
+//   links to fails once. A mega menu row (sgs_mega_menu) has no address: its header item is a trigger, so it passes when
+//   a header mega trigger controls that post's panel (the panel id ends `-mega-<post id>`, includes/nav-menu-markup.php)
+//   and the panel is on the page; whether it opens is the mega check's verdict.
+export function menuItems( { header, links, pages, examples = [], headerRows, draftLinks = [], megaTriggers = [], base, url } ) {
 	if ( ! header ) {
 		return [ { status: 'fail', subject: 'header', url, error: 'the page has no .sgs-site-header or <header>' } ];
 	}
 	if ( ! links.some( ( l ) => l.inMenu ) ) {
 		return [ { status: 'fail', subject: 'header menu', url, error: 'the header holds no menu links' } ];
 	}
-	const known = new Map( pages.filter( ( p ) => p.finalUrl ).map( ( p ) => [ pathKey( p.finalUrl, base ), p ] ) );
-	const under = examples.filter( ( e ) => e.finalUrl ).map( ( e ) => ( { key: e.key, prefix: pathKey( e.finalUrl, base ).replace( /\/[^/]*$/, '/' ) } ) );
+	const address = ( p ) => p.permalink || p.finalUrl;
+	const known = new Map();
+	// Permalinks first, so a page redirected onto another row's address never takes that address from it.
+	for ( const p of [ ...pages.filter( ( x ) => x.permalink ), ...pages.filter( ( x ) => ! x.permalink && x.finalUrl ) ] ) {
+		const k = pathKey( address( p ), base );
+		k && ! known.has( k ) && known.set( k, p );
+	}
+	const under = examples.filter( address ).map( ( e ) => ( { key: e.key, prefix: pathKey( address( e ), base ).replace( /\/[^/]*$/, '/' ) } ) );
 	const origin = new URL( base ).origin;
 	const items = links.map( ( l ) => {
 		const ev = { subject: `${ l.inMenu ? 'menu' : 'header' } link "${ l.text || '(no text)' }"`, url, selector: l.selector };
@@ -114,6 +126,10 @@ export function menuItems( { header, links, pages, examples = [], headerRows, dr
 	const linkKeys = new Set( links.map( ( l ) => pathKey( l.abs || l.href || '', base ) ) );
 	const texts = links.map( ( l ) => l.text.toLowerCase() );
 	for ( const r of headerRows ) {
+		if ( 'sgs_mega_menu' === r.postType ) {
+			items.push( megaRowItem( r, megaTriggers, url ) );
+			continue;
+		}
 		const byUrl = r.url && linkKeys.has( pathKey( r.url, base ) );
 		const byText = r.title && texts.includes( String( r.title ).toLowerCase() );
 		if ( ! byUrl && ! byText ) {
@@ -124,6 +140,22 @@ export function menuItems( { header, links, pages, examples = [], headerRows, dr
 		items.push( { status: 'fail', subject: `draft-file link "${ d.text || d.href }"`, error: `${ d.href } is a draft file, not a site address; linked from ${ d.pages.join( ', ' ) }` } );
 	}
 	return items;
+}
+
+// The menu item of one page-map mega menu row: the header trigger that controls its panel, by the post id the panel's
+// id ends with.
+function megaRowItem( r, triggers, url ) {
+	const subject = `page-map header item ${ r.key }`;
+	if ( null == r.id ) {
+		return { status: 'fail', subject, url, error: `the page map puts ${ r.key } ("${ r.title }") in the header menu but gives it no id on this site, so no header trigger can be matched to its panel` };
+	}
+	const suffix = `-mega-${ r.id }`;
+	const hit = triggers.find( ( t ) => String( t.panelId || '' ).endsWith( suffix ) );
+	if ( hit?.hasPanel ) {
+		return { status: 'pass', subject, url, selector: `[data-sgs-mega-trigger][aria-controls="${ hit.panelId }"]`, detail: `the header trigger "${ hit.text }" controls its panel #${ hit.panelId } (the mega check opens it)` };
+	}
+	const seen = triggers.length ? `; the header's mega triggers control ${ triggers.map( ( t ) => `#${ t.panelId }` ).join( ', ' ) }` : '; the header shows no mega trigger';
+	return { status: 'fail', subject, url, error: hit ? `the header trigger "${ hit.text }" names its panel #${ hit.panelId }, which is not on the page` : `the page map puts ${ r.key } ("${ r.title }", post ${ r.id }) in the header menu; no header trigger opens its panel (*${ suffix })${ seen }` };
 }
 
 // In-page: marks the visible mega triggers of the header (MARK="mega-<i>") and their panels (MARK="panel-<i>"):

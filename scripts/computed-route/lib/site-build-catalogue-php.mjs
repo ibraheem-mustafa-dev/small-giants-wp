@@ -5,6 +5,10 @@
 // this process, find-or-create terms by name, variations keyed by their attribute values, sync the parent, publish last
 // so the product preflight gate sees the variations and image). A product left with no image gets the photo-to-come
 // image (the catalogue image keyed PHOTO_TO_COME) and `_sgs_photo_to_come`, which goes once it shows another image.
+import { facetApplyPhp, facetStatePhp } from './site-build-catalogue-facets.mjs';
+
+// Each attribute's `variesBy` goes on its terms as `_sgs_variesby_value` when they have none; a held product (no
+// variesBy axis, the step's `hold`) is never published.
 // The photo-to-come image's key among the catalogue images (lib/site-build-catalogue.mjs::catalogueImages).
 export const PHOTO_TO_COME = 'photo-to-come';
 
@@ -27,6 +31,10 @@ $sgs_attachment = function ( $img ) {
 	global $wpdb;
 	if ( ! empty( $img['url'] ) ) {
 		$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_sgs_draft_image_source' AND meta_value = %s LIMIT 1", $img['url'] ) );
+		if ( ! $id && ! empty( $img['stem'] ) ) {
+			$stem = $wpdb->esc_like( $img['stem'] ) . '.%';
+			$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND ( meta_value LIKE %s OR meta_value LIKE %s ) ORDER BY post_id ASC LIMIT 1", $stem, '%/' . $stem ) );
+		}
 		return $id ? (int) $id : 0;
 	}
 	$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_sgs_draft_asset' AND meta_value = %s LIMIT 1", $img['sha'] ) );
@@ -35,18 +43,24 @@ $sgs_attachment = function ( $img ) {
 	$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND ( meta_value = %s OR meta_value LIKE %s ) ORDER BY post_id ASC LIMIT 1", $img['name'], $like ) );
 	return $id ? (int) $id : 0;
 };
+$sgs_variesby = function ( $value ) {
+	return class_exists( '\\SGS\\Blocks\\Configurator_Meta' ) ? \\SGS\\Blocks\\Configurator_Meta::sanitize_variesby( $value ) : (string) $value;
+};
 `;
 
 // The read: per product { draftId, id, how, fixture, type, status, sku, price, image, gallery, categories, brand, rrp,
-// draftMeta, photoToCome (the `_sgs_photo_to_come` marker), attributes (pa_ slugs), variations (SKUs), permalink }, every
-// image's attachment id, whether the product card shows the photo-to-come attachment as a photo
-// (includes/product-card-no-photo.php::sgs_product_card_has_real_image; null when the site lacks it or the attachment),
-// and the site's WooCommerce facts (active, product base, the brand taxonomy, active plugins).
-export function catalogueStatePhp( products, images ) {
+// draftMeta, photoToCome (the `_sgs_photo_to_come` marker), attributes (pa_ slugs), variesBy (per attribute taxonomy,
+// the `_sgs_variesby_value` of each of the product's terms, '' for none, as the preflight reads it), variations (SKUs),
+// permalink, facets (per facet slug, its term names) }, every image's attachment id, whether the product card shows the
+// photo-to-come attachment as a photo (includes/product-card-no-photo.php::sgs_product_card_has_real_image; null when the
+// site lacks it or the attachment), every facet's attribute (lib/site-build-catalogue-facets.mjs) and the site's
+// WooCommerce facts (active, product base, the brand taxonomy, active plugins). `catalogue` gives the facets.
+export function catalogueStatePhp( products, images, catalogue = {} ) {
 	return `$in = json_decode( base64_decode( '${ b64( products ) }' ), true );
 $imgs = json_decode( base64_decode( '${ b64( images ) }' ), true );
 if ( ! class_exists( 'WooCommerce' ) ) { echo wp_json_encode( array( 'woocommerce' => false ) ); return; }
 ${ HELPERS }
+${ facetStatePhp( catalogue ) }
 $out = array();
 foreach ( $in as $p ) {
 	list( $id, $how ) = $sgs_find( $p );
@@ -54,7 +68,14 @@ foreach ( $in as $p ) {
 	if ( $id ) {
 		$wc = wc_get_product( $id );
 		$attrs = array();
-		foreach ( $wc ? $wc->get_attributes() : array() as $tax => $a ) { $attrs[] = (string) $tax; }
+		$vb = array();
+		foreach ( $wc ? $wc->get_attributes() : array() as $tax => $a ) {
+			$attrs[] = (string) $tax;
+			if ( taxonomy_exists( $tax ) ) {
+				$vb[ $tax ] = array();
+				foreach ( wc_get_product_terms( $id, $tax, array( 'fields' => 'ids' ) ) as $tid ) { $vb[ $tax ][] = $sgs_variesby( get_term_meta( $tid, '_sgs_variesby_value', true ) ); }
+			}
+		}
 		$vars = array();
 		foreach ( $wc ? $wc->get_children() : array() as $vid ) { $vars[] = (string) get_post_meta( $vid, '_sku', true ); }
 		$cats = wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'names' ) );
@@ -62,7 +83,8 @@ foreach ( $in as $p ) {
 		$row += array( 'fixture' => $sgs_is_fixture( $id ), 'type' => $wc ? $wc->get_type() : get_post_type( $id ), 'status' => get_post_status( $id ), 'sku' => (string) get_post_meta( $id, '_sku', true ),
 			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => (int) get_post_thumbnail_id( $id ), 'gallery' => $wc ? count( $wc->get_gallery_image_ids() ) : 0,
 			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ),
-			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ) );
+			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variesBy' => (object) $vb, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ) );
+		$row['facets'] = $sgs_product_facets( $id );
 	}
 	$out[] = $row;
 }
@@ -71,12 +93,13 @@ foreach ( $imgs as $key => $img ) { $found[ $key ] = $sgs_attachment( $img ); }
 $ptc = (int) ( $found['${ PHOTO_TO_COME }'] ?? 0 );
 $shows = $ptc && function_exists( 'sgs_product_card_has_real_image' ) ? sgs_product_card_has_real_image( (string) wp_get_attachment_url( $ptc ) ) : null;
 $permalinks = (array) get_option( 'woocommerce_permalinks', array() );
-echo wp_json_encode( array( 'woocommerce' => true, 'products' => $out, 'images' => $found, 'productBase' => trim( (string) ( $permalinks['product_base'] ?? '' ), '/' ), 'brandTaxonomy' => taxonomy_exists( 'product_brand' ), 'photoToComeShows' => $shows, 'plugins' => array_values( (array) get_option( 'active_plugins', array() ) ) ) );`;
+echo wp_json_encode( array( 'woocommerce' => true, 'products' => $out, 'images' => $found, 'facets' => (object) $facets, 'productBase' => trim( (string) ( $permalinks['product_base'] ?? '' ), '/' ), 'brandTaxonomy' => taxonomy_exists( 'product_brand' ), 'photoToComeShows' => $shows, 'plugins' => array_values( (array) get_option( 'active_plugins', array() ) ) ) );`;
 }
 
 // The write: `steps` is the plan's actions with each product's catalogue record; `uploads` maps an image key to
-// { name, sha, data (base64) } for a draft asset to upload, or { url } to fetch. Prints { done: [ … ], issues: [ … ] }.
-export function catalogueApplyPhp( steps, images, uploads, productBase ) {
+// { name, sha, data (base64) } for a draft asset to upload, or { url } to fetch; `catalogue` gives the facets, made
+// before the products and given to each. Prints { done: [ … ], issues: [ … ] }.
+export function catalogueApplyPhp( steps, images, uploads, productBase, catalogue = {} ) {
 	return `$steps = json_decode( base64_decode( '${ b64( steps ) }' ), true );
 $imgs = json_decode( base64_decode( '${ b64( images ) }' ), true );
 $uploads = json_decode( base64_decode( '${ b64( uploads ) }' ), true );
@@ -103,8 +126,16 @@ $image_id = function ( $key ) use ( $imgs, $uploads, $sgs_attachment, &$done, &$
 	$u = $uploads[ $key ] ?? null;
 	if ( ! $u ) { return 0; }
 	if ( ! empty( $u['url'] ) ) {
-		$id = media_sideload_image( $u['url'], 0, null, 'id' );
-		if ( is_wp_error( $id ) ) { $issues[] = 'image ' . $u['url'] . ': ' . $id->get_error_message(); return 0; }
+		// media_sideload_image() refuses an address without an image file extension (a stock photo's), so the file is
+		// downloaded, its type read from its bytes, and named from its stock name or address with that type's extension.
+		$tmp = download_url( $u['url'] );
+		if ( is_wp_error( $tmp ) ) { $issues[] = 'image ' . $u['url'] . ': ' . $tmp->get_error_message(); return 0; }
+		$mime = wp_get_image_mime( $tmp );
+		$ext = $mime ? wp_get_default_extension_for_mime_type( $mime ) : '';
+		if ( ! $ext ) { wp_delete_file( $tmp ); $issues[] = 'image ' . $u['url'] . ': not an image file'; return 0; }
+		$stem = ! empty( $u['stem'] ) ? $u['stem'] : pathinfo( (string) wp_parse_url( $u['url'], PHP_URL_PATH ), PATHINFO_FILENAME );
+		$id = media_handle_sideload( array( 'name' => sanitize_file_name( ( '' !== $stem ? $stem : 'draft-image' ) . '.' . $ext ), 'tmp_name' => $tmp ), 0 );
+		if ( is_wp_error( $id ) ) { wp_delete_file( $tmp ); $issues[] = 'image ' . $u['url'] . ': ' . $id->get_error_message(); return 0; }
 		update_post_meta( $id, '_sgs_draft_image_source', $u['url'] );
 		$done[] = 'image fetched ' . $u['url'];
 		return (int) $id;
@@ -136,6 +167,7 @@ $term = function ( $name, $tax ) {
 	$r = wp_insert_term( $name, $tax );
 	return is_wp_error( $r ) ? null : get_term( $r['term_id'], $tax );
 };
+${ facetApplyPhp( catalogue ) }
 foreach ( $steps as $s ) {
 	$p = $s['product'];
 	list( $id ) = $sgs_find( $p );
@@ -189,6 +221,18 @@ foreach ( $steps as $s ) {
 	foreach ( $p['attributes'] as $a ) {
 		if ( $a['packSize'] && isset( $taxes[ $a['slug'] ] ) ) { update_post_meta( $id, '_sgs_pack_size_axis', $taxes[ $a['slug'] ] ); }
 	}
+	// Each attribute's Google variesBy axis on its terms that have none (a value already set is never replaced), so the
+	// product preflight's no_variesby check passes when the product publishes.
+	foreach ( $p['attributes'] as $a ) {
+		$tax = wc_attribute_taxonomy_name( $a['slug'] );
+		if ( empty( $a['variesBy'] ) || ! taxonomy_exists( $tax ) ) { continue; }
+		foreach ( wc_get_product_terms( $id, $tax, array( 'fields' => 'ids' ) ) as $tid ) {
+			if ( '' === $sgs_variesby( get_term_meta( $tid, '_sgs_variesby_value', true ) ) ) {
+				update_term_meta( $tid, '_sgs_variesby_value', $sgs_variesby( $a['variesBy'] ) );
+				$done[] = $p['draftId'] . ': variesBy ' . $a['variesBy'] . ' on ' . $tax . ' term ' . $tid;
+			}
+		}
+	}
 	// An image the product has stays, unless it is the photo-to-come image and the draft gives one; a product that would
 	// be left with none gets the photo-to-come image.
 	$ptc = function () use ( $imgs, $sgs_attachment ) { return isset( $imgs['${ PHOTO_TO_COME }'] ) ? $sgs_attachment( $imgs['${ PHOTO_TO_COME }'] ) : 0; };
@@ -237,6 +281,11 @@ foreach ( $steps as $s ) {
 			}
 		}
 		WC_Product_Variable::sync( $id );
+	}
+	$sgs_assign_facets( $id, $p, $ours );
+	if ( ! empty( $s['hold'] ) ) {
+		$done[] = $p['draftId'] . ': product ' . $id . ' kept a draft (no choice is a Google variesBy axis)';
+		continue;
 	}
 	if ( 'publish' !== get_post_status( $id ) ) {
 		wp_update_post( array( 'ID' => $id, 'post_status' => 'publish' ) );

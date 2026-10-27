@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-read-collect.mjs", "find": "pictures.push( ...own.filter( ( s, k ) => own.indexOf( s ) === k ) );", "replace": "pictures.push( ...own );", "why": "a placeholder's editing copy of its picture would count as a second item picture" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "snap.pictures = pictures.length > 1 ? pictures : null;", "replace": "snap.pictures = pictures;", "why": "an element's one image would be read as a list of pictures" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "if ( n.matches( 'img' ) && '' !== imgSrc( n ) ) {", "replace": "if ( false ) {", "why": "light-DOM images would be missing from the list" }
+]

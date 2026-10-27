@@ -14,6 +14,7 @@ import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
+import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
@@ -246,7 +247,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// A hidden input is no visible field, so the text beside it is never that field's text.
 	const visibleControl = ( k ) => !! controlBlock( k ) && 'hidden' !== String( k.attrs?.type || '' ).toLowerCase();
-	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( visibleControl );
+	// A field's own wrapper: an element holding exactly one visible control, that control a child of it. An element holding
+	// two or more controls (a row of fields, the form itself) is no field's wrapper, so its text is no field's text.
+	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( visibleControl ) && 1 === desc( p ).filter( visibleControl ).length;
 	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
 	// field's wrapper beside the control, or in a <label> there (two levels up at most).
 	const fieldText = ( e ) => {
@@ -259,17 +262,19 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The words a field's removed texts carried, as the field block's own settings: the label (the <label> naming the
 	// control, else the first text in its wrapper), whether it is required, and the remaining hint. A required marker
 	// ("*") and a character count ("0 / 800") are drawn by the field block itself.
+	// The texts are read in the field's own wrapper (holdsControl): the <label> round the control, or the element around
+	// that label when it holds no other control, else the control's parent. A label's own words are its text too.
 	const fieldContent = ( e, block ) => {
 		const p = m.byKey[ e.parentKey ];
-		const scope = p && 'label' === p.tag ? m.byKey[ p.parentKey ] || p : p;
-		const own = ( k ) => k === e || desc( k ).includes( e );
+		const up = p && 'label' === p.tag ? m.byKey[ p.parentKey ] : null;
+		const scope = [ up, p ].find( holdsControl ) || null;
 		const drawn = ( t ) => /^\*$/.test( t ) || /^\d+\s*\/\s*\d+$/.test( t );
 		const texts = [];
 		const visit = ( k ) => {
-			if ( k !== scope && own( k ) && k === e ) {
+			if ( k === e ) {
 				return;
 			}
-			if ( k !== scope && m.words( k ) && ! controlBlock( k ) ) {
+			if ( ( k !== scope || 'label' === k.tag ) && m.words( k ) && ! controlBlock( k ) ) {
 				texts.push( { el: k, text: m.words( k ).replace( /\s*\*$/, '' ).trim() } );
 			}
 			m.blockKids( k ).forEach( visit );
@@ -433,8 +438,22 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && specHit( R.openStatus, all( x ) ) && desc( x ).length <= 2 ) : null;
 			return first ? v( 'openStatus', { action: 'absorbed', into: first.key } ) : v( 'openStatus', { block: R.openStatus?.block, attributes: { displayType: 'open-status' }, absorb: true } );
 		},
-		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time.
-		( { text, kidsB } ) => ( kidsB.length && kidsB.length <= ( R.hoursRows?.maxParts ?? 3 ) && kidsB.every( ( k ) => ! m.blockKids( k ).length ) && specHit( facts.decisions.siteInfoPatterns?.hours, text ) && text.length <= ( R.hoursRows?.maxChars ?? 80 ) ?v( 'hoursRows', { block: R.hoursRows?.block, attributes: { displayType: 'hours', hoursLayout: 'rows' }, absorb: true } ) : null ),
+		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time. The
+		// block draws the whole week from Site Info, so the first row of a run of sibling hours rows is the block and every
+		// later sibling row is absorbed into it (one table, never one table per row).
+		( { e } ) => {
+			const isRow = ( x ) => {
+				const kids = m.blockKids( x );
+				const words = all( x );
+				return kids.length && kids.length <= ( R.hoursRows?.maxParts ?? 3 ) && kids.every( ( k ) => ! m.blockKids( k ).length ) && specHit( facts.decisions.siteInfoPatterns?.hours, words ) && words.length <= ( R.hoursRows?.maxChars ?? 80 );
+			};
+			if ( ! isRow( e ) ) {
+				return null;
+			}
+			const order = m.els.indexOf( e );
+			const first = m.els.find( ( x ) => x.parentKey === e.parentKey && m.els.indexOf( x ) < order && isRow( x ) );
+			return first ? v( 'hoursRows', { action: 'absorbed', into: first.key } ) : v( 'hoursRows', { block: R.hoursRows?.block, attributes: { displayType: 'hours', hoursLayout: 'rows' }, absorb: true } );
+		},
 		// A link or button that is one action: a pill (a label and an icon) is one button; a card (two or more pieces of
 		// text, or a heading) is a container whose whole box is the link.
 		( { e, text, kidsB } ) => {
@@ -597,6 +616,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
+	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
+	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
@@ -620,6 +641,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
+		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
+		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason } ) : null ),
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {
@@ -636,7 +659,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
 		// a choice the visitor makes: inside a form element it is that form's tiles field (`optionSetForm`); anywhere else it is
 		// an option picker, which draws its own options, and when the chips' handlers write a state key another list on the
-		// surface is filtered by it carries the hand-over to wire that filter (`optionSetFilter`).
+		// surface is filtered by it carries the hand-over to wire that filter (`optionSetFilter`). On a form surface drawn
+		// without a <form> (its root is the form block by rule formHost: a wizard in a <div>) a group that filters no list is
+		// the form's tiles field too.
 		( { e } ) => {
 			const chips = R.optionSet ? m.blockKids( e ) : [];
 			const chosen = ( k ) => 'button' === view.realTag( k ) && ( null != view.attr( k, 'aria-pressed' ) || null != view.attr( k, 'aria-checked' ) );
@@ -647,6 +672,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: {}, absorb: true } );
 			}
 			const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );
+			if ( R.optionSetForm && ! filter && 'form' === surface.kind ) {
+				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: {}, absorb: true } );
+			}
 			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
 		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
@@ -742,5 +770,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
 }

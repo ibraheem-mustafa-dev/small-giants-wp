@@ -16,11 +16,12 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_submission_name;
 use function SGS\Blocks\Forms\field_message_attrs;
 
 $fid      = field_id( $attributes['fieldName'] ?? 'unnamed' );
 $options  = $attributes['options'] ?? array();
-$name     = esc_attr( $attributes['fieldName'] ?? '' ) . '[]';
+$name     = esc_attr( field_submission_name( $fid, $attributes ) ) . '[]';
 $label    = $attributes['label'] ?? '';
 $required = ! empty( $attributes['required'] );
 $help_text = $attributes['helpText'] ?? '';

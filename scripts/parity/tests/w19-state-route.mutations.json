@@ -1,0 +1,13 @@
+[
+ {"file": "lib/entrances.mjs", "find": "if ( route && root ) {", "replace": "if ( false ) {", "why": "with a root the route root is sampled while the route is set"},
+ {"file": "lib/entrances.mjs", "find": "route && await route();", "replace": "", "why": "the reload sets the route again (no root)"},
+ {"file": "lib/entrances.mjs", "find": "[ out ] = await Promise.all( [ sample( cfg.entranceWait ?? 15000 ), route() ] );", "replace": "[ out ] = await Promise.all( [ sample( cfg.entranceWait ?? 15000 ) ] );", "why": "the reload sets the route again (root)"},
+ {"file": "lib/entrances.mjs", "find": "sample( cfg.entranceWait ?? 15000 )", "replace": "sample( 0 )", "why": "the route root is waited for, not read at once from the entry page"},
+ {"file": "lib/entrances.mjs", "find": "cfg.entranceWait ?? 15000", "replace": "15000", "why": "entranceWait bounds the wait"},
+ {"file": "lib/entrances.mjs", "find": "\t\troute && await route();\n\t\tout = await sample( 0 );", "replace": "\t\tout = await sample( 0 );\n\t\troute && await route();", "why": "with no root the route is set before the page is sampled"},
+ {"file": "lib/helpers.mjs", "find": "h.routed = 'draft' === side && String( url ).includes( '#@state/' );", "replace": "h.routed = String( url ).includes( '#@state/' );", "why": "the live side has no draft logic"},
+ {"file": "lib/helpers.mjs", "find": "h.routed = 'draft' === side && String( url ).includes( '#@state/' );", "replace": "h.routed = 'draft' === side && String( url ).includes( '#' );", "why": "a hash route is the draft's own"},
+ {"file": "lib/helpers.mjs", "find": "route: async () => ( h.routed ? ( await import", "replace": "route: async () => ( false ? ( await import", "why": "the route is applied on a routed page"},
+ {"file": "lib/helpers.mjs", "find": "\t\t\tawait h.route();\n\t\t},", "replace": "\t\t},", "why": "goto applies the route"},
+ {"file": "draft-live-walk.mjs", "find": "{ route: h.routed ? h.route : null }", "replace": "{ route: null }", "why": "the walker hands the entrance reload the route"}
+]

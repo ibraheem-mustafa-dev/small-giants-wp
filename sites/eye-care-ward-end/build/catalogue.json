@@ -9,6 +9,307 @@
     "productPage": "Eye Care Birmingham.dc.html",
     "idKey": "id"
   },
+  "facets": [
+    {
+      "field": "shape",
+      "key": "shapes",
+      "label": "Style",
+      "slug": "style",
+      "kind": "value",
+      "terms": [
+        {
+          "name": "Pilot",
+          "swatch": null
+        },
+        {
+          "name": "Wayfarer",
+          "swatch": null
+        },
+        {
+          "name": "Square",
+          "swatch": null
+        },
+        {
+          "name": "Rectangle",
+          "swatch": null
+        },
+        {
+          "name": "Round",
+          "swatch": null
+        },
+        {
+          "name": "Oval",
+          "swatch": null
+        },
+        {
+          "name": "Cat-eye",
+          "swatch": null
+        },
+        {
+          "name": "Butterfly",
+          "swatch": null
+        },
+        {
+          "name": "Shield",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "cols",
+      "key": "colours",
+      "label": "Colour",
+      "slug": "colour",
+      "kind": "multi",
+      "terms": [
+        {
+          "name": "Black",
+          "swatch": "#1b1b1b"
+        },
+        {
+          "name": "Havana",
+          "swatch": "#7d5030"
+        },
+        {
+          "name": "Gold",
+          "swatch": "#c6a469"
+        },
+        {
+          "name": "Tortoise",
+          "swatch": "#8a5a2b"
+        },
+        {
+          "name": "Gunmetal",
+          "swatch": "#5d6268"
+        },
+        {
+          "name": "Ivory",
+          "swatch": "#e8e1d3"
+        },
+        {
+          "name": "Rose gold",
+          "swatch": "#c98f7f"
+        },
+        {
+          "name": "Silver",
+          "swatch": "#b9bcc0"
+        },
+        {
+          "name": "Navy",
+          "swatch": "#2b3550"
+        },
+        {
+          "name": "Crystal",
+          "swatch": "#d9dde0"
+        },
+        {
+          "name": "Brown",
+          "swatch": "#4e3526"
+        },
+        {
+          "name": "Red",
+          "swatch": "#8d2b26"
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "mat",
+      "key": "mats",
+      "label": "Material",
+      "slug": "material",
+      "kind": "value",
+      "terms": [
+        {
+          "name": "Acetate",
+          "swatch": null
+        },
+        {
+          "name": "Metal",
+          "swatch": null
+        },
+        {
+          "name": "Plastic",
+          "swatch": null
+        },
+        {
+          "name": "Nylon",
+          "swatch": null
+        },
+        {
+          "name": "O-Matter",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "ftype",
+      "key": "ftypes",
+      "label": "Frame type",
+      "slug": "frame-type",
+      "kind": "value",
+      "terms": [
+        {
+          "name": "Full rim",
+          "swatch": null
+        },
+        {
+          "name": "Semi-rimless",
+          "swatch": null
+        },
+        {
+          "name": "Rimless",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "hinge",
+      "key": "hinges",
+      "label": "Hinge",
+      "slug": "hinge",
+      "kind": "value",
+      "terms": [
+        {
+          "name": "Standard barrel",
+          "swatch": null
+        },
+        {
+          "name": "Sprung",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "nose",
+      "key": "noses",
+      "label": "Nose pads",
+      "slug": "nose-pads",
+      "kind": "value",
+      "terms": [
+        {
+          "name": "Adjustable pads",
+          "swatch": null
+        },
+        {
+          "name": "Moulded bridge",
+          "swatch": null
+        },
+        {
+          "name": "Rubber pads",
+          "swatch": null
+        },
+        {
+          "name": "Unobtainium grip",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "eye",
+      "key": "sizeBand",
+      "label": "Size",
+      "slug": "size-filter",
+      "kind": "derived",
+      "terms": [
+        {
+          "name": "Small",
+          "swatch": null
+        },
+        {
+          "name": "Medium",
+          "swatch": null
+        },
+        {
+          "name": "Large",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "pol",
+      "key": "pol",
+      "label": "Polarised",
+      "slug": "polarised",
+      "kind": "boolean",
+      "terms": [
+        {
+          "name": "Polarised",
+          "swatch": null
+        }
+      ],
+      "wildcard": null,
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    },
+    {
+      "field": "gender",
+      "key": "gender",
+      "label": "Gender",
+      "slug": "gender",
+      "kind": "value",
+      "terms": [
+        {
+          "name": "Women",
+          "swatch": null
+        },
+        {
+          "name": "Men",
+          "swatch": null
+        }
+      ],
+      "wildcard": "Unisex",
+      "toggleLabel": null,
+      "axis": false,
+      "files": [
+        "Eye Care Birmingham.dc.html"
+      ]
+    }
+  ],
   "products": [
     {
       "draftId": "1",
@@ -24,20 +325,34 @@
       "categories": [],
       "brand": "Ray-Ban",
       "facets": {
-        "shape": "Pilot",
-        "cols": [
-          "gold",
-          "blk",
-          "gun",
-          "silver"
+        "style": [
+          "Pilot"
         ],
-        "mat": "Metal",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Adjustable pads",
-        "eye": 58,
-        "pol": false,
-        "gender": "Unisex"
+        "colour": [
+          "Gold",
+          "Black",
+          "Gunmetal",
+          "Silver"
+        ],
+        "material": [
+          "Metal"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Adjustable pads"
+        ],
+        "size-filter": [
+          "Large"
+        ],
+        "gender": [
+          "Women",
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -45,6 +360,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -111,19 +427,32 @@
       "categories": [],
       "brand": "Gucci",
       "facets": {
-        "shape": "Cat-eye",
-        "cols": [
-          "ivory",
-          "blk",
-          "hav"
+        "style": [
+          "Cat-eye"
         ],
-        "mat": "Acetate",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Moulded bridge",
-        "eye": 56,
-        "pol": false,
-        "gender": "Women"
+        "colour": [
+          "Ivory",
+          "Black",
+          "Havana"
+        ],
+        "material": [
+          "Acetate"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "gender": [
+          "Women"
+        ]
       },
       "attributes": [
         {
@@ -131,6 +460,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -197,19 +527,35 @@
       "categories": [],
       "brand": "Oakley",
       "facets": {
-        "shape": "Square",
-        "cols": [
-          "blk",
-          "gun",
-          "brown"
+        "style": [
+          "Square"
         ],
-        "mat": "O-Matter",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Unobtainium grip",
-        "eye": 55,
-        "pol": true,
-        "gender": "Men"
+        "colour": [
+          "Black",
+          "Gunmetal",
+          "Brown"
+        ],
+        "material": [
+          "O-Matter"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Unobtainium grip"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "polarised": [
+          "Polarised"
+        ],
+        "gender": [
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -217,6 +563,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -281,19 +628,32 @@
       "categories": [],
       "brand": "Prada",
       "facets": {
-        "shape": "Cat-eye",
-        "cols": [
-          "ivory",
-          "blk",
-          "hav"
+        "style": [
+          "Cat-eye"
         ],
-        "mat": "Acetate",
-        "ftype": "Full rim",
-        "hinge": "Sprung",
-        "nose": "Moulded bridge",
-        "eye": 51,
-        "pol": false,
-        "gender": "Women"
+        "colour": [
+          "Ivory",
+          "Black",
+          "Havana"
+        ],
+        "material": [
+          "Acetate"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Sprung"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Small"
+        ],
+        "gender": [
+          "Women"
+        ]
       },
       "attributes": [
         {
@@ -301,6 +661,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -367,22 +728,36 @@
       "categories": [],
       "brand": "Ray-Ban",
       "facets": {
-        "shape": "Wayfarer",
-        "cols": [
-          "blk",
-          "hav",
-          "tort",
-          "crys",
-          "navy",
-          "gold"
+        "style": [
+          "Wayfarer"
         ],
-        "mat": "Acetate",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Moulded bridge",
-        "eye": 50,
-        "pol": false,
-        "gender": "Unisex"
+        "colour": [
+          "Black",
+          "Havana",
+          "Tortoise",
+          "Crystal",
+          "Navy",
+          "Gold"
+        ],
+        "material": [
+          "Acetate"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Small"
+        ],
+        "gender": [
+          "Women",
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -390,6 +765,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -456,19 +832,33 @@
       "categories": [],
       "brand": "Ray-Ban",
       "facets": {
-        "shape": "Round",
-        "cols": [
-          "gold",
-          "gun",
-          "silver"
+        "style": [
+          "Round"
         ],
-        "mat": "Metal",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Adjustable pads",
-        "eye": 50,
-        "pol": false,
-        "gender": "Unisex"
+        "colour": [
+          "Gold",
+          "Gunmetal",
+          "Silver"
+        ],
+        "material": [
+          "Metal"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Adjustable pads"
+        ],
+        "size-filter": [
+          "Small"
+        ],
+        "gender": [
+          "Women",
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -476,6 +866,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -540,19 +931,33 @@
       "categories": [],
       "brand": "Versace",
       "facets": {
-        "shape": "Round",
-        "cols": [
-          "blk",
-          "gold",
-          "hav"
+        "style": [
+          "Round"
         ],
-        "mat": "Metal",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Adjustable pads",
-        "eye": 53,
-        "pol": false,
-        "gender": "Unisex"
+        "colour": [
+          "Black",
+          "Gold",
+          "Havana"
+        ],
+        "material": [
+          "Metal"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Adjustable pads"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "gender": [
+          "Women",
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -560,6 +965,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -624,18 +1030,35 @@
       "categories": [],
       "brand": "Polaroid",
       "facets": {
-        "shape": "Round",
-        "cols": [
-          "hav",
-          "blk"
+        "style": [
+          "Round"
         ],
-        "mat": "Plastic",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Moulded bridge",
-        "eye": 49,
-        "pol": true,
-        "gender": "Unisex"
+        "colour": [
+          "Havana",
+          "Black"
+        ],
+        "material": [
+          "Plastic"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Small"
+        ],
+        "polarised": [
+          "Polarised"
+        ],
+        "gender": [
+          "Women",
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -643,6 +1066,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -707,19 +1131,32 @@
       "categories": [],
       "brand": "Carrera",
       "facets": {
-        "shape": "Pilot",
-        "cols": [
-          "blk",
-          "gun",
-          "gold"
+        "style": [
+          "Pilot"
         ],
-        "mat": "Metal",
-        "ftype": "Semi-rimless",
-        "hinge": "Sprung",
-        "nose": "Adjustable pads",
-        "eye": 57,
-        "pol": false,
-        "gender": "Men"
+        "colour": [
+          "Black",
+          "Gunmetal",
+          "Gold"
+        ],
+        "material": [
+          "Metal"
+        ],
+        "frame-type": [
+          "Semi-rimless"
+        ],
+        "hinge": [
+          "Sprung"
+        ],
+        "nose-pads": [
+          "Adjustable pads"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "gender": [
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -727,6 +1164,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -791,18 +1229,31 @@
       "categories": [],
       "brand": "Ferrari Scuderia",
       "facets": {
-        "shape": "Pilot",
-        "cols": [
-          "blk",
-          "red"
+        "style": [
+          "Pilot"
         ],
-        "mat": "Nylon",
-        "ftype": "Full rim",
-        "hinge": "Sprung",
-        "nose": "Rubber pads",
-        "eye": 59,
-        "pol": false,
-        "gender": "Men"
+        "colour": [
+          "Black",
+          "Red"
+        ],
+        "material": [
+          "Nylon"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Sprung"
+        ],
+        "nose-pads": [
+          "Rubber pads"
+        ],
+        "size-filter": [
+          "Large"
+        ],
+        "gender": [
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -810,6 +1261,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -874,19 +1326,33 @@
       "categories": [],
       "brand": "Superdry",
       "facets": {
-        "shape": "Rectangle",
-        "cols": [
-          "tort",
-          "blk",
-          "crys"
+        "style": [
+          "Rectangle"
         ],
-        "mat": "Plastic",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Moulded bridge",
-        "eye": 54,
-        "pol": false,
-        "gender": "Unisex"
+        "colour": [
+          "Tortoise",
+          "Black",
+          "Crystal"
+        ],
+        "material": [
+          "Plastic"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "gender": [
+          "Women",
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -894,6 +1360,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -958,18 +1425,31 @@
       "categories": [],
       "brand": "Balenciaga",
       "facets": {
-        "shape": "Shield",
-        "cols": [
-          "blk",
-          "silver"
+        "style": [
+          "Shield"
         ],
-        "mat": "Acetate",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Moulded bridge",
-        "eye": 99,
-        "pol": false,
-        "gender": "Women"
+        "colour": [
+          "Black",
+          "Silver"
+        ],
+        "material": [
+          "Acetate"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Large"
+        ],
+        "gender": [
+          "Women"
+        ]
       },
       "attributes": [
         {
@@ -977,6 +1457,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -1041,19 +1522,35 @@
       "categories": [],
       "brand": "Police",
       "facets": {
-        "shape": "Pilot",
-        "cols": [
-          "gun",
-          "blk",
-          "navy"
+        "style": [
+          "Pilot"
         ],
-        "mat": "Metal",
-        "ftype": "Full rim",
-        "hinge": "Sprung",
-        "nose": "Adjustable pads",
-        "eye": 58,
-        "pol": true,
-        "gender": "Men"
+        "colour": [
+          "Gunmetal",
+          "Black",
+          "Navy"
+        ],
+        "material": [
+          "Metal"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Sprung"
+        ],
+        "nose-pads": [
+          "Adjustable pads"
+        ],
+        "size-filter": [
+          "Large"
+        ],
+        "polarised": [
+          "Polarised"
+        ],
+        "gender": [
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -1061,6 +1558,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -1125,19 +1623,32 @@
       "categories": [],
       "brand": "Dolce & Gabbana",
       "facets": {
-        "shape": "Butterfly",
-        "cols": [
-          "blk",
-          "hav",
-          "ivory"
+        "style": [
+          "Butterfly"
         ],
-        "mat": "Acetate",
-        "ftype": "Full rim",
-        "hinge": "Standard barrel",
-        "nose": "Moulded bridge",
-        "eye": 56,
-        "pol": false,
-        "gender": "Women"
+        "colour": [
+          "Black",
+          "Havana",
+          "Ivory"
+        ],
+        "material": [
+          "Acetate"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "gender": [
+          "Women"
+        ]
       },
       "attributes": [
         {
@@ -1145,6 +1656,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -1209,19 +1721,32 @@
       "categories": [],
       "brand": "Michael Kors",
       "facets": {
-        "shape": "Pilot",
-        "cols": [
-          "rose",
-          "gold",
-          "silver"
+        "style": [
+          "Pilot"
         ],
-        "mat": "Metal",
-        "ftype": "Rimless",
-        "hinge": "Standard barrel",
-        "nose": "Adjustable pads",
-        "eye": 56,
-        "pol": false,
-        "gender": "Women"
+        "colour": [
+          "Rose gold",
+          "Gold",
+          "Silver"
+        ],
+        "material": [
+          "Metal"
+        ],
+        "frame-type": [
+          "Rimless"
+        ],
+        "hinge": [
+          "Standard barrel"
+        ],
+        "nose-pads": [
+          "Adjustable pads"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "gender": [
+          "Women"
+        ]
       },
       "attributes": [
         {
@@ -1229,6 +1754,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -1293,19 +1819,35 @@
       "categories": [],
       "brand": "Emporio Armani",
       "facets": {
-        "shape": "Oval",
-        "cols": [
-          "blk",
-          "hav",
-          "navy"
+        "style": [
+          "Oval"
         ],
-        "mat": "Acetate",
-        "ftype": "Full rim",
-        "hinge": "Sprung",
-        "nose": "Moulded bridge",
-        "eye": 56,
-        "pol": true,
-        "gender": "Men"
+        "colour": [
+          "Black",
+          "Havana",
+          "Navy"
+        ],
+        "material": [
+          "Acetate"
+        ],
+        "frame-type": [
+          "Full rim"
+        ],
+        "hinge": [
+          "Sprung"
+        ],
+        "nose-pads": [
+          "Moulded bridge"
+        ],
+        "size-filter": [
+          "Medium"
+        ],
+        "polarised": [
+          "Polarised"
+        ],
+        "gender": [
+          "Men"
+        ]
       },
       "attributes": [
         {
@@ -1313,6 +1855,7 @@
           "label": "Size",
           "slug": "size",
           "packSize": false,
+          "variesBy": "size",
           "options": [
             {
               "value": "S",
@@ -1364,11 +1907,104 @@
       ]
     }
   ],
-  "gaps": [
-    {
-      "draftId": "*",
-      "kind": "facet",
-      "detail": "the shop filters on \"shape\", \"cols\", \"mat\", \"ftype\", \"hinge\", \"nose\", \"eye\", \"pol\", \"gender\" (Eye Care Birmingham.dc.html); the catalogue writes brands only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet"
+  "gaps": [],
+  "sites": {
+    "local-eye-care": {
+      "builtAt": "2026-10-27T19:35:20.496Z",
+      "products": {
+        "1": {
+          "id": 370,
+          "permalink": "http://localhost:8081/frames/ray-ban-aviator-classic/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "2": {
+          "id": 375,
+          "permalink": "http://localhost:8081/frames/gucci-oversized-cat-eye/",
+          "variations": 3
+        },
+        "3": {
+          "id": 379,
+          "permalink": "http://localhost:8081/frames/oakley-holbrook/",
+          "variations": 3
+        },
+        "4": {
+          "id": 383,
+          "permalink": "http://localhost:8081/frames/prada-symbole/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "5": {
+          "id": 387,
+          "permalink": "http://localhost:8081/frames/ray-ban-original-wayfarer/",
+          "variations": 3
+        },
+        "6": {
+          "id": 391,
+          "permalink": "http://localhost:8081/frames/ray-ban-round-metal/",
+          "variations": 3
+        },
+        "7": {
+          "id": 395,
+          "permalink": "http://localhost:8081/frames/versace-medusa-biggie/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "8": {
+          "id": 399,
+          "permalink": "http://localhost:8081/frames/polaroid-pld-6003-n/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "9": {
+          "id": 403,
+          "permalink": "http://localhost:8081/frames/carrera-carrera-1055-s/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "10": {
+          "id": 407,
+          "permalink": "http://localhost:8081/frames/ferrari-scuderia-fz6001/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "11": {
+          "id": 411,
+          "permalink": "http://localhost:8081/frames/superdry-sds-shockwave/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "12": {
+          "id": 415,
+          "permalink": "http://localhost:8081/frames/balenciaga-shield/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "13": {
+          "id": 419,
+          "permalink": "http://localhost:8081/frames/police-lewis-10/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "14": {
+          "id": 423,
+          "permalink": "http://localhost:8081/frames/dolce-and-gabbana-dg4268/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "15": {
+          "id": 427,
+          "permalink": "http://localhost:8081/frames/michael-kors-chelsea/",
+          "variations": 3,
+          "photoToCome": true
+        },
+        "16": {
+          "id": 431,
+          "permalink": "http://localhost:8081/frames/emporio-armani-ea4033/",
+          "variations": 3,
+          "photoToCome": true
+        }
+      }
     }
-  ]
+  }
 }

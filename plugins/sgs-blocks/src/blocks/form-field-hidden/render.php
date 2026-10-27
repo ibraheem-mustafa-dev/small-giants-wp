@@ -19,11 +19,12 @@
 defined( 'ABSPATH' ) || exit;
 
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_submission_name;
 use function SGS\Blocks\Forms\field_open;
 use function SGS\Blocks\Forms\field_close;
 
 $fid          = field_id( $attributes['fieldName'] ?? 'unnamed' );
-$field_name   = $attributes['fieldName'] ?? '';
+$field_name   = field_submission_name( $fid, $attributes );
 $default_value = $attributes['defaultValue'] ?? '';
 
 echo field_open( $attributes, 'hidden' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — field_open() returns safe markup.

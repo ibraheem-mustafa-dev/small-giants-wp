@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "project": "Tab panels fixture",
+  "generated": "2026-10-27",
+  "records": [
+    { "id": "S-01", "kind": "menu", "name": "Mega menu", "dc": "Home", "template_tpl_id": "5", "route": "*", "parent": null, "opened_by": "Hover Sunglasses or Brands", "closed_by": "pointer leaving the header", "states": [ { "name": "closed", "state_keys": { "mega": null }, "how_to_reach": "L.setState({mega:null})" }, { "name": "Sunglasses", "state_keys": { "mega": "sun" }, "how_to_reach": "Hover Sunglasses; L.setState({mega:\"sun\"})", "sc_if_tpl_ids": [ "4", "6" ] }, { "name": "Brands", "state_keys": { "mega": "brands" }, "how_to_reach": "Hover Brands; L.setState({mega:\"brands\"})", "sc_if_tpl_ids": [ "4", "10" ] } ], "time_dependent": { "value": false, "reason": "" } }
+  ]
+}

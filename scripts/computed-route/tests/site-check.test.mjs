@@ -70,6 +70,24 @@ test( 'MUST FAIL: a menu link to an address off the page map is reported, and a 
 	assert.equal( verdictOf( items ), 'fail' );
 } );
 
+test( 'MUST FAIL: a menu link reaches its row by the row\'s permalink, whatever the page redirects to', () => {
+	// WooCommerce sends an empty basket's checkout to the cart: the checkout row loads at /cart/.
+	const links = [
+		{ text: 'Checkout', href: '/checkout/', abs: `${ BASE }/checkout/`, inMenu: true, disclosure: false, selector: 'a >> nth=0' },
+		{ text: 'Basket', href: '/cart/', abs: `${ BASE }/cart/`, inMenu: true, disclosure: false, selector: 'a >> nth=1' },
+	];
+	const pages = [
+		{ key: 'page:checkout', permalink: `${ BASE }/checkout/`, finalUrl: `${ BASE }/cart/` },
+		{ key: 'page:cart', permalink: `${ BASE }/cart/`, finalUrl: `${ BASE }/cart/` },
+	];
+	const items = menuItems( { header: true, links, base: BASE, url: BASE, pages, headerRows: [ { key: 'page:checkout', title: 'Pay', url: `${ BASE }/checkout/` } ] } );
+	const by = Object.fromEntries( items.map( ( i ) => [ i.subject, i ] ) );
+	assert.equal( by[ 'menu link "Checkout"' ].status, 'pass', by[ 'menu link "Checkout"' ].error );
+	assert.match( by[ 'menu link "Checkout"' ].detail, /page:checkout/ );
+	assert.match( by[ 'menu link "Basket"' ].detail, /page:cart/ );
+	assert.equal( verdictOf( items ), 'pass' );
+} );
+
 test( 'MUST FAIL: the header\'s links are read from the rendered page with their menu-bar flag', async () => {
 	const page = await pageWith( '<header class="sgs-site-header"><nav class="sgs-nav-bar-menu"><a href="/a/">A</a></nav><a class="logo" href="/" aria-label="Home"></a></header>' );
 	const read = await page.evaluate( readHeaderLinksInPage );

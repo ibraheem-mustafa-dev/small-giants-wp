@@ -34,6 +34,18 @@ export function schemaFieldOf( schema, form ) {
 	return null;
 }
 
+// The schema field whose name is `name` (a field node built from the schema carries it as its `fieldName`): { field, step }, or
+// null when no field of the schema has that name.
+export function schemaFieldByName( schema, name ) {
+	for ( const step of name ? schema?.steps || [] : [] ) {
+		const field = step.fields.find( ( f ) => f && f.name === name );
+		if ( field ) {
+			return { field, step };
+		}
+	}
+	return null;
+}
+
 // The schema field a group of choice chips is: the choice field whose options are exactly the chips' labels.
 export function schemaChipsOf( schema, chips ) {
 	const labels = ( chips || [] ).map( ( c ) => c.label );

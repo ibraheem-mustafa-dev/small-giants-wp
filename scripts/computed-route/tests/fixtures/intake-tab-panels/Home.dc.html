@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="font-family:system-ui,sans-serif;color:#222">
+  <div style="position:relative;display:flex;gap:16px;padding:16px">
+    <button type="button" style="padding:10px 18px">Sunglasses</button>
+    <button type="button" style="padding:10px 18px">Brands</button>
+    <sc-if value="{{ open }}">
+      <div aria-label="Shop menu" style="position:absolute;top:100%;left:0;right:0;padding:24px;background:#fff;border:1px solid #222">
+        <sc-if value="{{ isSun }}">
+          <div style="display:flex;gap:12px">
+            <h2 style="margin:0;font-size:24px">Shop sunglasses</h2>
+            <a href="#aviator">Aviator</a>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isBrands }}">
+          <div style="display:grid;gap:12px">
+            <h2 style="margin:0;font-size:24px">Most asked for</h2>
+            <ul style="display:grid;grid-template-columns:repeat(3,1fr);margin:0;padding:0;list-style:none">
+              <li>North</li>
+              <li>South</li>
+              <li>East</li>
+            </ul>
+            <a href="#brands">All 40 brands</a>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+  </div>
+  <main style="padding:24px">
+    <h1 style="margin:0;font-size:32px">Frames</h1>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;600px&quot;}}">
+class Component extends DCLogic {
+  state = { mega: null };
+  renderVals() {
+    return { open: null != this.state.mega, isSun: 'sun' === this.state.mega, isBrands: 'brands' === this.state.mega };
+  }
+}
+</script>
+</body>
+</html>

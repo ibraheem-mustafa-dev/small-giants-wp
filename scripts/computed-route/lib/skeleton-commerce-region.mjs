@@ -23,10 +23,15 @@ import { isAccountRow } from './site-build-map.mjs';
 // (an ordinary page holding WooCommerce's account piece), the page row its post is; the checkout page's route (a cart's
 // region links to it); and, for the account page, `signIn`: the other draft page files holding the account row's own
 // WooCommerce forms (its `parts` owned by `woocommerce`, each naming `<file>:<line>:<column> <tag>`), where a signed-out
-// view sends its visitor.
+// view sends its visitor. The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
+// FR-48-92) says its filter rail can filter: { facets, brands, categories } (lib/skeleton-filter-rail.mjs).
 export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout' };
 const draftFile = ( s ) => /^([^:?#]+\.dc\.html)(?=[:?#]|$)/i.exec( String( s ?? '' ) )?.[ 1 ] ?? null;
-export function commerceOf( entry, rows = [] ) {
+const filtersOf = ( catalogue ) => {
+	const kept = ( catalogue?.products || [] ).filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
+	return { facets: catalogue?.facets || [], brands: [ ...new Set( kept.map( ( p ) => p.brand ).filter( Boolean ) ) ], categories: [ ...new Set( kept.flatMap( ( p ) => p.categories || [] ) ) ] };
+};
+export function commerceOf( entry, rows = [], catalogue = null ) {
 	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
 	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
 	if ( ! role ) {
@@ -34,7 +39,7 @@ export function commerceOf( entry, rows = [] ) {
 	}
 	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template )?.route ?? null;
 	const signIn = 'account' === role ? [ ...new Set( ( page.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => draftFile( p.draftId ) ).filter( ( f ) => f && f !== draftFile( page.route ) ) ) ] : [];
-	return { role, checkout, ...( signIn.length ? { signIn } : {} ) };
+	return { role, checkout, ...( signIn.length ? { signIn } : {} ), ...( 'shop' === role && catalogue ? { filters: filtersOf( catalogue ) } : {} ) };
 }
 
 // An attribute as the draft's code writes it: the element's own opening tag (the inventory's `attrs` keeps a few only).

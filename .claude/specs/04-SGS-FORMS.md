@@ -110,7 +110,7 @@ All field blocks share these attributes:
 
 | Attribute | Type | Description |
 |---|---|---|
-| `fieldName` | string | Machine name (used in submission data, e.g., "business_name") |
+| `fieldName` | string | Machine name: the key the field submits under, e.g. "business_name" (see Submission name) |
 | `label` | string | Field label |
 | `placeholder` | string | Placeholder text |
 | `helpText` | string | Hint text below field |
@@ -120,6 +120,10 @@ All field blocks share these attributes:
 | `conditionalField` | string | Field name to watch for conditional display |
 | `conditionalOperator` | string | equals | not_equals | contains | greater_than | is_empty |
 | `conditionalValue` | string | Value to compare against |
+
+### Submission name
+
+Every field submits under one name, from `plugins/sgs-blocks/includes/forms/field-render-helpers.php::field_submission_name`, which every `form-field-*` render.php calls: `fieldName` cleaned by `sanitize_key()` and used as written; else the label's slug ("Enquiry type" submits as `enquiry-type`, cut to 48 characters); else `field-` plus the field's unique id number. A derived name never repeats one already used on the page (a second unnamed "Email" field is `email-2`), so two unnamed radio or tile groups never merge. Every name passes the key pattern `Form_Rest_Submission::validate_fields` accepts (`[A-Za-z0-9_-]`, up to 64 characters). A list control (checkboxes, multi-select tiles) is named `<name>[]` and the form runtime (`src/blocks/form/view.js::submitForm`) sends it as a list under `<name>`; an address field's parts submit as `<name>-line1`, `<name>-postcode` and so on, and the postcode lookup box, when shown, submits the postcode. A file never travels in the fields: the file input is named for validation, the runtime skips its file object, and the attachment ID goes in `fileIds` from the upload carrier, which has no name. The stored row keeps each value under its name; the owner email (`Form_Mailer::humanise_key`) and the personal-data export (`Form_Privacy`) show the name title-cased (`enquiry-type` reads "Enquiry Type"); the label's exact text is not stored. A conditional field's `conditionalField` is cleaned the same way, so it matches the watched field's name. Proof: `php plugins/sgs-blocks/tests/php/run-form-field-names-standalone.php` (every field block on disk, rendered with no `fieldName`) and the "submitted field keys" cases of `tests/js/form-runtime-behaviours.test.js`.
 
 ### Conditional Logic
 
@@ -141,7 +145,7 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 - `columns` — 2 | 3 | 4 (desktop, always 2 on mobile)
 - `selectedStyle` — border | background | checkmark
 
-**Render:** Grid of clickable cards. Selected tiles show accent-colour border + checkmark. Underlying value stored as comma-separated string or JSON array.
+**Render:** Grid of clickable cards. Selected tiles show accent-colour border + checkmark. A single-select field submits one value; a multi-select field submits a list (see Submission name).
 
 ### File Upload (`sgs/form-field-file`)
 

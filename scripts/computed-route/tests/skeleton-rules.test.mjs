@@ -146,6 +146,23 @@ test( 'openStatus and hoursRows: a live open line is the open-status display, th
 	assert.notEqual( row( run( tree, { facts: facts( 'hoursRows' ) } ), ( x ) => 'div' === x.tag && x.depth === 1 ).rule, 'hoursRows' );
 } );
 
+test( 'MUST FAIL: a run of sibling hours rows is one hours display (the first row), the later rows absorbed into it; a row in another list is its own display', () => {
+	const dayRow = ( day, time ) => E( 'div', { display: 'flex' }, [ E( 'span', { words: day } ), E( 'span', { words: time } ) ] );
+	const tree = section( [
+		E( 'div', { display: 'flex', words: '' }, [ dayRow( 'Monday – Thursday', '9:30am – 5pm' ), dayRow( 'Friday', '9:30am – 12pm, 2:30 – 5pm' ), dayRow( 'Saturday', '10am – 3pm' ), dayRow( 'Sunday', 'Closed 9am' ) ] ),
+		E( 'div', { display: 'flex' }, [ dayRow( 'Tuesday', '8am – 6pm' ) ] ),
+	] );
+	const r = run( tree );
+	const rows = r.proposal.rows.filter( ( x ) => 'div' === x.tag && 2 === x.depth );
+	assert.equal( rows.length, 5 );
+	const shown = rows.filter( ( x ) => 'sgs/business-info' === x.block );
+	assert.deepEqual( shown.map( ( x ) => [ x.attributes.displayType, x.rule ] ), [ [ 'hours', 'hoursRows' ], [ 'hours', 'hoursRows' ] ], 'one display per list of rows' );
+	const later = rows.filter( ( x ) => 'absorbed' === x.action && 'hoursRows' === x.rule );
+	assert.equal( later.length, 3 );
+	assert.ok( later.every( ( x ) => x.into === shown[ 0 ].key ), 'each later row is absorbed into the first row of its list' );
+	assert.equal( byWords( r, 'Tuesday' ).action, 'absorbed', 'the other list\'s row text belongs to its own display' );
+} );
+
 test( 'pillButton and wholeCardLink: a label and an icon is one button reading Site Info; two pieces of text are a linked card; MUST FAIL without each', () => {
 	const pill = E( 'a', { attrs: { href: 'tel:01217714330' } }, [ E( 'span', {}, [ svg() ] ), E( 'span', { words: '0121 771 4330' } ) ] );
 	const card = E( 'a', { attrs: { href: 'mailto:sales@example.co.uk' } }, [ E( 'span', { words: 'Email us' } ), E( 'span', { words: 'We reply within a day' } ) ] );
@@ -567,6 +584,42 @@ test( 'formControl carries the field text into the block and stays inside real f
 	const inputs = misc.proposal.rows.filter( ( x ) => 'input' === x.tag );
 	assert.equal( inputs[ 0 ].block, 'sgs/form-field-text' );
 	assert.notEqual( inputs[ 1 ].rule, 'formControl' );
+} );
+
+test( 'formControl reads each field\'s text in its own wrapper, never in an element holding other controls; MUST FAIL with the label\'s parent or the form as the wrapper', () => {
+	const at = ( r, t, i = 0 ) => r.proposal.rows.filter( ( x ) => x.tag === t )[ i ];
+	const said = ( x ) => [ x.attributes?.label, x.attributes?.helpText ];
+	// A <label> holding its own words round the control, two of them in one grid row and two straight under the form.
+	const labelled = ( words, type, y ) => E( 'label', { words, y }, [ E( type, 'textarea' === type ? {} : { attrs: { type: 'email' === words.toLowerCase() ? 'email' : 'text' } } ) ] );
+	const own = run( section( [ E( 'form', {}, [ E( 'h2', { words: 'Send a message' } ), E( 'div', { display: 'grid', y: 40 }, [ labelled( 'Your name', 'input', 40 ), labelled( 'Email', 'input', 40 ) ] ), labelled( 'Order number', 'input', 120 ), labelled( 'Message', 'textarea', 200 ), E( 'button', { words: 'Send message', attrs: { type: 'submit' }, y: 300 } ) ] ) ] ) );
+	assert.deepEqual( [ 0, 1, 2 ].map( ( i ) => said( at( own, 'input', i ) ) ), [ [ 'Your name', undefined ], [ 'Email', undefined ], [ 'Order number', undefined ] ] );
+	assert.deepEqual( said( at( own, 'textarea' ) ), [ 'Message', undefined ] );
+	// A <label> holding a text span (with its star) and the control, the labels side by side in one grid; a consent tick
+	// straight under the form takes its own words, not the form's.
+	const spanned = ( words, y ) => E( 'label', { y }, [ E( 'span', { words }, [ E( 'span', { words: '*' } ) ] ), E( 'input', { attrs: { type: 'text' } } ) ] );
+	const tick = E( 'label', { y: 200 }, [ E( 'input', { attrs: { type: 'checkbox', required: '' } } ), E( 'span', { words: 'I agree to be contacted.' } ) ] );
+	const spans = run( section( [ E( 'form', {}, [ E( 'h3', { words: 'Register' } ), E( 'p', { words: 'Tell us about yourself.', y: 20 } ), E( 'div', { display: 'grid', y: 40 }, [ spanned( 'Full name', 40 ), spanned( 'Phone', 80 ) ] ), tick ] ) ] ) );
+	assert.deepEqual( [ said( at( spans, 'input', 0 ) ), said( at( spans, 'input', 1 ) ), said( at( spans, 'input', 2 ) ) ], [ [ 'Full name', undefined ], [ 'Phone', undefined ], [ 'I agree to be contacted.', undefined ] ] );
+	// A control straight under the form beside the form's own intro and its submit row: no label, and the intro and the
+	// submit row stay (they are no field's text).
+	const bare = run( section( [ E( 'form', {}, [ E( 'h2', { words: 'Or send me a message' } ), E( 'p', { words: 'I answer these myself.', y: 20 } ), E( 'div', { y: 40 }, [ E( 'input', { attrs: { type: 'text' } } ), E( 'input', { attrs: { type: 'email' }, y: 40 } ) ] ), E( 'textarea', { y: 100 } ), E( 'div', { y: 200 }, [ E( 'button', { words: 'Send message', attrs: { type: 'submit' } } ) ] ) ] ) ] ) );
+	assert.deepEqual( said( at( bare, 'textarea' ) ), [ undefined, undefined ] );
+	assert.notEqual( byWords( bare, 'I answer these myself.' ).action, 'remove' );
+	assert.notEqual( row( bare, ( x ) => 'div' === x.tag && 'Send message' === x.words )?.action, 'remove' );
+	assert.equal( byWords( bare, 'Send message' ).action, null );
+	// A search box beside a list of ticks in one panel: the ticks stay fields with their own names, and the search box
+	// takes none of their words.
+	const tickRow = ( w, y ) => E( 'label', { y }, [ E( 'span', {}, [ E( 'input', { attrs: { type: 'checkbox' } } ), E( 'span', { words: w } ) ] ), E( 'span', { words: '12' } ) ] );
+	const panel = run( section( [ E( 'div', {}, [ E( 'input', { attrs: { 'aria-label': 'Search brands' } } ), E( 'div', { y: 40 }, [ tickRow( 'Acme', 40 ), tickRow( 'Bolt', 80 ) ] ) ] ) ] ) );
+	assert.deepEqual( said( at( panel, 'input', 0 ) ), [ undefined, undefined ] );
+	assert.deepEqual( [ 1, 2 ].map( ( i ) => [ at( panel, 'input', i ).block, at( panel, 'input', i ).attributes?.label ] ), [ [ 'sgs/form-field-checkbox', 'Acme' ], [ 'sgs/form-field-checkbox', 'Bolt' ] ] );
+	// Negative control: a wrapper holding one control still gives it the label and the hint beside it.
+	const one = run( section( [ E( 'form', {}, [ E( 'div', {}, [ E( 'label', { words: 'Trading name' } ), E( 'input', { attrs: { type: 'text' } } ), E( 'span', { words: 'As on your invoices', y: 40 } ) ] ), E( 'input', { attrs: { type: 'email' }, y: 80 } ) ] ) ] ) );
+	assert.deepEqual( said( at( one, 'input', 0 ) ), [ 'Trading name', 'As on your invoices' ] );
+	assert.equal( byWords( one, 'As on your invoices' ).action, 'remove' );
+	// The wrapper's own words stay its own (the wrapper is not removed), so they are never the field's hint as well.
+	const worded = run( section( [ E( 'form', {}, [ E( 'div', { words: 'Step one' }, [ E( 'label', { words: 'Trading name' } ), E( 'input', { attrs: { type: 'text' } } ) ] ), E( 'input', { attrs: { type: 'email' }, y: 80 } ) ] ) ] ) );
+	assert.deepEqual( said( at( worded, 'input', 0 ) ), [ 'Trading name', undefined ] );
 } );
 
 test( 'dotMarker never takes a control and needs text beside it; cardHeading reads rem and keyword weights (QC council 2026-10-19); MUST FAIL without each guard', () => {

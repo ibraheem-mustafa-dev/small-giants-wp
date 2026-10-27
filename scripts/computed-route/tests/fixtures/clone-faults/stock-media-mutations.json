@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-media.mjs", "find": "const stock = null === file ? stockKey( img.src ) : null;", "replace": "const stock = null;", "why": "the stock path is off: a painted stock preview is 'not a file of the draft' again" },
+	{ "file": "lib/fill-media.mjs", "find": "filter( ( e ) => e.stock && e.asset === key )", "replace": "filter( ( e ) => e.asset === key )", "why": "a non-stock entry would stand for a stock preview" },
+	{ "file": "lib/fill-media.mjs", "find": "const hits = null === file ? stockEntries( media.map, media.site, stock ) : mapEntries( media.map, media.site, p );", "replace": "const hits = mapEntries( media.map, media.site, p );", "why": "a stock address looked up as a draft path matches entries that are not stock" },
+	{ "file": "lib/fill-media.mjs", "find": "${ null === file ? 'the stock preview ' : '' }", "replace": "", "why": "the gap no longer names the stock preview" },
+	{ "file": "lib/fill-media.mjs", "find": "const p = file ?? stock;", "replace": "const p = file;", "why": "the gaps name null instead of the stock address" }
+]

@@ -122,6 +122,31 @@
 				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
 			}
 		],
+		"filterRail": {
+			"reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words",
+			"block": "sgs/container",
+			"attributes": { "tagName": "aside", "anchor": "sgs-shop-filters", "className": "sgs-shop-filters" },
+			"filters": {
+				"name": "woocommerce/product-filters",
+				"innerBlocks": [
+					{
+						"name": "woocommerce/product-filter-active",
+						"innerBlocks": [
+							{ "name": "woocommerce/product-filter-removable-chips" },
+							{ "name": "woocommerce/product-filter-clear-button", "innerBlocks": [ { "name": "sgs/button", "attributes": { "label": "Clear all", "className": "wp-block-button__link" } } ] }
+						]
+					}
+				]
+			},
+			"heading": { "block": "sgs/heading", "attributes": { "level": "h3" }, "className": "sgs-shop-filters__group-heading", "openClass": "sgs-filter-open", "swatchClass": "sgs-filter-swatches" },
+			"displayStyles": { "choice": "woocommerce/product-filter-chips", "checkbox": "woocommerce/product-filter-checkbox-list" },
+			"groups": {
+				"facet": { "name": "woocommerce/product-filter-attribute", "attributes": { "queryType": "or", "showCounts": true, "sortOrder": "menu_order-asc" } },
+				"price": { "name": "woocommerce/product-filter-price", "innerBlocks": [ { "name": "woocommerce/product-filter-price-slider", "attributes": { "showInputFields": false } } ] },
+				"brand": { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_brand", "displayStyle": "woocommerce/product-filter-checkbox-list", "showCounts": true }, "innerBlocks": [ { "name": "woocommerce/product-filter-checkbox-list" } ] },
+				"category": { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_cat", "displayStyle": "woocommerce/product-filter-checkbox-list", "showCounts": true }, "innerBlocks": [ { "name": "woocommerce/product-filter-checkbox-list" } ] }
+			}
+		},
 		"commerceRegion": {
 			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
 			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",
@@ -458,6 +483,35 @@
 			"reason": "a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25)",
 			"droppedReason": "a second element under the form's root: the form is one linked embed, so nothing else of the form stays on the page"
 		},
+		"formSteps": {
+			"id": "formSteps",
+			"taughtBy": { "client": "indus-foods", "key": "TradeApplication/16, TradeApplication/10, TradeApplication/85 and the schema getter", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
+			"scope": "a form surface whose draft logic holds a form schema of two or more steps (lib/skeleton-form-steps.mjs): the draft's step list, step count and Next / Back buttons inside the form, and the schema fields the page never rendered",
+			"clients": [ "indus-foods" ],
+			"navBlock": "sgs/button",
+			"countLabel": { "patterns": [ "^\\S.*?\\s\\d+\\s+of\\s+\\d+(?:\\s*[·•|:-].*)?$" ], "flags": "i" },
+			"next": {
+				"words": { "patterns": [ "^(?:next|continue)(?:\\s+step)?$" ], "flags": "i" },
+				"handlers": { "patterns": [ "^(?:next|forward)(?:Step)?$" ] }
+			},
+			"back": {
+				"words": { "patterns": [ "^(?:back|prev|previous)(?:\\s+step)?$" ], "flags": "i" },
+				"handlers": { "patterns": [ "^(?:back|prev|previous)(?:Step)?$" ] }
+			},
+			"schemaTypes": {
+				"chips": { "rule": "optionSetForm" },
+				"check": { "type": "checkbox" },
+				"heading": { "rule": "cardHeading" }
+			},
+			"reasons": {
+				"indicator": "the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
+				"count": "the draft's step count: the form block draws its own progress (its step list numbers each step)",
+				"next": "the draft's Next button: the form block draws its own Next button between steps",
+				"back": "the draft's Back button: the form block draws its own Previous button between steps",
+				"progress": "a wordless element beside the draft's step list or step count (its progress line): the form block draws its own progress bar"
+			},
+			"reason": "a multi-step draft form is the form block with one sgs/form-step per schema step (Spec 42, Spec 48 FR-48-57): each step holds its schema fields, those the page never rendered built from the schema by their type (an input type or tag of rules.formControl, else the draft's own type word here), and the draft's step list, step count and Next / Back buttons are the form's own progress and step navigation, never static blocks beside it (2026-10-27)"
+		},
 		"formHost": {
 			"tag": "form",
 			"block": "sgs/form",
@@ -521,7 +575,7 @@
 			"id": "optionSetForm",
 			"block": "sgs/form-field-tiles",
 			"taughtBy": { "client": "mamas-munches-redesign", "key": "Checkout/73, Checkout/98 and Contact/48", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
-			"scope": "an option set (the optionSet scope) with a form element (the real tag form) among the ancestors in its template parent chain; the same group outside a form element stays the option picker",
+			"scope": "an option set (the optionSet scope) with a form element (the real tag form) among the ancestors in its template parent chain, or on a form surface (whose root is the form block whatever its tag, rule formHost) when the group filters no list (a filtering group there stays optionSetFilter); the same group outside a form stays the option picker",
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
 			"reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)"
 		},

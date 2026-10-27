@@ -15,17 +15,20 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_submission_name;
 use function SGS\Blocks\Forms\field_message_attrs;
 
 $fid         = field_id( $attributes['fieldName'] ?? 'consent' );
 $type        = $attributes['consentType'] ?? 'terms';
 $text        = $attributes['consentText'] ?? '';
+// Unnamed and unlabelled, it submits as "consent".
+$sub_name    = field_submission_name( $fid, $attributes + array( 'label' => 'consent' ) );
 $is_required = in_array( $type, array( 'terms', 'gdpr' ), true ) || ( $attributes['required'] ?? false );
 
 echo field_open( $attributes, 'consent' );
 
 echo '<label class="sgs-form-field__consent" for="' . esc_attr( $fid ) . '">';
-echo '<input type="checkbox" id="' . esc_attr( $fid ) . '" name="' . esc_attr( $attributes['fieldName'] ?? 'consent' ) . '" value="yes"';
+echo '<input type="checkbox" id="' . esc_attr( $fid ) . '" name="' . esc_attr( $sub_name ) . '" value="yes"';
 if ( $is_required ) {
 	echo ' required aria-required="true"';
 }

@@ -29,11 +29,19 @@
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( c.gatedBy ) {\n\t\t\tcontinue;\n\t\t}", "replace": "", "why": "a gated choice becomes a variation" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( ! rows.some( ( r ) => 'product' === r.postType && 'live' === r.collection ) ) {", "replace": "if ( false ) {", "why": "a client with no live product row gets a catalogue" },
 	{ "file": "lib/catalogue-read.mjs", "find": "const catField = facets.find( ( f ) => words( f.field ) && f.files.includes( shopFile ) && ! keyedValues( ctx, list.records.flatMap( ( r ) => r[ f.field ] ) ) )?.field || null;", "replace": "const catField = facets.find( ( f ) => words( f.field ) )?.field || null;", "why": "lookup keys become categories" },
-	{ "file": "lib/catalogue-read.mjs", "find": "if ( loose.length ) {", "replace": "if ( false ) {", "why": "unwritten filter fields vanish silently" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( route && /product single/i.test(", "replace": "if ( false && /product single/i.test(", "why": "the manifest's product base is ignored" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( seen.has( p.slug ) ) {", "replace": "if ( false ) {", "why": "two products share one slug" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( /\\.dc\\.html$/i.test( row.route || '' ) ) {\n\t\treturn null;\n\t}", "replace": "", "why": "a missing product page falls back to another draft" },
 	{ "file": "lib/intake-catalogue-run.mjs", "find": "'drop' === r.mark && /^catalogue:/.test( r.rowId )", "replace": "'drop' === r.mark", "why": "a dropped gap row or page-map row names a dropped product" },
 	{ "file": "lib/intake-catalogue-run.mjs", "find": "...( previous?.sites ? { sites: previous.sites } : {} )", "replace": "", "why": "a rewrite loses what the site builds recorded" },
-	{ "file": "lib/intake-review.mjs", "find": "catalogue: [ { value: 'accept' }, { value: 'drop' } ],", "replace": "catalogue: [ { value: 'accept' } ],", "why": "a product cannot be dropped in the review" }
+	{ "file": "lib/intake-review.mjs", "find": "catalogue: [ { value: 'accept' }, { value: 'drop' } ],", "replace": "catalogue: [ { value: 'accept' } ],", "why": "a product cannot be dropped in the review" },
+	{"file": "lib/catalogue-read.mjs", "find": "\tif ( pack ) {\n\t\treturn 'size';\n\t}", "replace": "", "why": "a pack size is not a size axis"},
+	{"file": "lib/catalogue-read.mjs", "find": "const hit = words.map( named ).find( Boolean );", "replace": "const hit = null;", "why": "no axis word is ever read"},
+	{"file": "lib/catalogue-read.mjs", "find": "String( key || '' ).replace( /([a-z])([A-Z])/g, '$1 $2' )", "replace": "String( key || '' )", "why": "a camelCase state key is not split into words"},
+	{"file": "lib/catalogue-read.mjs", "find": "Object.hasOwn( VARIESBY_WORDS, w.replace( /s$/, '' ) ) ? w.replace( /s$/, '' ) : null", "replace": "null", "why": "a plural axis word is not named"},
+	{"file": "lib/catalogue-read.mjs", "find": "colour: 'color', color: 'color',", "replace": "colour: 'colour', color: 'color',", "why": "the UK spelling is written as an invalid variesBy value"},
+	{"file": "lib/catalogue-read.mjs", "find": "variesBy: variesByOf( label, choice.key, pack ), priced,", "replace": "variesBy: null, priced,", "why": "attributes never carry their axis"},
+	{"file": "lib/catalogue-read.mjs", "find": "\tif ( attributes.length && ! attributes.some( ( a ) => a.variesBy ) ) {", "replace": "\tif ( false ) {", "why": "a product with no axis is not a gap row"},
+	{"file": "lib/catalogue-read.mjs", "find": "label || '' } ${ String(", "replace": "'' } ${ String(", "why": "the label is not read for the axis"},
+	{"file": "data/catalogue.schema.json", "find": "\"variesBy\": { \"enum\": [\"color\", \"size\", \"material\", \"pattern\", \"suggestedAge\", \"suggestedGender\", null],", "replace": "\"variesBy\": {", "why": "the schema accepts any variesBy value"}
 ]

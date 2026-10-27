@@ -8,15 +8,21 @@
 //     options carry a price (else the record's price);
 //   - a priced choice whose options are whole numbers of 2 or more, priced apart from the number, is a pack size (Spec 27 Part 2's pack axis:
 //     `_sgs_pack_size_axis`, each variation's `_sgs_unit_divisor` and `_sgs_discount_label`);
+//   - each attribute's `variesBy` is the Google ProductGroup axis it is (VARIESBY_WORDS: a pack size is `size`, else a
+//     word of its label or state key), null when none fits; a variable product none of whose attributes has one is a
+//     `no-variesby` gap row, because SGS's product preflight keeps such a product a draft;
 //   - a multi-choice, a switch (and the choices it gates), a choice whose options cannot be read, an amount the shopper
 //     picks as the price itself, more than one priced choice, too many variations and every filter field with no
-//     WooCommerce home are gap rows (`kind`, `detail`), never silent drops.
+//     WooCommerce home are gap rows (`kind`, `detail`), never silent drops;
+//   - every other filter field is a facet (lib/catalogue-facets.mjs): a global attribute with its terms, and each
+//     product's terms in its `facets`.
 import fs from 'node:fs';
 import path from 'node:path';
 import { embeddedManifest } from './intake-routing.mjs';
 import { UNREAD, catalogueSources, valueOf } from './catalogue-source.mjs';
 import { descriptionField, facetFields, imageFields, recordLists } from './catalogue-records.mjs';
 import { basketLines, keyOptions, lineFor, lineKeys } from './catalogue-options.mjs';
+import { readFacets, settleFacets } from './catalogue-facets.mjs';
 
 export const MAX_VARIATIONS = 100;
 export const SKU_PREFIX = 'sgs-draft-';
@@ -89,13 +95,32 @@ function keyedValues( ctx, values ) {
 	} )() ) );
 }
 
-// One attribute from a choice: { key, label, slug, packSize, options, default }.
+// Google's closed variesBy values (the ProductGroup axes SGS's product preflight requires one of on a variable product,
+// `includes/class-product-preflight.php` no_variesby), keyed by the axis words that name them; the framework's own
+// provisioning maps an axis name the same way (`class-product-provisioning.php::map_axis_to_variesby`).
+export const VARIESBY_WORDS = { size: 'size', colour: 'color', color: 'color', material: 'material', pattern: 'pattern', age: 'suggestedAge', gender: 'suggestedGender', sex: 'suggestedGender' };
+export const VARIESBY_VALUES = [ 'color', 'size', 'material', 'pattern', 'suggestedAge', 'suggestedGender' ];
+
+// The variesBy value of an attribute: `size` for a pack size, else the first word of its label, then of its state key
+// (camelCase split), singular or plural, that names a Google axis; null when none does (an option's swatch decides nothing: a swatch draws
+// any option, a flavour or a recipe as well as a colour).
+export function variesByOf( label, key, pack ) {
+	if ( pack ) {
+		return 'size';
+	}
+	const words = `${ label || '' } ${ String( key || '' ).replace( /([a-z])([A-Z])/g, '$1 $2' ) }`.toLowerCase().split( /[^a-z]+/ );
+	const named = ( w ) => ( Object.hasOwn( VARIESBY_WORDS, w ) ? w : Object.hasOwn( VARIESBY_WORDS, w.replace( /s$/, '' ) ) ? w.replace( /s$/, '' ) : null );
+	const hit = words.map( named ).find( Boolean );
+	return hit ? VARIESBY_WORDS[ hit ] : null;
+}
+
+// One attribute from a choice: { key, label, slug, packSize, variesBy, options, default }.
 function attributeOf( choice ) {
 	const priced = choice.options.every( ( o ) => 'number' === typeof o.price );
 	const pack = priced && choice.options.every( ( o ) => Number.isInteger( o.value ) && o.value >= 2 ) && choice.options.some( ( o ) => o.price !== o.value );
 	const label = pack ? 'Pack size' : human( choice.name ) || human( choice.key ) || choice.key;
 	return {
-		key: choice.key, label, slug: pack ? PACK_SLUG : slugify( label ), packSize: pack, priced,
+		key: choice.key, label, slug: pack ? PACK_SLUG : slugify( label ), packSize: pack, variesBy: variesByOf( label, choice.key, pack ), priced,
 		options: choice.options.map( ( o ) => ( { value: o.value, term: String( o.label ?? o.value ), price: priced ? o.price : null, swatch: o.swatch || null, badge: pack ? o.badge || null : null } ) ),
 		default: choice.options.some( ( o ) => o.value === choice.first ) ? String( choice.options.find( ( o ) => o.value === choice.first ).label ?? choice.first ) : null,
 	};
@@ -160,6 +185,9 @@ function choicesOf( ctx, lines, list, record, draftId ) {
 		gap( 'too-many-variations', `${ count } combinations of ${ attributes.map( ( a ) => a.key ).join( ', ' ) } exceed ${ MAX_VARIATIONS }; the product is made with no choices` );
 		attributes = [];
 	}
+	if ( attributes.length && ! attributes.some( ( a ) => a.variesBy ) ) {
+		gap( 'no-variesby', `no choice (${ attributes.map( ( a ) => `"${ a.key }"` ).join( ', ' ) }) is one of Google's variesBy axes (${ VARIESBY_VALUES.join( ', ' ) }), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft` );
+	}
 	return { attributes, gaps };
 }
 
@@ -177,7 +205,7 @@ const imageOf = ( v, roles, repo, folder ) => {
 // The catalogue of a client: { catalogue (catalogue.json's shape, without `sites`), notes }.
 export function readCatalogue( { repo, client, rows } ) {
 	const folder = path.join( repo, 'sites', client, 'handoff' );
-	const base = { schemaVersion: 1, client, productBase: 'product', source: null, products: [], gaps: [] };
+	const base = { schemaVersion: 1, client, productBase: 'product', source: null, facets: [], products: [], gaps: [] };
 	const notes = [];
 	if ( ! rows.some( ( r ) => 'product' === r.postType && 'live' === r.collection ) ) {
 		notes.push( 'the page map has no live product row, so the draft sells nothing through WooCommerce and has no catalogue' );
@@ -207,9 +235,9 @@ export function readCatalogue( { repo, client, rows } ) {
 		const brandField = facets.find( ( f ) => 'brand' === f.field && list.records.every( ( r ) => 'string' === typeof r.brand ) )?.field || null;
 		const catLabels = catField ? labelsFor( ctx, [ ...new Set( list.records.flatMap( ( r ) => r[ catField ] ) ) ] ) : new Map();
 		const loose = facets.filter( ( f ) => f.field !== catField && f.field !== brandField );
-		if ( loose.length ) {
-			out.gaps.push( { draftId: '*', kind: 'facet', detail: `the shop filters on ${ loose.map( ( f ) => `"${ f.field }"` ).join( ', ' ) } (${ loose.map( ( f ) => f.files.join( ' ' ) ).filter( ( v, i, a ) => a.indexOf( v ) === i ).join( '; ' ) }); the catalogue writes ${ [ catField && 'categories', brandField && 'brands' ].filter( Boolean ).join( ' and ' ) || 'no filter field' } only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet` } );
-		}
+		const facetRead = readFacets( ctx, list, loose.map( ( f ) => f.field ), { slugify, human } );
+		out.facets.push( ...facetRead.facets );
+		out.gaps.push( ...facetRead.gaps );
 		const lines = basketLines( ctx, list, file );
 		for ( const r of list.records ) {
 			const draftId = String( r[ list.key ] );
@@ -226,12 +254,13 @@ export function readCatalogue( { repo, client, rows } ) {
 				gallery: img.gallery && Array.isArray( r[ img.gallery ] ) ? r[ img.gallery ].map( ( g ) => imageOf( g, { table: null }, repo, folder ) ).filter( Boolean ) : [],
 				categories: catField ? r[ catField ].map( ( c ) => String( catLabels.get( c ) ?? c ) ) : [],
 				brand: brandField ? r[ brandField ] : null,
-				facets: Object.fromEntries( loose.filter( ( f ) => null != r[ f.field ] && UNREAD !== r[ f.field ] ).map( ( f ) => [ f.field, r[ f.field ] ] ) ),
+				facets: facetRead.termsOf( r ),
 				attributes: attributes.map( ( { priced, ...a } ) => a ),
 				variations,
 			} );
 		}
 	}
+	settleFacets( out );
 	const seen = new Map();
 	for ( const p of out.products ) {
 		if ( seen.has( p.slug ) ) {

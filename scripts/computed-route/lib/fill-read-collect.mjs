@@ -110,9 +110,26 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 			return f;
 		} )();
 		// The one image this element is (an <img>, or a <figure> / <picture> holding exactly one) and its figcaption's words.
-		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ) ];
+		// A custom element draws its picture in its open shadow root (an image placeholder element), so the <img>s with an
+		// address in the open shadow roots of the element and its descendants count too, those showing one address as one
+		// image (such an element keeps a second copy of its picture for its own editing chrome).
+		const imgSrc = ( i ) => i.getAttribute( 'src' ) ?? i.getAttribute( 'data-src' ) ?? '';
+		const shadowImgs = ( n ) => ( n.shadowRoot ? [ ...n.shadowRoot.querySelectorAll( 'img' ), ...[ ...n.shadowRoot.querySelectorAll( '*' ) ].flatMap( shadowImgs ) ] : [] );
+		const drawn = [ el, ...el.querySelectorAll( '*' ) ].flatMap( shadowImgs ).filter( ( i ) => '' !== imgSrc( i ) );
+		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ), ...drawn.filter( ( i, n ) => drawn.findIndex( ( j ) => imgSrc( j ) === imgSrc( i ) ) === n ) ];
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
-		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgs[ 0 ].getAttribute( 'src' ) ?? imgs[ 0 ].getAttribute( 'data-src' ) ?? '', alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgSrc( imgs[ 0 ] ), alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		// Every picture the element draws when it draws two or more, in document order (one image placeholder's copies of one
+		// address count once), so a list block can give each of its items the picture the draft draws in that item.
+		const pictures = [];
+		for ( const n of [ el, ...el.querySelectorAll( '*' ) ] ) {
+			if ( n.matches( 'img' ) && '' !== imgSrc( n ) ) {
+				pictures.push( imgSrc( n ) );
+			}
+			const own = shadowImgs( n ).map( imgSrc ).filter( Boolean );
+			pictures.push( ...own.filter( ( s, k ) => own.indexOf( s ) === k ) );
+		}
+		snap.pictures = pictures.length > 1 ? pictures : null;
 		// The one embedded frame this element is or holds (a map): its address, the filter it paints and its height.
 		const frames = el.matches( 'iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'iframe' ) ];
 		snap.embed = 1 === frames.length ? { src: frames[ 0 ].getAttribute( 'src' ) ?? '', filter: getComputedStyle( frames[ 0 ] ).filter, h: frames[ 0 ].getBoundingClientRect().height } : null;

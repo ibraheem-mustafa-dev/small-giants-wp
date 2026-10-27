@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { repoWith } from './fixtures/catalogue/repo.mjs';
-import { readCatalogue, productAddress, skuOf, slugify } from '../lib/catalogue-read.mjs';
+import { readCatalogue, productAddress, skuOf, slugify, variesByOf } from '../lib/catalogue-read.mjs';
 import { catalogueProblems, catalogueRecord, catalogueSummary, droppedIds } from '../lib/intake-catalogue-run.mjs';
 import { reviewRows, markProblem } from '../lib/intake-review.mjs';
 
@@ -29,13 +29,12 @@ test( 'shared script: the looked-up, priced list is the catalogue; a list with n
 	assert.deepEqual( catalogueProblems( catalogue ), [] );
 } );
 
-test( 'categories come from the array field the shop page filters on, named by the code\'s own label pairs; any other filter field is a facet gap', () => {
+test( 'categories come from the array field the shop page filters on, named by the code\'s own label pairs; any other filter field is a facet', () => {
 	const { catalogue } = read( 'shared', SHARED_ROWS );
 	assert.deepEqual( byId( catalogue, 'jar' ).categories, [ 'Pantry', 'Sweet things' ] );
-	assert.deepEqual( byId( catalogue, 'jar' ).facets, { origin: 'hills' } );
-	const facet = catalogue.gaps.filter( ( g ) => 'facet' === g.kind );
-	assert.equal( facet.length, 1 );
-	assert.match( facet[ 0 ].detail, /"origin"/ );
+	assert.deepEqual( byId( catalogue, 'jar' ).facets, { origin: [ 'hills' ] } );
+	assert.deepEqual( catalogue.facets.map( ( f ) => [ f.slug, f.kind, f.key, f.terms.map( ( t ) => t.name ) ] ), [ [ 'origin', 'value', 'origin', [ 'hills', 'coast' ] ] ] );
+	assert.equal( catalogue.gaps.filter( ( g ) => 'facet' === g.kind ).length, 0 );
 } );
 
 test( 'a priced whole-number choice is a pack size; with a second choice every combination is a variation priced by the pack', () => {
@@ -53,7 +52,7 @@ test( 'a priced whole-number choice is a pack size; with a second choice every c
 test( 'a multi-choice, a switch with its price factor and gated choice, and an amount picked as the price are gap rows; the quantity is none', () => {
 	const { catalogue } = read( 'shared', SHARED_ROWS );
 	const kinds = catalogue.gaps.filter( ( g ) => '*' !== g.draftId ).map( ( g ) => `${ g.draftId }:${ g.kind }` );
-	assert.deepEqual( kinds, [ 'jar:multi-choice', 'jar:switch', 'voucher:open-amount' ] );
+	assert.deepEqual( kinds, [ 'jar:multi-choice', 'jar:switch', 'voucher:open-amount', 'voucher:no-variesby' ] );
 	const sw = catalogue.gaps.find( ( g ) => 'switch' === g.kind );
 	assert.match( sw.detail, /"gift".*multiplies the price by 0\.8.*"every" \(1, 2\)/ );
 	assert.match( catalogue.gaps.find( ( g ) => 'multi-choice' === g.kind ).detail, /Nuts, Seeds, Comb/ );
@@ -92,8 +91,8 @@ test( 'class property: two price fields give price and RRP, images come from the
 	assert.deepEqual( catalogue.products.map( ( p ) => p.image ), [ { url: 'https://images.example.test/a.jpg' }, null, { url: 'https://images.example.test/b.jpg' } ] );
 	assert.deepEqual( catalogue.products[ 0 ].attributes.map( ( a ) => [ a.label, a.options.map( ( o ) => o.term ), a.default ] ), [ [ 'Size', [ 'S', 'M', 'L' ], 'M' ] ] );
 	assert.ok( catalogue.gaps.some( ( g ) => 'slug' === g.kind && '2' === g.draftId ) );
-	const facet = catalogue.gaps.find( ( g ) => 'facet' === g.kind );
-	assert.match( facet.detail, /"fit", "cols"/ );
+	assert.deepEqual( catalogue.facets.map( ( f ) => [ f.field, f.slug, f.terms.map( ( t ) => `${ t.name }${ t.swatch || '' }` ) ] ), [ [ 'fit', 'fit', [ 'Snug', 'Loose' ] ], [ 'cols', 'col', [ 'Black#111111', 'Red#aa2222' ] ] ] );
+	assert.deepEqual( catalogue.products[ 0 ].facets, { fit: [ 'Snug' ], col: [ 'Black', 'Red' ] } );
 	assert.deepEqual( catalogue.products[ 0 ].categories, [] );
 	assert.equal( productAddress( catalogue, catalogue.products[ 2 ] ), '/goods/saltway-harbour-hat/' );
 	assert.deepEqual( catalogueProblems( catalogue ), [] );
@@ -139,4 +138,19 @@ test( 'the review lists a row per product and per gap; drop is a valid mark and 
 	const kept = catalogueRecord( catalogue, { sites: { s: { builtAt: 'x', products: { box: { id: 5, permalink: '/product/tea-box/' } } } } }, [ 'box' ] );
 	assert.deepEqual( [ kept.dropped, kept.sites.s.products.box.id ], [ [ 'box' ], 5 ] );
 	assert.deepEqual( catalogueProblems( kept ), [] );
+} );
+
+test( 'variesBy: a pack size is size, a size or colour axis is named by its own words, an amount or a swatched recipe is none and its product is a no-variesby gap', () => {
+	const shared = read( 'shared', SHARED_ROWS ).catalogue;
+	assert.deepEqual( byId( shared, 'jar' ).attributes.map( ( a ) => [ a.key, a.variesBy ] ), [ [ 'pack', 'size' ], [ 'grain', null ] ] );
+	assert.deepEqual( byId( shared, 'voucher' ).attributes.map( ( a ) => a.variesBy ), [ null ] );
+	const held = shared.gaps.filter( ( g ) => 'no-variesby' === g.kind );
+	assert.deepEqual( held.map( ( g ) => g.draftId ), [ 'voucher' ] );
+	assert.match( held[ 0 ].detail, /"amount".*color, size, material, pattern, suggestedAge, suggestedGender.*no_variesby/ );
+	const single = read( 'single', SINGLE_ROWS ).catalogue;
+	assert.deepEqual( single.products.map( ( p ) => p.attributes[ 0 ].variesBy ), [ 'size', 'size', 'size' ] );
+	assert.ok( ! single.gaps.some( ( g ) => 'no-variesby' === g.kind ) );
+	assert.deepEqual( [ variesByOf( 'Frame colour', 'curCol', false ), variesByOf( 'Shade', 'colorPick', false ), variesByOf( 'Finish', 'material', false ), variesByOf( 'Amount', 'amount', false ), variesByOf( 'Amount', 'amount', true ), variesByOf( 'Sizes', 'x', false ), variesByOf( 'Message', 'page', false ) ], [ 'color', 'color', 'material', null, 'size', 'size', null ] );
+	assert.deepEqual( catalogueProblems( shared ), [] );
+	assert.ok( catalogueProblems( { ...shared, products: [ { ...byId( shared, 'jar' ), attributes: [ { ...byId( shared, 'jar' ).attributes[ 0 ], variesBy: 'flavour' } ] } ] } ).length > 0 );
 } );

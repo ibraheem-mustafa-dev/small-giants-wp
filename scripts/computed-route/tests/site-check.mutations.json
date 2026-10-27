@@ -1,4 +1,5 @@
 [
+	{ "file": "lib/site-check-nav.mjs", "find": "\tconst address = ( p ) => p.permalink || p.finalUrl;", "replace": "\tconst address = ( p ) => p.finalUrl;", "why": "a menu link is matched against the address a page redirected to, not its row's permalink" },
 	{ "file": "lib/site-check-nav.mjs", "find": "\tif ( ! isOpen( opened ) ) {", "replace": "\tif ( false ) {", "why": "a drawer that never opens is read as open" },
 	{ "file": "lib/site-check-nav.mjs", "find": "\t\tconst hit = k && ( known.get( k ) || under.find( ( u ) => k.startsWith( u.prefix ) ) );", "replace": "\t\tconst hit = k && ( known.get( k ) || under.find( ( u ) => k.startsWith( u.prefix ) ) || { key: 'any' } );", "why": "any address on the site counts as a page-map page" },
 	{ "file": "lib/site-check-nav.mjs", "find": "\t\tif ( DRAFT_HREF.test( raw ) ) {", "replace": "\t\tif ( false ) {", "why": "a draft-file link is not reported" },

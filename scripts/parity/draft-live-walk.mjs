@@ -6,7 +6,7 @@
 // or URL); page-wide, every painted word, links (dead, broken, or not where the config's table says)
 // and load entrances judged by paint.
 // Writes report.json, report.md, draft|live side-by-side screenshots and contact.md (every
-// shot with its review note). Exits 1 on a config lint problem, a difference that is not
+// shot with its review note), first clearing those an earlier walk left in the folder (lib/captures.mjs). Exits 1 on a config lint problem, a difference that is not
 // accepted, or a shot with no review note. The gap classes: scripts/parity/GAP-CHECKLIST.md.
 //
 // Usage: node scripts/parity/draft-live-walk.mjs <config.mjs> [--out dir] [--widths 1440,768,375,1920]
@@ -41,6 +41,7 @@ import { compareState } from './lib/compare-state.mjs';
 import { everyStateMap } from './lib/state-changes.mjs';
 import { draftCacheKey, currentEntries } from './lib/draft-cache.mjs';
 import { writeReport, sideBySide } from './lib/report.mjs';
+import { clearCaptures, cachedShots } from './lib/captures.mjs';
 import { lintRun } from './lib/lint.mjs';
 import { collectStructure } from './lib/structure.mjs';
 import { writeContactSheet } from './lib/review.mjs';
@@ -172,7 +173,7 @@ async function walkSide( browser, side, width, draftStates = null ) {
 	await h.goto( cfg[ side ].url );
 	// Load entrances (GAP-CHECKLIST.md section 15): the page reloaded and sampled as it paints in.
 	const firstState = cfg.states[ 0 ]?.name;
-	const entrances = header && ! lean && false !== cfg.entrances && ( ! onlyStates || onlyStates.includes( firstState ) ) ? await sampleEntrances( page, side, cfg ) : null;
+	const entrances = header && ! lean && false !== cfg.entrances && ( ! onlyStates || onlyStates.includes( firstState ) ) ? await sampleEntrances( page, side, cfg, { route: h.routed ? h.route : null } ) : null;
 	if ( cfg[ side ].open ) {
 		await cfg[ side ].open( h );
 	}
@@ -350,6 +351,9 @@ const allLiveLinks = [];
 const origins = { draft: new URL( cb( cfg.draft.url ) ).origin, live: new URL( cb( cfg.live.url ) ).origin };
 const cached = currentEntries( draftCache && fs.existsSync( draftCache ) ? JSON.parse( fs.readFileSync( draftCache, 'utf8' ) ) : {} );
 const cacheKey = ( width ) => draftCacheKey( { config: cfg.name, width, states: onlyStates || null, lean, self } );
+// The folder holds only this walk's files (lib/captures.mjs, GAP-CHECKLIST.md section 41): the walker's own shots, reports
+// and dumps from an earlier run go first, except the draft shots of the cached draft walks this run reuses.
+clearCaptures( outDir, cachedShots( widths.map( ( w ) => cached[ cacheKey( w ) ] ) ) );
 for ( const width of widths ) {
 	const draft = cached[ cacheKey( width ) ] || await walkSide( browser, 'draft', width );
 	if ( draftCache ) {

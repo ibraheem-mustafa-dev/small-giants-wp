@@ -37,6 +37,7 @@ defined( 'ABSPATH' ) || exit;
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/helpers-form-submit-motion.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-form-own-submit.php';
 
 // CSS-keyword sanitiser — letters + hyphen only (border-style — the only
 // free-text keyword sgs/form's declared supports concatenate into scoped CSS;
@@ -147,6 +148,9 @@ foreach ( $block->inner_blocks as $inner_block ) {
 }
 
 $is_multi_step = $total_steps > 1;
+// A form holding its own submit button (an sgs/button set as a submit button, at any depth) submits through it, so
+// the built-in submit button is left out.
+$has_own_submit = sgs_form_has_own_submit( (array) ( $block->parsed_block['innerBlocks'] ?? array() ) );
 $require_login = $attributes['requireLogin'] ?? false;
 $rate_limit    = absint( $attributes['rateLimit'] ?? 5 );
 
@@ -771,6 +775,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 
 	<?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InnerBlocks output, pre-rendered and escaped by WordPress. ?>
 
+	<?php if ( $is_multi_step || ! $has_own_submit ) : ?>
 	<div class="sgs-form__actions">
 		<?php if ( $is_multi_step ) : ?>
 			<button
@@ -792,6 +797,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 			</button>
 		<?php endif; ?>
 
+		<?php if ( ! $has_own_submit ) : ?>
 		<button
 			type="submit"
 			class="sgs-form__button sgs-form__button--submit sgs-form__button--<?php echo esc_attr( $submit_style ); ?>"
@@ -802,7 +808,9 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 		>
 			<?php echo esc_html( $submit_label ); ?>
 		</button>
+		<?php endif; ?>
 	</div>
+	<?php endif; ?>
 
 </form>
 

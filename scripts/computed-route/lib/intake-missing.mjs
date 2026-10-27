@@ -24,13 +24,14 @@ import { buildModel, codeTarget } from './intake-census-map.mjs';
 import { createRequire } from 'module';
 import { statusOf } from './clone-coverage.mjs';
 import { headMissing } from './intake-head.mjs';
-import { PROPS as FILL_PROPS } from './fill-read.mjs';
+import { PROPS as FILL_PROPS, TIE_PROPS } from './fill-read.mjs';
 import { CONTEXT_PROPS } from '../../parity/lib/collect.mjs';
 
 const MDN_PROPERTIES = createRequire( import.meta.url )( 'mdn-data/css/properties.json' );
-// What Fill reads and carries: its list without the context reads (direction, column-count, column-width), which it reads
-// only to judge other values and never writes from the computed read (lib/fill-resolve-element.mjs::fillElement).
-export const FILL_READS = new Set( FILL_PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) ) );
+// What Fill reads and carries: its list without the context reads (direction, column-count, column-width) and the tie
+// reads (background-clip), which it reads only to judge other values and never writes from the computed read
+// (lib/fill-resolve-element.mjs::fillElement).
+export const FILL_READS = new Set( FILL_PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) && ! TIE_PROPS.includes( p ) ) );
 // The longhands a property sets, by mdn-data's `computed` list, recursively (`border` → `border-width` → its four
 // sides); a longhand is itself.
 export function longhands( prop, seen = new Set() ) {
