@@ -238,7 +238,7 @@ export const drawerRepeatsHeader = ( menu, megaLabels ) => 'drawer' === menu.reg
 // FR-48-30: proposes the page map for one export folder. `routing` defaults to readRouting( { folder } );
 // `surfacesHint` is handoff/surfaces.json's parsed object (read from the folder when undefined, none when null).
 // `census` (FR-48-24) is accepted for the intake record's cross-reference and not needed here.
-// Returns { rows, linkMap, gaps }.
+// Returns { rows, linkMap, gaps, routeSlug ({ route: slug }, every route key the rows hold, a folded route included) }.
 export function proposePageMap( { folder, routing = null, census = null, surfacesHint } ) {
 	void census;
 	const exp = loadExport( folder );
@@ -355,7 +355,7 @@ export function proposePageMap( { folder, routing = null, census = null, surface
 	}
 	rows.forEach( ( r ) => delete r.shopTitled );
 	genericTemplates( rows, home, gaps );
-	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps };
+	return { rows, linkMap: linkMap( exp, route, routeSlug, home, gaps ), gaps, routeSlug: Object.fromEntries( routeSlug ) };
 }
 
 // Problems with a page map: schema violations (data/page-map.schema.json), a slug used twice within one post type

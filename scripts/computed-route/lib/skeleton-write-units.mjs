@@ -4,13 +4,14 @@
 // element's children; `buildBrand`, `buildIcons` and `buildList` build each one's node and record its rows.
 // The factory takes the writer's shared context (`ctx`) after the row book (lib/skeleton-write-record.mjs) is in `ctx.w`.
 import { brandOwnsAddress } from './brand-registry.mjs';
+import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { finish, W } from './skeleton-classify.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
 
 export function makeUnits( ctx ) {
-	const { m, facts, cls, R, view, overrides, base, rootOf, w } = ctx;
+	const { m, facts, cls, R, view, overrides, base, rootOf, w, siteLink } = ctx;
 	const { record, absorbSubtree } = w;
 	const { capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
@@ -124,10 +125,14 @@ export function makeUnits( ctx ) {
 				const owner = facts.brands.find( ( b ) => b.slug === kind );
 				return { [ li.text ]: '', [ li.siteInfoSource ]: kind, ...( real && li.siteInfoLink && ! ( owner && brandOwnsAddress( owner, href ) ) ? { [ li.siteInfoLink ]: true } : {} ) };
 			}
-			if ( ! real && 'a' === l.tag ) {
+			// The draft's destination as a site address (lib/draft-link.mjs): a draft route is never written as it stands.
+			const r = siteLink( href, l );
+			const out = linkWrite( r, href );
+			if ( 'none' === r.kind && 'a' === l.tag ) {
 				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link "${ m.words( l ) }" is "#": its destination is not in the draft, url left empty` } );
 			}
-			return { [ li.text ]: m.words( l ) || String( l.allText ?? '' ).replace( /\s+/g, ' ' ).trim(), ...( real ? { [ li.url ]: href } : {} ) };
+			out.handover && handover.push( out.handover );
+			return { [ li.text ]: m.words( l ) || String( l.allText ?? '' ).replace( /\s+/g, ' ' ).trim(), ...( null !== out.value ? { [ li.url ]: out.value } : {} ) };
 		} );
 		const C = {};
 		const ev = ( b, kind, w, text ) => ( C[ b ] ||= { block: b, evidence: [] } ).evidence.push( { kind, w, text } );
