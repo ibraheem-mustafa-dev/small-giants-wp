@@ -13,7 +13,7 @@ import { fileURLToPath } from 'url';
 import { colourHex } from './tokens.mjs';
 import { usageRoles, isBorder, SATURATED_C } from './intake-palette-usage.mjs';
 import { declarations, declaredRoles } from './intake-palette-declared.mjs';
-import { brandRegistry, brandOfToken } from './brand-registry.mjs';
+import { paletteBrands, brandOfToken } from './brand-registry.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const THEME_JSON = path.resolve( HERE, '../../../theme/sgs-theme/theme.json' );
@@ -238,7 +238,7 @@ function evidence( s, role ) {
 // by, why }]). `usage` is [{ hex (any colour form), property, draftId, count, tag?, ground?, text? }] (lib/intake-run-
 // collapse.mjs::paletteUsage plus lib/intake-palette-grounds.mjs::groundUsage); `slugs` is [{ slug, name }] (theme.json's
 // by default); `problems` carries lib/tokens.mjs's problems through.
-export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [], folder = null, brands = brandRegistry() } = {} ) {
+export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSlugs(), problems: carried = [], folder = null, brands = paletteBrands() } = {} ) {
 	const vocab = new Set( slugs.map( ( s ) => s.slug ) );
 	const problems = [ ...carried ];
 	const uses = usage.map( ( u ) => ( { ...u, hex: colourHex( u.hex ), ...( u.ground ? { ground: colourHex( u.ground ) } : {} ) } ) ).filter( ( u, k ) => u.hex ||
