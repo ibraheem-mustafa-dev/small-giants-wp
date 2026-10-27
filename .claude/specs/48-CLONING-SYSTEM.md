@@ -440,6 +440,8 @@ Behaviour the walker cannot see is tested by scripted flows in `scripts/parity/f
 
 Every row measured in a state no setting state maps to is reported in that surface's UNMAPPED list with the state named, never classed as a gap.
 
+`scripts/computed-route/site-check.mjs <client> --site <site>` is the whole-clone functional check: every page-map page loads, the header links reach page-map pages and no page links to a draft file, mega menus, the drawer (375 and 768), modals and choice flows open and close, every form submits once to its success state with a marked test entry, the client's flows above pass, and cart, checkout and my-account show WooCommerce's working forms; it writes `sites/<client>/build/qa/site-check/<stamp>/result.md` and exits 1 on any failed check.
+
 **Done when:** each flow passes on its client's test site after its fix, and fails against the bug it was written for (for Eye Care, the register's N11 and N25).
 
 Status: built for Eye Care (`scripts/parity/flows/*.mjs`); flows from a draft's logic not built.
