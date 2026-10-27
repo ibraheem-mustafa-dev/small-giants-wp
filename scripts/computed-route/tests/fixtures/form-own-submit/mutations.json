@@ -1,0 +1,17 @@
+[
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/render.php", "find": "<?php if ( ! $has_own_submit ) : ?>", "replace": "<?php if ( true ) : ?>", "why": "the built-in submit always renders"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/render.php", "find": "<?php if ( $is_multi_step || ! $has_own_submit ) : ?>", "replace": "<?php if ( true ) : ?>", "why": "the empty actions row stays"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/render.php", "find": "<?php if ( $is_multi_step || ! $has_own_submit ) : ?>", "replace": "<?php if ( ! $has_own_submit ) : ?>", "why": "a multi-step form with its own submit loses Previous and Next"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/render.php", "find": "<?php if ( ! $has_own_submit ) : ?>", "replace": "<?php if ( false ) : ?>", "why": "the built-in submit never renders"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/render.php", "find": "$has_own_submit = sgs_form_has_own_submit( (array) ( $block->parsed_block['innerBlocks'] ?? array() ) );", "replace": "$has_own_submit = false;", "why": "the form never looks for its own submit"},
+ {"file": "../../plugins/sgs-blocks/includes/helpers-form-own-submit.php", "find": " && ! empty( $parsed['attrs']['isSubmit'] )", "replace": "", "why": "any sgs/button counts as a submit button"},
+ {"file": "../../plugins/sgs-blocks/includes/helpers-form-own-submit.php", "find": "'sgs/button' === ( $parsed['blockName'] ?? '' ) && ", "replace": "", "why": "isSubmit on any block counts"},
+ {"file": "../../plugins/sgs-blocks/includes/helpers-form-own-submit.php", "find": " && sgs_form_has_own_submit( $parsed['innerBlocks'] ) ) {", "replace": " && false ) {", "why": "a submit button inside a container is not found"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/form-own-submit.js", "find": " && !! block.attributes?.isSubmit", "replace": "", "why": "editor: any sgs/button counts"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/form-own-submit.js", "find": "'sgs/button' === block?.name && ", "replace": "", "why": "editor: isSubmit on any block counts"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/form-own-submit.js", "find": "hasOwnSubmit( block?.innerBlocks )", "replace": "false", "why": "editor: a nested submit button is not found"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/form-own-submit.js", "find": "( blocks || [] ).some(", "replace": "blocks.some(", "why": "editor: a block with no inner blocks throws"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/style.css", "find": ":where(.sgs-form__inner, .sgs-form-step) > * {\n\tgrid-column: 1 / -1;\n}", "replace": "", "why": "non-field blocks take one track (the fault)"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/style.css", "find": ":where(.sgs-form__inner, .sgs-form-step) > * {", "replace": ".sgs-form__inner > *, .sgs-form-step > * {", "why": "the default carries specificity and beats a block's own column rule"},
+ {"file": "../../plugins/sgs-blocks/src/blocks/form/style.css", "find": "\t.sgs-form-field--half {\n\t\tgrid-column: span 3;\n\t}\n\n\t.sgs-form-field--third {\n\t\tgrid-column: span 2;\n\t}\n}\n\n/* Short number boxes", "replace": "}\n\n/* Short number boxes", "why": "half and third fields lose their spans and take the full-row default"}
+]

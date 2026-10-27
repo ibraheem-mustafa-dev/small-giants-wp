@@ -247,7 +247,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// A hidden input is no visible field, so the text beside it is never that field's text.
 	const visibleControl = ( k ) => !! controlBlock( k ) && 'hidden' !== String( k.attrs?.type || '' ).toLowerCase();
-	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( visibleControl );
+	// A field's own wrapper: an element holding exactly one visible control, that control a child of it. An element holding
+	// two or more controls (a row of fields, the form itself) is no field's wrapper, so its text is no field's text.
+	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( visibleControl ) && 1 === desc( p ).filter( visibleControl ).length;
 	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
 	// field's wrapper beside the control, or in a <label> there (two levels up at most).
 	const fieldText = ( e ) => {
@@ -260,17 +262,19 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The words a field's removed texts carried, as the field block's own settings: the label (the <label> naming the
 	// control, else the first text in its wrapper), whether it is required, and the remaining hint. A required marker
 	// ("*") and a character count ("0 / 800") are drawn by the field block itself.
+	// The texts are read in the field's own wrapper (holdsControl): the <label> round the control, or the element around
+	// that label when it holds no other control, else the control's parent. A label's own words are its text too.
 	const fieldContent = ( e, block ) => {
 		const p = m.byKey[ e.parentKey ];
-		const scope = p && 'label' === p.tag ? m.byKey[ p.parentKey ] || p : p;
-		const own = ( k ) => k === e || desc( k ).includes( e );
+		const up = p && 'label' === p.tag ? m.byKey[ p.parentKey ] : null;
+		const scope = [ up, p ].find( holdsControl ) || null;
 		const drawn = ( t ) => /^\*$/.test( t ) || /^\d+\s*\/\s*\d+$/.test( t );
 		const texts = [];
 		const visit = ( k ) => {
-			if ( k !== scope && own( k ) && k === e ) {
+			if ( k === e ) {
 				return;
 			}
-			if ( k !== scope && m.words( k ) && ! controlBlock( k ) ) {
+			if ( ( k !== scope || 'label' === k.tag ) && m.words( k ) && ! controlBlock( k ) ) {
 				texts.push( { el: k, text: m.words( k ).replace( /\s*\*$/, '' ).trim() } );
 			}
 			m.blockKids( k ).forEach( visit );

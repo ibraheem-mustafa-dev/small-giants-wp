@@ -83,6 +83,14 @@
 	grid-column: 1 / -1;
 }
 
+/* Any other block placed in the form (a heading, text, a container of fields,
+   a button) spans the whole row too: the six tracks are for half and third
+   width fields only, so without this each such block shrinks to one track.
+   Zero specificity, so the half and third rules and a block's own setting win. */
+:where(.sgs-form__inner, .sgs-form-step) > * {
+	grid-column: 1 / -1;
+}
+
 /* Half/third only apply inside the multi-column layout */
 @container sgs-form (min-width: 560px) {
 	.sgs-form-field--half {
