@@ -279,7 +279,7 @@
 }
 
 /* Tablet height — falls back to desktop value when not set. */
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1023px) {
 	.sgs-has-image-controls > img,
 	.sgs-has-image-controls .wp-block-image > img,
 	.sgs-has-image-controls figure > img {
@@ -287,12 +287,12 @@
 	}
 }
 
-/* Mobile height — falls back to desktop value when not set. */
-@media (max-width: 768px) {
+/* Mobile height — falls back to the tablet value, then desktop, when not set (a narrower device inherits the next wider one). */
+@media (max-width: 767px) {
 	.sgs-has-image-controls > img,
 	.sgs-has-image-controls .wp-block-image > img,
 	.sgs-has-image-controls figure > img {
-		height: var(--sgs-height-mobile, var(--sgs-height-desktop, auto));
+		height: var(--sgs-height-mobile, var(--sgs-height-tablet, var(--sgs-height-desktop, auto)));
 	}
 }
 

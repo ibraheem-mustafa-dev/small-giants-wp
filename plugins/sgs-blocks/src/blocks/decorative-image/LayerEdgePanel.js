@@ -15,12 +15,6 @@ const EDGE_UNITS = [
 	{ value: 'rem', label: 'rem' },
 ];
 
-/**
- * @param {Object}   props
- * @param {Object}   props.attributes    Block attributes.
- * @param {Function} props.setAttributes Block `setAttributes`.
- * @return {JSX.Element} The Position from the edges panel.
- */
 const EDGES = [
 	[ 'positionTop', __( 'Top', 'sgs-blocks' ) ],
 	[ 'positionRight', __( 'Right', 'sgs-blocks' ) ],
@@ -28,6 +22,12 @@ const EDGES = [
 	[ 'positionLeft', __( 'Left', 'sgs-blocks' ) ],
 ];
 
+/**
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block `setAttributes`.
+ * @return {JSX.Element} The Position from the edges panel.
+ */
 export default function LayerEdgePanel( { attributes, setAttributes } ) {
 	return (
 		<InspectorControls>

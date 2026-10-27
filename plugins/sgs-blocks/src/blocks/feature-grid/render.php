@@ -30,11 +30,12 @@ $columns_desktop = max( 1, absint( $attributes['columns']['desktop'] ?? 4 ) );
 $columns_tablet  = max( 1, absint( $attributes['columns']['tablet'] ?? 2 ) );
 $columns_mobile  = max( 1, absint( $attributes['columns']['mobile'] ?? 1 ) );
 // `minItemWidth` is a length string per device; each device's own value (tablet and mobile only where set)
-// feeds the auto-fill track, read through the shared validator.
+// feeds the auto-fill track's minmax() minimum, read through the single-length validator (a list or a keyword there
+// would make the whole grid-template-columns declaration invalid).
 $min_item_tiers = sgs_responsive_normalise_object( $attributes['minItemWidth'] ?? null );
 $min_item_css   = array();
 foreach ( array( 'desktop', 'tablet', 'mobile' ) as $min_item_tier ) {
-	$min_item_css[ $min_item_tier ] = sgs_css_length_value( $min_item_tiers[ $min_item_tier ] ?? '' );
+	$min_item_css[ $min_item_tier ] = sgs_css_single_length_value( $min_item_tiers[ $min_item_tier ] ?? '' );
 }
 if ( '' === $min_item_css['desktop'] ) {
 	$min_item_css['desktop'] = '240px';

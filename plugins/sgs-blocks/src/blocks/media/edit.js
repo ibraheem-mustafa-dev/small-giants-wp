@@ -24,11 +24,6 @@ import LottieCanvas from './components/LottieCanvas';
 import VideoCanvas from './components/VideoCanvas';
 
 /**
- * Allowed CSS length units for the media styling controls. Mirrors the
- * server-side sgs_media_validate_unit() allowlist so the editor cannot emit a
- * unit render.php would reject.
- */
-/**
  * Playback options (autoplay/loop/muted/controls/plays-inline/lazy-load) are
  * now owned entirely by the `video-behaviour` atom (Wave 5b, 2026-09-01),
  * mounted via `MediaPanelLayout`'s "Playback" section — the hand-rolled

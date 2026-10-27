@@ -46,11 +46,13 @@ $close_button_class = 'glyph' === $close_style ? 'sgs-modal__close sgs-modal__cl
 // Dialog custom width: one length string per device, overriding the maxWidth
 // variant class's `width` when set; empty keeps every existing modal's
 // maxWidth-driven width unchanged. Printed by the shared responsive emitter below.
-$dialog_width_obj = sgs_responsive_normalise_object( $attributes['dialogWidth'] ?? null );
-$has_dialog_width = false;
-foreach ( $dialog_width_obj as $dialog_width_value ) {
+// The viewport-safety clamp the variant classes carry travels with the width: printed on each
+// device that holds a safe width, so a device without one keeps its variant's own max-width.
+$dialog_width_obj   = sgs_responsive_normalise_object( $attributes['dialogWidth'] ?? null );
+$dialog_width_clamp = array();
+foreach ( $dialog_width_obj as $dialog_width_tier => $dialog_width_value ) {
 	if ( null !== $dialog_width_value && '' !== sgs_css_length_value( (string) $dialog_width_value ) ) {
-		$has_dialog_width = true;
+		$dialog_width_clamp[ $dialog_width_tier ] = 'calc(100vw - 2rem)';
 	}
 }
 
@@ -144,13 +146,6 @@ $dialog_rules = array();
 if ( $modal_background ) {
 	$dialog_rules[] = sgs_background_paint_decl( $modal_background, $modal_background_gradient );
 }
-// Dialog custom width — overrides the maxWidth variant class's `width` by
-// source-order-independent specificity (this scoped rule is two classes,
-// `.sgs-modal__dialog--{variant}` is one). `max-width` keeps the same
-// viewport-safety clamp the variant classes already carry.
-if ( $has_dialog_width ) {
-	$dialog_rules[] = 'max-width:calc(100vw - 2rem)';
-}
 // Dialog border (width, style, colour, gradient ring) through the shared
 // assembler, on the same selector as the background above. With no width set
 // it prints no width or style, so style.css's `border: none` look holds; the
@@ -229,12 +224,18 @@ if ( $trigger_bg_css ) {
 if ( $dialog_rules ) {
 	$scoped_css_rules[] = $root_sel . ' .sgs-modal__dialog{' . implode( ';', $dialog_rules ) . '}';
 }
+// Dialog custom width per device: overrides the maxWidth variant class's `width` by specificity (this scoped rule
+// is two classes, `.sgs-modal__dialog--{variant}` is one), with the viewport-safety clamp on the same devices.
 $scoped_css_rules[] = sgs_emit_responsive_css(
 	$root_sel . ' .sgs-modal__dialog',
 	array(
 		array(
 			'value' => $attributes['dialogWidth'] ?? null,
 			'css'   => 'width',
+		),
+		array(
+			'value' => $dialog_width_clamp,
+			'css'   => 'max-width',
 		),
 	)
 );

@@ -104,21 +104,8 @@ if ( '' === $media_type_raw ) {
 $media_type = in_array( $media_type_raw, array( 'image', 'video', 'svg', 'lottie' ), true ) ? $media_type_raw : 'image';
 
 // ---------------------------------------------------------------------------
-// 3. Helper: validate allowed CSS dimension units.
+// 3. Helper: per-device playback booleans.
 // ---------------------------------------------------------------------------
-if ( ! function_exists( 'sgs_media_validate_unit' ) ) {
-	/**
-	 * Validate a CSS dimension unit against an allowed list.
-	 *
-	 * @param string $unit The raw unit string from block attributes.
-	 * @return string A validated unit string, defaulting to 'px'.
-	 */
-	function sgs_media_validate_unit( string $unit ): string {
-		$allowed = array( 'px', '%', 'em', 'rem', 'vw', 'vh', 'svw', 'svh', 'ch' );
-		return in_array( $unit, $allowed, true ) ? $unit : 'px';
-	}
-}
-
 if ( ! function_exists( 'sgs_media_resolve_tier_bool' ) ) {
 	/**
 	 * Resolve a boolean per-device playback attribute's tablet/mobile

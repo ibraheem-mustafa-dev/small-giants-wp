@@ -256,7 +256,9 @@ if ( ! function_exists( 'sgs_container_tier_min_column_width' ) ) {
 			return null;
 		}
 
-		$length = sgs_css_length_value( $width );
+		// One length only: the value sits inside max( BASIS, calc() ), where a list or a keyword makes the whole
+		// grid-template-columns declaration invalid.
+		$length = sgs_css_single_length_value( $width );
 
 		return '' === $length ? null : $length;
 	}

@@ -89,4 +89,17 @@ final class TextLengthStringTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*width:95vw/', $css, 'mobile width' );
 		$this->assertStringContainsString( 'max-width:calc(100vw - 2rem)', $css );
 	}
+
+	/**
+	 * The clamp travels with the width: a dialog with a width on mobile only keeps its variant's own max-width on
+	 * desktop and tablet, and clamps on mobile.
+	 */
+	public function test_modal_clamp_prints_only_where_a_width_is_set(): void {
+		$css = $this->render_block( 'sgs/modal', array( 'dialogWidth' => array( 'mobile' => '90%' ) ) )['css'];
+
+		$base = preg_replace( '/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*\s*\}/', '', $css );
+		$this->assertStringNotContainsString( 'max-width:calc(100vw - 2rem)', $base, 'no clamp outside the mobile query' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*max-width:calc\(100vw - 2rem\)/', $css, 'the clamp in the mobile query' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767px[^{]*\{[^@]*sgs-modal__dialog\{[^}]*width:90%/', $css, 'control: the mobile width prints' );
+	}
 }

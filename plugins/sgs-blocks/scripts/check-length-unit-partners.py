@@ -58,7 +58,11 @@ SCAN = [
     'plugins/sgs-blocks/tests',
     'theme/sgs-theme',
     'scripts/computed-route',
+    'sites',
 ]
+# Under sites/, a client's dated run output (qa/), its draft intake recording (intake/) and its draft handoff (handoff/)
+# record what a run saw or what the draft holds; they build nothing, so they are not readers.
+SITES_SKIP = {'qa', 'intake', 'handoff'}
 SKIP_DIRS = {'node_modules', 'build', 'vendor', 'cache', 'reports', '.git'}
 SUFFIXES = {'.js', '.mjs', '.jsx', '.ts', '.tsx', '.php', '.py', '.json', '.md', '.html'}
 SELF = {
@@ -92,21 +96,35 @@ MIGRATED = {
 # attributes are not SGS settings.
 ALLOW_LINE = re.compile(r'core/[a-z0-9-]+::[A-Za-z0-9]+Unit')
 
-# (repo-relative path, unit name): the reason the mention is not a reader of an SGS pair.
+# (repo-relative path, unit name) -> (the reason the mention is not a reader of an SGS pair, the text each allowed line
+# carries, or None when every line of the file is allowed). A line that carries none of the texts is still a reader, so
+# a real reader added to an allowed file later fails the check.
 ALLOW = {
     ('plugins/sgs-blocks/scripts/migrate-core-blocks/pairings/cover_pairing.py', 'minHeightUnit'):
-        "core/cover's own attribute, read from the core block and folded into the SGS minHeight length",
+        ("core/cover's own attribute: the whole module reads the core block and folds it into the SGS minHeight length",
+         None),
     ('plugins/sgs-blocks/scripts/feature-parity-exceptions.json', 'minHeightUnit'):
-        "core/cover's own attribute, named in sgs/hero's parity exception against core/cover",
+        ("core/cover's own attribute, the key of sgs/hero's parity exception against core/cover", ('"minHeightUnit": {',)),
     ('plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py', 'widthUnit'):
-        "a synthetic sgs/plant fixture testing the role classifier's Unit-suffix rule",
+        ("a synthetic sgs/plant fixture testing the role classifier's Unit-suffix rule, and its assertions",
+         ('"sgs/plant", "widthUnit"', 'got.get("widthUnit")', "got.get('widthUnit')")),
     ('plugins/sgs-blocks/scripts/behavioural-analyser/assign-canonical.py', 'thicknessUnit'):
-        "a synthetic sgs/plant fixture testing the role classifier's Unit-suffix rule",
+        ("a synthetic sgs/plant fixture testing the role classifier's Unit-suffix rule, and its assertions",
+         ('"sgs/plant", "thicknessUnit"', 'got.get("thicknessUnit")', "got.get('thicknessUnit')")),
     ('plugins/sgs-blocks/scripts/inspector-scan/rules.json', 'maxWidthUnit'):
-        "rule 34's dated ratchet record: each lowering keeps the composition it enumerated that day",
+        ("rule 34's dated ratchet record: each lowering keeps the composition it enumerated that day",
+         ('"advisoryReason": "LOWERED 67 -> 49 (2026-10-16).',)),
     ('plugins/sgs-blocks/scripts/survey-length-control-scale.py', 'maxWidthUnit'):
-        "a synthetic sgs/x self-test source: the survey reads the setting out of a wrapped value expression",
+        ("a synthetic sgs/x self-test source: the survey reads the setting out of a wrapped value expression",
+         ('composeUnit( attributes.maxWidth, attributes.maxWidthUnit )',)),
 }
+
+
+def allowed(rel, unit, line):
+    """Whether ALLOW excuses this mention: its file and name are listed, and the line carries one of the entry's texts
+    (or the entry allows the whole file)."""
+    entry = ALLOW.get((rel, unit))
+    return bool(entry) and (entry[1] is None or any(text in line for text in entry[1]))
 
 
 def block_pairs(blocks_dir):
@@ -172,7 +190,11 @@ def candidate_lines(repo, units):
             raise RuntimeError(res.stderr.decode('utf-8', 'replace'))
         for raw in res.stdout.decode('utf-8', 'replace').splitlines():
             rel, line_no, text = raw.split(':', 2)
-            if Path(rel).suffix in SUFFIXES and not SKIP_DIRS & set(Path(rel).parts):
+            # A client's sources sit under sites/<client>/build/, so under sites/ only SITES_SKIP applies; elsewhere
+            # SKIP_DIRS (the plugin's compiled build/, vendor/, caches and reports).
+            parts = set(Path(rel).parts)
+            skip = SITES_SKIP if rel.startswith('sites/') else SKIP_DIRS
+            if Path(rel).suffix in SUFFIXES and not skip & parts:
                 yield rel, int(line_no), text
         return
     for p in scan_files(repo):
@@ -199,7 +221,7 @@ def readers(repo, units):
         if ALLOW_LINE.search(line):
             continue
         for m in pattern.finditer(line):
-            if (rel, m.group(1)) not in ALLOW:
+            if not allowed(rel, m.group(1), line):
                 out[m.group(1)].append((rel, i, line.strip()[:160]))
     return out
 
@@ -374,6 +396,10 @@ def self_test():
         (blocks / 'a' / 'block.json').write_text(json.dumps(a_now, indent='\t') + '\n', encoding='utf-8')
         assert check(survey(tmp, 'sgs/a', moved)) == 0, 'clean once the reader and the orphan go (a core attribute line is allowed)'
         assert check(survey(tmp, 'sgs/b', moved)) == 0
+        ALLOW[('x.py', 'gapUnit')] = ('a test entry', ('fixture: gapUnit',))
+        assert allowed('x.py', 'gapUnit', "row = 'fixture: gapUnit'") and not allowed('x.py', 'gapUnit', "a = attrs['gapUnit']"), 'a line-scoped entry allows only its own lines'
+        assert not allowed('y.py', 'gapUnit', 'fixture: gapUnit'), 'an entry names its file'
+        del ALLOW[('x.py', 'gapUnit')]
         print('self-test: OK')
         return 0
     finally:

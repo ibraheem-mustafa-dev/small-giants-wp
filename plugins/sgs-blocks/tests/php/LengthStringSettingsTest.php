@@ -38,6 +38,22 @@ final class LengthStringSettingsTest extends TestCase {
 	}
 
 	/**
+	 * A grid minimum is one length: a keyword or a list inside minmax() makes the whole grid-template-columns
+	 * declaration invalid, so the browser drops it. Both are refused, for feature-grid and for the container helper.
+	 */
+	public function test_a_grid_minimum_refuses_a_keyword_or_a_list(): void {
+		foreach ( array( 'auto', '10px 20px' ) as $bad ) {
+			$css = $this->css( 'sgs/feature-grid', array( 'layoutMode' => 'auto-flex', 'minItemWidth' => array( 'desktop' => $bad ) ) );
+			$this->assertStringNotContainsString( "minmax({$bad}", $css, "feature-grid $bad" );
+			$this->assertStringContainsString( 'minmax(240px, 1fr)', $css, "feature-grid $bad falls back to the 240px default" );
+			$out = $this->run_php( 'var_export( sgs_container_tier_min_column_width( array( "minColumnWidth" => array( "desktop" => ' . var_export( $bad, true ) . ' ) ), "desktop" ) );' );
+			$this->assertSame( 'NULL', trim( $out ), "container $bad" );
+		}
+		$out = $this->run_php( 'echo sgs_container_tier_min_column_width( array( "minColumnWidth" => array( "desktop" => "clamp(12rem, 30vw, 20rem)" ) ), "desktop" );' );
+		$this->assertSame( 'clamp(12rem, 30vw, 20rem)', trim( $out ), 'control: one function call is one length' );
+	}
+
+	/**
 	 * Runs PHP in a child process with the QA stubs and the helpers loaded, and returns its output.
 	 *
 	 * @param string $body PHP statements that echo the result.

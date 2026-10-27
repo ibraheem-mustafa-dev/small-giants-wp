@@ -1,9 +1,8 @@
 <?php
 /**
- * A stored unit never breaks out of the block's CSS rule: a length string stored in sgs/text's and sgs/heading's max width and
- * custom width is checked by the shared length validator (nothing prints when it holds `;`, `{` or `}`), and the shared responsive emitter cleans a
- * caller's `unit_default` the way it cleans a `unit_attr` value (sgs/quote passed its stored attribution margin unit
- * there raw). Valid units print as before.
+ * A stored length never breaks out of the block's CSS rule: a length string in sgs/text's and sgs/heading's max width
+ * and custom width, and in sgs/quote's attribution margin, is checked by the shared length validator (nothing prints
+ * when it holds `;`, `{` or `}`), and the same setting holding a safe length prints it.
  *
  * Run with: php vendor/phpunit/phpunit/phpunit --filter StoredUnitBreakoutTest
  *
@@ -30,10 +29,11 @@ final class StoredUnitBreakoutTest extends TestCase {
 				$this->assertStringNotContainsString( 'body{', $css, "$slug $attr: nothing leaves the rule" );
 				$this->assertStringNotContainsString( 'color:red', $css, "$slug $attr: nothing leaves the rule" );
 				$this->assertStringNotContainsString( $property . ':10px', $css, "$slug $attr: a refused length prints no declaration" );
+
+				$ok = $this->render_block( $slug, array_merge( $base, array( $attr => array( 'desktop' => '40rem' ) ) ) )['css'];
+				$this->assertMatchesRegularExpression( '/(?<![-\w])' . preg_quote( $property, '/' ) . ':40rem/', $ok, "$slug $attr: control, a safe length prints" );
 			}
 		}
-		$ok = $this->render_block( 'sgs/text', array( 'text' => 'Fresh bread', 'maxWidth' => array( 'desktop' => '40rem' ) ) )['css'];
-		$this->assertStringContainsString( 'max-width:40rem', $ok, 'control: a safe length prints' );
 	}
 
 	public function test_a_hostile_quote_margin_length_prints_nothing(): void {

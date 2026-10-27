@@ -22,7 +22,7 @@ import {
 	usePreviewTier,
 	wrapperPreview,
 } from '../../utils';
-import { cssLengthValue } from '../../utils/css-length';
+import { cssSingleLengthValue } from '../../utils/css-length';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 
 const LAYOUT_MODE_OPTIONS = [
@@ -70,9 +70,10 @@ const TEMPLATE = [
  * good enough for layout preview purposes.
  *
  * @param {Object} attributes Block attributes.
+ * @param {string} tier       The device the canvas previews (the minimum item width is per device).
  * @return {Object} React inline style object.
  */
-function buildGridStyle( attributes ) {
+function buildGridStyle( attributes, tier = 'desktop' ) {
 	const {
 		layoutMode,
 		columns,
@@ -94,13 +95,13 @@ function buildGridStyle( attributes ) {
 		: ( gapDesktop || '24px' );
 
 	if ( 'auto-flex' === layoutMode ) {
-		const minItemDesktop =
-			cssLengthValue(
-				resolveResponsiveTier( minItemWidth, 'desktop' )?.value
+		const minItem =
+			cssSingleLengthValue(
+				resolveResponsiveTier( minItemWidth, tier )?.value
 			) || '240px';
 		return {
 			display: 'grid',
-			gridTemplateColumns: `repeat(auto-fill, minmax(${ minItemDesktop }, 1fr))`,
+			gridTemplateColumns: `repeat(auto-fill, minmax(${ minItem }, 1fr))`,
 			gap: gapCss,
 			alignItems,
 			justifyItems,
@@ -180,7 +181,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		attributes,
 		previewTier,
 		colourPalette,
-		{ ...buildGridStyle( attributes ), ...sep.style }
+		{ ...buildGridStyle( attributes, previewTier ), ...sep.style }
 	);
 
 	const blockProps = useBlockProps( {

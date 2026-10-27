@@ -12,7 +12,7 @@
  */
 
 import { tierValueOf } from '../../utils';
-import { cssLengthValue } from '../../utils/css-length';
+import { cssSingleLengthValue } from '../../utils/css-length';
 
 const isBlank = ( v ) => undefined === v || null === v || '' === String( v ).trim();
 
@@ -52,7 +52,7 @@ export function containerColumnsPreview( attributes, tier, gap ) {
 		return undefined;
 	}
 	const width = tierValueOf( attributes.minColumnWidth, tier );
-	const basis = cssLengthValue( width );
+	const basis = cssSingleLengthValue( width );
 	return intrinsicColumnsTrack( tierValueOf( attributes.columns, tier ), gap, basis ) || undefined;
 }
 
