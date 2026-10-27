@@ -84,8 +84,9 @@
               "bottom": "20px"
             }
           },
-          "maxWidth": 18,
-          "maxWidthUnit": "ch",
+          "maxWidth": {
+            "desktop": "18ch"
+          },
           "className": "cr-ref-lenses-2",
           "lineHeight": {
             "mobile": 1.02,
@@ -128,8 +129,9 @@
             "desktop": 17
           },
           "textColour": "text-muted",
-          "maxWidth": 62,
-          "maxWidthUnit": "ch",
+          "maxWidth": {
+            "desktop": "62ch"
+          },
           "margin": {
             "desktop": {
               "bottom": "48px"

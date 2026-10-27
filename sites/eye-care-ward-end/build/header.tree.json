@@ -304,8 +304,9 @@
                   "logoId": 198,
                   "width": 48,
                   "linkToHome": true,
-                  "shrinkWidth": 40,
-                  "shrinkWidthUnit": "px",
+                  "shrinkWidth": {
+                    "desktop": "40px"
+                  },
                   "className": "cr-ref-header-6"
                 }
               },
@@ -330,8 +331,9 @@
                       "logoId": 1467,
                       "width": 110,
                       "linkToHome": false,
-                      "shrinkWidth": 91,
-                      "shrinkWidthUnit": "px",
+                      "shrinkWidth": {
+                        "desktop": "91px"
+                      },
                       "className": "cr-ref-header-8"
                     },
                     "innerBlocks": []

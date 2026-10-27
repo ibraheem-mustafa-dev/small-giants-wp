@@ -288,9 +288,8 @@
                   "inheritStyle": "primary",
                   "note": "from +£59",
                   "minHeight": {
-                    "desktop": 56
+                    "desktop": "56px"
                   },
-                  "minHeightUnit": "px",
                   "widthType": {
                     "desktop": "full"
                   },

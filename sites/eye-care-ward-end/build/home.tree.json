@@ -145,8 +145,9 @@
           "textColour": "text-inverse",
           "textWrap": "pretty",
           "className": "sgs-hero__headline cr-ref-home-2",
-          "maxWidth": 15,
-          "maxWidthUnit": "ch",
+          "maxWidth": {
+            "desktop": "15ch"
+          },
           "margin": {
             "desktop": {
               "bottom": "0"
@@ -190,8 +191,9 @@
           },
           "fontSizeUnit": "px",
           "textColour": "#F0EBE3",
-          "maxWidth": 47,
-          "maxWidthUnit": "ch",
+          "maxWidth": {
+            "desktop": "47ch"
+          },
           "margin": {
             "desktop": {
               "top": "22px",
@@ -1736,8 +1738,9 @@
                   },
                   "lineHeightUnit": "unitless",
                   "textWrap": "pretty",
-                  "maxWidth": 566,
-                  "maxWidthUnit": "px",
+                  "maxWidth": {
+                    "desktop": "566px"
+                  },
                   "margin": {
                     "desktop": {
                       "bottom": "0"
@@ -1755,8 +1758,9 @@
                 "desktop": 16.5
               },
               "fontSizeUnit": "px",
-              "maxWidth": 47,
-              "maxWidthUnit": "ch",
+              "maxWidth": {
+                "desktop": "47ch"
+              },
               "text": "I'm an optician who genuinely enjoys this part of the job — finding people frames that suit them. This shop exists so I can show you the whole range properly instead of scrolling a supplier's catalogue at the counter, and because I'd rather price frames fairly than squeeze the most out of every sale.",
               "textColour": "#E2DCD3",
               "textWrap": "pretty",
@@ -3631,8 +3635,9 @@
                 "desktop": 13.5
               },
               "fontSizeUnit": "px",
-              "maxWidth": 26,
-              "maxWidthUnit": "ch",
+              "maxWidth": {
+                "desktop": "26ch"
+              },
               "textColour": "#6B655E",
               "textWrap": "pretty",
               "className": "cr-ref-home-70"
@@ -3717,8 +3722,9 @@
                 }
               },
               "textWrap": "pretty",
-              "maxWidth": 622,
-              "maxWidthUnit": "px",
+              "maxWidth": {
+                "desktop": "622px"
+              },
               "className": "cr-ref-home-73"
             }
           },

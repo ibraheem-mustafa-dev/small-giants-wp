@@ -852,8 +852,9 @@
       "maxWidth": "large",
       "modalBackground": "surface",
       "modalRef": 461,
-      "dialogWidth": "720",
-      "dialogWidthUnit": "px",
+      "dialogWidth": {
+        "desktop": "720px"
+      },
       "borderWidth": {
         "top": "1px",
         "right": "1px",
