@@ -283,7 +283,7 @@ The off-canvas drawer is a member of the CPT family this spec owns (§5). **Admi
 **Non-destructive property:** with no Active drawer pointer set, `get_active_content()` returns `''` and `Sgs_Drawer_Render` emits nothing, so page output is unchanged. `wp sgs drawer clear-active` reverts the binding.
 
 #### FR-37-2 — "Set as active" action and stored pointer
-A row action + editor action on each CPT writes a global option: `sgs_active_header_cpt_id` / `sgs_active_footer_cpt_id` / `sgs_active_drawer_cpt_id`. Setting a new active post clears the previous one (single active per type). The pointers are single global options, so one install has one Active header; a second client's header needs its own site (the Indus test site).
+A row action + editor action on each CPT writes a global option: `sgs_active_header_cpt_id` / `sgs_active_footer_cpt_id` / `sgs_active_drawer_cpt_id`. Setting a new active post clears the previous one (single active per type). The pointers are single global options, so one install has one Active header; a second client's header needs its own site (the Indus test site). A client's test site exists only to receive its clone, so the clone owns every site-wide setting it builds there: the site build points each active header, footer and drawer at the clone's post whichever post it named before (Bean 2026-10-27; Spec 48 R-48-2 and §12). `eye-care-test` (darkcyan) is the one exception, a read-only reference the clone never writes.
 
 **Status:** `BUILT` — `plugins/sgs-blocks/includes/class-sgs-active-layout.php::set_active` / `::clear_active` (single-active enforced structurally by one option holding one id) + `class-sgs-active-layout-admin.php` ("Set as active" row action, nonce + `edit_theme_options` gated).
 
@@ -754,7 +754,7 @@ Header, footer and drawer posts are template-locked so each contains exactly its
 
 **Mechanism.** WordPress applies a post-type `template` once, from the editor's `setupEditor` action, gated on `post.status === 'auto-draft'` (`setupEditor`, WordPress core `wp-includes/js/dist/editor.js`), so it does not re-apply on saved posts — unlike the block-level `useInnerBlockTemplateSync` path of §3.3a, which re-applies on every mount under `templateLock: 'all'`. Evidence and cited bundle symbols: `.claude/reports/2026-09-17-fr37-46-verification-spike.md`.
 
-**Status:** `BUILT`. The build tool refuses a header or footer tree without its one root block and that block's three slotted rows, read from each container's `edit.js::TEMPLATE` (`scripts/lib/surface-tree-shape.js`, wired in `scripts/wp-build-page.js`; `scripts/computed-route/tests/wp-build-page-surface-shape.test.mjs`).
+**Status:** `BUILT`. The build tool refuses a header or footer tree without its one root block and that block's three slotted rows, read from each container's `TEMPLATE` (`plugins/sgs-blocks/src/blocks/site-header/edit.js::TEMPLATE`, `plugins/sgs-blocks/src/blocks/site-footer/edit.js::TEMPLATE`) (`scripts/lib/surface-tree-shape.js`, wired in `scripts/wp-build-page.js`; `scripts/computed-route/tests/wp-build-page-surface-shape.test.mjs`).
 
 **Done when:** a new post of any of the three types opens with the locked block already present and populated by its own template default; no other block can be inserted as a sibling or appended below it **in the block-editor UI** (the REST case is the named gap above, not a Done-when criterion).
 
@@ -818,7 +818,7 @@ One shared registration class (`plugins/sgs-blocks/includes/class-sgs-block-cpts
 | `sgs_modal` | Modals | Reusable modal content, referenced by a `sgs/modal` block's `modalRef` attribute | None — see `_sgs_is_default` below | No | None |
 | `sgs_form`, `sgs_choice_flow` | Forms, Choice Flows | Form / branching-quiz definitions | None | No | None — owned by Specs 42 and 43; they use their own capability (`edit_sgs_forms`) |
 
-The Active pointers are single global options: one install has one Active header, footer and drawer, so a second client's header needs its own site (the Indus test site is separate from the sandybrown canary). The pointers are read through `Sgs_Active_Layout`, never with a raw option write.
+The Active pointers are single global options: one install has one Active header, footer and drawer, so a second client's header needs its own site (the Indus test site is separate from the sandybrown canary). The pointers are read through `Sgs_Active_Layout`, never with a raw option write. A client's test site exists only to receive its clone, so the clone owns every site-wide setting it builds there: the site build points each active header, footer and drawer at the clone's post whichever post it named before (Bean 2026-10-27; Spec 48 R-48-2 and §12). `eye-care-test` (darkcyan) is the one exception, a read-only reference the clone never writes.
 
 ### 5.2 Shared admin machinery
 

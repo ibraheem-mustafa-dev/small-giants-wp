@@ -93,6 +93,11 @@ The wrapper block that handles the entire form lifecycle.
 | `paymentAmount` | string | **Not built.** Fixed amount or field reference (e.g., "{field:estimated_spend}") |
 | `paymentDescription` | string | **Not built.** Stripe payment description |
 
+### Submit button and layout
+
+- **The form's own submit button.** A form whose blocks include an `sgs/button` with `isSubmit` (at any depth) leaves out its built-in submit button, and leaves out the actions row too when nothing else is in it; a multi-step form keeps its Previous and Next (`plugins/sgs-blocks/includes/helpers-form-own-submit.php::sgs_form_has_own_submit`, read by the form's `render.php`; editor mirror `plugins/sgs-blocks/src/blocks/form/form-own-submit.js::hasOwnSubmit`). Test: `scripts/computed-route/tests/form-own-submit.test.mjs` (drives the real `render.php` through `plugins/sgs-blocks/tests/php/run-form-own-submit-standalone.php`; 15 of 15 mutations killed).
+- **Layout.** From a 560px-wide form (a container query, not the viewport) `.sgs-form__inner` and `.sgs-form-step` are a six-track grid. Every child spans the whole row by default (a zero-specificity `:where()` rule), so a heading, text, a container of fields or a button never shrinks to one track; a field's half or third width and a block's own column setting win (`plugins/sgs-blocks/src/blocks/form/style.css`).
+
 ### Multi-Step Behaviour
 
 When the form contains `sgs/form-step` inner blocks:
