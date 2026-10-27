@@ -110,5 +110,26 @@
     "tier": "mobile",
     "default": "off",
     "expect": { "value": "off", "inherited": true }
+  },
+  {
+    "name": "Case 17: an empty-string mobile value inherits the tablet value, as the length emitter does",
+    "value": { "desktop": "240px", "tablet": "60%", "mobile": "" },
+    "tier": "mobile",
+    "default": null,
+    "expect": { "value": "60%", "inherited": true }
+  },
+  {
+    "name": "Case 18: an empty-string tablet value inherits desktop",
+    "value": { "desktop": "240px", "tablet": "" },
+    "tier": "tablet",
+    "default": null,
+    "expect": { "value": "240px", "inherited": true }
+  },
+  {
+    "name": "Case 19: an empty-string desktop value falls to the default",
+    "value": { "desktop": "", "mobile": "50%" },
+    "tier": "desktop",
+    "default": "auto",
+    "expect": { "value": "auto", "inherited": true }
   }
 ]

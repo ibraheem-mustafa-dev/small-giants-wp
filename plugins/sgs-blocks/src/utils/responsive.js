@@ -78,8 +78,10 @@ export function resolveTier( value, tier = 'desktop', defaultValue ) {
 		return { value: defaultValue, inherited: true };
 	}
 
-	// Determine if a value marks inheritance: 'inherit', null, or undefined.
-	const isInherit = ( v ) => v === 'inherit' || v === null || v === undefined;
+	// Determine if a value marks inheritance: 'inherit', null, undefined, or an empty string (no control stores '' as a
+	// value - each clears a device by deleting it - and the length emitter, sgs_emit_responsive_css, inherits on '').
+	const isInherit = ( v ) =>
+		v === 'inherit' || v === null || v === undefined || v === '';
 
 	if ( tier === 'desktop' ) {
 		// Desktop: coerce inherit to defaultValue deterministically (§6b guard).

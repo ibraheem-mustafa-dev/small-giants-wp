@@ -661,9 +661,10 @@ if ( ! function_exists( 'sgs_resolve_tier' ) ) {
 			);
 		}
 
-		// Determine if a value marks inheritance: 'inherit', null, or missing key.
+		// Determine if a value marks inheritance: 'inherit', null, a missing key, or an empty string (no control stores
+		// '' as a value, and sgs_emit_responsive_css() inherits on '' too).
 		$is_inherit = function ( $v ) {
-			return 'inherit' === $v || null === $v;
+			return 'inherit' === $v || null === $v || '' === $v;
 		};
 
 		if ( 'desktop' === $tier ) {
@@ -785,7 +786,7 @@ if ( ! function_exists( 'sgs_emit_tier_rules_map' ) ) {
 	 * The binary helper could not express it: its `'on' === $state` test means
 	 * 'scrim' and 'none' would both fall to $css_off and paint identically.
 	 * Note that sgs_resolve_tier() itself needed no change — it is already
-	 * value-agnostic, treating only 'inherit'/null specially.
+	 * value-agnostic, treating only 'inherit'/null/'' specially.
 	 *
 	 * ⚠ The same rule applies here: CSS text is emitted verbatim, so a caller
 	 * must never pass per-instance absolute values destined for shared CSS.
@@ -845,7 +846,7 @@ if ( ! function_exists( 'sgs_resolve_on_tiers' ) ) {
 	 * Boolean absence-as-inherit semantics
 	 * are IDENTICAL to sgs_resolve_tier()'s null/absent-key-as-inherit rule —
 	 * an explicit `false` at a tier still means "off here", not "unset",
-	 * because sgs_resolve_tier() only treats `'inherit'`/`null`/missing as
+	 * because sgs_resolve_tier() only treats `'inherit'`/`null`/`''`/missing as
 	 * inherit, never a concrete `false`. Verified equivalent for the row
 	 * blocks' boolean-object shape (`$on_marker = true, $default = false`);
 	 * the SAME call also serves the tri-state string-enum shape used by
