@@ -11,11 +11,15 @@
 //   panel     a condition (`sc-if`) in a question's container after its options: a step the question opens underneath
 //             (FR-43-26), holding the panel's fields and a result; options and panels pair in order when their counts match.
 //   pieces    the flow's aside is the summary (FR-43-19); a close, skip, add-to-bag, continue or back button (by its handler or
-//             words, rules.choiceFlow patterns) is the flow's own setting; a heading outside the questions is the flow title.
+//             words, rules.choiceFlow patterns) is the flow's own setting.
+//   the rest  lib/skeleton-choice-flow-canvas.mjs: a choice between pressable buttons (a question where its buttons sit, with
+//             the step its revealing option opens), the summary line and stage note, and the canvas groups (blocks of the
+//             flow post beside the flow; a lone heading the flow title).
 // What the family cannot hold is never dropped: lib/skeleton-choice-flow-tree.mjs::settleFlowRows makes each rendered element
 // with words or a control outside every covered piece a gap row, and the notes and hand-overs here reach the review.
 import { specHit } from './skeleton-facts.mjs';
 import { brandOwnsAddress } from './brand-registry.mjs';
+import { toggleGroups, summaryOf as summaryLine, stageNoteOf, canvasOf } from './skeleton-choice-flow-canvas.mjs';
 
 const HEADING = /^h[1-6]$/;
 const FIELD_TAGS = new Set( [ 'input', 'select', 'textarea', 'sc-raw-select' ] );
@@ -131,9 +135,15 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		textHoles( [ pieces.add, ...t.desc( pieces.add ) ] ).some( ( x ) => x.vals?.v.some( price ) ) && ( addAttrs.buttonShowsTotal = true );
 	}
 
-	// The steps: each question, then the steps its panels open.
+	// The steps: each question, then the steps its panels open; a choice between pressable buttons is a question where its
+	// buttons sit, followed by what its revealing option shows (lib/skeleton-choice-flow-canvas.mjs).
+	const x = { els, t, rec, real, literal, control, textHoles, firstValue, price, all, rootKey, loops, inQuestion };
+	const toggles = toggleGroups( x );
+	const shownBy = new Map();
+	toggles.forEach( ( g ) => g.reveal && questions.forEach( ( q ) => t.desc( g.reveal ).includes( q.loop.k ) && shownBy.set( q, g ) ) );
 	const counts = [];
-	questions.forEach( ( q, qi ) => {
+	const emitQuestion = ( q ) => {
+		const qi = questions.indexOf( q );
 		const heading = q.texts.find( ( k ) => HEADING.test( rec( k ).realTag ) ) ?? q.texts[ 0 ];
 		const at = q.texts.indexOf( heading );
 		const before = q.texts.slice( 0, Math.max( 0, at ) ).map( literal );
@@ -190,14 +200,7 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		out.steps.push( step );
 
 		// The steps the panels open underneath, paired with the options in order.
-		const made = q.panels.map( ( p, pi ) => {
-			const fields = t.desc( p ).filter( ( k ) => FIELD_TAGS.has( rec( k ).realTag ) && 'hidden' !== String( rec( k ).attrs?.type ?? '' ).toLowerCase() ).map( ( k ) => fieldOf( k, p ) ).filter( Boolean );
-			const texts = t.desc( p ).filter( ( k ) => real( k ) && literal( k ) ).map( literal );
-			const paras = t.desc( p ).filter( ( k ) => 'p' === rec( k ).realTag && literal( k ) ).map( literal );
-			const result = fields.length ? { heading: '', ...( paras.length ? { body: paras.join( ' ' ) } : {} ) } : { heading: texts[ 0 ] || '', ...( texts.length > 1 ? { body: texts.slice( 1 ).join( ' ' ) } : {} ) };
-			cover( p, `${ name }, the step its option ${ pi + 1 } opens underneath` );
-			return { key: p, label: stripped, fields, result: { ...result, action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) } };
-		} );
+		const made = q.panels.map( ( p, pi ) => panelStep( p, stripped, `${ name }, the step its option ${ pi + 1 } opens underneath` ) );
 		if ( made.length ) {
 			question.showNextStepInline = true;
 			if ( made.length === question.options.length ) {
@@ -207,7 +210,42 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 			}
 			out.steps.push( ...made );
 		}
-	} );
+	};
+	// A panel a question opens: a step holding the panel's fields and a result worded by its texts.
+	function panelStep( p, label, why ) {
+		const fields = t.desc( p ).filter( ( k ) => FIELD_TAGS.has( rec( k ).realTag ) && 'hidden' !== String( rec( k ).attrs?.type ?? '' ).toLowerCase() ).map( ( k ) => fieldOf( k, p ) ).filter( Boolean );
+		const texts = t.desc( p ).filter( ( k ) => real( k ) && literal( k ) ).map( literal );
+		const paras = t.desc( p ).filter( ( k ) => 'p' === rec( k ).realTag && literal( k ) ).map( literal );
+		const result = fields.length ? { heading: '', ...( paras.length ? { body: paras.join( ' ' ) } : {} ) } : { heading: texts[ 0 ] || '', ...( texts.length > 1 ? { body: texts.slice( 1 ).join( ' ' ) } : {} ) };
+		cover( p, why );
+		return { key: p, label, fields, result: { ...result, action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) } };
+	}
+	// A choice between pressable buttons: one option per button; the revealing option opens what it reveals underneath and
+	// every other option goes past it.
+	const past = [];
+	const emitToggle = ( g ) => {
+		const name = `the choice between the pressable buttons in ${ g.parent }`;
+		const question = { question: '', options: g.options.map( ( o ) => ( { label: o.label, value: slug( o.label ), ...( o.description ? { description: o.description } : {} ), ...( o.isDefault ? { isDefault: true } : {} ) } ) ) };
+		out.notes.push( `${ name } has no words of its own: write its question in the editor` );
+		g.options.some( ( o ) => ! o.label ) && out.notes.push( `${ name }: an option has no words: write its label in the editor` );
+		g.prices.length && out.handovers.push( { owner: 'product-data', kind: 'text', detail: `${ name }: the option prices (${ g.prices.join( ', ' ) }) are the product's own prices (FR-43-10): set them on the product` } );
+		g.buttons.forEach( ( b ) => cover( b, `${ name }, sgs/choice-flow-question` ) );
+		out.steps.push( { key: g.parent, label: '', question, fields: [] } );
+		if ( ! g.reveal ) {
+			return;
+		}
+		const at = out.steps.length;
+		const shown = questions.filter( ( q ) => shownBy.get( q ) === g );
+		shown.length ? shown.forEach( emitQuestion ) : out.steps.push( panelStep( g.reveal, '', `${ name }, the step its option opens underneath` ) );
+		cover( g.reveal, `${ name }, the step its option opens underneath` );
+		question.showNextStepInline = true;
+		question.options.forEach( ( o, i ) => {
+			o.nextStepId = String( g.buttons[ i ] === g.revealer ? at : out.steps.length );
+			g.buttons[ i ] !== g.revealer && past.push( { o, name } );
+		} );
+	};
+	[ ...questions.filter( ( q ) => ! shownBy.has( q ) ).map( ( q ) => ( { at: t.num( q.box ), q } ) ), ...toggles.map( ( g ) => ( { at: t.num( g.buttons[ 0 ] ), g } ) ) ]
+		.sort( ( a, b ) => a.at - b.at ).forEach( ( u ) => ( u.q ? emitQuestion( u.q ) : emitToggle( u.g ) ) );
 
 	// A field of a panel: its block (rules.formControl by rendered type; a declared numeric input mode is a number field) and label.
 	function fieldOf( k, panel ) {
@@ -242,6 +280,11 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 	if ( pieces.add && ! out.steps.some( ( s ) => s.result ) ) {
 		out.steps.push( { key: pieces.add, label: '', fields: [], result: { heading: '', action: 'add-to-bag', ...addAttrs } } );
 	}
+	// An option that goes past a revealed step needs a step there.
+	past.filter( ( p ) => Number( p.o.nextStepId ) >= out.steps.length ).forEach( ( p ) => {
+		delete p.o.nextStepId;
+		out.notes.push( `${ p.name }: the option "${ p.o.label }" goes past the step another option opens, and no step follows it: set its next step` );
+	} );
 	! questions.length && out.notes.push( `no question found under the flow root ${ rootKey }: no loop of options whose button's handler binds the loop item` );
 
 	// The flow's own settings.
@@ -281,8 +324,21 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		summaryOf( aside );
 		cover( aside, 'the flow summary (sgs/choice-flow showPricePanel, FR-43-19)' );
 	}
-	const title = all.find( ( k ) => ! out.covered.has( k ) && HEADING.test( rec( k ).realTag ) && literal( k ) );
-	title && ( A.title = literal( title ), cover( title, 'the flow title (sgs/choice-flow title)' ) );
+	// With no aside, a live line naming the picks is the summary; with the summary shown, the note after the last control is
+	// its stage note; the rest with words and no control is the flow post's own blocks beside the flow, a lone heading its title.
+	const summary = aside ? null : summaryLine( x, { covered: out.covered, steps: out.steps } );
+	if ( summary ) {
+		A.showPricePanel = true;
+		boxes.length && ( A.summaryPosition = t.num( summary.panel ) < t.num( boxes[ 0 ] ) ? 'start' : 'end' );
+		cover( summary.panel, 'the flow summary (sgs/choice-flow showPricePanel, FR-43-19): its live line of the picks; Fill reads its look' );
+	}
+	const note = A.showPricePanel && ! A.stageNote ? stageNoteOf( x, { covered: out.covered } ) : null;
+	note && ( A.stageNote = words( note ), cover( note, 'the note after the flow\'s last control (sgs/choice-flow stageNote, shown in the summary)' ) );
+	const firstStep = Math.min( Infinity, ...out.steps.filter( ( s ) => s.question && els[ s.key ] ).map( ( s ) => t.num( s.key ) ) );
+	const canvas = canvasOf( x, { covered: out.covered, firstStep } );
+	canvas.title && ( A.title = literal( canvas.title ), cover( canvas.titleGroup, 'the flow title (sgs/choice-flow title)' ) );
+	canvas.canvas.forEach( ( c ) => cover( c.key, `a block of the flow post ${ c.at } sgs/choice-flow (Spec 48 R-47-12)` ) );
+	out.canvas = canvas.canvas;
 
 	// The summary's running lines (its base row and the placeholder row before the first choice) and its help note.
 	function summaryOf( k ) {
