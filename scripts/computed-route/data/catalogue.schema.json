@@ -47,7 +47,8 @@
               "properties": {
                 "id": { "type": "integer", "minimum": 1 },
                 "permalink": { "type": "string" },
-                "variations": { "type": "integer", "minimum": 0 }
+                "variations": { "type": "integer", "minimum": 0 },
+                "photoToCome": { "const": true, "description": "The product carries the photo-to-come image (the draft gave none): `_sgs_photo_to_come` on the product; a real photo replaces it." }
               }
             }
           }
