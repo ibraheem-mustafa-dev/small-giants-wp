@@ -546,10 +546,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The navigation element of the surface whose block draws its own collapsed-navigation opener (the block holds a collapse
 	// setting: rules.navigation.collapseAttribute), or null.
 	const burgerNav = () => m.els.find( ( n ) => 'nav' === n.tag && ! m.isPart( n ) && R.navigation?.collapseAttribute?.[ hooks.topBlock( n ) ] ) ?? null;
-	// A button or link whose click handler is named in the recorded opener of a drawer surface: it opens that drawer.
+	// The state keys a button or link's click handler (a renderVals key of its component) writes with an opening value, a
+	// toggle included (lib/skeleton-handler-opens.mjs); an empty Set for any other element or a client with no draft folder.
+	const handlerKeys = ( e ) => ( [ 'a', 'button' ].includes( e.tag ) && facts.repo && facts.client
+		? handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
+		: new Set() );
+	// A button or link that opens a drawer surface: its click handler writes a state key one of the drawer's surfaces.json
+	// states holds at true, or the handler is named in the drawer's recorded opener words.
 	const opensDrawer = ( e ) => {
 		const h = handlerOf( e );
-		return !! h && [ 'a', 'button' ].includes( e.tag ) && Object.values( view.surfaces ).some( ( s ) => 'drawer' === s.kind && String( view.openers[ s.id ] || '' ).split( /[^\w$]+/ ).includes( h ) );
+		if ( ! h || ! [ 'a', 'button' ].includes( e.tag ) ) {
+			return false;
+		}
+		const keys = handlerKeys( e );
+		return Object.values( view.surfaces ).some( ( s ) => 'drawer' === s.kind && ( opensOn( s, keys ) || String( view.openers[ s.id ] || '' ).split( /[^\w$]+/ ).includes( h ) ) );
 	};
 	// The drawers the page map hands to another row's block that names its owning block (rules.blockOwnedPart), found once for
 	// a header surface (the block's trigger is the site-wide control the header carries; a page's own link to the same drawer,
@@ -560,10 +570,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The block-owned drawer a button or link opens: its click handler (a renderVals key of its component) writes a state key
 	// that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or null.
 	const opensOwnedDrawer = ( e ) => {
-		if ( ! ownedDrawers.length || ! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo || ! facts.client ) {
+		if ( ! ownedDrawers.length ) {
 			return null;
 		}
-		const keys = handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } );
+		const keys = handlerKeys( e );
 		return ownedDrawers.find( ( d ) => opensOn( d.surface, keys ) ) ?? null;
 	};
 	// The owning block's trigger settings drawn from the control (the entry's `trigger` names the block's settings): words

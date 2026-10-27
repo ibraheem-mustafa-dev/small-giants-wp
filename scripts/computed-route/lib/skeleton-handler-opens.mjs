@@ -1,4 +1,4 @@
-// Which surface a control's click handler opens (Spec 48 FR-48-6, the `blockPartOpener` standing rule), read from the draft's
+// Which surface a control's click handler opens (Spec 48 FR-48-6, the `blockPartOpener` and `drawerOpener` standing rules), read from the draft's
 // logic syntax tree, never run and never matched by a name: the handler is a renderVals key; the `this.setState(…)` calls
 // inside its value write component state keys (an object literal, or a function returning one); a key written with a value
 // that is not a falsy literal (false, null, undefined, 0, '') opens. A surface opens on that key when one of its
