@@ -1,12 +1,12 @@
 {
-	"generatedAt": "2026-10-17T14:48:10.805Z",
+	"generatedAt": "2026-10-27T13:02:55.586Z",
 	"total": 13,
 	"violations": 0,
 	"findings": [
 		{
 			"file": "src/blocks/account/edit.js",
 			"block": "sgs/account",
-			"line": 191,
+			"line": 319,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -17,7 +17,7 @@
 		{
 			"file": "src/blocks/before-after/edit.js",
 			"block": "sgs/before-after",
-			"line": 975,
+			"line": 946,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -30,7 +30,7 @@
 		{
 			"file": "src/blocks/brand-strip/edit.js",
 			"block": "sgs/brand-strip",
-			"line": 1001,
+			"line": 1188,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -42,7 +42,7 @@
 		{
 			"file": "src/blocks/business-info/edit.js",
 			"block": "sgs/business-info",
-			"line": 557,
+			"line": 933,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -65,7 +65,7 @@
 		{
 			"file": "src/blocks/google-rating-badge/edit.js",
 			"block": "sgs/google-rating-badge",
-			"line": 429,
+			"line": 630,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -87,7 +87,7 @@
 		{
 			"file": "src/blocks/nav-bar-menu/edit.js",
 			"block": "sgs/nav-bar-menu",
-			"line": 945,
+			"line": 964,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -109,7 +109,7 @@
 		{
 			"file": "src/blocks/nav-drawer-menu/edit.js",
 			"block": "sgs/nav-drawer-menu",
-			"line": 799,
+			"line": 802,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -120,7 +120,7 @@
 		{
 			"file": "src/blocks/product-card/edit.js",
 			"block": "sgs/product-card",
-			"line": 3410,
+			"line": 3440,
 			"wrapped": true,
 			"ancestors": [
 				"",
@@ -131,7 +131,7 @@
 		{
 			"file": "src/blocks/responsive-logo/edit.js",
 			"block": "sgs/responsive-logo",
-			"line": 867,
+			"line": 846,
 			"wrapped": true,
 			"ancestors": [
 				"",
