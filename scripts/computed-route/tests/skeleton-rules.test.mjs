@@ -146,6 +146,23 @@ test( 'openStatus and hoursRows: a live open line is the open-status display, th
 	assert.notEqual( row( run( tree, { facts: facts( 'hoursRows' ) } ), ( x ) => 'div' === x.tag && x.depth === 1 ).rule, 'hoursRows' );
 } );
 
+test( 'MUST FAIL: a run of sibling hours rows is one hours display (the first row), the later rows absorbed into it; a row in another list is its own display', () => {
+	const dayRow = ( day, time ) => E( 'div', { display: 'flex' }, [ E( 'span', { words: day } ), E( 'span', { words: time } ) ] );
+	const tree = section( [
+		E( 'div', { display: 'flex', words: '' }, [ dayRow( 'Monday – Thursday', '9:30am – 5pm' ), dayRow( 'Friday', '9:30am – 12pm, 2:30 – 5pm' ), dayRow( 'Saturday', '10am – 3pm' ), dayRow( 'Sunday', 'Closed 9am' ) ] ),
+		E( 'div', { display: 'flex' }, [ dayRow( 'Tuesday', '8am – 6pm' ) ] ),
+	] );
+	const r = run( tree );
+	const rows = r.proposal.rows.filter( ( x ) => 'div' === x.tag && 2 === x.depth );
+	assert.equal( rows.length, 5 );
+	const shown = rows.filter( ( x ) => 'sgs/business-info' === x.block );
+	assert.deepEqual( shown.map( ( x ) => [ x.attributes.displayType, x.rule ] ), [ [ 'hours', 'hoursRows' ], [ 'hours', 'hoursRows' ] ], 'one display per list of rows' );
+	const later = rows.filter( ( x ) => 'absorbed' === x.action && 'hoursRows' === x.rule );
+	assert.equal( later.length, 3 );
+	assert.ok( later.every( ( x ) => x.into === shown[ 0 ].key ), 'each later row is absorbed into the first row of its list' );
+	assert.equal( byWords( r, 'Tuesday' ).action, 'absorbed', 'the other list\'s row text belongs to its own display' );
+} );
+
 test( 'pillButton and wholeCardLink: a label and an icon is one button reading Site Info; two pieces of text are a linked card; MUST FAIL without each', () => {
 	const pill = E( 'a', { attrs: { href: 'tel:01217714330' } }, [ E( 'span', {}, [ svg() ] ), E( 'span', { words: '0121 771 4330' } ) ] );
 	const card = E( 'a', { attrs: { href: 'mailto:sales@example.co.uk' } }, [ E( 'span', { words: 'Email us' } ), E( 'span', { words: 'We reply within a day' } ) ] );

@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/skeleton-rules.mjs", "find": "return first ? v( 'hoursRows', { action: 'absorbed', into: first.key } ) :", "replace": "return false ? v( 'hoursRows', { action: 'absorbed', into: first.key } ) :", "why": "every hours row is its own whole-week display again (the repeated table)" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "x.parentKey === e.parentKey && m.els.indexOf( x ) < order && isRow( x )", "replace": "m.els.indexOf( x ) < order && isRow( x )", "why": "a row of another list is absorbed into the first list's display" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "x.parentKey === e.parentKey && m.els.indexOf( x ) < order && isRow( x )", "replace": "x.parentKey === e.parentKey && isRow( x )", "why": "the first row finds itself and is absorbed into itself" }
+]
