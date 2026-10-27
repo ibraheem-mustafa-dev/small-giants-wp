@@ -16,9 +16,10 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_submission_name;
 
 $fid         = field_id( $attributes['fieldName'] ?? 'unnamed' );
-$field_name  = $attributes['fieldName'] ?? '';
+$field_name  = field_submission_name( $fid, $attributes );
 $required    = ! empty( $attributes['required'] );
 $max         = absint( $attributes['maxSize'] ?? 10 );
 $upload_text = $attributes['uploadText'] ?? '';
@@ -72,10 +73,10 @@ echo '</div>';
 echo '<div class="sgs-form-file__progress" hidden>' . esc_html__( 'Uploading…', 'sgs-blocks' ) . '</div>';
 echo '<div class="sgs-form-file__preview" hidden></div>';
 
-// Hidden input stores the attachment ID returned by the upload endpoint.
+// The upload script writes the attachment ID to data-file-id and the form sends it in fileIds. No name: the
+// carrier is not a field and never submits a value of its own.
 printf(
-	'<input type="hidden" name="%s_id" value="" data-file-id="" data-file-field="%s" />',
-	esc_attr( $field_name ),
+	'<input type="hidden" value="" data-file-id="" data-file-field="%s" />',
 	esc_attr( $field_name )
 );
 

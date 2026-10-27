@@ -255,14 +255,23 @@ const { state } = store( 'sgs/form', {
 						continue;
 					}
 
-					// Handle multiple values (checkboxes, tiles).
-					if ( fields[ key ] ) {
-						if ( ! Array.isArray( fields[ key ] ) ) {
-							fields[ key ] = [ fields[ key ] ];
+					// A file travels through the upload endpoint and fileIds; JSON cannot carry it.
+					if ( 'undefined' !== typeof File && value instanceof File ) {
+						continue;
+					}
+
+					// A list control (checkboxes, multi-select tiles) is named "<name>[]": it submits as a list
+					// under "<name>", the key pattern the submit endpoint accepts.
+					const isList = key.endsWith( '[]' );
+					const name = isList ? key.slice( 0, -2 ) : key;
+
+					if ( Object.prototype.hasOwnProperty.call( fields, name ) ) {
+						if ( ! Array.isArray( fields[ name ] ) ) {
+							fields[ name ] = [ fields[ name ] ];
 						}
-						fields[ key ].push( value );
+						fields[ name ].push( value );
 					} else {
-						fields[ key ] = value;
+						fields[ name ] = isList ? [ value ] : value;
 					}
 				}
 

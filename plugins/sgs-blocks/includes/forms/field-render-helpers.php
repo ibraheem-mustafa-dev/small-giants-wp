@@ -94,9 +94,10 @@ function field_open( array $attributes, string $type, string $extra_class = '' )
 		$operator = $attributes['conditionalOperator'] ?? 'equals';
 		$value    = $attributes['conditionalValue'] ?? '';
 
+		// The watched field submits under its fieldName cleaned by sanitize_key() (field_submission_name()).
 		$data_attrs = sprintf(
 			' data-conditional-field="%s" data-conditional-operator="%s" data-conditional-value="%s"',
-			esc_attr( $conditional_field ),
+			esc_attr( sanitize_key( (string) $conditional_field ) ),
 			esc_attr( $operator ),
 			esc_attr( $value )
 		);
@@ -218,6 +219,50 @@ function field_id( string $field_name ): string {
 }
 
 /**
+ * The name a field submits under (Spec 04, Field Blocks — Common Attributes): the one naming rule every
+ * form-field-* render.php uses.
+ *
+ * 1. fieldName, cleaned by sanitize_key(), used as written.
+ * 2. Otherwise the label's slug ("Enquiry type" becomes "enquiry-type"), cut to 48 characters.
+ * 3. Otherwise "field-" plus the field's unique id number (field_id()).
+ *
+ * A derived name (2 or 3) never repeats one already used on the page: a second "Email" becomes "email-2", so two
+ * unnamed radio groups never merge into one. Every result passes the key pattern
+ * Form_Rest_Submission::validate_fields() accepts; a control holding a list appends "[]", which the form runtime
+ * strips before it submits.
+ *
+ * @param string $field_id   Field ID (from field_id()).
+ * @param array  $attributes Block attributes (fieldName, label).
+ * @return string Submission name, never empty.
+ */
+function field_submission_name( string $field_id, array $attributes ): string {
+	static $taken = array();
+
+	$explicit = substr( sanitize_key( (string) ( $attributes['fieldName'] ?? '' ) ), 0, 64 );
+	if ( '' !== $explicit ) {
+		$taken[ $explicit ] = true;
+		return $explicit;
+	}
+
+	// A label that only slugs to percent-encoded bytes (a non-Latin script) names nothing readable.
+	$slug = sanitize_title( (string) ( $attributes['label'] ?? '' ) );
+	$base = false === strpos( $slug, '%' ) ? trim( substr( sanitize_key( $slug ), 0, 48 ), '-_' ) : '';
+	if ( '' === $base ) {
+		$base = 'field-' . preg_replace( '/^sgs-field-/', '', sanitize_key( $field_id ) );
+	}
+
+	$name = $base;
+	$n    = 2;
+	while ( isset( $taken[ $name ] ) ) {
+		$name = $base . '-' . $n;
+		++$n;
+	}
+	$taken[ $name ] = true;
+
+	return $name;
+}
+
+/**
  * Build input attributes string.
  *
  * Generates all common input attributes (id, name, placeholder,
@@ -233,20 +278,11 @@ function field_id( string $field_name ): string {
  * @return string Space-separated attribute string.
  */
 function field_input_attrs( string $field_id, array $attributes, bool $with_value = true ): string {
-	$field_name  = $attributes['fieldName'] ?? '';
 	$placeholder = $attributes['placeholder'] ?? '';
 	$required    = ! empty( $attributes['required'] );
 	$help_text   = $attributes['helpText'] ?? '';
 
-	// Derive the submission key from fieldName when set, otherwise fall back to
-	// the field_id value (which is already unique per page) so that name="" is
-	// never empty — an empty name means the field is silently excluded from POST.
-	$field_slug = sanitize_key( $field_name );
-	if ( '' === $field_slug ) {
-		// field_id() prefixes with 'sgs-field-'; strip it to get the raw slug.
-		$field_slug = preg_replace( '/^sgs-field-/', '', $field_id );
-	}
-	$submission_name = 'sgs-field-' . $field_slug;
+	$submission_name = field_submission_name( $field_id, $attributes );
 
 	$attrs = array(
 		'id="' . esc_attr( $field_id ) . '"',
