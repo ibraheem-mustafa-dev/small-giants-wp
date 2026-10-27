@@ -250,7 +250,11 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 				return;
 			}
 			const d = inst.baseKey ? chunkBase[ inst.baseKey ] : chunkDefault[ inst.variant ];
-			const reads = pickPass( passes, n, d );
+			// A style instance's pass is the one where its setting is reached (lib/calibrate.mjs::slotFor on that pass).
+			const reached = inst.row && ! inst.content && inst.marker
+				? ( r ) => ! slotFor( inst.row, inst.marker, at( d, r ), at( n, r ), { own: stateTarget( block, inst.row ) } ).dead
+				: null;
+			const reads = pickPass( passes, n, d, reached );
 			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
 		} );
 		done++;

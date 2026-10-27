@@ -75,3 +75,13 @@ test( 'MUST FAIL (the basket never fills or never empties): setBasket adds the l
 		await browser.close();
 	}
 } );
+
+test( 'MUST FAIL (wishlist row settings always dead): with a judge, a pass counts only where the setting itself is reached, not where anything differs', () => {
+	// The empty pass differs only in an unrelated property (the marked panel drops a default rule); the seeded pass
+	// changes the setting's own colour.
+	const empty = Object.assign( Object.fromEntries( WIDTHS.map( ( w ) => [ w, [ { '': { margin: '0px', color: 'red' } }, { '': { margin: '4px', color: 'red' } } ] ] ) ), { hoverMissed: [], scrolled: {} } );
+	const full = pass( true );
+	const colourReached = ( reads ) => WIDTHS.some( ( w ) => reads[ w ]?.[ 1 ]?.[ '' ]?.color !== reads[ w ]?.[ 0 ]?.[ '' ]?.color );
+	assert.equal( pickPass( [ empty, full ], 1, 0 ), empty, 'control: without a judge any difference keeps the first pass' );
+	assert.equal( pickPass( [ empty, full ], 1, 0, colourReached ), full );
+} );

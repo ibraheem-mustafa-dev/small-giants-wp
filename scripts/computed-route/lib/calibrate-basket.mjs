@@ -68,14 +68,16 @@ export function markerShows( reads, n, d ) {
 	return WIDTHS.some( ( w ) => JSON.stringify( reads[ w ]?.[ n ] ?? null ) !== JSON.stringify( reads[ w ]?.[ d ] ?? null ) );
 }
 
-// The read pass instance n keeps: the empty-basket pass when its marker shows there, else the full-basket pass when it
-// shows there, else the empty-basket pass. A state instance read under its trigger counts only when the trigger worked.
-export function pickPass( passes, n, d ) {
+// The read pass instance n keeps: the first pass when its marker shows there, else the second when it shows there, else
+// the first. `reached( reads )`, when given, judges whether the setting itself is reached in a pass (its own property
+// changed); without it any difference from the default counts, which also counts a marked instance that only dropped a
+// default rule. A state instance read under its trigger counts only when the trigger worked.
+export function pickPass( passes, n, d, reached = null ) {
 	const [ first, second ] = passes;
 	if ( ! second ) {
 		return first;
 	}
-	const shows = ( r ) => ! r.hoverMissed.includes( n ) && markerShows( r, n, d );
+	const shows = ( r ) => ! r.hoverMissed.includes( n ) && ( reached ? reached( r ) : markerShows( r, n, d ) );
 	if ( shows( first ) ) {
 		return first;
 	}
