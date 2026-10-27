@@ -49,3 +49,10 @@ test( 'MUST FAIL: a page-file draft takes no hash - its draft file (draftIndex) 
 	assert.equal( surfaceReach( { key: 'form-send', entry: { draftRoute: 'Contact.dc.html' }, skel: null, rows, routing: files } ).hash, '' );
 	assert.equal( surfaceReach( { key: 'contact', entry: {}, skel: null, rows, routing: { adapter: 'hash' } } ).hash, '#/Contact.dc.html', 'a hash draft keeps its route hash' );
 } );
+
+test( 'MUST FAIL: a surface the manifest marks noDraft (a WooCommerce page with no draft page) is skipped with its reason', () => {
+	const why = "no draft page: WooCommerce's own cart page keeps its block";
+	const r = surfaceReach( { key: 'cart', entry: { noDraft: why }, skel: null, rows: [ row( { slug: 'cart', route: null, template: 'cart' } ) ] } );
+	assert.equal( r.skip, why );
+	assert.equal( surfaceReach( { key: 'cart', entry: {}, skel: null, rows: [ row( { slug: 'cart', route: null, template: 'cart' } ) ] } ).skip, null, 'negative control: without the mark it is read' );
+} );
