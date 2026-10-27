@@ -122,6 +122,7 @@
           "_note": "Same composite wrapper grid capability as sgs/container (rendered via the shared SGS_Container_Wrapper, kind='layout'). Maps explicitly because this element declares no `prefix` — the default {prefix}{Suffix} convention cannot resolve a bare camelCase attribute (ROLLOUT REQUIREMENT 1). Members with no attribute on this block (display, order, overflow) remain honest gaps."
         },
         "header": {
+          "selector": ".sgs-accordion-item__header",
           "motion": false,
           "label": "Item header",
           "order": 3,
@@ -160,6 +161,7 @@
           "_note": "headerColour/headerBackground/headerFontWeight/headerGap/headerMinHeight style every accordion-item's header row via block context (providesContext). No independent header font-size or line-height control exists: both inherit from the accordion's own Typography panel, which reaches the header now that style.css holds no font-size or line-height hardcode on it, so the remaining text-cluster members are honest gaps. headerBackgroundGradient (colour-conformance preset-upgrade, 2026-09-06) bypasses the preset-slug mechanism entirely when set — see attribute description. headerBackgroundHover/HoverGradient (2026-09-06, FILL closeout) override the pre-existing hardcoded-default .sgs-accordion-item__header:hover rule in style.css. headerFontWeightOpen (2026-09-25) is a genuine third state ('open', not 'hover') — it paints the `[open]` attribute selector, the non-colour WCAG 1.4.1 signal alongside the open-state colour change — and overrides the pre-existing hardcoded-default open-state font-weight rule in style.css."
         },
         "icon": {
+          "selector": ".sgs-accordion-item__icon-open",
           "motion": false,
           "label": "Toggle icon",
           "order": 4,

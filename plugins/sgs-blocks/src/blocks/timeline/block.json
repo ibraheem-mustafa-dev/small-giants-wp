@@ -115,6 +115,7 @@
 					}
 				},
 				"connector": {
+					"selector": ".wp-block-sgs-timeline",
 					"motion": false,
 					"label": "Connector line / node",
 					"order": 3,

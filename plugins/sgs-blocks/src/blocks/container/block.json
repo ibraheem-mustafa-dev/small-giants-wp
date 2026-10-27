@@ -159,6 +159,7 @@
 					}
 				},
 				"grid-item": {
+					"selector": ".sgs-container__inner > *",
 					"motion": false,
 					"label": "Grid item",
 					"layer": "GRID_AREA",

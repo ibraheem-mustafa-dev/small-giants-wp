@@ -77,6 +77,7 @@
 					"_note": "The row (`.sgs-social-icons`, role list): a wrapping flex row of sgs/icon children. Gap per device, alignment along the row, Spacing padding and margin."
 				},
 				"shape": {
+					"selector": ".sgs-icon__shape",
 					"motion": false,
 					"label": "Icon shapes",
 					"order": 2,
@@ -123,6 +124,7 @@
 					"_note": "Group default glyph size (--sgs-si-size) for every child's `.sgs-icon__svg`."
 				},
 				"label": {
+					"selector": ".sgs-icon__label-text",
 					"motion": false,
 					"label": "Icon labels",
 					"order": 4,

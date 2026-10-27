@@ -220,6 +220,7 @@
 					"_note": "The `.sgs-nav-drawer-menu__indicator` sliding pill, view.js-animated behind the active/hovered item. It is rendered under `itemBgHoverTreatment === 'highlight'` and paints from the item Background row's OWN Hover swatch — `itemBgHover` / `itemBgHoverGradient`, claimed by the `item` element's `states.hover` (Spec 36 section 14 FR-41-25) — so this element routes no attribute of its own: one picker, one property, three ways of applying it. `clusters: [\"fill\"]` is retained (not `[]`) because the forward-resolution pass only visits a cluster's members when the cluster is declared; with an empty attrMap the fill members are honest GAPs, ungated and correct, since this element has no controls of its own. `supports.sgs.colourExemptions.indicator` records why it carries no hover state: style.css declares `.sgs-nav-drawer-menu__indicator { pointer-events: none; }`, so the element is structurally unhoverable."
 				},
 				"featured": {
+					"selector": ".sgs-nav-drawer-menu__item--featured .sgs-nav-drawer-menu__link",
 					"motion": false,
 					"label": "Featured item",
 					"order": 6,

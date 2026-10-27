@@ -258,6 +258,7 @@
 					"_note": "The Google rating badge in the chrome row (chromeRating on), independent of the free slot so both can sit in one row. It renders the sgs/google-rating-badge block with the rating, count and link from Site Info (or live Google data); chromeRatingColour paints its score and caption, chromeRatingShow hides it per device, chromeRatingPlacement puts it centred or at the end beside the close button."
 				},
 				"chromeButton": {
+					"selector": ".sgs-nav-drawer__chrome-slot",
 					"motion": false,
 					"label": "Top row button",
 					"order": 2,

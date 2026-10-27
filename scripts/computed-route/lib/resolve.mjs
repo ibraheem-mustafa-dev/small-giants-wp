@@ -95,6 +95,23 @@ export function blockElements( slug ) {
 	return elementsIndex[ slug ] || {};
 }
 
+let wrapperIndex = null;
+// The elements a block's manifest marks `isWrapper`: each is the block root itself (sgs/button's `button`), so it has no
+// selector of its own.
+export function blockWrapperElements( slug ) {
+	if ( ! wrapperIndex ) {
+		wrapperIndex = {};
+		for ( const dir of fs.readdirSync( BLOCKS_DIR ) ) {
+			const f = path.join( BLOCKS_DIR, dir, 'block.json' );
+			if ( fs.existsSync( f ) ) {
+				const j = JSON.parse( fs.readFileSync( f, 'utf8' ) );
+				wrapperIndex[ j.name ] = new Set( Object.entries( j.supports?.sgs?.elements || {} ).filter( ( [ , e ] ) => true === e?.isWrapper ).map( ( [ k ] ) => k ) );
+			}
+		}
+	}
+	return wrapperIndex[ slug ] || new Set();
+}
+
 // A path with its :nth-of-type steps dropped: an enclosing block's calibration fixture repeats the child at other
 // positions, so paths from two different trees compare without their indices (the same rule `resolve`'s own `loose`
 // applies under anyIndex).

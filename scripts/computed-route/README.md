@@ -822,6 +822,7 @@ Measures a rendered design draft and writes block settings through the framework
 - `GAPS`: gap reasons (`no-setting`, `ambiguous`, `shape`, `uncalibrated`).
 - `blockSchema(slug)` → the block's `block.json` attributes.
 - `blockElements(slug)` → `{ "<element>": "<selector>" }` from the block's `block.json` manifest (`supports.sgs.elements`); calibration hovers or focuses a state marker's element through it (`lib/calibrate-instances.mjs::stateTarget`).
+- `blockWrapperElements(slug)` → the set of element keys the manifest marks `isWrapper` (the block root itself); `stateTarget` targets the root for them, and a named selector that matches nothing in an instance leaves the state untested (`lib/calibrate-read.mjs::markTargetInPage` returns `{ missing: true }`).
 - `splitProperty(prop)` → `{ short, side }` (a walker longhand as the database shorthand and box side).
 - `tiersOf(perWidth, prop)` → `{ tiers, confirm }` (375 mobile, 768 tablet, 1440 desktop; Spec 48 FR-48-74). 1920 is never a source: `confirm` is `{ at1440, at1920 }` when the 1920 reading differs from 1440, else null.
 - `fluidForm(declared)` → the calibration form a declared value takes (`clamp`, `min`, `max`, `vw`) or null.

@@ -123,6 +123,7 @@
 					"_note": "Each child's own label position (labelX/labelY, css:left/css:top) is declared on sgs/diagram-dimension's manifest; the gap between a label's caption and value is set once here for every label in the diagram."
 				},
 				"value": {
+					"selector": ".sgs-diagram-dimension__value",
 					"motion": false,
 					"label": "Value",
 					"order": 5,
@@ -158,6 +159,7 @@
 					}
 				},
 				"caption": {
+					"selector": ".sgs-diagram-dimension__caption",
 					"motion": false,
 					"label": "Caption",
 					"order": 6,

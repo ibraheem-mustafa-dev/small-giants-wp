@@ -110,6 +110,7 @@
 					}
 				},
 				"link": {
+					"selector": ".sgs-wishlist-panel__remove",
 					"motion": false,
 					"label": "Remove / notify link",
 					"order": 5,

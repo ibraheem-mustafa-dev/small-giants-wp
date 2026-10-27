@@ -115,8 +115,9 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 }
 
 // In-page: marks the element a state trigger acts on (the instance's styled element, searched in the instance and its
-// controlled panels, else the root) with data-cr-target, and says whether it is visible and whether the instance has a
-// closed panel toggle it could open.
+// controlled panels; the root when no selector is given) with data-cr-target, and says whether it is visible and whether
+// the instance has a closed panel toggle it could open. A selector that matches nothing marks nothing and returns
+// { missing: true }.
 export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 	// Both marks are cleared: openToggle clicks the first [data-cr-toggle] on the page, so an earlier instance's toggle
 	// left marked would be opened instead of this one's.
@@ -139,6 +140,10 @@ export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 		}
 		// The companion shows only in a state of its own (a class the block's script adds); the calibration adds it.
 		el && companionClass && el.classList.add( companionClass );
+	}
+	if ( ! el && selector ) {
+		// The named element is not in this instance: hovering the root instead would read whatever sits under its centre.
+		return { visible: false, toggle: false, missing: true };
 	}
 	el = el || root;
 	el.setAttribute( 'data-cr-target', '1' );
@@ -192,6 +197,10 @@ export function missedReason( whys = [] ) {
 	if ( lines.length && lines.every( ( l ) => / hidden$/.test( l ) ) ) {
 		return 'the element stays hidden with its panel opened, so the state cannot be triggered';
 	}
+	const missing = lines.map( ( l ) => l.match( /: no element matches (.+)$/ )?.[ 1 ] );
+	if ( lines.length && missing.every( Boolean ) && 1 === new Set( missing ).size ) {
+		return `no element in the instance matches ${ missing[ 0 ] }: the block.json element needs the selector its state rule paints`;
+	}
 	return lines.length ? `the state could not be triggered: ${ lines.join( '; ' ) }` : 'the state could not be triggered';
 }
 
@@ -228,8 +237,8 @@ async function readUnderTrigger( page, instances, n, inst ) {
 	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances, n ) ) )[ n ];
 	if ( 'probe' === inst.trigger ) {
 		const mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
-		if ( ! mark ) {
-			return { read: null, why: 'no instance' };
+		if ( ! mark || mark.missing ) {
+			return { read: null, why: mark ? `no element matches ${ inst.target }` : 'no instance' };
 		}
 		const cdp = await page.context().newCDPSession( page );
 		try {
@@ -268,7 +277,7 @@ async function readUnderTrigger( page, instances, n, inst ) {
 		mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 	}
 	let read = null;
-	let why = mark ? 'hidden' : 'no instance';
+	let why = mark?.missing ? `no element matches ${ inst.target }` : ( mark ? 'hidden' : 'no instance' );
 	if ( mark?.visible ) {
 		const loc = page.locator( '[data-cr-target]' ).first();
 		try {

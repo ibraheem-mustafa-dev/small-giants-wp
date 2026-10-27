@@ -76,6 +76,26 @@ test( 'MUST FAIL (51 untested hover states): an opener outside the instance that
 	}
 } );
 
+test( 'MUST FAIL (account hover read at the root centre): a named target that matches nothing is reported missing, never the root', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( `<nav class="cr-ref-cal-0"><a class="sgs-x__item" href="#">Home</a></nav>` );
+		const miss = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__menu-link' ] );
+		assert.deepEqual( miss, { visible: false, toggle: false, missing: true } );
+		assert.equal( await page.evaluate( () => document.querySelectorAll( '[data-cr-target]' ).length ), 0, 'nothing is marked, so nothing is hovered' );
+		const hit = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__item' ] );
+		assert.equal( hit.visible, true, 'control: a selector that matches marks its element' );
+		const root = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, null ] );
+		assert.equal( root.visible, true, 'control: no selector targets the root' );
+		assert.equal( await page.evaluate( () => document.querySelector( '[data-cr-target]' )?.className ), 'cr-ref-cal-0' );
+	} finally {
+		await browser.close();
+	}
+	assert.match( missedReason( [ '375px: no element matches .sgs-x__menu-link', '768px: no element matches .sgs-x__menu-link' ] ), /^no element in the instance matches \.sgs-x__menu-link: the block\.json element needs/ );
+} );
+
 test( 'MUST FAIL (triggerDetachBackgroundHover): a companion printed outside the root is targeted by its BEM prefix and shown through the fixture\'s companion class', async () => {
 	const { chromium } = await import( 'playwright' );
 	const browser = await chromium.launch();

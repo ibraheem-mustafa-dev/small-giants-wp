@@ -68,6 +68,7 @@
 					}
 				},
 				"accent": {
+					"selector": ".sgs-audio__play",
 					"motion": false,
 					"label": "Accent colour",
 					"order": 2,

@@ -3,7 +3,7 @@
 // per enum value of a setting with no css_property (discovery). Pure: no browser, no site.
 import { markersFor, borderPartners, shadowPartners, defOf, types } from './calibrate-markers.mjs';
 import { modifierOf } from './db.mjs';
-import { blockElements } from './resolve.mjs';
+import { blockElements, blockWrapperElements } from './resolve.mjs';
 import { MARKER_HEX } from './calibrate-props.mjs';
 import { probeMechanisms } from './calibrate-probe.mjs';
 import { HOVER_PROPS, FOCUS_PROPS } from '../../parity/lib/collect.mjs';
@@ -54,10 +54,11 @@ export function stateLook( stateReads, slots, own = [] ) {
 
 // The element a hover or focus marker is applied to: the selector the block's manifest declares for css_element
 // (post-grid's read-more element is .sgs-post-grid__readmore), else its BEM name, or the instance root (null) for the
-// wrapper. The reader falls back to the root when the selector matches nothing.
+// wrapper and for an element the manifest marks isWrapper. A selector that matches nothing leaves the state untested
+// (lib/calibrate-read.mjs::markTargetInPage); it is never read on the root instead.
 export function stateTarget( block, row ) {
 	const el = row.css_element;
-	if ( ! el || /^(wrapper|root|block)$/.test( el ) ) {
+	if ( ! el || /^(wrapper|root|block)$/.test( el ) || blockWrapperElements( block ).has( el ) ) {
 		return null;
 	}
 	return blockElements( block )[ el ] || `.${ block.replace( /^sgs\//, 'sgs-' ) }__${ kebab( el ) }`;

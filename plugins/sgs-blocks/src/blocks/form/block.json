@@ -251,6 +251,7 @@
 					"_note": "The small dot beside the saved-progress notice (Spec 04 FR-4-9). Printed only when savedProgress is on; a preset slug or a custom hex, emitted as a scoped rule on the form uid class."
 				},
 				"field-input": {
+					"selector": ".sgs-form-field__input",
 					"motion": false,
 					"label": "Field controls",
 					"order": 6,
@@ -304,6 +305,7 @@
 					}
 				},
 				"field-label": {
+					"selector": ".sgs-form-field__label",
 					"motion": false,
 					"label": "Field label",
 					"order": 10,
@@ -336,6 +338,7 @@
 					}
 				},
 				"tile-icon": {
+					"selector": ".sgs-form-tile__icon",
 					"motion": false,
 					"label": "Tile icon",
 					"order": 11,
@@ -367,6 +370,7 @@
 					}
 				},
 				"tile-label": {
+					"selector": ".sgs-form-tile__label",
 					"motion": false,
 					"label": "Tile label",
 					"order": 12,
@@ -398,6 +402,7 @@
 					}
 				},
 				"consent-text": {
+					"selector": ".sgs-form-field__consent-text",
 					"motion": false,
 					"label": "Consent text",
 					"order": 13,
@@ -429,6 +434,7 @@
 					}
 				},
 				"review-term": {
+					"selector": ".sgs-form-review__term",
 					"motion": false,
 					"label": "Review term",
 					"order": 14,
@@ -460,6 +466,7 @@
 					}
 				},
 				"nav-button": {
+					"selector": ".sgs-form__button--next",
 					"motion": false,
 					"label": "Step buttons",
 					"order": 15,
@@ -491,6 +498,7 @@
 					}
 				},
 				"help-text": {
+					"selector": ".sgs-form-field__help",
 					"motion": false,
 					"label": "Help text",
 					"order": 16,
@@ -522,6 +530,7 @@
 					}
 				},
 				"error-text": {
+					"selector": ".sgs-form-field__error",
 					"motion": false,
 					"label": "Error text",
 					"order": 17,
@@ -553,6 +562,7 @@
 					}
 				},
 				"file-status": {
+					"selector": ".sgs-form-file__preview",
 					"motion": false,
 					"label": "File upload status",
 					"order": 18,
@@ -584,6 +594,7 @@
 					}
 				},
 				"review-heading": {
+					"selector": ".sgs-form-review__heading",
 					"motion": false,
 					"label": "Review heading",
 					"order": 19,
@@ -615,6 +626,7 @@
 					}
 				},
 				"review-detail": {
+					"selector": ".sgs-form-review__detail",
 					"motion": false,
 					"label": "Review answer",
 					"order": 20,
@@ -679,6 +691,7 @@
 					}
 				},
 				"file-button": {
+					"selector": ".sgs-form-field__file-button",
 					"motion": false,
 					"label": "File upload button",
 					"order": 22,
@@ -710,6 +723,7 @@
 					}
 				},
 				"file-prompt": {
+					"selector": ".sgs-form-field__file-label",
 					"motion": false,
 					"label": "File upload prompt",
 					"order": 23,
@@ -741,6 +755,7 @@
 					}
 				},
 				"grid-column-heading": {
+					"selector": ".sgs-form-field__column-heading",
 					"motion": false,
 					"label": "Grid column heading",
 					"order": 24,
@@ -772,6 +787,7 @@
 					}
 				},
 				"grid-row-heading": {
+					"selector": ".sgs-form-field__row-heading",
 					"motion": false,
 					"label": "Grid row heading",
 					"order": 25,

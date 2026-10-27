@@ -254,3 +254,11 @@ test( 'MUST FAIL (state target: guessed class): a state marker hovers the elemen
 	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'not-declared' } ), '.sgs-post-grid__not-declared' );
 	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'wrapper' } ), null );
 } );
+
+test( 'MUST FAIL (a wrapper element hovered by a class that does not exist): an element the manifest marks isWrapper is the instance root', async () => {
+	const { stateTarget } = await import( '../lib/calibrate-instances.mjs' );
+	// sgs/button's `button` and sgs/text's `text` elements are the block root (isWrapper); .sgs-button__button does not exist.
+	assert.equal( stateTarget( 'sgs/button', { css_element: 'button' } ), null );
+	assert.equal( stateTarget( 'sgs/text', { css_element: 'text' } ), null );
+	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'read-more' } ), '.sgs-post-grid__readmore', 'control: a declared selector is kept' );
+} );
