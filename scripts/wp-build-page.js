@@ -204,9 +204,19 @@ async function buildTemplate( page, tree, route, slug, dryRun ) {
 			const restPath = `/wp/v2/${ r }/${ id }`;
 			step = 'save';
 			try {
-				await apiFetch( { path: restPath, method: 'POST', data: { content: serialised } } );
+				try {
+					await apiFetch( { path: restPath, method: 'POST', data: { content: serialised } } );
+				} catch ( e ) {
+					// A template the theme ships no file for (page-my-account, Spec 48 FR-48-56) has no copy to save over: it is
+					// created as the active theme's own custom template under the same id, as the Site Editor's "Add template" does.
+					if ( 'rest_template_not_found' !== e.code ) {
+						throw e;
+					}
+					step = 'create';
+					await apiFetch( { path: `/wp/v2/${ r }`, method: 'POST', data: { slug: sl, title: sl, content: serialised, ...( 'template-parts' === r ? { area: 'uncategorized' } : {} ) } } );
+				}
 		} catch ( e ) {
-			return { ok: false, code: 5, error: `save failed: ${ e.message || e.code }` };
+			return { ok: false, code: 5, error: `${ step } failed: ${ e.message || e.code }` };
 		}
 		// Read back: every block must parse valid and serialise to what was saved.
 		const readBack = async () => {

@@ -16,6 +16,7 @@ const DB_DOWN = { code: 'wp_die', message: '<h1>Error establishing a database co
 function fakePage( failures, drop = false ) {
 	let stored = '';
 	let calls = 0;
+	const log = [];
 	const wp = {
 		blocks: {
 			createBlock: ( name ) => ( { name } ),
@@ -24,6 +25,7 @@ function fakePage( failures, drop = false ) {
 		},
 		apiFetch: async ( { path, method, data } ) => {
 			calls += 1;
+			log.push( { path, method, data } );
 			if ( failures[ calls ] ) {
 				throw failures[ calls ];
 			}
@@ -47,6 +49,7 @@ function fakePage( failures, drop = false ) {
 			}
 		},
 		calls: () => calls,
+		log,
 	};
 }
 
@@ -134,4 +137,24 @@ test( 'buildTemplate: a template whose save is lost fails with exit 5 instead of
 	assert.match( r.error, /not the build/ );
 	const kept = await buildTemplate( fakePage( {} ), tree, 'templates', 'archive-product', false );
 	assert.equal( kept.ok, true, 'control: the same build with the content kept is ok' );
+} );
+
+test( "MUST FAIL: a template the theme ships no file for is created as the theme's own custom template, then read back", async () => {
+	// Call 2, the save over `sgs-theme//page-my-account`, finds no template (WordPress's own error for a missing id).
+	const page = fakePage( { 2: { code: 'rest_template_not_found', message: 'No templates exist with that ID.', data: { status: 404 } } } );
+	const r = await buildTemplate( page, tree, 'templates', 'page-my-account', false );
+	assert.equal( r.ok, true, JSON.stringify( r ) );
+	const create = page.log.find( ( c ) => '/wp/v2/templates' === c.path && 'POST' === c.method );
+	assert.ok( create, 'a create request on the collection' );
+	assert.equal( create.data.slug, 'page-my-account' );
+	assert.equal( create.data.content, '<!-- wp:sgs/container /-->' );
+	assert.equal( r.id, 'sgs-theme//page-my-account' );
+} );
+
+test( 'any other save error is still a save failure, never a create', async () => {
+	const page = fakePage( { 2: { code: 'rest_forbidden', message: 'Sorry, you are not allowed to do that.', data: { status: 403 } } } );
+	const r = await buildTemplate( page, tree, 'templates', 'archive-product', false );
+	assert.equal( r.ok, false );
+	assert.match( r.error, /^save failed: Sorry/ );
+	assert.equal( page.log.some( ( c ) => '/wp/v2/templates' === c.path ), false );
 } );
