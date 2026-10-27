@@ -1,0 +1,13 @@
+{
+	"surface": "contact",
+	"verdicts": [
+		{
+			"key": "cr-ref-contact-3||style|border-color",
+			"pair": "form-field",
+			"kind": "style",
+			"property": "border-color",
+			"class": "F",
+			"evidence": [ { "check": "attribute", "holds": true } ]
+		}
+	]
+}

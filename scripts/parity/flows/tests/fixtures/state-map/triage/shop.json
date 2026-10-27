@@ -1,0 +1,29 @@
+{
+	"surface": "shop",
+	"verdicts": [
+		{
+			"key": "cr-ref-shop-4||style|width",
+			"pair": "brand-panel",
+			"kind": "style",
+			"property": "width",
+			"class": "U",
+			"evidence": [ { "check": "unmapped-state", "states": [ "brand-picked", "panel-open" ] } ]
+		},
+		{
+			"key": "cr-ref-shop-28|div > input:nth-of-type(2)|style|outline-style",
+			"pair": "price-slider",
+			"kind": "style",
+			"property": "outline-style",
+			"class": "U",
+			"evidence": [ { "check": "unmapped-state", "states": [ "price-moved" ] } ]
+		},
+		{
+			"key": "cr-ref-shop-1||style|gap",
+			"pair": "product-grid",
+			"kind": "style",
+			"property": "gap",
+			"class": "F",
+			"evidence": [ { "check": "attribute", "holds": true } ]
+		}
+	]
+}

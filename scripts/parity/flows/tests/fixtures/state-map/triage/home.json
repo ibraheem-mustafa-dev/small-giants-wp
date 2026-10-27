@@ -1,0 +1,39 @@
+{
+	"surface": "home",
+	"verdicts": [
+		{
+			"key": "cr-ref-home-5||hover|transform",
+			"pair": "hero-button",
+			"kind": "hover",
+			"property": "transform",
+			"class": "U",
+			"evidence": [ { "check": "unmapped-state", "states": [ "reviews-next" ] } ]
+		},
+		{
+			"key": "cr-ref-home-9||style|color",
+			"pair": "filter-label",
+			"kind": "style",
+			"property": "color",
+			"class": "U",
+			"solveReason": "unmapped-state filter-open"
+		},
+		{
+			"key": "cr-ref-home-11||style|opacity",
+			"pair": "filter-panel",
+			"kind": "style",
+			"property": "opacity",
+			"class": "U",
+			"solveReason": "unmapped-state filter-open",
+			"evidence": [ { "check": "unmapped-state", "states": [ "filter-open" ] } ]
+		},
+		{
+			"key": "cr-ref-home-2||style|padding-top",
+			"pair": "brand-strip",
+			"kind": "style",
+			"property": "padding-top",
+			"class": "W",
+			"solveReason": "holds the draft value but writing it breaks the layout",
+			"evidence": [ { "check": "resolver", "holds": false } ]
+		}
+	]
+}

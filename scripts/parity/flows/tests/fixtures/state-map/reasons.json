@@ -1,0 +1,32 @@
+{
+	"stateless": [],
+	"stateConflicts": {
+		"entries": [
+			{
+				"surface": "home",
+				"key": "cr-ref-home-5||hover|transform",
+				"pair": "hero-button",
+				"walkerStates": [ "reviews-next" ],
+				"mappedTo": [ "reviews-next->rest" ],
+				"reason": "measured in reviews-next and in opening; both map to rest with different draft values."
+			},
+			{
+				"surface": "shop",
+				"key": "cr-ref-shop-4||style|width",
+				"pair": "brand-panel",
+				"property": "width",
+				"walkerStates": [ "brand-picked", "panel-open" ],
+				"mappedTo": [ "brand-picked->rest", "panel-open->open" ],
+				"reason": "measured in brand-picked, panel-open and in opening; brand-picked and opening both map to rest with different draft values."
+			},
+			{
+				"surface": "shop",
+				"key": "cr-ref-shop-28|div > input:nth-of-type(2)|style|outline-style",
+				"pair": "price-slider",
+				"walkerStates": [ "price-moved" ],
+				"mappedTo": [ "price-moved->rest" ],
+				"reason": "measured in price-moved and in opening; both map to rest with different draft values."
+			}
+		]
+	}
+}
