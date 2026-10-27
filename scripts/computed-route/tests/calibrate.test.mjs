@@ -255,6 +255,17 @@ test( 'MUST FAIL (state target: guessed class): a state marker hovers the elemen
 	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'wrapper' } ), null );
 } );
 
+test( 'MUST FAIL (overlay and link hovers untested on blocks that print them through shared code): a shared element is found by its shared selector as well as the own class of the block', async () => {
+	const { stateTarget } = await import( '../lib/calibrate-instances.mjs' );
+	// The shared container wrapper prints .sgs-container__overlay in every block it wraps (trust-bar, site-header).
+	assert.equal( stateTarget( 'sgs/trust-bar', { css_element: 'overlay' } ), '.sgs-trust-bar__overlay, .sgs-container__overlay' );
+	// hero prints its own .sgs-hero__overlay: the block's own class comes first in the list, so it is still found.
+	assert.equal( stateTarget( 'sgs/hero', { css_element: 'overlay' } ), '.sgs-hero__overlay, .sgs-container__overlay' );
+	// sgs_link_underline_css() paints `{selector} a`: the link inside the block.
+	assert.equal( stateTarget( 'sgs/text', { css_element: 'text-link' } ), '.sgs-text__text-link, a' );
+	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'not-declared' } ), '.sgs-post-grid__not-declared', 'control: an element no shared code prints keeps its BEM name alone' );
+} );
+
 test( 'MUST FAIL (a wrapper element hovered by a class that does not exist): an element the manifest marks isWrapper is the instance root', async () => {
 	const { stateTarget } = await import( '../lib/calibrate-instances.mjs' );
 	// sgs/button's `button` and sgs/text's `text` elements are the block root (isWrapper); .sgs-button__button does not exist.

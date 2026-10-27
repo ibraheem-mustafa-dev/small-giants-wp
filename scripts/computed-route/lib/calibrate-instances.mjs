@@ -1,12 +1,15 @@
 // Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked
 // instance per setting and marker, each carrying the preconditions its element needs to render, plus one instance
-// per enum value of a setting with no css_property (discovery). Pure: no browser, no site.
+// per enum value of a setting with no css_property (discovery). No browser, no site; it reads the block manifests and data/shared-state-elements.json.
 import { markersFor, borderPartners, shadowPartners, defOf, types } from './calibrate-markers.mjs';
 import { modifierOf } from './db.mjs';
+import fs from 'fs';
 import { blockElements, blockWrapperElements } from './resolve.mjs';
 import { MARKER_HEX } from './calibrate-props.mjs';
 import { probeMechanisms } from './calibrate-probe.mjs';
 import { HOVER_PROPS, FOCUS_PROPS } from '../../parity/lib/collect.mjs';
+// Elements shared code prints inside many blocks (the shared wrapper's overlay, the link helper's `a`), by css_element.
+const SHARED_STATE_ELEMENTS = JSON.parse( fs.readFileSync( new URL( '../data/shared-state-elements.json', import.meta.url ), 'utf8' ) );
 
 // How each setting state is reached before a marker is read (§3.2): 'hover' under a real mouse on the styled element;
 // 'focus' by keyboard-visible focus on it; 'scroll' by scrolling the window past the header offset (the header script
@@ -61,7 +64,13 @@ export function stateTarget( block, row ) {
 	if ( ! el || /^(wrapper|root|block)$/.test( el ) || blockWrapperElements( block ).has( el ) ) {
 		return null;
 	}
-	return blockElements( block )[ el ] || `.${ block.replace( /^sgs\//, 'sgs-' ) }__${ kebab( el ) }`;
+	const declared = blockElements( block )[ el ];
+	if ( declared ) {
+		return declared;
+	}
+	const own = `.${ block.replace( /^sgs\//, 'sgs-' ) }__${ kebab( el ) }`;
+	const shared = SHARED_STATE_ELEMENTS[ el ]?.selector;
+	return shared ? `${ own }, ${ shared }` : own;
 }
 
 // A boolean "show/enable/has/use X" setting that is off by default and gates the element a setting styles: the

@@ -1,0 +1,18 @@
+{
+	"_meta": {
+		"what": "Elements shared code prints inside many blocks, by the css_element name the framework DB gives their state rows. Calibration (lib/calibrate-instances.mjs::stateTarget) looks for the block's own class sgs-<block>__<element> OR this shared selector, so a block that prints its own element still finds it first.",
+		"add_when": "a state setting's rule is printed by a shared helper or the shared wrapper under a class that is not the block's own BEM name; cite the helper"
+	},
+	"overlay": {
+		"selector": ".sgs-container__overlay",
+		"source": "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php: the shared wrapper prints .sgs-container__overlay and scopes backgroundOverlayColourHover / overlayGradientHover on `.{uid} .sgs-container__overlay`"
+	},
+	"text-link": {
+		"selector": "a",
+		"source": "plugins/sgs-blocks/includes/helpers-link-underline.php::sgs_link_underline_css paints `{selector} a`"
+	},
+	"content-link": {
+		"selector": "a",
+		"source": "plugins/sgs-blocks/includes/helpers-link-underline.php::sgs_link_underline_css paints `{selector} a`"
+	}
+}
