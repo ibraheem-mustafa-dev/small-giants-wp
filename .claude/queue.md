@@ -4,3 +4,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 
 - 2026-10-27 F calibration-start local-mamas (sgs/account: proves the council's test-order fix)
 - 2026-10-27 F calibration-end local-mamas (sgs/account 96 settings accepted with the council's test-order fix; the mirror holds 0 orders afterwards). local-mamas free
+- 2026-10-27 F deploy-start all (6a5cd9f09 empty-string tier, 105fc7665 account selectors, 660f0b09c; hold site runs, calibrations and mirror syncs until F deployed)
