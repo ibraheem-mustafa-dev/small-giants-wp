@@ -91,7 +91,7 @@ function run( o = {} ) {
 	] );
 	const factRecord = { schema: '1', client: 'fixture-client', elements, surfaces: o.surfaces ?? SURFACES(), sources: { files: { 'Root.dc.html': draft.hash } } };
 	const inventory = { checks: {}, source: 'fixture', root: 'header', generated: 'fixture', elements: list.map( ( [ n, p, tag, words, x ] ) => el( n, p, tag, words, x ) ) };
-	return proposeSkeleton( { inventory, facts: facts( draft.repo, o.edit ), surface: 'header', surfaceKind: o.kind ?? 'header', surfaceName: 'Header', db, factRecord, openers: { 'S-05': 'Menu button (toggleMenu)', 'S-24': 'Bag button' }, pageMap: o.pageMap ?? [ CART() ] } );
+	return proposeSkeleton( { inventory, facts: facts( draft.repo, o.edit ), surface: 'header', surfaceKind: o.kind ?? 'header', surfaceName: 'Header', db, factRecord, openers: o.openers ?? { 'S-05': 'Menu button (toggleMenu)', 'S-24': 'Bag button' }, pageMap: o.pageMap ?? [ CART() ] } );
 }
 const all = ( l ) => l.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
 const nodeOf = ( r, k ) => all( r.skeleton ).find( ( n ) => n.draftRef?.tpl === k );
@@ -146,6 +146,35 @@ test( 'NEGATIVE: the navigation drawer\'s opener stays the burger, and no page m
 	kept( { pageMap: [ { ...CART(), template: 'page' } ] }, 'a row whose template names no owning block' );
 	kept( { surfaces: SURFACES( [ { name: 'open', state_keys: { menu: true } } ] ) }, 'a drawer no state of which holds the written key' );
 	kept( { edit: ( R ) => delete R.blockPartOpener }, 'the rule removed' );
+} );
+
+// rules.drawerOpener by the handler's state write (FR-48-6): the drawer's opened_by words name no handler ("Menu button
+// (below 1060px)"), so only the handler's write of a key a drawer state holds at true says the burger opens it.
+const UNNAMED = { 'S-05': 'Menu button (below 1060px)', 'S-24': 'Bag button' };
+const MENU_VALS = `${ VALS }, showMenu: () => this.setState( { menu: true } ), closeMenu: () => this.setState( { menu: false } ), openSize: () => this.setState( { size: true } ), setWidth: () => this.setState( { w: 375 } )`;
+// The header with one more button (element 9) whose click handler is `click`.
+const WITH = ( click, tag = 'button' ) => [ ...HEADER(), [ 9, 1, tag, '', { click, attrs: { 'aria-label': 'Other' } } ] ];
+const SIZE = { 'S-25': { id: 'S-25', kind: 'modal', name: 'Size guide', dc: 'Root', parent: null, roots: [ 'Root/50' ], parts: [], states: [ { name: 'open', state_keys: { size: true } } ] } };
+const burgered = ( r, k ) => [ rowOf( r, k )?.action, rowOf( r, k )?.rule, rowOf( r, k )?.into ];
+
+test( 'MUST FAIL: a burger whose drawer\'s opened_by words name no handler is the navigation\'s burger when its handler writes a key the drawer opens on (a toggle, or a plain true)', () => {
+	assert.deepEqual( burgered( run( { openers: UNNAMED } ), 'Root/5#0' ), [ 'absorbed', 'drawerOpener', 'Root/2#0' ], 'toggleMenu toggles menu, which S-05\'s open state holds at true' );
+	assert.deepEqual( burgered( run( { openers: UNNAMED, header: WITH( 'showMenu' ), logic: LOGIC( MENU_VALS ) } ), 'Root/9#0' ), [ 'absorbed', 'drawerOpener', 'Root/2#0' ], 'a handler writing menu: true' );
+} );
+
+test( 'NEGATIVE: with no handler named, a closing handler, a modal\'s opener and a key no drawer opens on stay; the bag pill stays the cart; the name match still opens', () => {
+	const at = ( click, o = {} ) => rowOf( run( { openers: UNNAMED, header: WITH( click ), logic: LOGIC( MENU_VALS ), ...o } ), 'Root/9#0' ).rule;
+	assert.notEqual( at( 'closeMenu' ), 'drawerOpener', 'a handler writing only menu: false opens nothing' );
+	assert.notEqual( at( 'openSize', { surfaces: { ...SURFACES(), ...SIZE } } ), 'drawerOpener', 'a modal, not a drawer' );
+	assert.notEqual( at( 'setWidth' ), 'drawerOpener', 'a key no drawer state holds at true' );
+	const named = ( header ) => rowOf( run( { header, logic: LOGIC( MENU_VALS ) } ), 'Root/9#0' ).rule;
+	assert.notEqual( named( WITH( 'toggleMenu', 'span' ) ), 'drawerOpener', 'only a button or link is the burger, whatever its handler' );
+	assert.notEqual( named( WITH( undefined ) ), 'drawerOpener', 'a button with no click handler opens nothing' );
+	const r = run( { openers: UNNAMED } );
+	assert.equal( nodeOf( r, 'Root/6#0' )?.name, 'sgs/cart', 'the control opening the block-owned bag drawer is the cart, never the burger' );
+	assert.equal( rowOf( r, 'Root/6#0' ).rule, 'blockPartOpener' );
+	assert.deepEqual( burgered( run( { logic: LOGIC( VALS.replace( '( s ) => ( { menu: ! s.menu } )', '{ x: 1 }' ) ) } ), 'Root/5#0' ), [ 'absorbed', 'drawerOpener', 'Root/2#0' ], 'the opened_by words naming toggleMenu still open, whatever it writes' );
+	assert.notEqual( rowOf( run( { openers: UNNAMED, edit: ( R ) => delete R.drawerOpener } ), 'Root/5#0' ).rule, 'drawerOpener', 'the rule removed' );
 } );
 
 test( 'handlerOpens, opensOn and blockPartSurfaces read structure, never names', () => {
