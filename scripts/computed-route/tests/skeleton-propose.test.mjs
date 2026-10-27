@@ -1,5 +1,5 @@
-// The skeleton writer's proposal (Spec 48 §3.4, R-47-4, R-47-10): offline over the committed footer inventory
-// (sites/eye-care-ward-end/build/skeleton/footer.inventory.json), with a fixture slice for the two draft shapes the hosted
+// The skeleton writer's proposal (Spec 48 §3.4, R-47-4, R-47-10): offline over a frozen copy of the Eye Care footer inventory
+// (tests/fixtures/site-build-carried/footer.inventory.json; the client's own file is rewritten by every site run), with a fixture slice for the two draft shapes the hosted
 // draft no longer has (a typed wordmark, a coming-soon line). Four generator rules, each from database queries and the
 // standing decisions data, then the 13 uncertain rows of the first prototype scored against the choices the committed
 // footer tree records (answer key below, each row citing its tree path).
@@ -17,7 +17,7 @@ import { lintSkeleton } from '../lint.mjs';
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const CLIENT = 'eye-care-ward-end';
 const DIR = path.join( REPO, 'sites', CLIENT, 'build' );
-const inventory = JSON.parse( fs.readFileSync( path.join( DIR, 'skeleton', 'footer.inventory.json' ), 'utf8' ) );
+const inventory = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), 'fixtures', 'site-build-carried', 'footer.inventory.json' ), 'utf8' ) );
 const committed = JSON.parse( fs.readFileSync( path.join( DIR, 'footer.tree.json' ), 'utf8' ) );
 const db = openDb();
 const SITE = 'Eye Care Birmingham';

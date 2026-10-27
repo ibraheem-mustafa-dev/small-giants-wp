@@ -63,7 +63,7 @@ test( 'MUST FAIL: carriedIds().logo reads the element through the view it is giv
 } );
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
-const inventory = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', 'eye-care-ward-end', 'build', 'skeleton', 'footer.inventory.json' ), 'utf8' ) );
+const inventory = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), 'fixtures', 'site-build-carried', 'footer.inventory.json' ), 'utf8' ) );
 const db = openDb();
 const facts = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Eye Care Birmingham' } );
 const propose = ( o = {} ) => proposeSkeleton( { inventory, facts, surface: 'footer', db, ...o } );
