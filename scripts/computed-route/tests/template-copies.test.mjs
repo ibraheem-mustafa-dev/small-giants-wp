@@ -96,11 +96,11 @@ test( 'every theme template parses into blocks, and the derived templates keep t
 const INDUS = [ row( { slug: 'home', route: 'home', template: 'front-page', id: 1 } ), row( { slug: 'blog', template: 'home', collection: 'live', id: 2 } ), row( { slug: 'about', template: 'page', id: 3 } ), row( { slug: 'contact', template: 'page', id: 4 } ), row( { slug: 'news-1', postType: 'post', template: 'single', id: 5 } ) ];
 // The rows as a fresh site sees them (no post made yet).
 const fresh = ( rows ) => rows.map( ( r ) => ( { ...r, id: null } ) );
-const SHOP = [ row( { slug: 'shop', postType: 'shop', template: 'archive-product', collection: 'live', id: 10 } ), row( { slug: 'product', postType: 'product', template: 'single-product', collection: 'live' } ), row( { slug: 'cart', template: 'cart', id: 11 } ), row( { slug: 'checkout', template: 'checkout', id: 12 } ), row( { slug: 'my-account', template: 'page-my-account', id: 13 } ), row( { slug: 'order-confirmation', route: 'Confirmation.dc.html', postType: 'template', template: 'order-confirmation' } ), row( { slug: 'help', template: 'page', id: 14 } ) ];
+const SHOP = [ row( { slug: 'shop', postType: 'shop', template: 'archive-product', collection: 'live', id: 10 } ), row( { slug: 'product', postType: 'product', template: 'single-product', collection: 'live' } ), row( { slug: 'cart', template: 'cart', id: 11 } ), row( { slug: 'checkout', template: 'checkout', id: 12 } ), row( { slug: 'my-account', template: 'page', id: 13 } ), row( { slug: 'order-confirmation', route: 'Confirmation.dc.html', postType: 'template', template: 'order-confirmation' } ), row( { slug: 'help', template: 'page', id: 14 } ) ];
 
 test( 'the site serves each template a row names, page, 404 and search everywhere, single and archive with posts, and the shop set with a shop', () => {
 	assert.deepEqual( servedTemplates( INDUS ), [ 'front-page', 'home', 'page', 'single', 'archive', 'search', '404' ] );
-	assert.deepEqual( servedTemplates( SHOP ), [ 'page', 'search', '404', 'archive-product', 'single-product', 'product-search-results', 'taxonomy-product_attribute', 'cart', 'checkout', 'order-confirmation', 'page-my-account' ] );
+	assert.deepEqual( servedTemplates( SHOP ), [ 'page', 'search', '404', 'archive-product', 'single-product', 'product-search-results', 'taxonomy-product_attribute', 'cart', 'checkout', 'order-confirmation' ] );
 	assert.deepEqual( DERIVED.map( ( s ) => copySource( INDUS, s ) ), [ 'page', 'page', 'page', 'page', 'page' ] );
 	assert.equal( copySource( SHOP, 'archive-product' ), 'whole' );
 	assert.equal( copySource( SHOP, 'cart' ), 'whole', 'a WooCommerce page is an SGS page with the WooCommerce piece in it: its copy is the whole tree' );
@@ -169,7 +169,7 @@ test( 'MUST FAIL: the manifest gives one template surface per served template, e
 	assert.equal( 'template-archive-product' in shop.entries, false, 'the shop row is its own template\'s surface' );
 	assert.deepEqual( shop.entries.shop.copy, { from: 'whole' } );
 	assert.equal( 'shell' in shop.entries.cart, false, 'WooCommerce\'s page keeps its own content' );
-	assert.deepEqual( templateSurfaces( SHOP ).map( ( c ) => c.key ), [ 'template-page', 'template-search', 'template-404', 'template-product-search-results', 'template-taxonomy-product_attribute', 'template-cart', 'template-checkout', 'template-order-confirmation', 'template-page-my-account' ] );
+	assert.deepEqual( templateSurfaces( SHOP ).map( ( c ) => c.key ), [ 'template-page', 'template-search', 'template-404', 'template-product-search-results', 'template-taxonomy-product_attribute', 'template-cart', 'template-checkout', 'template-order-confirmation' ] );
 } );
 
 test( 'MUST FAIL: a template copy Filled on its own is read at the row playing it, and a template row has its template\'s address', () => {

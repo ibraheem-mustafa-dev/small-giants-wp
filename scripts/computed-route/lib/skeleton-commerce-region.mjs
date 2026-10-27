@@ -14,12 +14,15 @@
 // role leave the surface as it is, with a note naming them. Pure: the inventory model in, the region out.
 
 import { templateKey } from './fact-key.mjs';
+import { isAccountRow } from './site-build-map.mjs';
 
-// The commerce role of a surface, by the template it builds (surfaces.json `target.template`), and the checkout page's
-// route (a cart's region links to it).
-export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout', 'page-my-account': 'account' };
+// The commerce role of a surface, by the template it builds (surfaces.json `target.template`) or, for the account page
+// (an ordinary page holding WooCommerce's account piece), the page row its post is; and the checkout page's route (a
+// cart's region links to it).
+export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout' };
 export function commerceOf( entry, rows = [] ) {
-	const role = COMMERCE_ROLES[ entry?.target?.template ];
+	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
+	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
 	return role ? { role, checkout: rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template )?.route ?? null } : null;
 }
 

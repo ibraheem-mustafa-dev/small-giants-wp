@@ -108,7 +108,8 @@ test( 'MUST FAIL: the account\'s sign-in and register forms (password fields) ar
 	];
 	const { skeleton, proposal } = run( els, { role: 'account', checkout: null } );
 	assert.equal( proposal.commerceRegion.key, 'Root/3#0', 'the smallest element holding both forms\' password fields (read from the source tag too)' );
-	assert.ok( find( skeleton, 'core/post-content' ) );
+	assert.ok( find( skeleton, 'sgs/account' ), 'the account page is an ordinary page holding WooCommerce\'s account piece' );
+	assert.equal( find( skeleton, 'core/post-content' ), null );
 	assert.ok( find( skeleton, 'sgs/heading' ) );
 } );
 
@@ -160,8 +161,10 @@ test( 'no region without the structure: a page surface, a cart with only the dra
 test( 'the role comes from the template the surface builds; a checkout link is matched by route, hash or path', () => {
 	const rows = [ { postType: 'page', template: 'checkout', route: 'Checkout.dc.html' } ];
 	assert.deepEqual( commerceOf( { target: { template: 'cart' } }, rows ), { role: 'cart', checkout: 'Checkout.dc.html' } );
-	assert.deepEqual( [ 'archive-product', 'checkout', 'page-my-account' ].map( ( t ) => commerceOf( { target: { template: t } }, rows ).role ), [ 'shop', 'checkout', 'account' ] );
+	assert.deepEqual( [ 'archive-product', 'checkout' ].map( ( t ) => commerceOf( { target: { template: t } }, rows ).role ), [ 'shop', 'checkout' ] );
 	assert.equal( commerceOf( { target: { postId: 3 } }, rows ), null );
+	assert.equal( commerceOf( { target: { postId: 13 } }, [ ...rows, { postType: 'page', slug: 'my-account', template: 'page', id: 13 } ] ).role, 'account', 'the account page is read by its row, an ordinary page' );
+	assert.equal( commerceOf( { target: { template: 'page-my-account' } }, rows ), null );
 	assert.equal( commerceOf( { target: { template: 'page' } }, rows ), null );
 	assert.deepEqual( [ [ 'Checkout.dc.html', 'Checkout.dc.html' ], [ '#/checkout', 'checkout' ], [ '#checkout', 'checkout' ], [ '/shop/checkout/', 'checkout' ], [ '#/cart', 'checkout' ], [ '', 'checkout' ] ].map( ( [ h, r ] ) => leadsTo( h, r ) ), [ true, true, true, true, false, false ] );
 	assert.deepEqual( decisionsProblems( facts() ), [] );

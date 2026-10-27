@@ -19,6 +19,9 @@ export const SHOP_TYPES = [ 'product', 'product_cat', 'shop' ];
 export const POSTLESS_TYPES = [ 'product', 'product_cat', 'template' ];
 const TEMPLATE_DEFAULTS = { product: 'single-product', product_cat: 'archive-product', shop: 'archive-product' };
 
+// WooCommerce's account page: an ordinary page whose content holds WooCommerce's account piece, `sgs/account`.
+export const isAccountRow = ( row ) => 'page' === row?.postType && [ 'my-account', 'account' ].includes( row.slug );
+
 // The WordPress post type a row is made as.
 export const wpType = ( row ) => ( 'shop' === row.postType ? 'page' : row.postType );
 export const hasPost = ( row ) => ! POSTLESS_TYPES.includes( row.postType );
@@ -135,6 +138,10 @@ export function placeholderTree( row, menuIds = {} ) {
 	}
 	if ( 'drawer' === kind ) {
 		return [ { name: 'sgs/nav-drawer', innerBlocks: [ { name: 'sgs/nav-drawer-menu', attributes: { ref: menuIds[ boundMenu( kind, Object.keys( menuIds ) ) ] || 0 } } ] } ];
+	}
+	// The account page always holds WooCommerce's working account piece, so it is never a placeholder heading.
+	if ( isAccountRow( row ) ) {
+		return [ { name: 'sgs/account' } ];
 	}
 	return [ { name: 'sgs/heading', attributes: { content: row.title, level: [ 'page', 'post' ].includes( row.postType ) ? 'h1' : 'h2' } } ];
 }

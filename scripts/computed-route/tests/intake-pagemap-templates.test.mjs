@@ -42,16 +42,16 @@ test( 'MUST FAIL: the one page listing the posts is home; a page listing another
 	assert.equal( hash.rows.some( ( r ) => 'listsPosts' in r ), false, 'the working flag leaves no trace in a row' );
 } );
 
-test( 'MUST FAIL: the account page (a password field, or WooCommerce\'s added my-account row) is page-my-account', () => {
-	assert.equal( shape( shop, 'Account.dc.html' ), 'my-account:page:page-my-account' );
-	assert.equal( shape( bakery, 'Account.dc.html' ), 'my-account:page:page-my-account' );
-	assert.equal( shape( files, 'Account.dc.html' ), 'my-account:page:page-my-account', 'on a client with no shop, and its order search does not make it the search page' );
-	assert.equal( proposePageMap( { folder: FIX( 'manifest' ) } ).rows.find( ( r ) => 'my-account' === r.slug ).template, 'page-my-account', 'a manifest page slugged my-account' );
+test( 'MUST FAIL: the account page (a password field, or WooCommerce\'s added my-account row) is an ordinary page', () => {
+	assert.equal( shape( shop, 'Account.dc.html' ), 'my-account:page:page' );
+	assert.equal( shape( bakery, 'Account.dc.html' ), 'my-account:page:page' );
+	assert.equal( shape( files, 'Account.dc.html' ), 'my-account:page:page', 'on a client with no shop, and its order search does not make it the search page' );
+	assert.equal( proposePageMap( { folder: FIX( 'manifest' ) } ).rows.find( ( r ) => 'my-account' === r.slug ).template, 'page', 'a manifest page slugged my-account' );
 	const tmp = fs.mkdtempSync( path.join( os.tmpdir(), 'pagemap-account-' ) );
 	fs.cpSync( FIX( 'commerce' ), tmp, { recursive: true } );
 	fs.rmSync( path.join( tmp, 'Account.dc.html' ) );
 	const added = proposePageMap( { folder: tmp } ).rows.filter( ( r ) => 'my-account' === r.slug );
-	assert.deepEqual( added.map( ( r ) => `${ r.route }:${ r.template }` ), [ 'undefined:page-my-account' ], 'the my-account row a shop client is given' );
+	assert.deepEqual( added.map( ( r ) => `${ r.route }:${ r.template }` ), [ 'undefined:page' ], 'the my-account row a shop client is given' );
 } );
 
 test( 'MUST FAIL: the confirmation the checkout\'s submit leads to is its own order-confirmation row; cart and checkout keep theirs', () => {
@@ -109,6 +109,6 @@ test( 'MUST FAIL: regenerating an old map adds the confirmation row with no id, 
 	assert.deepEqual( [ 'checkout', 'my-account', 'home' ].map( ( s ) => rows.find( ( r ) => 'page' === r.postType && r.slug === s )?.id ), [ 11, 12, 13 ], 'every id carries' );
 	assert.match( said.join( '\n' ), /1 review marks matched/ );
 	assert.match( said.join( '\n' ), /added template:order-confirmation/ );
-	assert.match( said.join( '\n' ), /page:my-account: template null -> "page-my-account"/ );
+	assert.match( said.join( '\n' ), /page:my-account: template null -> "page"/ );
 	assert.doesNotMatch( said.join( '\n' ), /loses rows/ );
 } );

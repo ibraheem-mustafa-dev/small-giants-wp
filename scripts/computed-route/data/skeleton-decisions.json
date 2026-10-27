@@ -128,7 +128,7 @@
 			"roles": {
 				"cart": { "block": "core/post-content", "reason": "the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button" },
 				"checkout": { "block": "core/post-content", "reason": "the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary" },
-				"account": { "block": "core/post-content", "reason": "the account page's content is WooCommerce's account output inside sgs/account (kept by site build), which draws the sign-in and account forms" },
+				"account": { "block": "sgs/account", "reason": "the account page is an ordinary page (Bean, 2026-10-26; eye-care-test's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard" },
 				"shop": {
 					"block": "woocommerce/product-collection",
 					"attributes": { "queryId": 0, "query": { "inherit": true, "perPage": 24, "isProductCollectionBlock": true }, "tagName": "div", "displayLayout": { "type": "flex", "columns": 3, "shrinkColumns": true }, "queryContextIncludes": [ "collection" ] },

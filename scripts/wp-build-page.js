@@ -207,7 +207,7 @@ async function buildTemplate( page, tree, route, slug, dryRun ) {
 				try {
 					await apiFetch( { path: restPath, method: 'POST', data: { content: serialised } } );
 				} catch ( e ) {
-					// A template the theme ships no file for (page-my-account, Spec 48 FR-48-56) has no copy to save over: it is
+					// A template the theme ships no file for (a site's own template, Spec 48 FR-48-56) has no copy to save over: it is
 					// created as the active theme's own custom template under the same id, as the Site Editor's "Add template" does.
 					if ( 'rest_template_not_found' !== e.code ) {
 						throw e;

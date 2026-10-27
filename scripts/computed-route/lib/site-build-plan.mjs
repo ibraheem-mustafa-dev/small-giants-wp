@@ -11,7 +11,7 @@
 // run saved before marking it) is marked and rebuilt. A rebuild never overwrites content a person changed since the build saved it.
 import fs from 'fs';
 import path from 'path';
-import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
+import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, isAccountRow, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
 import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
 import { desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
@@ -24,7 +24,7 @@ const CREATES = [ 'create', 'menu', 'item-add' ];
 const shown = ( v ) => ( v && 'object' === typeof v && v.ref ? `(new ${ v.ref })` : String( v ) );
 
 // WooCommerce's role for a page-map row whose page WooCommerce renders itself ('cart', 'checkout', 'my account'), else null:
-// its template (cart, checkout, page-my-account) or WooCommerce's own page name (my-account, account) says which.
+// its template (cart, checkout) or WooCommerce's own page name (my-account, account) says which.
 export function wooContentRole( row ) {
 	if ( 'page' !== row?.postType ) {
 		return null;
@@ -32,7 +32,13 @@ export function wooContentRole( row ) {
 	if ( [ 'cart', 'checkout' ].includes( row.template ) ) {
 		return row.template;
 	}
-	return 'page-my-account' === row.template || [ 'my-account', 'account' ].includes( row.slug ) ? 'my account' : null;
+	return isAccountRow( row ) ? 'my account' : null;
+}
+
+// Whether a WooCommerce page's content is WooCommerce's own block, kept and never rebuilt from a tree: the cart and
+// checkout pages. The account page is an ordinary page whose tree holds WooCommerce's account piece (`sgs/account`).
+export function keepsWooContent( row ) {
+	return [ 'cart', 'checkout' ].includes( wooContentRole( row ) );
 }
 
 // The WooCommerce page options (part 6) and the page-map row each takes: the shop row by its type, the others by
@@ -158,10 +164,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		const p = state.posts[ String( ids[ key ] ) ];
-		// WooCommerce's own cart, checkout and account pages keep WooCommerce's content (its Cart and Checkout blocks, the
-		// account shortcode or block): that content takes orders and saves accounts, so the clone styles it and never rebuilds
-		// it from a tree. The shop page's content is not shown (the shop template is), so it is built as any page.
-		const wooContent = woo.some( ( [ option, , list ] ) => 'woocommerce_shop_page_id' !== option && list[ 0 ] === row );
+		// WooCommerce's own cart and checkout pages keep WooCommerce's content (its Cart and Checkout blocks): that content
+		// takes orders, so the clone styles it and never rebuilds it from a tree. The account page's tree holds `sgs/account`. The shop page's content is not shown (the shop template is), so it is built as any page.
+		const wooContent = keepsWooContent( row ) && woo.some( ( [ option, , list ] ) => 'woocommerce_shop_page_id' !== option && list[ 0 ] === row );
 		if ( p.treeHash !== hash && ! wooContent ) {
 			if ( p.builtContentHash && p.contentHash !== p.builtContentHash ) {
 				problems.push( `${ key }: post ${ p.id } was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or let the rebuild win with "wp post meta delete ${ p.id } ${ CONTENT_META }"` );

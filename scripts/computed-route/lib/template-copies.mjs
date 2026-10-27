@@ -26,13 +26,13 @@ const MAIN = { name: 'sgs/container', attributes: { tagName: 'main', anchor: 'ma
 // Templates whose inner block is the page's own content.
 export const PAGE_CONTENT = [ 'front-page', 'page' ];
 // Templates built from their surface's whole Filled tree: WooCommerce's pages.
-export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout', 'page-my-account' ];
+export const WHOLE_TREE = [ 'archive-product', 'single-product', 'cart', 'checkout' ];
 // Templates the draft has no surface for: built from the site's own `page` copy with the theme template's own content.
 export const DERIVED = [ '404', 'search', 'archive', 'product-search-results', 'taxonomy-product_attribute' ];
 // The templates WordPress reaches by its template hierarchy (a page's slug reaches `page-<slug>`), never set as a page's
 // `page_template`.
 export const HIERARCHY = [ 'front-page', 'home', 'page', 'single', 'archive', 'search', '404', 'index', 'order-confirmation', 'archive-product', 'single-product', 'product-search-results', 'taxonomy-product_attribute' ];
-const SHOP_SERVES = [ 'archive-product', 'single-product', 'product-search-results', 'taxonomy-product_attribute', 'cart', 'checkout', 'order-confirmation', 'page-my-account' ];
+const SHOP_SERVES = [ 'archive-product', 'single-product', 'product-search-results', 'taxonomy-product_attribute', 'cart', 'checkout', 'order-confirmation' ];
 const ORDER = [ 'front-page', 'home', 'page', 'single', 'archive', 'search', '404', ...SHOP_SERVES ];
 
 // The `page_template` a page row's post takes: none for a template the hierarchy reaches, else the row's own template.
@@ -141,7 +141,7 @@ export function themeContent( slug, dir = THEME_TEMPLATES ) {
 }
 
 // The inner block a shell holds for a template: the page's own content for a page template or one the theme ships no
-// file for (page-my-account), else the theme template's own content.
+// file for, else the theme template's own content.
 export const innerOf = ( slug, dir = THEME_TEMPLATES ) => ( PAGE_CONTENT.includes( slug ) || ! fs.existsSync( path.join( dir, `${ slug }.html` ) ) ? [ POST_CONTENT ] : themeContent( slug, dir ) );
 
 // `inner` inside the shell `chain`, inside the theme's `<main>` unless the shell's outer wrapper is the main itself.

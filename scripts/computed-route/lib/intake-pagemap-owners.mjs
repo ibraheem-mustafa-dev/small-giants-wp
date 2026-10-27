@@ -6,8 +6,9 @@ import { kebab } from './intake-pagemap-surfaces.mjs';
 
 // WooCommerce's own pages keep WooCommerce's slugs: the shop `shop`, the cart and checkout pages `cart` and
 // `checkout`, and every page holding a password field (sign-in, register, account details) the one `my-account` page,
-// so two such routes collapse into one row through the twin rule. The account page names the `page-my-account`
-// template (FR-48-56).
+// so two such routes collapse into one row through the twin rule. The account page is an ordinary page (Bean,
+// 2026-10-26: the theme has no account template and needs none; eye-care-test's account page is the theme's page with
+// WooCommerce's account output in it), so it names the `page` template.
 export function wooSlugs( rows, accountPages ) {
 	for ( const r of rows ) {
 		const account = 'page' === r.postType && ! r.template && accountPages.has( r.route );
@@ -22,9 +23,9 @@ export function wooSlugs( rows, accountPages ) {
 	}
 }
 
-// The theme template the WooCommerce account page names (FR-48-56; the theme has none, so the site build makes the site's own).
-export const ACCOUNT_TEMPLATE = 'page-my-account';
-const isAccount = ( r ) => ACCOUNT_TEMPLATE === r.template || 'my-account' === r.slug;
+// The template the WooCommerce account page names: the site's own page copy, as any ordinary page.
+export const ACCOUNT_TEMPLATE = 'page';
+const isAccount = ( r ) => 'my-account' === r.slug;
 
 // The shop row's title is the label of the first menu item that links to it (WooCommerce's shop page keeps slug `shop`
 // and shows the draft's own name for it).
@@ -73,7 +74,7 @@ const cartPanel = ( s, checkout ) => 'drawer' === s.kind && !! s.orderLines && !
 // A shop client (a `shop` or `product` row) always has WooCommerce's cart, checkout and my-account pages, since the site
 // build points WooCommerce's page settings at them: each the draft gives no route gets a row with WooCommerce's slug.
 // The cart takes the label of the cart block's panel when the draft shows one ("Your bag"), else "Cart". The account
-// page, given or added, names the `page-my-account` template.
+// page, given or added, is an ordinary page.
 export function wooPages( rows, surfaces, used ) {
 	if ( ! rows.some( ( r ) => [ 'shop', 'product' ].includes( r.postType ) ) ) {
 		return;

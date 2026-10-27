@@ -57,7 +57,7 @@ test( 'MUST FAIL: a shop client always has cart, checkout and my-account rows; t
 	assert.deepEqual( [ row( state, 'cart' ).template, row( state, 'cart' ).title, row( state, 'cart' ).route ], [ 'cart', 'Your bag', undefined ] );
 	const bare = proposePageMap( { folder: FIX( 'manifest' ) } );
 	assert.deepEqual( [ 'cart', 'checkout', 'my-account' ].map( ( s ) => row( bare, s ) && `${ s }:${ row( bare, s ).template }:${ row( bare, s ).title }` ),
-		[ 'cart:cart:Cart', 'checkout:checkout:Checkout', 'my-account:page-my-account:Sign in' ] );
+		[ 'cart:cart:Cart', 'checkout:checkout:Checkout', 'my-account:page:Sign in' ] );
 	const plain = proposePageMap( { folder: FIX( 'hash' ) } );
 	assert.equal( plain.rows.some( ( r ) => [ 'cart', 'checkout', 'my-account' ].includes( r.slug ) ), false, 'a client with no shop gets none' );
 } );

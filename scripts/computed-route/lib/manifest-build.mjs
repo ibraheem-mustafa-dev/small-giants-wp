@@ -4,7 +4,7 @@
 // copy, lib/template-copies.mjs). Pure functions over parsed files; manifest.mjs reads and writes them.
 import { builtTemplate, rowKey } from './site-build-map.mjs';
 import { WHOLE_TREE, copySource, rowsOf, servedTemplates } from './template-copies.mjs';
-import { wooContentRole } from './site-build-plan.mjs';
+import { keepsWooContent } from './site-build-plan.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
 export const PREFIXES = { sgs_mega_menu: 'mega-', sgs_drawer: 'drawer-', sgs_modal: 'modal-', sgs_form: 'form-', sgs_choice_flow: 'flow-' };
 // Post type -> handoff record kind.
@@ -204,9 +204,9 @@ const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) =
 // The post row the single-post template is shaped from: the first post row of the page map, or null with none.
 export const templateSource = ( rows ) => rows.find( ( r ) => 'post' === r.postType ) ?? null;
 
-// A page row whose page surface is Filled and built into its post once it has an id (not WooCommerce's own page, whose
-// content is kept).
-const ownPage = ( r ) => 'page' === r.postType && ! wooContentRole( r );
+// A page row whose page surface is Filled and built into its post once it has an id (not WooCommerce's cart or checkout
+// page, whose content is kept; the account page is Filled like any page).
+const ownPage = ( r ) => 'page' === r.postType && ! keepsWooContent( r );
 
 // The template copy surfaces (FR-48-56), one per template the site serves that is not a shop row's own: { slug, key, copy,
 // row } with `copy.from` 'pages' (the shell the Filled pages in `copy.surfaces` share, those of its pages with an id, so it
