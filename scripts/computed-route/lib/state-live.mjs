@@ -21,18 +21,20 @@ const RESOLVE = resolveFinder.toString();
 
 // The walker states a state read opens, each with the pairs read in it: [{ name (null at rest), state (the config's
 // state entry, null at rest), pairs: [{ name, draft, live, draftFinder, liveFinder }] }]. A pair with no `states` is read
-// at rest; a pair scoped to states is read in each of them (the config's opening state is rest). A pair's finders may
-// be any walker finder (a selector, a group of paths, a text run's `within`, a template path): the in-page resolver
-// turns each into its element. A pair naming a state the config cannot open on both sides, or lacking a finder on a
-// side, is not followed. Each pair keeps one job id per side in every state.
+// in every state, as the walker walks it (draft-live-walk.mjs::pairsFor): at rest and in each later state the config
+// opens on both sides; a pair scoped to states is read in each of them (the config's opening state is rest). A pair's
+// finders may be any walker finder (a selector, a group of paths, a text run's `within`, a template path): the in-page
+// resolver turns each into its element. A pair naming a state the config cannot open on both sides, or lacking a finder
+// on a side, is not followed. Each pair keeps one job id per side in every state.
 export function stateGroups( cfg ) {
 	const opening = cfg.states?.[ 0 ]?.name ?? null;
+	const every = [ null, ...( cfg.states || [] ).slice( 1 ).map( ( s ) => s.name ) ];
 	const groups = new Map();
 	( cfg.pairs || [] ).forEach( ( p, i ) => {
 		if ( ! p.draft || ! p.live ) {
 			return;
 		}
-		for ( const n of p.states?.length ? p.states : [ null ] ) {
+		for ( const n of p.states?.length ? p.states : every ) {
 			const name = n === opening ? null : n;
 			const state = name ? ( cfg.states || [] ).find( ( s ) => s.name === name ) : null;
 			if ( name && ! ( 'function' === typeof state?.draft && 'function' === typeof state?.live ) ) {
@@ -45,6 +47,10 @@ export function stateGroups( cfg ) {
 	} );
 	return [ ...groups.values() ];
 }
+
+// The widths a state group is read at: every read width, less those a state scoped to some widths (`widths` on the
+// state, as the walker reads it) is not run at.
+export const groupWidths = ( group, widths ) => widths.filter( ( w ) => ! group.state?.widths || group.state.widths.includes( w ) );
 
 // The pairs the state check does not follow, each with the reason: { name, state (null at rest), why }.
 export function stateSkips( cfg ) {
@@ -118,7 +124,7 @@ export async function liveStateCheck( { browser, cfg, rows, widths = READ_WIDTHS
 		const live = {};
 		const timing = { draft: {}, live: {} };
 		const liveRest = {};
-		for ( const width of widths ) {
+		for ( const width of groupWidths( group, widths ) ) {
 			const d = await openDraft( browser, cfg, width, group.state );
 			try {
 				const side = await readSide( d, draftJobs, rows, null, log, logicRows );

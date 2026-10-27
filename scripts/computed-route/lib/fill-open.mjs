@@ -87,6 +87,18 @@ export function readUrlOf( { url, opener, record, routing } ) {
 	return opener || isStatePage( routing ) ? withRoute( url, opener?.route ?? record?.route ?? null, routing ) : url;
 }
 
+// The ways to open one record state, in plainState's order: [{ via ('state' | 'reach'), state, keys | calls, dropped,
+// expect, bounds }], with the reason none exists (null when one does). live: the component's facts.json `state` entry.
+export function stateWays( s, live ) {
+	const { keys, dropped } = usableKeys( s.state_keys, live );
+	const common = { state: s.name, dropped, expect: ( s.sc_if_tpl_ids || [] ).map( String ), bounds: widthBounds( s ) };
+	const set = Object.keys( keys ).length ? [ { via: 'state', ...common, keys } ] : [];
+	const calls = reachCalls( s.how_to_reach );
+	const reach = calls.length ? [ { via: 'reach', ...common, calls } ] : [];
+	const ways = plainState( s ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
+	return { ways, reason: ways.length ? null : `no usable state key (${ dropped.map( ( d ) => `${ d.key }: ${ d.why }` ).join( '; ' ) || 'the state sets none' }) and no setState call in its how_to_reach` };
+}
+
 // The opener for one surface, or null when the surface is not state-driven (its intake skeleton's root does not exist
 // without a state). entry: the `surfaces.json` entry; skeleton: intake.json `skeletons[<intakeSurface>]`; record: the
 // handoff `surfaces.json` record (`skeleton.id`); facts: the fact record or null; rootComponent: the served entry draft's
@@ -130,13 +142,8 @@ export function stateOpener( { entry, skeleton, record, facts, rootComponent = n
 	const refused = [];
 	const ways = [];
 	for ( const s of candidates ) {
-		const { keys, dropped } = usableKeys( s.state_keys, live );
-		const common = { state: s.name, dropped, expect: ( s.sc_if_tpl_ids || [] ).map( String ), bounds: widthBounds( s ) };
-		const set = Object.keys( keys ).length ? [ { via: 'state', ...common, keys } ] : [];
-		const calls = reachCalls( s.how_to_reach );
-		const reach = calls.length ? [ { via: 'reach', ...common, calls } ] : [];
-		const own = plainState( s ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
-		own.length ? ways.push( ...own ) : refused.push( { state: s.name, reason: `no usable state key (${ dropped.map( ( d ) => `${ d.key }: ${ d.why }` ).join( '; ' ) || 'the state sets none' }) and no setState call in its how_to_reach` } );
+		const { ways: own, reason } = stateWays( s, live );
+		own.length ? ways.push( ...own ) : refused.push( { state: s.name, reason } );
 	}
 	const first = ways[ 0 ];
 	return first ? { ...base, ways, state: first.state, keys: first.keys ?? {}, calls: first.calls ?? [], dropped: first.dropped, expect: first.expect, refused } : { ...base, ways, refused };

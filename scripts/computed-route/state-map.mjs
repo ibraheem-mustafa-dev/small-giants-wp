@@ -5,15 +5,30 @@
 // Prints each walker state with its setting state, every sc-if with how the draft reaches it (or its gap row), and the
 // diff against scripts/parity/flows/state-map-reasons.json. --check exits 1 when an sc-if is neither reached nor listed,
 // or the diff holds a row.
+//   node scripts/computed-route/state-map.mjs --check-walkers <client> [--surfaces <surfaces.json>]
+// The walker check (lib/walker-check.mjs): every walker file a surface names exists and walks every state the surface
+// maps; a state its generated config lists as unwalked is printed with its reason. Exits 1 on a fault.
+import path from 'path';
 import { stateRows } from './lib/state-vocab.mjs';
 import { stateMap, diffReasons } from './lib/state-map.mjs';
-import { loadClient, loadReasons } from './lib/state-map-io.mjs';
+import { loadClient, loadReasons, REPO } from './lib/state-map-io.mjs';
+import { checkWalkers } from './lib/walker-check.mjs';
 
 const argv = process.argv.slice( 2 );
 const flag = ( n ) => {
 	const i = argv.indexOf( n );
 	return -1 === i ? null : argv[ i + 1 ];
 };
+const walkersOf = flag( '--check-walkers' );
+if ( walkersOf ) {
+	const { surfaces: all } = loadClient( walkersOf, { surfacesFile: flag( '--surfaces' ) } );
+	const r = await checkWalkers( all, path.join( REPO, 'sites', walkersOf, 'build' ) );
+	console.log( `# Walker check: ${ walkersOf } (${ r.checked } surfaces with a walker)\n` );
+	r.faults.forEach( ( f ) => console.log( `- FAULT ${ f }` ) );
+	r.unwalked.forEach( ( u ) => console.log( `- listed ${ u }` ) );
+	console.log( r.faults.length ? `\nwalker check failed: ${ r.faults.length } fault(s)` : '\nwalker check passed' );
+	process.exit( r.faults.length ? 1 : 0 );
+}
 const client = flag( '--client' );
 const surface = flag( '--surface' );
 if ( ! client || ! surface ) {
@@ -28,7 +43,7 @@ try {
 	console.error( `state vocabulary unavailable (${ e.message }): set-state rows carry no setting state` );
 }
 const map = stateMap( { surfaces, surface, intake, vocab, records: flag( '--records' )?.split( ',' ) || null } );
-const diff = diffReasons( map, loadReasons() );
+const diff = diffReasons( map, loadReasons(), client );
 
 
 const census = ( intake?.census || [] ).filter( ( r ) => 'sc-if' === r.kind ).length;
