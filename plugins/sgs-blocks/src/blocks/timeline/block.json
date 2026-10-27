@@ -186,13 +186,13 @@
 					"motion": false,
 					"label": "Description links",
 					"attrMap": {
-						"css:color-link": "descriptionLinkColour",
+						"css:color": "descriptionLinkColour",
 						"css:color-link-gradient": "descriptionLinkColourGradient"
 					},
 					"states": {
 						"hover": {
 							"attrMap": {
-								"css:color-link": "descriptionLinkColourHover",
+								"css:color": "descriptionLinkColourHover",
 								"css:color-link-gradient": "descriptionLinkColourHoverGradient"
 							}
 						}
