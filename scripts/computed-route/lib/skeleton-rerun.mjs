@@ -32,14 +32,19 @@ const savedBreakpoints = ( repo, client ) => {
 	const file = path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' );
 	return fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ).breakpoints || [] : [];
 };
+// The page map in the client's saved intake.json: which surface is a choice flow or a block-owned part (lib/skeleton-surface-role.mjs).
+const savedPageMap = ( repo, client ) => {
+	const file = path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' );
+	return fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ).pageMap || [] : [];
+};
 
 // o: { client, db, repo?, skeletons (intake.json's `skeletons`: { <slug>: { id, kind, name } }), motion? (loopingKeys), picks? ({ surface: { key:
 // decision } }), useBuilt? (false proposes even a surface the client built, to measure the rules on it), breakpoints? (intake.json's
-// `breakpoints`; the saved file's by default), propose? (the proposer; proposeSkeleton by default) }. Each surface is proposed with the context `skeleton.mjs propose` passes
+// `breakpoints`; the saved file's by default), pageMap? (intake.json's `pageMap`; the saved file's by default), propose? (the proposer; proposeSkeleton by default) }. Each surface is proposed with the context `skeleton.mjs propose` passes
 // (lib/skeleton-context.mjs::proposalContext): its handoff states, the thresholds, and the calibration keys and settings.
 // Returns { surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton } }, missing: [slug], absorbed: { <slug>: { into (the header surface's slug), root (the strip's root key) } } }; throws when
 // the decisions data is not sound (lib/skeleton-facts.mjs::decisionsProblems), as the intake run refuses it.
-export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), propose = proposeSkeleton } ) {
+export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), pageMap = savedPageMap( repo, client ), propose = proposeSkeleton } ) {
 	const dir = path.join( repo, 'sites', client, 'build', 'intake', 'inventories' );
 	const builtFile = path.join( repo, 'sites', client, 'build', 'skeleton', 'built-surfaces.json' );
 	const built = useBuilt && fs.existsSync( builtFile ) ? JSON.parse( fs.readFileSync( builtFile, 'utf8' ) ).surfaces || {} : {};
@@ -78,7 +83,7 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 		}
 		const b = built[ s.id ] || built[ s.slug ] || null;
 		const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints } );
-		const r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db } );
+		const r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id } );
 		r.proposal.stripRoots?.forEach( ( k ) => absorbedKeys.set( k, s.slug ) );
 		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ), fingerprints: fingerprintsOf( inventory ) };
 	}
@@ -98,7 +103,7 @@ const entryOf = ( slug, was, r, inventory ) => ( {
 // intake.json with its `skeletons` proposed again offline and collapsed as the intake run collapses them. A surface
 // whose inventory was not saved keeps its old entry and is listed in `missing`. Returns { intake, missing, before, after }.
 export function refreshIntakeSkeletons( { intake, client, db, repo = REPO } ) {
-	const run = rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), breakpoints: intake.breakpoints || [] } );
+	const run = rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), breakpoints: intake.breakpoints || [], pageMap: intake.pageMap || [] } );
 	const entries = Object.keys( intake.skeletons ).filter( ( slug ) => ! run.absorbed[ slug ] ).map( ( slug ) => run.surfaces[ slug ]?.entry || { surface: slug, ...intake.skeletons[ slug ] } );
 	const c = collapseSkeletons( entries );
 	return { intake: { ...intake, skeletons: c.skeletons }, missing: run.missing, before: c.before, after: c.after };

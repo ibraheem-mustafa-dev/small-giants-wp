@@ -552,6 +552,35 @@
 			"scope": "two or more consecutive icon-only links, in the top row of a surface of kind drawer (the first child of the drawer root that sits in the flow), whose targets are Site Info kinds the brand registry owns (a tel: or mailto: address, a social profile host)",
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
 			"reason": "a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21)"
+		},
+		"blockOwnedPart": {
+			"id": "blockOwnedPart",
+			"scope": "a surface whose root the page map holds as a part with owner `block` of another row (lib/skeleton-surface-role.mjs, the part's draftId naming the surface's record or its root's tag and aria-label); the owning block comes from the row's template",
+			"byTemplate": {
+				"cart": { "block": "sgs/cart", "attributes": { "displayMode": "drawer" }, "reason": "the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87)" }
+			},
+			"reason": "a drawer the page map holds as a block-owned part of another row is drawn by that block, never the navigation drawer: the block is the surface's root and every element in it is absorbed (Bean, 2026-10-23, plan 2026-10-23-cloning-tool-completion S5: the bag drawer is part of the cart block)"
+		},
+		"choiceFlow": {
+			"id": "choiceFlow",
+			"postType": "sgs_choice_flow",
+			"block": "sgs/choice-flow",
+			"step": "sgs/form-step",
+			"question": "sgs/choice-flow-question",
+			"result": "sgs/choice-flow-result",
+			"showcaseKinds": [ "modal" ],
+			"countLabel": { "patterns": [ "^(.+?)\\s+\\d+\\s+of\\s+\\d+$" ], "flags": "i" },
+			"stepNumber": { "patterns": [ "^\\d+\\s*[·.:)\\-]\\s*" ] },
+			"price": { "patterns": [ "(?:£|\\$|€|¥|₹)\\s?\\d", "\\d[\\d.,]*\\s?(?:€|zł|kr)(?![a-z])", "^(?:included|free)$" ], "flags": "i" },
+			"pricePrefixFrom": { "patterns": [ "^from\\b" ], "flags": "i" },
+			"close": { "patterns": [ "close", "dismiss" ], "flags": "i" },
+			"skip": { "patterns": [ "\\bskip\\b" ], "flags": "i" },
+			"addToBag": { "handlers": { "patterns": [ "^add(?:[A-Z]\\w*)?$" ] }, "words": { "patterns": [ "\\badd\\b.*\\b(?:bag|basket|cart)\\b" ], "flags": "i" } },
+			"next": { "patterns": [ "next", "continue" ], "flags": "i" },
+			"back": { "patterns": [ "back", "prev" ], "flags": "i" },
+			"scope": "the surface the page map holds as an sgs_choice_flow row (its draftId names the surface's surfaces.json record), read from the fact record (lib/skeleton-choice-flow.mjs): a question is a loop whose item holds a button its handler binds to the loop item, its words the text in the loop's container (or the text just before it), its options the loop's recorded values; a conditional panel after a question's options is a step it opens underneath; the summary is the flow's aside; close, skip, add to bag, continue and back are buttons named by their handler or words",
+			"gapReason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+			"reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row"
 		}
 	}
 }

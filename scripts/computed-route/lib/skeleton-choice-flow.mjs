@@ -1,0 +1,306 @@
+// A choice flow read from the fact record (Spec 48 FR-48-6, rules.choiceFlow; Spec 43). The page map says which surface is a
+// flow (lib/skeleton-surface-role.mjs); this file says what it holds, from the template and the logic's recorded values, never
+// from the rendered page alone (a flow renders one step at a time) and never from a name:
+//   question  a loop (`sc-for`) whose item holds a button its click handler binds to the loop item (`{{ o.pick }}`). Its
+//             container is the highest element above the loop holding no other question and no other control; its words are
+//             the container's own text (else the text just before it): a heading (else the first text) is the question, a
+//             text before it the eyebrow or the flow's step count ("Question 1 of 3"), the text after it the intro. Each
+//             option is one loop item: the first recorded text of its button is the label, a text that is not a price the
+//             description, a recorded text under a condition outside the button its help text. A value is read only when
+//             the loop recorded one distinct value per item; otherwise the field is left out and a note says why.
+//   panel     a condition (`sc-if`) in a question's container after its options: a step the question opens underneath
+//             (FR-43-26), holding the panel's fields and a result; options and panels pair in order when their counts match.
+//   pieces    the flow's aside is the summary (FR-43-19); a close, skip, add-to-bag, continue or back button (by its handler or
+//             words, rules.choiceFlow patterns) is the flow's own setting; a heading outside the questions is the flow title.
+// What the family cannot hold is never dropped: lib/skeleton-choice-flow-tree.mjs::settleFlowRows makes each rendered element
+// with words or a control outside every covered piece a gap row, and the notes and hand-overs here reach the review.
+import { specHit } from './skeleton-facts.mjs';
+import { brandOwnsAddress } from './brand-registry.mjs';
+
+const HEADING = /^h[1-6]$/;
+const FIELD_TAGS = new Set( [ 'input', 'select', 'textarea', 'sc-raw-select' ] );
+const BOUND = /\{\{/;
+const LINK_SOURCES = new Set( [ 'phone', 'email', 'whatsapp' ] );
+const NOTE_ICONS = new Set( [ 'whatsapp', 'phone', 'email' ] );
+const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
+const slug = ( s ) => squash( s ).toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' );
+
+// The record's template tree under one root, in document order (a template element's number grows down the document).
+function recordTree( els, rootKey ) {
+	const comp = els[ rootKey ]?.template.component;
+	const kids = new Map();
+	for ( const [ k, v ] of Object.entries( els ) ) {
+		const p = v.template.parent;
+		v.template.component === comp && p && ( kids.get( p ) ?? kids.set( p, [] ).get( p ) ).push( k );
+	}
+	const num = ( k ) => Number( els[ k ].template.n );
+	kids.forEach( ( list ) => list.sort( ( a, b ) => num( a ) - num( b ) ) );
+	const desc = ( k ) => ( kids.get( k ) || [] ).flatMap( ( c ) => [ c, ...desc( c ) ] );
+	return { kids: ( k ) => kids.get( k ) || [], desc, parent: ( k ) => els[ k ]?.template.parent ?? null, num };
+}
+
+// o: { view (lib/skeleton-record.mjs::recordView), rootKey (the flow root's record key), R (rules.choiceFlow), formControl
+// (rules.formControl), brands (lib/brand-registry.mjs), surfaceKind, parts (the surface's surfaces.json parts, from
+// surfaceContext) }. Returns { attributes (the root's settings), steps [{ key, label, question?, fields, result? }], covered
+// (record key -> what draws it), copies [{ words, reason }], handovers, notes }.
+export function choiceFlowModel( { view, rootKey, R, formControl = null, brands = [], surfaceKind = null, parts = [] } ) {
+	const els = view.elements || {};
+	const out = { attributes: {}, steps: [], covered: new Map(), copies: [], handovers: [], notes: [] };
+	if ( ! rootKey || ! els[ rootKey ] ) {
+		out.notes.push( 'the flow root has no fact record entry: its questions cannot be read' );
+		return out;
+	}
+	const t = recordTree( els, rootKey );
+	const rec = ( k ) => els[ k ].template;
+	const real = ( k ) => ! /^sc-/.test( rec( k ).realTag );
+	const literal = ( k ) => ( ( w ) => ( w && ! BOUND.test( w ) ? w : '' ) )( squash( rec( k ).words ) );
+	const words = ( k ) => [ k, ...t.desc( k ) ].map( literal ).filter( Boolean ).join( ' ' );
+	const handler = ( k ) => rec( k ).events?.find( ( ev ) => /^onclick$/i.test( ev.name ) )?.expr ?? /^\{\{\s*([^}\s]+)\s*\}\}$/.exec( rec( k ).attrs?.onClick ?? '' )?.[ 1 ] ?? '';
+	const control = ( k ) => [ 'button', 'a' ].includes( rec( k ).realTag ) || !! handler( k );
+	const values = ( k, hole ) => {
+		const a = els[ k ].logic?.holes?.[ hole.id ] || {};
+		const at = a[ 1440 ] ?? Object.values( a )[ 0 ];
+		return at && ! at.err ? { v: ( at.v || [] ).filter( ( x ) => [ 'string', 'number' ].includes( x.t ) ).map( ( x ) => squash( x.v ) ), n: at.n, loop: !! at.loop, more: at.more ?? 0 } : null;
+	};
+	const textHoles = ( list ) => list.flatMap( ( k ) => rec( k ).holes.filter( ( h ) => 'text' === h.where ).map( ( h ) => ( { k, vals: values( k, h ) } ) ) );
+	const firstValue = ( k ) => textHoles( [ k, ...t.desc( k ) ] ).map( ( x ) => x.vals?.v[ 0 ] ).find( Boolean ) || '';
+	const cover = ( k, why ) => [ k, ...t.desc( k ) ].forEach( ( x ) => out.covered.has( x ) || out.covered.set( x, why ) );
+	const all = t.desc( rootKey );
+	const price = ( v ) => !! specHit( R.price, v );
+
+	// The option loops: the button its handler binds to the item, and the item count the list recorded.
+	const loops = all.filter( ( k ) => 'sc-for' === rec( k ).realTag && rec( k ).attrs?.as ).map( ( k ) => {
+		const as = rec( k ).attrs.as;
+		const button = t.desc( k ).find( ( d ) => 'button' === rec( d ).realTag && handler( d ).startsWith( `${ as }.` ) );
+		const list = rec( k ).holes.find( ( h ) => 'attr:list' === h.where );
+		const counted = list ? ( els[ k ].logic?.holes?.[ list.id ]?.[ 1440 ]?.v?.[ 0 ]?.n ?? null ) : null;
+		return button ? { k, as, button, count: counted ?? Math.max( 0, ...textHoles( t.desc( k ) ).map( ( x ) => x.vals?.n ?? 0 ) ) } : null;
+	} ).filter( Boolean );
+	const inLoop = ( loop ) => new Set( [ loop.k, ...t.desc( loop.k ) ] );
+	// The question's container: up from the loop while the element holds no other loop and no control outside this one.
+	const containerOf = ( loop ) => {
+		const mine = inLoop( loop );
+		const fits = ( k ) => ! t.desc( k ).some( ( d ) => ! mine.has( d ) && ( control( d ) || loops.some( ( o ) => o.k === d ) ) );
+		let best = t.parent( loop.k );
+		for ( let p = t.parent( best ); p && p !== rootKey && fits( p ); p = t.parent( p ) ) {
+			real( p ) && ( best = p );
+		}
+		return best;
+	};
+
+	const add = R.addToBag;
+	const pieces = { close: null, skip: null, add: null, next: null, back: null };
+	const questions = loops.map( ( loop ) => {
+		const box = containerOf( loop );
+		const mine = inLoop( loop );
+		const after = Math.max( ...[ ...mine ].map( t.num ) );
+		const panels = t.desc( box ).filter( ( k ) => 'sc-if' === rec( k ).realTag && ! mine.has( k ) && t.num( k ) > after && ! String( rec( k ).attrs?.value ?? '' ).includes( `${ loop.as }.` ) );
+		const top = panels.filter( ( k ) => ! panels.some( ( o ) => o !== k && t.desc( o ).includes( k ) ) );
+		const skip = new Set( [ ...mine, ...top.flatMap( ( k ) => [ k, ...t.desc( k ) ] ) ] );
+		let texts = t.desc( box ).filter( ( k ) => ! skip.has( k ) && real( k ) && literal( k ) );
+		const lead = [];
+		// No words in the container: the sibling just before it, when it holds text and no control (a label above a row of chips).
+		if ( ! texts.length ) {
+			const sibs = t.kids( t.parent( box ) );
+			const s = sibs[ sibs.indexOf( box ) - 1 ];
+			s && ( literal( s ) || t.desc( s ).some( literal ) ) && ! [ s, ...t.desc( s ) ].some( ( d ) => control( d ) || loops.some( ( o ) => o.k === d ) ) && lead.push( s );
+			texts = lead.flatMap( ( x ) => [ x, ...t.desc( x ) ] ).filter( literal );
+		}
+		const bound = t.desc( box ).filter( ( k ) => ! skip.has( k ) && BOUND.test( rec( k ).words || '' ) );
+		return { loop, box, mine, panels: top, texts, lead, bound };
+	} );
+	const boxes = questions.map( ( q ) => q.box );
+	const inQuestion = new Set( questions.flatMap( ( q ) => [ q.box, ...t.desc( q.box ), ...q.lead.flatMap( ( s ) => [ s, ...t.desc( s ) ] ) ] ) );
+
+	// The flow's own controls outside the questions, by handler or words.
+	for ( const k of all.filter( ( x ) => ! inQuestion.has( x ) && control( x ) ) ) {
+		const h = handler( k );
+		const w = words( k ) || firstValue( k );
+		const which = specHit( R.close, h ) || specHit( R.close, w ) || specHit( R.close, literal( k ) ) ? 'close'
+			: specHit( R.skip, literal( k ) ) ? 'skip'
+				: specHit( add?.handlers, h ) || specHit( add?.words, w ) ? 'add'
+					: specHit( R.next, h ) ? 'next' : specHit( R.back, h ) ? 'back' : null;
+		which && ! pieces[ which ] && ( pieces[ which ] = k );
+	}
+	const aside = all.find( ( k ) => ! inQuestion.has( k ) && 'aside' === rec( k ).realTag ) || null;
+	const resultAction = pieces.add ? 'add-to-bag' : 'recommend';
+	const addAttrs = {};
+	if ( pieces.add ) {
+		const own = words( pieces.add );
+		own && ! BOUND.test( own ) && ( addAttrs.addToBasketLabel = own );
+		textHoles( [ pieces.add, ...t.desc( pieces.add ) ] ).some( ( x ) => x.vals?.v.some( price ) ) && ( addAttrs.buttonShowsTotal = true );
+	}
+
+	// The steps: each question, then the steps its panels open.
+	const counts = [];
+	questions.forEach( ( q, qi ) => {
+		const heading = q.texts.find( ( k ) => HEADING.test( rec( k ).realTag ) ) ?? q.texts[ 0 ];
+		const at = q.texts.indexOf( heading );
+		const before = q.texts.slice( 0, Math.max( 0, at ) ).map( literal );
+		const intro = q.texts.slice( at + 1 ).map( literal ).join( ' ' );
+		const stripped = heading ? literal( heading ).replace( new RegExp( R.stepNumber?.patterns?.[ 0 ] ?? '^$' ), '' ) : '';
+		const question = { question: stripped };
+		const count = before[ 0 ] ? new RegExp( R.countLabel?.patterns?.[ 0 ] ?? '^$', R.countLabel?.flags ?? '' ).exec( before[ 0 ] ) : null;
+		count ? counts.push( count[ 1 ] ) : before.length && ( question.eyebrow = before.join( ' ' ) );
+		intro && ( question.intro = intro );
+		! stripped && out.notes.push( `question ${ qi + 1 } (${ q.box }) has no words of its own: write its question in the editor` );
+		q.bound.forEach( ( k ) => out.notes.push( `question ${ qi + 1 }: the live line ${ k } "${ squash( rec( k ).words ) }" has no flow setting` ) );
+
+		// The options, one per loop item.
+		const inButton = new Set( [ q.loop.button, ...t.desc( q.loop.button ) ] );
+		const conditional = ( k ) => {
+			for ( let p = t.parent( k ); p && p !== q.loop.k; p = t.parent( p ) ) {
+				if ( 'sc-if' === rec( p ).realTag ) {
+					return true;
+				}
+			}
+			return false;
+		};
+		const holes = textHoles( t.desc( q.loop.k ) );
+		const own = holes.filter( ( x ) => inButton.has( x.k ) && ! conditional( x.k ) );
+		const aligned = ( x ) => !! x?.vals?.loop && x.vals.v.length === q.loop.count;
+		const label = own.find( ( x ) => ! x.vals?.v.some( price ) );
+		const cost = own.find( ( x ) => x !== label && x.vals?.v.some( price ) );
+		const description = own.find( ( x ) => x !== label && x !== cost && ! x.vals?.v.some( price ) );
+		const help = holes.find( ( x ) => ! inButton.has( x.k ) && conditional( x.k ) );
+		const name = `question ${ qi + 1 } "${ stripped || q.box }"`;
+		if ( aligned( label ) ) {
+			question.options = label.vals.v.map( ( l, i ) => ( {
+				label: l, value: slug( l ),
+				...( aligned( description ) ? { description: description.vals.v[ i ] } : {} ),
+				...( aligned( help ) ? { helpText: help.vals.v[ i ] } : {} ),
+			} ) );
+			description && ! aligned( description ) && out.notes.push( `${ name }: the option descriptions repeat a value, so they cannot be paired with their options` );
+			help && ! aligned( help ) && out.notes.push( `${ name }: the option help texts repeat a value, so they cannot be paired with their options` );
+		} else {
+			question.options = [];
+			out.notes.push( `${ name }: the loop ${ q.loop.k } recorded ${ label?.vals?.more ? `only ${ label.vals.v.length } of its ${ q.loop.count } labels` : 'no distinct label per option' }, so its options are not listed: add them in the editor` );
+		}
+		if ( cost?.vals?.v.length ) {
+			cost.vals.v.some( ( v ) => specHit( R.pricePrefixFrom, v ) ) && ( question.pricePrefix = 'from' );
+			out.handovers.push( { owner: 'product-data', kind: 'text', detail: `${ name}: the option prices (${ cost.vals.v.join( ', ' ) }) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there` } );
+		}
+		t.desc( q.loop.button ).some( ( k ) => [ 'img', 'svg' ].includes( rec( k ).realTag ) ) && out.handovers.push( { owner: 'content-page', kind: 'presence', detail: `${ name }: each option shows a picture: choose each option's image (FR-43-15)` } );
+		const badges = t.desc( q.loop.button ).filter( ( k ) => conditional( k ) && ( literal( k ) || textHoles( [ k ] ).length ) );
+		const badgeWords = [ ...new Set( badges.map( ( k ) => literal( k ) || firstValue( k ) ).filter( Boolean ) ) ];
+		badgeWords.length && out.handovers.push( { owner: 'content-page', kind: 'text', detail: `${ name }: the badge "${ badgeWords.join( ', ' ) }" shows on some options: set it on those options` } );
+		cover( q.box, `${ name }, sgs/choice-flow-question` );
+		q.lead.forEach( ( s ) => cover( s, `${ name }'s words, sgs/choice-flow-question` ) );
+		const step = { key: q.box, label: stripped, question, fields: [] };
+		out.steps.push( step );
+
+		// The steps the panels open underneath, paired with the options in order.
+		const made = q.panels.map( ( p, pi ) => {
+			const fields = t.desc( p ).filter( ( k ) => FIELD_TAGS.has( rec( k ).realTag ) && 'hidden' !== String( rec( k ).attrs?.type ?? '' ).toLowerCase() ).map( ( k ) => fieldOf( k, p ) ).filter( Boolean );
+			const texts = t.desc( p ).filter( ( k ) => real( k ) && literal( k ) ).map( literal );
+			const paras = t.desc( p ).filter( ( k ) => 'p' === rec( k ).realTag && literal( k ) ).map( literal );
+			const result = fields.length ? { heading: '', ...( paras.length ? { body: paras.join( ' ' ) } : {} ) } : { heading: texts[ 0 ] || '', ...( texts.length > 1 ? { body: texts.slice( 1 ).join( ' ' ) } : {} ) };
+			cover( p, `${ name }, the step its option ${ pi + 1 } opens underneath` );
+			return { key: p, label: stripped, fields, result: { ...result, action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) } };
+		} );
+		if ( made.length ) {
+			question.showNextStepInline = true;
+			if ( made.length === question.options.length ) {
+				made.forEach( ( s, i ) => ( question.options[ i ].nextStepId = String( out.steps.length + i ) ) );
+			} else {
+				out.notes.push( `${ name }: ${ made.length } panels and ${ question.options.length } options do not pair, so no option opens its panel: set each option's next step` );
+			}
+			out.steps.push( ...made );
+		}
+	} );
+
+	// A field of a panel: its block (rules.formControl by rendered type; a declared numeric input mode is a number field) and label.
+	function fieldOf( k, panel ) {
+		const F = formControl;
+		if ( ! F ) {
+			return null;
+		}
+		const tag = rec( k ).realTag;
+		const mode = String( rec( k ).attrs?.inputMode ?? rec( k ).attrs?.inputmode ?? '' ).toLowerCase();
+		const type = String( rec( k ).attrs?.type ?? ( [ 'decimal', 'numeric' ].includes( mode ) ? 'number' : 'text' ) ).toLowerCase();
+		if ( 'input' === tag && ( F.notFields || [] ).includes( type ) ) {
+			return null;
+		}
+		const block = 'input' === tag ? F.byType?.[ type ] || F.fallback : F.byTag?.[ tag ] || F.fallback;
+		const aria = squash( rec( k ).attrs?.[ 'aria-label' ] );
+		let wrap = null;
+		for ( let p = t.parent( k ); p && p !== panel && ! wrap; p = t.parent( p ) ) {
+			'label' === rec( p ).realTag && ( wrap = p );
+		}
+		const label = ( aria && ! BOUND.test( aria ) ? aria : '' ) || ( wrap ? t.desc( wrap ).map( literal ).find( Boolean ) : '' ) || t.desc( panel ).map( literal ).find( Boolean ) || '';
+		return { block, label };
+	}
+
+	// Result parts of the surface (surfaces.json kind result) are result steps.
+	for ( const part of parts.filter( ( p ) => 'result' === p.kind ) ) {
+		const roots = ( part.roots || [] ).filter( ( k ) => els[ k ] );
+		const texts = roots.flatMap( ( k ) => [ k, ...t.desc( k ) ] ).filter( ( k ) => literal( k ) ).map( literal );
+		roots.forEach( ( k ) => cover( k, `the result "${ part.name }", sgs/choice-flow-result` ) );
+		out.steps.push( { key: roots[ 0 ] ?? null, label: part.name || '', fields: [], result: { heading: texts[ 0 ] || '', ...( texts.length > 1 ? { body: texts.slice( 1 ).join( ' ' ) } : {} ), action: resultAction, ...( 'add-to-bag' === resultAction ? addAttrs : {} ) } } );
+	}
+	// The add-to-bag control ends the flow: with no result step yet, it is one.
+	if ( pieces.add && ! out.steps.some( ( s ) => s.result ) ) {
+		out.steps.push( { key: pieces.add, label: '', fields: [], result: { heading: '', action: 'add-to-bag', ...addAttrs } } );
+	}
+	! questions.length && out.notes.push( `no question found under the flow root ${ rootKey }: no loop of options whose button's handler binds the loop item` );
+
+	// The flow's own settings.
+	const A = out.attributes;
+	A.flowLayout = ( R.showcaseKinds || [] ).includes( surfaceKind ) ? 'showcase' : 'compact';
+	counts.length && ( A.stepCountLabel = counts[ 0 ] );
+	// The bar a control sits in (the root's child holding it, when that child holds no question or summary) is the flow's own.
+	const bar = ( k ) => {
+		let b = k;
+		while ( t.parent( b ) && t.parent( b ) !== rootKey ) {
+			b = t.parent( b );
+		}
+		return t.parent( b ) === rootKey && ! [ b, ...t.desc( b ) ].some( ( d ) => boxes.includes( d ) || d === aside ) ? b : k;
+	};
+	if ( pieces.close ) {
+		const own = literal( pieces.close );
+		Object.assign( A, { showHeader: true, closeStyle: own ? 'text' : 'icon' }, own ? { closeLabel: own } : {} );
+		const head = bar( pieces.close );
+		cover( head, 'the flow header (sgs/choice-flow showHeader, closeLabel)' );
+		[ head, ...t.desc( head ) ].some( ( k ) => 'img' === rec( k ).realTag ) && out.handovers.push( { owner: 'site-info', kind: 'presence', detail: 'the flow header shows a logo: choose it in the flow\'s header logo setting (headerLogo)' } );
+	}
+	if ( pieces.skip ) {
+		const holder = t.parent( pieces.skip );
+		Object.assign( A, { skipLabel: words( pieces.skip ) }, holder && literal( holder ) ? { skipPrompt: literal( holder ) } : {}, specHit( add?.handlers, handler( pieces.skip ) ) ? { skipAddsToBag: true } : {} );
+		cover( bar( pieces.skip ), 'the flow footer and its skip link (sgs/choice-flow skipPrompt, skipLabel)' );
+	}
+	if ( pieces.next ) {
+		const label = words( pieces.next ) || firstValue( pieces.next );
+		label && ( A.continueLabel = label );
+		cover( bar( pieces.next ), 'the flow footer (sgs/choice-flow continueLabel)' );
+	}
+	pieces.back && cover( bar( pieces.back ), 'the flow footer and its Back button' );
+	pieces.add && cover( bar( pieces.add ), 'the add-to-bag result (sgs/choice-flow-result action add-to-bag)' );
+	if ( aside ) {
+		A.showPricePanel = true;
+		boxes.length && ( A.summaryPosition = t.num( aside ) < t.num( boxes[ 0 ] ) ? 'start' : 'end' );
+		summaryOf( aside );
+		cover( aside, 'the flow summary (sgs/choice-flow showPricePanel, FR-43-19)' );
+	}
+	const title = all.find( ( k ) => ! out.covered.has( k ) && HEADING.test( rec( k ).realTag ) && literal( k ) );
+	title && ( A.title = literal( title ), cover( title, 'the flow title (sgs/choice-flow title)' ) );
+
+	// The summary's running lines (its base row and the placeholder row before the first choice) and its help note.
+	function summaryOf( k ) {
+		const lines = t.desc( k ).find( ( d ) => 'sc-for' === rec( d ).realTag && 2 === textHoles( t.desc( d ) ).length );
+		const [ key, value ] = lines ? textHoles( t.desc( lines ) ) : [];
+		if ( key?.vals?.loop && 2 === key.vals.v.length && value?.vals?.loop && 2 === value.vals.v.length && ! price( value.vals.v[ 1 ] ) ) {
+			Object.assign( A, { summaryBaseLabel: key.vals.v[ 0 ], summaryPendingLabel: key.vals.v[ 1 ], summaryPendingText: value.vals.v[ 1 ] } );
+		}
+		const link = t.desc( k ).find( ( d ) => 'a' === rec( d ).realTag && /^(?!#|\{\{)\S/.test( rec( d ).attrs?.href ?? '' ) );
+		if ( link ) {
+			const texts = [ link, ...t.desc( link ) ].map( literal ).filter( Boolean );
+			const href = rec( link ).attrs.href;
+			const brand = brands.find( ( b ) => brandOwnsAddress( b, href ) )?.slug ?? null;
+			texts[ 0 ] && ( A.stageNote = texts[ 0 ] );
+			A.stageNoteLink = { url: href, text: texts.slice( 1 ).join( ' ' ), source: LINK_SOURCES.has( brand ) ? brand : 'url' };
+			NOTE_ICONS.has( brand ) && ( A.stageNoteIcon = brand );
+			out.copies.push( { words: texts.join( '' ).replace( /\s+/g, '' ), reason: 'the summary\'s help note, shown again where the summary collapses (sgs/choice-flow stageNote)' } );
+		}
+	}
+	return out;
+}

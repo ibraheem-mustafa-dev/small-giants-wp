@@ -15,6 +15,7 @@ import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
+import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -95,7 +96,7 @@ const HEADING = /^h[1-6]$/;
 // of template keys, `<component>/<tpl>`, whose own animation loops a translate for ever: lib/skeleton-rerun.mjs::loopingKeys),
 // view (lib/skeleton-record.mjs::recordView: the fact record's reading of each element's attributes and declarations; an
 // empty view reads the rendered attributes), scope (lib/skeleton-record.mjs::surfaceContext: the surface's parent, kind and
-// opener, or null) }.
+// opener, or null) }. `surface.role` is the page map's role for the surface (lib/skeleton-surface-role.mjs::surfaceRole).
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	const R = facts.decisions.rules || {};
 	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
@@ -357,7 +358,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A bar above the header (by surface kind and name) is the header's top row.
 		( { e } ) => {
-			const hit = 0 === e.depth && ( R.surfaceRoot?.entries || [] ).find( ( x ) => x.kind === surface.kind && new RegExp( x.namePattern, 'i' ).test( surface.name || '' ) );
+			const hit = 0 === e.depth && 'blockPart' !== surface.role?.role && ( R.surfaceRoot?.entries || [] ).find( ( x ) => x.kind === surface.kind && new RegExp( x.namePattern, 'i' ).test( surface.name || '' ) );
 			return hit ? v( 'surfaceRoot', { block: hit.block, reason: hit.reason } ) : null;
 		},
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
@@ -549,7 +550,19 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
+	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
+	const role = surface.role ?? null;
+	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;
 	const STRUCTURES = [
+		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
+		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
+		( { e } ) => ( flow && e === m.root ? v( 'choiceFlow', { block: R.choiceFlow.block, absorb: true, attributes: flow.attributes } ) : null ),
+		// A surface the page map holds as a block-owned part of another row (the cart page's bag drawer) is that block, which
+		// draws everything in it (S5); a row template with no owning block named leaves the root to the scoring.
+		( { e } ) => {
+			const own = e === m.root && 'blockPart' === role?.role ? R.blockOwnedPart?.byTemplate?.[ role.row.template ] : null;
+			return own ? v( 'blockOwnedPart', { block: own.block, absorb: true, attributes: { ...( own.attributes || {} ) }, reason: `${ own.reason }; the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row` } ) : null;
+		},
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
@@ -675,5 +688,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region };
+	return { ruleFor, drawsChildren, declared, iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, choiceFlow: flow };
 }

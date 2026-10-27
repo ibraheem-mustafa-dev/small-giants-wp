@@ -81,7 +81,12 @@ export function decisionsProblems( facts ) {
 	const r = d.rules || {};
 	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ], [ 'rules.marquee.logoBlock', r.marquee?.logoBlock ], [ 'rules.marquee.itemBlock', r.marquee?.itemBlock ], [ 'rules.trustBar', r.trustBar?.block ], [ 'rules.hero', r.hero?.block ], [ 'rules.formHost', r.formHost?.block ], [ 'rules.formLink', r.formLink?.block ], [ 'rules.formControl.inputPartHost', r.formControl?.inputPartHost ], [ 'rules.marqueeCodeItems', r.marqueeCodeItems?.block ], [ 'rules.megaGroup', r.megaGroup?.block ], [ 'rules.megaAside', r.megaAside?.block ], [ 'rules.megaContainer', r.megaContainer?.block ], [ 'rules.drawerIconRun', r.drawerIconRun?.block ], [ 'rules.headerSlots', r.headerSlots?.block ], [ 'rules.headerSlots.rowBlock', r.headerSlots?.rowBlock ], [ 'rules.footerSlots', r.footerSlots?.block ], [ 'rules.footerSlots.rowBlock', r.footerSlots?.rowBlock ],
 		...Object.entries( r.navigation?.bySurface || {} ).map( ( [ k, b ] ) => [ `rules.navigation.${ k }`, b ] ), ...( r.surfaceRoot?.entries || [] ).map( ( x, i ) => [ `rules.surfaceRoot[${ i }]`, x.block ] ),
-		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ) ].forEach( ( [ where, slug ] ) => known( slug, where ) );
+		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ),
+		...[ 'block', 'step', 'question', 'result' ].map( ( k ) => [ `rules.choiceFlow.${ k }`, r.choiceFlow?.[ k ] ] ),
+		...Object.entries( r.blockOwnedPart?.byTemplate || {} ).map( ( [ k, x ] ) => [ `rules.blockOwnedPart.byTemplate.${ k }`, x.block ] ) ].forEach( ( [ where, slug ] ) => known( slug, where ) );
+	if ( r.choiceFlow && [ 'block', 'step', 'question', 'result' ].some( ( k ) => ! r.choiceFlow[ k ] ) ) {
+		problems.push( 'rules.choiceFlow must name its block, step, question and result blocks' );
+	}
 	if ( r.headerSlots && ( ! r.headerSlots.slotAttribute || ! facts.attr( r.headerSlots.rowBlock, r.headerSlots.slotAttribute ) || ! Array.isArray( r.headerSlots.slots ) || 3 !== r.headerSlots.slots.length ) ) {
 		problems.push( `rules.headerSlots must name three slots and a slot attribute that ${ r.headerSlots.rowBlock } has` );
 	}

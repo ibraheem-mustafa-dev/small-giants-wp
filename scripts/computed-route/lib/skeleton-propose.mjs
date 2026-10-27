@@ -18,6 +18,8 @@ import { formStepNodes } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
 import { fieldInputSlot } from './skeleton-form-slots.mjs';
 import { linkedFormOf } from './skeleton-form-link.mjs';
+import { surfaceRole } from './skeleton-surface-role.mjs';
+import { flowNodes, settleFlowRows } from './skeleton-choice-flow-tree.mjs';
 import { detectReferences } from './references.mjs';
 import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
@@ -98,10 +100,11 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record),
-// formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences)
-// and draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
-// null resolves every draft route to no address) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null } ) {
+// formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences),
+// draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
+// null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
+// part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -115,7 +118,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
 	const siteLink = siteLinkResolver( draftLinks );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
+	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -286,7 +291,21 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	}
 
 	const rootNode = buildNode( m.root, null );
-	const skeleton = formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null } );
+	// A choice flow's steps are composed from the record and its absorbed rows settled (lib/skeleton-choice-flow-tree.mjs); the
+	// form passes never run on it (its panels' fields belong to its steps, not to an sgs/form).
+	const flowNode = cls.choiceFlow && nodeOfKey[ m.root.key ]?.name === R.choiceFlow?.block ? nodeOfKey[ m.root.key ] : null;
+	if ( flowNode ) {
+		flowNode.innerBlocks = flowNodes( { model: cls.choiceFlow, R: R.choiceFlow, m, view, finder } );
+		settleFlowRows( { model: cls.choiceFlow, R: R.choiceFlow, rows, root: m.root, block: flowNode.name, m, view } );
+		// A width-only element the flow draws as one of its pieces (the summary's note where the summary collapses) is no lost alternative.
+		const drawn = new Set( rows.filter( ( x ) => x.into === m.root.key && /^drawn by /.test( x.reason || '' ) && ! /per-width/.test( x.reason ) ).map( ( x ) => x.key ) );
+		flowNode.handover = ( flowNode.handover || [] ).filter( ( h ) => ! drawn.has( String( h.detail ).split( ':' )[ 0 ] ) );
+		! flowNode.handover.length && delete flowNode.handover;
+		cls.choiceFlow.handovers.length && ( flowNode.handover = [ ...( flowNode.handover || [] ), ...cls.choiceFlow.handovers ] );
+		const rootRow = rowOf[ m.root.key ];
+		rootRow && cls.choiceFlow.notes.length && ( rootRow.slotNotes = [ ...( rootRow.slotNotes || [] ), ...cls.choiceFlow.notes ] );
+	}
+	const skeleton = flowNode ? [].concat( rootNode || [] ) : formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
 	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
@@ -319,6 +338,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
+		...( role ? { surfaceRole: { role: role.role, row: role.row.slug, ...( role.part ? { part: role.part.label } : {} ) } } : {} ),
+		...( flowNode ? { choiceFlow: { steps: cls.choiceFlow.steps.length, questions: cls.choiceFlow.steps.filter( ( s ) => s.question ).length, results: cls.choiceFlow.steps.filter( ( s ) => s.result ).length, notes: cls.choiceFlow.notes } } : {} ),
 		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block } } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		widthAlternatives, problems, rows,
