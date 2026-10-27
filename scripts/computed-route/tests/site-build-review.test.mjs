@@ -189,15 +189,20 @@ test( 'MUST FAIL: several rows of one layout kind stop the run even when the act
 	assert.match( named.problems[ 0 ], /2 header rows/ );
 } );
 
-test( 'MUST FAIL: a pointer is overwritten only when it is empty or names a post carrying a row key', () => {
+test( 'MUST FAIL: a pointer always goes to the page-map row\'s post, whichever post it names now, and the plan shows the old value', () => {
 	const one = () => [ row( { slug: 'home', title: 'Home' } ), noUndefined( row( { slug: 'header', title: 'Header', route: undefined, postType: 'sgs_header', id: 50 } ) ) ];
 	const posts = { 50: post( 50, 'sgs_header:header', { treeHash: 'x' } ) };
 	const foreign = plan( one(), state( { posts, pointers: { header: 77, footer: 0, drawer: 0 } } ) );
-	assert.equal( pointerAction( foreign ), undefined );
-	assert.match( foreign.notes.join( '\n' ), /active header is post 77.*not made by the site build, so it is left/ );
-	assert.equal( pointerAction( plan( one(), state( { posts, pointers: { header: 0, footer: 0, drawer: 0 } } ) ) ).id, 50 );
+	assert.equal( pointerAction( foreign )?.id, 50, 'a pointer naming a post the site build did not make is moved to the clone\'s post' );
+	assert.equal( pointerAction( foreign ).say, 'active header: 77 -> 50' );
+	assert.deepEqual( foreign.options.find( ( o ) => 'sgs_active_header_cpt_id' === o.name ), { name: 'sgs_active_header_cpt_id', before: '77', after: '50' } );
+	assert.doesNotMatch( foreign.notes.join( '\n' ), /active header/, 'no note says the pointer is left' );
+	const empty = pointerAction( plan( one(), state( { posts, pointers: { header: 0, footer: 0, drawer: 0 } } ) ) );
+	assert.deepEqual( [ empty.id, empty.say ], [ 50, 'active header: none -> 50' ] );
 	const ours = plan( one(), state( { posts, pointers: { header: 77, footer: 0, drawer: 0 }, pointerKeys: { header: 'sgs_header:old' } } ) );
 	assert.equal( pointerAction( ours ).id, 50 );
+	const already = plan( one(), state( { posts, pointers: { header: 50, footer: 0, drawer: 0 }, pointerKeys: { header: 'sgs_header:header' } } ) );
+	assert.equal( pointerAction( already ), undefined, 'a pointer already on the row\'s post is not planned again' );
 } );
 
 // 7 -----------------------------------------------------------------------------------------------------------------

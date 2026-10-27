@@ -349,9 +349,10 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		options.push( { name: 'permalink_structure', before: state.options.permalink_structure, after: PERMALINKS } );
 		actions.push( { phase: 'site', type: 'permalinks', value: PERMALINKS, say: `permalinks ${ JSON.stringify( state.options.permalink_structure ) } -> ${ PERMALINKS }` } );
 	}
-	// Only an empty pointer or one naming a post the site build made is ever overwritten. A page map holds one layout row
-	// of each kind (Spec 48 FR-48-30); two rows of one kind stop the run naming them, since nothing can tell which one
-	// is the site's.
+	// Each active-layout pointer goes to its page-map row's post, whichever post it names now: the clone owns every
+	// site-wide setting it builds (Spec 48 FR-48-55), and the plan line shows the old value so the change can be undone.
+	// A page map holds one layout row of each kind (Spec 48 FR-48-30); two rows of one kind stop the run naming them,
+	// since nothing can tell which one is the site's.
 	for ( const [ type, area ] of Object.entries( LAYOUT_TYPES ) ) {
 		const mine = rows.filter( ( r ) => r.postType === type );
 		if ( ! mine.length ) {
@@ -365,10 +366,6 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const current = state.pointers[ area ] || 0;
 		const built = ids[ rowKey( row ) ];
 		if ( built && current === built ) {
-			continue;
-		}
-		if ( current && ! state.pointerKeys?.[ area ] ) {
-			notes.push( `active ${ area } is post ${ current }, a post not made by the site build, so it is left; to point it at ${ rowKey( row ) } set it yourself once the post exists, if that is wanted` );
 			continue;
 		}
 		const id = idOf( rowKey( row ) );

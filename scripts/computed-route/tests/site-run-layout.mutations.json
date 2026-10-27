@@ -1,0 +1,13 @@
+[
+	{ "file": "lib/site-run-layout.mjs", "find": "if ( ! Number.isInteger( id ) ) {", "replace": "if ( false ) {", "why": "a template surface (no post id) is looked up as a layout row" },
+	{ "file": "lib/site-run-layout.mjs", "find": "rows.find( ( r ) => r.id === id )", "replace": "rows.find( ( r ) => LAYOUT_TYPES[ r.postType ] )", "why": "any surface points the first layout row's area" },
+	{ "file": "lib/site-run-layout.mjs", "find": "?.postType ] ?? null;", "replace": "?.postType ] ?? 'header';", "why": "a page or form surface's post is treated as a layout" },
+	{ "file": "lib/site-run-layout.mjs", "find": "if ( ! AREAS.includes( area ) ) {", "replace": "if ( false ) {", "why": "a non-layout area is written" },
+	{ "file": "lib/site-run-layout.mjs", "find": ".trim().split( /\\r?\\n/ ).pop() ) || 0;", "replace": ".trim() ) || 0;", "why": "a chatty wp-cli reply (a notice before the value) reads as no pointer" },
+	{ "file": "lib/site-run-layout.mjs", "find": "if ( before === id ) {", "replace": "if ( false ) {", "why": "a pointer already on the built post is written again" },
+	{ "file": "lib/site-run-layout.mjs", "find": "if ( before === id ) {", "replace": "if ( before ) {", "why": "a stale pointer is left (the removed protective rule)" },
+	{ "file": "lib/site-run-layout.mjs", "find": "wp( [ 'sgs', area, 'set-active', String( id ) ] );", "replace": "", "why": "the pointer is never written" },
+	{ "file": "lib/site-run-layout.mjs", "find": "if ( after !== id ) {", "replace": "if ( false ) {", "why": "a pointer that does not read back passes" },
+	{ "file": "lib/site-run-layout.mjs", "find": "${ before || 'none' } -> ${ id }", "replace": "${ before } -> ${ id }", "why": "an empty pointer is logged as 0 rather than none" },
+	{ "file": "lib/site-run-layout.mjs", "find": "return area ? pointLayout(", "replace": "return true ? pointLayout(", "why": "a non-layout surface is pointed" }
+]
