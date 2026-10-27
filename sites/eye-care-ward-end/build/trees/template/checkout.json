@@ -1,0 +1,1393 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "className": "cr-ref-template-checkout-0",
+      "minHeight": {
+        "desktop": "0px"
+      },
+      "maxWidth": {
+        "desktop": "1200px"
+      },
+      "textColourHover": "primary",
+      "padding": {
+        "desktop": "52px",
+        "tablet": "52px",
+        "mobile": "20px"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "content": "Checkout",
+          "className": "cr-ref-template-checkout-1",
+          "fontSize": {
+            "mobile": 34,
+            "desktop": 48
+          },
+          "lineHeight": {
+            "mobile": 1,
+            "desktop": 1
+          },
+          "lineHeightUnit": "",
+          "margin": {
+            "desktop": {
+              "bottom": "0px"
+            }
+          },
+          "textWrap": "wrap",
+          "textColourHover": "primary"
+        },
+        "innerBlocks": []
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "layout": "grid",
+          "className": "cr-ref-template-checkout-2",
+          "gridTemplateColumns": {
+            "tablet": "repeat(1, minmax(0, 1fr))",
+            "desktop": "minmax(0, 1.62fr) minmax(0, 1fr)"
+          },
+          "gap": {
+            "desktop": "48px"
+          },
+          "alignItems": "start",
+          "textColourHover": "primary"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "layout": "stack",
+              "className": "cr-ref-template-checkout-3",
+              "gap": {
+                "desktop": "40px"
+              },
+              "textColourHover": "primary"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "section",
+                  "className": "cr-ref-template-checkout-4",
+                  "textColourHover": "primary",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "load",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateY": 0
+                              },
+                              "duration": "token:entrance.duration",
+                              "easing": "token:easing.ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/multi-button",
+                    "attributes": {
+                      "layout": "grid",
+                      "className": "cr-ref-template-checkout-5",
+                      "gap": {
+                        "desktop": "8px"
+                      },
+                      "alignItems": {
+                        "desktop": "stretch",
+                        "tablet": "stretch"
+                      },
+                      "flexDirection": {
+                        "desktop": "row",
+                        "mobile": "row"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "Apple Pay",
+                          "className": "cr-ref-template-checkout-6",
+                          "fontSize": {
+                            "desktop": 15
+                          },
+                          "fontWeight": "500",
+                          "lineHeight": {
+                            "desktop": 1.267
+                          },
+                          "colourText": "surface-alt",
+                          "colourBackground": "#000000",
+                          "borderStyle": "none",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "4px",
+                              "topRight": "4px",
+                              "bottomRight": "4px",
+                              "bottomLeft": "4px"
+                            }
+                          },
+                          "padding": {
+                            "desktop": {
+                              "top": "1px",
+                              "right": "6px",
+                              "bottom": "1px",
+                              "left": "6px"
+                            }
+                          },
+                          "colourBackgroundHover": "#000000",
+                          "colourTextHover": "surface-alt"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "G Pay",
+                          "className": "cr-ref-template-checkout-7",
+                          "fontSize": {
+                            "desktop": 15
+                          },
+                          "fontWeight": "500",
+                          "lineHeight": {
+                            "desktop": 1.267
+                          },
+                          "colourText": "primary",
+                          "colourBackground": "surface-alt",
+                          "borderWidth": {
+                            "right": "1px",
+                            "bottom": "1px",
+                            "left": "1px",
+                            "top": "1px"
+                          },
+                          "borderColour": "#DADADA",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "4px",
+                              "topRight": "4px",
+                              "bottomRight": "4px",
+                              "bottomLeft": "4px"
+                            }
+                          },
+                          "padding": {
+                            "desktop": {
+                              "top": "1px",
+                              "right": "6px",
+                              "bottom": "1px",
+                              "left": "6px"
+                            }
+                          },
+                          "colourBackgroundHover": "surface-alt",
+                          "borderColourHover": "#DADADA",
+                          "colourTextHover": "primary"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "PayPal",
+                          "className": "cr-ref-template-checkout-8",
+                          "fontSize": {
+                            "desktop": 15
+                          },
+                          "fontWeight": "600",
+                          "fontStyle": "italic",
+                          "lineHeight": {
+                            "desktop": 1.267
+                          },
+                          "colourText": "primary",
+                          "colourBackground": "#FFC439",
+                          "borderStyle": "none",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "4px",
+                              "topRight": "4px",
+                              "bottomRight": "4px",
+                              "bottomLeft": "4px"
+                            }
+                          },
+                          "padding": {
+                            "desktop": {
+                              "top": "1px",
+                              "right": "6px",
+                              "bottom": "1px",
+                              "left": "6px"
+                            }
+                          },
+                          "colourBackgroundHover": "#FFC439",
+                          "colourTextHover": "primary"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/button",
+                        "attributes": {
+                          "label": "Klarna.",
+                          "className": "cr-ref-template-checkout-9",
+                          "fontSize": {
+                            "desktop": 15
+                          },
+                          "fontWeight": "600",
+                          "lineHeight": {
+                            "desktop": 1.267
+                          },
+                          "colourText": "primary",
+                          "colourBackground": "#FFB3C7",
+                          "borderStyle": "none",
+                          "borderRadius": {
+                            "desktop": {
+                              "topLeft": "4px",
+                              "topRight": "4px",
+                              "bottomRight": "4px",
+                              "bottomLeft": "4px"
+                            }
+                          },
+                          "padding": {
+                            "desktop": {
+                              "top": "1px",
+                              "right": "6px",
+                              "bottom": "1px",
+                              "left": "6px"
+                            }
+                          },
+                          "colourBackgroundHover": "#FFB3C7",
+                          "colourTextHover": "primary"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/label",
+                    "attributes": {
+                      "className": "cr-ref-template-checkout-10",
+                      "text": "or pay by card",
+                      "fontWeight": "400",
+                      "lineHeight": 1.5,
+                      "letterSpacing": 0.16,
+                      "textColour": "custom-text-3",
+                      "textColourHover": "custom-text-3"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "section",
+                  "className": "cr-ref-template-checkout-11",
+                  "textColourHover": "primary",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "load",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateY": 0
+                              },
+                              "duration": 600,
+                              "easing": "token:easing.ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-template-checkout-12",
+                      "fontSize": {
+                        "desktop": 13
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "textTransform": "uppercase",
+                      "gap": {
+                        "desktop": "12px"
+                      },
+                      "alignItems": "center",
+                      "margin": {
+                        "desktop": {
+                          "bottom": "16px"
+                        }
+                      },
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "1",
+                          "className": "cr-ref-template-checkout-13",
+                          "fontFamily": "heading",
+                          "fontSize": {
+                            "desktop": 22
+                          },
+                          "fontWeight": "500",
+                          "textColour": "accent-text",
+                          "textColourHover": "accent-text"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "grid",
+                      "className": "cr-ref-template-checkout-14",
+                      "gridTemplateColumns": {
+                        "desktop": "repeat(1, minmax(0, 1fr))"
+                      },
+                      "gap": {
+                        "desktop": "8px"
+                      },
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/form-field-email",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-15",
+                          "placeholder": "Email",
+                          "autocomplete": "email"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-16",
+                          "placeholder": "Mobile — so I can WhatsApp you updates",
+                          "autocomplete": "tel"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "stack",
+                      "className": "cr-ref-template-checkout-17",
+                      "gap": {
+                        "desktop": "10px"
+                      },
+                      "margin": {
+                        "desktop": {
+                          "top": "14px"
+                        }
+                      },
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/form-field-checkbox",
+                        "attributes": {
+                          "label": "Create an account",
+                          "helpText": "Optional. Follow this order and keep your addresses and saved frames for next time. Already have an account? Sign in",
+                          "className": "cr-ref-template-checkout-18"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "className": "cr-ref-template-checkout-19",
+                          "fontSize": {
+                            "desktop": 13.5
+                          },
+                          "textColour": "custom-text-muted",
+                          "textColourHover": "custom-text-muted"
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/button",
+                            "attributes": {
+                              "label": "Sign in",
+                              "className": "cr-ref-template-checkout-20",
+                              "lineHeight": {
+                                "desktop": 1.333
+                              },
+                              "colourText": "primary",
+                              "colourBackground": "#00000000",
+                              "borderWidth": {
+                                "top": "0px",
+                                "right": "0px",
+                                "left": "0px",
+                                "bottom": "1px"
+                              },
+                              "borderColour": "primary",
+                              "padding": {
+                                "desktop": {
+                                  "right": "0px",
+                                  "left": "0px"
+                                }
+                              },
+                              "minHeight": {
+                                "desktop": "0px"
+                              },
+                              "colourBackgroundHover": "#00000000",
+                              "borderColourHover": "primary",
+                              "colourTextHover": "primary"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "section",
+                  "className": "cr-ref-template-checkout-21",
+                  "textColourHover": "primary",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "load",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateY": 0
+                              },
+                              "duration": 700,
+                              "easing": "token:easing.ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-template-checkout-22",
+                      "fontSize": {
+                        "desktop": 13
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "textTransform": "uppercase",
+                      "gap": {
+                        "desktop": "12px"
+                      },
+                      "alignItems": "center",
+                      "margin": {
+                        "desktop": {
+                          "bottom": "16px"
+                        }
+                      },
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "2",
+                          "className": "cr-ref-template-checkout-23",
+                          "fontFamily": "heading",
+                          "fontSize": {
+                            "desktop": 22
+                          },
+                          "fontWeight": "500",
+                          "textColour": "accent-text",
+                          "textColourHover": "accent-text"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "grid",
+                      "className": "cr-ref-template-checkout-24",
+                      "gridTemplateColumns": {
+                        "mobile": "repeat(1, minmax(0, 1fr))",
+                        "desktop": "repeat(2, minmax(0, 1fr))"
+                      },
+                      "gap": {
+                        "desktop": "8px"
+                      },
+                      "margin": {
+                        "desktop": {
+                          "bottom": "12px"
+                        }
+                      },
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "className": "cr-ref-template-checkout-25",
+                          "fontSize": {
+                            "desktop": 13.333
+                          },
+                          "backgroundColour": "custom-surface-alt",
+                          "borderWidth": {
+                            "right": "1px",
+                            "bottom": "1px",
+                            "left": "1px",
+                            "top": "1px"
+                          },
+                          "borderStyle": "solid",
+                          "backgroundColourHover": "custom-surface-alt",
+                          "borderColourHover": "primary",
+                          "textColourHover": "primary",
+                          "padding": {
+                            "desktop": {
+                              "top": "18px",
+                              "right": "20px",
+                              "bottom": "18px",
+                              "left": "20px"
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "className": "cr-ref-template-checkout-26",
+                              "fontSize": {
+                                "desktop": 16
+                              },
+                              "fontWeight": "500",
+                              "gap": {
+                                "mobile": "172.8px",
+                                "tablet": "165.8px",
+                                "desktop": "157.8px"
+                              },
+                              "justifyContent": "space-between",
+                              "textColourHover": "primary"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Post it to me",
+                                  "className": "cr-ref-template-checkout-27",
+                                  "lineHeight": {
+                                    "desktop": 1.25
+                                  },
+                                  "textColourHover": "primary"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Free",
+                                  "className": "cr-ref-template-checkout-28",
+                                  "lineHeight": {
+                                    "desktop": 1.25
+                                  },
+                                  "textColour": "accent-text",
+                                  "textColourHover": "accent-text"
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "Royal Mail Tracked 48. Free over £75.",
+                              "className": "cr-ref-template-checkout-29",
+                              "lineHeight": {
+                                "desktop": 1.333
+                              },
+                              "textColour": "text-muted",
+                              "textColourHover": "text-muted"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "className": "cr-ref-template-checkout-30",
+                          "fontSize": {
+                            "desktop": 13.333
+                          },
+                          "backgroundColour": "surface-alt",
+                          "borderWidth": {
+                            "right": "1px",
+                            "bottom": "1px",
+                            "left": "1px",
+                            "top": "1px"
+                          },
+                          "borderStyle": "solid",
+                          "borderColour": "border",
+                          "borderColourHover": "primary",
+                          "backgroundColourHover": "surface-alt",
+                          "textColourHover": "primary",
+                          "sgsFocusRests": true,
+                          "padding": {
+                            "desktop": {
+                              "top": "18px",
+                              "right": "20px",
+                              "bottom": "18px",
+                              "left": "20px"
+                            }
+                          }
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "sgs/container",
+                            "attributes": {
+                              "tagName": "div",
+                              "layout": "flex",
+                              "className": "cr-ref-template-checkout-31",
+                              "fontSize": {
+                                "desktop": 16
+                              },
+                              "fontWeight": "500",
+                              "gap": {
+                                "mobile": "104.59px",
+                                "tablet": "97.59px",
+                                "desktop": "89.59px"
+                              },
+                              "justifyContent": "space-between",
+                              "textColourHover": "primary"
+                            },
+                            "innerBlocks": [
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Collect in Birmingham",
+                                  "className": "cr-ref-template-checkout-32",
+                                  "lineHeight": {
+                                    "desktop": 1.25
+                                  },
+                                  "textColourHover": "primary"
+                                },
+                                "innerBlocks": []
+                              },
+                              {
+                                "name": "sgs/text",
+                                "attributes": {
+                                  "text": "Free",
+                                  "className": "cr-ref-template-checkout-33",
+                                  "lineHeight": {
+                                    "desktop": 1.25
+                                  },
+                                  "textColour": "accent-text",
+                                  "textColourHover": "accent-text"
+                                },
+                                "innerBlocks": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "sgs/text",
+                            "attributes": {
+                              "text": "I'll fit and adjust them to you in person.",
+                              "className": "cr-ref-template-checkout-34",
+                              "lineHeight": {
+                                "desktop": 1.333
+                              },
+                              "textColour": "text-muted",
+                              "textColourHover": "text-muted"
+                            },
+                            "innerBlocks": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "grid",
+                      "className": "cr-ref-template-checkout-35",
+                      "gridTemplateColumns": {
+                        "desktop": "repeat(2, minmax(0, 1fr))"
+                      },
+                      "gap": {
+                        "desktop": "8px"
+                      },
+                      "textColourHover": "primary",
+                      "sgsMotion": {
+                        "v": 1,
+                        "elements": {
+                          "root": {
+                            "entrance": {
+                              "base": {
+                                "trigger": "load",
+                                "values": {
+                                  "from": {
+                                    "opacity": 0
+                                  },
+                                  "to": {
+                                    "opacity": 1
+                                  },
+                                  "duration": "token:duration.medium",
+                                  "easing": "token:easing.ease"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-36",
+                          "placeholder": "First name"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-37",
+                          "placeholder": "Last name"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-38",
+                          "placeholder": "Address"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-39",
+                          "placeholder": "Town or city"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-40",
+                          "placeholder": "Postcode"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "section",
+                  "className": "cr-ref-template-checkout-41",
+                  "textColourHover": "primary",
+                  "sgsMotion": {
+                    "v": 1,
+                    "elements": {
+                      "root": {
+                        "entrance": {
+                          "base": {
+                            "trigger": "load",
+                            "values": {
+                              "from": {
+                                "opacity": 0,
+                                "translateY": "token:entrance.distance"
+                              },
+                              "to": {
+                                "opacity": 1,
+                                "translateY": 0
+                              },
+                              "duration": "token:duration.extra-slow",
+                              "easing": "token:easing.ease"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-template-checkout-42",
+                      "fontSize": {
+                        "desktop": 13
+                      },
+                      "fontWeight": "700",
+                      "letterSpacing": {
+                        "desktop": 0.2
+                      },
+                      "textTransform": "uppercase",
+                      "gap": {
+                        "desktop": "12px"
+                      },
+                      "alignItems": "center",
+                      "margin": {
+                        "desktop": {
+                          "bottom": "16px"
+                        }
+                      },
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "3",
+                          "className": "cr-ref-template-checkout-43",
+                          "fontFamily": "heading",
+                          "fontSize": {
+                            "desktop": 22
+                          },
+                          "fontWeight": "500",
+                          "textColour": "accent-text",
+                          "textColourHover": "accent-text"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "grid",
+                      "className": "cr-ref-template-checkout-44",
+                      "gridTemplateColumns": {
+                        "desktop": "repeat(2, minmax(0, 1fr))"
+                      },
+                      "gap": {
+                        "desktop": "8px"
+                      },
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-45",
+                          "placeholder": "Card number",
+                          "inputmode": "numeric"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-46",
+                          "placeholder": "MM / YY",
+                          "inputmode": "numeric"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/form-field-text",
+                        "attributes": {
+                          "className": "cr-ref-template-checkout-47",
+                          "placeholder": "CVC",
+                          "inputmode": "numeric"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-template-checkout-48",
+                      "fontSize": {
+                        "desktop": 13
+                      },
+                      "letterSpacing": {
+                        "desktop": 0.12
+                      },
+                      "textTransform": "uppercase",
+                      "textAlign": "center",
+                      "textColour": "primary-text",
+                      "backgroundColour": "primary",
+                      "gap": {
+                        "mobile": "202.8px",
+                        "tablet": "531.8px",
+                        "desktop": "515.8px"
+                      },
+                      "justifyContent": "space-between",
+                      "alignItems": "center",
+                      "minHeight": {
+                        "desktop": "56px"
+                      },
+                      "margin": {
+                        "desktop": {
+                          "top": "22px"
+                        }
+                      },
+                      "backgroundColourHover": "primary-hover",
+                      "textColourHover": "primary-text",
+                      "sgsFocusRests": true,
+                      "padding": {
+                        "desktop": {
+                          "right": "22px",
+                          "left": "22px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Pay now",
+                          "className": "cr-ref-template-checkout-49",
+                          "lineHeight": {
+                            "desktop": 1.231
+                          },
+                          "textColourHover": "primary-text"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "£0",
+                          "className": "cr-ref-template-checkout-50",
+                          "lineHeight": {
+                            "desktop": 1.231
+                          },
+                          "textColourHover": "primary-text"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Secure payment. Prescription details are held under UK GDPR and seen only by me.",
+                      "className": "cr-ref-template-checkout-51",
+                      "fontSize": {
+                        "desktop": 12.5
+                      },
+                      "textAlign": "center",
+                      "textColour": "custom-text-3",
+                      "margin": {
+                        "desktop": {
+                          "top": "12px"
+                        }
+                      },
+                      "textColourHover": "custom-text-3"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "aside",
+              "className": "cr-ref-template-checkout-52",
+              "backgroundColour": "surface-alt",
+              "borderWidth": {
+                "right": "1px",
+                "bottom": "1px",
+                "left": "1px",
+                "top": "1px"
+              },
+              "borderStyle": "solid",
+              "borderColour": "border",
+              "borderColourHover": "border",
+              "backgroundColourHover": "surface-alt",
+              "textColourHover": "primary",
+              "padding": {
+                "desktop": {
+                  "top": "24px",
+                  "right": "24px",
+                  "bottom": "24px",
+                  "left": "24px"
+                }
+              },
+              "sgsCustomCss": "@media (max-width: 1023px) { & { position: static; } } @media (min-width: 1024px) { & { position: sticky; } }",
+              "sgsCustomCssId": "wgate52",
+              "sgsCustomCssNote": "Width ladder position: 0-1023px static, 1024px and up sticky",
+              "sgsMotion": {
+                "v": 1,
+                "elements": {
+                  "root": {
+                    "entrance": {
+                      "base": {
+                        "trigger": "load",
+                        "values": {
+                          "from": {
+                            "opacity": 0
+                          },
+                          "to": {
+                            "opacity": 1
+                          },
+                          "duration": 600,
+                          "easing": "token:easing.ease"
+                        },
+                        "devices": {
+                          "mobile": {
+                            "duration": 449
+                          },
+                          "tablet": {
+                            "duration": 450
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "flex",
+                  "className": "cr-ref-template-checkout-53",
+                  "fontSize": {
+                    "desktop": 12
+                  },
+                  "letterSpacing": {
+                    "desktop": 0.2
+                  },
+                  "textTransform": "uppercase",
+                  "gap": {
+                    "mobile": "185.24px",
+                    "tablet": "514.24px",
+                    "desktop": "250.24px"
+                  },
+                  "justifyContent": "space-between",
+                  "margin": {
+                    "desktop": {
+                      "bottom": "16px"
+                    }
+                  },
+                  "textColourHover": "primary"
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Your bag",
+                      "className": "cr-ref-template-checkout-54",
+                      "textColourHover": "primary"
+                    },
+                    "innerBlocks": []
+                  },
+                  {
+                    "name": "sgs/button",
+                    "attributes": {
+                      "label": "Edit",
+                      "className": "cr-ref-template-checkout-55",
+                      "fontSize": {
+                        "desktop": 12
+                      },
+                      "lineHeight": {
+                        "desktop": 1.5
+                      },
+                      "textTransform": "none",
+                      "colourText": "custom-text-muted",
+                      "colourBackground": "#00000000",
+                      "borderWidth": {
+                        "top": "0px",
+                        "right": "0px",
+                        "left": "0px",
+                        "bottom": "1px"
+                      },
+                      "borderColour": "border",
+                      "padding": {
+                        "desktop": {
+                          "right": "0px",
+                          "left": "0px"
+                        }
+                      },
+                      "minHeight": {
+                        "desktop": "auto"
+                      },
+                      "colourBackgroundHover": "#00000000",
+                      "borderColourHover": "border",
+                      "colourTextHover": "custom-text-muted"
+                    },
+                    "innerBlocks": []
+                  }
+                ]
+              },
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "tagName": "div",
+                  "layout": "stack",
+                  "className": "cr-ref-template-checkout-56",
+                  "fontSize": {
+                    "desktop": 14
+                  },
+                  "textColour": "text-muted",
+                  "borderWidth": {
+                    "right": "0px",
+                    "bottom": "0px",
+                    "left": "0px",
+                    "top": "1px"
+                  },
+                  "borderColour": "border",
+                  "gap": {
+                    "desktop": "8px"
+                  },
+                  "margin": {
+                    "desktop": {
+                      "top": "18px"
+                    }
+                  },
+                  "textColourHover": "text-muted",
+                  "borderColourHover": "border",
+                  "padding": {
+                    "desktop": {
+                      "top": "14px"
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-template-checkout-57",
+                      "gap": {
+                        "mobile": "215.38px",
+                        "tablet": "544.38px",
+                        "desktop": "280.38px"
+                      },
+                      "justifyContent": "space-between",
+                      "textColourHover": "text-muted"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Subtotal",
+                          "className": "cr-ref-template-checkout-58",
+                          "textColourHover": "text-muted"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "£0",
+                          "className": "cr-ref-template-checkout-59",
+                          "textColour": "primary",
+                          "textColourHover": "primary"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-template-checkout-60",
+                      "gap": {
+                        "mobile": "205.44px",
+                        "tablet": "534.44px",
+                        "desktop": "270.44px"
+                      },
+                      "justifyContent": "space-between",
+                      "textColourHover": "text-muted"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Delivery",
+                          "className": "cr-ref-template-checkout-61",
+                          "textColourHover": "text-muted"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Free",
+                          "className": "cr-ref-template-checkout-62",
+                          "textColour": "primary",
+                          "textColourHover": "primary"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "div",
+                      "layout": "flex",
+                      "className": "cr-ref-template-checkout-63",
+                      "fontSize": {
+                        "desktop": 18
+                      },
+                      "textColour": "primary",
+                      "borderWidth": {
+                        "right": "0px",
+                        "bottom": "0px",
+                        "left": "0px",
+                        "top": "1px"
+                      },
+                      "borderColour": "border",
+                      "gap": {
+                        "mobile": "215.72px",
+                        "tablet": "544.72px",
+                        "desktop": "280.72px"
+                      },
+                      "justifyContent": "space-between",
+                      "margin": {
+                        "desktop": {
+                          "top": "4px"
+                        }
+                      },
+                      "borderColourHover": "border",
+                      "textColourHover": "primary",
+                      "padding": {
+                        "desktop": {
+                          "top": "8px"
+                        }
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "Total",
+                          "className": "cr-ref-template-checkout-64",
+                          "textColourHover": "primary"
+                        },
+                        "innerBlocks": []
+                      },
+                      {
+                        "name": "sgs/text",
+                        "attributes": {
+                          "text": "£0",
+                          "className": "cr-ref-template-checkout-65",
+                          "fontFamily": "heading",
+                          "fontSize": {
+                            "desktop": 24
+                          },
+                          "fontWeight": "500",
+                          "textColourHover": "primary"
+                        },
+                        "innerBlocks": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "Klarna: 3 interest-free payments of £0 . 18+, T&Cs apply.",
+                  "className": "cr-ref-template-checkout-66",
+                  "fontSize": {
+                    "desktop": 12.5
+                  },
+                  "textColour": "custom-text-3",
+                  "margin": {
+                    "desktop": {
+                      "top": "16px"
+                    }
+                  },
+                  "textWrap": "pretty",
+                  "textColourHover": "custom-text-3"
+                },
+                "innerBlocks": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

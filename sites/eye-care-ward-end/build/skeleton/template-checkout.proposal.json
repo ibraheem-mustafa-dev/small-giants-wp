@@ -1,0 +1,2564 @@
+{
+	"generated": "2026-10-26T23:53:24.107Z",
+	"inventory": "2026-10-26T23:53:23.561Z",
+	"source": "http://127.0.0.1:58797/#@state/page=checkout",
+	"surface": "page-checkout",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [
+		{
+			"id": "S-35",
+			"kind": "form-step",
+			"name": "Checkout delivery method",
+			"openedBy": "Checkout page",
+			"roots": [
+				"Eye Care Birmingham/770"
+			]
+		},
+		{
+			"id": "S-36",
+			"kind": "form-step",
+			"name": "Checkout prescription",
+			"openedBy": "Bag contains an item with lenses",
+			"roots": [
+				"Eye Care Birmingham/792"
+			]
+		},
+		{
+			"id": "S-52",
+			"kind": "form-step",
+			"name": "Checkout account option",
+			"openedBy": "Contact step of checkout",
+			"roots": [
+				"Eye Care Birmingham/758"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 73,
+		"parts": 1,
+		"rows": 72,
+		"skeletonNodes": 67,
+		"expandedNodes": 67,
+		"low": 19,
+		"removed": 5,
+		"unresolved": 0,
+		"byRule": {
+			"label": 3,
+			"formControl": 13
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/739#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_739_0@375.png",
+				"1440": "shots/Root_739_0@1440.png"
+			},
+			"snippet": "<main class=\"sgs-page-checkout\" data-screen-label=\"Checkout\" style=\"max-width:1200px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"739\"> <h1 style=\"margin:0 0 32px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1\" data-dc-tpl=\"740\">Checkout</h1> <div style=\"display:grid;grid-template-columns: {{ coCols }};gap:48px;align-items:start\" data-dc-tpl=\"741\"> <di",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/740#0",
+			"tag": "h1",
+			"depth": 1,
+			"words": "Checkout",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_740_0@375.png",
+				"1440": "shots/Root_740_0@1440.png"
+			},
+			"snippet": "<h1 style=\"margin:0 0 32px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1\" data-dc-tpl=\"740\">Checkout</h1>",
+			"attributes": {
+				"content": "Checkout"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/741#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_741_0@375.png",
+				"1440": "shots/Root_741_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns: {{ coCols }};gap:48px;align-items:start\" data-dc-tpl=\"741\"> <div style=\"display:flex;flex-direction:column;gap:40px\" data-dc-tpl=\"742\"> <section class=\"sgs-checkout-express\" style=\"animation:rise .5s both\" data-dc-tpl=\"743\"> <div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px\" data-dc-tpl=\"744\"> <button style=\"ba",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/742#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_742_0@375.png",
+				"1440": "shots/Root_742_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:40px\" data-dc-tpl=\"742\"> <section class=\"sgs-checkout-express\" style=\"animation:rise .5s both\" data-dc-tpl=\"743\"> <div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px\" data-dc-tpl=\"744\"> <button style=\"background:#000;color:#fff;border:0;min-height:48px;font-size:15px;font-weight:500;border-radius:4px\" data-dc-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/743#0",
+			"tag": "section",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_743_0@375.png",
+				"1440": "shots/Root_743_0@1440.png"
+			},
+			"snippet": "<section class=\"sgs-checkout-express\" style=\"animation:rise .5s both\" data-dc-tpl=\"743\"> <div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px\" data-dc-tpl=\"744\"> <button style=\"background:#000;color:#fff;border:0;min-height:48px;font-size:15px;font-weight:500;border-radius:4px\" data-dc-tpl=\"745\">Apple Pay</button> <button style=\"background:#fff;color:#141414;bo",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/744#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 4 children propose sgs/button",
+						"a row of 4 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_744_0@375.png",
+				"1440": "shots/Root_744_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px\" data-dc-tpl=\"744\"> <button style=\"background:#000;color:#fff;border:0;min-height:48px;font-size:15px;font-weight:500;border-radius:4px\" data-dc-tpl=\"745\">Apple Pay</button> <button style=\"background:#fff;color:#141414;border:1px solid #DADADA;min-height:48px;font-size:15px;font-weight:500;border-radius:4px\" ",
+			"attributes": {
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/745#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "Apple Pay",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_745_0@375.png",
+				"1440": "shots/Root_745_0@1440.png"
+			},
+			"snippet": "<button style=\"background:#000;color:#fff;border:0;min-height:48px;font-size:15px;font-weight:500;border-radius:4px\" data-dc-tpl=\"745\">Apple Pay</button>",
+			"attributes": {
+				"label": "Apple Pay"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/746#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "G Pay",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_746_0@375.png",
+				"1440": "shots/Root_746_0@1440.png"
+			},
+			"snippet": "<button style=\"background:#fff;color:#141414;border:1px solid #DADADA;min-height:48px;font-size:15px;font-weight:500;border-radius:4px\" data-dc-tpl=\"746\">G Pay</button>",
+			"attributes": {
+				"label": "G Pay"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/747#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "PayPal",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_747_0@375.png",
+				"1440": "shots/Root_747_0@1440.png"
+			},
+			"snippet": "<button style=\"background:#FFC439;color:#141414;border:0;min-height:48px;font-size:15px;font-weight:600;font-style:italic;border-radius:4px\" data-dc-tpl=\"747\">PayPal</button>",
+			"attributes": {
+				"label": "PayPal"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/748#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "Klarna.",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_748_0@375.png",
+				"1440": "shots/Root_748_0@1440.png"
+			},
+			"snippet": "<button style=\"background:#FFB3C7;color:#141414;border:0;min-height:48px;font-size:15px;font-weight:600;border-radius:4px\" data-dc-tpl=\"748\">Klarna.</button>",
+			"attributes": {
+				"label": "Klarna."
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/749#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "or pay by card",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_749_0@375.png",
+				"1440": "shots/Root_749_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;gap:16px;margin:22px 0 0;color:#77716A;font-size:12px;letter-spacing:.16em;text-transform:uppercase\" data-dc-tpl=\"749\"><span style=\"flex:1;height:1px;background:#E6E1DA\" data-dc-tpl=\"750\"></span>or pay by card<span style=\"flex:1;height:1px;background:#E6E1DA\" data-dc-tpl=\"751\"></span></div>",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/750#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/749#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_750_0@375.png",
+				"1440": "shots/Root_750_0@1440.png"
+			},
+			"snippet": "<span style=\"flex:1;height:1px;background:#E6E1DA\" data-dc-tpl=\"750\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/751#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/749#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_751_0@375.png",
+				"1440": "shots/Root_751_0@1440.png"
+			},
+			"snippet": "<span style=\"flex:1;height:1px;background:#E6E1DA\" data-dc-tpl=\"751\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/752#0",
+			"tag": "section",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_752_0@375.png",
+				"1440": "shots/Root_752_0@1440.png"
+			},
+			"snippet": "<section class=\"sgs-checkout-contact\" style=\"animation:rise .6s both\" data-dc-tpl=\"752\"> <h2 style=\"margin:0 0 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:12px;align-items:center\" data-dc-tpl=\"753\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"754\">1</span>Contact</h2",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/753#0",
+			"tag": "h2",
+			"depth": 4,
+			"words": "Contact",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_753_0@375.png",
+				"1440": "shots/Root_753_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0 0 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:12px;align-items:center\" data-dc-tpl=\"753\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"754\">1</span>Contact</h2>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/754#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "1",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_754_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"754\">1</span>",
+			"attributes": {
+				"text": "1"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/755#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_755_0@375.png",
+				"1440": "shots/Root_755_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;gap:8px\" data-dc-tpl=\"755\"> <input type=\"email\" placeholder=\"Email\" sc-camel-default-value=\"{{ userEmail }}\" sc-camel-on-change=\"{{ setCoEmail }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"756\"> <input placeholder=\"Mobile — so I can WhatsApp you updates\" sc-camel-default-value=",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/756#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-email",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-email",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_756_0@375.png",
+				"1440": "shots/Root_756_0@1440.png"
+			},
+			"snippet": "<input type=\"email\" placeholder=\"Email\" sc-camel-default-value=\"{{ userEmail }}\" sc-camel-on-change=\"{{ setCoEmail }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"756\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/756#0"
+				}
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/757#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_757_0@375.png",
+				"1440": "shots/Root_757_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"Mobile — so I can WhatsApp you updates\" sc-camel-default-value=\"{{ userMobile }}\" sc-camel-auto-complete=\"tel\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"757\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/757#0"
+				}
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/759#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_759_0@375.png",
+				"1440": "shots/Root_759_0@1440.png"
+			},
+			"snippet": "<div style=\"margin-top:14px;display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"759\"> <label style=\"display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:15px;min-height:44px;padding-top:2px\" data-dc-tpl=\"760\"> <input type=\"checkbox\" checked=\"{{ coAccount }}\" sc-camel-on-change=\"{{ toggleCoAccount }}\" style=\"accent-color:#141414;width:18px;height:18px;margin:2px 0 0;flex-shri",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/760#0",
+			"tag": "label",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_760_0@375.png",
+				"1440": "shots/Root_760_0@1440.png"
+			},
+			"snippet": "<label style=\"display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-size:15px;min-height:44px;padding-top:2px\" data-dc-tpl=\"760\"> <input type=\"checkbox\" checked=\"{{ coAccount }}\" sc-camel-on-change=\"{{ toggleCoAccount }}\" style=\"accent-color:#141414;width:18px;height:18px;margin:2px 0 0;flex-shrink:0\" data-dc-tpl=\"761\"> <span data-dc-tpl=\"762\">Create an account<span style=\"display:block",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root/761#0",
+			"tag": "input",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/form-field-checkbox",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-checkbox",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_761_0@1440.png"
+			},
+			"snippet": "<input type=\"checkbox\" checked=\"{{ coAccount }}\" sc-camel-on-change=\"{{ toggleCoAccount }}\" style=\"accent-color:#141414;width:18px;height:18px;margin:2px 0 0;flex-shrink:0\" data-dc-tpl=\"761\">",
+			"attributes": {
+				"label": "Create an account",
+				"helpText": "Optional. Follow this order and keep your addresses and saved frames for next time. Already have an account? Sign in"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/762#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Create an account",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_762_0@375.png",
+				"1440": "shots/Root_762_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"762\">Create an account<span style=\"display:block;font-size:13.5px;color:#5E584F;margin-top:2px\" data-dc-tpl=\"763\">Optional. Follow this order and keep your addresses and saved frames for next time.</span></span>",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root/763#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Optional. Follow this order and keep your addresses and saved frames for next time.",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/762#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_763_0@375.png",
+				"1440": "shots/Root_763_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-size:13.5px;color:#5E584F;margin-top:2px\" data-dc-tpl=\"763\">Optional. Follow this order and keep your addresses and saved frames for next time.</span>",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root/766#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "Already have an account?",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_766_0@375.png",
+				"1440": "shots/Root_766_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:13.5px;color:#6B655E\" data-dc-tpl=\"766\">Already have an account? <button sc-camel-on-click=\"{{ goSignin }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"767\">Sign in</button></p>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/767#0",
+			"tag": "button",
+			"depth": 6,
+			"words": "Sign in",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_767_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ goSignin }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"767\">Sign in</button>",
+			"attributes": {
+				"label": "Sign in"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/770#0",
+			"tag": "section",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_770_0@375.png",
+				"1440": "shots/Root_770_0@1440.png"
+			},
+			"snippet": "<section class=\"sgs-checkout-delivery\" style=\"animation:rise .7s both\" data-dc-tpl=\"770\"> <h2 style=\"margin:0 0 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:12px;align-items:center\" data-dc-tpl=\"771\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"772\">2</span>Delivery</",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/771#0",
+			"tag": "h2",
+			"depth": 4,
+			"words": "Delivery",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_771_0@375.png",
+				"1440": "shots/Root_771_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0 0 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:12px;align-items:center\" data-dc-tpl=\"771\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"772\">2</span>Delivery</h2>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/772#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "2",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_772_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"772\">2</span>",
+			"attributes": {
+				"text": "2"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root/773#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_773_0@375.png",
+				"1440": "shots/Root_773_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:8px;margin-bottom:12px\" data-dc-tpl=\"773\"> <button sc-camel-on-click=\"{{ setDelivery }}\" style=\"text-align:left;background: {{ delBg }};border:1px solid {{ delBorder }};padding:18px 20px;color:#141414;transition:all .2s\" style-hover=\"border-color:#141414\" data-dc-tpl=\"774\"> <span style=\"display:flex;jus",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root/774#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_774_0@375.png",
+				"1440": "shots/Root_774_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ setDelivery }}\" style=\"text-align:left;background: {{ delBg }};border:1px solid {{ delBorder }};padding:18px 20px;color:#141414;transition:all .2s\" style-hover=\"border-color:#141414\" data-dc-tpl=\"774\"> <span style=\"display:flex;justify-content:space-between;font-size:16px;font-weight:500\" data-dc-tpl=\"775\"><span data-dc-tpl=\"776\">Post it to me</span><span style=\"color",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/775#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_775_0@375.png",
+				"1440": "shots/Root_775_0@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;justify-content:space-between;font-size:16px;font-weight:500\" data-dc-tpl=\"775\"><span data-dc-tpl=\"776\">Post it to me</span><span style=\"color:var(--accInk,#6F6152)\" data-dc-tpl=\"777\">{{ shippingLabel }}</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/776#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Post it to me",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_776_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"776\">Post it to me</span>",
+			"attributes": {
+				"text": "Post it to me"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/777#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Free",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_777_0@375.png",
+				"1440": "shots/Root_777_0@1440.png"
+			},
+			"snippet": "<span style=\"color:var(--accInk,#6F6152)\" data-dc-tpl=\"777\">{{ shippingLabel }}</span>",
+			"attributes": {
+				"text": "Free"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/778#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "Royal Mail Tracked 48. Free over £75.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_778_0@375.png",
+				"1440": "shots/Root_778_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-size:13.5px;color:#5E584F;margin-top:4px\" data-dc-tpl=\"778\">Royal Mail Tracked 48. Free over £75.</span>",
+			"attributes": {
+				"text": "Royal Mail Tracked 48. Free over £75."
+			}
+		},
+		{
+			"order": 35,
+			"key": "Root/779#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_779_0@375.png",
+				"1440": "shots/Root_779_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ setCollect }}\" style=\"text-align:left;background: {{ colBg }};border:1px solid {{ colBorder }};padding:18px 20px;color:#141414;transition:all .2s\" style-hover=\"border-color:#141414\" data-dc-tpl=\"779\"> <span style=\"display:flex;justify-content:space-between;font-size:16px;font-weight:500\" data-dc-tpl=\"780\"><span data-dc-tpl=\"781\">Collect in Birmingham</span><span style",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root/780#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_780_0@375.png",
+				"1440": "shots/Root_780_0@1440.png"
+			},
+			"snippet": "<span style=\"display:flex;justify-content:space-between;font-size:16px;font-weight:500\" data-dc-tpl=\"780\"><span data-dc-tpl=\"781\">Collect in Birmingham</span><span style=\"color:var(--accInk,#6F6152)\" data-dc-tpl=\"782\">Free</span></span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root/781#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Collect in Birmingham",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_781_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"781\">Collect in Birmingham</span>",
+			"attributes": {
+				"text": "Collect in Birmingham"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root/782#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Free",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_782_0@375.png",
+				"1440": "shots/Root_782_0@1440.png"
+			},
+			"snippet": "<span style=\"color:var(--accInk,#6F6152)\" data-dc-tpl=\"782\">Free</span>",
+			"attributes": {
+				"text": "Free"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/783#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "I'll fit and adjust them to you in person.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_783_0@375.png",
+				"1440": "shots/Root_783_0@1440.png"
+			},
+			"snippet": "<span style=\"display:block;font-size:13.5px;color:#5E584F;margin-top:4px\" data-dc-tpl=\"783\">I'll fit and adjust them to you in person.</span>",
+			"attributes": {
+				"text": "I'll fit and adjust them to you in person."
+			}
+		},
+		{
+			"order": 40,
+			"key": "Root/785#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_785_0@375.png",
+				"1440": "shots/Root_785_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;animation:fade .3s both\" data-dc-tpl=\"785\"> <input placeholder=\"First name\" sc-camel-default-value=\"{{ coAddr.first }}\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"786\"> <input placeholder=\"Last name\" sc-camel-default-value=\"{{ coAddr.last }}\" style=\"border",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 41,
+			"key": "Root/786#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_786_0@375.png",
+				"1440": "shots/Root_786_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"First name\" sc-camel-default-value=\"{{ coAddr.first }}\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"786\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/786#0"
+				}
+			}
+		},
+		{
+			"order": 42,
+			"key": "Root/787#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_787_0@375.png",
+				"1440": "shots/Root_787_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"Last name\" sc-camel-default-value=\"{{ coAddr.last }}\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"787\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/787#0"
+				}
+			}
+		},
+		{
+			"order": 43,
+			"key": "Root/788#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_788_0@375.png",
+				"1440": "shots/Root_788_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"Address\" sc-camel-default-value=\"{{ coAddr.line1 }}\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;grid-column:1/-1\" data-dc-tpl=\"788\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/788#0"
+				}
+			}
+		},
+		{
+			"order": 44,
+			"key": "Root/789#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_789_0@375.png",
+				"1440": "shots/Root_789_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"Town or city\" sc-camel-default-value=\"{{ coAddr.town }}\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"789\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/789#0"
+				}
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root/790#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_790_0@375.png",
+				"1440": "shots/Root_790_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"Postcode\" sc-camel-default-value=\"{{ coAddr.postcode }}\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"790\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/790#0"
+				}
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root/806#0",
+			"tag": "section",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_806_0@375.png",
+				"1440": "shots/Root_806_0@1440.png"
+			},
+			"snippet": "<section class=\"sgs-checkout-payment\" style=\"animation:rise .9s both\" data-dc-tpl=\"806\"> <h2 style=\"margin:0 0 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:12px;align-items:center\" data-dc-tpl=\"807\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"808\">{{ payStepNo }}</sp",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 47,
+			"key": "Root/807#0",
+			"tag": "h2",
+			"depth": 4,
+			"words": "Payment",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_807_0@375.png",
+				"1440": "shots/Root_807_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0 0 16px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:12px;align-items:center\" data-dc-tpl=\"807\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"808\">{{ payStepNo }}</span>Payment</h2>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 48,
+			"key": "Root/808#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "3",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_808_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px;letter-spacing:0;color:var(--accInk,#6F6152)\" data-dc-tpl=\"808\">{{ payStepNo }}</span>",
+			"attributes": {
+				"text": "3"
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root/809#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_809_0@375.png",
+				"1440": "shots/Root_809_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px\" data-dc-tpl=\"809\"> <input placeholder=\"Card number\" sc-camel-input-mode=\"numeric\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;grid-column:1/-1\" data-dc-tpl=\"810\"> <input placeholder=\"MM / YY\" sc-camel-input-mode=\"numeric\" style=\"border:1px solid #E6E1DA;background:#fff;",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root/810#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_810_0@375.png",
+				"1440": "shots/Root_810_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"Card number\" sc-camel-input-mode=\"numeric\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;grid-column:1/-1\" data-dc-tpl=\"810\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/810#0"
+				}
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root/811#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_811_0@375.png",
+				"1440": "shots/Root_811_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"MM / YY\" sc-camel-input-mode=\"numeric\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"811\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/811#0"
+				}
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root/812#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_812_0@375.png",
+				"1440": "shots/Root_812_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"CVC\" sc-camel-input-mode=\"numeric\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px\" data-dc-tpl=\"812\">",
+			"attributes": {},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root/812#0"
+				}
+			}
+		},
+		{
+			"order": 53,
+			"key": "Root/813#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_813_0@375.png",
+				"1440": "shots/Root_813_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ placeOrder }}\" style=\"margin-top:22px;width:100%;background:#141414;color:#FAF8F5;border:0;min-height:56px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;padding:0 22px;transition:background .2s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"813\"><span data-dc-tpl=\"814\">Pay now</span><span dat",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 54,
+			"key": "Root/814#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Pay now",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_814_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"814\">Pay now</span>",
+			"attributes": {
+				"text": "Pay now"
+			}
+		},
+		{
+			"order": 55,
+			"key": "Root/815#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "£0",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_815_0@375.png",
+				"1440": "shots/Root_815_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"815\">{{ totalLabel }}</span>",
+			"attributes": {
+				"text": "£0"
+			}
+		},
+		{
+			"order": 56,
+			"key": "Root/816#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "Secure payment. Prescription details are held under UK GDPR and seen only by me.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_816_0@375.png",
+				"1440": "shots/Root_816_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:12px 0 0;font-size:12.5px;color:#77716A;text-align:center\" data-dc-tpl=\"816\">Secure payment. Prescription details are held under UK GDPR and seen only by me.</p>",
+			"attributes": {
+				"text": "Secure payment. Prescription details are held under UK GDPR and seen only by me."
+			}
+		},
+		{
+			"order": 57,
+			"key": "Root/817#0",
+			"tag": "aside",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [
+				"Root/821#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_817_0@375.png",
+				"1440": "shots/Root_817_0@1440.png"
+			},
+			"snippet": "<aside style=\"position: {{ railPos }};top:110px;background:#fff;border:1px solid #E6E1DA;padding:24px;animation:fade .6s both\" data-dc-tpl=\"817\"> <div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between\" data-dc-tpl=\"818\"><span data-dc-tpl=\"819\">Your bag</span><a href=\"#\" sc-camel-on-click=\"{{ openBag }}\" style=\"letter-sp",
+			"attributes": {
+				"tagName": "aside"
+			}
+		},
+		{
+			"order": 58,
+			"key": "Root/818#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_818_0@375.png",
+				"1440": "shots/Root_818_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px;display:flex;justify-content:space-between\" data-dc-tpl=\"818\"><span data-dc-tpl=\"819\">Your bag</span><a href=\"#\" sc-camel-on-click=\"{{ openBag }}\" style=\"letter-spacing:0;text-transform:none;color:#6B655E;border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"820\">Edit</a></div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 59,
+			"key": "Root/819#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Your bag",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_819_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"819\">Your bag</span>",
+			"attributes": {
+				"text": "Your bag"
+			}
+		},
+		{
+			"order": 60,
+			"key": "Root/820#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Edit",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_820_0@375.png",
+				"1440": "shots/Root_820_0@1440.png"
+			},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openBag }}\" style=\"letter-spacing:0;text-transform:none;color:#6B655E;border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"820\">Edit</a>",
+			"attributes": {
+				"label": "Edit"
+			}
+		},
+		{
+			"order": 61,
+			"key": "Root/833#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_833_0@375.png",
+				"1440": "shots/Root_833_0@1440.png"
+			},
+			"snippet": "<div style=\"border-top:1px solid #E6E1DA;margin-top:18px;padding-top:14px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:#5E584F\" data-dc-tpl=\"833\"> <div style=\"display:flex;justify-content:space-between\" data-dc-tpl=\"834\"><span data-dc-tpl=\"835\">Subtotal</span><span style=\"color:#141414\" data-dc-tpl=\"836\">{{ subtotalLabel }}</span></div> <div style=\"display:flex;justify-content:s",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 62,
+			"key": "Root/834#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_834_0@375.png",
+				"1440": "shots/Root_834_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between\" data-dc-tpl=\"834\"><span data-dc-tpl=\"835\">Subtotal</span><span style=\"color:#141414\" data-dc-tpl=\"836\">{{ subtotalLabel }}</span></div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 63,
+			"key": "Root/835#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Subtotal",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_835_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"835\">Subtotal</span>",
+			"attributes": {
+				"text": "Subtotal"
+			}
+		},
+		{
+			"order": 64,
+			"key": "Root/836#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "£0",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_836_0@375.png",
+				"1440": "shots/Root_836_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#141414\" data-dc-tpl=\"836\">{{ subtotalLabel }}</span>",
+			"attributes": {
+				"text": "£0"
+			}
+		},
+		{
+			"order": 65,
+			"key": "Root/837#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_837_0@375.png",
+				"1440": "shots/Root_837_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between\" data-dc-tpl=\"837\"><span data-dc-tpl=\"838\">{{ shipLine }}</span><span style=\"color:#141414\" data-dc-tpl=\"839\">{{ shippingLabel }}</span></div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 66,
+			"key": "Root/838#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Delivery",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_838_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"838\">{{ shipLine }}</span>",
+			"attributes": {
+				"text": "Delivery"
+			}
+		},
+		{
+			"order": 67,
+			"key": "Root/839#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Free",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_839_0@375.png",
+				"1440": "shots/Root_839_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#141414\" data-dc-tpl=\"839\">{{ shippingLabel }}</span>",
+			"attributes": {
+				"text": "Free"
+			}
+		},
+		{
+			"order": 68,
+			"key": "Root/840#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_840_0@375.png",
+				"1440": "shots/Root_840_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;font-size:18px;color:#141414;padding-top:8px;border-top:1px solid #E6E1DA;margin-top:4px\" data-dc-tpl=\"840\"><span data-dc-tpl=\"841\">Total</span><span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"842\">{{ totalLabel }}</span></div>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 69,
+			"key": "Root/841#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Total",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_841_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"841\">Total</span>",
+			"attributes": {
+				"text": "Total"
+			}
+		},
+		{
+			"order": 70,
+			"key": "Root/842#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "£0",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_842_0@375.png",
+				"1440": "shots/Root_842_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"842\">{{ totalLabel }}</span>",
+			"attributes": {
+				"text": "£0"
+			}
+		},
+		{
+			"order": 71,
+			"key": "Root/843#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Klarna: 3 interest-free payments of £0 . 18+, T&Cs apply.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_843_0@375.png",
+				"1440": "shots/Root_843_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:16px 0 0;font-size:12.5px;color:#77716A;text-wrap:pretty\" data-dc-tpl=\"843\">Klarna: 3 interest-free payments of {{ klarnaLabel }}. 18+, T&amp;Cs apply.</p>",
+			"attributes": {
+				"text": "Klarna: 3 interest-free payments of £0 . 18+, T&Cs apply."
+			}
+		}
+	]
+}

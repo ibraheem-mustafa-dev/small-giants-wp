@@ -1,0 +1,857 @@
+{
+	"generated": "2026-10-27T00:09:48.127Z",
+	"inventory": "2026-10-27T00:09:47.475Z",
+	"source": "http://127.0.0.1:61964/#@state/page=about",
+	"surface": "page-about",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 26,
+		"parts": 0,
+		"rows": 26,
+		"skeletonNodes": 18,
+		"expandedNodes": 18,
+		"low": 4,
+		"removed": 8,
+		"unresolved": 0,
+		"byRule": {
+			"hero": 1,
+			"heroInner": 8,
+			"label": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/601#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_601_0@375.png",
+				"1440": "shots/Root_601_0@1440.png"
+			},
+			"snippet": "<main class=\"sgs-page-about\" data-screen-label=\"About\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"601\"> <div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"602\"> <div data-dc-tpl=\"603\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:ris",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/602#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/hero",
+			"action": null,
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)",
+			"source": "rule hero",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hero",
+			"handover": {
+				"owner": "content-page",
+				"kind": "presence",
+				"detail": "the hero image: choose it in the hero's split media setting"
+			},
+			"candidates": [
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_602_0@375.png",
+				"1440": "shots/Root_602_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"602\"> <div data-dc-tpl=\"603\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"604\">About Eye Care</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-si",
+			"attributes": {
+				"layout": "grid",
+				"variant": "split"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/603#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_603_0@375.png",
+				"1440": "shots/Root_603_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"603\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"604\">About Eye Care</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty;animation:rise .6s both\" data-dc-tpl=\"605\">Fatima Nawaz</h1> <p s",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root/604#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "About Eye Care",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_604_0@375.png",
+				"1440": "shots/Root_604_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"604\">About Eye Care</p>",
+			"attributes": {
+				"text": "About Eye Care"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/605#0",
+			"tag": "h1",
+			"depth": 3,
+			"words": "Fatima Nawaz",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_605_0@375.png",
+				"1440": "shots/Root_605_0@1440.png"
+			},
+			"snippet": "<h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty;animation:rise .6s both\" data-dc-tpl=\"605\">Fatima Nawaz</h1>",
+			"attributes": {
+				"content": "Fatima Nawaz"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/606#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_606_0@375.png",
+				"1440": "shots/Root_606_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 28px;font-size:15px;color:#6B655E;letter-spacing:.04em;animation:rise .7s both\" data-dc-tpl=\"606\">BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care</p>",
+			"attributes": {
+				"text": "BSc (Hons) Optometry · MCOptom · DipTp(IP) · Prof Cert Paediatric Eye Care"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/607#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_607_0@375.png",
+				"1440": "shots/Root_607_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 18px;font-size:17px;text-wrap:pretty;animation:rise .8s both\" data-dc-tpl=\"607\">Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site.</p>",
+			"attributes": {
+				"text": "Eye Care Birmingham is an independent clinic in Birmingham. This shop is how it sells eyewear beyond the front door: the same frames the chains stock, priced by someone without a chain's overheads, with lenses glazed and fitted on site."
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/608#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_608_0@375.png",
+				"1440": "shots/Root_608_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 18px;font-size:16px;color:#5E584F;text-wrap:pretty;animation:rise .85s both\" data-dc-tpl=\"608\">Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame.</p>",
+			"attributes": {
+				"text": "Day to day I test eyes, treat eye conditions and dispense glasses. The letters below aren't decoration — they're why I can look at your prescription and tell you what will actually work in a given frame."
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/609#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_609_0@375.png",
+				"1440": "shots/Root_609_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:16px;color:#5E584F;text-wrap:pretty;animation:rise .9s both\" data-dc-tpl=\"609\">Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will.</p>",
+			"attributes": {
+				"text": "Every prescription order is checked by me before it's made. If a frame won't suit a strong prescription, I'll say so before you pay and suggest something that will."
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/610#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_610_0@375.png",
+				"1440": "shots/Root_610_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:10px;margin-top:32px;flex-wrap:wrap;animation:rise 1s both\" data-dc-tpl=\"610\"> <a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;gap:11px;background:#25D366;color:#0B2B17;padding:0 24px;min-height:50px;font-size:14px;font-weight:500;transition:background .25s\" style-hover=\"background:#1EBE5A;color:#0B2B17\" d",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/611#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Message me",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_611_0@1440.png"
+			},
+			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;gap:11px;background:#25D366;color:#0B2B17;padding:0 24px;min-height:50px;font-size:14px;font-weight:500;transition:background .25s\" style-hover=\"background:#1EBE5A;color:#0B2B17\" data-dc-tpl=\"611\"> <img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/612#0",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"into": "Root/602#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_612_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"612\">",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/613#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "Shop the range",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_613_0@375.png",
+				"1440": "shots/Root_613_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:none;color:#141414;border:1px solid #141414;padding:0 24px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#F3F0EB\" data-dc-tpl=\"613\">Shop the range</button>",
+			"attributes": {
+				"label": "Shop the range"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/614#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_614_0@375.png",
+				"1440": "shots/Root_614_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .8s both\" data-dc-tpl=\"614\"> <div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"615\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"616\">BSc (Hons)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"617\">An",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/615#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_615_0@375.png",
+				"1440": "shots/Root_615_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"615\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"616\">BSc (Hons)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"617\">An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.</p></div>",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root/616#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "BSc (Hons)",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_616_0@375.png",
+				"1440": "shots/Root_616_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"616\">BSc (Hons)</div>",
+			"attributes": {
+				"text": "BSc (Hons)"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/617#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_617_0@375.png",
+				"1440": "shots/Root_617_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"617\">An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council.</p>",
+			"attributes": {
+				"text": "An honours degree in optometry, a supervised pre-registration year, and registration with the General Optical Council."
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/618#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_618_0@375.png",
+				"1440": "shots/Root_618_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"618\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"619\">MCOptom</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"620\">Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.</p></div>",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/619#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "MCOptom",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_619_0@375.png",
+				"1440": "shots/Root_619_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"619\">MCOptom</div>",
+			"attributes": {
+				"text": "MCOptom"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/620#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_620_0@375.png",
+				"1440": "shots/Root_620_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"620\">Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum.</p>",
+			"attributes": {
+				"text": "Member of the College of Optometrists, which means ongoing training and a code of clinic beyond the legal minimum."
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/621#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_621_0@375.png",
+				"1440": "shots/Root_621_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:22px 24px;border-left:3px solid var(--acc,#9C8B78)\" data-dc-tpl=\"621\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"622\">DipTp(IP)</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"623\">Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescrib",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root/622#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "DipTp(IP)",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_622_0@375.png",
+				"1440": "shots/Root_622_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"622\">DipTp(IP)</div>",
+			"attributes": {
+				"text": "DipTp(IP)"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/623#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_623_0@375.png",
+				"1440": "shots/Root_623_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"623\">Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't.</p>",
+			"attributes": {
+				"text": "Independent Prescriber — a postgraduate qualification allowing me to diagnose eye conditions and prescribe medicine for them. Most opticians can't."
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/624#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_624_0@375.png",
+				"1440": "shots/Root_624_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:22px 24px\" data-dc-tpl=\"624\"><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"625\">Paediatric Eye Care</div><p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"626\">Additional certification in children's vision, which matters when the order is for a child.</p></div>",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root/625#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "Paediatric Eye Care",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_625_0@375.png",
+				"1440": "shots/Root_625_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:22px\" data-dc-tpl=\"625\">Paediatric Eye Care</div>",
+			"attributes": {
+				"text": "Paediatric Eye Care"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/626#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "Additional certification in children's vision, which matters when the order is for a child.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_626_0@375.png",
+				"1440": "shots/Root_626_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:6px 0 0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"626\">Additional certification in children's vision, which matters when the order is for a child.</p>",
+			"attributes": {
+				"text": "Additional certification in children's vision, which matters when the order is for a child."
+			}
+		}
+	]
+}

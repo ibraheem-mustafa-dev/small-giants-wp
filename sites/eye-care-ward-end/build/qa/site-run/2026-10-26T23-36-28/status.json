@@ -1,0 +1,198 @@
+{
+  "footer": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "about": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "lenses": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "help": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "contact": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "home": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "header": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "mobile-menu": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "mega-sunglasses": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "mega-brands": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "mega-lenses": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "mega-help": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "size-guide": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "lens": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "shop": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "product": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "contact-form": {
+    "run": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "The \"path\" argument must be of type string. Received undefined"
+    }
+  },
+  "my-account": {
+    "inventory": {
+      "ok": true,
+      "seconds": 24,
+      "detail": "27 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "20 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own my account page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    }
+  },
+  "cart": {
+    "inventory": {
+      "ok": false,
+      "seconds": 0,
+      "detail": "no intake surface: no handoff record matched"
+    }
+  },
+  "form-submit-contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "17 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "8 nodes, 0 low"
+    }
+  },
+  "prescription-lenses": {
+    "inventory": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "48 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "48 nodes, 18 low"
+    }
+  },
+  "checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 31,
+      "detail": "73 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "67 nodes, 19 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own checkout page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    }
+  },
+  "drawer-eye-care-birmingham": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "30 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "13 nodes, 1 low"
+    }
+  }
+}

@@ -3,26 +3,42 @@
 		"name": "sgs/site-footer",
 		"attributes": {},
 		"draftRef": {
-			"tpl": "Root/844#0"
+			"tpl": "Root/1124#0"
 		},
 		"draftFingerprint": {
 			"tag": "footer",
-			"cls": "",
-			"styleHash": "906c2415"
+			"cls": "sgs-footer",
+			"styleHash": "906c2415",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 1999
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/site-footer-row",
 				"attributes": {
-					"layout": "grid"
+					"rowSlot": "top"
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"layout": "grid",
+					"rowSlot": "columns"
 				},
 				"draftRef": {
-					"tpl": "Root/845#0"
+					"tpl": "Root/1125#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
 					"cls": "",
-					"styleHash": "92247fe6"
+					"styleHash": "92247fe6",
+					"parentTags": [
+						"footer"
+					],
+					"textHash": "1505",
+					"line": 2000
 				},
 				"innerBlocks": [
 					{
@@ -31,24 +47,37 @@
 							"tagName": "div"
 						},
 						"draftRef": {
-							"tpl": "Root/846#0"
+							"tpl": "Root/1126#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
 							"cls": "",
-							"styleHash": "1505"
+							"styleHash": "1505",
+							"parentTags": [
+								"footer",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 2001
 						},
 						"innerBlocks": [
 							{
 								"name": "sgs/responsive-logo",
 								"attributes": {},
 								"draftRef": {
-									"tpl": "Root/847#0"
+									"tpl": "Root/1127#0"
 								},
 								"draftFingerprint": {
-									"tag": "img",
+									"tag": "div",
 									"cls": "",
-									"styleHash": "924f5e88"
+									"styleHash": "58056218",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "a8dc18c9",
+									"line": 2002
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -65,38 +94,41 @@
 									"text": "Designer eyewear from an independent optician in Birmingham."
 								},
 								"draftRef": {
-									"tpl": "Root/848#0"
+									"tpl": "Root/1129#0"
 								},
 								"draftFingerprint": {
 									"tag": "p",
 									"cls": "",
-									"styleHash": "a4158abd"
+									"styleHash": "a4158abd",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "bdb0a0d9",
+									"line": 2004
 								},
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/social-icons",
+								"name": "sgs/gallery",
 								"attributes": {},
-								"draftRef": "footer[data-dc-tpl=\"844\"] [data-dc-tpl=\"849\"]",
+								"draftRef": {
+									"tpl": "Root/1130#0"
+								},
 								"draftFingerprint": {
 									"tag": "div",
 									"cls": "",
-									"styleHash": "a03e8424"
+									"styleHash": "a03e8424",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 2005
 								},
-								"innerBlocks": [],
-								"siteInfoRow": [
-									"instagram",
-									"google",
-									"whatsapp"
-								],
-								"childRefs": {
-									"instagram": "[data-dc-tpl=\"850\"]",
-									"google": "[data-dc-tpl=\"861\"]",
-									"whatsapp": "[data-dc-tpl=\"867\"]"
-								},
-								"childAttributes": {
-									"linkTarget": "_blank"
-								}
+								"innerBlocks": []
 							}
 						]
 					},
@@ -107,12 +139,18 @@
 							"layout": "stack"
 						},
 						"draftRef": {
-							"tpl": "Root/870#0"
+							"tpl": "Root/1137#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
 							"cls": "",
-							"styleHash": "d0f4af7f"
+							"styleHash": "d0f4af7f",
+							"parentTags": [
+								"footer",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 2017
 						},
 						"innerBlocks": [
 							{
@@ -121,12 +159,19 @@
 									"content": "Shop"
 								},
 								"draftRef": {
-									"tpl": "Root/871#0"
+									"tpl": "Root/1138#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
 									"cls": "",
-									"styleHash": "72cd63c6"
+									"styleHash": "72cd63c6",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "7c8a2f61",
+									"line": 2017
 								},
 								"innerBlocks": []
 							},
@@ -146,12 +191,19 @@
 									]
 								},
 								"draftRef": {
-									"tpl": "Root/872#0"
+									"tpl": "Root/1139#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "",
-									"styleHash": "1505"
+									"styleHash": "1505",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "a820011",
+									"line": 2017
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -181,12 +233,18 @@
 							"layout": "stack"
 						},
 						"draftRef": {
-							"tpl": "Root/875#0"
+							"tpl": "Root/1143#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
 							"cls": "",
-							"styleHash": "d0f4af7f"
+							"styleHash": "d0f4af7f",
+							"parentTags": [
+								"footer",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 2018
 						},
 						"innerBlocks": [
 							{
@@ -195,12 +253,19 @@
 									"content": "Help"
 								},
 								"draftRef": {
-									"tpl": "Root/876#0"
+									"tpl": "Root/1144#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
 									"cls": "",
-									"styleHash": "72cd63c6"
+									"styleHash": "72cd63c6",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "7c860174",
+									"line": 2018
 								},
 								"innerBlocks": []
 							},
@@ -223,12 +288,19 @@
 									]
 								},
 								"draftRef": {
-									"tpl": "Root/877#0"
+									"tpl": "Root/1145#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "",
-									"styleHash": "1505"
+									"styleHash": "1505",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "628d2966",
+									"line": 2018
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -263,12 +335,18 @@
 							"layout": "stack"
 						},
 						"draftRef": {
-							"tpl": "Root/881#0"
+							"tpl": "Root/1149#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
 							"cls": "",
-							"styleHash": "d0f4af7f"
+							"styleHash": "d0f4af7f",
+							"parentTags": [
+								"footer",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 2019
 						},
 						"innerBlocks": [
 							{
@@ -277,12 +355,19 @@
 									"content": "Visit or call"
 								},
 								"draftRef": {
-									"tpl": "Root/882#0"
+									"tpl": "Root/1150#0"
 								},
 								"draftFingerprint": {
 									"tag": "span",
 									"cls": "",
-									"styleHash": "72cd63c6"
+									"styleHash": "72cd63c6",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "dba88f4b",
+									"line": 2020
 								},
 								"innerBlocks": []
 							},
@@ -301,21 +386,23 @@
 											"text": "",
 											"siteInfoSource": "address",
 											"siteInfoLink": true
-										},
-										{
-											"text": "",
-											"siteInfoSource": "hours",
-											"siteInfoLink": true
 										}
 									]
 								},
 								"draftRef": {
-									"tpl": "Root/883#0"
+									"tpl": "Root/1151#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "",
-									"styleHash": "1505"
+									"styleHash": "1505",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "34b72d44",
+									"line": 2021
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -323,6 +410,35 @@
 										"owner": "behaviour",
 										"kind": "link",
 										"detail": "draft link \"About Eye Care\" is \"#\": its destination is not in the draft, url left empty"
+									}
+								]
+							},
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "hours"
+								},
+								"draftRef": {
+									"tpl": "Root/1155#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "340798a7",
+									"parentTags": [
+										"footer",
+										"div",
+										"div"
+									],
+									"textHash": "811f1cb0",
+									"line": 2024
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "site-info",
+										"kind": "text",
+										"detail": "Site Info \"hours\" must read: Mon–Sat 9.30–17.30"
 									}
 								]
 							}
@@ -333,15 +449,21 @@
 			{
 				"name": "sgs/site-footer-row",
 				"attributes": {
-					"layout": "flex"
+					"layout": "flex",
+					"rowSlot": "bottom"
 				},
 				"draftRef": {
-					"tpl": "Root/888#0"
+					"tpl": "Root/1156#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
 					"cls": "",
-					"styleHash": "ecd6e835"
+					"styleHash": "82c1ba4a",
+					"parentTags": [
+						"footer"
+					],
+					"textHash": "1505",
+					"line": 2027
 				},
 				"innerBlocks": [
 					{
@@ -351,12 +473,18 @@
 							"copyrightPrefix": ""
 						},
 						"draftRef": {
-							"tpl": "Root/889#0"
+							"tpl": "Root/1157#0"
 						},
 						"draftFingerprint": {
 							"tag": "span",
 							"cls": "",
-							"styleHash": "1505"
+							"styleHash": "1505",
+							"parentTags": [
+								"footer",
+								"div"
+							],
+							"textHash": "57bfe239",
+							"line": 2028
 						},
 						"innerBlocks": [],
 						"handover": [
@@ -368,18 +496,23 @@
 						]
 					},
 					{
-						"name": "sgs/container",
+						"name": "sgs/multi-button",
 						"attributes": {
-							"tagName": "div",
 							"layout": "flex"
 						},
 						"draftRef": {
-							"tpl": "Root/890#0"
+							"tpl": "Root/1158#0"
 						},
 						"draftFingerprint": {
 							"tag": "span",
 							"cls": "",
-							"styleHash": "e88a52f3"
+							"styleHash": "e88a52f3",
+							"parentTags": [
+								"footer",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 2029
 						},
 						"innerBlocks": [
 							{
@@ -388,12 +521,19 @@
 									"label": "Privacy"
 								},
 								"draftRef": {
-									"tpl": "Root/891#0"
+									"tpl": "Root/1159#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "",
-									"styleHash": "26842410"
+									"styleHash": "1505",
+									"parentTags": [
+										"footer",
+										"div",
+										"span"
+									],
+									"textHash": "cf47b943",
+									"line": 2029
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -410,12 +550,19 @@
 									"label": "Terms"
 								},
 								"draftRef": {
-									"tpl": "Root/892#0"
+									"tpl": "Root/1160#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "",
-									"styleHash": "26842410"
+									"styleHash": "1505",
+									"parentTags": [
+										"footer",
+										"div",
+										"span"
+									],
+									"textHash": "d92b8f8",
+									"line": 2029
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -425,30 +572,26 @@
 										"detail": "draft link is \"#\": destination not in the draft, url left empty"
 									}
 								]
-							},
-							{
-								"name": "sgs/business-info",
-								"attributes": {
-									"displayType": "attribution"
-								},
-								"draftRef": {
-									"tpl": "Root/893#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "ec-credit",
-									"styleHash": "1505"
-								},
-								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "site-info",
-										"kind": "text",
-										"detail": "Site Info \"attribution\" must read: Website by Small Giants Studio"
-									}
-								]
 							}
 						]
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Ask me anything"
+						},
+						"draftRef": {
+							"tpl": "Root/1161#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "sgs-whatsapp-fab scpf",
+							"styleHash": "341774d3",
+							"parentTags": [],
+							"textHash": "1505",
+							"line": 2033
+						},
+						"innerBlocks": []
 					}
 				]
 			}

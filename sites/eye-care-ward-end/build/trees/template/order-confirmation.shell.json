@@ -1,0 +1,25 @@
+{
+  "chain": [
+    {
+      "name": "sgs/container",
+      "attributes": {
+        "tagName": "main",
+        "className": "cr-ref-template-order-confirmation-0",
+        "textAlign": "center",
+        "minHeight": {
+          "desktop": "0px"
+        },
+        "maxWidth": {
+          "desktop": "720px"
+        },
+        "textColourHover": "primary",
+        "padding": {
+          "desktop": "52px",
+          "tablet": "52px",
+          "mobile": "20px"
+        }
+      }
+    }
+  ],
+  "from": "template-order-confirmation"
+}

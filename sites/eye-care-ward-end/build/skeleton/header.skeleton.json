@@ -3,106 +3,384 @@
 		"name": "sgs/site-header",
 		"attributes": {},
 		"draftRef": {
-			"tpl": "Root/14#0"
+			"tpl": "Root/13#0"
 		},
 		"draftFingerprint": {
 			"tag": "header",
-			"cls": "",
-			"styleHash": "129569ef"
+			"cls": "sgs-header",
+			"styleHash": "618f6c7e",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 556
 		},
 		"innerBlocks": [
 			{
 				"name": "sgs/site-header-row",
 				"attributes": {
-					"layout": "grid"
+					"rowSlot": "top"
 				},
 				"draftRef": {
-					"tpl": "Root/15#0"
+					"tpl": "Root/7#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "sgs-trust-ticker",
+					"styleHash": "b4b819b2",
+					"parentTags": [],
+					"textHash": "1505",
+					"line": 545
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "100% genuine, supplied direct by the brands"
+						},
+						"draftRef": {
+							"tpl": "Root/10#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "d4a6a051",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "7ad87c43",
+							"line": 548
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Free UK delivery over £75, or collect in Birmingham"
+						},
+						"draftRef": {
+							"tpl": "Root/10#1"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "d4a6a051",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "29982a4",
+							"line": 548
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Prescription lenses glazed here in 7–10 days"
+						},
+						"draftRef": {
+							"tpl": "Root/10#2"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "d4a6a051",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "e1846261",
+							"line": 548
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "30 days to return, free adjustments for life"
+						},
+						"draftRef": {
+							"tpl": "Root/10#3"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "d4a6a051",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "3dea2d41",
+							"line": 548
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "100% genuine, supplied direct by the brands"
+						},
+						"draftRef": {
+							"tpl": "Root/10#4"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "aa53ce7b",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "7ad87c43",
+							"line": 548
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Free UK delivery over £75, or collect in Birmingham"
+						},
+						"draftRef": {
+							"tpl": "Root/10#5"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "aa53ce7b",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "29982a4",
+							"line": 548
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Prescription lenses glazed here in 7–10 days"
+						},
+						"draftRef": {
+							"tpl": "Root/10#6"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "aa53ce7b",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "e1846261",
+							"line": 548
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "30 days to return, free adjustments for life"
+						},
+						"draftRef": {
+							"tpl": "Root/10#7"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "aa53ce7b",
+							"parentTags": [
+								"div",
+								"div"
+							],
+							"textHash": "3dea2d41",
+							"line": 548
+						},
+						"innerBlocks": []
+					}
+				],
+				"draftSlots": {
+					".sgs-container__inner": {
+						"tpl": "Root/8#0"
+					}
+				}
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"layout": "grid",
+					"rowSlot": "middle"
+				},
+				"draftRef": {
+					"tpl": "Root/14#0"
 				},
 				"draftFingerprint": {
 					"tag": "div",
 					"cls": "",
-					"styleHash": "30cc5cc8"
+					"styleHash": "30cc5cc8",
+					"parentTags": [
+						"header"
+					],
+					"textHash": "1505",
+					"line": 557
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "nav",
-							"layout": "flex"
-						},
+						"name": "sgs/nav-bar-menu",
+						"attributes": {},
 						"draftRef": {
-							"tpl": "Root/16#0"
+							"tpl": "Root/15#0"
 						},
 						"draftFingerprint": {
 							"tag": "nav",
 							"cls": "",
-							"styleHash": "d0e1c09f"
+							"styleHash": "d0e1c09f",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 558
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
+								"tpl": "Root/23#0"
+							}
+						},
+						"widthVariants": [
+							{
+								"key": "Root/17#0",
+								"shown": [
+									375,
+									768
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/17#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "",
+							"styleHash": "a2c9e8ee",
+							"parentTags": [
+								"header",
+								"div",
+								"nav"
+							],
+							"textHash": "1505",
+							"line": 560
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/button",
+								"name": "sgs/container",
 								"attributes": {
-									"label": "Sunglasses"
+									"tagName": "div",
+									"layout": "stack"
 								},
 								"draftRef": {
-									"tpl": "Root/24#0"
+									"tpl": "Root/18#0"
 								},
 								"draftFingerprint": {
-									"tag": "a",
+									"tag": "span",
 									"cls": "",
-									"styleHash": "70cad5c6"
+									"styleHash": "99b6a44b",
+									"parentTags": [
+										"header",
+										"div",
+										"nav",
+										"button"
+									],
+									"textHash": "1505",
+									"line": 561
 								},
-								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "behaviour",
-										"kind": "link",
-										"detail": "draft link is \"#\" and navigates by script goSun: destination not in the draft, url left empty"
-									}
-								]
+								"innerBlocks": []
 							},
 							{
-								"name": "sgs/button",
+								"name": "sgs/label",
 								"attributes": {
-									"label": "Brands"
+									"text": "Menu"
 								},
 								"draftRef": {
-									"tpl": "Root/25#0"
+									"tpl": "Root/21#0"
 								},
 								"draftFingerprint": {
-									"tag": "a",
+									"tag": "span",
 									"cls": "",
-									"styleHash": "70cad5c6"
+									"styleHash": "1d7726a",
+									"parentTags": [
+										"header",
+										"div",
+										"nav",
+										"button"
+									],
+									"textHash": "7c804cd6",
+									"line": 565
 								},
-								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "behaviour",
-										"kind": "link",
-										"detail": "draft link is \"#\" and navigates by script toggleMegaBrands: destination not in the draft, url left empty"
-									}
-								]
-							},
+								"innerBlocks": []
+							}
+						],
+						"widthShown": [
+							375,
+							768
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/28#0"
+						},
+						"draftFingerprint": {
+							"tag": "a",
+							"cls": "",
+							"styleHash": "7d883d1",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 575
+						},
+						"innerBlocks": [
 							{
-								"name": "sgs/button",
+								"name": "sgs/responsive-logo",
 								"attributes": {
-									"label": "Lenses"
+									"logoId": 65
 								},
 								"draftRef": {
-									"tpl": "Root/26#0"
+									"tpl": "Root/29#0"
 								},
 								"draftFingerprint": {
-									"tag": "a",
+									"tag": "img",
 									"cls": "",
-									"styleHash": "70cad5c6"
+									"styleHash": "5607dc5e",
+									"parentTags": [
+										"header",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 576
 								},
 								"innerBlocks": [],
 								"handover": [
 									{
-										"owner": "behaviour",
-										"kind": "link",
-										"detail": "draft link is \"#\" and navigates by script goLenses: destination not in the draft, url left empty"
+										"owner": "site-info",
+										"kind": "presence",
+										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
 									}
 								]
 							},
@@ -110,88 +388,51 @@
 								"name": "sgs/container",
 								"attributes": {
 									"tagName": "div",
-									"layout": "flex"
+									"layout": "stack"
 								},
-								"draftRef": {
-									"tpl": "Root/27#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "69f51109"
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "SOON"
-										},
-										"draftRef": {
-											"tpl": "Root/28#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "b04eff65"
-										},
-										"innerBlocks": []
-									}
-								]
-							}
-						]
-					},
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div",
-							"layout": "flex"
-						},
-						"draftRef": {
-							"tpl": "Root/29#0"
-						},
-						"draftFingerprint": {
-							"tag": "a",
-							"cls": "",
-							"styleHash": "7d883d1"
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/responsive-logo",
-								"attributes": {},
 								"draftRef": {
 									"tpl": "Root/30#0"
 								},
 								"draftFingerprint": {
-									"tag": "img",
+									"tag": "span",
 									"cls": "",
-									"styleHash": "1505"
+									"styleHash": "5575c24d",
+									"parentTags": [
+										"header",
+										"div",
+										"a"
+									],
+									"textHash": "1505",
+									"line": 577
 								},
-								"innerBlocks": [],
-								"handover": [
+								"innerBlocks": [
 									{
-										"owner": "site-info",
-										"kind": "presence",
-										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-									}
-								]
-							},
-							{
-								"name": "sgs/responsive-logo",
-								"attributes": {},
-								"draftRef": {
-									"tpl": "Root/31#0"
-								},
-								"draftFingerprint": {
-									"tag": "img",
-									"cls": "",
-									"styleHash": "bf4b632"
-								},
-								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "site-info",
-										"kind": "presence",
-										"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+										"name": "sgs/responsive-logo",
+										"attributes": {},
+										"draftRef": {
+											"tpl": "Root/31#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "85aeb36b",
+											"parentTags": [
+												"header",
+												"div",
+												"a",
+												"span"
+											],
+											"textHash": "a8dc18c9",
+											"line": 578
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "site-info",
+												"kind": "presence",
+												"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
+											}
+										]
 									}
 								]
 							}
@@ -204,38 +445,47 @@
 							"layout": "flex"
 						},
 						"draftRef": {
-							"tpl": "Root/32#0"
+							"tpl": "Root/33#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
 							"cls": "",
-							"styleHash": "133a4d71"
+							"styleHash": "133a4d71",
+							"parentTags": [
+								"header",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 582
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/business-info",
+								"name": "sgs/button",
 								"attributes": {
-									"displayType": "phone"
+									"label": "0121 729 8233",
+									"url": "tel:01217298233",
+									"linkSource": "phone",
+									"labelFromSiteInfo": true
 								},
 								"draftRef": {
-									"tpl": "Root/34#0"
+									"tpl": "Root/35#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "scp1",
-									"styleHash": "4eef3f81"
+									"styleHash": "4eef3f81",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "f40a7031",
+									"line": 584
 								},
 								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "site-info",
-										"kind": "text",
-										"detail": "Site Info \"phone\" must read: <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"currentC"
-									}
-								],
 								"draftSlots": {
-									".sgs-business-info > .sgs-business-info__link > .sgs-business-info__icon > svg": {
-										"tpl": "Root/35#0"
+									".sgs-button__icon > svg": {
+										"tpl": "Root/36#0"
 									}
 								}
 							},
@@ -245,12 +495,19 @@
 									"label": "About Eye Care"
 								},
 								"draftRef": {
-									"tpl": "Root/37#0"
+									"tpl": "Root/38#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "scp2",
-									"styleHash": "4ac32d75"
+									"styleHash": "4ac32d75",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "34b72d44",
+									"line": 588
 								},
 								"innerBlocks": [],
 								"handover": [
@@ -267,21 +524,53 @@
 									"label": "Help"
 								},
 								"draftRef": {
-									"tpl": "Root/38#0"
+									"tpl": "Root/39#0"
 								},
 								"draftFingerprint": {
 									"tag": "a",
 									"cls": "",
-									"styleHash": "4ac32d75"
+									"styleHash": "4ac32d75",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "7c860174",
+									"line": 589
 								},
 								"innerBlocks": [],
 								"handover": [
 									{
 										"owner": "behaviour",
 										"kind": "link",
-										"detail": "draft link is \"#\" and navigates by script goHelp: destination not in the draft, url left empty"
+										"detail": "draft link is \"#\" and navigates by script navHelp: destination not in the draft, url left empty"
 									}
 								]
+							},
+							{
+								"name": "sgs/icon",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/40#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "scp3",
+									"styleHash": "d2610e4b",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 591
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-icon__shape > .sgs-icon__glyph > svg": {
+										"tpl": "Root/41#0"
+									}
+								}
 							},
 							{
 								"name": "sgs/container",
@@ -290,12 +579,19 @@
 									"layout": "flex"
 								},
 								"draftRef": {
-									"tpl": "Root/39#0"
+									"tpl": "Root/46#0"
 								},
 								"draftFingerprint": {
 									"tag": "button",
-									"cls": "scp3",
-									"styleHash": "e97ba571"
+									"cls": "scp4",
+									"styleHash": "49b46e15",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 595
 								},
 								"innerBlocks": [
 									{
@@ -304,12 +600,20 @@
 											"text": "Bag"
 										},
 										"draftRef": {
-											"tpl": "Root/40#0"
+											"tpl": "Root/47#0"
 										},
 										"draftFingerprint": {
 											"tag": "span",
 											"cls": "",
-											"styleHash": "1505"
+											"styleHash": "6fdf5917",
+											"parentTags": [
+												"header",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "b87c701",
+											"line": 596
 										},
 										"innerBlocks": []
 									},
@@ -319,12 +623,20 @@
 											"text": "0"
 										},
 										"draftRef": {
-											"tpl": "Root/41#0"
+											"tpl": "Root/51#0"
 										},
 										"draftFingerprint": {
 											"tag": "span",
 											"cls": "",
-											"styleHash": "fb026049"
+											"styleHash": "6a5ac802",
+											"parentTags": [
+												"header",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "2b595",
+											"line": 598
 										},
 										"innerBlocks": []
 									}
@@ -333,6 +645,13 @@
 						]
 					}
 				]
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "bottom"
+				},
+				"innerBlocks": []
 			}
 		]
 	}

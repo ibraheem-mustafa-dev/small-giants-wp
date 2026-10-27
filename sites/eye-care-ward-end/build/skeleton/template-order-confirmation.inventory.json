@@ -1,0 +1,400 @@
+{
+  "generated": "2026-10-26T23:54:07.198Z",
+  "source": "http://127.0.0.1:58797/#@state/page=done",
+  "root": "main",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/845#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Confirmation is on its way by email and WhatsApp. Frames pos"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 6,
+      "768": 6,
+      "1440": 6
+    },
+    "tagAgree": 6,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/845#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 845,
+      "attrs": {
+        "class": "sgs-page-order-confirmed",
+        "style": "max-width: 720px; margin: 0px auto; padding: 48px 52px 90px; text-align: center;"
+      },
+      "words": "",
+      "allText": "✓ Thank you — order EC-10482. Confirmation is on its way by email and WhatsApp. Frames post within one working day; pres",
+      "srcLine": 1641,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isDone }}",
+          "tpl": "844"
+        }
+      ],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main class=\"sgs-page-order-confirmed\" data-screen-label=\"Order confirmed\" style=\"max-width:720px;margin:0 auto;padding: {{ pagePad }};text-align:center\" data-dc-tpl=\"845\"> <div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"846\">✓</div> <h1 st",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 105.8,
+          "w": 375,
+          "h": 411.6
+        },
+        "768": {
+          "x": 24,
+          "y": 105.8,
+          "w": 720,
+          "h": 466.3
+        },
+        "1440": {
+          "x": 360,
+          "y": 105.8,
+          "w": 720,
+          "h": 466.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_845_0@375.png",
+        "1440": "shots/Root_845_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/846#0",
+      "parentKey": "Root/845#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 846,
+      "attrs": {
+        "style": "width: 64px; height: 64px; border-radius: 50%; background: var(--acc,#9C8B78); color: rgb(255, 255, 255); display: inline-flex; align-items: center; justify-content: center; font-size: 26px; animation: 0.6s ease 0s 1 normal both running pop;"
+      },
+      "words": "✓",
+      "allText": "✓",
+      "srcLine": 1642,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isDone }}",
+          "tpl": "844"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "✓",
+      "snippet": "<div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"846\">✓</div>",
+      "box": {
+        "375": {
+          "x": 155.5,
+          "y": 133.8,
+          "w": 64,
+          "h": 64
+        },
+        "768": {
+          "x": 352,
+          "y": 153.8,
+          "w": 64,
+          "h": 64
+        },
+        "1440": {
+          "x": 688,
+          "y": 153.8,
+          "w": 64,
+          "h": 64
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_846_0@375.png",
+        "1440": "shots/Root_846_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/847#0",
+      "parentKey": "Root/845#0",
+      "depth": 1,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 847,
+      "attrs": {
+        "style": "margin: 24px 0px 12px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 48px; line-height: 1.05; animation: 0.6s ease 0s 1 normal both running rise;"
+      },
+      "words": "Thank you — order EC-10482.",
+      "allText": "Thank you — order EC-10482.",
+      "srcLine": 1643,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isDone }}",
+          "tpl": "844"
+        }
+      ],
+      "srcTag": "h1",
+      "srcOwnText": "Thank you — order EC-10482.",
+      "snippet": "<h1 style=\"margin:24px 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05;animation:rise .6s both\" data-dc-tpl=\"847\">Thank you — order EC-10482.</h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 221.8,
+          "w": 335,
+          "h": 71.4
+        },
+        "768": {
+          "x": 76,
+          "y": 241.8,
+          "w": 616,
+          "h": 100.8
+        },
+        "1440": {
+          "x": 412,
+          "y": 241.8,
+          "w": 616,
+          "h": 100.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_847_0@375.png",
+        "1440": "shots/Root_847_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/848#0",
+      "parentKey": "Root/845#0",
+      "depth": 1,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 848,
+      "attrs": {
+        "style": "margin: 0px 0px 28px; color: rgb(94, 88, 79); font-size: 16.5px; text-wrap: pretty; animation: 0.7s ease 0s 1 normal both running rise;"
+      },
+      "words": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10.",
+      "allText": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10.",
+      "srcLine": 1644,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isDone }}",
+          "tpl": "844"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ doneNote }}",
+      "snippet": "<p style=\"margin:0 0 28px;color:#5E584F;font-size:16.5px;text-wrap:pretty;animation:rise .7s both\" data-dc-tpl=\"848\">{{ doneNote }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 305.1,
+          "w": 335,
+          "h": 74.3
+        },
+        "768": {
+          "x": 76,
+          "y": 354.5,
+          "w": 616,
+          "h": 49.5
+        },
+        "1440": {
+          "x": 412,
+          "y": 354.5,
+          "w": 616,
+          "h": 49.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_848_0@375.png",
+        "1440": "shots/Root_848_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/851#0",
+      "parentKey": "Root/845#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 851,
+      "attrs": {
+        "style": "display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;"
+      },
+      "words": "",
+      "allText": "Back to the shop",
+      "srcLine": 1648,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isDone }}",
+          "tpl": "844"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;gap:10px;justify-content:center;flex-wrap:wrap\" data-dc-tpl=\"851\"> <button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"852\">Back to the shop</button> <sc-if value=\"{{ doneHasAccount }}\" hint-placeholder-val=\"{",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 407.4,
+          "w": 335,
+          "h": 50
+        },
+        "768": {
+          "x": 76,
+          "y": 432,
+          "w": 616,
+          "h": 50
+        },
+        "1440": {
+          "x": 412,
+          "y": 432,
+          "w": 616,
+          "h": 50
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_851_0@375.png",
+        "1440": "shots/Root_851_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/852#0",
+      "parentKey": "Root/851#0",
+      "depth": 2,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 852,
+      "attrs": {
+        "style": "background: rgb(20, 20, 20); color: rgb(250, 248, 245); border: 0px; padding: 0px 26px; min-height: 50px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; animation: 0.8s ease 0s 1 normal both running rise;"
+      },
+      "words": "Back to the shop",
+      "allText": "Back to the shop",
+      "srcLine": 1649,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isDone }}",
+          "tpl": "844"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Back to the shop",
+      "snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"852\">Back to the shop</button>",
+      "box": {
+        "375": {
+          "x": 91.7,
+          "y": 407.4,
+          "w": 191.6,
+          "h": 50
+        },
+        "768": {
+          "x": 288.2,
+          "y": 432,
+          "w": 191.6,
+          "h": 50
+        },
+        "1440": {
+          "x": 624.2,
+          "y": 432,
+          "w": 191.6,
+          "h": 50
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_852_0@375.png",
+        "1440": "shots/Root_852_0@1440.png"
+      }
+    }
+  ]
+}

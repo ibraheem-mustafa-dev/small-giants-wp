@@ -1,0 +1,60 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "className": "cr-ref-template-order-confirmation-0",
+      "textAlign": "center",
+      "minHeight": {
+        "desktop": "0px"
+      },
+      "maxWidth": {
+        "desktop": "720px"
+      },
+      "textColourHover": "primary",
+      "padding": {
+        "desktop": "52px",
+        "tablet": "52px",
+        "mobile": "20px"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "contentWidth": {
+            "desktop": "normal"
+          },
+          "flexDirection": "column",
+          "padding": {
+            "top": "var:preset|spacing|50",
+            "bottom": "var:preset|spacing|60"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "core/template-part",
+            "attributes": {
+              "slug": "sgs-order-confirmation-content"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

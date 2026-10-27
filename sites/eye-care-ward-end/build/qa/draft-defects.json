@@ -1,0 +1,40 @@
+{
+	"client": "eye-care-ward-end",
+	"takenOn": "2026-10-26T21:15:22.158Z",
+	"defects": [
+		{
+			"id": "defect:Eye Care Birmingham:js:2647:81",
+			"draftId": "Eye Care Birmingham:js:2647:81",
+			"construct": "timer",
+			"test": "unreached",
+			"declares": "a timer in the draft's code",
+			"renders": "never reached at 375, 768, 1440 px, even with hover, focus, state keys and events forced and the scroll pass run",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-26",
+			"sentOn": null
+		},
+		{
+			"id": "defect:Eye Care Birmingham:js:2650:4",
+			"draftId": "Eye Care Birmingham:js:2650:4",
+			"construct": "handler",
+			"test": "unreached",
+			"declares": "a handler in the draft's code",
+			"renders": "never reached at 375, 768, 1440 px, even with visibilitychange forced and the scroll pass run",
+			"owner": "Claude Design",
+			"widths": [
+				375,
+				768,
+				1440
+			],
+			"built": null,
+			"listedOn": "2026-10-26",
+			"sentOn": null
+		}
+	]
+}

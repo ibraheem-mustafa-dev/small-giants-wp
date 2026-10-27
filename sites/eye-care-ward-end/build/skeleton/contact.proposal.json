@@ -1,0 +1,1287 @@
+{
+	"generated": "2026-10-27T00:11:48.192Z",
+	"inventory": "2026-10-27T00:11:47.989Z",
+	"source": "http://127.0.0.1:61964/#@state/page=contact",
+	"surface": "page-contact",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [
+		{
+			"id": "S-34",
+			"kind": "form",
+			"name": "Contact form",
+			"openedBy": "Contact page",
+			"roots": [
+				"Eye Care Birmingham/682"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 74,
+		"parts": 34,
+		"rows": 40,
+		"skeletonNodes": 23,
+		"expandedNodes": 23,
+		"low": 1,
+		"removed": 17,
+		"unresolved": 0,
+		"byRule": {
+			"hero": 1,
+			"heroInner": 7,
+			"label": 5,
+			"siteInfoLink": 1,
+			"hoursRows": 2,
+			"formLink": 4,
+			"pillButton": 4
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/662#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_662_0@375.png",
+				"1440": "shots/Root_662_0@1440.png"
+			},
+			"snippet": "<main class=\"sgs-page-contact\" data-screen-label=\"Contact\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"662\"> <div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"663\"> <div data-dc-tpl=\"664\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/663#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/hero",
+			"action": null,
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)",
+			"source": "rule hero",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hero",
+			"handover": {
+				"owner": "content-page",
+				"kind": "presence",
+				"detail": "the hero image: choose it in the hero's split media setting"
+			},
+			"candidates": [
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_663_0@375.png",
+				"1440": "shots/Root_663_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:48px;align-items:start\" data-dc-tpl=\"663\"> <div data-dc-tpl=\"664\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"665\">Contact</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;t",
+			"attributes": {
+				"layout": "grid",
+				"variant": "split"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/664#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_664_0@375.png",
+				"1440": "shots/Root_664_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"664\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"665\">Contact</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty\" data-dc-tpl=\"666\">You'll be talking to me, not a help desk.</h1> <p style=\"margin:0 0 28px;colo",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root/665#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Contact",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_665_0@375.png",
+				"1440": "shots/Root_665_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"665\">Contact</p>",
+			"attributes": {
+				"text": "Contact"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/666#0",
+			"tag": "h1",
+			"depth": 3,
+			"words": "You'll be talking to me, not a help desk.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_666_0@375.png",
+				"1440": "shots/Root_666_0@1440.png"
+			},
+			"snippet": "<h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;text-wrap:pretty\" data-dc-tpl=\"666\">You'll be talking to me, not a help desk.</h1>",
+			"attributes": {
+				"content": "You'll be talking to me, not a help desk."
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/667#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Frame advice, prescription questions, order updates — WhatsApp is quickest. Messages in opening hours are usually answered within the hour.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_667_0@375.png",
+				"1440": "shots/Root_667_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 28px;color:#5E584F;font-size:16.5px;text-wrap:pretty\" data-dc-tpl=\"667\">Frame advice, prescription questions, order updates — WhatsApp is quickest. Messages in opening hours are usually answered within the hour.</p>",
+			"attributes": {
+				"text": "Frame advice, prescription questions, order updates — WhatsApp is quickest. Messages in opening hours are usually answered within the hour."
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/668#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "WhatsApp 07960 5978",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_668_0@375.png",
+				"1440": "shots/Root_668_0@1440.png"
+			},
+			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:inline-flex;align-items:center;gap:12px;background:#25D366;color:#0B2B17;padding:0 26px;min-height:56px;font-size:15px;font-weight:500;transition:transform .25s,background .25s\" style-hover=\"transform:translateY(-2px);background:#1EBE5A;color:#0B2B17\" data-dc-tpl=\"668\"> <img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-h",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/669#0",
+			"tag": "img",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"into": "Root/663#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_669_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"21\" height=\"21\" style=\"display:block\" data-dc-tpl=\"669\">",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/670#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_670_0@375.png",
+				"1440": "shots/Root_670_0@1440.png"
+			},
+			"snippet": "<div style=\"margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;font-size:15px\" data-dc-tpl=\"670\"> <div data-dc-tpl=\"671\"><div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"672\">Phone</div><a href=\"{{ phoneHref }}\" data-dc-tpl=\"673\">{{ phone }}</a></div> <div data-dc-tpl=\"674\"><div styl",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/671#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_671_0@375.png",
+				"1440": "shots/Root_671_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"671\"><div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"672\">Phone</div><a href=\"{{ phoneHref }}\" data-dc-tpl=\"673\">{{ phone }}</a></div>",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/672#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Phone",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_672_0@375.png",
+				"1440": "shots/Root_672_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"672\">Phone</div>",
+			"attributes": {
+				"text": "Phone"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/673#0",
+			"tag": "a",
+			"depth": 5,
+			"words": "0121 729 8233",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_673_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"673\">{{ phone }}</a>",
+			"attributes": {
+				"label": "0121 729 8233",
+				"url": "tel:01217298233",
+				"linkSource": "phone",
+				"labelFromSiteInfo": true
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/674#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "hello@eyecarebirmingham.co.uk",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_674_0@375.png",
+				"1440": "shots/Root_674_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"674\"><div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"675\">Email</div>hello@eyecarebirmingham.co.uk</div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/675#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Email",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_675_0@375.png",
+				"1440": "shots/Root_675_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"675\">Email</div>",
+			"attributes": {
+				"text": "Email"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/676#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "644 Washwood Heath Rd Birmingham B8 2HQ",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [
+				"Root/678#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_676_0@375.png",
+				"1440": "shots/Root_676_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"676\"><div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"677\">Clinic</div>644 Washwood Heath Rd<br data-dc-tpl=\"678\">Birmingham B8 2HQ</div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/677#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Clinic",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_677_0@375.png",
+				"1440": "shots/Root_677_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"677\">Clinic</div>",
+			"attributes": {
+				"text": "Clinic"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/679#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "Mon–Sat 9.30–17.30 Collections by arrangement",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
+			"source": "rule hoursRows",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
+					]
+				}
+			],
+			"parts": [
+				"Root/681#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_679_0@375.png",
+				"1440": "shots/Root_679_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"679\"><div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"680\">Hours</div>Mon–Sat 9.30–17.30<br data-dc-tpl=\"681\">Collections by arrangement</div>",
+			"attributes": {
+				"displayType": "hours",
+				"hoursLayout": "rows"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/680#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "Hours",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hoursRows",
+			"into": "Root/679#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_680_0@375.png",
+				"1440": "shots/Root_680_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#77716A;margin-bottom:6px\" data-dc-tpl=\"680\">Hours</div>",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/682#0",
+			"tag": "form",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_682_0@375.png",
+				"1440": "shots/Root_682_0@1440.png"
+			},
+			"snippet": "<form sc-camel-on-submit=\"{{ submitContact }}\" style=\"margin-top:40px;border-top:1px solid #E6E1DA;padding-top:32px\" data-dc-tpl=\"682\"> <h2 style=\"margin:0 0 8px;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"683\">Or send me a message</h2> <p style=\"margin:0 0 22px;font-size:15px;color:#5E584F\" data-dc-tpl=\"684\">I answer these myself, usually the same day.</p> <d",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root/683#0",
+			"tag": "h2",
+			"depth": 4,
+			"words": "Or send me a message",
+			"block": "sgs/form",
+			"action": null,
+			"reason": "a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25)",
+			"source": "rule formLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"candidates": [
+				{
+					"block": "sgs/form",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formLink: a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_683_0@375.png",
+				"1440": "shots/Root_683_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0 0 8px;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"683\">Or send me a message</h2>",
+			"attributes": {
+				"submitLabel": "Or send me a message",
+				"formIsLinked": true,
+				"formId": "form-submit-contact"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/684#0",
+			"tag": "p",
+			"depth": 4,
+			"words": "I answer these myself, usually the same day.",
+			"block": null,
+			"action": "remove",
+			"reason": "a second element under the form's root: the form is one linked embed, so nothing else of the form stays on the page",
+			"source": "rule formLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_684_0@375.png",
+				"1440": "shots/Root_684_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 22px;font-size:15px;color:#5E584F\" data-dc-tpl=\"684\">I answer these myself, usually the same day.</p>",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root/685#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a second element under the form's root: the form is one linked embed, so nothing else of the form stays on the page",
+			"source": "rule formLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_685_0@375.png",
+				"1440": "shots/Root_685_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px\" data-dc-tpl=\"685\"> <input required=\"{{ true }}\" placeholder=\"Your name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:52px;font-size:15px\" data-dc-tpl=\"686\"> <input required=\"{{ true }}\" type=\"email\" placeholder=\"Email\" style=\"border:1px solid #E6E1DA;background:#fff;pa",
+			"attributes": {}
+		},
+		{
+			"order": 22,
+			"key": "Root/686#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/685#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_686_0@375.png",
+				"1440": "shots/Root_686_0@1440.png"
+			},
+			"snippet": "<input required=\"{{ true }}\" placeholder=\"Your name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:52px;font-size:15px\" data-dc-tpl=\"686\">",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root/687#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/685#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_687_0@375.png",
+				"1440": "shots/Root_687_0@1440.png"
+			},
+			"snippet": "<input required=\"{{ true }}\" type=\"email\" placeholder=\"Email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:52px;font-size:15px\" data-dc-tpl=\"687\">",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root/688#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/685#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_688_0@375.png",
+				"1440": "shots/Root_688_0@1440.png"
+			},
+			"snippet": "<input placeholder=\"Phone (optional)\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:52px;font-size:15px\" data-dc-tpl=\"688\">",
+			"attributes": {}
+		},
+		{
+			"order": 25,
+			"key": "Root/689#0",
+			"tag": "select",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root/685#0)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [
+				"Root/690#0",
+				"Root/691#0",
+				"Root/692#0",
+				"Root/693#0",
+				"Root/694#0",
+				"Root/695#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_689_0@375.png",
+				"1440": "shots/Root_689_0@1440.png"
+			},
+			"snippet": "<sc-raw-select aria-label=\"What it's about\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:52px;font-size:15px;color:#141414\" data-dc-tpl=\"689\"> <option data-dc-tpl=\"690\">What can I help with?</option> <option data-dc-tpl=\"691\">Choosing a frame</option> <option data-dc-tpl=\"692\">Prescription lenses</option> <option data-dc-tpl=\"693\">An order I've placed</option> <option ",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root/696#0",
+			"tag": "textarea",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a second element under the form's root: the form is one linked embed, so nothing else of the form stays on the page",
+			"source": "rule formLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_696_0@375.png",
+				"1440": "shots/Root_696_0@1440.png"
+			},
+			"snippet": "<textarea placeholder=\"Your message\" rows=\"5\" style=\"margin-top:10px;width:100%;border:1px solid #E6E1DA;background:#fff;padding:14px;font-size:15px;resize:vertical\" data-dc-tpl=\"696\"></textarea>",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root/697#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_697_0@375.png",
+				"1440": "shots/Root_697_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:14px\" data-dc-tpl=\"697\"> <button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 28px;min-height:52px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"698\">Send message</button> <sc-if value=\"{{ contactSent }}\" ",
+			"attributes": {}
+		},
+		{
+			"order": 28,
+			"key": "Root/698#0",
+			"tag": "button",
+			"depth": 5,
+			"words": "Send message",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_698_0@1440.png"
+			},
+			"snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 28px;min-height:52px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"698\">Send message</button>",
+			"attributes": {
+				"label": "Send message"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root/701#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_701_0@375.png",
+				"1440": "shots/Root_701_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"701\"> <a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" style=\"position:relative;aspect-ratio:4/3;background:#EFEAE2;border:1px solid #E6E1DA;overflow:hidden;display:block\" data-dc-tpl=\"702\"> <svg sc-camel-view-box=\"0 0 400 300\" style=\"position:absolute;inset:0;width:100%;height:100%\" aria-hidden=\"true\" data-dc-tpl=\"703\"> <",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "Root/702#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [
+				"Root/703#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_702_0@375.png",
+				"1440": "shots/Root_702_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" style=\"position:relative;aspect-ratio:4/3;background:#EFEAE2;border:1px solid #E6E1DA;overflow:hidden;display:block\" data-dc-tpl=\"702\"> <svg sc-camel-view-box=\"0 0 400 300\" style=\"position:absolute;inset:0;width:100%;height:100%\" aria-hidden=\"true\" data-dc-tpl=\"703\"> <rect width=\"400\" height=\"300\" fill=\"#EDE8DF\" data-dc-tpl=\"704\"></rect> <g st",
+			"attributes": {}
+		},
+		{
+			"order": 31,
+			"key": "Root/729#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_729_0@375.png",
+				"1440": "shots/Root_729_0@1440.png"
+			},
+			"snippet": "<span style=\"position:absolute;left:0;right:0;bottom:0;background:rgba(250,248,245,.94);border-top:1px solid #E6E1DA;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px\" data-dc-tpl=\"729\"> <span style=\"font-size:13.5px;color:#141414\" data-dc-tpl=\"730\">644 Washwood Heath Rd, B8 2HQ</span> <span style=\"font-size:12px;letter-spacing:.08em;text-transform:uppercase;",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/730#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "644 Washwood Heath Rd, B8 2HQ",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.8,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"address\"",
+						"decisions: address pattern (a UK postcode)",
+						"block_capabilities: sgs/business-info lists \"address\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_730_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:13.5px;color:#141414\" data-dc-tpl=\"730\">644 Washwood Heath Rd, B8 2HQ</span>",
+			"attributes": {
+				"displayType": "address"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/731#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Directions",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_731_0@375.png",
+				"1440": "shots/Root_731_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid #141414;white-space:nowrap\" data-dc-tpl=\"731\">Directions</span>",
+			"attributes": {
+				"text": "Directions"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/732#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Sketch map — swap for an embedded Google map on the live site.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_732_0@375.png",
+				"1440": "shots/Root_732_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:12.5px;color:#8B8478;text-wrap:pretty\" data-dc-tpl=\"732\">Sketch map — swap for an embedded Google map on the live site.</p>",
+			"attributes": {
+				"text": "Sketch map — swap for an embedded Google map on the live site."
+			}
+		},
+		{
+			"order": 35,
+			"key": "Root/733#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_733_0@375.png",
+				"1440": "shots/Root_733_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:10px;flex-wrap:wrap\" data-dc-tpl=\"733\"> <a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" style=\"flex:1;min-width:140px;border:1px solid #E6E1DA;background:#fff;padding:16px;font-size:14px;display:flex;flex-direction:column;gap:4px\" style-hover=\"border-color:#141414;color:#141414\" data-dc-tpl=\"734\"><span style=\"font-size:11.5px;letter-spacing:.16em;text-transform:",
+			"attributes": {
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root/734#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Reviews & hours",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_734_0@375.png",
+				"1440": "shots/Root_734_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" style=\"flex:1;min-width:140px;border:1px solid #E6E1DA;background:#fff;padding:16px;font-size:14px;display:flex;flex-direction:column;gap:4px\" style-hover=\"border-color:#141414;color:#141414\" data-dc-tpl=\"734\"><span style=\"font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"735\">Google</span>Reviews &amp;",
+			"attributes": {
+				"label": "Reviews & hours Google"
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root/735#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Google",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/734#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_735_0@375.png",
+				"1440": "shots/Root_735_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"735\">Google</span>",
+			"attributes": {}
+		},
+		{
+			"order": 38,
+			"key": "Root/736#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "@eyecare.birmingham",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_736_0@375.png",
+				"1440": "shots/Root_736_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" style=\"flex:1;min-width:140px;border:1px solid #E6E1DA;background:#fff;padding:16px;font-size:14px;display:flex;flex-direction:column;gap:4px\" style-hover=\"border-color:#141414;color:#141414\" data-dc-tpl=\"736\"><span style=\"font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"737\">Instagram</span>@eyecare.bi",
+			"attributes": {
+				"label": "@eyecare.birmingham Instagram"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/737#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Instagram",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/736#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_737_0@375.png",
+				"1440": "shots/Root_737_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"737\">Instagram</span>",
+			"attributes": {}
+		}
+	]
+}

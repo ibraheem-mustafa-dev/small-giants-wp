@@ -1,0 +1,40 @@
+[
+	{
+		"name": "sgs/mega-panel",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/53#0"
+		},
+		"draftFingerprint": {
+			"tag": "div",
+			"cls": "sgs-mega-menu",
+			"styleHash": "e752a34c",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 604
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/card-grid",
+				"attributes": {
+					"layout": "grid"
+				},
+				"draftRef": {
+					"tpl": "Root/56#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "f8bbea98",
+					"parentTags": [
+						"div",
+						"div"
+					],
+					"textHash": "1505",
+					"line": 608
+				},
+				"innerBlocks": []
+			}
+		]
+	}
+]

@@ -58130,7 +58130,7 @@
    "slug": "my-account",
    "title": "Sign in / register",
    "parent": null,
-   "template": "page-my-account",
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -135332,8 +135332,7 @@
    "contentHash": "86cfb05da8641d6145bbc1b4526857ce4c53c120b1fa4010d39066235aaf5d2c",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:shop:shop",
@@ -135357,8 +135356,7 @@
    "contentHash": "bfe15d8aeea14b4f5f166dab7834df9fc0eb294916de6ec3d68bdfe9bdd275e2",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:about",
@@ -135366,8 +135364,7 @@
    "contentHash": "8b1f42b586d2f548d845cc1739fecccadbea9c83e071b450f6c64d98c63229f9",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:help",
@@ -135375,8 +135372,7 @@
    "contentHash": "379a9f81f40c9f7fecafc0927c84c6f0e125d33cf4445910fca1ce8c715d5cc3",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:contact",
@@ -135384,8 +135380,7 @@
    "contentHash": "16d3b1622091137c476ed551092cd9a167d88b53d74997ec0d904a7a8245ee9a",
    "mark": null,
    "markedOn": null,
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": null
   },
   {
    "rowId": "page:page:checkout",
@@ -135406,7 +135401,7 @@
   {
    "rowId": "page:page:my-account",
    "rowType": "page-map",
-   "contentHash": "7860c8c625d8f3a1d146ab8899c403cd6bd465d95fc5e27c8d6d51f27041b671",
+   "contentHash": "28e79bb8c9aaace8fe0ef0e161729b10abc9c9b0984d68fe1a880e9c8dcd73c4",
    "mark": null,
    "markedOn": null,
    "carriedFrom": null,

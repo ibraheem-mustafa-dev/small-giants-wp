@@ -1,0 +1,249 @@
+{
+	"generated": "2026-10-26T23:54:07.299Z",
+	"inventory": "2026-10-26T23:54:07.198Z",
+	"source": "http://127.0.0.1:58797/#@state/page=done",
+	"surface": "page-done",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 6,
+		"parts": 0,
+		"rows": 6,
+		"skeletonNodes": 6,
+		"expandedNodes": 6,
+		"low": 1,
+		"removed": 0,
+		"unresolved": 0,
+		"byRule": {}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/845#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_845_0@375.png",
+				"1440": "shots/Root_845_0@1440.png"
+			},
+			"snippet": "<main class=\"sgs-page-order-confirmed\" data-screen-label=\"Order confirmed\" style=\"max-width:720px;margin:0 auto;padding: {{ pagePad }};text-align:center\" data-dc-tpl=\"845\"> <div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"846\">✓</div> <h1 st",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/846#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "✓",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_846_0@375.png",
+				"1440": "shots/Root_846_0@1440.png"
+			},
+			"snippet": "<div style=\"width:64px;height:64px;border-radius:50%;background:var(--acc,#9C8B78);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:26px;animation:pop .6s both\" data-dc-tpl=\"846\">✓</div>",
+			"attributes": {
+				"text": "✓"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/847#0",
+			"tag": "h1",
+			"depth": 1,
+			"words": "Thank you — order EC-10482.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_847_0@375.png",
+				"1440": "shots/Root_847_0@1440.png"
+			},
+			"snippet": "<h1 style=\"margin:24px 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05;animation:rise .6s both\" data-dc-tpl=\"847\">Thank you — order EC-10482.</h1>",
+			"attributes": {
+				"content": "Thank you — order EC-10482."
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/848#0",
+			"tag": "p",
+			"depth": 1,
+			"words": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_848_0@375.png",
+				"1440": "shots/Root_848_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 28px;color:#5E584F;font-size:16.5px;text-wrap:pretty;animation:rise .7s both\" data-dc-tpl=\"848\">{{ doneNote }}</p>",
+			"attributes": {
+				"text": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10."
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/851#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_851_0@375.png",
+				"1440": "shots/Root_851_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:10px;justify-content:center;flex-wrap:wrap\" data-dc-tpl=\"851\"> <button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"852\">Back to the shop</button> <sc-if value=\"{{ doneHasAccount }}\" hint-placeholder-val=\"{",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/852#0",
+			"tag": "button",
+			"depth": 2,
+			"words": "Back to the shop",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_852_0@375.png",
+				"1440": "shots/Root_852_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;animation:rise .8s both\" data-dc-tpl=\"852\">Back to the shop</button>",
+			"attributes": {
+				"label": "Back to the shop"
+			}
+		}
+	]
+}

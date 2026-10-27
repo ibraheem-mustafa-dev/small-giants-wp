@@ -1,9 +1,19 @@
 {
-	"generated": "2026-10-10T00:30:17.206Z",
-	"inventory": "2026-10-10T00:24:25.219Z",
-	"source": "https://mintcream-lyrebird-224487.hostingersite.com/",
+	"generated": "2026-10-27T00:16:05.090Z",
+	"inventory": "2026-10-27T00:16:04.909Z",
+	"source": "http://127.0.0.1:61964/",
 	"surface": "footer",
 	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [],
+	"stripRoots": [
+		"Root/1161#0"
+	],
+	"recordDisagreements": [],
+	"recordUntranslated": [
+		{
+			"reason": "the element carries no host and data-dc-tpl identity"
+		}
+	],
 	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
 	"weights": {
 		"tag": 0.5,
@@ -13,23 +23,31 @@
 		"siteInfo": 0.3,
 		"pattern": 0.5,
 		"decision": 1,
-		"logo": 0.5
+		"logo": 0.5,
+		"rule": 1
 	},
 	"counts": {
-		"inventoryElements": 50,
-		"parts": 18,
-		"rows": 32,
-		"skeletonNodes": 21,
-		"expandedNodes": 24,
+		"inventoryElements": 40,
+		"parts": 1,
+		"rows": 39,
+		"skeletonNodes": 23,
+		"expandedNodes": 23,
 		"low": 1,
-		"removed": 0,
-		"unresolved": 0
+		"removed": 10,
+		"unresolved": 0,
+		"byRule": {
+			"footerSlots": 2,
+			"logoGrid": 7,
+			"columnHeading": 3,
+			"pillButton": 3
+		}
 	},
+	"widthAlternatives": [],
 	"problems": [],
 	"rows": [
 		{
 			"order": 0,
-			"key": "Root/844#0",
+			"key": "Root/1124#0",
 			"tag": "footer",
 			"depth": 0,
 			"words": "",
@@ -40,64 +58,66 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/site-footer",
-					"score": 1,
+					"score": 1.4,
 					"share": 1,
 					"evidence": [
 						"block_capabilities: sgs/site-footer lists \"footer\" (the draft root tag)",
 						"block_composition: sgs/site-footer is a section-root accepting [\"sgs/site-footer-row\"]",
-						"the root of the surface"
+						"the root of the surface",
+						"the root's children fit what it accepts (sgs/site-footer-row)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_844_0@375.png",
-				"1440": "shots/Root_844_0@1440.png"
+				"375": "shots/Root_1124_0@375.png",
+				"1440": "shots/Root_1124_0@1440.png"
 			},
-			"snippet": "<footer style=\"border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px\" data-dc-tpl=\"844\"> <div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"845\"> <div data-dc-tpl=\"846\"> <img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;he",
+			"snippet": "<footer class=\"sgs-footer\" style=\"border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px\" data-dc-tpl=\"1124\"> <div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1125\"> <div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;l",
 			"attributes": {}
 		},
 		{
 			"order": 1,
-			"key": "Root/845#0",
+			"key": "Root/1125#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
 			"block": "sgs/site-footer-row",
 			"action": null,
-			"reason": null,
-			"source": null,
+			"reason": "the columns row of the footer",
+			"source": "rule footerSlots",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": "footerSlots",
 			"candidates": [
 				{
 					"block": "sgs/site-footer-row",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/site-footer (section-root) accepts [\"sgs/site-footer-row\"]; sgs/site-footer-row is a content-block",
-						"sgs/site-footer accepts sgs/site-footer-row as its only child",
-						"element holds 4 block children"
+						"rule footerSlots: a footer is always three rows: its grid of link groups is the columns row, a strip above it is the top row, a strip below it (a legal line, a copyright bar) and any floating element it carries is the bottom row (Bean, 2026-10-22)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_845_0@375.png",
-				"1440": "shots/Root_845_0@1440.png"
+				"375": "shots/Root_1125_0@375.png",
+				"1440": "shots/Root_1125_0@1440.png"
 			},
-			"snippet": "<div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"845\"> <div data-dc-tpl=\"846\"> <img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;height:32px;width:auto\" data-dc-tpl=\"847\"> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;tex",
+			"snippet": "<div style=\"max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px\" data-dc-tpl=\"1125\"> <div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div> <div style=\"font-size:9.5px;letter-spacing:.32em;",
 			"attributes": {
-				"layout": "grid"
+				"layout": "grid",
+				"rowSlot": "columns"
 			}
 		},
 		{
 			"order": 2,
-			"key": "Root/846#0",
+			"key": "Root/1126#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -108,70 +128,98 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/container",
 					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
 						"no row block fits: a generic wrapper"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_846_0@375.png",
-				"1440": "shots/Root_846_0@1440.png"
+				"375": "shots/Root_1126_0@375.png",
+				"1440": "shots/Root_1126_0@1440.png"
 			},
-			"snippet": "<div data-dc-tpl=\"846\"> <img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;height:32px;width:auto\" data-dc-tpl=\"847\"> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"848\">Designer eyewear from an independent optician in Birmingham.</p> <div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"849\"> <a href=\"{{ igHref }}",
+			"snippet": "<div data-dc-tpl=\"1126\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div> <div style=\"font-size:9.5px;letter-spacing:.32em;color:#77716A;margin-top:4px\" data-dc-tpl=\"1128\">BIRMINGHAM</div> <p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1129\">Designer eyewear from an indepen",
 			"attributes": {
 				"tagName": "div"
 			}
 		},
 		{
 			"order": 3,
-			"key": "Root/847#0",
-			"tag": "img",
+			"key": "Root/1127#0",
+			"tag": "div",
 			"depth": 3,
-			"words": "",
+			"words": "EYE CARE",
 			"block": "sgs/responsive-logo",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.82,
+			"confidence": 0.8,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/responsive-logo",
-					"score": 1.15,
-					"share": 0.821,
+					"score": 1,
+					"share": 0.8,
 					"evidence": [
 						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
-						"logo image: eye-care-wordmark.png / alt \"Eye Care Birmingham\" (an image whose file name, alt text or class says it is the brand mark)",
-						"the image's alt text is the site name \"Eye Care Birmingham\""
+						"typed brand name: the words equal the site name \"Eye Care Birmingham\""
 					]
 				},
 				{
-					"block": "sgs/media",
+					"block": "sgs/text",
 					"score": 0.25,
-					"share": 0.179,
+					"share": 0.2,
 					"evidence": [
-						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
+						"html_tag_to_core_block: p -> sgs/text, halved: the words are a brand name"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_847_0@1440.png"
+				"375": "shots/Root_1127_0@375.png",
+				"1440": "shots/Root_1127_0@1440.png"
 			},
-			"snippet": "<img src=\"image/eye-care-wordmark.png\" alt=\"Eye Care Birmingham\" style=\"display:block;height:32px;width:auto\" data-dc-tpl=\"847\">",
-			"attributes": {}
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px\" data-dc-tpl=\"1127\">EYE CARE</div>",
+			"attributes": {},
+			"unit": "brand",
+			"note": "typed brand name \"EYE CARE BIRMINGHAM\" is the logo block"
 		},
 		{
 			"order": 4,
-			"key": "Root/848#0",
+			"key": "Root/1128#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "BIRMINGHAM",
+			"block": null,
+			"action": "absorbed",
+			"reason": "part of the typed brand name; the logo block carries it",
+			"source": null,
+			"confidence": 0.8,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_1128_0@375.png",
+				"1440": "shots/Root_1128_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:9.5px;letter-spacing:.32em;color:#77716A;margin-top:4px\" data-dc-tpl=\"1128\">BIRMINGHAM</div>",
+			"attributes": {},
+			"into": "Root/1127#0"
+		},
+		{
+			"order": 5,
+			"key": "Root/1129#0",
 			"tag": "p",
 			"depth": 3,
 			"words": "Designer eyewear from an independent optician in Birmingham.",
@@ -182,6 +230,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -195,202 +244,186 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_848_0@1440.png"
+				"1440": "shots/Root_1129_0@1440.png"
 			},
-			"snippet": "<p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"848\">Designer eyewear from an independent optician in Birmingham.</p>",
+			"snippet": "<p style=\"margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty\" data-dc-tpl=\"1129\">Designer eyewear from an independent optician in Birmingham.</p>",
 			"attributes": {
 				"text": "Designer eyewear from an independent optician in Birmingham."
 			}
 		},
 		{
-			"order": 5,
-			"key": "Root/849#0",
+			"order": 6,
+			"key": "Root/1130#0",
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/social-icons",
+			"block": "sgs/gallery",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.74,
+			"reason": "a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items",
+			"source": "rule logoGrid",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": "logoGrid",
 			"candidates": [
 				{
-					"block": "sgs/social-icons",
+					"block": "sgs/gallery",
 					"score": 1,
-					"share": 0.741,
+					"share": 1,
 					"evidence": [
-						"block_composition: sgs/social-icons is a content-block accepting exactly [\"sgs/icon\"]; all 3 children propose sgs/icon",
-						"a row of 3 sgs/icon",
-						"block_capabilities: sgs/social-icons lists instagram, whatsapp"
-					]
-				},
-				{
-					"block": "sgs/container",
-					"score": 0.35,
-					"share": 0.259,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 3 block children"
+						"rule logoGrid: a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_849_0@375.png",
-				"1440": "shots/Root_849_0@1440.png"
+				"375": "shots/Root_1130_0@375.png",
+				"1440": "shots/Root_1130_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"849\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#E4405F;box-shadow:0 0 0 1px #E4405F\"",
-			"attributes": {},
-			"rowNote": "icons generated by Fill from siteInfoRow [\"instagram\",\"google\",\"whatsapp\"]"
-		},
-		{
-			"order": 6,
-			"key": "Root/850#0",
-			"tag": "a",
-			"depth": 4,
-			"words": "",
-			"block": "sgs/icon",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.9,
-			"low": false,
-			"stale": null,
-			"candidates": [
-				{
-					"block": "sgs/icon",
-					"score": 0.9,
-					"share": 1,
-					"evidence": [
-						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
-						"brand-registry: instagram owns https://www.instagram.com/eyecare.birmingham/; site-info-placeholder-map: {{ igHref }} -> socials.instagram; brand-registry label \"Instagram\" in aria-label/title"
-					]
-				}
-			],
-			"parts": [
-				"Root/851#0"
-			],
-			"screenshots": {
-				"1440": "shots/Root_850_0@1440.png"
-			},
-			"snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#E4405F;box-shadow:0 0 0 1px #E4405F\" data-dc-tpl=\"850\"> <svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0",
-			"attributes": {
-				"iconSource": "brand",
-				"brandName": "instagram",
-				"metadata": {
-					"bindings": {
-						"linkUrl": {
-							"source": "sgs/site-info",
-							"args": {
-								"key": "socials.instagram"
-							}
-						}
-					}
-				},
-				"linkTarget": "_blank"
-			},
-			"generatedBy": "Root/849#0"
+			"snippet": "<div style=\"display:flex;gap:10px;margin-top:20px\" data-dc-tpl=\"1130\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584",
+			"attributes": {}
 		},
 		{
 			"order": 7,
-			"key": "Root/861#0",
+			"key": "Root/1131#0",
 			"tag": "a",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/icon",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
 			"source": null,
-			"confidence": 0.9,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"candidates": [
-				{
-					"block": "sgs/icon",
-					"score": 0.9,
-					"share": 1,
-					"evidence": [
-						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
-						"site-info-placeholder-map: {{ gmbHref }} -> socials.google; brand-registry label \"Google\" in aria-label/title"
-					]
-				}
-			],
-			"parts": [
-				"Root/862#0"
-			],
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_861_0@1440.png"
+				"1440": "shots/Root_1131_0@1440.png"
 			},
-			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google Business profile\" title=\"Google reviews\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#4285F4;box-shadow:0 0 0 1px #4285F4\" data-dc-tpl=\"861\"> <svg width=\"18\" height=\"18\" sc",
-			"attributes": {
-				"iconSource": "brand",
-				"brandName": "google",
-				"metadata": {
-					"bindings": {
-						"linkUrl": {
-							"source": "sgs/site-info",
-							"args": {
-								"key": "socials.google"
-							}
-						}
-					}
-				},
-				"linkTarget": "_blank"
-			},
-			"generatedBy": "Root/849#0"
+			"snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" title=\"Instagram\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#C13584;box-shadow:0 0 0 1px #C13584\" data-dc-tpl=\"1131\"> <img src=\"assets/instagram.svg\" alt=\"\" aria-hidde",
+			"attributes": {}
 		},
 		{
 			"order": 8,
-			"key": "Root/867#0",
-			"tag": "a",
-			"depth": 4,
+			"key": "Root/1132#0",
+			"tag": "img",
+			"depth": 5,
 			"words": "",
-			"block": "sgs/icon",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
 			"source": null,
-			"confidence": 0.75,
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"candidates": [
-				{
-					"block": "sgs/icon",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
-						"brand-registry label \"WhatsApp\" in aria-label/title"
-					]
-				}
-			],
-			"parts": [
-				"Root/868#0"
-			],
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_867_0@1440.png"
+				"1440": "shots/Root_1132_0@1440.png"
 			},
-			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" title=\"WhatsApp\" style=\"width:44px;height:44px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#25D366;box-shadow:0 0 0 1px #25D366\" data-dc-tpl=\"867\"> <svg width=\"18\" height=\"18",
-			"attributes": {
-				"iconSource": "brand",
-				"brandName": "whatsapp",
-				"metadata": {
-					"bindings": {
-						"linkUrl": {
-							"source": "sgs/site-info",
-							"args": {
-								"key": "socials.whatsapp"
-							}
-						}
-					}
-				},
-				"linkTarget": "_blank"
-			},
-			"generatedBy": "Root/849#0"
+			"snippet": "<img src=\"assets/instagram.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1132\">",
+			"attributes": {}
 		},
 		{
 			"order": 9,
-			"key": "Root/870#0",
+			"key": "Root/1133#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1133_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google Business profile\" title=\"Google reviews\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#4285F4;box-shadow:0 0 0 1px #4285F4\" data-dc-tpl=\"1133\"> <img src=\"assets/google-g.svg",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/1134#0",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1134_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/google-g.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1134\">",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/1135#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1135_0@1440.png"
+			},
+			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" title=\"WhatsApp\" style=\"width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;color:#25D366;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s\" style-hover=\"border-color:#25D366;box-shadow:0 0 0 1px #25D366\" data-dc-tpl=\"1135\"> <img src=\"assets/whatsapp",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/1136#0",
+			"tag": "img",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/gallery: rule logoGrid",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "logoGrid",
+			"into": "Root/1130#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1136_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/whatsapp-green.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1136\">",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/1137#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -401,13 +434,14 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/container",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
 						"no row block fits: a generic wrapper",
 						"block_capabilities: sgs/container lists \"flex\" (draft display)"
 					]
@@ -415,59 +449,52 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_870_0@375.png",
-				"1440": "shots/Root_870_0@1440.png"
+				"375": "shots/Root_1137_0@375.png",
+				"1440": "shots/Root_1137_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"870\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"871\">Shop</span><a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"872\">Sunglasses</a><a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"873\">All brands</a><a href=\"#\" sc-camel-on-c",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1137\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1138\">Shop</span><a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1139\">Sunglasses</a><a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1140\">All brands</a><a href=\"#\" sc-camel-",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
 			}
 		},
 		{
-			"order": 10,
-			"key": "Root/871#0",
+			"order": 14,
+			"key": "Root/1138#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Shop",
 			"block": "sgs/heading",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.8,
+			"reason": "the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style",
+			"source": "rule columnHeading",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": "columnHeading",
 			"candidates": [
 				{
 					"block": "sgs/heading",
 					"score": 1,
-					"share": 0.8,
+					"share": 1,
 					"evidence": [
-						"decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)"
-					]
-				},
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 0.2,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"rule columnHeading: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_871_0@375.png",
-				"1440": "shots/Root_871_0@1440.png"
+				"375": "shots/Root_1138_0@375.png",
+				"1440": "shots/Root_1138_0@1440.png"
 			},
-			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"871\">Shop</span>",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1138\">Shop</span>",
 			"attributes": {
 				"content": "Shop"
 			}
 		},
 		{
-			"order": 11,
-			"key": "Root/872#0",
+			"order": 15,
+			"key": "Root/1139#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Sunglasses",
@@ -478,6 +505,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -500,9 +528,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_872_0@1440.png"
+				"375": "shots/Root_1139_0@375.png",
+				"1440": "shots/Root_1139_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"872\">Sunglasses</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" data-dc-tpl=\"1139\">Sunglasses</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -510,8 +539,8 @@
 			}
 		},
 		{
-			"order": 12,
-			"key": "Root/873#0",
+			"order": 16,
+			"key": "Root/1140#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "All brands",
@@ -522,6 +551,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -536,9 +566,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_873_0@1440.png"
+				"375": "shots/Root_1140_0@375.png",
+				"1440": "shots/Root_1140_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"873\">All brands</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ toggleMegaBrands }}\" data-dc-tpl=\"1140\">All brands</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -546,8 +577,8 @@
 			}
 		},
 		{
-			"order": 13,
-			"key": "Root/874#0",
+			"order": 17,
+			"key": "Root/1141#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Prescription lenses",
@@ -558,6 +589,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -572,9 +604,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_874_0@1440.png"
+				"375": "shots/Root_1141_0@375.png",
+				"1440": "shots/Root_1141_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" data-dc-tpl=\"874\">Prescription lenses</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" data-dc-tpl=\"1141\">Prescription lenses</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -582,8 +615,31 @@
 			}
 		},
 		{
-			"order": 14,
-			"key": "Root/875#0",
+			"order": 18,
+			"key": "Root/1142#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Glasses — arriving soon",
+			"block": null,
+			"action": "remove",
+			"reason": "brief-only line (coming-soon): a coming-soon line exists only because the designer's brief said the thing is not ready; it has no place on a live page",
+			"source": "decisions coming-soon",
+			"confidence": 0.9,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_1142_0@375.png",
+				"1440": "shots/Root_1142_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#8B8478\" data-dc-tpl=\"1142\">Glasses — arriving soon</span>",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root/1143#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -594,6 +650,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -608,59 +665,52 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_875_0@375.png",
-				"1440": "shots/Root_875_0@1440.png"
+				"375": "shots/Root_1143_0@375.png",
+				"1440": "shots/Root_1143_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"875\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"876\">Help</span><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"877\">Delivery &amp; returns</a><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"878\">FAQs</a><a href=\"#\" sc-camel-on-clic",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1143\"><span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1144\">Help</span><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1145\">Delivery &amp; returns</a><a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1146\">FAQs</a><a href=\"#\" sc-camel-on-",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
 			}
 		},
 		{
-			"order": 15,
-			"key": "Root/876#0",
+			"order": 20,
+			"key": "Root/1144#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Help",
 			"block": "sgs/heading",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.8,
+			"reason": "the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style",
+			"source": "rule columnHeading",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": "columnHeading",
 			"candidates": [
 				{
 					"block": "sgs/heading",
 					"score": 1,
-					"share": 0.8,
+					"share": 1,
 					"evidence": [
-						"decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)"
-					]
-				},
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 0.2,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"rule columnHeading: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_876_0@375.png",
-				"1440": "shots/Root_876_0@1440.png"
+				"375": "shots/Root_1144_0@375.png",
+				"1440": "shots/Root_1144_0@1440.png"
 			},
-			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"876\">Help</span>",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1144\">Help</span>",
 			"attributes": {
 				"content": "Help"
 			}
 		},
 		{
-			"order": 16,
-			"key": "Root/877#0",
+			"order": 21,
+			"key": "Root/1145#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Delivery & returns",
@@ -671,6 +721,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -693,9 +744,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_877_0@1440.png"
+				"375": "shots/Root_1145_0@375.png",
+				"1440": "shots/Root_1145_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"877\">Delivery &amp; returns</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1145\">Delivery &amp; returns</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -703,8 +755,8 @@
 			}
 		},
 		{
-			"order": 17,
-			"key": "Root/878#0",
+			"order": 22,
+			"key": "Root/1146#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "FAQs",
@@ -715,6 +767,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -729,9 +782,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_878_0@1440.png"
+				"375": "shots/Root_1146_0@375.png",
+				"1440": "shots/Root_1146_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"878\">FAQs</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1146\">FAQs</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -739,8 +793,8 @@
 			}
 		},
 		{
-			"order": 18,
-			"key": "Root/879#0",
+			"order": 23,
+			"key": "Root/1147#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Size guide",
@@ -751,6 +805,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -765,9 +820,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_879_0@1440.png"
+				"375": "shots/Root_1147_0@375.png",
+				"1440": "shots/Root_1147_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openSizeGuide }}\" data-dc-tpl=\"879\">Size guide</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ openSizeGuide }}\" data-dc-tpl=\"1147\">Size guide</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -775,8 +831,8 @@
 			}
 		},
 		{
-			"order": 19,
-			"key": "Root/880#0",
+			"order": 24,
+			"key": "Root/1148#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Contact",
@@ -787,6 +843,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -801,9 +858,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_880_0@1440.png"
+				"375": "shots/Root_1148_0@375.png",
+				"1440": "shots/Root_1148_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"880\">Contact</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"1148\">Contact</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -811,8 +869,8 @@
 			}
 		},
 		{
-			"order": 20,
-			"key": "Root/881#0",
+			"order": 25,
+			"key": "Root/1149#0",
 			"tag": "div",
 			"depth": 2,
 			"words": "",
@@ -823,6 +881,7 @@
 			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -837,59 +896,52 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_881_0@375.png",
-				"1440": "shots/Root_881_0@1440.png"
+				"375": "shots/Root_1149_0@375.png",
+				"1440": "shots/Root_1149_0@1440.png"
 			},
-			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"881\"> <span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"882\">Visit or call</span> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"883\">About Eye Care</a> <a href=\"{{ phoneHref }}\" data-dc-tpl=\"884\">{{ phone }}</a> <a href=\"{{ mapHref }}\" target=\"_b",
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:10px\" data-dc-tpl=\"1149\"> <span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1150\">Visit or call</span> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1151\">About Eye Care</a> <a href=\"{{ phoneHref }}\" data-dc-tpl=\"1152\">{{ phone }}</a> <a href=\"{{ mapHref }}\" target",
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack"
 			}
 		},
 		{
-			"order": 21,
-			"key": "Root/882#0",
+			"order": 26,
+			"key": "Root/1150#0",
 			"tag": "span",
 			"depth": 3,
 			"words": "Visit or call",
 			"block": "sgs/heading",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.8,
+			"reason": "the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style",
+			"source": "rule columnHeading",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": "columnHeading",
 			"candidates": [
 				{
 					"block": "sgs/heading",
 					"score": 1,
-					"share": 0.8,
+					"share": 1,
 					"evidence": [
-						"decisions: column label (the first text child of a wrapper whose other children are a run of links is the column heading)"
-					]
-				},
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 0.2,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+						"rule columnHeading: the first piece of text in a column that sits directly in a header or footer row heads that column (sgs/heading), whatever its type style"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_882_0@375.png",
-				"1440": "shots/Root_882_0@1440.png"
+				"375": "shots/Root_1150_0@375.png",
+				"1440": "shots/Root_1150_0@1440.png"
 			},
-			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"882\">Visit or call</span>",
+			"snippet": "<span style=\"font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:4px\" data-dc-tpl=\"1150\">Visit or call</span>",
 			"attributes": {
 				"content": "Visit or call"
 			}
 		},
 		{
-			"order": 22,
-			"key": "Root/883#0",
+			"order": 27,
+			"key": "Root/1151#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "About Eye Care",
@@ -900,6 +952,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -908,7 +961,7 @@
 					"evidence": [
 						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
 						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"3 bare text links, one above the next"
 					]
 				},
 				{
@@ -922,9 +975,10 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_883_0@1440.png"
+				"375": "shots/Root_1151_0@375.png",
+				"1440": "shots/Root_1151_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"883\">About Eye Care</a>",
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1151\">About Eye Care</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -932,8 +986,8 @@
 			}
 		},
 		{
-			"order": 23,
-			"key": "Root/884#0",
+			"order": 28,
+			"key": "Root/1152#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "0121 729 8233",
@@ -944,6 +998,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -952,15 +1007,16 @@
 					"evidence": [
 						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
 						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"3 bare text links, one above the next"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_884_0@1440.png"
+				"375": "shots/Root_1152_0@375.png",
+				"1440": "shots/Root_1152_0@1440.png"
 			},
-			"snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"884\">{{ phone }}</a>",
+			"snippet": "<a href=\"{{ phoneHref }}\" data-dc-tpl=\"1152\">{{ phone }}</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -970,8 +1026,8 @@
 			"siteInfoKind": "phone"
 		},
 		{
-			"order": 24,
-			"key": "Root/885#0",
+			"order": 29,
+			"key": "Root/1153#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "644 Washwood Heath Rd Birmingham B8 2HQ",
@@ -982,6 +1038,7 @@
 			"confidence": 0.7,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/icon-list",
@@ -990,17 +1047,18 @@
 					"evidence": [
 						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
 						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"3 bare text links, one above the next"
 					]
 				}
 			],
 			"parts": [
-				"Root/886#0"
+				"Root/1154#0"
 			],
 			"screenshots": {
-				"1440": "shots/Root_885_0@1440.png"
+				"375": "shots/Root_1153_0@375.png",
+				"1440": "shots/Root_1153_0@1440.png"
 			},
-			"snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" data-dc-tpl=\"885\">644 Washwood Heath Rd<br data-dc-tpl=\"886\">Birmingham B8 2HQ</a>",
+			"snippet": "<a href=\"{{ mapHref }}\" target=\"_blank\" rel=\"noopener\" style=\"color:#5E584F\" data-dc-tpl=\"1153\">644 Washwood Heath Rd<br data-dc-tpl=\"1154\">Birmingham B8 2HQ</a>",
 			"attributes": {},
 			"unit": "list",
 			"item": {
@@ -1011,82 +1069,87 @@
 			"siteInfoKind": "address"
 		},
 		{
-			"order": 25,
-			"key": "Root/887#0",
-			"tag": "a",
+			"order": 30,
+			"key": "Root/1155#0",
+			"tag": "span",
 			"depth": 3,
 			"words": "Mon–Sat 9.30–17.30",
-			"block": "sgs/icon-list",
+			"block": "sgs/business-info",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 0.7,
+			"confidence": 0.8,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/icon-list",
-					"score": 1.15,
-					"share": 0.697,
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 0.8,
 					"evidence": [
-						"html_tag_to_core_block: ul -> sgs/icon-list: the database block for a list",
-						"block_capabilities: sgs/icon-list lists \"list\"",
-						"4 bare text links, one above the next"
+						"block_attributes: sgs/business-info.displayType enum has \"hours\"",
+						"decisions: hours pattern (a day name followed by a clock time (9:30, 9am) or \"closed\")",
+						"block_capabilities: sgs/business-info lists \"hours\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 0.2,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_887_0@1440.png"
+				"375": "shots/Root_1155_0@375.png",
+				"1440": "shots/Root_1155_0@1440.png"
 			},
-			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" data-dc-tpl=\"887\">Mon–Sat 9.30–17.30</a>",
-			"attributes": {},
-			"unit": "list",
-			"item": {
-				"text": "",
-				"siteInfoSource": "hours",
-				"siteInfoLink": true
-			},
-			"siteInfoKind": "hours"
+			"snippet": "<span style=\"color:#8B8478;font-size:13px\" data-dc-tpl=\"1155\">Mon–Sat 9.30–17.30</span>",
+			"attributes": {
+				"displayType": "hours"
+			}
 		},
 		{
-			"order": 26,
-			"key": "Root/888#0",
+			"order": 31,
+			"key": "Root/1156#0",
 			"tag": "div",
 			"depth": 1,
 			"words": "",
 			"block": "sgs/site-footer-row",
 			"action": null,
-			"reason": null,
-			"source": null,
+			"reason": "the bottom row of the footer",
+			"source": "rule footerSlots",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
+			"rule": "footerSlots",
 			"candidates": [
 				{
 					"block": "sgs/site-footer-row",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/site-footer (section-root) accepts [\"sgs/site-footer-row\"]; sgs/site-footer-row is a content-block",
-						"sgs/site-footer accepts sgs/site-footer-row as its only child",
-						"element holds 2 block children"
+						"rule footerSlots: a footer is always three rows: its grid of link groups is the columns row, a strip above it is the top row, a strip below it (a legal line, a copyright bar) and any floating element it carries is the bottom row (Bean, 2026-10-22)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_888_0@375.png",
-				"1440": "shots/Root_888_0@1440.png"
+				"375": "shots/Root_1156_0@375.png",
+				"1440": "shots/Root_1156_0@1440.png"
 			},
-			"snippet": "<div style=\"border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#141414;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto\" data-dc-tpl=\"888\"> <span data-dc-tpl=\"889\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span> <span style=\"display:flex;gap:14px\" data-dc-tpl=\"890\"><a href=\"#\" styl",
+			"snippet": "<div style=\"border-top:1px solid #E6E1DA;padding:16px 24px;font-size:12px;color:#77716A;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1440px;margin:0 auto\" data-dc-tpl=\"1156\"> <span data-dc-tpl=\"1157\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span> <span style=\"display:flex;gap:14px\" data-dc-tpl=\"1158\"><a href=\"#\" d",
 			"attributes": {
-				"layout": "flex"
+				"layout": "flex",
+				"rowSlot": "bottom"
 			}
 		},
 		{
-			"order": 27,
-			"key": "Root/889#0",
+			"order": 32,
+			"key": "Root/1157#0",
 			"tag": "span",
 			"depth": 2,
 			"words": "© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners",
@@ -1097,6 +1160,7 @@
 			"confidence": 0.8,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/business-info",
@@ -1119,54 +1183,61 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_889_0@375.png",
-				"1440": "shots/Root_889_0@1440.png"
+				"375": "shots/Root_1157_0@375.png",
+				"1440": "shots/Root_1157_0@1440.png"
 			},
-			"snippet": "<span data-dc-tpl=\"889\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>",
+			"snippet": "<span data-dc-tpl=\"1157\">© 2026 Eye Care Birmingham · GOC-registered · All brand names are trademarks of their owners</span>",
 			"attributes": {
 				"displayType": "copyright",
 				"copyrightPrefix": ""
 			}
 		},
 		{
-			"order": 28,
-			"key": "Root/890#0",
+			"order": 33,
+			"key": "Root/1158#0",
 			"tag": "span",
 			"depth": 2,
 			"words": "",
-			"block": "sgs/container",
+			"block": "sgs/multi-button",
 			"action": null,
 			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.51,
+			"low": true,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"375": "shots/Root_890_0@375.png",
-				"1440": "shots/Root_890_0@1440.png"
+				"375": "shots/Root_1158_0@375.png",
+				"1440": "shots/Root_1158_0@1440.png"
 			},
-			"snippet": "<span style=\"display:flex;gap:14px\" data-dc-tpl=\"890\"><a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"891\">Privacy</a><a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"892\">Terms</a><a class=\"ec-credit\" href=\"https://smallgiantsstudio.co.uk/\" rel=\"noopener\" data-dc-tpl=\"893\">Website by Small Giants Studio</a></span>",
+			"snippet": "<span style=\"display:flex;gap:14px\" data-dc-tpl=\"1158\"><a href=\"#\" data-dc-tpl=\"1159\">Privacy</a><a href=\"#\" data-dc-tpl=\"1160\">Terms</a></span>",
 			"attributes": {
-				"tagName": "div",
 				"layout": "flex"
 			}
 		},
 		{
-			"order": 29,
-			"key": "Root/891#0",
+			"order": 34,
+			"key": "Root/1159#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Privacy",
@@ -1177,6 +1248,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1190,16 +1262,16 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_891_0@1440.png"
+				"1440": "shots/Root_1159_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"891\">Privacy</a>",
+			"snippet": "<a href=\"#\" data-dc-tpl=\"1159\">Privacy</a>",
 			"attributes": {
 				"label": "Privacy"
 			}
 		},
 		{
-			"order": 30,
-			"key": "Root/892#0",
+			"order": 35,
+			"key": "Root/1160#0",
 			"tag": "a",
 			"depth": 3,
 			"words": "Terms",
@@ -1210,6 +1282,7 @@
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
+			"rule": null,
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -1223,54 +1296,95 @@
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_892_0@1440.png"
+				"1440": "shots/Root_1160_0@1440.png"
 			},
-			"snippet": "<a href=\"#\" style=\"text-decoration:underline\" data-dc-tpl=\"892\">Terms</a>",
+			"snippet": "<a href=\"#\" data-dc-tpl=\"1160\">Terms</a>",
 			"attributes": {
 				"label": "Terms"
 			}
 		},
 		{
-			"order": 31,
-			"key": "Root/893#0",
+			"order": 36,
+			"key": "Root/1161#0",
 			"tag": "a",
-			"depth": 3,
-			"words": "Website by Small Giants Studio",
-			"block": "sgs/business-info",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/button",
 			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.38,
-			"low": true,
+			"reason": "a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link",
+			"source": "rule pillButton",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
+			"rule": "pillButton",
 			"candidates": [
 				{
-					"block": "sgs/business-info",
-					"score": 0.75,
-					"share": 0.5,
-					"evidence": [
-						"block_attributes: sgs/business-info.displayType enum has \"attribution\"",
-						"decisions: attribution pattern (a credit line for the agency that built the site)"
-					]
-				},
-				{
 					"block": "sgs/button",
-					"score": 0.75,
-					"share": 0.5,
+					"score": 1,
+					"share": 1,
 					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+						"rule pillButton: a link or button holding exactly one label (and a glyph) is one button whose glyph is its own icon; a toggle, a slider arrow and a link with no words are not pills; a lone link is a button too, which can be styled as a plain link"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {
-				"1440": "shots/Root_893_0@1440.png"
+				"375": "shots/Root_1161_0@375.png",
+				"1440": "shots/Root_1161_0@1440.png"
 			},
-			"snippet": "<a class=\"ec-credit\" href=\"https://smallgiantsstudio.co.uk/\" rel=\"noopener\" data-dc-tpl=\"893\">Website by Small Giants Studio</a>",
+			"snippet": "<a class=\"sgs-whatsapp-fab\" href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"Message Fatima on WhatsApp\" style=\"position:fixed;right:22px;bottom:22px;z-index:35;display:flex;align-items:center;gap:10px;background:#25D366;color:#0B2B17;border-radius:999px;padding:0 18px 0 14px;min-height:52px;font-size:13.5px;font-weight:500;box-shadow:0 10px 30px rgba(13,110,53,.32);trans",
 			"attributes": {
-				"displayType": "attribution"
-			}
+				"label": "Ask me anything"
+			},
+			"strip": "Root/1161#0"
+		},
+		{
+			"order": 37,
+			"key": "Root/1162#0",
+			"tag": "img",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/1161#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1162_0@1440.png"
+			},
+			"snippet": "<img src=\"assets/whatsapp-ink.svg\" alt=\"\" aria-hidden=\"true\" width=\"22\" height=\"22\" style=\"display:block\" data-dc-tpl=\"1162\">",
+			"attributes": {},
+			"strip": "Root/1161#0"
+		},
+		{
+			"order": 38,
+			"key": "Root/1163#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "Ask me anything",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/button: rule pillButton",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "pillButton",
+			"into": "Root/1161#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_1163_0@1440.png"
+			},
+			"snippet": "<span style=\"display:{{ hideOnMobile }}\" data-dc-tpl=\"1163\">Ask me anything</span>",
+			"attributes": {},
+			"strip": "Root/1161#0"
 		}
 	]
 }

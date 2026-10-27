@@ -1,0 +1,108 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/856#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "sgs-page-signin",
+			"styleHash": "e0705001",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 1658
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/hero",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/858#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "94fb8982",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 1660
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/label",
+						"attributes": {
+							"text": "Your account"
+						},
+						"draftRef": {
+							"tpl": "Root/859#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "4893b240",
+							"parentTags": [
+								"main",
+								"div"
+							],
+							"textHash": "e5ea9ef5",
+							"line": 1661
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Sign in or create an account"
+						},
+						"draftRef": {
+							"tpl": "Root/860#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "8f0173ce",
+							"parentTags": [
+								"main",
+								"div"
+							],
+							"textHash": "3d13afa6",
+							"line": 1662
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place."
+						},
+						"draftRef": {
+							"tpl": "Root/861#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "131376a7",
+							"parentTags": [
+								"main",
+								"div"
+							],
+							"textHash": "7f899c21",
+							"line": 1663
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/account",
+				"attributes": {},
+				"innerBlocks": []
+			}
+		]
+	}
+]

@@ -1,0 +1,124 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/845#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "sgs-page-order-confirmed",
+			"styleHash": "819b1d43",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 1641
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "✓"
+				},
+				"draftRef": {
+					"tpl": "Root/846#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "4a6ec1a2",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "292b6",
+					"line": 1642
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Thank you — order EC-10482."
+				},
+				"draftRef": {
+					"tpl": "Root/847#0"
+				},
+				"draftFingerprint": {
+					"tag": "h1",
+					"cls": "",
+					"styleHash": "6146123c",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "5550a3de",
+					"line": 1643
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Confirmation is on its way by email and WhatsApp. Frames post within one working day; prescription lenses take 7 to 10."
+				},
+				"draftRef": {
+					"tpl": "Root/848#0"
+				},
+				"draftFingerprint": {
+					"tag": "p",
+					"cls": "",
+					"styleHash": "696f2b21",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "f4031071",
+					"line": 1644
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "flex"
+				},
+				"draftRef": {
+					"tpl": "Root/851#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "bc75286c",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 1648
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Back to the shop"
+						},
+						"draftRef": {
+							"tpl": "Root/852#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "",
+							"styleHash": "fdc256ae",
+							"parentTags": [
+								"main",
+								"div"
+							],
+							"textHash": "be0dfec8",
+							"line": 1649
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		]
+	}
+]

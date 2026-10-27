@@ -155,7 +155,7 @@
     "slug": "my-account",
     "title": "Sign in / register",
     "parent": null,
-    "template": "page-my-account",
+    "template": "page",
     "menus": [],
     "postType": "page",
     "collection": "static",
@@ -240,7 +240,7 @@
     "postType": "sgs_header",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 137,
     "draftId": "surfaces.json S-03"
   },
   {
@@ -252,7 +252,7 @@
     "postType": "sgs_footer",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 139,
     "draftId": "surfaces.json S-06"
   },
   {
@@ -264,7 +264,7 @@
     "postType": "sgs_drawer",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 141,
     "draftId": "surfaces.json S-05"
   },
   {
@@ -300,7 +300,7 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": null,
+    "id": 123,
     "draftId": "surfaces.json S-04"
   },
   {
@@ -312,7 +312,7 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 125
   },
   {
     "slug": "mega-menu-lenses",
@@ -323,7 +323,7 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 127
   },
   {
     "slug": "mega-menu-help",
@@ -334,6 +334,6 @@
     "postType": "sgs_mega_menu",
     "collection": "static",
     "flags": [],
-    "id": null
+    "id": 129
   }
 ]

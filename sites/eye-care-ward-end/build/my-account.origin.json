@@ -1,0 +1,73 @@
+{
+  "cr-ref-my-account-0": {
+    "tpl": "Root/856#0",
+    "fingerprint": {
+      "tag": "main",
+      "cls": "sgs-page-signin",
+      "styleHash": "e0705001",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 1658
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-my-account-1": {
+    "tpl": "Root/858#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "94fb8982",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 1660
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-my-account-2": {
+    "tpl": "Root/859#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "4893b240",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "e5ea9ef5",
+      "line": 1661
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-my-account-3": {
+    "tpl": "Root/860#0",
+    "fingerprint": {
+      "tag": "h1",
+      "cls": "",
+      "styleHash": "8f0173ce",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "3d13afa6",
+      "line": 1662
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-my-account-4": {
+    "tpl": "Root/861#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "131376a7",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "7f899c21",
+      "line": 1663
+    },
+    "draft": "10edcc3a998d8e4f"
+  }
+}

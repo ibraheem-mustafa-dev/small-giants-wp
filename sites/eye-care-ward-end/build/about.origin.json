@@ -1,0 +1,294 @@
+{
+  "cr-ref-about-0": {
+    "tpl": "Root/601#0",
+    "fingerprint": {
+      "tag": "main",
+      "cls": "sgs-page-about",
+      "styleHash": "e0705001",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 1374
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-1": {
+    "tpl": "Root/602#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "99307561",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 1375
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-2": {
+    "tpl": "Root/604#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "a9254447",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "34b72d44",
+      "line": 1377
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-3": {
+    "tpl": "Root/605#0",
+    "fingerprint": {
+      "tag": "h1",
+      "cls": "",
+      "styleHash": "52304f77",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "8f608df0",
+      "line": 1378
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-4": {
+    "tpl": "Root/606#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "92f46dab",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "e4ddf8fd",
+      "line": 1379
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-5": {
+    "tpl": "Root/607#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "52a2d47e",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "e2caf20f",
+      "line": 1380
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-6": {
+    "tpl": "Root/608#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "52d192e3",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "ba9a04b9",
+      "line": 1381
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-7": {
+    "tpl": "Root/609#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "c0d3530e",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "edd071ed",
+      "line": 1382
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-8": {
+    "tpl": "Root/611#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpq",
+      "styleHash": "58c6e5cb",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "ac9484c6",
+      "line": 1384
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-9": {
+    "tpl": "Root/613#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpr",
+      "styleHash": "e2166b48",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "3ed0f727",
+      "line": 1388
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-10": {
+    "tpl": "Root/616#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b1d79051",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "605ea04c",
+      "line": 1392
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-11": {
+    "tpl": "Root/617#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "a769c001",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "109a6165",
+      "line": 1392
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-12": {
+    "tpl": "Root/619#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b1d79051",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "9ef1b562",
+      "line": 1393
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-13": {
+    "tpl": "Root/620#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "a769c001",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "54fa9549",
+      "line": 1393
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-14": {
+    "tpl": "Root/622#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b1d79051",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b7a6a6e4",
+      "line": 1394
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-15": {
+    "tpl": "Root/623#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "a769c001",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "72a97ef9",
+      "line": 1394
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-16": {
+    "tpl": "Root/625#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b1d79051",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "75991e3d",
+      "line": 1395
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-about-17": {
+    "tpl": "Root/626#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "a769c001",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7faa41e",
+      "line": 1395
+    },
+    "draft": "10edcc3a998d8e4f"
+  }
+}

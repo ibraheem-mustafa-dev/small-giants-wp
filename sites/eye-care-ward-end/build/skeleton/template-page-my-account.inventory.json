@@ -1,0 +1,1813 @@
+{
+  "generated": "2026-10-27T00:22:57.298Z",
+  "source": "http://127.0.0.1:61964/#@state/page=signin",
+  "root": "main",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/856#0",
+    "unstamped": [],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 27,
+      "768": 27,
+      "1440": 27
+    },
+    "tagAgree": 27,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/856#0",
+      "parentKey": "Root/6#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 856,
+      "attrs": {
+        "class": "sgs-page-signin",
+        "style": "max-width: 1100px; margin: 0px auto; padding: 48px 52px 90px;"
+      },
+      "words": "",
+      "allText": "Your account Sign in or create an account You don't need an account to order; checkout works as a guest. An account keep",
+      "srcLine": 1658,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        }
+      ],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main class=\"sgs-page-signin\" data-screen-label=\"Sign in\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"856\"> <sc-if value=\"{{ authSignin }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"857\"> <div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 105.8,
+          "w": 375,
+          "h": 1195.2
+        },
+        "768": {
+          "x": 0,
+          "y": 105.8,
+          "w": 768,
+          "h": 1193.2
+        },
+        "1440": {
+          "x": 170,
+          "y": 105.8,
+          "w": 1100,
+          "h": 778.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_856_0@375.png",
+        "1440": "shots/Root_856_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/858#0",
+      "parentKey": "Root/856#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 858,
+      "attrs": {
+        "style": "animation: 0.5s ease 0s 1 normal both running rise;"
+      },
+      "words": "",
+      "allText": "Your account Sign in or create an account You don't need an account to order; checkout works as a guest. An account keep",
+      "srcLine": 1660,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p> <h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1> <p style=\"margin:0 0 32",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 133.8,
+          "w": 335,
+          "h": 207.4
+        },
+        "768": {
+          "x": 52,
+          "y": 153.8,
+          "w": 664,
+          "h": 138.4
+        },
+        "1440": {
+          "x": 222,
+          "y": 153.8,
+          "w": 996,
+          "h": 138.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_858_0@375.png",
+        "1440": "shots/Root_858_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/859#0",
+      "parentKey": "Root/858#0",
+      "depth": 2,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 859,
+      "attrs": {
+        "style": "margin: 0px 0px 10px; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accInk,#6F6152);"
+      },
+      "words": "Your account",
+      "allText": "Your account",
+      "srcLine": 1661,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "Your account",
+      "snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 133.8,
+          "w": 335,
+          "h": 18
+        },
+        "768": {
+          "x": 52,
+          "y": 153.8,
+          "w": 664,
+          "h": 18
+        },
+        "1440": {
+          "x": 222,
+          "y": 153.8,
+          "w": 996,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_859_0@375.png",
+        "1440": "shots/Root_859_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/860#0",
+      "parentKey": "Root/858#0",
+      "depth": 2,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 860,
+      "attrs": {
+        "style": "margin: 0px 0px 12px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 48px; line-height: 1.05;"
+      },
+      "words": "Sign in or create an account",
+      "allText": "Sign in or create an account",
+      "srcLine": 1662,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "h1",
+      "srcOwnText": "Sign in or create an account",
+      "snippet": "<h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 161.8,
+          "w": 335,
+          "h": 71.4
+        },
+        "768": {
+          "x": 52,
+          "y": 181.8,
+          "w": 664,
+          "h": 50.4
+        },
+        "1440": {
+          "x": 222,
+          "y": 181.8,
+          "w": 996,
+          "h": 50.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_860_0@375.png",
+        "1440": "shots/Root_860_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/861#0",
+      "parentKey": "Root/858#0",
+      "depth": 2,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 861,
+      "attrs": {
+        "style": "margin: 0px 0px 32px; max-width: 60ch; color: rgb(94, 88, 79); font-size: 16px; text-wrap: pretty;"
+      },
+      "words": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.",
+      "allText": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses an",
+      "srcLine": 1663,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.",
+      "snippet": "<p style=\"margin:0 0 32px;max-width:60ch;color:#5E584F;font-size:16px;text-wrap:pretty\" data-dc-tpl=\"861\">You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 245.1,
+          "w": 335,
+          "h": 96
+        },
+        "768": {
+          "x": 52,
+          "y": 244.1,
+          "w": 629.8,
+          "h": 48
+        },
+        "1440": {
+          "x": 222,
+          "y": 244.1,
+          "w": 629.8,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_861_0@375.png",
+        "1440": "shots/Root_861_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/864#0",
+      "parentKey": "Root/856#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 864,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 1px; background: rgb(230, 225, 218); border: 1px solid rgb(230, 225, 218); animation: 0.6s ease 0s 1 normal both running rise;"
+      },
+      "words": "",
+      "allText": "Sign in Email Password Keep me signed in Forgotten your password? Sign in New here? First name Email Password8 character",
+      "srcLine": 1668,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns: {{ authCols }};gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .6s both\" data-dc-tpl=\"864\"> <form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;lin",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 373.1,
+          "w": 335,
+          "h": 867.8
+        },
+        "768": {
+          "x": 52,
+          "y": 324.1,
+          "w": 664,
+          "h": 884.8
+        },
+        "1440": {
+          "x": 222,
+          "y": 324.1,
+          "w": 996,
+          "h": 470
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_864_0@375.png",
+        "1440": "shots/Root_864_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/865#0",
+      "parentKey": "Root/864#0",
+      "depth": 2,
+      "tag": "form",
+      "template": "Root",
+      "tpl": 865,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 40px 44px; display: flex; flex-direction: column; gap: 14px;"
+      },
+      "words": "",
+      "allText": "Sign in Email Password Keep me signed in Forgotten your password? Sign in",
+      "srcLine": 1669,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "form",
+      "srcOwnText": "",
+      "snippet": "<form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-t",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 374.1,
+          "w": 333,
+          "h": 420.8
+        },
+        "768": {
+          "x": 53,
+          "y": 325.1,
+          "w": 662,
+          "h": 413.8
+        },
+        "1440": {
+          "x": 223,
+          "y": 325.1,
+          "w": 496.5,
+          "h": 468
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_865_0@375.png",
+        "1440": "shots/Root_865_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/866#0",
+      "parentKey": "Root/865#0",
+      "depth": 3,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 866,
+      "attrs": {
+        "style": "margin: 0px 0px 4px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 28px; line-height: 1.1;"
+      },
+      "words": "Sign in",
+      "allText": "Sign in",
+      "srcLine": 1670,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "Sign in",
+      "snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 402.1,
+          "w": 289,
+          "h": 30.8
+        },
+        "768": {
+          "x": 97,
+          "y": 365.1,
+          "w": 574,
+          "h": 30.8
+        },
+        "1440": {
+          "x": 267,
+          "y": 365.1,
+          "w": 408.5,
+          "h": 30.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_866_0@375.png",
+        "1440": "shots/Root_866_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/867#0",
+      "parentKey": "Root/865#0",
+      "depth": 3,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 867,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
+      },
+      "words": "Email",
+      "allText": "Email",
+      "srcLine": 1671,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Email",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"867\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\"></label>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 450.9,
+          "w": 289,
+          "h": 73.5
+        },
+        "768": {
+          "x": 97,
+          "y": 413.9,
+          "w": 574,
+          "h": 73.5
+        },
+        "1440": {
+          "x": 267,
+          "y": 413.9,
+          "w": 408.5,
+          "h": 73.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_867_0@375.png",
+        "1440": "shots/Root_867_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/868#0",
+      "parentKey": "Root/867#0",
+      "depth": 4,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 868,
+      "attrs": {
+        "type": "email",
+        "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 1671,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\">",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 476.4,
+          "w": 289,
+          "h": 48
+        },
+        "768": {
+          "x": 97,
+          "y": 439.4,
+          "w": 574,
+          "h": 48
+        },
+        "1440": {
+          "x": 267,
+          "y": 439.4,
+          "w": 408.5,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_868_0@375.png",
+        "1440": "shots/Root_868_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/869#0",
+      "parentKey": "Root/865#0",
+      "depth": 3,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 869,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
+      },
+      "words": "Password",
+      "allText": "Password",
+      "srcLine": 1672,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Password",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"869\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\"></label>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 538.4,
+          "w": 289,
+          "h": 73.5
+        },
+        "768": {
+          "x": 97,
+          "y": 501.4,
+          "w": 574,
+          "h": 73.5
+        },
+        "1440": {
+          "x": 267,
+          "y": 501.4,
+          "w": 408.5,
+          "h": 73.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_869_0@375.png",
+        "1440": "shots/Root_869_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/870#0",
+      "parentKey": "Root/869#0",
+      "depth": 4,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 870,
+      "attrs": {
+        "type": "password",
+        "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 1672,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\">",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 563.9,
+          "w": 289,
+          "h": 48
+        },
+        "768": {
+          "x": 97,
+          "y": 526.9,
+          "w": 574,
+          "h": 48
+        },
+        "1440": {
+          "x": 267,
+          "y": 526.9,
+          "w": 408.5,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_870_0@375.png",
+        "1440": "shots/Root_870_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/871#0",
+      "parentKey": "Root/865#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 871,
+      "attrs": {
+        "style": "display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"
+      },
+      "words": "",
+      "allText": "Keep me signed in Forgotten your password?",
+      "srcLine": 1673,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap\" data-dc-tpl=\"871\"> <label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label> <button type=\"button",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 625.9,
+          "w": 289,
+          "h": 75
+        },
+        "768": {
+          "x": 97,
+          "y": 588.9,
+          "w": 574,
+          "h": 44
+        },
+        "1440": {
+          "x": 267,
+          "y": 588.9,
+          "w": 408.5,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_871_0@375.png",
+        "1440": "shots/Root_871_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/872#0",
+      "parentKey": "Root/871#0",
+      "depth": 4,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 872,
+      "attrs": {
+        "style": "display: flex; gap: 10px; align-items: center; font-size: 14px; color: rgb(74, 69, 62); cursor: pointer; min-height: 44px;"
+      },
+      "words": "Keep me signed in",
+      "allText": "Keep me signed in",
+      "srcLine": 1674,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Keep me signed in",
+      "snippet": "<label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 625.9,
+          "w": 137.3,
+          "h": 44
+        },
+        "768": {
+          "x": 97,
+          "y": 588.9,
+          "w": 137.3,
+          "h": 44
+        },
+        "1440": {
+          "x": 267,
+          "y": 588.9,
+          "w": 137.3,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_872_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/873#0",
+      "parentKey": "Root/872#0",
+      "depth": 5,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 873,
+      "attrs": {
+        "type": "checkbox",
+        "style": "accent-color: rgb(20, 20, 20); width: 16px; height: 16px; margin: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 1674,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 639.9,
+          "w": 16,
+          "h": 16
+        },
+        "768": {
+          "x": 97,
+          "y": 602.9,
+          "w": 16,
+          "h": 16
+        },
+        "1440": {
+          "x": 267,
+          "y": 602.9,
+          "w": 16,
+          "h": 16
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_873_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/874#0",
+      "parentKey": "Root/871#0",
+      "depth": 4,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 874,
+      "attrs": {
+        "type": "button",
+        "style": "background: none; border-width: 0px 0px 1px; border-top-style: initial; border-right-style: initial; border-bottom-style: solid; border-left-style: initial; border-top-color: initial; border-right-color: initial; border-bottom-color: rgb(20, 20, 20); border-left-color: initial; border-image: initial; padding: 0px; color: rgb(20, 20, 20); font-size: 13.5px;"
+      },
+      "words": "Forgotten your password?",
+      "allText": "Forgotten your password?",
+      "srcLine": 1675,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Forgotten your password?",
+      "snippet": "<button type=\"button\" sc-camel-on-click=\"{{ goForgot }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"874\">Forgotten your password?</button>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 681.9,
+          "w": 156.1,
+          "h": 19
+        },
+        "768": {
+          "x": 514.9,
+          "y": 601.4,
+          "w": 156.1,
+          "h": 19
+        },
+        "1440": {
+          "x": 519.4,
+          "y": 601.4,
+          "w": 156.1,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_874_0@375.png",
+        "1440": "shots/Root_874_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/875#0",
+      "parentKey": "Root/865#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 875,
+      "attrs": {
+        "type": "submit",
+        "class": "scpp",
+        "style": "background: rgb(20, 20, 20); color: rgb(250, 248, 245); border: 0px; min-height: 52px; padding: 0px 26px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; transition: background 0.2s;"
+      },
+      "words": "Sign in",
+      "allText": "Sign in",
+      "srcLine": 1677,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Sign in",
+      "snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"875\">Sign in</button>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 714.9,
+          "w": 289,
+          "h": 52
+        },
+        "768": {
+          "x": 97,
+          "y": 646.9,
+          "w": 574,
+          "h": 52
+        },
+        "1440": {
+          "x": 267,
+          "y": 646.9,
+          "w": 408.5,
+          "h": 52
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_875_0@375.png",
+        "1440": "shots/Root_875_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/876#0",
+      "parentKey": "Root/864#0",
+      "depth": 2,
+      "tag": "form",
+      "template": "Root",
+      "tpl": 876,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 40px 44px; display: flex; flex-direction: column; gap: 14px;"
+      },
+      "words": "",
+      "allText": "New here? First name Email Password8 characters or more Create account",
+      "srcLine": 1679,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "form",
+      "srcOwnText": "",
+      "snippet": "<form sc-camel-on-submit=\"{{ register }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"876\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 795.9,
+          "w": 333,
+          "h": 444
+        },
+        "768": {
+          "x": 53,
+          "y": 739.9,
+          "w": 662,
+          "h": 468
+        },
+        "1440": {
+          "x": 720.5,
+          "y": 325.1,
+          "w": 496.5,
+          "h": 468
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_876_0@375.png",
+        "1440": "shots/Root_876_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/877#0",
+      "parentKey": "Root/876#0",
+      "depth": 3,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 877,
+      "attrs": {
+        "style": "margin: 0px 0px 4px; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 28px; line-height: 1.1;"
+      },
+      "words": "New here?",
+      "allText": "New here?",
+      "srcLine": 1680,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "New here?",
+      "snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 823.9,
+          "w": 289,
+          "h": 30.8
+        },
+        "768": {
+          "x": 97,
+          "y": 779.9,
+          "w": 574,
+          "h": 30.8
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 365.1,
+          "w": 408.5,
+          "h": 30.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_877_0@375.png",
+        "1440": "shots/Root_877_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/878#0",
+      "parentKey": "Root/876#0",
+      "depth": 3,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 878,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
+      },
+      "words": "First name",
+      "allText": "First name",
+      "srcLine": 1681,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "First name",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"878\">First name<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\"></label>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 872.7,
+          "w": 289,
+          "h": 73.5
+        },
+        "768": {
+          "x": 97,
+          "y": 828.7,
+          "w": 574,
+          "h": 73.5
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 413.9,
+          "w": 408.5,
+          "h": 73.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_878_0@375.png",
+        "1440": "shots/Root_878_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/879#0",
+      "parentKey": "Root/878#0",
+      "depth": 4,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 879,
+      "attrs": {
+        "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 1681,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\">",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 898.2,
+          "w": 289,
+          "h": 48
+        },
+        "768": {
+          "x": 97,
+          "y": 854.2,
+          "w": 574,
+          "h": 48
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 439.4,
+          "w": 408.5,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_879_0@375.png",
+        "1440": "shots/Root_879_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/880#0",
+      "parentKey": "Root/876#0",
+      "depth": 3,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 880,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
+      },
+      "words": "Email",
+      "allText": "Email",
+      "srcLine": 1682,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Email",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"880\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\"></label>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 960.2,
+          "w": 289,
+          "h": 73.5
+        },
+        "768": {
+          "x": 97,
+          "y": 916.2,
+          "w": 574,
+          "h": 73.5
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 501.4,
+          "w": 408.5,
+          "h": 73.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_880_0@375.png",
+        "1440": "shots/Root_880_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/881#0",
+      "parentKey": "Root/880#0",
+      "depth": 4,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 881,
+      "attrs": {
+        "type": "email",
+        "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 1682,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\">",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 985.7,
+          "w": 289,
+          "h": 48
+        },
+        "768": {
+          "x": 97,
+          "y": 941.7,
+          "w": 574,
+          "h": 48
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 526.9,
+          "w": 408.5,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_881_0@375.png",
+        "1440": "shots/Root_881_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/882#0",
+      "parentKey": "Root/876#0",
+      "depth": 3,
+      "tag": "label",
+      "template": "Root",
+      "tpl": 882,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: rgb(74, 69, 62);"
+      },
+      "words": "Password",
+      "allText": "Password8 characters or more",
+      "srcLine": 1683,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "label",
+      "srcOwnText": "Password",
+      "snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"882\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\"><span style=\"font-size:12.",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 1047.7,
+          "w": 289,
+          "h": 98.3
+        },
+        "768": {
+          "x": 97,
+          "y": 1003.7,
+          "w": 574,
+          "h": 98.3
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 588.9,
+          "w": 408.5,
+          "h": 98.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_882_0@375.png",
+        "1440": "shots/Root_882_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/883#0",
+      "parentKey": "Root/882#0",
+      "depth": 4,
+      "tag": "input",
+      "template": "Root",
+      "tpl": 883,
+      "attrs": {
+        "type": "password",
+        "style": "border: 1px solid rgb(230, 225, 218); background: rgb(255, 255, 255); padding: 0px 14px; min-height: 48px; font-size: 15px; color: rgb(20, 20, 20); width: 100%;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 1683,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "input",
+      "srcOwnText": "",
+      "snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\">",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 1073.2,
+          "w": 289,
+          "h": 48
+        },
+        "768": {
+          "x": 97,
+          "y": 1029.2,
+          "w": 574,
+          "h": 48
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 614.4,
+          "w": 408.5,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_883_0@375.png",
+        "1440": "shots/Root_883_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/884#0",
+      "parentKey": "Root/882#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 884,
+      "attrs": {
+        "style": "font-size: 12.5px; color: rgb(119, 113, 106);"
+      },
+      "words": "8 characters or more",
+      "allText": "8 characters or more",
+      "srcLine": 1683,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "8 characters or more",
+      "snippet": "<span style=\"font-size:12.5px;color:#77716A\" data-dc-tpl=\"884\">8 characters or more</span>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 1127.2,
+          "w": 289,
+          "h": 18.8
+        },
+        "768": {
+          "x": 97,
+          "y": 1083.2,
+          "w": 574,
+          "h": 18.8
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 668.4,
+          "w": 408.5,
+          "h": 18.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_884_0@375.png",
+        "1440": "shots/Root_884_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/885#0",
+      "parentKey": "Root/876#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 885,
+      "attrs": {
+        "type": "submit",
+        "class": "scp4",
+        "style": "background: none; color: rgb(20, 20, 20); border: 1px solid rgb(20, 20, 20); min-height: 52px; padding: 0px 26px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; transition: background 0.25s, color 0.25s;"
+      },
+      "words": "Create account",
+      "allText": "Create account",
+      "srcLine": 1684,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isSignin }}",
+          "tpl": "855"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ authSignin }}",
+          "tpl": "857"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "Create account",
+      "snippet": "<button type=\"submit\" style=\"background:none;color:#141414;border:1px solid #141414;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color:#FAF8F5\" data-dc-tpl=\"885\">Create account</button>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 1160,
+          "w": 289,
+          "h": 52
+        },
+        "768": {
+          "x": 97,
+          "y": 1116,
+          "w": 574,
+          "h": 52
+        },
+        "1440": {
+          "x": 764.5,
+          "y": 701.2,
+          "w": 408.5,
+          "h": 52
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_885_0@375.png",
+        "1440": "shots/Root_885_0@1440.png"
+      }
+    }
+  ]
+}

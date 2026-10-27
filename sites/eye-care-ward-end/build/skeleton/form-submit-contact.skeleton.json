@@ -1,0 +1,187 @@
+[
+	{
+		"name": "sgs/form",
+		"attributes": {},
+		"draftRef": {
+			"tpl": "Root/682#0"
+		},
+		"draftFingerprint": {
+			"tag": "form",
+			"cls": "",
+			"styleHash": "72138329",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 1456
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Or send me a message"
+				},
+				"draftRef": {
+					"tpl": "Root/683#0"
+				},
+				"draftFingerprint": {
+					"tag": "h2",
+					"cls": "",
+					"styleHash": "d69f1d3d",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "34bdb466",
+					"line": 1457
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div",
+					"layout": "grid"
+				},
+				"draftRef": {
+					"tpl": "Root/685#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "60c95aa",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 1459
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"required": true
+						},
+						"draftRef": {
+							"tpl": "Root/686#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "6f47842b",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 1460
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/686#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-email",
+						"attributes": {
+							"required": true
+						},
+						"draftRef": {
+							"tpl": "Root/687#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "6f47842b",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 1461
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/687#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/688#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "6f47842b",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 1462
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/688#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/689#0"
+						},
+						"draftFingerprint": {
+							"tag": "select",
+							"cls": "",
+							"styleHash": "8dccd443",
+							"parentTags": [
+								"form",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 1463
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/689#0"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/form-field-textarea",
+				"attributes": {
+					"label": "Or send me a message",
+					"helpText": "I answer these myself, usually the same day. Send message"
+				},
+				"draftRef": {
+					"tpl": "Root/696#0"
+				},
+				"draftFingerprint": {
+					"tag": "textarea",
+					"cls": "",
+					"styleHash": "8448b147",
+					"parentTags": [
+						"form"
+					],
+					"textHash": "1505",
+					"line": 1472
+				},
+				"innerBlocks": [],
+				"draftSlots": {
+					".sgs-form-field__input": {
+						"tpl": "Root/696#0"
+					}
+				}
+			}
+		]
+	}
+]

@@ -1,0 +1,137 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "className": "cr-ref-template-page-my-account-0",
+      "minHeight": {
+        "desktop": "0px"
+      },
+      "maxWidth": {
+        "desktop": "1100px"
+      },
+      "textColourHover": "primary",
+      "padding": {
+        "desktop": "52px",
+        "tablet": "52px",
+        "mobile": "20px"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/hero",
+        "attributes": {
+          "className": "cr-ref-template-page-my-account-1",
+          "minHeight": {
+            "mobile": "0px"
+          },
+          "flexDirection": "row",
+          "textColourHover": "primary",
+          "sgsMotion": {
+            "v": 1,
+            "elements": {
+              "root": {
+                "entrance": {
+                  "base": {
+                    "trigger": "load",
+                    "values": {
+                      "from": {
+                        "opacity": 0,
+                        "translateY": "token:entrance.distance"
+                      },
+                      "to": {
+                        "opacity": 1,
+                        "translateY": 0
+                      },
+                      "duration": "token:entrance.duration",
+                      "easing": "token:easing.ease"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/label",
+            "attributes": {
+              "text": "Your account",
+              "className": "cr-ref-template-page-my-account-2",
+              "fontWeight": "400",
+              "lineHeight": 1.5,
+              "letterSpacing": 0.24,
+              "textColour": "accent-text",
+              "margin": {
+                "desktop": {
+                  "bottom": "10px"
+                }
+              },
+              "textColourHover": "accent-text"
+            },
+            "innerBlocks": []
+          },
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "Sign in or create an account",
+              "className": "cr-ref-template-page-my-account-3",
+              "fontSize": {
+                "mobile": 34,
+                "desktop": 48
+              },
+              "margin": {
+                "desktop": {
+                  "bottom": "12px"
+                }
+              },
+              "textWrap": "wrap",
+              "textColourHover": "primary"
+            },
+            "innerBlocks": []
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.",
+              "className": "cr-ref-template-page-my-account-4",
+              "textColour": "text-muted",
+              "margin": {
+                "desktop": {
+                  "bottom": "32px"
+                }
+              },
+              "maxWidth": {
+                "desktop": "629.76px"
+              },
+              "textWrap": "pretty",
+              "textColourHover": "text-muted"
+            },
+            "innerBlocks": []
+          }
+        ]
+      },
+      {
+        "name": "sgs/account",
+        "attributes": {
+          "className": "cr-ref-template-page-my-account-5"
+        },
+        "innerBlocks": []
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

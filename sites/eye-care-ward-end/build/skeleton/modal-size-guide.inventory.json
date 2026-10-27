@@ -1,0 +1,2477 @@
+{
+  "generated": "2026-10-26T20:21:19.640Z",
+  "source": "http://127.0.0.1:56651/Eye%20Care%20Birmingham.dc.html",
+  "root": "[data-sgs-skeleton-root=\"size-guide\"]",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/1235#0",
+    "unstamped": [],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 42,
+      "768": 42,
+      "1440": 42
+    },
+    "tagAgree": 42,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/1235#0",
+      "parentKey": null,
+      "depth": 0,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1235,
+      "attrs": {
+        "class": "sgs-size-guide",
+        "style": "position: fixed; inset: 0px; z-index: 78; display: flex; align-items: center; justify-content: center; padding: 32px;"
+      },
+      "words": "",
+      "allText": "Which size am I? × The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the",
+      "srcLine": 2120,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div class=\"sgs-size-guide\" style=\"position:fixed;inset:0;z-index:78;display:flex;align-items:center;justify-content:center;padding: {{ modalPad }}\" data-dc-tpl=\"1235\"> <div sc-camel-on-click=\"{{ closeModal }}\" style=\"position:absolute;inset:0;background:rgba(20,20,20,.5);animation:fade .25s both\" data-dc-tpl=\"1236\"></div> <div role=\"dialog\" aria-label=\"Size guide\" style=\"position:relative;backgro",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 0,
+          "w": 375,
+          "h": 900
+        },
+        "768": {
+          "x": 0,
+          "y": 0,
+          "w": 768,
+          "h": 900
+        },
+        "1440": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 900
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "fixed",
+        "768": "fixed",
+        "1440": "fixed"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1236#0",
+      "parentKey": "Root/1235#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1236,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: rgba(20, 20, 20, 0.5); animation: 0.25s ease 0s 1 normal both running fade;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 2121,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div sc-camel-on-click=\"{{ closeModal }}\" style=\"position:absolute;inset:0;background:rgba(20,20,20,.5);animation:fade .25s both\" data-dc-tpl=\"1236\"></div>",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 0,
+          "w": 375,
+          "h": 900
+        },
+        "768": {
+          "x": 0,
+          "y": 0,
+          "w": 768,
+          "h": 900
+        },
+        "1440": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 900
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1237#0",
+      "parentKey": "Root/1235#0",
+      "depth": 1,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1237,
+      "attrs": {
+        "aria-label": "Size guide",
+        "role": "dialog",
+        "style": "position: relative; background: rgb(250, 248, 245); border: 1px solid rgb(230, 225, 218); width: 100%; max-width: 720px; max-height: 88%; overflow: auto; box-shadow: rgba(0, 0, 0, 0.3) 0px 30px 70px; animation: 0.3s ease 0s 1 normal both running zoomIn;"
+      },
+      "words": "",
+      "allText": "Which size am I? × The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the",
+      "srcLine": 2122,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div role=\"dialog\" aria-label=\"Size guide\" style=\"position:relative;background:#FAF8F5;border:1px solid #E6E1DA;width:100%;max-width:720px;max-height:88%;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.3);animation:zoomIn .3s both\" data-dc-tpl=\"1237\"> <div style=\"display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #E6E1DA;position:stick",
+      "box": {
+        "375": {
+          "x": 16,
+          "y": 68.1,
+          "w": 343,
+          "h": 763.8
+        },
+        "768": {
+          "x": 32,
+          "y": 82.2,
+          "w": 704,
+          "h": 735.7
+        },
+        "1440": {
+          "x": 360,
+          "y": 82.2,
+          "w": 720,
+          "h": 735.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1238#0",
+      "parentKey": "Root/1237#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1238,
+      "attrs": {
+        "style": "display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 20px 24px; border-bottom: 1px solid rgb(230, 225, 218); position: sticky; top: 0px; background: rgb(250, 248, 245); z-index: 2;"
+      },
+      "words": "",
+      "allText": "Which size am I? ×",
+      "srcLine": 2123,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #E6E1DA;position:sticky;top:0;background:#FAF8F5;z-index:2\" data-dc-tpl=\"1238\"> <span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"1239\">Which size am I?</span> <button sc-camel-on-click=\"{{ closeModal }}\" aria-label=\"Close\" style=",
+      "box": {
+        "375": {
+          "x": 17,
+          "y": 69.1,
+          "w": 341,
+          "h": 85
+        },
+        "768": {
+          "x": 33,
+          "y": 83.2,
+          "w": 702,
+          "h": 85
+        },
+        "1440": {
+          "x": 361,
+          "y": 83.2,
+          "w": 718,
+          "h": 85
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "sticky",
+        "768": "sticky",
+        "1440": "sticky"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1239#0",
+      "parentKey": "Root/1238#0",
+      "depth": 3,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1239,
+      "attrs": {
+        "style": "font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 24px;"
+      },
+      "words": "Which size am I?",
+      "allText": "Which size am I?",
+      "srcLine": 2124,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Which size am I?",
+      "snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"1239\">Which size am I?</span>",
+      "box": {
+        "375": {
+          "x": 41,
+          "y": 93.1,
+          "w": 182,
+          "h": 36
+        },
+        "768": {
+          "x": 57,
+          "y": 107.2,
+          "w": 182,
+          "h": 36
+        },
+        "1440": {
+          "x": 385,
+          "y": 107.2,
+          "w": 182,
+          "h": 36
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1240#0",
+      "parentKey": "Root/1238#0",
+      "depth": 3,
+      "tag": "button",
+      "template": "Root",
+      "tpl": 1240,
+      "attrs": {
+        "aria-label": "Close",
+        "style": "background: none; border: 0px; font-size: 28px; min-width: 44px; min-height: 44px; color: rgb(20, 20, 20);"
+      },
+      "words": "×",
+      "allText": "×",
+      "srcLine": 2125,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "button",
+      "srcOwnText": "×",
+      "snippet": "<button sc-camel-on-click=\"{{ closeModal }}\" aria-label=\"Close\" style=\"background:none;border:0;font-size:28px;min-width:44px;min-height:44px;color:#141414\" data-dc-tpl=\"1240\">×</button>",
+      "box": {
+        "375": {
+          "x": 290,
+          "y": 89.1,
+          "w": 44,
+          "h": 44
+        },
+        "768": {
+          "x": 667,
+          "y": 103.2,
+          "w": 44,
+          "h": 44
+        },
+        "1440": {
+          "x": 1011,
+          "y": 103.2,
+          "w": 44,
+          "h": 44
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1241#0",
+      "parentKey": "Root/1237#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1241,
+      "attrs": {
+        "style": "padding: 24px;"
+      },
+      "words": "",
+      "allText": "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll f",
+      "srcLine": 2127,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:24px\" data-dc-tpl=\"1241\"> <p style=\"margin:0 0 20px;font-size:16px;color:#4A453E;text-wrap:pretty\" data-dc-tpl=\"1242\">The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.</p> <div style=\"background:#fff;border:1px solid #E6E1DA;padding:22px;text-align:center;margin-bottom:22px\" d",
+      "box": {
+        "375": {
+          "x": 17,
+          "y": 154.1,
+          "w": 341,
+          "h": 1026.8
+        },
+        "768": {
+          "x": 33,
+          "y": 168.2,
+          "w": 702,
+          "h": 876
+        },
+        "1440": {
+          "x": 361,
+          "y": 168.2,
+          "w": 718,
+          "h": 876
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1242#0",
+      "parentKey": "Root/1241#0",
+      "depth": 3,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 1242,
+      "attrs": {
+        "style": "margin: 0px 0px 20px; font-size: 16px; color: rgb(74, 69, 62); text-wrap: pretty;"
+      },
+      "words": "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.",
+      "allText": "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll f",
+      "srcLine": 2128,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.",
+      "snippet": "<p style=\"margin:0 0 20px;font-size:16px;color:#4A453E;text-wrap:pretty\" data-dc-tpl=\"1242\">The quickest way: pick up a pair of glasses you already like the fit of and look at the inside of the left arm. You'll find three numbers printed there.</p>",
+      "box": {
+        "375": {
+          "x": 41,
+          "y": 178.1,
+          "w": 293,
+          "h": 96
+        },
+        "768": {
+          "x": 57,
+          "y": 192.2,
+          "w": 654,
+          "h": 48
+        },
+        "1440": {
+          "x": 385,
+          "y": 192.2,
+          "w": 670,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1243#0",
+      "parentKey": "Root/1241#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1243,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); border: 1px solid rgb(230, 225, 218); padding: 22px; text-align: center; margin-bottom: 22px;"
+      },
+      "words": "",
+      "allText": "55▫ 18137 Lens widthBridgeTemple",
+      "srcLine": 2129,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#fff;border:1px solid #E6E1DA;padding:22px;text-align:center;margin-bottom:22px\" data-dc-tpl=\"1243\"> <div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:baseline;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;letter-spacing:.04em\" data-dc-tpl=\"1244\"> <span data-dc-tpl=\"1245\">55</span><span data-dc-tpl=\"1246\">▫ 18</",
+      "box": {
+        "375": {
+          "x": 41,
+          "y": 294.1,
+          "w": 293,
+          "h": 140
+        },
+        "768": {
+          "x": 57,
+          "y": 260.2,
+          "w": 654,
+          "h": 122
+        },
+        "1440": {
+          "x": 385,
+          "y": 260.2,
+          "w": 670,
+          "h": 122
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1244#0",
+      "parentKey": "Root/1243#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1244,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(3, minmax(0px, 1fr)); gap: 10px; align-items: baseline; font-family: \"Playfair Display\", serif; font-weight: 500; font-size: 32px; letter-spacing: 0.04em;"
+      },
+      "words": "",
+      "allText": "55▫ 18137",
+      "srcLine": 2130,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:baseline;font-family:'Playfair Display',serif;font-weight:500;font-size:32px;letter-spacing:.04em\" data-dc-tpl=\"1244\"> <span data-dc-tpl=\"1245\">55</span><span data-dc-tpl=\"1246\">▫ 18</span><span data-dc-tpl=\"1247\">137</span> </div>",
+      "box": {
+        "375": {
+          "x": 64,
+          "y": 317.1,
+          "w": 247,
+          "h": 48
+        },
+        "768": {
+          "x": 80,
+          "y": 283.2,
+          "w": 608,
+          "h": 48
+        },
+        "1440": {
+          "x": 408,
+          "y": 283.2,
+          "w": 624,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1245#0",
+      "parentKey": "Root/1244#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1245,
+      "attrs": {},
+      "words": "55",
+      "allText": "55",
+      "srcLine": 2131,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "55",
+      "snippet": "<span data-dc-tpl=\"1245\">55</span>",
+      "box": {
+        "375": {
+          "x": 64,
+          "y": 317.1,
+          "w": 75.7,
+          "h": 48
+        },
+        "768": {
+          "x": 80,
+          "y": 283.2,
+          "w": 196,
+          "h": 48
+        },
+        "1440": {
+          "x": 408,
+          "y": 283.2,
+          "w": 201.3,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1246#0",
+      "parentKey": "Root/1244#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1246,
+      "attrs": {},
+      "words": "▫ 18",
+      "allText": "▫ 18",
+      "srcLine": 2131,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "▫ 18",
+      "snippet": "<span data-dc-tpl=\"1246\">▫ 18</span>",
+      "box": {
+        "375": {
+          "x": 149.7,
+          "y": 317.1,
+          "w": 75.7,
+          "h": 48
+        },
+        "768": {
+          "x": 286,
+          "y": 283.2,
+          "w": 196,
+          "h": 48
+        },
+        "1440": {
+          "x": 619.3,
+          "y": 283.2,
+          "w": 201.3,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1247#0",
+      "parentKey": "Root/1244#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1247,
+      "attrs": {},
+      "words": "137",
+      "allText": "137",
+      "srcLine": 2131,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "137",
+      "snippet": "<span data-dc-tpl=\"1247\">137</span>",
+      "box": {
+        "375": {
+          "x": 235.3,
+          "y": 317.1,
+          "w": 75.7,
+          "h": 48
+        },
+        "768": {
+          "x": 492,
+          "y": 283.2,
+          "w": 196,
+          "h": 48
+        },
+        "1440": {
+          "x": 830.7,
+          "y": 283.2,
+          "w": 201.3,
+          "h": 48
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1248#0",
+      "parentKey": "Root/1243#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1248,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(3, minmax(0px, 1fr)); gap: 10px; margin-top: 10px; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: rgb(119, 113, 106);"
+      },
+      "words": "",
+      "allText": "Lens widthBridgeTemple",
+      "srcLine": 2133,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"1248\"> <span data-dc-tpl=\"1249\">Lens width</span><span data-dc-tpl=\"1250\">Bridge</span><span data-dc-tpl=\"1251\">Temple</span> </div>",
+      "box": {
+        "375": {
+          "x": 64,
+          "y": 375.1,
+          "w": 247,
+          "h": 36
+        },
+        "768": {
+          "x": 80,
+          "y": 341.2,
+          "w": 608,
+          "h": 18
+        },
+        "1440": {
+          "x": 408,
+          "y": 341.2,
+          "w": 624,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1249#0",
+      "parentKey": "Root/1248#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1249,
+      "attrs": {},
+      "words": "Lens width",
+      "allText": "Lens width",
+      "srcLine": 2134,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Lens width",
+      "snippet": "<span data-dc-tpl=\"1249\">Lens width</span>",
+      "box": {
+        "375": {
+          "x": 64,
+          "y": 375.1,
+          "w": 75.7,
+          "h": 36
+        },
+        "768": {
+          "x": 80,
+          "y": 341.2,
+          "w": 196,
+          "h": 18
+        },
+        "1440": {
+          "x": 408,
+          "y": 341.2,
+          "w": 201.3,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1250#0",
+      "parentKey": "Root/1248#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1250,
+      "attrs": {},
+      "words": "Bridge",
+      "allText": "Bridge",
+      "srcLine": 2134,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Bridge",
+      "snippet": "<span data-dc-tpl=\"1250\">Bridge</span>",
+      "box": {
+        "375": {
+          "x": 149.7,
+          "y": 375.1,
+          "w": 75.7,
+          "h": 36
+        },
+        "768": {
+          "x": 286,
+          "y": 341.2,
+          "w": 196,
+          "h": 18
+        },
+        "1440": {
+          "x": 619.3,
+          "y": 341.2,
+          "w": 201.3,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1251#0",
+      "parentKey": "Root/1248#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1251,
+      "attrs": {},
+      "words": "Temple",
+      "allText": "Temple",
+      "srcLine": 2134,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Temple",
+      "snippet": "<span data-dc-tpl=\"1251\">Temple</span>",
+      "box": {
+        "375": {
+          "x": 235.3,
+          "y": 375.1,
+          "w": 75.7,
+          "h": 36
+        },
+        "768": {
+          "x": 492,
+          "y": 341.2,
+          "w": 196,
+          "h": 18
+        },
+        "1440": {
+          "x": 830.7,
+          "y": 341.2,
+          "w": 201.3,
+          "h": 18
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1252#0",
+      "parentKey": "Root/1241#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1252,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 1px; background: rgb(230, 225, 218); border: 1px solid rgb(230, 225, 218); margin-bottom: 22px;"
+      },
+      "words": "",
+      "allText": "Lens width — 42 to 62mmThe width of one lens at its widest. This is the number that decides whether a frame looks too sm",
+      "srcLine": 2137,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;margin-bottom:22px\" data-dc-tpl=\"1252\"> <div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1253\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Lens width — 42 to 62mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The widt",
+      "box": {
+        "375": {
+          "x": 41,
+          "y": 456.1,
+          "w": 293,
+          "h": 392.5
+        },
+        "768": {
+          "x": 57,
+          "y": 404.2,
+          "w": 654,
+          "h": 327.3
+        },
+        "1440": {
+          "x": 385,
+          "y": 404.2,
+          "w": 670,
+          "h": 327.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1253#0",
+      "parentKey": "Root/1252#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1253,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 18px 20px;"
+      },
+      "words": "",
+      "allText": "Lens width — 42 to 62mmThe width of one lens at its widest. This is the number that decides whether a frame looks too sm",
+      "srcLine": 2138,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1253\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Lens width — 42 to 62mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.</p></div>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 457.1,
+          "w": 291,
+          "h": 129.5
+        },
+        "768": {
+          "x": 58,
+          "y": 405.2,
+          "w": 652,
+          "h": 107.8
+        },
+        "1440": {
+          "x": 386,
+          "y": 405.2,
+          "w": 668,
+          "h": 107.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1254#0",
+      "parentKey": "Root/1253#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1254,
+      "attrs": {
+        "style": "font-size: 15.5px; font-weight: 500;"
+      },
+      "words": "Lens width — 42 to 62mm",
+      "allText": "Lens width — 42 to 62mm",
+      "srcLine": 2138,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Lens width — 42 to 62mm",
+      "snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1254\">Lens width — 42 to 62mm</div>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 475.1,
+          "w": 251,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78,
+          "y": 423.2,
+          "w": 612,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 406,
+          "y": 423.2,
+          "w": 628,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1255#0",
+      "parentKey": "Root/1253#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 1255,
+      "attrs": {
+        "style": "margin: 5px 0px 0px; font-size: 14.5px; color: rgb(94, 88, 79); text-wrap: pretty;"
+      },
+      "words": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.",
+      "allText": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.",
+      "srcLine": 2138,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.",
+      "snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1255\">The width of one lens at its widest. This is the number that decides whether a frame looks too small or too big on you.</p>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 503.3,
+          "w": 251,
+          "h": 65.3
+        },
+        "768": {
+          "x": 78,
+          "y": 451.4,
+          "w": 612,
+          "h": 43.5
+        },
+        "1440": {
+          "x": 406,
+          "y": 451.4,
+          "w": 628,
+          "h": 43.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1256#0",
+      "parentKey": "Root/1252#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1256,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 18px 20px;"
+      },
+      "words": "",
+      "allText": "Bridge — 14 to 24mmThe gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they sli",
+      "srcLine": 2139,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1256\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1257\">Bridge — 14 to 24mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1258\">The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.</p></div>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 587.6,
+          "w": 291,
+          "h": 129.5
+        },
+        "768": {
+          "x": 58,
+          "y": 513.9,
+          "w": 652,
+          "h": 107.8
+        },
+        "1440": {
+          "x": 386,
+          "y": 513.9,
+          "w": 668,
+          "h": 107.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1257#0",
+      "parentKey": "Root/1256#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1257,
+      "attrs": {
+        "style": "font-size: 15.5px; font-weight: 500;"
+      },
+      "words": "Bridge — 14 to 24mm",
+      "allText": "Bridge — 14 to 24mm",
+      "srcLine": 2139,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Bridge — 14 to 24mm",
+      "snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1257\">Bridge — 14 to 24mm</div>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 605.6,
+          "w": 251,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78,
+          "y": 531.9,
+          "w": 612,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 406,
+          "y": 531.9,
+          "w": 628,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1258#0",
+      "parentKey": "Root/1256#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 1258,
+      "attrs": {
+        "style": "margin: 5px 0px 0px; font-size: 14.5px; color: rgb(94, 88, 79); text-wrap: pretty;"
+      },
+      "words": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.",
+      "allText": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.",
+      "srcLine": 2139,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.",
+      "snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1258\">The gap between the lenses that sits over your nose. Too narrow and they pinch; too wide and they slide down.</p>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 633.8,
+          "w": 251,
+          "h": 65.3
+        },
+        "768": {
+          "x": 78,
+          "y": 560.2,
+          "w": 612,
+          "h": 43.5
+        },
+        "1440": {
+          "x": 406,
+          "y": 560.2,
+          "w": 628,
+          "h": 43.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1259#0",
+      "parentKey": "Root/1252#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1259,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 18px 20px;"
+      },
+      "words": "",
+      "allText": "Temple — 130 to 150mmThe length of the arm, ear bend included. I can adjust this in person, so it's the least critical o",
+      "srcLine": 2140,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#fff;padding:18px 20px\" data-dc-tpl=\"1259\"><div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1260\">Temple — 130 to 150mm</div><p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1261\">The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.</p></div>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 718.1,
+          "w": 291,
+          "h": 129.5
+        },
+        "768": {
+          "x": 58,
+          "y": 622.7,
+          "w": 652,
+          "h": 107.8
+        },
+        "1440": {
+          "x": 386,
+          "y": 622.7,
+          "w": 668,
+          "h": 107.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1260#0",
+      "parentKey": "Root/1259#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1260,
+      "attrs": {
+        "style": "font-size: 15.5px; font-weight: 500;"
+      },
+      "words": "Temple — 130 to 150mm",
+      "allText": "Temple — 130 to 150mm",
+      "srcLine": 2140,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "Temple — 130 to 150mm",
+      "snippet": "<div style=\"font-size:15.5px;font-weight:500\" data-dc-tpl=\"1260\">Temple — 130 to 150mm</div>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 736.1,
+          "w": 251,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78,
+          "y": 640.7,
+          "w": 612,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 406,
+          "y": 640.7,
+          "w": 628,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1261#0",
+      "parentKey": "Root/1259#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 1261,
+      "attrs": {
+        "style": "margin: 5px 0px 0px; font-size: 14.5px; color: rgb(94, 88, 79); text-wrap: pretty;"
+      },
+      "words": "The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.",
+      "allText": "The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.",
+      "srcLine": 2140,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.",
+      "snippet": "<p style=\"margin:5px 0 0;font-size:14.5px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"1261\">The length of the arm, ear bend included. I can adjust this in person, so it's the least critical of the three.</p>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 764.3,
+          "w": 251,
+          "h": 65.3
+        },
+        "768": {
+          "x": 78,
+          "y": 668.9,
+          "w": 612,
+          "h": 43.5
+        },
+        "1440": {
+          "x": 406,
+          "y": 668.9,
+          "w": 628,
+          "h": 43.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1262#0",
+      "parentKey": "Root/1241#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1262,
+      "attrs": {
+        "style": "display: flex; flex-direction: column; gap: 1px; background: rgb(230, 225, 218); border: 1px solid rgb(230, 225, 218); margin-bottom: 22px;"
+      },
+      "words": "",
+      "allText": "Smalllens width up to 52mm Medium53 to 57mm Large58mm and above",
+      "srcLine": 2142,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-direction:column;gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;margin-bottom:22px\" data-dc-tpl=\"1262\"> <div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1263\"><span data-dc-tpl=\"1264\">Small</span><span style=\"color:#5E584F\" data-dc-tpl=\"1265\">lens width up to 52mm</span></div> <div styl",
+      "box": {
+        "375": {
+          "x": 41,
+          "y": 870.6,
+          "w": 293,
+          "h": 167.5
+        },
+        "768": {
+          "x": 57,
+          "y": 753.4,
+          "w": 654,
+          "h": 167.5
+        },
+        "1440": {
+          "x": 385,
+          "y": 753.4,
+          "w": 670,
+          "h": 167.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1263#0",
+      "parentKey": "Root/1262#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1263,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 16px 20px; display: flex; justify-content: space-between; gap: 12px; font-size: 15px;"
+      },
+      "words": "",
+      "allText": "Smalllens width up to 52mm",
+      "srcLine": 2143,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1263\"><span data-dc-tpl=\"1264\">Small</span><span style=\"color:#5E584F\" data-dc-tpl=\"1265\">lens width up to 52mm</span></div>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 871.6,
+          "w": 291,
+          "h": 54.5
+        },
+        "768": {
+          "x": 58,
+          "y": 754.4,
+          "w": 652,
+          "h": 54.5
+        },
+        "1440": {
+          "x": 386,
+          "y": 754.4,
+          "w": 668,
+          "h": 54.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1264#0",
+      "parentKey": "Root/1263#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1264,
+      "attrs": {},
+      "words": "Small",
+      "allText": "Small",
+      "srcLine": 2143,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Small",
+      "snippet": "<span data-dc-tpl=\"1264\">Small</span>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 887.6,
+          "w": 36.5,
+          "h": 22.5
+        },
+        "768": {
+          "x": 78,
+          "y": 770.4,
+          "w": 36.5,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 406,
+          "y": 770.4,
+          "w": 36.5,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1265#0",
+      "parentKey": "Root/1263#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1265,
+      "attrs": {
+        "style": "color: rgb(94, 88, 79);"
+      },
+      "words": "lens width up to 52mm",
+      "allText": "lens width up to 52mm",
+      "srcLine": 2143,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "lens width up to 52mm",
+      "snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1265\">lens width up to 52mm</span>",
+      "box": {
+        "375": {
+          "x": 165.4,
+          "y": 887.6,
+          "w": 147.6,
+          "h": 22.5
+        },
+        "768": {
+          "x": 542.4,
+          "y": 770.4,
+          "w": 147.6,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 886.4,
+          "y": 770.4,
+          "w": 147.6,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1266#0",
+      "parentKey": "Root/1262#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1266,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 16px 20px; display: flex; justify-content: space-between; gap: 12px; font-size: 15px;"
+      },
+      "words": "",
+      "allText": "Medium53 to 57mm",
+      "srcLine": 2144,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1266\"><span data-dc-tpl=\"1267\">Medium</span><span style=\"color:#5E584F\" data-dc-tpl=\"1268\">53 to 57mm</span></div>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 927.1,
+          "w": 291,
+          "h": 54.5
+        },
+        "768": {
+          "x": 58,
+          "y": 809.9,
+          "w": 652,
+          "h": 54.5
+        },
+        "1440": {
+          "x": 386,
+          "y": 809.9,
+          "w": 668,
+          "h": 54.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1267#0",
+      "parentKey": "Root/1266#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1267,
+      "attrs": {},
+      "words": "Medium",
+      "allText": "Medium",
+      "srcLine": 2144,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Medium",
+      "snippet": "<span data-dc-tpl=\"1267\">Medium</span>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 943.1,
+          "w": 53.3,
+          "h": 22.5
+        },
+        "768": {
+          "x": 78,
+          "y": 825.9,
+          "w": 53.3,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 406,
+          "y": 825.9,
+          "w": 53.3,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1268#0",
+      "parentKey": "Root/1266#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1268,
+      "attrs": {
+        "style": "color: rgb(94, 88, 79);"
+      },
+      "words": "53 to 57mm",
+      "allText": "53 to 57mm",
+      "srcLine": 2144,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "53 to 57mm",
+      "snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1268\">53 to 57mm</span>",
+      "box": {
+        "375": {
+          "x": 235.6,
+          "y": 943.1,
+          "w": 77.4,
+          "h": 22.5
+        },
+        "768": {
+          "x": 612.6,
+          "y": 825.9,
+          "w": 77.4,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 956.6,
+          "y": 825.9,
+          "w": 77.4,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1269#0",
+      "parentKey": "Root/1262#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 1269,
+      "attrs": {
+        "style": "background: rgb(255, 255, 255); padding: 16px 20px; display: flex; justify-content: space-between; gap: 12px; font-size: 15px;"
+      },
+      "words": "",
+      "allText": "Large58mm and above",
+      "srcLine": 2145,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"background:#fff;padding:16px 20px;display:flex;justify-content:space-between;gap:12px;font-size:15px\" data-dc-tpl=\"1269\"><span data-dc-tpl=\"1270\">Large</span><span style=\"color:#5E584F\" data-dc-tpl=\"1271\">58mm and above</span></div>",
+      "box": {
+        "375": {
+          "x": 42,
+          "y": 982.6,
+          "w": 291,
+          "h": 54.5
+        },
+        "768": {
+          "x": 58,
+          "y": 865.4,
+          "w": 652,
+          "h": 54.5
+        },
+        "1440": {
+          "x": 386,
+          "y": 865.4,
+          "w": 668,
+          "h": 54.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1270#0",
+      "parentKey": "Root/1269#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1270,
+      "attrs": {},
+      "words": "Large",
+      "allText": "Large",
+      "srcLine": 2145,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Large",
+      "snippet": "<span data-dc-tpl=\"1270\">Large</span>",
+      "box": {
+        "375": {
+          "x": 62,
+          "y": 998.6,
+          "w": 39.2,
+          "h": 22.5
+        },
+        "768": {
+          "x": 78,
+          "y": 881.4,
+          "w": 39.2,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 406,
+          "y": 881.4,
+          "w": 39.2,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1271#0",
+      "parentKey": "Root/1269#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1271,
+      "attrs": {
+        "style": "color: rgb(94, 88, 79);"
+      },
+      "words": "58mm and above",
+      "allText": "58mm and above",
+      "srcLine": 2145,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "58mm and above",
+      "snippet": "<span style=\"color:#5E584F\" data-dc-tpl=\"1271\">58mm and above</span>",
+      "box": {
+        "375": {
+          "x": 197.9,
+          "y": 998.6,
+          "w": 115.1,
+          "h": 22.5
+        },
+        "768": {
+          "x": 574.9,
+          "y": 881.4,
+          "w": 115.1,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 918.9,
+          "y": 881.4,
+          "w": 115.1,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1272#0",
+      "parentKey": "Root/1241#0",
+      "depth": 3,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 1272,
+      "attrs": {
+        "href": "https://wa.me/4479605978",
+        "target": "_blank",
+        "class": "scpo",
+        "style": "display: flex; gap: 14px; align-items: center; background: rgb(233, 249, 239); border: 1px solid rgb(183, 229, 199); padding: 16px 18px; transition: background 0.25s;"
+      },
+      "words": "",
+      "allText": "Can't find the numbers?Send me a photo of the inside of the arm and I'll read it for you.",
+      "srcLine": 2147,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" style=\"display:flex;gap:14px;align-items:center;background:#E9F9EF;border:1px solid #B7E5C7;padding:16px 18px;transition:background .25s\" style-hover=\"background:#DCF4E5;color:#0F2E1C\" data-dc-tpl=\"1272\"> <span style=\"width:36px;height:36px;border-radius:50%;background:#25D366;color:#fff;display:inline-flex;align-items:center;justif",
+      "box": {
+        "375": {
+          "x": 41,
+          "y": 1060.1,
+          "w": 293,
+          "h": 96.8
+        },
+        "768": {
+          "x": 57,
+          "y": 942.9,
+          "w": 654,
+          "h": 77.3
+        },
+        "1440": {
+          "x": 385,
+          "y": 942.9,
+          "w": 670,
+          "h": 77.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1273#0",
+      "parentKey": "Root/1272#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1273,
+      "attrs": {
+        "style": "width: 36px; height: 36px; border-radius: 50%; background: rgb(37, 211, 102); color: rgb(255, 255, 255); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 2148,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:36px;height:36px;border-radius:50%;background:#25D366;color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0\" data-dc-tpl=\"1273\"> <img src=\"assets/whatsapp-white.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"1274\"> </span>",
+      "box": {
+        "375": {
+          "x": 60,
+          "y": 1090.5,
+          "w": 36,
+          "h": 36
+        },
+        "768": {
+          "x": 76,
+          "y": 963.5,
+          "w": 36,
+          "h": 36
+        },
+        "1440": {
+          "x": 404,
+          "y": 963.5,
+          "w": 36,
+          "h": 36
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1274#0",
+      "parentKey": "Root/1273#0",
+      "depth": 5,
+      "tag": "img",
+      "template": "Root",
+      "tpl": 1274,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "display: block;",
+        "srcBasename": "whatsapp-white.svg"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 2149,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "img",
+      "srcOwnText": "",
+      "snippet": "<img src=\"assets/whatsapp-white.svg\" alt=\"\" aria-hidden=\"true\" width=\"19\" height=\"19\" style=\"display:block\" data-dc-tpl=\"1274\">",
+      "box": {
+        "375": {
+          "x": 68.5,
+          "y": 1099,
+          "w": 19,
+          "h": 19
+        },
+        "768": {
+          "x": 84.5,
+          "y": 972,
+          "w": 19,
+          "h": 19
+        },
+        "1440": {
+          "x": 412.5,
+          "y": 972,
+          "w": 19,
+          "h": 19
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1275#0",
+      "parentKey": "Root/1272#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1275,
+      "attrs": {
+        "style": "font-size: 14.5px; color: rgb(18, 48, 30); text-wrap: pretty;"
+      },
+      "words": "Can't find the numbers?",
+      "allText": "Can't find the numbers?Send me a photo of the inside of the arm and I'll read it for you.",
+      "srcLine": 2151,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Can't find the numbers?",
+      "snippet": "<span style=\"font-size:14.5px;color:#12301E;text-wrap:pretty\" data-dc-tpl=\"1275\">Can't find the numbers?<span style=\"display:block;font-size:13px;color:#2F5C3F;margin-top:2px\" data-dc-tpl=\"1276\">Send me a photo of the inside of the arm and I'll read it for you.</span></span>",
+      "box": {
+        "375": {
+          "x": 110,
+          "y": 1077.1,
+          "w": 205,
+          "h": 62.8
+        },
+        "768": {
+          "x": 126,
+          "y": 959.9,
+          "w": 359.3,
+          "h": 43.3
+        },
+        "1440": {
+          "x": 454,
+          "y": 959.9,
+          "w": 359.3,
+          "h": 43.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    },
+    {
+      "key": "Root/1276#0",
+      "parentKey": "Root/1275#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 1276,
+      "attrs": {
+        "style": "display: block; font-size: 13px; color: rgb(47, 92, 63); margin-top: 2px;"
+      },
+      "words": "Send me a photo of the inside of the arm and I'll read it for you.",
+      "allText": "Send me a photo of the inside of the arm and I'll read it for you.",
+      "srcLine": 2151,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ sizeModalOpen }}",
+          "tpl": "1234"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Send me a photo of the inside of the arm and I'll read it for you.",
+      "snippet": "<span style=\"display:block;font-size:13px;color:#2F5C3F;margin-top:2px\" data-dc-tpl=\"1276\">Send me a photo of the inside of the arm and I'll read it for you.</span>",
+      "box": {
+        "375": {
+          "x": 110,
+          "y": 1100.8,
+          "w": 205,
+          "h": 39
+        },
+        "768": {
+          "x": 126,
+          "y": 983.7,
+          "w": 359.3,
+          "h": 19.5
+        },
+        "1440": {
+          "x": 454,
+          "y": 983.7,
+          "w": 359.3,
+          "h": 19.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {}
+    }
+  ],
+  "sources": {
+    "files": {
+      "Eye Care Birmingham.dc.html": "2f2096a8c7a8c9ff8d40824b14d32f0374f84eda07a3c51c64d9a43a9315da3a",
+      "Frame Card.dc.html": "4c139189317abfd2d49c4851624fd8e1e3043fc002bfaddb474a0a645b8b8db4",
+      "README.md": "0b063b7a239855d748cfeb9ac9ce978cb0bf6a9a38c41a04f81a858d30afbfe8",
+      "animations.json": "25ac5fbc1097f2a95773452d363dcc2073906719d99d83e03ac90053097df2b0",
+      "assets/ec-logo.png": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f",
+      "assets/google-g.svg": "a38b9299dc4f1d1c96079ac7c6c84b7d0c5a36e6521845056b4351387fb45875",
+      "assets/instagram.svg": "2e63f047e9cce71a4c7a38eb22327a758ae31c6418197cebfde2ddf3eff77c38",
+      "assets/whatsapp-deep.svg": "d4f59fdf92f70685a75ef3fa920d96aad53c7e7fc37c3179d1809de9ba4ac7a0",
+      "assets/whatsapp-green.svg": "7c831ad55d0f49fd715d55723062faa212fe3fafcbb0a7d63d1dd0261f716c4a",
+      "assets/whatsapp-ink.svg": "1d98c1896e1bca405c3e152aaec32415c24ef77f83a46450dbebd8f18ffb3d5d",
+      "assets/whatsapp-white.svg": "97f0612934fac011b54359c333998c3712581c2d9d7359acd2e51d0c78032699",
+      "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
+      "surfaces.json": "e0ddf5410ad40408f885d07ad1e34fc22fd30fa5c8b256639a6ab3092d5447b2",
+      "tokens/colors.css": "9473a276fdb556d59fc1850805e80210dbc4dac9d1264eff03fb8f2b4b487977",
+      "tokens/spacing.css": "d2ec7bbe305cce06d1124d4d03b1f507694bd6c0812210d67e879540b126a4fa",
+      "tokens/typography.css": "10afddb7990718dee4942ef9abbd139dc2b38d26ae4416415cab54901cba3eff"
+    },
+    "route": {
+      "commit": "17e7f5a204e2eebf808aa8cb60b11cad815c29f8"
+    }
+  }
+}

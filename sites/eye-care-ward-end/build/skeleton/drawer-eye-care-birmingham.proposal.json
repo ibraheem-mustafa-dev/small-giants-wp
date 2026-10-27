@@ -1,0 +1,698 @@
+{
+	"generated": "2026-10-27T00:17:45.248Z",
+	"inventory": "2026-10-26T20:20:23.322Z",
+	"source": "http://127.0.0.1:56651/Eye%20Care%20Birmingham.dc.html",
+	"surface": "mobile-menu",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 30,
+		"parts": 8,
+		"rows": 22,
+		"skeletonNodes": 13,
+		"expandedNodes": 13,
+		"low": 1,
+		"removed": 9,
+		"unresolved": 0,
+		"byRule": {
+			"surfaceRoot": 1,
+			"label": 1,
+			"navigation": 11,
+			"siteInfoLink": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/1165#0",
+			"tag": "div",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/nav-drawer",
+			"action": null,
+			"reason": "a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body",
+			"source": "rule surfaceRoot",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "surfaceRoot",
+			"candidates": [
+				{
+					"block": "sgs/nav-drawer",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule surfaceRoot: a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div class=\"sgs-mobile-menu\" style=\"position:fixed;inset:0;z-index:60;background:#FAF8F5;animation:fade .3s both;display:flex;flex-direction:column;padding:20px 24px;overflow:auto\" data-dc-tpl=\"1165\"> <div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"1166\"> <span style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em\" data-dc-tpl=\"116",
+			"attributes": {}
+		},
+		{
+			"order": 1,
+			"key": "Root/1166#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"1166\"> <span style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em\" data-dc-tpl=\"1167\">EYE CARE</span> <button sc-camel-on-click=\"{{ toggleMenu }}\" aria-label=\"Close menu\" style=\"background:none;border:0;font-size:28px;min-width:44px;min-height:44px\" data-dc-tpl=\"1168\">×</button> </di",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/1167#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "EYE CARE",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em\" data-dc-tpl=\"1167\">EYE CARE</span>",
+			"attributes": {
+				"text": "EYE CARE"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/1168#0",
+			"tag": "button",
+			"depth": 2,
+			"words": "×",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ toggleMenu }}\" aria-label=\"Close menu\" style=\"background:none;border:0;font-size:28px;min-width:44px;min-height:44px\" data-dc-tpl=\"1168\">×</button>",
+			"attributes": {
+				"label": "×"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/1169#0",
+			"tag": "nav",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/nav-drawer-menu",
+			"action": null,
+			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu",
+			"source": "rule navigation",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"candidates": [
+				{
+					"block": "sgs/nav-drawer-menu",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<nav style=\"display:flex;flex-direction:column;margin-top:32px;font-family:'Playfair Display',serif;font-weight:500;font-size:34px\" data-dc-tpl=\"1169\"> <a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" style=\"padding:14px 0;border-bottom:1px solid #E6E1DA;animation:rise .5s both;animation-delay:.05s\" data-dc-tpl=\"1170\">Sunglasses</a> <a href=\"#\" sc-camel-on-click=\"{{ goBrands }}\" style=\"padding:14px 0;b",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/1170#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Sunglasses",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1169#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" style=\"padding:14px 0;border-bottom:1px solid #E6E1DA;animation:rise .5s both;animation-delay:.05s\" data-dc-tpl=\"1170\">Sunglasses</a>",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root/1171#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Brands",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1169#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goBrands }}\" style=\"padding:14px 0;border-bottom:1px solid #E6E1DA;animation:rise .5s both;animation-delay:.1s\" data-dc-tpl=\"1171\">Brands</a>",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root/1172#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Prescription lenses",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1169#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goLenses }}\" style=\"padding:14px 0;border-bottom:1px solid #E6E1DA;animation:rise .5s both;animation-delay:.15s\" data-dc-tpl=\"1172\">Prescription lenses</a>",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/1173#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "Glasses",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1169#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"padding:14px 0;border-bottom:1px solid #E6E1DA;color:#A39C90;animation:rise .5s both;animation-delay:.2s\" data-dc-tpl=\"1173\">Glasses <span style=\"font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.14em\" data-dc-tpl=\"1174\">SOON</span></span>",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root/1174#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "SOON",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1169#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:.14em\" data-dc-tpl=\"1174\">SOON</span>",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/1175#0",
+			"tag": "nav",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/nav-drawer-menu",
+			"action": null,
+			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu",
+			"source": "rule navigation",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"candidates": [
+				{
+					"block": "sgs/nav-drawer-menu",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule navigation: the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<nav style=\"display:flex;flex-direction:column;gap:14px;margin-top:28px;font-size:15px;letter-spacing:.04em;animation:rise .5s both;animation-delay:.3s\" data-dc-tpl=\"1175\"> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1176\">About Eye Care</a> <a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1177\">Delivery, returns &amp; FAQs</a> <button sc-camel-on-click=\"{{ openSizeGuide }}",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/1176#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "About Eye Care",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1175#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1176\">About Eye Care</a>",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/1177#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Delivery, returns & FAQs",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1175#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1177\">Delivery, returns &amp; FAQs</a>",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/1178#0",
+			"tag": "button",
+			"depth": 2,
+			"words": "Size guide",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1175#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button sc-camel-on-click=\"{{ openSizeGuide }}\" style=\"background:none;border:0;padding:0;text-align:left;font-size:15px;letter-spacing:.04em;color:#141414\" data-dc-tpl=\"1178\">Size guide</button>",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/1179#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Contact",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-drawer-menu: rule navigation",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/1175#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" data-dc-tpl=\"1179\">Contact</a>",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root/1180#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"margin-top:auto;padding-top:28px;display:flex;flex-direction:column;gap:12px;animation:rise .5s both;animation-delay:.36s\" data-dc-tpl=\"1180\"> <a href=\"{{ phoneHref }}\" style=\"display:flex;align-items:center;gap:12px;border:1px solid #E6E1DA;background:#fff;padding:14px 16px;font-size:15px\" data-dc-tpl=\"1181\"> <svg width=\"17\" height=\"17\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/1181#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "0121 729 8233",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [
+				"Root/1182#0"
+			],
+			"screenshots": {},
+			"snippet": "<a href=\"{{ phoneHref }}\" style=\"display:flex;align-items:center;gap:12px;border:1px solid #E6E1DA;background:#fff;padding:14px 16px;font-size:15px\" data-dc-tpl=\"1181\"> <svg width=\"17\" height=\"17\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"#141414\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"1182\"><path d=\"M6 3h3l2 5-2.5 1.5a12 12 0 0 0 ",
+			"attributes": {
+				"label": "0121 729 8233",
+				"url": "tel:01217298233",
+				"linkSource": "phone",
+				"labelFromSiteInfo": true
+			},
+			"slots": {
+				".sgs-button__icon > svg": {
+					"tpl": "Root/1182#0"
+				}
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/1184#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;gap:10px\" data-dc-tpl=\"1184\"> <a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" style=\"flex:1;border:1px solid #E6E1DA;background:#fff;min-height:46px;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"1185\"> <svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"#141414\" stroke-width=\"1.7\" aria-hidden=\"tr",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/1185#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.9,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.9,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"brand-registry: instagram owns https://www.instagram.com/eyecare.birmingham/; site-info-placeholder-map: {{ igHref }} -> socials.instagram; brand-registry label \"Instagram\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/1186#0"
+			],
+			"screenshots": {},
+			"snippet": "<a href=\"{{ igHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Instagram\" style=\"flex:1;border:1px solid #E6E1DA;background:#fff;min-height:46px;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"1185\"> <svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"#141414\" stroke-width=\"1.7\" aria-hidden=\"true\" data-dc-tpl=\"1186\"><rect x=\"3\" y=\"3\" width=\"18\" hei",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "instagram",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.instagram"
+							}
+						}
+					}
+				},
+				"linkTarget": "_blank"
+			},
+			"slots": {
+				".sgs-icon__shape > .sgs-icon__glyph > svg": {
+					"tpl": "Root/1186#0"
+				}
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/1190#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.9,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 0.9,
+					"share": 1,
+					"evidence": [
+						"block_capabilities: sgs/icon lists svg and icon; the element is a link holding only an svg",
+						"site-info-placeholder-map: {{ gmbHref }} -> socials.google; brand-registry label \"Google\" in aria-label/title"
+					]
+				}
+			],
+			"parts": [
+				"Root/1191#0"
+			],
+			"screenshots": {},
+			"snippet": "<a href=\"{{ gmbHref }}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Google reviews\" style=\"flex:1;border:1px solid #E6E1DA;background:#fff;min-height:46px;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"1190\"> <svg width=\"18\" height=\"18\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"#141414\" stroke-width=\"1.7\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"1191\"><p",
+			"attributes": {
+				"iconSource": "brand",
+				"brandName": "google",
+				"metadata": {
+					"bindings": {
+						"linkUrl": {
+							"source": "sgs/site-info",
+							"args": {
+								"key": "socials.google"
+							}
+						}
+					}
+				},
+				"linkTarget": "_blank"
+			},
+			"slots": {
+				".sgs-icon__shape > .sgs-icon__glyph > svg": {
+					"tpl": "Root/1191#0"
+				}
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/1193#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"https://wa.me/4479605978\" target=\"_blank\" rel=\"noopener\" aria-label=\"WhatsApp\" style=\"flex:1;border:1px solid #B7E5C7;background:#E9F9EF;color:#1B7F43;min-height:46px;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"1193\"> <img src=\"assets/whatsapp-deep.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1194\"> </a>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/1194#0",
+			"tag": "img",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/media",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.29,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/media",
+					"score": 0.5,
+					"share": 0.588,
+					"evidence": [
+						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\")"
+					]
+				},
+				{
+					"block": "sgs/responsive-logo",
+					"score": 0.35,
+					"share": 0.412,
+					"evidence": [
+						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<img src=\"assets/whatsapp-deep.svg\" alt=\"\" aria-hidden=\"true\" width=\"18\" height=\"18\" style=\"display:block\" data-dc-tpl=\"1194\">",
+			"attributes": {}
+		}
+	]
+}

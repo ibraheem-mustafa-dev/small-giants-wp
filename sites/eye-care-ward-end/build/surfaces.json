@@ -1,363 +1,563 @@
 {
-  "footer": {
-    "tree": "footer.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "template-front-page": {
+    "tree": "trees/template/front-page.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "postId": 182
+      "template": "front-page"
     },
     "canvas": true,
-    "walker": "qa/parity/footer.mjs",
-    "walkerFull": "qa/parity/footer.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "home"
+      ]
+    },
     "states": {
-      "opening": null
+      "resting": null
+    }
+  },
+  "template-page": {
+    "tree": "trees/template/page.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "page"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "prescription-lenses",
+        "about",
+        "help",
+        "contact",
+        "my-account"
+      ]
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-search": {
+    "tree": "trees/template/search.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "search"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-404": {
+    "tree": "trees/template/404.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "404"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-product-search-results": {
+    "tree": "trees/template/product-search-results.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "product-search-results"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-taxonomy-product_attribute": {
+    "tree": "trees/template/taxonomy-product_attribute.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "taxonomy-product_attribute"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-cart": {
+    "tree": "trees/template/cart.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "cart"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page",
+      "unplayed": "page:cart"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "home": {
+    "tree": "trees/page/home.json",
+    "intakeSurface": "page-home",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 104
+    },
+    "shell": "front-page",
+    "walker": "qa/parity/home.fill-base.mjs",
+    "walkerFull": "qa/parity/home.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null,
+      "reviews-rail-scrolled": "scrolled"
+    }
+  },
+  "shop": {
+    "tree": "trees/shop/shop.json",
+    "intakeSurface": "page-shop",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "archive-product"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "whole"
+    },
+    "walker": "qa/parity/shop.fill-base.mjs",
+    "walkerFull": "qa/parity/shop.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "product": {
+    "tree": "trees/product/product.json",
+    "intakeSurface": "page-product",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "single-product"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "whole"
+    },
+    "walker": "qa/parity/product.fill-base.mjs",
+    "walkerFull": "qa/parity/product.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "prescription-lenses": {
+    "tree": "trees/page/prescription-lenses.json",
+    "intakeSurface": "page-lenses",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 107
+    },
+    "shell": "page",
+    "walker": "qa/parity/prescription-lenses.fill-base.mjs",
+    "walkerFull": "qa/parity/prescription-lenses.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "about": {
+    "tree": "trees/page/about.json",
+    "intakeSurface": "page-about",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 109
+    },
+    "shell": "page",
+    "walker": "qa/parity/about.fill-base.mjs",
+    "walkerFull": "qa/parity/about.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "help": {
+    "tree": "trees/page/help.json",
+    "intakeSurface": "page-help",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 111
+    },
+    "shell": "page",
+    "walker": "qa/parity/help.fill-base.mjs",
+    "walkerFull": "qa/parity/help.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "contact": {
+    "tree": "trees/page/contact.json",
+    "intakeSurface": "page-contact",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 113
+    },
+    "shell": "page",
+    "walker": "qa/parity/contact.fill-base.mjs",
+    "walkerFull": "qa/parity/contact.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "checkout": {
+    "tree": "trees/page/checkout.json",
+    "intakeSurface": "page-checkout",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 8
+    },
+    "walker": "qa/parity/checkout.fill-base.mjs",
+    "walkerFull": "qa/parity/checkout.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "my-account": {
+    "tree": "trees/page/my-account.json",
+    "intakeSurface": "page-signin",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 9
+    },
+    "shell": "page",
+    "walker": "qa/parity/my-account.fill-base.mjs",
+    "walkerFull": "qa/parity/my-account.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "cart": {
+    "tree": "trees/page/cart.json",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 7
+    },
+    "walker": "qa/parity/cart.fill-base.mjs",
+    "walkerFull": "qa/parity/cart.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "resting": null
+    }
+  },
+  "form-submit-contact": {
+    "tree": "trees/sgs_form/form-submit-contact.json",
+    "intakeSurface": "contact-form",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 116
+    },
+    "canvas": true,
+    "walker": "qa/parity/form-submit-contact.fill-base.mjs",
+    "walkerFull": "qa/parity/form-submit-contact.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "draftRoute": "contact",
+    "states": {
+      "idle": null,
+      "sent": null
+    },
+    "provides": [
+      "sgs/form:form-submit-contact"
+    ]
+  },
+  "header": {
+    "tree": "trees/sgs_header/header.json",
+    "intakeSurface": "header",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 137
+    },
+    "canvas": true,
+    "walker": "qa/parity/header.fill-base.mjs",
+    "walkerFull": "qa/parity/header.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "top": null,
+      "scrolled": "scrolled",
+      "full-nav": null,
+      "compact-nav": null,
+      "signed-out": null,
+      "signed-in": null
+    },
+    "provides": [
+      "core/template-part:header"
+    ]
+  },
+  "footer": {
+    "tree": "trees/sgs_footer/footer.json",
+    "intakeSurface": "footer",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "postId": 139
+    },
+    "canvas": true,
+    "walker": "qa/parity/footer.fill-base.mjs",
+    "walkerFull": "qa/parity/footer.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
     },
     "provides": [
       "core/template-part:footer"
     ]
   },
-  "about": {
-    "tree": "about.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "drawer-eye-care-birmingham": {
+    "tree": "trees/sgs_drawer/drawer-eye-care-birmingham.json",
+    "intakeSurface": "mobile-menu",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "postId": 187
+      "postId": 141
     },
-    "walker": "qa/parity/about.mjs",
-    "walkerFull": "qa/parity/about.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "canvas": true,
+    "walker": "qa/parity/drawer-eye-care-birmingham.fill-base.mjs",
+    "walkerFull": "qa/parity/drawer-eye-care-birmingham.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "opening": null
+      "open": null
     }
   },
-  "lenses": {
-    "tree": "lenses.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "modal-size-guide": {
+    "tree": "trees/sgs_modal/modal-size-guide.json",
+    "intakeSurface": "size-guide",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "postId": 168
+      "postId": 118
     },
-    "walker": "qa/parity/lenses.mjs",
-    "walkerFull": "qa/parity/lenses.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "canvas": true,
+    "walker": "qa/parity/modal-size-guide.fill-base.mjs",
+    "walkerFull": "qa/parity/modal-size-guide.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "opening": null
+      "open": null
     }
   },
-  "help": {
-    "tree": "help.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "flow-choice-flow-add-prescription-lenses": {
+    "tree": "trees/sgs_choice_flow/choice-flow-add-prescription-lenses.json",
+    "intakeSurface": "lens-configurator",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "postId": 171
+      "postId": 120
     },
-    "walker": "qa/parity/help.mjs",
-    "walkerFull": "qa/parity/help.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "canvas": true,
+    "walker": "qa/parity/flow-choice-flow-add-prescription-lenses.fill-base.mjs",
+    "walkerFull": "qa/parity/flow-choice-flow-add-prescription-lenses.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "opening": null,
-      "faq-closed": null,
-      "faq-item2-open": "open",
-      "faq-item3-open": "open",
-      "faq-item4-open": "open",
-      "faq-item5-open": "open",
-      "faq-item6-open": "open",
-      "faq-item7-open": "open",
-      "faq-item8-open": "open"
-    },
-    "walkStates": [
-      "opening",
-      "faq-closed",
-      "faq-item2-open",
-      "faq-item3-open",
-      "faq-item4-open",
-      "faq-item5-open",
-      "faq-item6-open",
-      "faq-item7-open",
-      "faq-item8-open"
-    ]
-  },
-  "contact": {
-    "tree": "contact.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 190
-    },
-    "walker": "qa/parity/contact.mjs",
-    "walkerFull": "qa/parity/contact.full.mjs",
-    "walkStates": [
-      "opening",
-      "field-focused",
-      "form-submitted-empty"
-    ],
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "opening": null,
-      "field-focused": null,
-      "form-submitted-empty": null
+      "open-side-by-side": null,
+      "open-stacked": null
     }
   },
-  "home": {
-    "tree": "home.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "mega-menu-sunglasses": {
+    "tree": "trees/sgs_mega_menu/mega-menu-sunglasses.json",
+    "intakeSurface": "mega-menu",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "postId": 208
+      "postId": 123
     },
-    "walker": "qa/parity/home.mjs",
-    "walkerFull": "qa/parity/home.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "canvas": true,
+    "walker": "qa/parity/mega-menu-sunglasses.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-menu-sunglasses.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "opening": null,
-      "hero-scrolled": null,
-      "reviews-next": null
+      "sunglasses": null,
+      "brands": null,
+      "lenses": null,
+      "help": null
     }
   },
-  "header": {
-    "tree": "header.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "mega-menu-brands": {
+    "tree": "trees/sgs_mega_menu/mega-menu-brands.json",
+    "intakeSurface": "mega-menu",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "postId": 199
+      "postId": 125
     },
     "canvas": true,
-    "walker": "qa/parity/header.mjs",
-    "walkerFull": "qa/parity/header.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "walker": "qa/parity/mega-menu-brands.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-menu-brands.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "closed": null,
-      "scrolled": "scrolled"
-    },
-    "walkStates": [
-      "closed",
-      "scrolled"
-    ],
-    "provides": [
-      "core/template-part:header"
-    ]
-  },
-  "mobile-menu": {
-    "tree": "mobile-menu.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 203
-    },
-    "canvas": true,
-    "walker": "qa/parity/header.mjs",
-    "walkerFull": "qa/parity/mobile-menu.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "drawer-open": null
-    },
-    "walkStates": [
-      "drawer-open"
-    ]
-  },
-  "mega-sunglasses": {
-    "tree": "mega-sunglasses.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 165
-    },
-    "canvas": true,
-    "walker": "qa/parity/header.mjs",
-    "walkerFull": "qa/parity/mega-sunglasses.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "mega-shop": null
-    },
-    "walkStates": [
-      "mega-shop"
-    ]
-  },
-  "mega-brands": {
-    "tree": "mega-brands.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 176
-    },
-    "canvas": true,
-    "walker": "qa/parity/header.mjs",
-    "walkerFull": "qa/parity/mega-brands.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "mega-brands": null
-    },
-    "walkStates": [
-      "mega-brands"
-    ]
-  },
-  "mega-lenses": {
-    "tree": "mega-lenses.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 183
-    },
-    "canvas": true,
-    "walker": "qa/parity/header.mjs",
-    "walkerFull": "qa/parity/mega-lenses.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "mega-lenses": null
-    },
-    "walkStates": [
-      "mega-lenses"
-    ]
-  },
-  "mega-help": {
-    "tree": "mega-help.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 186
-    },
-    "canvas": true,
-    "walker": "qa/parity/header.mjs",
-    "walkerFull": "qa/parity/mega-help.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "mega-help": null
-    },
-    "walkStates": [
-      "mega-help"
-    ]
-  },
-  "size-guide": {
-    "tree": "size-guide.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 461
-    },
-    "canvas": true,
-    "walker": "qa/parity/help.mjs",
-    "walkerFull": "qa/parity/size-guide.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "size-guide": null
-    },
-    "walkStates": [
-      "size-guide"
-    ]
-  },
-  "lens": {
-    "tree": "lens-configurator.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "postId": 463
-    },
-    "canvas": true,
-    "walker": "qa/parity/lens.mjs",
-    "walkerFull": "qa/parity/lens.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "q1-use": null,
-      "q2-thickness": null,
-      "q3-finish": null,
-      "q4-prescription": null,
-      "q4-upload": null,
-      "q4-type": null
-    },
-    "provides": [
-      "sgs/choice-flow:lens-configurator"
-    ]
-  },
-  "shop": {
-    "tree": "archive-product.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
-    "target": {
-      "template": "archive-product"
-    },
-    "canvas": true,
-    "walker": "qa/parity/shop.mjs",
-    "walkerFull": "qa/parity/shop.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
-    "states": {
-      "opening": null,
-      "filters-open": null,
-      "women": null,
-      "colour-black": null,
-      "brand-ray-ban": null,
-      "panel-after-click": null,
-      "size-open": null,
-      "brand-typed": null,
-      "sort-low": null,
-      "price-moved": null,
-      "scrolled": null
+      "sunglasses": null,
+      "brands": null,
+      "lenses": null,
+      "help": null
     }
   },
-  "product": {
-    "tree": "single-product.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "mega-menu-lenses": {
+    "tree": "trees/sgs_mega_menu/mega-menu-lenses.json",
+    "intakeSurface": "mega-menu",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "template": "single-product"
+      "postId": 127
     },
     "canvas": true,
-    "walker": "qa/parity/product.mjs",
-    "walkerFull": "qa/parity/product.full.mjs",
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "walker": "qa/parity/mega-menu-lenses.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-menu-lenses.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "opening": null,
-      "tab-description": null,
-      "tab-details": null,
-      "tab-sizing": null,
-      "gallery-thumbnail": null,
-      "pick-colour": "current",
-      "pick-size": "current",
-      "accordion-open": "open",
-      "bag-added": null,
-      "size-guide": null
+      "sunglasses": null,
+      "brands": null,
+      "lenses": null,
+      "help": null
     }
   },
-  "contact-form": {
-    "tree": "contact-form.tree.json",
-    "envFile": ".claude/secrets/eye-care-test.env",
-    "envKey": "EYECARETEST",
-    "site": "eye-care-test",
+  "mega-menu-help": {
+    "tree": "trees/sgs_mega_menu/mega-menu-help.json",
+    "intakeSurface": "mega-menu",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
     "target": {
-      "postId": 285
+      "postId": 129
     },
     "canvas": true,
-    "walker": "qa/parity/contact.mjs",
-    "walkerFull": "qa/parity/contact-form.full.mjs",
-    "walkStates": [
-      "opening",
-      "field-focused",
-      "form-submitted-empty"
-    ],
-    "draftUrl": "https://mintcream-lyrebird-224487.hostingersite.com/",
+    "walker": "qa/parity/mega-menu-help.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-menu-help.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
-      "opening": null,
-      "field-focused": null,
-      "form-submitted-empty": null
+      "sunglasses": null,
+      "brands": null,
+      "lenses": null,
+      "help": null
+    }
+  },
+  "template-checkout": {
+    "tree": "trees/template/checkout.json",
+    "intakeSurface": "page-checkout",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "checkout"
     },
-    "provides": [
-      "sgs/form:contact"
-    ]
+    "canvas": true,
+    "copy": {
+      "from": "fill",
+      "row": "page:checkout"
+    },
+    "walker": "qa/parity/template-checkout.fill-base.mjs",
+    "walkerFull": "qa/parity/template-checkout.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null
+    }
+  },
+  "template-order-confirmation": {
+    "tree": "trees/template/order-confirmation.json",
+    "intakeSurface": "page-done",
+    "envFile": ".claude/secrets/local-eye-care.env",
+    "envKey": "LOCALEYECARE",
+    "site": "local-eye-care",
+    "target": {
+      "template": "order-confirmation"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "fill",
+      "row": "template:order-confirmation"
+    },
+    "walker": "qa/parity/template-order-confirmation.fill-base.mjs",
+    "walkerFull": "qa/parity/template-order-confirmation.fill.mjs",
+    "draftDir": "sites/eye-care-ward-end/handoff",
+    "draftIndex": "Eye Care Birmingham.dc.html",
+    "states": {
+      "default": null,
+      "with-account": null
+    }
   }
 }

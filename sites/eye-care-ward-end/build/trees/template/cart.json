@@ -1,0 +1,58 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "anchor": "main",
+      "contentWidth": {
+        "desktop": "full"
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "contentWidth": {
+            "desktop": "normal"
+          },
+          "flexDirection": "column",
+          "padding": {
+            "top": "var:preset|spacing|50",
+            "bottom": "var:preset|spacing|60"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "core/template-part",
+            "attributes": {
+              "slug": "sgs-cart-content"
+            }
+          },
+          {
+            "name": "sgs/wishlist-panel",
+            "attributes": {
+              "layout": "strip",
+              "maxItems": 4,
+              "heading": "Saved for later"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

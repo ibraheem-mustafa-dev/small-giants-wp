@@ -1,0 +1,1807 @@
+{
+  "cr-ref-shop-0": {
+    "tpl": "Root/248#0",
+    "fingerprint": {
+      "tag": "main",
+      "cls": "sgs-page-shop",
+      "styleHash": "41bf7980",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 905
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-1": {
+    "tpl": "Root/249#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fb5ac2ca",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 906
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-2": {
+    "tpl": "Root/251#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "70e86359",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "7c8a2f61",
+      "line": 908
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-3": {
+    "tpl": "Root/252#0",
+    "fingerprint": {
+      "tag": "h1",
+      "cls": "",
+      "styleHash": "6dcf41b6",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "a820011",
+      "line": 909
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-4": {
+    "tpl": "Root/253#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b0bcd820",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 911
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-5": {
+    "tpl": "Root/256#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "7320a6b0",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "96834005",
+      "line": 914
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-6": {
+    "tpl": "Root/257#0",
+    "fingerprint": {
+      "tag": "select",
+      "cls": "",
+      "styleHash": "dc12ff9",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 916
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/257#0"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-7": {
+    "tpl": "Root/269#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sgs-shop-layout",
+      "styleHash": "388ec7f1",
+      "parentTags": [
+        "main"
+      ],
+      "textHash": "1505",
+      "line": 935
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-8": {
+    "tpl": "Root/271#0",
+    "fingerprint": {
+      "tag": "aside",
+      "cls": "",
+      "styleHash": "fe46bc1f",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 937
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-9": {
+    "tpl": "Root/276#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2741ddd9",
+      "parentTags": [
+        "main",
+        "div",
+        "aside"
+      ],
+      "textHash": "1505",
+      "line": 945
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-10": {
+    "tpl": "Root/278#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-11": {
+    "tpl": "Root/279#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-12": {
+    "tpl": "Root/280#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "98d85eba",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-13": {
+    "tpl": "Root/281#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-icon__shape > .sgs-icon__glyph > svg": "Root/283#0"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-14": {
+    "tpl": "Root/286#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8830042a",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 956
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-15": {
+    "tpl": "Root/288#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "dbc018c2",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 958
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-16": {
+    "tpl": "Root/290#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "5c79b3ae",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b87b364",
+      "line": 960
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-17": {
+    "tpl": "Root/290#1",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "bf730d84",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "d8630fb",
+      "line": 960
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-18": {
+    "tpl": "Root/290#2",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "bf730d84",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b87c443",
+      "line": 960
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-19": {
+    "tpl": "Root/278#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-20": {
+    "tpl": "Root/279#1",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-21": {
+    "tpl": "Root/280#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "7c8a2900",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-22": {
+    "tpl": "Root/281#1",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-icon__shape > .sgs-icon__glyph > svg": "Root/283#1"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-23": {
+    "tpl": "Root/278#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-24": {
+    "tpl": "Root/279#2",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-25": {
+    "tpl": "Root/280#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "a1c185ad",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-26": {
+    "tpl": "Root/281#2",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-icon__shape > .sgs-icon__glyph > svg": "Root/283#2"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-27": {
+    "tpl": "Root/286#1",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8830042a",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 956
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-28": {
+    "tpl": "Root/298#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "706d0c0e",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 975
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-29": {
+    "tpl": "Root/300#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "d702e8f3",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-30": {
+    "tpl": "Root/300#1",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "dc53c1e4",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-31": {
+    "tpl": "Root/300#2",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "be38f7e1",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-32": {
+    "tpl": "Root/300#3",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "53205062",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-33": {
+    "tpl": "Root/300#4",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "e3c3d148",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-34": {
+    "tpl": "Root/300#5",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "f22c6742",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-35": {
+    "tpl": "Root/300#6",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "ee6e99e7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-36": {
+    "tpl": "Root/300#7",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "ba9ac1a1",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-37": {
+    "tpl": "Root/300#8",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "39758a1f",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-38": {
+    "tpl": "Root/300#9",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "1ae9c327",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-39": {
+    "tpl": "Root/300#10",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "c9220854",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-40": {
+    "tpl": "Root/300#11",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scpi",
+      "styleHash": "2172314e",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 977
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-41": {
+    "tpl": "Root/278#3",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-42": {
+    "tpl": "Root/279#3",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-43": {
+    "tpl": "Root/280#3",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "dd328c8",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-44": {
+    "tpl": "Root/281#3",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-container__svg-bg > svg": "Root/283#3"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-45": {
+    "tpl": "Root/282#3",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f185ac83",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button",
+        "span"
+      ],
+      "textHash": "9310c0af",
+      "line": 951
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-46": {
+    "tpl": "Root/286#2",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8830042a",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 956
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-47": {
+    "tpl": "Root/302#0",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "ce47e72d",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 982
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/302#0"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-48": {
+    "tpl": "Root/278#4",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-49": {
+    "tpl": "Root/279#4",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-50": {
+    "tpl": "Root/280#4",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "c9eeb7e",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-51": {
+    "tpl": "Root/281#4",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-container__svg-bg > svg": "Root/283#4"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-52": {
+    "tpl": "Root/282#4",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f185ac83",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button",
+        "span"
+      ],
+      "textHash": "596781",
+      "line": 951
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-53": {
+    "tpl": "Root/286#3",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8830042a",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 956
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-54": {
+    "tpl": "Root/307#0",
+    "fingerprint": {
+      "tag": "input",
+      "cls": "",
+      "styleHash": "e91657d5",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 986
+    },
+    "slots": {
+      ".sgs-form-field__input": "Root/307#0"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-55": {
+    "tpl": "Root/278#5",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-56": {
+    "tpl": "Root/279#5",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-57": {
+    "tpl": "Root/280#5",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "dc153f2",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-58": {
+    "tpl": "Root/281#5",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-container__svg-bg > svg": "Root/283#5"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-59": {
+    "tpl": "Root/282#5",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f185ac83",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button",
+        "span"
+      ],
+      "textHash": "596826",
+      "line": 951
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-60": {
+    "tpl": "Root/286#4",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8830042a",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 956
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-61": {
+    "tpl": "Root/292#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 965
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-62": {
+    "tpl": "Root/294#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "ddd662b",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-63": {
+    "tpl": "Root/294#1",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b422eee8",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-64": {
+    "tpl": "Root/294#2",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "c61daaa4",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-65": {
+    "tpl": "Root/294#3",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "19a84cc4",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-66": {
+    "tpl": "Root/294#4",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "dba2507",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-67": {
+    "tpl": "Root/294#5",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7c83b631",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-68": {
+    "tpl": "Root/294#6",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "df536dc7",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-69": {
+    "tpl": "Root/294#7",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "e9e5b4d6",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-70": {
+    "tpl": "Root/294#8",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b46db7c3",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-71": {
+    "tpl": "Root/294#9",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7162ad0c",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-72": {
+    "tpl": "Root/294#10",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "c7d4d93a",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-73": {
+    "tpl": "Root/294#11",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "scph",
+      "styleHash": "1ea55b31",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "927b5fea",
+      "line": 967
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-74": {
+    "tpl": "Root/278#6",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-75": {
+    "tpl": "Root/279#6",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-76": {
+    "tpl": "Root/280#6",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "326770ee",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-77": {
+    "tpl": "Root/281#6",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-icon__shape > .sgs-icon__glyph > svg": "Root/283#6"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-78": {
+    "tpl": "Root/278#7",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-79": {
+    "tpl": "Root/279#7",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-80": {
+    "tpl": "Root/280#7",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "29b1e820",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-81": {
+    "tpl": "Root/281#7",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-icon__shape > .sgs-icon__glyph > svg": "Root/283#7"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-82": {
+    "tpl": "Root/278#8",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-83": {
+    "tpl": "Root/279#8",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-84": {
+    "tpl": "Root/280#8",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "d4416a8",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-85": {
+    "tpl": "Root/281#8",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-icon__shape > .sgs-icon__glyph > svg": "Root/283#8"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-86": {
+    "tpl": "Root/278#9",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "35fd23a7",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 947
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-87": {
+    "tpl": "Root/279#9",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "932b83cc",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 948
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-88": {
+    "tpl": "Root/280#9",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "64f694b4",
+      "line": 949
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-89": {
+    "tpl": "Root/281#9",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "f4aede7b",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "div",
+        "button"
+      ],
+      "textHash": "1505",
+      "line": 950
+    },
+    "slots": {
+      ".sgs-icon__shape > .sgs-icon__glyph > svg": "Root/283#9"
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-90": {
+    "tpl": "Root/315#0",
+    "fingerprint": {
+      "tag": "label",
+      "cls": "",
+      "styleHash": "7a1d9069",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1004
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-91": {
+    "tpl": "Root/316#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "37576053",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "label"
+      ],
+      "textHash": "afe7efaa",
+      "line": 1005
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-92": {
+    "tpl": "Root/317#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "2efc9c24",
+      "parentTags": [
+        "main",
+        "div",
+        "aside",
+        "div",
+        "label"
+      ],
+      "textHash": "1505",
+      "line": 1006
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-93": {
+    "tpl": "Root/323#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "main",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1021
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-96": {
+    "tpl": "Root/326#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "125e8249",
+      "parentTags": [
+        "main",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 1024
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-shop-97": {
+    "tpl": "Root/333#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "80ca1cc4",
+      "parentTags": [
+        "main",
+        "div",
+        "div"
+      ],
+      "textHash": "2e9938b1",
+      "line": 1036
+    },
+    "draft": "10edcc3a998d8e4f"
+  }
+}

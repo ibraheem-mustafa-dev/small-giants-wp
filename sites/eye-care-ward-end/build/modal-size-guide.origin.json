@@ -1,0 +1,615 @@
+{
+  "cr-ref-modal-size-guide-0": {
+    "tpl": "Root/1235#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sgs-size-guide",
+      "styleHash": "a3d8ff89",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 2120
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-1": {
+    "tpl": "Root/1237#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "aa3e4e73",
+      "parentTags": [
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2122
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-2": {
+    "tpl": "Root/1238#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "a324480f",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2123
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-3": {
+    "tpl": "Root/1239#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "b1dac997",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "12a11827",
+      "line": 2124
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-4": {
+    "tpl": "Root/1240#0",
+    "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "e18ab6fc",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "2b572",
+      "line": 2125
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-5": {
+    "tpl": "Root/1242#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "5ed0dc5c",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "2d923389",
+      "line": 2128
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-6": {
+    "tpl": "Root/1243#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "597d3e14",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2129
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-7": {
+    "tpl": "Root/1244#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f0abb7bb",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2130
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-8": {
+    "tpl": "Root/1245#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5967a5",
+      "line": 2131
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-9": {
+    "tpl": "Root/1246#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "67c0c347",
+      "line": 2131
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-10": {
+    "tpl": "Root/1247#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b866d30",
+      "line": 2131
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-11": {
+    "tpl": "Root/1248#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "8f6c06da",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2133
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-12": {
+    "tpl": "Root/1249#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "b57a21d7",
+      "line": 2134
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-13": {
+    "tpl": "Root/1250#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "a08083fa",
+      "line": 2134
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-14": {
+    "tpl": "Root/1251#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "bff4df40",
+      "line": 2134
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-15": {
+    "tpl": "Root/1252#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "82be4c7c",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2137
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-16": {
+    "tpl": "Root/1253#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c0afe615",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2138
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-17": {
+    "tpl": "Root/1254#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b52a5622",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5e2fe17a",
+      "line": 2138
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-18": {
+    "tpl": "Root/1255#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "d82ad839",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "627f8fe3",
+      "line": 2138
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-19": {
+    "tpl": "Root/1256#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c0afe615",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2139
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-20": {
+    "tpl": "Root/1257#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b52a5622",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "91dd4216",
+      "line": 2139
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-21": {
+    "tpl": "Root/1258#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "d82ad839",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "a450e46d",
+      "line": 2139
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-22": {
+    "tpl": "Root/1259#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c0afe615",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2140
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-23": {
+    "tpl": "Root/1260#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "b52a5622",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "739ca8a9",
+      "line": 2140
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-24": {
+    "tpl": "Root/1261#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "d82ad839",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "e95d3f17",
+      "line": 2140
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-25": {
+    "tpl": "Root/1262#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "82be4c7c",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2142
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-26": {
+    "tpl": "Root/1263#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "442f9d15",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2143
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-27": {
+    "tpl": "Root/1264#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "dcd9ada",
+      "line": 2143
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-28": {
+    "tpl": "Root/1265#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4af6226c",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "e384c0ae",
+      "line": 2143
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-29": {
+    "tpl": "Root/1266#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "442f9d15",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2144
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-30": {
+    "tpl": "Root/1267#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "9dc79c78",
+      "line": 2144
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-31": {
+    "tpl": "Root/1268#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4af6226c",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "a523c9da",
+      "line": 2144
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-32": {
+    "tpl": "Root/1269#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "442f9d15",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2145
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-33": {
+    "tpl": "Root/1270#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "d004ab8",
+      "line": 2145
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-34": {
+    "tpl": "Root/1271#0",
+    "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4af6226c",
+      "parentTags": [
+        "div",
+        "div",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "7415665c",
+      "line": 2145
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-modal-size-guide-35": {
+    "tpl": "Root/1272#0",
+    "fingerprint": {
+      "tag": "a",
+      "cls": "scpo",
+      "styleHash": "4d8271ca",
+      "parentTags": [
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 2147
+    },
+    "draft": "10edcc3a998d8e4f"
+  }
+}

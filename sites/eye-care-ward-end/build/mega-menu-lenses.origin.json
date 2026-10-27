@@ -1,0 +1,29 @@
+{
+  "cr-ref-mega-menu-lenses-0": {
+    "tpl": "Root/53#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "sgs-mega-menu",
+      "styleHash": "e752a34c",
+      "parentTags": [],
+      "textHash": "1505",
+      "line": 604
+    },
+    "draft": "10edcc3a998d8e4f"
+  },
+  "cr-ref-mega-menu-lenses-1": {
+    "tpl": "Root/56#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f8bbea98",
+      "parentTags": [
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 608
+    },
+    "draft": "10edcc3a998d8e4f"
+  }
+}

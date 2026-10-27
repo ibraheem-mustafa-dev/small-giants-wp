@@ -1,0 +1,771 @@
+{
+	"generated": "2026-10-27T00:22:57.401Z",
+	"inventory": "2026-10-27T00:22:57.298Z",
+	"source": "http://127.0.0.1:61964/#@state/page=signin",
+	"surface": "page-signin",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [
+		{
+			"id": "S-43",
+			"kind": "form",
+			"name": "Sign-in and register forms",
+			"openedBy": "Default view of the sign-in page",
+			"roots": [
+				"Eye Care Birmingham/857"
+			]
+		},
+		{
+			"id": "S-44",
+			"kind": "form-step",
+			"name": "Forgotten-password flow",
+			"openedBy": "\"Forgotten your password?\" on the sign-in form",
+			"roots": [
+				"Eye Care Birmingham/886"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"commerceRegion": {
+		"key": "Root/864#0",
+		"role": "account",
+		"block": "sgs/account"
+	},
+	"counts": {
+		"inventoryElements": 27,
+		"parts": 0,
+		"rows": 27,
+		"skeletonNodes": 6,
+		"expandedNodes": 6,
+		"low": 0,
+		"removed": 21,
+		"unresolved": 0,
+		"byRule": {
+			"hero": 1,
+			"label": 1,
+			"commerceRegion": 22
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/856#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_856_0@375.png",
+				"1440": "shots/Root_856_0@1440.png"
+			},
+			"snippet": "<main class=\"sgs-page-signin\" data-screen-label=\"Sign in\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"856\"> <sc-if value=\"{{ authSignin }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"857\"> <div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/858#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/hero",
+			"action": null,
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)",
+			"source": "rule hero",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hero",
+			"candidates": [
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_858_0@375.png",
+				"1440": "shots/Root_858_0@1440.png"
+			},
+			"snippet": "<div style=\"animation:rise .5s both\" data-dc-tpl=\"858\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p> <h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1> <p style=\"margin:0 0 32",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/859#0",
+			"tag": "p",
+			"depth": 2,
+			"words": "Your account",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_859_0@375.png",
+				"1440": "shots/Root_859_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"859\">Your account</p>",
+			"attributes": {
+				"text": "Your account"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/860#0",
+			"tag": "h1",
+			"depth": 2,
+			"words": "Sign in or create an account",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_860_0@375.png",
+				"1440": "shots/Root_860_0@1440.png"
+			},
+			"snippet": "<h1 style=\"margin:0 0 12px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.05\" data-dc-tpl=\"860\">Sign in or create an account</h1>",
+			"attributes": {
+				"content": "Sign in or create an account"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/861#0",
+			"tag": "p",
+			"depth": 2,
+			"words": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_861_0@375.png",
+				"1440": "shots/Root_861_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 32px;max-width:60ch;color:#5E584F;font-size:16px;text-wrap:pretty\" data-dc-tpl=\"861\">You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place.</p>",
+			"attributes": {
+				"text": "You don't need an account to order; checkout works as a guest. An account keeps your orders, subscriptions, addresses and saved frames in one place."
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/864#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/account",
+			"action": null,
+			"reason": "the account page is an ordinary page (Bean, 2026-10-26; eye-care-test's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (2 password field(s))",
+			"source": "rule commerceRegion",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"candidates": [
+				{
+					"block": "sgs/account",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule commerceRegion: the account page is an ordinary page (Bean, 2026-10-26; eye-care-test's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (2 password field(s))"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_864_0@375.png",
+				"1440": "shots/Root_864_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns: {{ authCols }};gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;animation:rise .6s both\" data-dc-tpl=\"864\"> <form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;lin",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root/865#0",
+			"tag": "form",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_865_0@375.png",
+				"1440": "shots/Root_865_0@1440.png"
+			},
+			"snippet": "<form sc-camel-on-submit=\"{{ signIn }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"865\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-t",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root/866#0",
+			"tag": "h2",
+			"depth": 3,
+			"words": "Sign in",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_866_0@375.png",
+				"1440": "shots/Root_866_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"866\">Sign in</h2>",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/867#0",
+			"tag": "label",
+			"depth": 3,
+			"words": "Email",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_867_0@375.png",
+				"1440": "shots/Root_867_0@1440.png"
+			},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"867\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\"></label>",
+			"attributes": {}
+		},
+		{
+			"order": 9,
+			"key": "Root/868#0",
+			"tag": "input",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_868_0@375.png",
+				"1440": "shots/Root_868_0@1440.png"
+			},
+			"snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"868\">",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/869#0",
+			"tag": "label",
+			"depth": 3,
+			"words": "Password",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_869_0@375.png",
+				"1440": "shots/Root_869_0@1440.png"
+			},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"869\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\"></label>",
+			"attributes": {}
+		},
+		{
+			"order": 11,
+			"key": "Root/870#0",
+			"tag": "input",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_870_0@375.png",
+				"1440": "shots/Root_870_0@1440.png"
+			},
+			"snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-auto-complete=\"current-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"870\">",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/871#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_871_0@375.png",
+				"1440": "shots/Root_871_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap\" data-dc-tpl=\"871\"> <label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label> <button type=\"button",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/872#0",
+			"tag": "label",
+			"depth": 4,
+			"words": "Keep me signed in",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_872_0@1440.png"
+			},
+			"snippet": "<label style=\"display:flex;gap:10px;align-items:center;font-size:14px;color:#4A453E;cursor:pointer;min-height:44px\" data-dc-tpl=\"872\"><input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">Keep me signed in</label>",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/873#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_873_0@1440.png"
+			},
+			"snippet": "<input type=\"checkbox\" style=\"accent-color:#141414;width:16px;height:16px;margin:0\" data-dc-tpl=\"873\">",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root/874#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "Forgotten your password?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_874_0@375.png",
+				"1440": "shots/Root_874_0@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ goForgot }}\" style=\"background:none;border:0;padding:0;border-bottom:1px solid #141414;color:#141414;font-size:13.5px\" data-dc-tpl=\"874\">Forgotten your password?</button>",
+			"attributes": {}
+		},
+		{
+			"order": 16,
+			"key": "Root/875#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "Sign in",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_875_0@375.png",
+				"1440": "shots/Root_875_0@1440.png"
+			},
+			"snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .2s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"875\">Sign in</button>",
+			"attributes": {}
+		},
+		{
+			"order": 17,
+			"key": "Root/876#0",
+			"tag": "form",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_876_0@375.png",
+				"1440": "shots/Root_876_0@1440.png"
+			},
+			"snippet": "<form sc-camel-on-submit=\"{{ register }}\" style=\"background:#fff;padding: {{ authPad }};display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"876\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2> <label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-",
+			"attributes": {}
+		},
+		{
+			"order": 18,
+			"key": "Root/877#0",
+			"tag": "h2",
+			"depth": 3,
+			"words": "New here?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_877_0@375.png",
+				"1440": "shots/Root_877_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:28px;line-height:1.1;margin-bottom:4px\" data-dc-tpl=\"877\">New here?</h2>",
+			"attributes": {}
+		},
+		{
+			"order": 19,
+			"key": "Root/878#0",
+			"tag": "label",
+			"depth": 3,
+			"words": "First name",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_878_0@375.png",
+				"1440": "shots/Root_878_0@1440.png"
+			},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"878\">First name<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\"></label>",
+			"attributes": {}
+		},
+		{
+			"order": 20,
+			"key": "Root/879#0",
+			"tag": "input",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_879_0@375.png",
+				"1440": "shots/Root_879_0@1440.png"
+			},
+			"snippet": "<input name=\"first\" required=\"{{ true }}\" sc-camel-auto-complete=\"given-name\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"879\">",
+			"attributes": {}
+		},
+		{
+			"order": 21,
+			"key": "Root/880#0",
+			"tag": "label",
+			"depth": 3,
+			"words": "Email",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_880_0@375.png",
+				"1440": "shots/Root_880_0@1440.png"
+			},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"880\">Email<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\"></label>",
+			"attributes": {}
+		},
+		{
+			"order": 22,
+			"key": "Root/881#0",
+			"tag": "input",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_881_0@375.png",
+				"1440": "shots/Root_881_0@1440.png"
+			},
+			"snippet": "<input name=\"email\" type=\"email\" required=\"{{ true }}\" sc-camel-auto-complete=\"email\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"881\">",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root/882#0",
+			"tag": "label",
+			"depth": 3,
+			"words": "Password",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_882_0@375.png",
+				"1440": "shots/Root_882_0@1440.png"
+			},
+			"snippet": "<label style=\"display:flex;flex-direction:column;gap:6px;font-size:13px;color:#4A453E\" data-dc-tpl=\"882\">Password<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\"><span style=\"font-size:12.",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root/883#0",
+			"tag": "input",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_883_0@375.png",
+				"1440": "shots/Root_883_0@1440.png"
+			},
+			"snippet": "<input name=\"password\" type=\"password\" required=\"{{ true }}\" sc-camel-min-length=\"8\" sc-camel-auto-complete=\"new-password\" style=\"border:1px solid #E6E1DA;background:#fff;padding:0 14px;min-height:48px;font-size:15px;color:#141414;width:100%\" data-dc-tpl=\"883\">",
+			"attributes": {}
+		},
+		{
+			"order": 25,
+			"key": "Root/884#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "8 characters or more",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_884_0@375.png",
+				"1440": "shots/Root_884_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:12.5px;color:#77716A\" data-dc-tpl=\"884\">8 characters or more</span>",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root/885#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "Create account",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/account: rule commerceRegion",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "commerceRegion",
+			"into": "Root/864#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_885_0@375.png",
+				"1440": "shots/Root_885_0@1440.png"
+			},
+			"snippet": "<button type=\"submit\" style=\"background:none;color:#141414;border:1px solid #141414;min-height:52px;padding:0 26px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color:#FAF8F5\" data-dc-tpl=\"885\">Create account</button>",
+			"attributes": {}
+		}
+	]
+}

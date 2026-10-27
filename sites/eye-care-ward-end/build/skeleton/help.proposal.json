@@ -1,0 +1,2134 @@
+{
+	"generated": "2026-10-27T00:11:35.029Z",
+	"inventory": "2026-10-27T00:11:34.823Z",
+	"source": "http://127.0.0.1:61964/#@state/page=help",
+	"surface": "page-help",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [
+		{
+			"id": "S-39",
+			"kind": "accordion",
+			"name": "FAQ accordion (8)",
+			"openedBy": "Click a question",
+			"roots": [
+				"Eye Care Birmingham/647"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 59,
+		"parts": 0,
+		"rows": 59,
+		"skeletonNodes": 59,
+		"expandedNodes": 59,
+		"low": 20,
+		"removed": 0,
+		"unresolved": 0,
+		"byRule": {
+			"label": 4,
+			"siteInfoLink": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/628#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_628_0@375.png",
+				"1440": "shots/Root_628_0@1440.png"
+			},
+			"snippet": "<main class=\"sgs-page-help\" data-screen-label=\"Help\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"628\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"629\">Help</p> <h1 style=\"margin:0 0 40px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02\" data-",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/629#0",
+			"tag": "p",
+			"depth": 1,
+			"words": "Help",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_629_0@375.png",
+				"1440": "shots/Root_629_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152)\" data-dc-tpl=\"629\">Help</p>",
+			"attributes": {
+				"text": "Help"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/630#0",
+			"tag": "h1",
+			"depth": 1,
+			"words": "Delivery, returns and the usual questions",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_630_0@375.png",
+				"1440": "shots/Root_630_0@1440.png"
+			},
+			"snippet": "<h1 style=\"margin:0 0 40px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02\" data-dc-tpl=\"630\">Delivery, returns and the usual questions</h1>",
+			"attributes": {
+				"content": "Delivery, returns and the usual questions"
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/631#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_631_0@375.png",
+				"1440": "shots/Root_631_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:1px;background:#E6E1DA;border:1px solid #E6E1DA;margin-bottom:56px\" data-dc-tpl=\"631\"> <div style=\"background:#fff;padding:26px\" data-dc-tpl=\"632\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:10px\" data-dc-tpl=\"633\">UK delivery</div><p style=\"margin",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/632#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_632_0@375.png",
+				"1440": "shots/Root_632_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:26px\" data-dc-tpl=\"632\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:10px\" data-dc-tpl=\"633\">UK delivery</div><p style=\"margin:0;font-size:15px;color:#4A453E\" data-dc-tpl=\"634\">Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/633#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "UK delivery",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_633_0@375.png",
+				"1440": "shots/Root_633_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:10px\" data-dc-tpl=\"633\">UK delivery</div>",
+			"attributes": {
+				"text": "UK delivery"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/634#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to make.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_634_0@375.png",
+				"1440": "shots/Root_634_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:15px;color:#4A453E\" data-dc-tpl=\"634\">Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to make.</p>",
+			"attributes": {
+				"text": "Free over £75, otherwise £3.95 tracked. Frames in stock go out within one working day; prescription orders take 7–10 working days to make."
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/635#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_635_0@375.png",
+				"1440": "shots/Root_635_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:26px\" data-dc-tpl=\"635\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:10px\" data-dc-tpl=\"636\">Collect in Birmingham</div><p style=\"margin:0;font-size:15px;color:#4A453E\" data-dc-tpl=\"637\">Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait.</p></div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/636#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Collect in Birmingham",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_636_0@375.png",
+				"1440": "shots/Root_636_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:10px\" data-dc-tpl=\"636\">Collect in Birmingham</div>",
+			"attributes": {
+				"text": "Collect in Birmingham"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/637#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_637_0@375.png",
+				"1440": "shots/Root_637_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:15px;color:#4A453E\" data-dc-tpl=\"637\">Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait.</p>",
+			"attributes": {
+				"text": "Free. Pick it at checkout and I'll message when it's ready. I'll adjust them to fit while you wait."
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/638#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_638_0@375.png",
+				"1440": "shots/Root_638_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:26px\" data-dc-tpl=\"638\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:10px\" data-dc-tpl=\"639\">Returns</div><p style=\"margin:0;font-size:15px;color:#4A453E\" data-dc-tpl=\"640\">30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refunda",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/639#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Returns",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_639_0@375.png",
+				"1440": "shots/Root_639_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A;margin-bottom:10px\" data-dc-tpl=\"639\">Returns</div>",
+			"attributes": {
+				"text": "Returns"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/640#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refundable if I got them wrong.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_640_0@375.png",
+				"1440": "shots/Root_640_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:15px;color:#4A453E\" data-dc-tpl=\"640\">30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refundable if I got them wrong.</p>",
+			"attributes": {
+				"text": "30 days on unworn frames with case and tags, refunded in full. Lenses made to your prescription can't be resold, so they're only refundable if I got them wrong."
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/641#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_641_0@375.png",
+				"1440": "shots/Root_641_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:16px\" data-dc-tpl=\"641\"> <h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"642\">Questions</h2> <div style=\"display:flex;gap:18px;flex-wrap:wrap;font-size:13px;letter-spacing:.08em;text-transform:uppercase\" data-dc-tpl=\"643\"> <button s",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/642#0",
+			"tag": "h2",
+			"depth": 2,
+			"words": "Questions",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_642_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"642\">Questions</h2>",
+			"attributes": {
+				"content": "Questions"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/643#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_643_0@375.png",
+				"1440": "shots/Root_643_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:18px;flex-wrap:wrap;font-size:13px;letter-spacing:.08em;text-transform:uppercase\" data-dc-tpl=\"643\"> <button sc-camel-on-click=\"{{ openSizeGuide }}\" style=\"background:none;border:0;padding:0 0 3px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#141414;border-bottom:1px solid #141414\" data-dc-tpl=\"644\">Size guide</button> <a href=\"#\" sc-camel-on-clic",
+			"attributes": {
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/644#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "Size guide",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_644_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ openSizeGuide }}\" style=\"background:none;border:0;padding:0 0 3px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#141414;border-bottom:1px solid #141414\" data-dc-tpl=\"644\">Size guide</button>",
+			"attributes": {
+				"label": "Size guide"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/645#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Contact me",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_645_0@1440.png"
+			},
+			"snippet": "<a href=\"#\" sc-camel-on-click=\"{{ goContact }}\" style=\"border-bottom:1px solid #141414;padding-bottom:3px\" data-dc-tpl=\"645\">Contact me</a>",
+			"attributes": {
+				"label": "Contact me"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/646#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 8 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_646_0@375.png",
+				"1440": "shots/Root_646_0@1440.png"
+			},
+			"snippet": "<div style=\"border-top:1px solid #E6E1DA\" data-dc-tpl=\"646\"> <sc-for list=\"{{ faqs }}\" as=\"q\" hint-placeholder-count=\"6\" data-dc-tpl=\"647\"> <div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/648#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_0@375.png",
+				"1440": "shots/Root_648_0@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/649#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_0@375.png",
+				"1440": "shots/Root_649_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/650#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Are these frames genuine?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_650_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "Are these frames genuine?"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/651#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_0@375.png",
+				"1440": "shots/Root_651_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/653#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Yes. Everything comes through the brands' authorised UK suppliers to a GOC-registered clinic, boxed with its own case, cloth and warranty card. If a seller can't tell you where their stock comes from, be careful.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_653_0@375.png",
+				"1440": "shots/Root_653_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;padding:0 0 22px;font-size:15.5px;color:#5E584F;max-width:72ch;text-wrap:pretty;animation:fade .3s both\" data-dc-tpl=\"653\">{{ q.a }}</p>",
+			"attributes": {
+				"text": "Yes. Everything comes through the brands' authorised UK suppliers to a GOC-registered clinic, boxed with its own case, cloth and warranty card. If a seller can't tell you where their stock comes from, be careful."
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/648#1",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_1@375.png",
+				"1440": "shots/Root_648_1@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/649#1",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_1@375.png",
+				"1440": "shots/Root_649_1@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/650#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "How are you cheaper than the high street?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_650_1@375.png",
+				"1440": "shots/Root_650_1@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "How are you cheaper than the high street?"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/651#1",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_1@375.png",
+				"1440": "shots/Root_651_1@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/648#2",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_2@375.png",
+				"1440": "shots/Root_648_2@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root/649#2",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_2@375.png",
+				"1440": "shots/Root_649_2@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root/650#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "Can I put prescription lenses in sunglasses?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_650_2@375.png",
+				"1440": "shots/Root_650_2@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "Can I put prescription lenses in sunglasses?"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/651#2",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_2@375.png",
+				"1440": "shots/Root_651_2@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/648#3",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_3@375.png",
+				"1440": "shots/Root_648_3@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/649#3",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_3@375.png",
+				"1440": "shots/Root_649_3@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/650#3",
+			"tag": "span",
+			"depth": 4,
+			"words": "What do I need for a prescription order?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_650_3@375.png",
+				"1440": "shots/Root_650_3@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "What do I need for a prescription order?"
+			}
+		},
+		{
+			"order": 35,
+			"key": "Root/651#3",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_3@375.png",
+				"1440": "shots/Root_651_3@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root/648#4",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_4@375.png",
+				"1440": "shots/Root_648_4@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root/649#4",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_4@375.png",
+				"1440": "shots/Root_649_4@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root/650#4",
+			"tag": "span",
+			"depth": 4,
+			"words": "How long do prescription lenses take?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_650_4@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "How long do prescription lenses take?"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/651#4",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_4@375.png",
+				"1440": "shots/Root_651_4@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 40,
+			"key": "Root/648#5",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_5@375.png",
+				"1440": "shots/Root_648_5@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 41,
+			"key": "Root/649#5",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_5@375.png",
+				"1440": "shots/Root_649_5@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 42,
+			"key": "Root/650#5",
+			"tag": "span",
+			"depth": 4,
+			"words": "How do I know which size to choose?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_650_5@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "How do I know which size to choose?"
+			}
+		},
+		{
+			"order": 43,
+			"key": "Root/651#5",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_5@375.png",
+				"1440": "shots/Root_651_5@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 44,
+			"key": "Root/648#6",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_6@375.png",
+				"1440": "shots/Root_648_6@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root/649#6",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_6@375.png",
+				"1440": "shots/Root_649_6@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root/650#6",
+			"tag": "span",
+			"depth": 4,
+			"words": "Can I return prescription sunglasses?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_650_6@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "Can I return prescription sunglasses?"
+			}
+		},
+		{
+			"order": 47,
+			"key": "Root/651#6",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_6@375.png",
+				"1440": "shots/Root_651_6@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 48,
+			"key": "Root/648#7",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_648_7@375.png",
+				"1440": "shots/Root_648_7@1440.png"
+			},
+			"snippet": "<div style=\"border-bottom:1px solid #E6E1DA\" data-dc-tpl=\"648\"> <button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"fo",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root/649#7",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_649_7@375.png",
+				"1440": "shots/Root_649_7@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ q.toggle }}\" aria-expanded=\"{{ q.open }}\" style=\"width:100%;background:none;border:0;padding:20px 0;display:flex;justify-content:space-between;align-items:center;gap:20px;text-align:left;font-size:17px;color:#141414;min-height:56px\" data-dc-tpl=\"649\"><span data-dc-tpl=\"650\">{{ q.q }}</span><span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root/650#7",
+			"tag": "span",
+			"depth": 4,
+			"words": "Can I collect and have them fitted?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_650_7@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"650\">{{ q.q }}</span>",
+			"attributes": {
+				"text": "Can I collect and have them fitted?"
+			}
+		},
+		{
+			"order": 51,
+			"key": "Root/651#7",
+			"tag": "span",
+			"depth": 4,
+			"words": "+",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_651_7@375.png",
+				"1440": "shots/Root_651_7@1440.png"
+			},
+			"snippet": "<span style=\"font-size:24px;font-weight:300;transition:transform .3s;transform: {{ q.rot }};flex-shrink:0\" data-dc-tpl=\"651\">+</span>",
+			"attributes": {
+				"text": "+"
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root/654#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_654_0@375.png",
+				"1440": "shots/Root_654_0@1440.png"
+			},
+			"snippet": "<div style=\"margin-top:44px;border:1px solid #E6E1DA;background:#fff;padding:28px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap\" data-dc-tpl=\"654\"> <div data-dc-tpl=\"655\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"656\">Still not answered?</div> <p style=\"margin:6px 0 0;font-size:15px;color:#5E584F;text-wrap",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 53,
+			"key": "Root/655#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_655_0@375.png",
+				"1440": "shots/Root_655_0@1440.png"
+			},
+			"snippet": "<div data-dc-tpl=\"655\"> <div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"656\">Still not answered?</div> <p style=\"margin:6px 0 0;font-size:15px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"657\">Call the clinic on {{ phone }}, or send me a message and I'll get back to you.</p> </div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 54,
+			"key": "Root/656#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Still not answered?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_656_0@375.png",
+				"1440": "shots/Root_656_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:24px\" data-dc-tpl=\"656\">Still not answered?</div>",
+			"attributes": {
+				"text": "Still not answered?"
+			}
+		},
+		{
+			"order": 55,
+			"key": "Root/657#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Call the clinic on 0121 729 8233 , or send me a message and I'll get back to you.",
+			"block": "sgs/business-info",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.41,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 0.8,
+					"share": 0.516,
+					"evidence": [
+						"block_attributes: sgs/business-info.displayType enum has \"phone\"",
+						"site-info-placeholder-map: {{ phone }} -> phone",
+						"block_capabilities: sgs/business-info lists \"phone\""
+					]
+				},
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 0.484,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_657_0@375.png",
+				"1440": "shots/Root_657_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:6px 0 0;font-size:15px;color:#5E584F;text-wrap:pretty\" data-dc-tpl=\"657\">Call the clinic on {{ phone }}, or send me a message and I'll get back to you.</p>",
+			"attributes": {
+				"displayType": "phone"
+			}
+		},
+		{
+			"order": 56,
+			"key": "Root/658#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/multi-button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.51,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/multi-button",
+					"score": 0.75,
+					"share": 0.682,
+					"evidence": [
+						"block_composition: sgs/multi-button is a content-block accepting exactly [\"sgs/button\"]; all 2 children propose sgs/button",
+						"a row of 2 sgs/button"
+					]
+				},
+				{
+					"block": "sgs/container",
+					"score": 0.35,
+					"share": 0.318,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_658_0@375.png",
+				"1440": "shots/Root_658_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:10px;flex-wrap:wrap\" data-dc-tpl=\"658\"> <button sc-camel-on-click=\"{{ goContact }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 24px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"659\">Contact me</button> <a href=\"{{ phoneHref }}\" style=\"display:inline-flex;align-items:center;bac",
+			"attributes": {
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 57,
+			"key": "Root/659#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "Contact me",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_659_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ goContact }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 24px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"659\">Contact me</button>",
+			"attributes": {
+				"label": "Contact me"
+			}
+		},
+		{
+			"order": 58,
+			"key": "Root/660#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "Call",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_660_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ phoneHref }}\" style=\"display:inline-flex;align-items:center;background:none;color:#141414;border:1px solid #141414;padding:0 24px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#F3F0EB;color:#141414\" data-dc-tpl=\"660\">Call</a>",
+			"attributes": {
+				"label": "Call",
+				"url": "tel:01217298233",
+				"linkSource": "phone"
+			}
+		}
+	]
+}

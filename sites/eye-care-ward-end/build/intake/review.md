@@ -27,14 +27,14 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `page:page:about` | **changed** about → About (page, static, page) | about | drawer-2 #1 |  |
-| `page:page:contact` | **changed** contact → Contact (page, static, page) | contact | drawer-2 #3 |  |
-| `page:page:help` | **changed** help → Help (page, static, page) | help | drawer-2 #2 |  |
-| `page:page:home` | **changed** home → Home (page, static, front-page) | home |  |  |
-| `page:page:my-account` | **changed** signin → Sign in / register (page, static, page-my-account) | my-account |  |  |
-| `page:page:prescription-lenses` | **changed** lenses → Lenses (page, static, page) | prescription-lenses | header #3, drawer-1 #3 |  |
+| `page:page:my-account` | **changed** signin → Sign in / register (page, static, page) | my-account |  |  |
+| `page:page:about` | about → About (page, static, page) | about | drawer-2 #1 |  |
 | `page:page:cart` | (no route) → Your bag (page, static, cart) | cart |  | accept |
 | `page:page:checkout` | checkout → Checkout (page, static, checkout) | checkout |  | accept |
+| `page:page:contact` | contact → Contact (page, static, page) | contact | drawer-2 #3 |  |
+| `page:page:help` | help → Help (page, static, page) | help | drawer-2 #2 |  |
+| `page:page:home` | home → Home (page, static, front-page) | home |  |  |
+| `page:page:prescription-lenses` | lenses → Lenses (page, static, page) | prescription-lenses | header #3, drawer-1 #3 |  |
 | `page:product:product` | product → Product (product, live, single-product) | product |  | accept |
 | `page:sgs_choice_flow:choice-flow-add-prescription-lenses` | (no route) → Add prescription lenses (sgs_choice_flow, static) | choice-flow-add-prescription-lenses |  | accept |
 | `page:sgs_drawer:drawer-eye-care-birmingham` | (no route) → Drawer (sgs_drawer, static) | drawer-eye-care-birmingham |  | accept |

@@ -1,0 +1,1711 @@
+{
+	"generated": "2026-10-27T00:09:53.561Z",
+	"inventory": "2026-10-27T00:09:53.382Z",
+	"source": "http://127.0.0.1:61964/#@state/page=lenses",
+	"surface": "page-lenses",
+	"siteName": "Eye Care Birmingham",
+	"surfaceParts": [],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 48,
+		"parts": 0,
+		"rows": 48,
+		"skeletonNodes": 48,
+		"expandedNodes": 48,
+		"low": 18,
+		"removed": 0,
+		"unresolved": 0,
+		"byRule": {
+			"label": 5
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/552#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_552_0@375.png",
+				"1440": "shots/Root_552_0@1440.png"
+			},
+			"snippet": "<main class=\"sgs-page-lenses\" data-screen-label=\"Lenses\" style=\"max-width:1100px;margin:0 auto;padding: {{ pagePad }}\" data-dc-tpl=\"552\"> <p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"553\">Prescription lenses</p> <h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/553#0",
+			"tag": "p",
+			"depth": 1,
+			"words": "Prescription lenses",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_553_0@375.png",
+				"1440": "shots/Root_553_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 10px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accInk,#6F6152);animation:rise .5s both\" data-dc-tpl=\"553\">Prescription lenses</p>",
+			"attributes": {
+				"text": "Prescription lenses"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root/554#0",
+			"tag": "h1",
+			"depth": 1,
+			"words": "Three questions, then leave the rest to me.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_554_0@375.png",
+				"1440": "shots/Root_554_0@1440.png"
+			},
+			"snippet": "<h1 style=\"margin:0 0 20px;font-family:'Playfair Display',serif;font-weight:500;font-size: {{ h1 }};line-height:1.02;max-width:18ch;text-wrap:pretty;animation:rise .6s both\" data-dc-tpl=\"554\">Three questions, then leave the rest to me.</h1>",
+			"attributes": {
+				"content": "Three questions, then leave the rest to me."
+			}
+		},
+		{
+			"order": 3,
+			"key": "Root/555#0",
+			"tag": "p",
+			"depth": 1,
+			"words": "Any frame on this site can be glazed to your prescription. You tell me what they're for, how thin you want the lenses and what finish; I check the order, cut the lenses and fit them myself. Send your prescription whenever suits — before or after you order.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_555_0@375.png",
+				"1440": "shots/Root_555_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0 0 48px;color:#5E584F;font-size:17px;max-width:62ch;text-wrap:pretty;animation:rise .7s both\" data-dc-tpl=\"555\">Any frame on this site can be glazed to your prescription. You tell me what they're for, how thin you want the lenses and what finish; I check the order, cut the lenses and fit them myself. Send your prescription whenever suits — before or after you order.</p>",
+			"attributes": {
+				"text": "Any frame on this site can be glazed to your prescription. You tell me what they're for, how thin you want the lenses and what finish; I check the order, cut the lenses and fit them myself. Send your prescription whenever suits — before or after you order."
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root/556#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_556_0@375.png",
+				"1440": "shots/Root_556_0@1440.png"
+			},
+			"snippet": "<div data-reveal=\"1\" style=\"display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:1px;background:#E6E1DA;border:1px solid #E6E1DA\" data-dc-tpl=\"556\"> <div style=\"background:#fff;padding:28px\" data-dc-tpl=\"557\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"558\">Single vision</div><div style=\"font-family:'Playfair Di",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root/557#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_557_0@375.png",
+				"1440": "shots/Root_557_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:28px\" data-dc-tpl=\"557\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"558\">Single vision</div><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"559\">from £59</div><p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"560\">Distance or read",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root/558#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Single vision",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_558_0@375.png",
+				"1440": "shots/Root_558_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"558\">Single vision</div>",
+			"attributes": {
+				"text": "Single vision"
+			}
+		},
+		{
+			"order": 7,
+			"key": "Root/559#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "from £59",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_559_0@375.png",
+				"1440": "shots/Root_559_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"559\">from £59</div>",
+			"attributes": {
+				"text": "from £59"
+			}
+		},
+		{
+			"order": 8,
+			"key": "Root/560#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Distance or reading, tinted to match the frame.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_560_0@375.png",
+				"1440": "shots/Root_560_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"560\">Distance or reading, tinted to match the frame.</p>",
+			"attributes": {
+				"text": "Distance or reading, tinted to match the frame."
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/561#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_561_0@375.png",
+				"1440": "shots/Root_561_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:28px\" data-dc-tpl=\"561\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"562\">Varifocal</div><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"563\">from £129</div><p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"564\">Near and far in one",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root/562#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Varifocal",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_562_0@375.png",
+				"1440": "shots/Root_562_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"562\">Varifocal</div>",
+			"attributes": {
+				"text": "Varifocal"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/563#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "from £129",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_563_0@375.png",
+				"1440": "shots/Root_563_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"563\">from £129</div>",
+			"attributes": {
+				"text": "from £129"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root/564#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Near and far in one lens, no visible line.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_564_0@375.png",
+				"1440": "shots/Root_564_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"564\">Near and far in one lens, no visible line.</p>",
+			"attributes": {
+				"text": "Near and far in one lens, no visible line."
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root/565#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_565_0@375.png",
+				"1440": "shots/Root_565_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:28px\" data-dc-tpl=\"565\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"566\">Polarised</div><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"567\">+£40</div><p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"568\">Kills glare off water, r",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root/566#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Polarised",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_566_0@375.png",
+				"1440": "shots/Root_566_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"566\">Polarised</div>",
+			"attributes": {
+				"text": "Polarised"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root/567#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "+£40",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_567_0@375.png",
+				"1440": "shots/Root_567_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"567\">+£40</div>",
+			"attributes": {
+				"text": "+£40"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/568#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Kills glare off water, roads and windscreens.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_568_0@375.png",
+				"1440": "shots/Root_568_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"568\">Kills glare off water, roads and windscreens.</p>",
+			"attributes": {
+				"text": "Kills glare off water, roads and windscreens."
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/569#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_569_0@375.png",
+				"1440": "shots/Root_569_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#fff;padding:28px\" data-dc-tpl=\"569\"><div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"570\">Thinner lenses</div><div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"571\">+£30–£100</div><p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"572\">I recommend on",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/570#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "Thinner lenses",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_570_0@375.png",
+				"1440": "shots/Root_570_0@1440.png"
+			},
+			"snippet": "<div style=\"font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#77716A\" data-dc-tpl=\"570\">Thinner lenses</div>",
+			"attributes": {
+				"text": "Thinner lenses"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/571#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "+£30–£100",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a div"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_571_0@375.png",
+				"1440": "shots/Root_571_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Playfair Display',serif;font-weight:500;font-size:34px;margin:10px 0 6px\" data-dc-tpl=\"571\">+£30–£100</div>",
+			"attributes": {
+				"text": "+£30–£100"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root/572#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "I recommend one from your prescription strength.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_572_0@375.png",
+				"1440": "shots/Root_572_0@1440.png"
+			},
+			"snippet": "<p style=\"margin:0;font-size:14.5px;color:#5E584F\" data-dc-tpl=\"572\">I recommend one from your prescription strength.</p>",
+			"attributes": {
+				"text": "I recommend one from your prescription strength."
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root/573#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_573_0@375.png",
+				"1440": "shots/Root_573_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns: {{ twoColWide }};gap:40px;margin-top:64px\" data-dc-tpl=\"573\"> <div data-reveal=\"1\" data-dc-tpl=\"574\"> <h2 style=\"margin:0 0 16px;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"575\">In every lens, no extra charge</h2> <ul style=\"margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px;font-size:",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root/574#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_574_0@375.png",
+				"1440": "shots/Root_574_0@1440.png"
+			},
+			"snippet": "<div data-reveal=\"1\" data-dc-tpl=\"574\"> <h2 style=\"margin:0 0 16px;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"575\">In every lens, no extra charge</h2> <ul style=\"margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px;font-size:15.5px;color:#5E584F\" data-dc-tpl=\"576\"> <li data-dc-tpl=\"577\">UV400 protection</li><li data-dc-tpl=\"578\">Anti",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root/575#0",
+			"tag": "h2",
+			"depth": 3,
+			"words": "In every lens, no extra charge",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_575_0@375.png",
+				"1440": "shots/Root_575_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0 0 16px;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"575\">In every lens, no extra charge</h2>",
+			"attributes": {
+				"content": "In every lens, no extra charge"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root/576#0",
+			"tag": "ul",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 6 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_576_0@375.png",
+				"1440": "shots/Root_576_0@1440.png"
+			},
+			"snippet": "<ul style=\"margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px;font-size:15.5px;color:#5E584F\" data-dc-tpl=\"576\"> <li data-dc-tpl=\"577\">UV400 protection</li><li data-dc-tpl=\"578\">Anti-scratch hard coat</li><li data-dc-tpl=\"579\">Anti-reflective back surface, so you don't catch your own eye in the lens</li><li data-dc-tpl=\"580\">Tint matched to the frame's original lenses</",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 25,
+			"key": "Root/577#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "UV400 protection",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a li"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_577_0@375.png",
+				"1440": "shots/Root_577_0@1440.png"
+			},
+			"snippet": "<li data-dc-tpl=\"577\">UV400 protection</li>",
+			"attributes": {
+				"text": "UV400 protection"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root/578#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "Anti-scratch hard coat",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a li"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_578_0@375.png",
+				"1440": "shots/Root_578_0@1440.png"
+			},
+			"snippet": "<li data-dc-tpl=\"578\">Anti-scratch hard coat</li>",
+			"attributes": {
+				"text": "Anti-scratch hard coat"
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root/579#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "Anti-reflective back surface, so you don't catch your own eye in the lens",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a li"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_579_0@375.png",
+				"1440": "shots/Root_579_0@1440.png"
+			},
+			"snippet": "<li data-dc-tpl=\"579\">Anti-reflective back surface, so you don't catch your own eye in the lens</li>",
+			"attributes": {
+				"text": "Anti-reflective back surface, so you don't catch your own eye in the lens"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root/580#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "Tint matched to the frame's original lenses",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a li"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_580_0@375.png",
+				"1440": "shots/Root_580_0@1440.png"
+			},
+			"snippet": "<li data-dc-tpl=\"580\">Tint matched to the frame's original lenses</li>",
+			"attributes": {
+				"text": "Tint matched to the frame's original lenses"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root/581#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "Checked against your prescription by me before it's posted",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a li"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_581_0@375.png",
+				"1440": "shots/Root_581_0@1440.png"
+			},
+			"snippet": "<li data-dc-tpl=\"581\">Checked against your prescription by me before it's posted</li>",
+			"attributes": {
+				"text": "Checked against your prescription by me before it's posted"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root/582#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "Two-year guarantee on the lenses",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a li"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_582_0@375.png",
+				"1440": "shots/Root_582_0@1440.png"
+			},
+			"snippet": "<li data-dc-tpl=\"582\">Two-year guarantee on the lenses</li>",
+			"attributes": {
+				"text": "Two-year guarantee on the lenses"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root/583#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_583_0@375.png",
+				"1440": "shots/Root_583_0@1440.png"
+			},
+			"snippet": "<div data-reveal=\"1\" data-dc-tpl=\"583\"> <h2 style=\"margin:0 0 16px;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"584\">How it goes</h2> <ol style=\"margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:15px;font-size:15.5px\" data-dc-tpl=\"585\"> <li style=\"display:flex;gap:16px\" data-dc-tpl=\"586\"><span style=\"font-family:'Playfair Display',serif;",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 32,
+			"key": "Root/584#0",
+			"tag": "h2",
+			"depth": 3,
+			"words": "How it goes",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_584_0@375.png",
+				"1440": "shots/Root_584_0@1440.png"
+			},
+			"snippet": "<h2 style=\"margin:0 0 16px;font-family:'Playfair Display',serif;font-weight:500;font-size:30px\" data-dc-tpl=\"584\">How it goes</h2>",
+			"attributes": {
+				"content": "How it goes"
+			}
+		},
+		{
+			"order": 33,
+			"key": "Root/585#0",
+			"tag": "ol",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_585_0@375.png",
+				"1440": "shots/Root_585_0@1440.png"
+			},
+			"snippet": "<ol style=\"margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:15px;font-size:15.5px\" data-dc-tpl=\"585\"> <li style=\"display:flex;gap:16px\" data-dc-tpl=\"586\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"587\">1</span><span data-dc-tpl=\"588\">Choose a frame and tap “Add my prescription”.</span></li> <li",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 34,
+			"key": "Root/586#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_586_0@375.png",
+				"1440": "shots/Root_586_0@1440.png"
+			},
+			"snippet": "<li style=\"display:flex;gap:16px\" data-dc-tpl=\"586\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"587\">1</span><span data-dc-tpl=\"588\">Choose a frame and tap “Add my prescription”.</span></li>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 35,
+			"key": "Root/587#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "1",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_587_0@375.png",
+				"1440": "shots/Root_587_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"587\">1</span>",
+			"attributes": {
+				"text": "1"
+			}
+		},
+		{
+			"order": 36,
+			"key": "Root/588#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Choose a frame and tap “Add my prescription”.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_588_0@375.png",
+				"1440": "shots/Root_588_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"588\">Choose a frame and tap “Add my prescription”.</span>",
+			"attributes": {
+				"text": "Choose a frame and tap “Add my prescription”."
+			}
+		},
+		{
+			"order": 37,
+			"key": "Root/589#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_589_0@375.png",
+				"1440": "shots/Root_589_0@1440.png"
+			},
+			"snippet": "<li style=\"display:flex;gap:16px\" data-dc-tpl=\"589\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"590\">2</span><span data-dc-tpl=\"591\">Pick what they're for, how thin, what finish — all with pictures.</span></li>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 38,
+			"key": "Root/590#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "2",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_590_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"590\">2</span>",
+			"attributes": {
+				"text": "2"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root/591#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Pick what they're for, how thin, what finish — all with pictures.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_591_0@375.png",
+				"1440": "shots/Root_591_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"591\">Pick what they're for, how thin, what finish — all with pictures.</span>",
+			"attributes": {
+				"text": "Pick what they're for, how thin, what finish — all with pictures."
+			}
+		},
+		{
+			"order": 40,
+			"key": "Root/592#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_592_0@375.png",
+				"1440": "shots/Root_592_0@1440.png"
+			},
+			"snippet": "<li style=\"display:flex;gap:16px\" data-dc-tpl=\"592\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"593\">3</span><span data-dc-tpl=\"594\">Send the prescription now, or after you order. I'll remind you.</span></li>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 41,
+			"key": "Root/593#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "3",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_593_0@375.png",
+				"1440": "shots/Root_593_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"593\">3</span>",
+			"attributes": {
+				"text": "3"
+			}
+		},
+		{
+			"order": 42,
+			"key": "Root/594#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Send the prescription now, or after you order. I'll remind you.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_594_0@375.png",
+				"1440": "shots/Root_594_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"594\">Send the prescription now, or after you order. I'll remind you.</span>",
+			"attributes": {
+				"text": "Send the prescription now, or after you order. I'll remind you."
+			}
+		},
+		{
+			"order": 43,
+			"key": "Root/595#0",
+			"tag": "li",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_595_0@375.png",
+				"1440": "shots/Root_595_0@1440.png"
+			},
+			"snippet": "<li style=\"display:flex;gap:16px\" data-dc-tpl=\"595\"><span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"596\">4</span><span data-dc-tpl=\"597\">Made and checked in Birmingham, posted in 7–10 working days — or collect and I'll fit them to you in person.</span></li>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 44,
+			"key": "Root/596#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "4",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_596_0@375.png",
+				"1440": "shots/Root_596_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Playfair Display',serif;font-weight:500;color:var(--accInk,#6F6152);min-width:22px\" data-dc-tpl=\"596\">4</span>",
+			"attributes": {
+				"text": "4"
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root/597#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Made and checked in Birmingham, posted in 7–10 working days — or collect and I'll fit them to you in person.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_597_0@375.png",
+				"1440": "shots/Root_597_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"597\">Made and checked in Birmingham, posted in 7–10 working days — or collect and I'll fit them to you in person.</span>",
+			"attributes": {
+				"text": "Made and checked in Birmingham, posted in 7–10 working days — or collect and I'll fit them to you in person."
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root/598#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_598_0@375.png",
+				"1440": "shots/Root_598_0@1440.png"
+			},
+			"snippet": "<div style=\"margin-top:28px\" data-dc-tpl=\"598\"><button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"599\">Choose a frame</button></div>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 47,
+			"key": "Root/599#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "Choose a frame",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_599_0@1440.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ goSun }}\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 26px;min-height:50px;font-size:13px;letter-spacing:.1em;text-transform:uppercase\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"599\">Choose a frame</button>",
+			"attributes": {
+				"label": "Choose a frame"
+			}
+		}
+	]
+}

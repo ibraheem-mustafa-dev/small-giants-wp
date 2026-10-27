@@ -1,0 +1,101 @@
+{
+  "my-account": {
+    "inventory": {
+      "ok": true,
+      "seconds": 24,
+      "detail": "27 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "6 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 53,
+      "detail": "fill my-account: 23 settings written, 12 UNMAPPED, 0 handover, 0 fluid, 6 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\my-account\\2026-10-27T01-30-29\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 72,
+      "detail": "{\"ok\":true,\"id\":9,\"link\":\"http://localhost:8081/my-account/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 162,
+      "detail": "report written (exit 1: my-account: 96 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\my-account\\report.md, con)"
+    }
+  },
+  "template-page": {
+    "build": {
+      "ok": true,
+      "seconds": 23,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//page\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (prescription-lenses, about, help, contact, my-account)"
+    }
+  },
+  "template-cart": {
+    "build": {
+      "ok": true,
+      "seconds": 46,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//cart\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-search": {
+    "build": {
+      "ok": true,
+      "seconds": 71,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//search\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-404": {
+    "build": {
+      "ok": true,
+      "seconds": 70,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//404\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-product-search-results": {
+    "build": {
+      "ok": true,
+      "seconds": 67,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//product-search-results\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-taxonomy-product_attribute": {
+    "build": {
+      "ok": true,
+      "seconds": 70,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//taxonomy-product_attribute\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  }
+}
