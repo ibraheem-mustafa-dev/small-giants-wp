@@ -1,15 +1,21 @@
 // Fill's state opener (FR-48-13, FR-48-34): a surface that exists only while a draft state holds (a drawer, a mega-menu
-// panel) is opened before it is read, through the same runtime path intake uses (lib/intake-state.mjs::setDraftState).
-// The state comes from the handoff record the surface's intake skeleton names (`surfaces.json` `states` names it), and
-// only what the draft's runtime can act on is offered:
-//   - a key that is a state key of the live component (facts.json `state[<component>].keys`), never a render value
-//     (`R.pin`, `item.current`), a width-derived key (`widthKeys`, `isDesktop`), an underscore key (`_closing`) or a
-//     form-control selector (`select[name=role]`);
-//   - a value that is concrete: never a placeholder (`<page>-<bi>`, `{…}`, `IND-######`) or prose.
+// panel, a modal) is opened before it is read, through the runtime paths intake uses (lib/intake-state.mjs::setDraftState
+// and ::reachDraftState). The state comes from the handoff record the surface's intake skeleton names (`surfaces.json`
+// `states` names it), and each state is opened two ways, in intake's order (lib/state-reach.mjs):
+//   - `state`: its keys set directly, offering only what the draft's runtime can act on: a key that is a state key of the
+//     live component (facts.json `state[<component>].keys`), never a render value (`R.pin`, `item.current`), a
+//     width-derived key (`widthKeys`, `isDesktop`), an underscore key (`_closing`) or a form-control selector
+//     (`select[name=role]`), with a concrete value, never a placeholder (`<page>-<bi>`, `{…}`, `IND-######`) or prose;
+//   - `reach`: the `<ident>.setState(<args>)` calls its how_to_reach gives, run on the component's own logic, with the
+//     keys its width bounds name (`{"w": ">= 768"}`) put back to the viewport's values after the calls.
+// A state whose keys are all plain values tries `state` first; one holding a description (`"{open:true}"`, `">= 768"`)
+// tries `reach` first. A state with width bounds is offered only at the widths inside them.
 // A component a route mounts has no live instance until the route loads, so the record's route is loaded first. A state
 // whose listed `sc_if_tpl_ids` did not render is refused (a gap row naming the state and the reason), never read as a
 // closed surface.
-import { setDraftState } from './intake-state.mjs';
+import { setDraftState, reachDraftState, logicState } from './intake-state.mjs';
+import { reachCalls } from './intake-reach-calls.mjs';
+import { plainState, widthBounds, fitsWidth, waysHeldAt } from './state-reach.mjs';
 import { ROOT_HOST, isStatePage, stateRouteHash } from './state-route.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
 
@@ -48,7 +54,8 @@ export function usableKeys( keys, live ) {
 			: name.startsWith( '_' ) ? 'an underscore key the component sets itself'
 				: live && ( live.widthKeys || [] ).includes( name ) ? 'derived from the viewport width'
 					: live && ! ( live.keys || [] ).includes( name ) ? 'not a state key of the component (facts.json state keys)'
-						: isPlaceholder( value ) ? 'a placeholder or description, not a value' : null;
+						: widthBounds( { state_keys: { [ name ]: value } } ).length ? 'a width bound the viewport holds, not a value'
+							: isPlaceholder( value ) ? 'a placeholder or description, not a value' : null;
 		why ? dropped.push( { key: name, why } ) : ( use[ name ] = value );
 	}
 	return { keys: use, dropped };
@@ -77,8 +84,11 @@ export function readUrlOf( { url, opener, record, routing } ) {
 // without a state). entry: the `surfaces.json` entry; skeleton: intake.json `skeletons[<intakeSurface>]`; record: the
 // handoff `surfaces.json` record (`skeleton.id`); facts: the fact record or null; rootComponent: the served entry draft's
 // component, which the runtime hosts as `Root` (every other component keeps its own name).
-// Returns { id, component (the runtime's host name), dc (the record's component, the facts key), route, state, keys, dropped, expect, refused: [ { state, reason } ] }; `state` is null when
-// every candidate state was refused. The first usable state opens the surface (a state named open first).
+// Returns { id, component (the runtime's host name), dc (the record's component, the facts key), route, ways, state,
+// keys, calls, dropped, expect, refused: [ { state, reason } ] }. `ways` lists every way to open the surface in the order
+// they are tried: [{ via ('state' | 'reach'), state, keys | calls, dropped, expect, bounds }] (candidate states named
+// open first, each state's two ways in plainState's order); `state`, `keys`, `calls`, `dropped` and `expect` are the
+// first way's. `state` is null when no candidate state has a way (each is refused with its reason).
 export function stateOpener( { entry, skeleton, record, facts, rootComponent = null } ) {
 	if ( ! skeleton?.root?.viaState ) {
 		return null;
@@ -97,17 +107,43 @@ export function stateOpener( { entry, skeleton, record, facts, rootComponent = n
 		return { ...base, refused: [ { state: null, reason: `no state of record ${ record.id } is named by the surface's states (${ [ ...named ].join( ', ' ) || 'none' })` } ] };
 	}
 	candidates.sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );
+	// The same state at another breakpoint joins it: a record state with width bounds whose other keys equal a bounded
+	// candidate's (the walker state map keeps one of the two, since a breakpoint is never a state of its own).
+	const unbound = ( s ) => {
+		const held = new Set( widthBounds( s ).map( ( b ) => b.key ) );
+		return JSON.stringify( Object.entries( s.state_keys || {} ).filter( ( [ k ] ) => ! held.has( k ) ).sort( ( [ a ], [ b ] ) => ( a < b ? -1 : 1 ) ) );
+	};
+	const bounded = candidates.filter( ( c ) => widthBounds( c ).length );
+	candidates.push( ...pool.filter( ( s ) => ! candidates.includes( s ) && widthBounds( s ).length && bounded.some( ( c ) => unbound( c ) === unbound( s ) ) ) );
 	const live = facts?.state?.[ record.dc ] ?? null;
 	const refused = [];
+	const ways = [];
 	for ( const s of candidates ) {
 		const { keys, dropped } = usableKeys( s.state_keys, live );
-		if ( Object.keys( keys ).length ) {
-			return { ...base, state: s.name, keys, dropped, expect: ( s.sc_if_tpl_ids || [] ).map( String ), refused };
-		}
-		refused.push( { state: s.name, reason: `no usable state key (${ dropped.map( ( d ) => `${ d.key }: ${ d.why }` ).join( '; ' ) || 'the state sets none' })` } );
+		const common = { state: s.name, dropped, expect: ( s.sc_if_tpl_ids || [] ).map( String ), bounds: widthBounds( s ) };
+		const set = Object.keys( keys ).length ? [ { via: 'state', ...common, keys } ] : [];
+		const calls = reachCalls( s.how_to_reach );
+		const reach = calls.length ? [ { via: 'reach', ...common, calls } ] : [];
+		const own = plainState( s ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
+		own.length ? ways.push( ...own ) : refused.push( { state: s.name, reason: `no usable state key (${ dropped.map( ( d ) => `${ d.key }: ${ d.why }` ).join( '; ' ) || 'the state sets none' }) and no setState call in its how_to_reach` } );
 	}
-	return { ...base, refused };
+	const first = ways[ 0 ];
+	return first ? { ...base, ways, state: first.state, keys: first.keys ?? {}, calls: first.calls ?? [], dropped: first.dropped, expect: first.expect, refused } : { ...base, ways, refused };
 }
+
+// The ways of an opener offered at a width (every way when the width is unknown), in order; an opener built without
+// `ways` is its own one `state` way.
+export const waysAt = ( opener, width ) => waysHeldAt( opener.ways || [ { via: 'state', state: opener.state, keys: opener.keys, expect: opener.expect || [], bounds: [] } ], width );
+
+// The way each read width opened with: { [width]: index into `opener.ways` } from openState's verdicts ({ [width]:
+// verdict }), for the walker config to open the same way (openerSource).
+export const openedAt = ( opener, widths ) => Object.fromEntries( Object.entries( widths || {} ).filter( ( [ , v ] ) => v?.ok ).map( ( [ w, v ] ) => [ w, ( opener.ways || [] ).findIndex( ( x ) => x.state === v.state && x.via === v.via ) ] ).filter( ( [ , i ] ) => i >= 0 ) );
+
+// One line per way, for the run log: `"<state>" <how>[ at <bounds>]`.
+export const describeWays = ( opener ) => ( opener.ways || [] ).map( ( w ) => `"${ w.state }" ${ describeWay( w ) }${ w.bounds.length ? ` at ${ boundsText( w.bounds ) }` : '' }` ).join( ' | ' );
+
+const describeWay = ( w ) => ( 'reach' === w.via ? w.calls.map( ( c ) => `${ c.ident }.setState(${ c.args })` ).join( '; ' ) : `setting ${ JSON.stringify( w.keys ) }` );
+const boundsText = ( b ) => b.map( ( x ) => `${ x.key } ${ null == x.min ? `<= ${ x.max }` : null == x.max ? `>= ${ x.min }` : `${ x.min }-${ x.max }` }` ).join( ', ' );
 
 // In-page: how many of `tpls` the live copies of `component` render, judged as lib/intake-skeletons.mjs::markRoot does:
 // an element renders when a live copy carries its id; an sc-if, sc-for or sc-else renders when an element it stamps is live.
@@ -125,41 +161,65 @@ export function renderedTpls( { component, tpls } ) {
 	} ).length;
 }
 
-// Applies the opener on an open draft page (the route already loaded) and judges it: { reached (instances set), rendered
-// (of `expected`), expected, reason }. `ok` when an instance was reached and, where the record lists sc-if ids, at least
-// one rendered.
-export async function openState( page, opener ) {
-	const expected = opener.expect.length;
-	const reached = await setDraftState( page, { component: opener.component, keys: opener.keys } );
+// Applies the opener on an open draft page (the route already loaded) at `width` (the page's viewport when not given) and
+// judges it: { state, via, reached (instances set), rendered (of `expected`), expected, ok, reason }. Each way offered at
+// the width is tried in order until one opens; `ok` when a way reached an instance and, where its state lists sc-if ids,
+// at least one rendered. The verdict is the opening way's, else the last way's carrying every tried way's reason.
+export async function openState( page, opener, width = null ) {
+	const at = width ?? page.viewportSize?.()?.width ?? null;
+	const ways = waysAt( opener, at );
+	if ( ! ways.length ) {
+		const held = [ ...new Set( ( opener.ways || [] ).map( ( w ) => `"${ w.state }": ${ boundsText( w.bounds ) }` ) ) ];
+		return { state: null, via: null, reached: 0, rendered: 0, expected: 0, ok: false, reason: `no state of ${ opener.id ?? 'the surface' } holds at ${ at }px (${ held.join( '; ' ) })` };
+	}
+	const reasons = [];
+	let verdict = null;
+	for ( const way of ways ) {
+		verdict = await openWay( page, opener, way );
+		if ( verdict.ok ) {
+			return verdict;
+		}
+		reasons.push( verdict.reason );
+	}
+	return { ...verdict, reason: reasons.join( '; ' ) };
+}
+
+// One way of an opener: its keys set, or its setState calls run with its width-bound keys kept at the viewport's values.
+async function openWay( page, opener, way ) {
+	const expected = way.expect.length;
+	const where = routeHash( opener.route );
+	const on = where ? ` on ${ where }` : ' on the entry page';
+	const reached = 'reach' === way.via
+		? await reachDraftState( page, { component: opener.component, calls: way.calls, keep: way.bounds.map( ( b ) => b.key ) } )
+		: await setDraftState( page, { component: opener.component, keys: way.keys } );
+	const head = { state: way.state, via: way.via };
 	if ( ! reached ) {
-		const where = routeHash( opener.route );
-		return { reached: 0, rendered: 0, expected, ok: false, reason: `${ opener.component } has no live instance${ where ? ` on ${ where }` : ' on the entry page' }` };
+		return { ...head, reached: 0, rendered: 0, expected, ok: false, reason: 'reach' === way.via ? `${ describeWay( way ) } reached no live ${ opener.component }${ on } (not mounted, or a call threw)` : `${ opener.component } has no live instance${ on }` };
 	}
 	await settleAnimations( page, { floor: 400, cap: 3000 } );
-	const rendered = expected ? await page.evaluate( renderedTpls, { component: opener.component, tpls: opener.expect } ) : null;
+	const rendered = expected ? await page.evaluate( renderedTpls, { component: opener.component, tpls: way.expect } ) : null;
 	const ok = ! expected || rendered > 0;
-	return { reached, rendered, expected, ok, reason: ok ? null : `none of the ${ expected } sc-if ids of state "${ opener.state }" (${ opener.expect.join( ', ' ) }) rendered after setting ${ JSON.stringify( opener.keys ) }` };
+	return { ...head, reached, rendered, expected, ok, reason: ok ? null : `none of the ${ expected } sc-if ids of state "${ way.state }" (${ way.expect.join( ', ' ) }) rendered after ${ describeWay( way ) }` };
 }
 
-// In-page: sets `keys` on each live instance of `component` through the draft's own setState (the path of
-// lib/intake-state.mjs, written out so the generated walker config can carry it as source text).
-export function setStateInPage( { component, keys } ) {
-	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
-		const name = host.dataset.scName;
-		if ( name !== component ) {
-			continue;
+// The walker config's draft `open` function text for an opener: at the page's width it applies the way Fill opened the
+// surface with there (`opener.openedAt`, { [width]: index into `ways` }), else the first way offered at that width,
+// through lib/intake-state.mjs::logicState carried as source text (keys set, or setState calls run with the width-bound
+// keys kept), then waits for the re-render.
+export function openerSource( opener ) {
+	const ways = ( opener.ways || waysAt( opener, null ) ).map( ( w ) => ( { op: 'reach' === w.via ? 'reach' : 'set', patch: 'reach' === w.via ? { calls: w.calls, keep: w.bounds.map( ( b ) => b.key ) } : w.keys, bounds: w.bounds || [] } ) );
+	return `async ( h ) => {
+		const ways = ${ JSON.stringify( ways ) };
+		const at = ${ JSON.stringify( opener.openedAt || {} ) };
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ${ fitsWidth.toString() };
+		const way = ways[ at[ width ] ] || ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			await h.page.evaluate( ${ logicState.toString() }, { comp: ${ JSON.stringify( opener.component ) }, op: way.op, patch: way.patch } );
 		}
-		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
-		let f = key ? host[ key ] : null;
-		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
-			f = f.return;
-		}
-		f && f.stateNode.logic.setState( keys );
-	}
+		await h.page.waitForTimeout( 900 );
+	}`;
 }
-
-// The walker config's draft `open` function text for an opener: sets the state, then waits for the re-render.
-export const openerSource = ( opener ) => `async ( h ) => {\n\t\tawait h.page.evaluate( ${ setStateInPage.toString().replace( /\n\t*/g, ' ' ) }, ${ JSON.stringify( { component: opener.component, keys: opener.keys } ) } );\n\t\tawait h.page.waitForTimeout( 900 );\n\t}`;
 
 // The UNMAPPED rows of the refused states (a gap row naming the state and the reason), attached to the surface's root
 // node. nodes: the skeleton nodes; flat[index]: the tree node; refOf: its ref.

@@ -28,12 +28,16 @@
 //     (the palette proposal and its colour usage) from the draft tokens and one 1440 rest reading per route, without
 //     the other stages; --record records the replay file first; --into-intake also replaces intake.json's palette block and
 //     review.md's palette section, keeping a mark only where its slugs equal the new proposal's (lib/intake-palette-run.mjs).
+//   node scripts/computed-route/intake.mjs --catalogue <client>     reads the draft catalogue (FR-48-92) offline from the
+//     export and the page map into build/catalogue.json, puts its summary into intake.json and re-renders review.md
+//     (lib/intake-catalogue-run.mjs).
 // Exit 0 pass, 1 a failure (named on stderr), 2 usage. --repo points every path at another repository root (tests).
 import { parseArgs, runIntake, applyIntakeReview, recordProblems, pathsFor, USAGE } from './lib/intake-run.mjs';
 import { runFinalise, runApplyPicks, runRender, runRerunSkeletons } from './lib/intake-run-finalise.mjs';
 import { runFacts } from './lib/intake-facts-run.mjs';
 import { runPageMap } from './lib/intake-pagemap-regen.mjs';
 import { runPaletteOnly } from './lib/intake-palette-run.mjs';
+import { runCatalogue } from './lib/intake-catalogue-run.mjs';
 
 const o = parseArgs( process.argv.slice( 2 ) );
 if ( o.error ) {
@@ -51,6 +55,7 @@ const modes = {
 	facts: () => runFacts( o, { log } ),
 	'page-map': () => runPageMap( o, { log } ),
 	'palette-only': () => runPaletteOnly( o, { log } ),
+	catalogue: () => runCatalogue( o, { log } ),
 	run: () => runIntake( o ),
 };
 process.exitCode = await modes[ o.mode ]();
