@@ -1,0 +1,12 @@
+[
+	{ "file": "lib/resolve-side-effects.mjs", "find": "const free = rows.filter( ( r ) => ! ownEffects( r ).some( atDefault ) );", "replace": "const free = rows;", "why": "no tie breaks: the background gradient stays ambiguous with the text gradient" },
+	{ "file": "lib/resolve-side-effects.mjs", "find": "return free.length ? free : rows;", "replace": "return free;", "why": "a tie every row is ruled out of empties instead of staying" },
+	{ "file": "lib/resolve-side-effects.mjs", "find": "return widths.length > 0 && widths.every(", "replace": "return widths.every(", "why": "a draft whose background-clip was never read convicts the text gradient" },
+	{ "file": "lib/resolve-side-effects.mjs", "find": "! isLength( draft[ w ] ) && ! isLength( paint[ w ] ) && equal(", "replace": "equal(", "why": "a length effect (a layout consequence) decides a tie" },
+	{ "file": "lib/resolve-side-effects.mjs", "find": "same( e.slice( 0, e.lastIndexOf( '|' ) ), slot )", "replace": "true", "why": "an effect on another element decides the read element's tie" },
+	{ "file": "lib/resolve.mjs", "find": "siblings: input.siblings || {}, paintOf:", "replace": "siblings: {}, paintOf:", "why": "the resolver does not hand the element's draft reads to the tie rule" },
+	{ "file": "lib/resolve.mjs", "find": "let tied = near ?? reached;", "replace": "let tied = sideEffectFree( near ?? reached, { effectsOf: ( r ) => ctx.calibration.settings?.[ r.attr_name ]?.effects, slot, same: ( p, s ) => loose( p ) === s, siblings: input.siblings || {}, paintOf: ( p ) => defaultPaint( ctx.calibration, slot, p, ( a, b ) => loose( a ) === b ), equal: sameMeasured, isLength: ( v ) => !! parseLength( v ) } );", "why": "the side-effect rule runs before the part-or-element rule and convicts a setting by a value-conditional effect" },
+	{ "file": "lib/resolve.mjs", "find": "( { flat, others, bases } = split( tied ) );", "replace": "", "why": "the tie the side-effect rule narrows is never re-split, so it stays ambiguous" },
+	{ "file": "lib/fill-read.mjs", "find": "export const TIE_PROPS = [ 'background-clip' ];", "replace": "export const TIE_PROPS = [];", "why": "Fill no longer reads background-clip, so the tie rule never has the draft's value" },
+	{ "file": "lib/intake-missing.mjs", "find": " && ! TIE_PROPS.includes( p ) ) );", "replace": " ) );", "why": "the tie read is counted as a property Fill carries" }
+]
