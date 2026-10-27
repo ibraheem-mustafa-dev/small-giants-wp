@@ -1,0 +1,574 @@
+{
+  "schemaVersion": 1,
+  "client": "mamas-munches-redesign",
+  "productBase": "product",
+  "source": {
+    "files": [
+      "store.js"
+    ],
+    "productPage": "Product.dc.html",
+    "idKey": "id"
+  },
+  "products": [
+    {
+      "draftId": "zookies",
+      "sku": "sgs-draft-zookies",
+      "slug": "zookies",
+      "name": "Zookies",
+      "type": "variable",
+      "price": 9.5,
+      "rrp": null,
+      "shortDescription": "Our giant lactation cookie, baked to order in the flavour you pick.",
+      "image": {
+        "asset": "sites/mamas-munches-redesign/handoff/assets/photo-pair-love.jpg"
+      },
+      "gallery": [
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-pair-love.jpg"
+        },
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-bags-pink.jpg"
+        },
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-hero-mug.jpg"
+        },
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-tray-love.jpg"
+        }
+      ],
+      "categories": [
+        "Zookies",
+        "Vegan",
+        "Subscribe"
+      ],
+      "brand": null,
+      "facets": {
+        "occ": [
+          "born",
+          "far",
+          "forty"
+        ]
+      },
+      "attributes": [
+        {
+          "key": "size",
+          "label": "Pack size",
+          "slug": "pack-size",
+          "packSize": true,
+          "options": [
+            {
+              "value": 8,
+              "term": "8",
+              "price": 9.5,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": 20,
+              "term": "20",
+              "price": 21.5,
+              "swatch": null,
+              "badge": "Most popular"
+            },
+            {
+              "value": 40,
+              "term": "40",
+              "price": 38,
+              "swatch": null,
+              "badge": "Best value"
+            }
+          ],
+          "default": "20"
+        },
+        {
+          "key": "base",
+          "label": "Base",
+          "slug": "base",
+          "packSize": false,
+          "options": [
+            {
+              "value": "oat",
+              "term": "Classic oat",
+              "price": null,
+              "swatch": "#D9A86C",
+              "badge": null
+            },
+            {
+              "value": "vegan",
+              "term": "Vegan oat",
+              "price": null,
+              "swatch": "#CDAA72",
+              "badge": null
+            }
+          ],
+          "default": "Classic oat"
+        },
+        {
+          "key": "chip",
+          "label": "Chip",
+          "slug": "chip",
+          "packSize": false,
+          "options": [
+            {
+              "value": "milk",
+              "term": "Milk choc",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "white",
+              "term": "White choc",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "dark",
+              "term": "Dark choc",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": "none",
+              "term": "No chips",
+              "price": null,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "Milk choc"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-zookies-8-classic-oat-milk-choc",
+          "options": {
+            "pack-size": "8",
+            "base": "Classic oat",
+            "chip": "Milk choc"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-8-classic-oat-white-choc",
+          "options": {
+            "pack-size": "8",
+            "base": "Classic oat",
+            "chip": "White choc"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-8-classic-oat-dark-choc",
+          "options": {
+            "pack-size": "8",
+            "base": "Classic oat",
+            "chip": "Dark choc"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-8-classic-oat-no-chips",
+          "options": {
+            "pack-size": "8",
+            "base": "Classic oat",
+            "chip": "No chips"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-8-vegan-oat-milk-choc",
+          "options": {
+            "pack-size": "8",
+            "base": "Vegan oat",
+            "chip": "Milk choc"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-8-vegan-oat-white-choc",
+          "options": {
+            "pack-size": "8",
+            "base": "Vegan oat",
+            "chip": "White choc"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-8-vegan-oat-dark-choc",
+          "options": {
+            "pack-size": "8",
+            "base": "Vegan oat",
+            "chip": "Dark choc"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-8-vegan-oat-no-chips",
+          "options": {
+            "pack-size": "8",
+            "base": "Vegan oat",
+            "chip": "No chips"
+          },
+          "price": 9.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-classic-oat-milk-choc",
+          "options": {
+            "pack-size": "20",
+            "base": "Classic oat",
+            "chip": "Milk choc"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-classic-oat-white-choc",
+          "options": {
+            "pack-size": "20",
+            "base": "Classic oat",
+            "chip": "White choc"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-classic-oat-dark-choc",
+          "options": {
+            "pack-size": "20",
+            "base": "Classic oat",
+            "chip": "Dark choc"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-classic-oat-no-chips",
+          "options": {
+            "pack-size": "20",
+            "base": "Classic oat",
+            "chip": "No chips"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-vegan-oat-milk-choc",
+          "options": {
+            "pack-size": "20",
+            "base": "Vegan oat",
+            "chip": "Milk choc"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-vegan-oat-white-choc",
+          "options": {
+            "pack-size": "20",
+            "base": "Vegan oat",
+            "chip": "White choc"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-vegan-oat-dark-choc",
+          "options": {
+            "pack-size": "20",
+            "base": "Vegan oat",
+            "chip": "Dark choc"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-20-vegan-oat-no-chips",
+          "options": {
+            "pack-size": "20",
+            "base": "Vegan oat",
+            "chip": "No chips"
+          },
+          "price": 21.5
+        },
+        {
+          "sku": "sgs-draft-zookies-40-classic-oat-milk-choc",
+          "options": {
+            "pack-size": "40",
+            "base": "Classic oat",
+            "chip": "Milk choc"
+          },
+          "price": 38
+        },
+        {
+          "sku": "sgs-draft-zookies-40-classic-oat-white-choc",
+          "options": {
+            "pack-size": "40",
+            "base": "Classic oat",
+            "chip": "White choc"
+          },
+          "price": 38
+        },
+        {
+          "sku": "sgs-draft-zookies-40-classic-oat-dark-choc",
+          "options": {
+            "pack-size": "40",
+            "base": "Classic oat",
+            "chip": "Dark choc"
+          },
+          "price": 38
+        },
+        {
+          "sku": "sgs-draft-zookies-40-classic-oat-no-chips",
+          "options": {
+            "pack-size": "40",
+            "base": "Classic oat",
+            "chip": "No chips"
+          },
+          "price": 38
+        },
+        {
+          "sku": "sgs-draft-zookies-40-vegan-oat-milk-choc",
+          "options": {
+            "pack-size": "40",
+            "base": "Vegan oat",
+            "chip": "Milk choc"
+          },
+          "price": 38
+        },
+        {
+          "sku": "sgs-draft-zookies-40-vegan-oat-white-choc",
+          "options": {
+            "pack-size": "40",
+            "base": "Vegan oat",
+            "chip": "White choc"
+          },
+          "price": 38
+        },
+        {
+          "sku": "sgs-draft-zookies-40-vegan-oat-dark-choc",
+          "options": {
+            "pack-size": "40",
+            "base": "Vegan oat",
+            "chip": "Dark choc"
+          },
+          "price": 38
+        },
+        {
+          "sku": "sgs-draft-zookies-40-vegan-oat-no-chips",
+          "options": {
+            "pack-size": "40",
+            "base": "Vegan oat",
+            "chip": "No chips"
+          },
+          "price": 38
+        }
+      ]
+    },
+    {
+      "draftId": "trial",
+      "sku": "sgs-draft-trial",
+      "slug": "taster-trio",
+      "name": "Taster Trio",
+      "type": "simple",
+      "price": 5,
+      "rrp": null,
+      "shortDescription": "3 Classic Zookies to try. Postage included, fits through the letterbox.",
+      "image": {
+        "asset": "sites/mamas-munches-redesign/handoff/assets/photo-bun-case.jpg"
+      },
+      "gallery": [
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-bun-case.jpg"
+        },
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-pair-love.jpg"
+        }
+      ],
+      "categories": [
+        "Taster"
+      ],
+      "brand": null,
+      "facets": {
+        "occ": [
+          "far",
+          "born"
+        ]
+      },
+      "attributes": [],
+      "variations": []
+    },
+    {
+      "draftId": "giftbox",
+      "sku": "sgs-draft-giftbox",
+      "slug": "new-baby-gift-box",
+      "name": "New Baby Gift Box",
+      "type": "simple",
+      "price": 15,
+      "rrp": null,
+      "shortDescription": "A mix of Zookies in a gift box, sent with your message.",
+      "image": {
+        "asset": "sites/mamas-munches-redesign/handoff/assets/photo-gift-heart.jpg"
+      },
+      "gallery": [
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-gift-heart.jpg"
+        },
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-hero-mug.jpg"
+        },
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-tray-love.jpg"
+        }
+      ],
+      "categories": [
+        "Gifts"
+      ],
+      "brand": null,
+      "facets": {
+        "occ": [
+          "born",
+          "hospital",
+          "far",
+          "shower"
+        ]
+      },
+      "attributes": [],
+      "variations": []
+    },
+    {
+      "draftId": "care40",
+      "sku": "sgs-draft-care40",
+      "slug": "40-day-care-bundle",
+      "name": "40-Day Care Bundle",
+      "type": "simple",
+      "price": 42,
+      "rrp": null,
+      "shortDescription": "Six weekly deliveries for the 40-day postnatal window.",
+      "image": {
+        "asset": "sites/mamas-munches-redesign/handoff/assets/photo-hero-mug.jpg"
+      },
+      "gallery": [
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-hero-mug.jpg"
+        },
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/photo-bags-pink.jpg"
+        }
+      ],
+      "categories": [
+        "Gifts",
+        "Bundles"
+      ],
+      "brand": null,
+      "facets": {
+        "occ": [
+          "forty",
+          "born",
+          "far"
+        ]
+      },
+      "attributes": [],
+      "variations": []
+    },
+    {
+      "draftId": "giftcard",
+      "sku": "sgs-draft-giftcard",
+      "slug": "baby-shower-gift-card",
+      "name": "Baby Shower Gift Card",
+      "type": "variable",
+      "price": 15,
+      "rrp": null,
+      "shortDescription": "Give it at the shower. She redeems it once baby arrives, so every cookie is fresh.",
+      "image": {
+        "asset": "sites/mamas-munches-redesign/handoff/assets/logo-round.png"
+      },
+      "gallery": [
+        {
+          "asset": "sites/mamas-munches-redesign/handoff/assets/logo-round.png"
+        }
+      ],
+      "categories": [
+        "Gifts"
+      ],
+      "brand": null,
+      "facets": {
+        "occ": [
+          "shower"
+        ]
+      },
+      "attributes": [
+        {
+          "key": "amount",
+          "label": "Amount",
+          "slug": "amount",
+          "packSize": false,
+          "options": [
+            {
+              "value": 15,
+              "term": "15",
+              "price": 15,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": 25,
+              "term": "25",
+              "price": 25,
+              "swatch": null,
+              "badge": null
+            },
+            {
+              "value": 40,
+              "term": "40",
+              "price": 40,
+              "swatch": null,
+              "badge": null
+            }
+          ],
+          "default": "25"
+        }
+      ],
+      "variations": [
+        {
+          "sku": "sgs-draft-giftcard-15",
+          "options": {
+            "amount": "15"
+          },
+          "price": 15
+        },
+        {
+          "sku": "sgs-draft-giftcard-25",
+          "options": {
+            "amount": "25"
+          },
+          "price": 25
+        },
+        {
+          "sku": "sgs-draft-giftcard-40",
+          "options": {
+            "amount": "40"
+          },
+          "price": 40
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "draftId": "*",
+      "kind": "facet",
+      "detail": "the shop filters on \"occ\" (Gifts.dc.html); the catalogue writes categories only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet"
+    },
+    {
+      "draftId": "zookies",
+      "kind": "multi-choice",
+      "detail": "choice \"flav\" lets the shopper pick several of Vanilla, Chocolate, Strawberry, Mango, Banana, Coffee, Mint, Caramel, Coconut, Pistachio, Honey: a WooCommerce variation holds one value per attribute, so it needs a product add-ons field; recorded, not built"
+    },
+    {
+      "draftId": "zookies",
+      "kind": "switch",
+      "detail": "choice \"sub\" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks \"freq\" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built"
+    },
+    {
+      "draftId": "giftcard",
+      "kind": "open-amount",
+      "detail": "the shopper picks the amount paid (£15, £25, £40): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have"
+    }
+  ]
+}
