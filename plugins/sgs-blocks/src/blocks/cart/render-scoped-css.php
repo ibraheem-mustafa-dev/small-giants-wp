@@ -35,16 +35,18 @@ if ( '' !== $badge_text_effective ) {
 // Hover — safe to paint directly (no precondition swap needed): the badge's
 // own background always lives on its ::after layer above, never on
 // $badge_sel itself, so background-clip:text here can never clip a
-// background.
+// background. The badge takes no pointer events (style.css), so its hover
+// colour shows while the cart button holding it is hovered or focused.
 $badge_text_hover           = (string) ( $attributes['badgeTextColourHover'] ?? '' );
 $badge_text_hover_gradient  = (string) ( $attributes['badgeTextColourHoverGradient'] ?? '' );
 $badge_text_hover_effective = sgs_resolve_text_colour_or_gradient( $badge_text_hover, $badge_text_hover_gradient );
 if ( '' !== $badge_text_hover_effective ) {
+	$badge_trigger_sel     = $sel . ' .sgs-cart__trigger';
 	$badge_text_hover_decl = sgs_text_colour_decl( $badge_text_hover_effective );
 	if ( '' !== $badge_text_hover_decl ) {
-		$scoped_css[] = sgs_hover_state_rules( $badge_sel, $badge_text_hover_decl );
+		$scoped_css[] = sgs_hover_state_rules( $badge_trigger_sel, $badge_text_hover_decl, ':focus-visible', ' .sgs-cart__badge' );
 	}
-	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $badge_sel . ':hover', $badge_text_hover_effective );
+	$scoped_css[] = sgs_text_colour_gradient_fallback_rule( $badge_trigger_sel . ':hover .sgs-cart__badge', $badge_text_hover_effective );
 }
 
 // Badge count text (size, weight) through the shared typography helper, for the
