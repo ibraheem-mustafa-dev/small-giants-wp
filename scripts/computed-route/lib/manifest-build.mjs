@@ -5,6 +5,7 @@
 import { builtTemplate, rowKey } from './site-build-map.mjs';
 import { WHOLE_TREE, copySource, rowsOf, servedTemplates } from './template-copies.mjs';
 import { keepsWooContent, wooContentRole } from './site-build-plan.mjs';
+import { megaPanelLabel } from './page-map-names.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
 export const PREFIXES = { sgs_mega_menu: 'mega-', sgs_drawer: 'drawer-', sgs_modal: 'modal-', sgs_form: 'form-', sgs_choice_flow: 'flow-' };
 // Post type -> handoff record kind.
@@ -181,6 +182,15 @@ export function statesOf( record, vocab, ctx = null ) {
 	return out;
 }
 
+// The walker states of one mega-menu panel row (titled "<label> mega menu", lib/page-map-names.mjs) whose record holds
+// several panels as states of one record (each tab a state, `{ mega: "brands" }`): only the state its label names, so each
+// panel surface opens its own tab (Fill's opener and the walker's draft `open` take the entry's first state). Any other
+// row, or a label naming none of the states, keeps them all.
+export function panelStates( row, states ) {
+	const key = 'menu' === KINDS[ row.postType ] && Object.keys( states ).length > 1 ? walkerKey( megaPanelLabel( row.title ?? '' ) ) : null;
+	return key && Object.hasOwn( states, key ) ? { [ key ]: states[ key ] } : states;
+}
+
 // Intake's record with the matched handoff record's id, else the one of the same kind whose name matches the row (a page
 // by page_key), or null.
 function intakeRecord( row, intake, record ) {
@@ -305,7 +315,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			const ctx = facts?.state?.[ match.record.dc ] ?? null;
 			const got = statesOf( match.record, vocab, ctx );
 			! handSet && got.noContext.length && out.noFacts.push( { key, why: facts ? `facts.json holds no state keys for ${ match.record.dc }` : 'no facts.json: run intake first', names: got.noContext } );
-			states = got.states;
+			states = panelStates( row, got.states );
 			got.pointer.forEach( ( name ) => mine.pointer.push( { key, name } ) );
 			got.dropped.forEach( ( name ) => mine.dropped.push( { key, name } ) );
 			const theirs = intakeRecord( row, intake, match.record );

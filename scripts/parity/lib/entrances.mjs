@@ -94,12 +94,24 @@ async function sampleIn( [ rootSel, exclude, windowMs, trace, waitMs ] ) {
 
 // Reloads the page and samples its entrances. The host's "Checking your browser" page is waited out
 // first (a sample of it would read nothing), then the reload runs on the real page.
-export async function sampleEntrances( page, side, cfg ) {
+// A state-page draft's reload lands on its entry page, since its route lives in the logic's state, not the URL: `route`
+// (the walker's helpers' `route`, given only for such a page) sets the route again. With a root (auto.root) the root is
+// waited for while the route is set (up to `entranceWait` ms, default 15000) and sampled from when it shows, as a region is;
+// with none the route is set first and the page sampled after it.
+export async function sampleEntrances( page, side, cfg, { route = null } = {} ) {
 	await page.reload( { waitUntil: 'domcontentloaded' } );
 	for ( let t = 0; t < 50 && /checking your browser/i.test( await page.title().catch( () => '' ) ); t++ ) {
 		await page.waitForTimeout( 300 );
 	}
-	const out = await page.evaluate( sampleIn, [ cfg.auto?.root?.[ side ] || null, excludeFor( side, cfg ), cfg.entranceWindow ?? 1600, traceArgs( side, cfg ), 0 ] ).catch( () => null );
+	const root = cfg.auto?.root?.[ side ] || null;
+	const sample = ( waitMs ) => page.evaluate( sampleIn, [ root, excludeFor( side, cfg ), cfg.entranceWindow ?? 1600, traceArgs( side, cfg ), waitMs ] ).catch( () => null );
+	let out;
+	if ( route && root ) {
+		[ out ] = await Promise.all( [ sample( cfg.entranceWait ?? 15000 ), route() ] );
+	} else {
+		route && await route();
+		out = await sample( 0 );
+	}
 	await page.waitForLoadState( 'networkidle' ).catch( () => {} );
 	return out;
 }
