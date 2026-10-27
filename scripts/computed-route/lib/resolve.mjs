@@ -3,6 +3,7 @@
 // block's storage shape, or a gap with its reason. Candidates come from the framework database (source 'sgs' only);
 // calibration decides which candidate paints that slot (R-47-6); values snap to the site's tokens (R-47-7).
 import { nearestHome } from './resolve-nearest.mjs';
+import { sideEffectFree } from './resolve-side-effects.mjs';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -551,7 +552,7 @@ export function resolve( input, ctx ) {
 	const reached = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );
 	// A tie between settings on the element and on its ancestors goes to the nearest (lib/resolve-nearest.mjs).
 	const near = nearestHome( reached, ( r ) => ( 'string' === typeof ctx.calibration.settings[ r.attr_name ]?.slot ? loose( ctx.calibration.settings[ r.attr_name ].slot ) : undefined ), slot );
-	const tied = near ?? reached;
+	let tied = near ?? reached;
 	// A state setting calibration never measured (no trigger for that state yet) is unproven, not missing.
 	if ( ! tied.length && state && ! rows.some( ( r ) => ctx.calibration.settings?.[ r.attr_name ] ) ) {
 		return { gap: 'uncalibrated', detail: `${ block } ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) } (${ state }) not calibrated` };
@@ -560,9 +561,17 @@ export function resolve( input, ctx ) {
 		const named = 'display' === prop ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `no ${ prop } setting on ${ block } paints "${ slot }"`;
 		return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `${ named } (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` );
 	}
-	const flat = tied.filter( ( r ) => 'flat_sibling' === r.tier_shape );
-	const others = ownElementSetting( ctx.db, block, tied.filter( ( r ) => 'flat_sibling' !== r.tier_shape ) );
-	const bases = new Set( flat.map( ( r ) => r.attr_name.replace( /(Tablet|Mobile)$/, '' ) ) );
+	const split = ( rows ) => {
+		const f = rows.filter( ( r ) => 'flat_sibling' === r.tier_shape );
+		return { flat: f, others: ownElementSetting( ctx.db, block, rows.filter( ( r ) => 'flat_sibling' !== r.tier_shape ) ), bases: new Set( f.map( ( r ) => r.attr_name.replace( /(Tablet|Mobile)$/, '' ) ) ) };
+	};
+	let { flat, others, bases } = split( tied );
+	// A tie the other rules leave goes, as the last resort, to the settings whose other paint on the element the draft does
+	// not contradict (lib/resolve-side-effects.mjs).
+	if ( others.length + bases.size > 1 ) {
+		tied = sideEffectFree( tied, { effectsOf: ( r ) => ctx.calibration.settings?.[ r.attr_name ]?.effects, slot, same: ( p, s ) => loose( p ) === s, siblings: input.siblings || {}, paintOf: ( p ) => defaultPaint( ctx.calibration, slot, p, ( a, b ) => loose( a ) === b ), equal: sameMeasured, isLength: ( v ) => !! parseLength( v ) } );
+		( { flat, others, bases } = split( tied ) );
+	}
 	if ( others.length + bases.size > 1 ) {
 		return { gap: 'ambiguous', detail: `${ [ ...others.map( ( r ) => r.attr_name ), ...bases ].join( ', ' ) } all paint ${ prop } on "${ slot }"` };
 	}

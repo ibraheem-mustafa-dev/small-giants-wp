@@ -34,7 +34,11 @@ const SIDE_STYLES = [ 'border-right-style', 'border-bottom-style', 'border-left-
 // root is: the element itself, or a wrapper holding only it that paints nothing (flexItemsInPage). They are never swept
 // (the sweep reads each element's own value).
 export const FLEX_ITEM_PROPS = [ 'flex-shrink' ];
-export const PROPS = [ ...new Set( [ ...DEFAULT_PROPS, ...REF_PROPS, ...SIDE_STYLES, ...FLEX_ITEM_PROPS ] ) ].filter( ( p ) => ! /^(animation-|icon-)/.test( p ) && 'gap' !== p );
+// Read so the resolver can tell apart settings that all paint one property by what else each paints (a text gradient
+// clips its background to the text, lib/resolve-side-effects.mjs), never resolved or written from the computed read; a
+// draft that declares one is still resolved through its declarations (lib/fill-resolve-element.mjs::fillElement).
+export const TIE_PROPS = [ 'background-clip' ];
+export const PROPS = [ ...new Set( [ ...DEFAULT_PROPS, ...REF_PROPS, ...SIDE_STYLES, ...FLEX_ITEM_PROPS, ...TIE_PROPS ] ) ].filter( ( p ) => ! /^(animation-|icon-)/.test( p ) && 'gap' !== p );
 
 // Playwright, from the route's own pinned install (scripts/computed-route/node_modules, FR-48-75).
 export async function loadChromium() {
