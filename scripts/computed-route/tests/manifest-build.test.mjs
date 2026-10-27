@@ -128,6 +128,23 @@ test( 'a mega menu open state keeps setting state null', () => {
 	assert.deepEqual( run( [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ) ], records ).entries[ 'mega-m' ].states, { open: null } );
 } );
 
+// One mega menu record whose panels are states of one key (each tab a `{ mega: <tab> }` state), and one page-map row per
+// panel titled "<label> mega menu" (lib/page-map-names.mjs).
+test( 'MUST FAIL: each panel row of a mega menu record holding several panels keeps only the state its label names', () => {
+	const panels = [ { name: 'closed', state_keys: { mega: null } }, { name: 'Sunglasses', state_keys: { mega: 'sun' } }, { name: 'Brands', state_keys: { mega: 'brands' } }, { name: 'Lenses', state_keys: { mega: 'lenses' } } ];
+	const records = [ rec( 'S-4', 'menu', 'Mega menu', panels, { dc: 'Site' } ) ];
+	const facts = { state: { Site: { keys: [ 'mega' ], widthKeys: [] } } };
+	const rows = [ row( 'sgs_mega_menu', 'mega-menu-sunglasses', 1, { title: 'Sunglasses mega menu' } ), row( 'sgs_mega_menu', 'mega-menu-brands', 2, { title: 'Brands mega menu' } ), row( 'sgs_mega_menu', 'mega-menu-lenses', 3, { title: 'Lenses mega menu' } ) ];
+	const { entries } = run( rows, records, { facts } );
+	assert.deepEqual( Object.keys( entries[ 'mega-menu-brands' ].states ), [ 'brands' ], 'the Brands panel opens the Brands tab, not the first' );
+	assert.deepEqual( Object.keys( entries[ 'mega-menu-sunglasses' ].states ), [ 'sunglasses' ] );
+	assert.deepEqual( Object.keys( entries[ 'mega-menu-lenses' ].states ), [ 'lenses' ] );
+	// Negative controls: a panel whose label names no state keeps every state, and a drawer titled after a state is not narrowed.
+	assert.deepEqual( Object.keys( run( [ row( 'sgs_mega_menu', 'mega-menu-help', 4, { title: 'Help mega menu' } ) ], records, { facts } ).entries[ 'mega-menu-help' ].states ), [ 'sunglasses', 'brands', 'lenses' ] );
+	const drawer = [ rec( 'S-5', 'drawer', 'Brands', panels, { dc: 'Site' } ) ];
+	assert.deepEqual( Object.keys( run( [ row( 'sgs_drawer', 'brands', 5, { title: 'Brands mega menu' } ) ], drawer, { facts } ).entries[ 'drawer-brands' ].states ), [ 'sunglasses', 'brands', 'lenses' ] );
+} );
+
 test( "'link hover' is dropped and listed as a pointer state", () => {
 	const records = [ rec( 'S-1', 'menu', 'M', [ { name: 'open', state_keys: {} }, { name: 'link hover', state_keys: {} } ] ) ];
 	const out = run( [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ) ], records );
