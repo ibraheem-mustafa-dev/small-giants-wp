@@ -1,0 +1,18 @@
+[
+ {"file": "draft-live-walk.mjs", "find": "clearCaptures( outDir, cachedShots( widths.map( ( w ) => cached[ cacheKey( w ) ] ) ) );", "replace": "", "why": "a walk clears the captures an earlier run left"},
+ {"file": "draft-live-walk.mjs", "find": "clearCaptures( outDir, cachedShots( widths.map( ( w ) => cached[ cacheKey( w ) ] ) ) );", "replace": "clearCaptures( outDir, [] );", "why": "the draft shots a cached draft walk reuses are kept"},
+ {"file": "lib/captures.mjs", "find": "/^(draft|live)-\\d+-.+\\.png$/, ", "replace": "", "why": "each side's state shots are the walker's"},
+ {"file": "lib/captures.mjs", "find": "/^(draft|live)-\\d+-.+\\.png$/", "replace": "/(draft|live)-\\d+-.+\\.png$/", "why": "a side shot's name starts the file name"},
+ {"file": "lib/captures.mjs", "find": "/^(draft|live)-\\d+-.+\\.png$/", "replace": "/^(draft|live)-.+\\.png$/", "why": "a side shot's name carries its width"},
+ {"file": "lib/captures.mjs", "find": "/^pair-\\d+-.+\\.png$/, ", "replace": "", "why": "the side-by-side pairs are the walker's"},
+ {"file": "lib/captures.mjs", "find": "/^pair-\\d+-.+\\.png$/", "replace": "/pair-\\d+-.+\\.png$/", "why": "a pair's name starts the file name"},
+ {"file": "lib/captures.mjs", "find": "/^auto-(draft|live)-\\d+-.+\\.json$/, ", "replace": "", "why": "the --dump-auto reads are the walker's"},
+ {"file": "lib/captures.mjs", "find": "/^auto-(draft|live)-\\d+-.+\\.json$/", "replace": "/auto-(draft|live)-\\d+-.+\\.json$/", "why": "an auto dump's name starts the file name"},
+ {"file": "lib/captures.mjs", "find": "/^(report\\.json|report\\.md|contact\\.md)$/", "replace": "/(report\\.json|report\\.md|contact\\.md)/", "why": "the reports are matched by their whole names"},
+ {"file": "lib/captures.mjs", "find": ", /^(report\\.json|report\\.md|contact\\.md)$/", "replace": "", "why": "the reports and contact sheet are the walker's"},
+ {"file": "lib/captures.mjs", "find": ".map( ( s ) => s?.shot ).filter( Boolean )", "replace": ".map( ( s ) => s?.shot )", "why": "a state with no shot keeps nothing"},
+ {"file": "lib/captures.mjs", "find": "export const cachedShots = ( entries ) => ( entries || [] ).flatMap(", "replace": "export const cachedShots = ( entries ) => [].flatMap(", "why": "the cached draft walks' shots are kept"},
+ {"file": "lib/captures.mjs", "find": "&& ! kept.has( path.resolve( file ) ) ", "replace": "", "why": "a kept file is not deleted"},
+ {"file": "lib/captures.mjs", "find": " && fs.statSync( file ).isFile()", "replace": "", "why": "only files are deleted, never a folder"},
+ {"file": "lib/captures.mjs", "find": "fs.existsSync( outDir ) ? fs.readdirSync( outDir ) : []", "replace": "fs.readdirSync( outDir )", "why": "a folder not made yet clears nothing"}
+]

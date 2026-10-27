@@ -43,7 +43,7 @@ export function walkerKey( name ) {
 // that is current). `open` and `active` are a surface's own reach and the press look, so no walker state maps to them.
 const PAGE_LOOKS = [ 'scrolled', 'shrunk', 'current' ];
 // Record kinds of open-able surfaces: only their open or expanded states are walker states.
-const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion' ];
+export const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion' ];
 const POINTER_WORDS = [ 'hover', 'focus', 'active' ];
 
 // The setting state of a handoff state: a page-condition look that is a vocabulary state and a word of the state's name,
