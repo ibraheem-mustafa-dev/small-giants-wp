@@ -10,3 +10,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-27 F calibration-start local-indus (sgs/mega-panel with the drawer-context fixture variant, alongside the local-eye-care run)
 - 2026-10-27 F calibration-end local-eye-care, local-indus (after c66a378cf/69fbe21df: 14 of 15 blocks accepted - mega-panel 65 settings with 23 drawer settings measured on local-indus, timeline 55 twice in a row; sgs/wishlist-panel refused on both mirrors for sgsHideOnDesktop, old map kept, cause open). Mirrors free
 - 2026-10-27 F reseed-start (from main 825b13036: sgs/info-box scaleHover element correction; hold calibrations and Fills until reseed-done)
+- 2026-10-27 F reseed-done (main 558517e5c: info-box scaleHover element wrapper; no unexpected seed change). F calibration-start local-eye-care (8 blocks: multi-button, physics-canvas, site-header, site-footer, trust-bar, heading, text, info-box - shared state elements)
