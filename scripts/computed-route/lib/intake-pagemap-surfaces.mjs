@@ -7,6 +7,7 @@
 import { attrOf, readBinding, classMethod, isFn, propName, subtree, keyName, decodeEntities } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, returnsOf } from './intake-ast-eval.mjs';
 import { megaPanelTitle } from './page-map-names.mjs';
+import { megaSlots } from './intake-pagemap-mega-slots.mjs';
 import { logicOf, moneyBinding } from './shop-parts-logic.mjs';
 
 const VOID = new Set( [ 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr' ] );
@@ -137,6 +138,17 @@ function labelOf( d, el, anchor, text ) {
 	return anchor ? attrOf( anchor, 'aria-label' ) || innerText( text, anchor ) : '';
 }
 
+// The element a static nav item was read from (its anchor; a list item's template anchor is shared by every element,
+// so it names none), and the element each menu was read from (its scope).
+const ANCHOR = new WeakMap();
+const SCOPE = new WeakMap();
+const anchored = ( item, anchor ) => {
+	if ( anchor ) {
+		ANCHOR.set( item, anchor );
+	}
+	return item;
+};
+
 // The items of a menu scope in document order: each sc-for's elements, with nested sc-for lists over the item
 // (`item.links`) as children, and, inside a <nav> (`mode` 'nav'), its static anchors. `mode` 'list' reads one
 // nested list.
@@ -163,7 +175,7 @@ function readItems( d, tree, node, scope, roots, mode ) {
 		} else if ( 'a' === c.name && 'nav' === mode ) {
 			const targets = targetsOf( d, c, scope, roots );
 			if ( targets.length ) {
-				items.push( { label: attrOf( c, 'aria-label' ) || innerText( tree.text, c ), targets, children: [] } );
+				items.push( anchored( { label: attrOf( c, 'aria-label' ) || innerText( tree.text, c ), targets, children: [] }, c ) );
 			}
 		} else if ( 'a' !== c.name ) {
 			items.push( ...readItems( d, tree, c, scope, roots, mode ) );
@@ -172,7 +184,7 @@ function readItems( d, tree, node, scope, roots, mode ) {
 	return items;
 }
 
-const numbered = ( items, parentItem = null ) => items.map( ( it, i ) => ( { ...it, position: i + 1, parentItem, children: numbered( it.children, it.label ) } ) );
+const numbered = ( items, parentItem = null ) => items.map( ( it, i ) => anchored( { ...it, position: i + 1, parentItem, children: numbered( it.children, it.label ) }, ANCHOR.get( it ) ) );
 
 // Is this element an overlay (dialog, aria-modal, or a fixed panel holding a nav and no dialog: a fixed wrapper around
 // a dialog is its backdrop), and which kind: a drawer is a
@@ -355,7 +367,7 @@ function megaPanels( d, header, panel ) {
 	return inner.map( ( g, i ) => {
 		const want = gateValue( d, g );
 		const opens = want ? openers.filter( ( o ) => setValues( d, attrOf( o, 'onFocus' ) ).includes( want ) ) : [];
-		return { label: 1 === opens.length ? attrOf( opens[ 0 ], 'aria-label' ) || innerText( d.text, opens[ 0 ] ) : `Mega menu ${ i + 1 }`, node: g };
+		return { label: 1 === opens.length ? attrOf( opens[ 0 ], 'aria-label' ) || innerText( d.text, opens[ 0 ] ) : `Mega menu ${ i + 1 }`, node: g, opener: 1 === opens.length ? opens[ 0 ] : null };
 	} );
 }
 
@@ -430,11 +442,13 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 				const name = many ? `${ r.kind }-${ kebab( attrOf( s, 'aria-label' ) || '' ) || i + 1 }` : r.kind;
 				if ( items.length ) {
 					menus.push( { menu: menus.some( ( m ) => m.menu === name ) ? `${ name }-${ i + 1 }` : name, region: r.kind, draftId: tagId( d, s ), items } );
+					SCOPE.set( menus[ menus.length - 1 ], s );
 				}
 			} );
 		}
 		// Mega-menu panels: header items whose children show in a header or drawer menu; else a panel element that
-		// drops below the header (absolute, top:100%).
+		// drops below the header (absolute, top:100%), each panel taking the header menu slot of the control that opens
+		// it (lib/intake-pagemap-mega-slots.mjs).
 		const headerMenus = menus.filter( ( m ) => 'header' === m.region && m.draftId.startsWith( `${ d.file }:` ) );
 		const withKids = ( label ) => menus.some( ( m ) => ( 'drawer' === m.region || 'header' === m.region ) && m.items.some( ( it ) => it.label === label && it.children.length ) );
 		const panels = headerMenus.flatMap( ( m ) => m.items.filter( ( it ) => withKids( it.label ) ).map( ( it ) => ( { it, m } ) ) );
@@ -443,10 +457,22 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 		}
 		if ( ! panels.length ) {
 			for ( const h of named( 'header' ) ) {
-				for ( const p of descendants( h.node ).filter( ( x ) => /position:absolute/.test( style( x ) ) && /top:100%/.test( style( x ) ) ) ) {
-					for ( const m of megaPanels( d, h.node, p ) ) {
-						surfaces.push( { kind: 'menu', label: m.label, title: megaPanelTitle( m.label ), route: null, page: null, dc: stem( d.file ), draftId: tagId( d, m.node ) } );
-					}
+				const found = descendants( h.node ).filter( ( x ) => /position:absolute/.test( style( x ) ) && /top:100%/.test( style( x ) ) ).flatMap( ( p ) => megaPanels( d, h.node, p ) );
+				const slots = megaSlots( {
+					menu: menus.find( ( m ) => SCOPE.has( m ) && [ SCOPE.get( m ), ...ancestors( SCOPE.get( m ) ) ].includes( h.node ) ) || null,
+					openers: found.map( ( m ) => m.opener ),
+					anchorOf: ( it ) => ANCHOR.get( it ),
+					itemOf: ( o ) => anchored( { label: attrOf( o, 'aria-label' ) || innerText( d.text, o ), targets: [ ...new Set( targetsOf( d, o, new Map(), roots ) ) ], children: [], parentItem: null }, o ),
+					newMenu: () => {
+						const m = { menu: menus.some( ( x ) => 'header' === x.menu ) ? `header-${ menus.filter( ( x ) => 'header' === x.region ).length + 1 }` : 'header', region: 'header', draftId: tagId( d, h.node ), items: [] };
+						menus.push( m );
+						SCOPE.set( m, h.node );
+						return m;
+					},
+				} );
+				for ( const m of found ) {
+					const slot = slots.get( m.opener );
+					surfaces.push( { kind: 'menu', label: m.label, title: megaPanelTitle( m.label ), route: null, page: null, dc: stem( d.file ), draftId: tagId( d, m.node ), ...( slot ? { menuItem: slot } : {} ) } );
 				}
 			}
 		}

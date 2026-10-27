@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Bakery</title></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "help", "label": "Help", "kind": "content page", "wp": { "slug": "help", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header>
+  <div>
+    <button onClick="{{ toHelp }}" onFocus="{{ openHelp }}">Help</button>
+    <button onClick="{{ toggleCakes }}" onFocus="{{ openCakes }}" aria-label="Cakes">Cakes</button>
+    <button onFocus="{{ openGifts }}">Gifts</button>
+    <button onFocus="{{ openGifts }}">Gift ideas</button>
+  </div>
+  <sc-if value="{{ megaAny }}">
+  <div style="position:absolute;left:0;right:0;top:100%">
+    <sc-if value="{{ megaCakes }}"><div><a href="#" onClick="{{ toHome }}">All cakes</a></div></sc-if>
+    <sc-if value="{{ megaHelp }}"><div><a href="#" onClick="{{ toHelp }}">Delivery</a></div></sc-if>
+    <sc-if value="{{ megaGifts }}"><div><a href="#" onClick="{{ toHome }}">Gift boxes</a></div></sc-if>
+  </div>
+  </sc-if>
+</header>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isHelp }}"><main><h1>Help</h1></main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', mega: null };
+  go(p) { this.setState({ page: p, mega: null }); }
+  renderVals() {
+    const S = this.state;
+    return {
+      isHome: S.page === 'home', isHelp: S.page === 'help',
+      megaAny: !!S.mega, megaCakes: S.mega === 'cakes', megaHelp: S.mega === 'help', megaGifts: S.mega === 'gifts',
+      openCakes: () => this.setState({ mega: 'cakes' }), openHelp: () => this.setState({ mega: 'help' }), openGifts: () => this.setState({ mega: 'gifts' }),
+      toggleCakes: (e) => { e.preventDefault(); this.setState({ mega: 'cakes' }); },
+      toHome: () => this.go('home'), toHelp: () => this.go('help'),
+    };
+  }
+}
+</script>
+</body></html>
