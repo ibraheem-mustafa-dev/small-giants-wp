@@ -4,6 +4,7 @@
 // for the element's block (a logo block's `logoId`, a menu block's `ref`).
 // The factory takes the writer's shared context (`ctx`).
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
+import { elementHandler, handlerOf, linkWrite } from './draft-link.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -23,7 +24,7 @@ export function copyrightPrefixParts( text, siteName = null ) {
 export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixParts( text, siteName ).prefix;
 
 export function makeContent( ctx ) {
-	const { m, facts, view, carried, surfaceKind } = ctx;
+	const { m, facts, view, carried, surfaceKind, siteLink } = ctx;
 	const { composition, enumOf } = facts;
 	const attrExists = ( slug, name ) => !! facts.attr( slug, name );
 	const layoutOf = ( slug, e ) => {
@@ -69,11 +70,15 @@ export function makeContent( ctx ) {
 		top.linkSource && ( a.linkSource = top.linkSource );
 		const href = e.attrs?.href;
 		if ( linkAttr && href ) {
-			if ( '#' === href ) {
-				const onClick = /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ];
-				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link is "#"${ onClick ? ` and navigates by script ${ onClick }` : '' }: destination not in the draft, url left empty` } );
+			// The draft's destination as a site address (lib/draft-link.mjs): a draft route is never written as it stands.
+			const r = siteLink( href, e );
+			if ( 'none' === r.kind ) {
+				const onClick = handlerOf( elementHandler( e ) );
+				handover.push( { owner: 'behaviour', kind: 'link', detail: `draft link is "#"${ onClick ? ` and navigates by script ${ onClick }` : '' }${ r.routes ? ` to one of ${ r.routes.map( ( x ) => `"${ x }"` ).join( ', ' ) } by the item it is clicked on` : '' }: destination not in the draft, url left empty` } );
 			} else if ( ! top.linkSource ) {
-				a[ linkAttr ] = href;
+				const out = linkWrite( r, href );
+				null !== out.value && ( a[ linkAttr ] = out.value );
+				out.handover && handover.push( out.handover );
 			}
 			e.attrs?.target && attrExists( block, 'linkTarget' ) && ( a.linkTarget = e.attrs.target );
 		}

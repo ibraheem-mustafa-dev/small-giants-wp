@@ -1,6 +1,6 @@
 // The proposal context a surface's skeleton is proposed with (lib/skeleton-propose.mjs::proposeSkeleton): the surface's
 // handoff states, the draft's width thresholds, and the calibration cache's element keys and settings for its block
-// slugs on its site. skeleton.mjs::intakeContext and lib/skeleton-rerun.mjs::rerunSkeletons both read them here, so an
+// slugs on its site, and the client's draft-link context (lib/draft-link.mjs). skeleton.mjs::intakeContext and lib/skeleton-rerun.mjs::rerunSkeletons both read them here, so an
 // intake-generated proposal and `skeleton.mjs propose` carry the same child slots and collapse points, and the same form links
 // (lib/skeleton-form-link.mjs).
 import fs from 'fs';
@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { loadCalibration } from './cache.mjs';
 import { formLinksFor } from './skeleton-form-link.mjs';
 import { detectReferences } from './references.mjs';
+import { draftLinksFor } from './draft-link.mjs';
 
 const CACHE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'cache' );
 
@@ -36,5 +37,5 @@ export function siteOf( { repo, client, slug } ) {
 // Everything proposeSkeleton takes beyond the inventory and the decisions, for one intake skeleton.
 export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ) } ) {
 	const refs = detectReferences();
-	return { calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs };
+	return { calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
 }

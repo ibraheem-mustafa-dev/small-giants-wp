@@ -23,6 +23,7 @@ import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
 import { makeContent } from './skeleton-write-content.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
+import { siteLinkResolver } from './draft-link.mjs';
 
 export const COVERAGE_WRITES = [
 	'construct:dc-import',
@@ -97,8 +98,10 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // calibration element keys), calSettings (slug -> the calibration's settings with their slots), states (the surface's handoff
 // record states: name, how_to_reach, sc_if_tpl_ids), thresholds (the width thresholds the draft's code uses), db, openers (surface id to its surfaces.json opened_by words, read from the handoff folder when omitted), factRecord (the
 // client's fact record, lib/fact-record.mjs: loaded from `facts.client` when omitted, none when the client has no record),
-// formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link) and refs (lib/references.mjs::detectReferences) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences() } ) {
+// formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences)
+// and draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
+// null resolves every draft route to no address) }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -110,7 +113,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
 	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce }, motion, view, scope, formLinkOf, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
+	const siteLink = siteLinkResolver( draftLinks );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -128,7 +133,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// innermost last) and `w`, which holds the writer's functions once each module has made them.
 	const w = {};
 	const ctx = {
-		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, rows, rowOf, w,
+		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, rows, rowOf, w, siteLink,
 		widthAlternatives: [], variantsOf: new Map(), carryProblems: [], slotProblems: [], nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
 	};
 	const { widthAlternatives, carryProblems, slotProblems, nodeOfKey, partPending, hosts } = ctx;

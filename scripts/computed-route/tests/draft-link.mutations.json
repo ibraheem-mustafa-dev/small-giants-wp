@@ -1,0 +1,23 @@
+[
+	{ "file": "lib/skeleton-write-content.mjs", "find": "null !== out.value && ( a[ linkAttr ] = out.value );", "replace": "a[ linkAttr ] = href;", "why": "the content writer copies the draft href verbatim again (the defect)" },
+	{ "file": "lib/skeleton-write-units.mjs", "find": "...( null !== out.value ? { [ li.url ]: out.value } : {} )", "replace": "...( href && '#' !== href ? { [ li.url ]: href } : {} )", "why": "a link list's items copy the draft href verbatim again" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: null !== out.value ? { [ attr ]: out.value } : {}", "replace": "attributes: { [ attr ]: realHref( e ) }", "why": "a whole-card link and a card's call to action copy the draft href verbatim again" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "const siteLink = siteLinkResolver( draftLinks );", "replace": "const siteLink = siteLinkResolver( null );", "why": "the writer ignores the client's draft-link context" },
+	{ "file": "lib/skeleton-classify.mjs", "find": "formLinkOf, siteLink, topBlock:", "replace": "formLinkOf, topBlock:", "why": "the rules never receive the draft-link resolver" },
+	{ "file": "lib/draft-link.mjs", "find": "return { value: null, handover: { owner: r.owner,", "replace": "return { value: href, handover: { owner: r.owner,", "why": "an unresolved draft route is written as it stands" },
+	{ "file": "lib/draft-link.mjs", "find": "value: `${ at.address }${ fragment ? `#${ fragment }` : '' }`", "replace": "value: at.address", "why": "the draft's #fragment is dropped" },
+	{ "file": "lib/draft-link.mjs", "find": "const address = isFront( row ) ? '/' : permalinkOf( row, rows );", "replace": "const address = permalinkOf( row, rows );", "why": "the front page is linked by its slug, not /" },
+	{ "file": "lib/draft-link.mjs", "find": "row && routeRow.set( route, row );", "replace": "void row;", "why": "a route the page map folded into another row resolves to nothing" },
+	{ "file": "lib/draft-link.mjs", "find": "return { address: PERMALINKS.replace( '%postname%', row.slug ) };", "replace": "return { owner: 'content-page', why: 'mutated' };", "why": "a post row has no address" },
+	{ "file": "lib/draft-link.mjs", "find": "if ( 'product' === row.postType ) {", "replace": "if ( false ) {", "why": "a product link is not handed to product data" },
+	{ "file": "lib/draft-link.mjs", "find": "if ( 1 === routes.length && null !== routes[ 0 ] ) {", "replace": "if ( false ) {", "why": "a go() link to one page resolves to nothing" },
+	{ "file": "lib/draft-link.mjs", "find": "if ( 1 === routes.length && null !== routes[ 0 ] ) {", "replace": "if ( null != routes[ 0 ] ) {", "why": "a per-item handler reaching two pages takes the first" },
+	{ "file": "lib/draft-link.mjs", "find": "if ( slash || ( 'hash' === ctx?.adapter && ctx.routeRow.has( key ) ) ) {", "replace": "if ( slash ) {", "why": "a hash key with no slash is read as an in-page anchor" },
+	{ "file": "lib/draft-link.mjs", "find": "\t\treturn { kind: 'anchor', value: h };", "replace": "\t\treturn toRow( key, ctx );", "why": "an in-page anchor is read as a route" },
+	{ "file": "lib/draft-link.mjs", "find": "if ( /\\.dc\\.html$/i.test( p ) ) {", "replace": "if ( false ) {", "why": "a page file no row holds is written as it stands" },
+	{ "file": "lib/draft-link.mjs", "find": "const dropped = [ ...query.keys() ].length ? `?${ query.toString() }` : null;", "replace": "const dropped = null;", "why": "a dropped draft query is not reported" },
+	{ "file": "lib/draft-link.mjs", "find": "const route = ctx?.routeRow.has( p ) ? p : resolveRef( p, file );", "replace": "const route = p;", "why": "a page file is not resolved from the linking draft's folder" },
+	{ "file": "lib/draft-link.mjs", "find": "export const elementFile = ( e ) => ( e?.template ? `${ e.template }.dc.html` : '' );", "replace": "export const elementFile = ( e ) => '';", "why": "an element's click handler is matched in no draft file" },
+	{ "file": "lib/draft-link.mjs", "find": "if ( EXTERNAL.test( h ) ) {", "replace": "if ( false ) {", "why": "an external link is read as a relative path" },
+	{ "file": "lib/draft-link.mjs", "find": "if ( slash && '' === key ) {", "replace": "if ( false ) {", "why": "the hash home route #/ resolves to nothing" }
+]

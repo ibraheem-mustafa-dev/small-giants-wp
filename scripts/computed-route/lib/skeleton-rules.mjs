@@ -14,6 +14,7 @@ import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
+import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -88,8 +89,9 @@ const EMOJI = /^(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+$/u;
 const HEADING = /^h[1-6]$/;
 
 // o: { m (lib/skeleton-model.mjs), facts (lib/skeleton-facts.mjs), surface: { slug, kind, name }, hooks: { siteInfoKinds,
-// isColumnLabel, topBlock, blockOfKey } (the classifier's own readings: an element's Site Info kinds, whether it heads a
-// column of links, the block its plain scoring proposes, the block already proposed for an ancestor's key), motion (a Set
+// isColumnLabel, topBlock, blockOfKey, siteLink } (the classifier's own readings: an element's Site Info kinds, whether it heads a
+// column of links, the block its plain scoring proposes, the block already proposed for an ancestor's key; and the draft-link
+// resolver, lib/draft-link.mjs::siteLinkResolver), motion (a Set
 // of template keys, `<component>/<tpl>`, whose own animation loops a translate for ever: lib/skeleton-rerun.mjs::loopingKeys),
 // view (lib/skeleton-record.mjs::recordView: the fact record's reading of each element's attributes and declarations; an
 // empty view reads the rendered attributes), scope (lib/skeleton-record.mjs::surfaceContext: the surface's parent, kind and
@@ -328,11 +330,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const wordBound = ( lk ) => ( lk ? { wordBound: { labelFromSiteInfo: lk.kind } } : {} );
 	// A verdict of a rule, or null when the decisions data has no entry for it (each rule is switched on by its entry).
 	const v = ( rule, extra ) => ( R[ rule ] ? { rule, reason: R[ rule ].reason || rule, ...extra } : null );
+	// A link setting's value as a site address (lib/draft-link.mjs, through hooks.siteLink): { attributes, handover? }, the
+	// setting absent when the draft's destination resolves to no address.
+	const siteLinkOf = ( attr, e ) => {
+		const out = linkWrite( ( hooks.siteLink || siteLinkResolver( null ) )( realHref( e ), e ), realHref( e ) );
+		return { attributes: null !== out.value ? { [ attr ]: out.value } : {}, ...( out.handover ? { handover: out.handover } : {} ) };
+	};
 	const linkAttrs = ( e, lk ) => {
 		if ( lk ) {
-			return { sgsBlockLinkSource: lk.source };
+			return { attributes: { sgsBlockLinkSource: lk.source } };
 		}
-		return realHref( e ) ? { sgsBlockLink: realHref( e ) } : {};
+		return realHref( e ) ? siteLinkOf( 'sgsBlockLink', e ) : { attributes: {} };
 	};
 
 	// The rules in precedence order; the first verdict wins. Each takes x: { e, st (declared style), text (all its
@@ -437,7 +445,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 					return null;
 				}
 				// A card that ends in a short call to action is a plain card: the action is the button that holds the link.
-				return R.cardAction && ( ( a ) => !! a && !! actionOf( a ) )( cardAction( e ) ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: linkAttrs( e, lk ) } );
+				return R.cardAction && ( ( a ) => !! a && !! actionOf( a ) )( cardAction( e ) ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, ...linkAttrs( e, lk ) } );
 			}
 			// One action with one label (and a glyph): a pill. A toggle or a slider arrow is not; nor is a link with no words.
 			if ( 1 !== texts.length || disclosure( e ) ) {
@@ -460,11 +468,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			const lk = linkKindOf( card );
-			let link = realHref( card ) ? { url: realHref( card ) } : {};
-			if ( lk ) {
-				link = { linkSource: lk.source };
-			}
-			return v( 'cardAction', { block: R.cardAction?.block, attributes: { label: m.words( e ), ...link } } );
+			const link = lk ? { attributes: { linkSource: lk.source } } : realHref( card ) ? siteLinkOf( 'url', card ) : { attributes: {} };
+			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: m.words( e ), ...link.attributes } } );
 		},
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker. A control the visitor operates and a bare number are neither.

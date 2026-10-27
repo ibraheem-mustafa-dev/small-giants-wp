@@ -20,6 +20,7 @@ import { mapPool, poolSize } from './intake-pool.mjs';
 import { readInventory, INVENTORY_WIDTHS } from './skeleton-inventory.mjs';
 import { proposeSkeleton } from './skeleton-propose.mjs';
 import { formLinksFor } from './skeleton-form-link.mjs';
+import { draftLinksFor } from './draft-link.mjs';
 import { detectReferences } from './references.mjs';
 import { loadFacts, decisionsProblems, REPO } from './skeleton-facts.mjs';
 import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
@@ -374,11 +375,12 @@ function factsFor( { db, client, repo, facts } ) {
 // tests' negative control). o: { folder, harPath, surfaces, client, db?, facts?, entry?, routing?, site?, shotsDir?,
 // widths, repo?, harness? (harness options), log?, census?, openStates?, inventoriesDir? (each surface's full inventory is
 // written there as <surface>.json, so lib/skeleton-rerun.mjs can propose again offline), propose? (the proposer; proposeSkeleton by default, called with the client's saved
-// form links) }. Returns { skeletons: [{ surface, id, kind,
+// form links and its draft-link context), pageMap? (this run's proposed page map rows, the draft-link context's rows until a
+// confirmed page-map.json exists) }. Returns { skeletons: [{ surface, id, kind,
 // name, route, opened?, inventory, rows, counts, problems, gap? }], gaps, runs: [{ file, hash, surfaces, requests,
 // unlisted, blocked, proxyAttempts, ms }] }. A surface whose inventory or proposal throws, or that no opener renders,
 // keeps its entry with `gap` and adds a gap row naming what was tried.
-export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton } ) {
+export async function proposeSkeletons( { folder, harPath, surfaces, client, db = null, facts = null, entry = null, routing = null, site = null, shotsDir = null, widths = INVENTORY_WIDTHS, repo = REPO, harness = {}, log = () => {}, census = null, openStates = true, inventoriesDir = null, propose = proposeSkeleton, pageMap = null } ) {
 	if ( [ ...widths ].sort().join() !== [ ...INVENTORY_WIDTHS ].sort().join() ) {
 		throw new Error( `the skeleton inventory reads at ${ INVENTORY_WIDTHS.join( ', ' ) } (Spec 48 §3.4), not ${ widths.join( ', ' ) }` );
 	}
@@ -400,6 +402,9 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const refs = detectReferences();
 	let links = null;
 	const formLinks = () => ( links ||= formLinksFor( { repo, client, refs } ) );
+	// The page map and routing that turn a draft link into a site address (lib/draft-link.mjs): this run's own, read once.
+	let linkCtx;
+	const draftLinks = () => ( undefined !== linkCtx ? linkCtx : ( linkCtx = draftLinksFor( { repo, client, routing: routeInfo().error ? null : routeInfo(), proposedRows: pageMap } ) ) );
 	// Every surface root of the export (the run may read a subset): the roots a header's sibling strip may not hold.
 	let every = null;
 	const everySurface = () => ( every ||= census ? surfaceRoots( { folder, census } ).surfaces : surfaces );
@@ -476,7 +481,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						if ( f.error ) {
 							throw new Error( f.error );
 						}
-						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, db: theDb } );
+						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb } );
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
 						r.proposal.stripRoots?.forEach( ( k ) => absorbed.set( k, s.slug ) );
 						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
