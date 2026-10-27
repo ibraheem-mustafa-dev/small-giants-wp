@@ -14,6 +14,7 @@
 import { parseExpression } from '@babel/parser';
 import { attrOf, readBinding, isFn, keyName, propName, resolveName, subtree } from './intake-ast.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
+import { fnsNamed } from './intake-census-map.mjs';
 
 const MAX_DEPTH = 4;
 // A state key whose surfaces.json value is a comparison or a range (">= 768", "768–1023") is a condition, not a write.
@@ -36,25 +37,17 @@ function literal( n ) {
 	return null;
 }
 
-// The functions the logic gives a name: class or object properties holding a function, methods, function declarations
-// (indexed by name once per parsed logic).
+// The functions the logic gives a name (lib/intake-census-map.mjs::fnsNamed, every kind of name): a class member (a method,
+// a function field, `this.<name> = <function>`, `this.y` and `this.y.bind(…)` followed to y), a local function (`function
+// <name>`, `const <name> = <function>`) and an object key holding a function. Kept per parsed logic by name.
 const NAMED = new WeakMap();
-function fnsNamed( idx, name ) {
-	if ( ! NAMED.has( idx ) ) {
-		const byName = new Map();
-		const add = ( key, fn ) => null != key && byName.set( key, [ ...( byName.get( key ) || [] ), fn ] );
-		for ( const n of idx.all ) {
-			if ( /ClassProperty|ObjectProperty/.test( n.type ) && isFn( n.value ) ) {
-				add( keyName( n ), n.value );
-			} else if ( /ClassMethod|ObjectMethod/.test( n.type ) ) {
-				add( keyName( n ), n );
-			} else if ( 'FunctionDeclaration' === n.type ) {
-				add( n.id?.name, n );
-			}
-		}
-		NAMED.set( idx, byName );
+function fnsOf( idx, name ) {
+	const byName = NAMED.get( idx ) ?? NAMED.set( idx, new Map() ).get( idx );
+	if ( ! byName.has( name ) ) {
+		const m = { nodes: idx.all };
+		byName.set( name, [ ...new Set( [ 'member', 'local', 'key' ].flatMap( ( how ) => fnsNamed( m, name, how ) ) ) ] );
 	}
-	return NAMED.get( idx ).get( name ) || [];
+	return byName.get( name );
 }
 
 // The literal writes a value makes at `at` (its path), added to `out` as 'path=value': an object's properties path by
@@ -106,10 +99,10 @@ function calleesOf( idx, call ) {
 		if ( 'var' === decl?.kind && isFn( decl.init ) ) {
 			return [ decl.init ];
 		}
-		return fnsNamed( idx, call.callee.name );
+		return fnsOf( idx, call.callee.name );
 	}
 	const name = propName( call.callee );
-	return name ? fnsNamed( idx, name ) : [];
+	return name ? fnsOf( idx, name ) : [];
 }
 
 // The literal writes a function makes through setState: each setState call's object (or its updater's returned
@@ -171,7 +164,7 @@ function handlerFns( idx, value ) {
 		return [];
 	}
 	const name = expr && ( propName( expr ) || ( 'Identifier' === expr.type ? expr.name : null ) );
-	return name ? fnsNamed( idx, name ) : [];
+	return name ? fnsOf( idx, name ) : [];
 }
 
 // Sets `opensFlow` on each product row whose page holds an element opening a flow row's surface. `exp` is the loaded

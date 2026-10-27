@@ -11,9 +11,10 @@
 //   { not: <condition>, partial?: true }          the negation of a condition with no inverse form; a negated partial
 //                                                 `all`/`any` is `{ not, partial: true }` because its unread term has no inverse
 // A condition that reads no width is `width: null`; one that reads a width the reader cannot follow is a gap row.
-import { parseLogic, resolveName, isThisMember, propName, keyName, snippet, classMethod, readBinding } from './intake-ast.mjs';
+import { parseLogic, resolveName, isThisMember, keyName, snippet, classMethod, readBinding } from './intake-ast.mjs';
 import { returnsOf, evalDeep } from './intake-ast-eval.mjs';
 import { widthReader, numberOf } from './intake-breakpoints.mjs';
+import { stateObjects } from './intake-state-objects.mjs';
 
 const NEGATED = { '<': '>=', '<=': '>', '>': '<=', '>=': '<', '===': '!==', '!==': '===', '==': '!=', '!=': '==' };
 const MIRROR = { '<': '>', '<=': '>=', '>': '<', '>=': '<=', '===': '===', '!==': '!==', '==': '==', '!=': '!=' };
@@ -42,13 +43,6 @@ export function negate( c ) {
 }
 
 const allOf = ( list ) => ( 1 === list.length ? list[ 0 ] : { all: list } );
-
-// The object literals that write class state: `state = { … }` and the argument of every setState({ … }).
-function stateObjects( idx ) {
-	return idx.all.filter( ( n ) => 'ClassProperty' === n.type && 'state' === keyName( n ) ).map( ( n ) => n.value )
-		.concat( idx.all.filter( ( n ) => 'CallExpression' === n.type && 'setState' === propName( n.callee ) ).map( ( n ) => n.arguments[ 0 ] ) )
-		.map( ( v ) => ( /Function/.test( v?.type || '' ) ? v.body : v ) ).filter( ( v ) => 'ObjectExpression' === v?.type );
-}
 
 // The keys of the class state (every key `state = { … }` or a setState({ … }) names).
 export function stateKeysOf( idx ) {
