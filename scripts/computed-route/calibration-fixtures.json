@@ -8,6 +8,26 @@
   "sgs/text": {
     "attributes": {
       "text": "Calibration text for measuring, with a <a href=\"https://example.com/\">link</a>."
+    },
+    "preconditions": {
+      "firstLetterColour": {
+        "dropCap": true
+      },
+      "firstLetterColourGradient": {
+        "dropCap": true
+      },
+      "firstLetterColourHover": {
+        "dropCap": true
+      },
+      "firstLetterFontSize": {
+        "dropCap": true
+      },
+      "firstLetterFontSizeUnit": {
+        "dropCap": true
+      },
+      "firstLetterFontWeight": {
+        "dropCap": true
+      }
     }
   },
   "sgs/container": {
@@ -124,7 +144,69 @@
       {
         "childIconShape": "circle"
       }
-    ]
+    ],
+    "preconditions": {
+      "childIconLabelPosition": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelColour": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelColourGradient": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelColourHover": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelColourHoverGradient": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelFontSize": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelFontSizeUnit": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelFontWeight": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelFontStyle": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelFontFamily": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelTextTransform": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelTextDecoration": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelLineHeight": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelLineHeightUnit": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelLetterSpacing": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelLetterSpacingUnit": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelTextWrap": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelTextStrokeWidth": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelTextStrokeColour": {
+        "childIconShowLabel": true
+      },
+      "childIconLabelTextStrokeColourHover": {
+        "childIconShowLabel": true
+      }
+    }
   },
   "sgs/business-info": {
     "attributes": {
@@ -858,7 +940,8 @@
         "name": "sgs/form-field-text",
         "attributes": {
           "fieldName": "your_name",
-          "label": "",
+          "label": "Your name",
+          "helpText": "As it appears on your records",
           "placeholder": "Your name",
           "required": true,
           "width": "half"
@@ -902,6 +985,68 @@
           "placeholder": "Your message",
           "required": true,
           "width": "full"
+        }
+      },
+      {
+        "name": "sgs/form-field-number",
+        "attributes": {
+          "fieldName": "right_sph",
+          "label": "Right SPH",
+          "columnHeading": "SPH",
+          "rowHeading": "R",
+          "required": false,
+          "width": "half"
+        }
+      },
+      {
+        "name": "sgs/form-field-tiles",
+        "attributes": {
+          "fieldName": "service",
+          "label": "Service",
+          "required": false,
+          "width": "full",
+          "tiles": [
+            {
+              "value": "eye-test",
+              "label": "Eye test",
+              "icon": "eye",
+              "iconSource": "lucide"
+            },
+            {
+              "value": "frames",
+              "label": "Frames",
+              "icon": "glasses",
+              "iconSource": "lucide"
+            }
+          ]
+        }
+      },
+      {
+        "name": "sgs/form-field-consent",
+        "attributes": {
+          "fieldName": "consent",
+          "consentText": "I agree to the Terms &amp; Conditions",
+          "required": false,
+          "width": "full"
+        }
+      },
+      {
+        "name": "sgs/form-field-file",
+        "attributes": {
+          "fieldName": "upload",
+          "label": "Upload",
+          "zoneStyle": "panel",
+          "buttonLabel": "Choose file",
+          "helpText": "PDF or image",
+          "required": false,
+          "width": "full"
+        }
+      },
+      {
+        "name": "sgs/form-review",
+        "attributes": {
+          "heading": "Review your information",
+          "headingLevel": "h3"
         }
       },
       {
@@ -1629,6 +1774,12 @@
             },
             "innerBlocks": [
               {
+                "name": "sgs/text",
+                "attributes": {
+                  "text": "01"
+                }
+              },
+              {
                 "name": "sgs/heading",
                 "attributes": {
                   "level": "h3",
@@ -1641,6 +1792,12 @@
                   "tagName": "div"
                 },
                 "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "Link row description"
+                    }
+                  },
                   {
                     "name": "sgs/icon-list",
                     "attributes": {
@@ -1672,10 +1829,54 @@
         "attributes": {},
         "innerBlocks": [
           {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "minHeight": {
+                "desktop": "132px"
+              }
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/label",
+                "attributes": {
+                  "text": "Since 1994"
+                }
+              }
+            ]
+          },
+          {
+            "name": "sgs/text",
+            "attributes": {
+              "text": "Card title"
+            }
+          },
+          {
             "name": "sgs/text",
             "attributes": {
               "text": "Aside feature text."
             }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div"
+            },
+            "innerBlocks": [
+              {
+                "name": "sgs/button",
+                "attributes": {
+                  "label": "Read our story",
+                  "url": "/story/"
+                }
+              }
+            ]
           }
         ]
       }
@@ -1696,6 +1897,12 @@
       },
       {
         "style": "cards",
+        "metadata": {
+          "name": "sgs-cal-mega-drawer"
+        }
+      },
+      {
+        "drawerCardCompact": true,
         "metadata": {
           "name": "sgs-cal-mega-drawer"
         }
@@ -1940,6 +2147,58 @@
       },
       "chromeRatingColour": {
         "chromeRating": true
+      },
+      "chromeButtonColourBackground": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourBackgroundGradient": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourBackgroundHover": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourText": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourTextGradient": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourTextHover": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourTextHoverGradient": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourBorder": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonColourBorderHover": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonBorderStyle": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonBorderWidth": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonBorderRadius": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
+      },
+      "chromeButtonPadding": {
+        "chromeSlotType": "button",
+        "chromeSlotUrl": "/shop/"
       }
     }
   },
@@ -3039,7 +3298,11 @@
   "sgs/wishlist-panel": {
     "attributes": {
       "showWhenEmpty": true
-    }
+    },
+    "wishlist": {
+      "settle": ".sgs-wishlist-panel__remove"
+    },
+    "settleGone": ".sgs-wishlist-panel[hidden], .sgs-wishlist-panel [aria-busy=\"true\"]"
   },
   "sgs/measured-diagram": {
     "attributes": {

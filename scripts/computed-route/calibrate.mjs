@@ -38,6 +38,7 @@ import { WIDTHS, READ_KEY, buildTree, slotFor, foldReading, defaultPaint, longha
 import { contentRowsFor, planContentInstances, needlesOf, readContentAll, collectContent } from './lib/calibrate-content.mjs';
 import { setBasket, pickPass } from './lib/calibrate-basket.mjs';
 import { withTestOrder } from './lib/calibrate-order.mjs';
+import { setWishlist } from './lib/calibrate-wishlist.mjs';
 import { refsFor, refGate, checkRefsExist, fixtureRoles, resolveFixture, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { openRunSession, closeStrayTabs, readEnv } from './lib/wp-run-session.mjs';
 
@@ -206,13 +207,26 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		const pageUrl = built.json.link || `${ env.url }/?page_id=${ target.postId }`;
 		// A fixture's basket line (lib/calibrate-basket.mjs): the page is read again holding it, and each instance keeps the
 		// pass in which its marker shows.
-		const passes = [ await readAll( shared.page, pageUrl, list ) ];
+		// A fixture's `settleGone` holds every pass until no element matches it (a block its script unhides after load).
+		const settleGone = fixture.settleGone || null;
+		const passes = [ await readAll( shared.page, pageUrl, list, { settleGone } ) ];
 		if ( fixture.basket ) {
 			await setBasket( shared.page, env.url, fixture.basket );
 			try {
-				passes.push( await readAll( shared.page, pageUrl, list ) );
+				passes.push( await readAll( shared.page, pageUrl, list, { settleGone } ) );
 			} finally {
 				await setBasket( shared.page, env.url, null );
+			}
+		}
+		// A fixture's wishlist (lib/calibrate-wishlist.mjs): the page is read again with one saved product, and the user's
+		// own list is put back.
+		if ( fixture.wishlist ) {
+			const runPhp = wpEvalRunner( target, site, REPO );
+			setWishlist( runPhp, env.user, true );
+			try {
+				passes.push( await readAll( shared.page, pageUrl, list, { settle: fixture.wishlist.settle || null, settleGone } ) );
+			} finally {
+				setWishlist( runPhp, env.user, false );
 			}
 		}
 		// A second pass only when this chunk holds a content instance: the content read records node existence, text and

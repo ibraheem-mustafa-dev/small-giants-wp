@@ -362,3 +362,47 @@ test( 'MUST FAIL (forced details left open): a summary whose click is cancelled 
 	}
 	assert.deepEqual( after.details, [ false, false ] );
 } );
+
+test( 'MUST FAIL (wishlist rows never read): a pass with a settle selector waits for it before reading, so content a script builds after load is read', async () => {
+	const fs = await import( 'node:fs' );
+	const os = await import( 'node:os' );
+	const path = await import( 'node:path' );
+	const { chromium } = await import( 'playwright' );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cal-settle-' ) );
+	const file = path.join( dir, 'p.html' );
+	fs.writeFileSync( file, '<div class="cr-ref-cal-0"><p>rest</p></div><script>setTimeout(()=>{const s=document.createElement("span");s.className="sgs-x__late";s.textContent="row";document.querySelector(".cr-ref-cal-0").append(s);},1500)</script>' );
+	const url = 'file:///' + file.split( path.sep ).join( '/' );
+	const browser = await chromium.launch();
+	try {
+		const page = await ( await browser.newContext() ).newPage();
+		const has = ( r ) => Object.keys( r[ 1440 ]?.[ 0 ] || {} ).some( ( k ) => k.includes( 'late' ) );
+		const early = await readAll( page, url, [ { isDefault: true } ] );
+		assert.equal( has( early ), false, 'control: without a settle selector the read comes before the row' );
+		const settled = await readAll( page, url, [ { isDefault: true } ], { settle: '.sgs-x__late' } );
+		assert.equal( has( settled ), true, 'the settled read includes the row' );
+	} finally {
+		await browser.close();
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );
+
+test( 'MUST FAIL (wishlist sgsHideOnDesktop read dead at random): a pass with settleGone waits until no element matches it, so a block its script unhides is read shown', async () => {
+	const fs = await import( 'node:fs' );
+	const os = await import( 'node:os' );
+	const path = await import( 'node:path' );
+	const { chromium } = await import( 'playwright' );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cal-gone-' ) );
+	const file = path.join( dir, 'p.html' );
+	fs.writeFileSync( file, '<div class="cr-ref-cal-0 sgs-x" hidden><p>rest</p></div><script>setTimeout(()=>{document.querySelector(".sgs-x").hidden=false;},1500)</script>' );
+	const url = 'file:///' + file.split( path.sep ).join( '/' );
+	const browser = await chromium.launch();
+	try {
+		const page = await ( await browser.newContext() ).newPage();
+		const display = ( r ) => r[ 1440 ]?.[ 0 ]?.[ '' ]?.display;
+		assert.equal( display( await readAll( page, url, [ { isDefault: true } ] ) ), 'none', 'control: read before the script unhides it' );
+		assert.equal( display( await readAll( page, url, [ { isDefault: true } ], { settleGone: '.sgs-x[hidden]' } ) ), 'block' );
+	} finally {
+		await browser.close();
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );

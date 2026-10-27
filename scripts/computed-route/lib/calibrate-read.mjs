@@ -160,11 +160,14 @@ export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 	return { visible, toggle: !! toggle };
 }
 
+// The longest a pass waits for its settle or settleGone selector.
+const SETTLE_TIMEOUT_MS = 30000;
+
 // Reads every instance at each width; state instances again under their trigger; scroll instances (and every default
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
 // { scrolled: { width: { n: read } }, scrollMissed: [n], hoverMissed: [n] (state instances read at no width),
 // hoverWhy: { n: [ '<width>px: <why>' ] } (why each width's read failed: hidden, no instance, or the browser's error) }. The widths are read in parallel, each in its own page of the logged-in context.
-export async function readAll( page, url, instances ) {
+export async function readAll( page, url, instances, { settle = null, settleGone = null } = {} ) {
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
@@ -175,7 +178,7 @@ export async function readAll( page, url, instances ) {
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, settle, settleGone } );
 		} finally {
 			await p.close();
 		}
@@ -321,7 +324,7 @@ async function readUnderTrigger( page, instances, n, inst ) {
 }
 
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {} } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, settle = null, settleGone = null } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
@@ -337,6 +340,16 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 			throw new Error( `the calibration page at ${ w }px returned HTTP ${ response.status() } and holds none of the calibration wrappers (a server or PHP error on the page: check the site's PHP error log; a stale build/ synced to a mirror is one cause)` );
 		}
 		throw new Error( wrappers ? `the block rendered nothing inside its ${ wrappers } calibration wrapper(s) at ${ w }px (no .${ CAL_PREFIX }0 on the page)` : `the calibration page at ${ w }px holds none of the calibration wrappers (the build did not save, or the page is cached)` );
+	}
+	// A pass whose content a script builds after load (a fixture's wishlist rows, fetched over REST) names the element
+	// it waits for (`settle`), and a block its script shows only after load (the wishlist panel prints `hidden` until its
+	// REST reply) names what must be gone first (`settleGone`). A wait that times out leaves the read as it is rather
+	// than failing the block.
+	if ( settleGone ) {
+		await page.waitForFunction( ( sel ) => ! document.querySelector( sel ), settleGone, { timeout: SETTLE_TIMEOUT_MS } ).catch( () => {} );
+	}
+	if ( settle ) {
+		await page.waitForSelector( settle, { state: 'attached', timeout: SETTLE_TIMEOUT_MS } ).catch( () => {} );
 	}
 	await page.waitForTimeout( 800 );
 	out[ w ] = await page.evaluate( readInstancesInPage, args( instances ) );
