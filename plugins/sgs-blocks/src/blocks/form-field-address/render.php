@@ -3,7 +3,8 @@
  * Server-side render for Address Field block.
  *
  * Renders a compound address field with optional postcode auto-lookup.
- * Sub-fields submit as <name>-line1, <name>-postcode, etc. (<name> from field_submission_name()); the
+ * Sub-fields submit as <name>-line1, <name>-postcode, etc. (<name> from field_submission_name(), which leaves room
+ * for the longest "-<part>" so every sub-field name stays within the submit endpoint's 64-character key); the
  * postcode lookup box, when shown, submits the postcode.
  *
  * @package SGS\Blocks
@@ -18,12 +19,14 @@ use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
 use function SGS\Blocks\Forms\field_submission_name;
+use function SGS\Blocks\Forms\field_name_suffix_reserve;
+use const SGS\Blocks\Forms\ADDRESS_FIELD_PARTS;
 
 $base_fid      = field_id( $attributes['fieldName'] ?? 'unnamed' );
 // Each sub-field submits as <name>-<part> ("site-postcode").
-$base_name     = field_submission_name( $base_fid, $attributes );
+$base_name     = field_submission_name( $base_fid, $attributes, field_name_suffix_reserve( 'sgs/form-field-address' ) );
 $enable_lookup = $attributes['enableLookup'] ?? false;
-$fields        = $attributes['fields'] ?? array( 'line1', 'line2', 'city', 'county', 'postcode', 'country' );
+$fields        = $attributes['fields'] ?? ADDRESS_FIELD_PARTS;
 
 $field_labels = array(
 	'line1'    => __( 'Address line 1', 'sgs-blocks' ),
