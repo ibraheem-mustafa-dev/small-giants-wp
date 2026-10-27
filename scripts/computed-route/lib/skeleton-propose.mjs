@@ -19,7 +19,7 @@ import { formHostNodes } from './skeleton-form-host.mjs';
 import { fieldInputSlot } from './skeleton-form-slots.mjs';
 import { linkedFormOf } from './skeleton-form-link.mjs';
 import { surfaceRole } from './skeleton-surface-role.mjs';
-import { flowNodes, settleFlowRows } from './skeleton-choice-flow-tree.mjs';
+import { flowNodes, settleFlowRows, canvasSiblings } from './skeleton-choice-flow-tree.mjs';
 import { detectReferences } from './references.mjs';
 import { makeRecorder } from './skeleton-write-record.mjs';
 import { makeUnits } from './skeleton-write-units.mjs';
@@ -120,7 +120,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const siteLink = siteLinkResolver( draftLinks );
 	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -294,8 +294,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// A choice flow's steps are composed from the record and its absorbed rows settled (lib/skeleton-choice-flow-tree.mjs); the
 	// form passes never run on it (its panels' fields belong to its steps, not to an sgs/form).
 	const flowNode = cls.choiceFlow && nodeOfKey[ m.root.key ]?.name === R.choiceFlow?.block ? nodeOfKey[ m.root.key ] : null;
+	const flowSides = { before: [], after: [] };
 	if ( flowNode ) {
 		flowNode.innerBlocks = flowNodes( { model: cls.choiceFlow, R: R.choiceFlow, m, view, finder } );
+		// The words the flow holds no setting for are the flow post's own blocks beside it, built by the ordinary rules.
+		Object.assign( flowSides, canvasSiblings( { model: cls.choiceFlow, m, view, rows, rowOf, build: ( e ) => buildNode( e, null ) } ) );
 		settleFlowRows( { model: cls.choiceFlow, R: R.choiceFlow, rows, root: m.root, block: flowNode.name, m, view } );
 		// A width-only element the flow draws as one of its pieces (the summary's note where the summary collapses) is no lost alternative.
 		const drawn = new Set( rows.filter( ( x ) => x.into === m.root.key && /^drawn by /.test( x.reason || '' ) && ! /per-width/.test( x.reason ) ).map( ( x ) => x.key ) );
@@ -305,7 +308,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const rootRow = rowOf[ m.root.key ];
 		rootRow && cls.choiceFlow.notes.length && ( rootRow.slotNotes = [ ...( rootRow.slotNotes || [] ), ...cls.choiceFlow.notes ] );
 	}
-	const skeleton = flowNode ? [].concat( rootNode || [] ) : formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null } );
+	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
 	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).

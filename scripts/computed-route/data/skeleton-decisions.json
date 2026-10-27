@@ -557,9 +557,14 @@
 			"id": "blockOwnedPart",
 			"scope": "a surface whose root the page map holds as a part with owner `block` of another row (lib/skeleton-surface-role.mjs, the part's draftId naming the surface's record or its root's tag and aria-label); the owning block comes from the row's template",
 			"byTemplate": {
-				"cart": { "block": "sgs/cart", "attributes": { "displayMode": "drawer" }, "reason": "the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87)" }
+				"cart": { "block": "sgs/cart", "attributes": { "displayMode": "drawer" }, "trigger": { "style": "triggerStyle", "pill": "pill", "icon": "icon", "label": "pillLabel", "countStyle": "pillCountStyle", "bubble": "bubble", "plain": "plain", "showZero": "showZero", "ariaLabel": "ariaLabel" }, "reason": "the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87)" }
 			},
 			"reason": "a drawer the page map holds as a block-owned part of another row is drawn by that block, never the navigation drawer: the block is the surface's root and every element in it is absorbed (Bean, 2026-10-23, plan 2026-10-23-cloning-tool-completion S5: the bag drawer is part of the cart block)"
+		},
+		"blockPartOpener": {
+			"id": "blockPartOpener",
+			"scope": "in a surface of kind header, a button or link whose click handler (a renderVals key of its component) writes a state key that a drawer's surfaces.json state holds at true, where the page map holds that drawer as a part with owner `block` of a row whose template names its owning block in rules.blockOwnedPart.byTemplate (lib/skeleton-handler-opens.mjs, lib/skeleton-surface-role.mjs::blockPartSurfaces)",
+			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23)"
 		},
 		"choiceFlow": {
 			"id": "choiceFlow",
@@ -578,9 +583,9 @@
 			"addToBag": { "handlers": { "patterns": [ "^add(?:[A-Z]\\w*)?$" ] }, "words": { "patterns": [ "\\badd\\b.*\\b(?:bag|basket|cart)\\b" ], "flags": "i" } },
 			"next": { "patterns": [ "next", "continue" ], "flags": "i" },
 			"back": { "patterns": [ "back", "prev" ], "flags": "i" },
-			"scope": "the surface the page map holds as an sgs_choice_flow row (its draftId names the surface's surfaces.json record), read from the fact record (lib/skeleton-choice-flow.mjs): a question is a loop whose item holds a button its handler binds to the loop item, its words the text in the loop's container (or the text just before it), its options the loop's recorded values; a conditional panel after a question's options is a step it opens underneath; the summary is the flow's aside; close, skip, add to bag, continue and back are buttons named by their handler or words",
+			"scope": "the surface the page map holds as an sgs_choice_flow row (its draftId names the surface's surfaces.json record), read from the fact record (lib/skeleton-choice-flow.mjs): a question is a loop whose item holds a button its handler binds to the loop item, its words the text in the loop's container (or the text just before it), its options the loop's recorded values; a conditional panel after a question's options is a step it opens underneath; the summary is the flow's aside; close, skip, add to bag, continue and back are buttons named by their handler or words; then two or more pressable buttons under one parent are a question whose revealing option opens what its condition shows, a live line naming two questions' picks is the summary, the one text after the last control the stage note, and every other worded element with no control a block of the flow post beside the flow (lib/skeleton-choice-flow-canvas.mjs)",
 			"gapReason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
-			"reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row"
+			"reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row"
 		}
 	}
 }

@@ -1,0 +1,63 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "shop", "label": "Shop", "kind": "product archive", "wp": { "slug": "frames", "parent": null, "type": "product archive" } },
+  { "id": "product", "label": "Product", "kind": "single product", "wp": { "slug": "product", "parent": null, "type": "product" } },
+  { "id": "lenses", "label": "Lenses", "kind": "content page", "wp": { "slug": "lenses", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header>
+  <nav><a href="#" onClick="{{ toShop }}">Frames</a><a href="#" onClick="{{ toLenses }}">Lenses</a></nav>
+  <button onClick="{{ openBag }}" aria-label="Bag">Bag</button>
+</header>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isShop }}"><main><h1>All frames</h1><a href="#" onClick="{{ toProduct }}">Round frame</a></main></sc-if>
+<sc-if value="{{ isProduct }}"><main>
+  <h1>Round frame</h1>
+  <button onClick="{{ openSize }}">Which size am I?</button>
+  <button onClick="{{ addFrame }}">Add frame only</button>
+  <button onClick="{{ openLens }}">Add my prescription</button>
+</main></sc-if>
+<sc-if value="{{ isLenses }}"><main><h1>Lenses</h1><button onClick="{{ toShop }}">Choose a frame</button></main></sc-if>
+<footer><nav><a href="#" onClick="{{ toHome }}">Home</a></nav></footer>
+<div role="dialog" aria-label="Your bag" style="position:fixed;top:0;bottom:0;right:0;width:400px">
+  <sc-for list="{{ bagItems }}" as="it"><p>{{ it.name }} {{ it.price }}</p><button onClick="{{ it.addLens }}">Add lenses</button></sc-for>
+</div>
+<div role="dialog" aria-label="Size guide" style="position:fixed;inset:0"><p>Sizes</p><button onClick="{{ closeModal }}">Close</button></div>
+<div role="dialog" aria-label="Add lenses" style="position:fixed;inset:0">
+  <sc-for list="{{ uses }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <sc-for list="{{ finishes }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <button onClick="{{ closeLens }}">Close</button>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', modal: null, bag: [], lens: { open: false, step: 0, use: null } };
+  go(p) { this.setState({ page: p }); }
+  renderVals() {
+    const S = this.state;
+    const L = S.lens;
+    const isPage = (p) => S.page === p;
+    const money = (n) => '£' + n.toFixed(2);
+    const setL = patch => this.setState(s => ({ lens: Object.assign({}, s.lens, patch) }));
+    const OPEN = { open: true, step: 0 };
+    return {
+      isHome: isPage('home'), isShop: isPage('shop'), isProduct: isPage('product'), isLenses: isPage('lenses'),
+      toShop: () => this.go('shop'), toLenses: () => this.go('lenses'), toHome: () => this.go('home'), toProduct: () => this.go('product'),
+      openBag: () => this.setState({ bagOpen: true }),
+      openSize: () => this.setState({ modal: 'size' }), closeModal: () => this.setState({ modal: null }),
+      addFrame: () => this.setState(s => ({ bag: s.bag.concat([{ id: 1 }]), lens: Object.assign({}, s.lens, { step: 0 }) })),
+      openLens: () => setL({ open: true, step: 0, use: null }),
+      closeLens: () => setL({ open: false }),
+      reopenLens: () => setL({ ...OPEN }),
+      bagItems: S.bag.map((b, i) => ({ name: 'Round frame', price: money(120), addLens: () => this.setState(s => ({ bagOpen: false, page: 'product', lens: Object.assign({}, s.lens, { open: true, step: 0, fromBag: i }) })) })),
+      uses: [ { label: 'Distance', pick: () => setL({ use: 'distance', step: 1 }) }, { label: 'Reading', pick: () => setL({ use: 'reading', step: 1 }) } ],
+      finishes: [ { label: 'Clear', pick: () => setL({ finish: 'clear', step: 2 }) } ],
+    };
+  }
+}
+</script>
+</body></html>

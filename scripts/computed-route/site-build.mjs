@@ -2,13 +2,22 @@
 // once, with its menus, front and posts page, permalinks and active header, drawer and footer.
 //   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--templates-only] [--only <row key,...>] [--repo <root>]
 //   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
+//   node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
 // each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
 // beside the map (page-map.site); a run against another site that shares the client plans from the map without those ids
 // (a post carrying a row key is adopted) and its write-back replaces them. The site phase also sets the site options the
 // draft's behaviours need (the route fade) from sites/<client>/build/site-options.json, which --promote-options fills from a
-// Fill run (lib/site-build-options.mjs). Exit 0 done, 1 failure or a stopped run, 2 usage.
+// Fill run (lib/site-build-options.mjs). --flow-links runs only the product flow links (lib/site-build-flow-links.mjs):
+// each published product covered by a page-map product row with `opensFlow` gets that flow's slug as `_sgs_choice_flow`
+// (a dry run without --apply), reading the page map and writing nothing else, the map included; a whole build (neither
+// --templates-only nor --only) runs the same step after its four phases. --catalogue runs only the draft catalogue
+// (lib/site-build-catalogue.mjs, FR-48-92): every product of sites/<client>/build/catalogue.json planned by SKU (create,
+// complete, exists, or left when it is a fixture), made or completed with --apply, read back, and its product id and
+// permalink recorded in catalogue.json's `sites.<site>`; the page map is neither read nor written.
+// Exit 0 done, 1 failure or a stopped run, 2 usage.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -20,6 +29,8 @@ import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
+import { runFlowLinks } from './lib/site-build-flow-links.mjs';
+import { runCatalogue } from './lib/site-build-catalogue.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -28,7 +39,9 @@ const site = opt( '--site' );
 const promote = opt( '--promote-options' );
 if ( ! client || ( ! site && ! promote ) ) {
 	console.error( 'usage: node site-build.mjs <client> --site <site> [--apply] [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --promote-options <Fill run folder or file> [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]' );
 	process.exit( 2 );
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -44,6 +57,26 @@ if ( promote ) {
 }
 const mapFile = path.join( repo, 'sites', client, 'build', 'page-map.json' );
 const apply = args.includes( '--apply' );
+// The site's calibration target: a local mirror's names its WSL docroot (`pluginDir`), so its wp-cli runs there instead
+// of over SSH; a site with no target entry runs over SSH.
+const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
+const target = ( fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
+if ( args.includes( '--catalogue' ) ) {
+	try {
+		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
+if ( args.includes( '--flow-links' ) ) {
+	try {
+		process.exit( runFlowLinks( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
 // --templates-only plans and runs the template copies alone (FR-48-56), leaving every post, menu and option as it is.
 const templatesOnly = args.includes( '--templates-only' );
 // --only <row keys> plans and runs those rows' own steps alone (post:<slug>, page:<slug>), leaving every other post, menu,
@@ -72,10 +105,6 @@ const print = ( plan ) => {
 try {
 	// The rows as this site sees them: ids written for another site name nothing here.
 	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
-	// A local mirror's calibration target names its WSL docroot (`pluginDir`), so its wp-cli runs there instead of over SSH;
-	// a site with no target entry runs over SSH as before.
-	const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
-	const target = ( fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
 	const runPhp = wpEvalRunner( target, site, repo );
 	const wp = wpCommand( target, site, repo );
 	const ids = {};
@@ -99,7 +128,7 @@ try {
 	const counts = tally( first.actions );
 	if ( ! apply ) {
 		console.log( `${ counts.creates } to create, ${ counts.changes } to change, ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
-		process.exit( 0 );
+		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) );
 	}
 	const build = wpBuildPage( repo, site );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
@@ -126,6 +155,10 @@ try {
 	}
 	console.log( 'a fresh read plans 0 creates and 0 changes' );
 	writeMenuMap( path.join( repo, 'sites', client, 'build', 'menu-map.json' ), site, readState( runPhp, rows ).menus );
+	// The product flow links last, once the posts phase has made the flow posts they name.
+	if ( ! templatesOnly && ! onlyRows && 0 !== runFlowLinks( { rows, runPhp, apply: true } ) ) {
+		throw new Error( 'the product flow links did not complete' );
+	}
 } catch ( e ) {
 	console.error( `FAILED: ${ e.message }` );
 	process.exit( 1 );

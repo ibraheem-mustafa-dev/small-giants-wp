@@ -44,6 +44,22 @@ export function brandDomains( brand ) {
 	return m ? [ ...new Set( [ brand.slug, m[ 1 ] ].map( ( s ) => s.toLowerCase() ) ) ] : [];
 }
 
+// The names a brand goes by in a draft's token names: its slug and Site Info name (both at least three letters, so a
+// one-letter slug such as x claims no word), its label's words (letters only) and the registry's `aliases`.
+export function brandNames( brand ) {
+	const label = String( brand?.label || '' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( ( w ) => w.length >= 3 );
+	const own = [ brand?.slug, ...brandDomains( brand ) ].filter( ( s ) => s && s.length >= 3 );
+	return [ ...new Set( [ ...own, ...label, ...( brand?.aliases || [] ) ].map( ( s ) => String( s ).toLowerCase() ) ) ];
+}
+
+// The brand a colour token is named for (`--social-facebook`, `--fb-blue`, `--brand-youtube`), or null: a brand that
+// carries a colour, one of whose names is a whole word of the token name. A contact entry (phone, email, address)
+// carries no colour and is never matched.
+export function brandOfToken( name, brands = brandRegistry() ) {
+	const words = String( name ?? '' ).replace( /^--/, '' ).toLowerCase().split( /[-_]+/ ).filter( Boolean );
+	return brands.find( ( b ) => b.colour && brandNames( b ).some( ( n ) => words.includes( n ) ) ) ?? null;
+}
+
 // Whether an address is the given brand's own (see the file header). A brand with no siteInfoKey owns nothing.
 export function brandOwnsAddress( brand, address ) {
 	const href = String( address ?? '' ).trim();

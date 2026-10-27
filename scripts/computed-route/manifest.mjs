@@ -1,8 +1,9 @@
 // The surfaces manifest generator (Spec 48 section 2): sites/<client>/build/surfaces.json from the confirmed page map.
 //   node manifest.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--repo <root>] [--db <framework db>] [--only <key,key>]
 // Without --apply it prints the entries it would write and every row it could not settle, and writes nothing. With
-// --apply it writes surfaces.json (entries already there keep every field they have). Exit 0 done, 1 a row with a match
-// rule left unresolved, 2 usage or an input it cannot use.
+// --apply it writes surfaces.json (entries already there keep every field they have, except the generated `noDraft`
+// skip). One of WooCommerce's own pages that the draft has no page for is a named skip (`no-draft-page`), never
+// unresolved. Exit 0 done, 1 a row with a match rule left unresolved, 2 usage or an input it cannot use.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -96,6 +97,7 @@ try {
 	result.dropped.forEach( ( d ) => console.log( `states-dropped ${ d.key }: ${ d.name }` ) );
 	result.noFacts.forEach( ( u ) => console.log( `states-no-facts ${ u.key }: ${ u.why }; the key names R, item and bp decided [${ u.names.join( ' | ' ) }]` ) );
 	result.noIntake.forEach( ( u ) => console.log( `no-intake-surface ${ u.key }: ${ u.why }` ) );
+	result.noDraft.forEach( ( u ) => console.log( `no-draft-page ${ u.key }: ${ u.why }` ) );
 	// A stale entry building a template that a template copy surface now builds is that surface's earlier key: replaced.
 	const replaced = result.stale.filter( ( k ) => keep[ k ]?.target?.template && Object.entries( result.entries ).some( ( [ n, e ] ) => n !== k && e.target?.template === keep[ k ].target.template ) );
 	replaced.forEach( ( k ) => {

@@ -991,16 +991,21 @@
 					]
 				},
 				{
-					"id": "drawer-add-options:hint",
+					"id": "drawer-add-options",
 					"label": "Line add-options control",
 					"home": {
-						"type": "missing",
-						"reason": "only words name this control (button) as \"Line add-options control\": no structural fact of the draft confirms it, so it is a gap, not a mapped part",
-						"hint": "drawer-add-options"
+						"type": "setting",
+						"block": "sgs/cart",
+						"settings": [
+							"itemAddOptionsLabel"
+						]
 					},
-					"write": null,
+					"write": {
+						"itemShowAddOptions": true,
+						"itemAddOptionsLabel": "Add my prescription"
+					},
 					"by": [
-						"hint"
+						"structure"
 					],
 					"units": 1,
 					"locators": [
@@ -1130,16 +1135,6 @@
 					"why": "only words name this text (#text) as \"Panel heading\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
 				},
 				{
-					"rowId": "missing:shop:drawer:drawer-add-options:hint",
-					"draftId": "Bag drawer:drawer-add-options:hint",
-					"construct": "shop drawer part: Line add-options control",
-					"from": "shop-parts",
-					"key": "Eye Care Birmingham.dc.html#drawer/drawer-add-options:hint",
-					"line": "Line add-options control: only words name this control (button) as \"Line add-options control\": no structural fact of the draft confirms it, so it is a gap, not a mapped part (1 unit)",
-					"mainFlow": "buy",
-					"why": "only words name this control (button) as \"Line add-options control\": no structural fact of the draft confirms it, so it is a gap, not a mapped part"
-				},
-				{
 					"rowId": "missing:shop:drawer:drawer-free-delivery:hint",
 					"draftId": "Bag drawer:drawer-free-delivery:hint",
 					"construct": "shop drawer part: Free-delivery message",
@@ -1175,10 +1170,10 @@
 	"counts": {
 		"units": 70,
 		"parts": 44,
-		"mapped": 20,
-		"missing": 24,
+		"mapped": 21,
+		"missing": 23,
 		"elsewhere": 0,
-		"hinted": 10,
+		"hinted": 9,
 		"unmatched": 11,
 		"problems": 0
 	}

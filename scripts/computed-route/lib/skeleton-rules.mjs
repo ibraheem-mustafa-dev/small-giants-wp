@@ -16,6 +16,8 @@ import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
+import { blockPartSurfaces } from './skeleton-surface-role.mjs';
+import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -96,7 +98,8 @@ const HEADING = /^h[1-6]$/;
 // of template keys, `<component>/<tpl>`, whose own animation loops a translate for ever: lib/skeleton-rerun.mjs::loopingKeys),
 // view (lib/skeleton-record.mjs::recordView: the fact record's reading of each element's attributes and declarations; an
 // empty view reads the rendered attributes), scope (lib/skeleton-record.mjs::surfaceContext: the surface's parent, kind and
-// opener, or null) }. `surface.role` is the page map's role for the surface (lib/skeleton-surface-role.mjs::surfaceRole).
+// opener, or null) }. `surface.role` is the page map's role for the surface (lib/skeleton-surface-role.mjs::surfaceRole);
+// `surface.pageMap` the page-map rows (which drawer another row's block draws, for the control that opens it).
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	const R = facts.decisions.rules || {};
 	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
@@ -548,6 +551,40 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const h = handlerOf( e );
 		return !! h && [ 'a', 'button' ].includes( e.tag ) && Object.values( view.surfaces ).some( ( s ) => 'drawer' === s.kind && String( view.openers[ s.id ] || '' ).split( /[^\w$]+/ ).includes( h ) );
 	};
+	// The drawers the page map hands to another row's block that names its owning block (rules.blockOwnedPart), found once for
+	// a header surface (the block's trigger is the site-wide control the header carries; a page's own link to the same drawer,
+	// such as a checkout's Edit link, stays a link): [ { surface, row, part, own (the byTemplate entry) } ].
+	const ownedDrawers = R.blockOwnedPart && R.blockPartOpener && 'header' === surface.kind && surface.pageMap?.length
+		? blockPartSurfaces( { pageMap: surface.pageMap, surfaces: view.surfaces, elements: view.elements, kind: 'drawer' } ).map( ( d ) => ( { ...d, own: R.blockOwnedPart.byTemplate?.[ d.row.template ] } ) ).filter( ( d ) => d.own )
+		: [];
+	// The block-owned drawer a button or link opens: its click handler (a renderVals key of its component) writes a state key
+	// that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or null.
+	const opensOwnedDrawer = ( e ) => {
+		if ( ! ownedDrawers.length || ! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo || ! facts.client ) {
+			return null;
+		}
+		const keys = handlerOpens( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } );
+		return ownedDrawers.find( ( d ) => opensOn( d.surface, keys ) ) ?? null;
+	};
+	// The owning block's trigger settings drawn from the control (the entry's `trigger` names the block's settings): words
+	// beside a count make a pill with that label, no words an icon; a count that paints its own box is a bubble, else plain;
+	// a count showing zero at rest keeps showing it; a typed aria-label is the trigger's accessible name.
+	const triggerOf = ( e, T ) => {
+		if ( ! T ) {
+			return {};
+		}
+		const leaves = [ ...( m.words( e ) ? [ e ] : [] ), ...textLeaves( e ) ];
+		const count = leaves.find( numberOnly ) ?? null;
+		const label = leaves.filter( ( k ) => k !== count ).map( ( k ) => m.words( k ).trim() ).filter( Boolean ).join( ' ' );
+		const aria = view.attr( e, 'aria-label' );
+		return {
+			[ T.style ]: label ? T.pill : T.icon,
+			...( label ? { [ T.label ]: label } : {} ),
+			...( count ? { [ T.countStyle ]: view.ownPaint( count ) ? T.bubble : T.plain } : {} ),
+			...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: true } : {} ),
+			...( aria && ! /\{\{/.test( aria ) ? { [ T.ariaLabel ]: aria } : {} ),
+		};
+	};
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
@@ -562,6 +599,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => {
 			const own = e === m.root && 'blockPart' === role?.role ? R.blockOwnedPart?.byTemplate?.[ role.row.template ] : null;
 			return own ? v( 'blockOwnedPart', { block: own.block, absorb: true, attributes: { ...( own.attributes || {} ) }, reason: `${ own.reason }; the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row` } ) : null;
+		},
+		// The control that opens such a drawer is that block too (the bag pill is the cart block's trigger): the block draws the
+		// drawer and its own trigger, so the control's label, count and icon are absorbed into the trigger settings. Before the
+		// drawer opener, which would otherwise take any control opening a drawer as the navigation's burger.
+		( { e } ) => {
+			const d = opensOwnedDrawer( e );
+			return d ? v( 'blockPartOpener', { block: d.own.block, absorb: true, attributes: { ...( d.own.attributes || {} ), ...triggerOf( e, d.own.trigger ) }, reason: `${ R.blockPartOpener.reason }; it opens ${ d.surface.id } (${ d.surface.name }), which the page map holds as the ${ d.part.kind } part "${ d.part.label }" of the ${ d.row.slug } row` } ) : null;
 		},
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.

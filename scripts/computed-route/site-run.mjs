@@ -87,7 +87,8 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 	const own = byRow ?? ( postSlug ? rows.find( ( r ) => 'post' === r.postType && r.slug === postSlug ) : rows.find( ( r ) => 'page' === r.postType && ( r.slug === key || r.route === key ) ) );
 	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
 	const row = own ?? named ?? null;
-	const skip = entry.contentOnly && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null;
+	// A surface the manifest marks `noDraft` (one of WooCommerce's own pages the draft has no page for) has nothing to read.
+	const skip = entry.noDraft ?? ( entry.contentOnly && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null );
 	// A state-page draft ignores a route hash: its route is the state fragment Fill, the inventory read and the walker set on the loaded draft.
 	const at = ( r ) => ( 'files' === routing?.adapter ? '' : isStatePage( routing ) ? ( stateRouteHash( r ) ? `#${ stateRouteHash( r ) }` : '' ) : routeHash( r ) ?? '' );
 	const hash = entry.draftRoute ? at( entry.draftRoute ) : own && [ 'page', 'template' ].includes( own.postType ) ? ( 'home' !== own.route ? at( own.route ) : '' ) : at( skel?.route );

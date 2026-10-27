@@ -162,7 +162,8 @@ export function recordView( record, { openers = {}, rootComponent = null } = {} 
 		if ( bound.some( ( p ) => /^(?:background|border|box-shadow)/.test( p ) ) ) {
 			return true;
 		}
-		if ( ! NO_COLOUR.has( String( st[ 'background-color' ] ?? '' ).toLowerCase() ) || ! UNSET.has( st[ 'background-image' ] ?? '' ) || ! UNSET.has( st[ 'box-shadow' ] ?? '' ) ) {
+		// A `background` shorthand the record keeps unexpanded (its value holds a var()) paints as its longhands would.
+		if ( ! NO_COLOUR.has( String( st[ 'background-color' ] ?? '' ).toLowerCase() ) || ! UNSET.has( st[ 'background-image' ] ?? '' ) || ! [ NO_COLOUR, UNSET ].some( ( set ) => set.has( String( st.background ?? '' ).toLowerCase() ) ) || ! UNSET.has( st[ 'box-shadow' ] ?? '' ) ) {
 			return true;
 		}
 		return [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => ! zeroWidth( st[ `border-${ side }-width` ] ) && ! UNSET.has( st[ `border-${ side }-style` ] ?? '' ) );
