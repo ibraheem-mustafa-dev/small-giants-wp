@@ -3,6 +3,7 @@
 	"stateConflicts": {
 		"entries": [
 			{
+				"client": "fixture-client",
 				"surface": "home",
 				"key": "cr-ref-home-5||hover|transform",
 				"pair": "hero-button",
@@ -11,6 +12,7 @@
 				"reason": "measured in reviews-next and in opening; both map to rest with different draft values."
 			},
 			{
+				"client": "fixture-client",
 				"surface": "shop",
 				"key": "cr-ref-shop-4||style|width",
 				"pair": "brand-panel",
@@ -20,6 +22,7 @@
 				"reason": "measured in brand-picked, panel-open and in opening; brand-picked and opening both map to rest with different draft values."
 			},
 			{
+				"client": "fixture-client",
 				"surface": "shop",
 				"key": "cr-ref-shop-28|div > input:nth-of-type(2)|style|outline-style",
 				"pair": "price-slider",
