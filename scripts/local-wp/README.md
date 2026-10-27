@@ -51,3 +51,16 @@ It reads both URLs from `.claude/secrets/<name>.env` (`WP_URL_<KEY>`), backs up 
 ## Measuring on a mirror
 
 `scripts/computed-route/solve.mjs --site local-eye-care` builds and walks a surface on the mirror instead of the test site (`solve.mjs::siteOverride`; the walker's live URLs move with `SGS_LIVE_ORIGIN`). The mirror is a database copy, so the surface's post ids and templates are its own. Calibration targets the mirrors as `local-eye-care` / `local-sandybrown` / `local-indus` / `local-mamas`.
+
+## Push the mirror to the test site
+
+The reverse of the refresh: the clone is built on the mirror, then its database and uploads are copied onto the test site so the posts, menus and media keep the same ids (from Git Bash, which holds the SSH key):
+
+```
+bash scripts/local-wp/push-to-remote.sh local-eye-care eye-care-clone-test --dry-run
+bash scripts/local-wp/push-to-remote.sh local-eye-care eye-care-clone-test
+```
+
+The target must be named in `ALLOWED_REMOTE_TARGETS` at the top of the script (the four test sites); anything else is refused, so a production site can never be overwritten. `SECRETS_DIR` overrides the secrets folder (a git worktree has no `.claude/secrets/`). The script refuses if the mirror's `siteurl` is not the URL its secrets file holds or if the two table prefixes differ. It backs up the test site's database on the server to `~/backups/push-to-remote/<host>-<timestamp>.sql` (outside `public_html`, and the path is printed), dumps the mirror with `wp db export`, extracts the mirror's `wp-content/uploads` over the test site's (additive, nothing is deleted), imports the dump with `mysql` using the credentials `wp config get` reads on the server, then runs `wp search-replace` (`--all-tables-with-prefix --skip-columns=guid`) for the mirror URL and its other scheme in plain, JSON-escaped and scheme-relative form. It then flushes the object cache, the LiteSpeed cache (when that plugin is active), the rewrite rules and OPcache, and exits 1 unless `siteurl` and `home` on the server equal the test site's URL exactly; any failure after the import starts prints the command that restores the backup.
+
+The import replaces the whole database, so the test site takes the mirror's users, options and active plugins; code is deployed separately (`build-deploy.py`). `--dry-run` does every read and check (URLs, prefixes, the dump size, the occurrences of each search-replace pair in the dump, post counts by type on both sides) and prints each remaining step, but writes nothing on the server.
