@@ -1407,7 +1407,7 @@ Status: the checks exist as one-line commands in Spec 32 §12.5 and are not wire
 R-48-2 (The pointer exception, §1) governs this section.
 
 ### FR-48-55 — The site-build script
-One script, `scripts/computed-route/site-build.mjs`, builds the site's skeleton from the confirmed `page-map.json` (FR-48-30):
+One script, `scripts/computed-route/site-build.mjs`, builds the site's skeleton from the confirmed `page-map.json` (FR-48-30). The whole clone is built on the local mirror, so these steps run against the mirror, and `scripts/local-wp/push-to-remote.sh` then copies the mirror's database and uploads onto the test site, which keeps every post, menu and media id:
 1. **Posts.** Each row without an `id` is created with `node scripts/wp-build-page.js --create <postType> --title
    <title> --slug <slug> --tree <tree>`. Its tree is the stage 3 tree when one exists, else a one-block placeholder
    tree. `--create` reaches `post-new.php?post_type=<type>` for any post type (the documented list is page, `sgs_header`, `sgs_footer`, `sgs_drawer`, `sgs_modal`, `sgs_mega_menu`, `sgs_form`, `sgs_choice_flow`, `wp_block`). The script reads the ID `wp-build-page.js` prints and writes it into the row. A `product` row creates no post: its tree builds WooCommerce's `single-product` template (`wp-build-page.js --template single-product`), the products themselves come from WooCommerce (`collection: live`), and its `id` stays empty.
