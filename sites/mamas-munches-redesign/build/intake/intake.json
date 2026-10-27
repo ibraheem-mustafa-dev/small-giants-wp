@@ -77825,14 +77825,14 @@
      },
      "tag": "aside",
      "words": "",
-     "block": "sgs/nav-drawer",
+     "block": "sgs/cart",
      "confidence": 1,
      "low": false,
-     "reason": "a drawer surface is sgs/nav-drawer, whose own settings draw its top row, logo, close button and body",
-     "rule": "surfaceRoot",
+     "reason": "the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part \"Basket\" of the cart row",
+     "rule": "blockOwnedPart",
      "candidates": [
       {
-       "block": "sgs/nav-drawer",
+       "block": "sgs/cart",
        "score": 1,
        "share": 1
       }
@@ -77882,30 +77882,25 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;padding:10px 12px 10px 20px;border-bottom:1px solid #EADBC0;min-height:64px\" data-dc-t",
      "parent": {
       "draftId": "SiteHeader:128",
       "tag": "aside",
-      "block": "sgs/nav-drawer"
+      "block": "sgs/cart"
      },
      "siblings": [
       {
        "draftId": "SiteHeader:176",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -77950,30 +77945,25 @@
      },
      "tag": "div",
      "words": "Your basket",
-     "block": "sgs/container",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:24px\" data-dc-tpl=\"130\">Your basket <span style=\"font-family:Karla;font-size:16px;color:#6B5646\" data-dc-t",
      "parent": {
       "draftId": "SiteHeader:129",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "SiteHeader:132",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -78019,24 +78009,19 @@
      },
      "tag": "span",
      "words": "( 0 )",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<span style=\"font-family:Karla;font-size:16px;color:#6B5646\" data-dc-tpl=\"131\">({{ count }})</span>",
      "parent": {
       "draftId": "SiteHeader:130",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [],
      "siblingCount": 0,
@@ -78081,30 +78066,25 @@
      },
      "tag": "button",
      "words": "×",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<button sc-camel-on-click=\"{{ close }}\" aria-label=\"Close basket\" style=\"width:48px;height:48px;border:0;background:transparent;border-radius:999px;font-size:28",
      "parent": {
       "draftId": "SiteHeader:129",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "SiteHeader:130",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -78148,30 +78128,25 @@
      },
      "tag": "div",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 28px;gap:14px\" data-dc-tpl=\"176\">",
      "parent": {
       "draftId": "SiteHeader:128",
       "tag": "aside",
-      "block": "sgs/nav-drawer"
+      "block": "sgs/cart"
      },
      "siblings": [
       {
        "draftId": "SiteHeader:129",
        "tag": "div",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -78216,50 +78191,40 @@
      },
      "tag": "img",
      "words": "",
-     "block": "sgs/responsive-logo",
-     "confidence": 0.66,
-     "low": true,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/responsive-logo",
-       "score": 0.85,
-       "share": 0.773
-      },
-      {
-       "block": "sgs/media",
-       "score": 0.25,
-       "share": 0.227
-      }
-     ],
-     "action": null,
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:120px;height:auto\" data-dc-tpl=\"177\">",
      "parent": {
       "draftId": "SiteHeader:176",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "SiteHeader:178",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:179",
        "tag": "p",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:180",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       },
       {
        "draftId": "SiteHeader:181",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -78304,45 +78269,40 @@
      },
      "tag": "div",
      "words": "Your basket is empty",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<div style=\"font-family:'Young Serif',serif;font-size:26px\" data-dc-tpl=\"178\">Your basket is empty</div>",
      "parent": {
       "draftId": "SiteHeader:176",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "SiteHeader:177",
        "tag": "img",
-       "block": "sgs/responsive-logo"
+       "block": null
       },
       {
        "draftId": "SiteHeader:179",
        "tag": "p",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:180",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       },
       {
        "draftId": "SiteHeader:181",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -78387,45 +78347,40 @@
      },
      "tag": "p",
      "words": "New to Zookies? The Taster Trio is 3 cookies for £5, postage included.",
-     "block": "sgs/text",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<p style=\"margin:0;color:#6B5646;font-size:16px;line-height:1.5;max-width:300px\" data-dc-tpl=\"179\">New to Zookies? The Taster Trio is 3 cookies for £5, postage ",
      "parent": {
       "draftId": "SiteHeader:176",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "SiteHeader:177",
        "tag": "img",
-       "block": "sgs/responsive-logo"
+       "block": null
       },
       {
        "draftId": "SiteHeader:178",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:180",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       },
       {
        "draftId": "SiteHeader:181",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -78470,45 +78425,40 @@
      },
      "tag": "button",
      "words": "Add a Taster Trio · £5",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<button sc-camel-on-click=\"{{ addTrial }}\" style=\"height:56px;padding:0 28px;border-radius:999px;border:0;background:#EE8088;color:#3A2A22;font-weight:700;font-",
      "parent": {
       "draftId": "SiteHeader:176",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "SiteHeader:177",
        "tag": "img",
-       "block": "sgs/responsive-logo"
+       "block": null
       },
       {
        "draftId": "SiteHeader:178",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:179",
        "tag": "p",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:181",
        "tag": "a",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -78553,45 +78503,40 @@
      },
      "tag": "a",
      "words": "Browse the shop",
-     "block": "sgs/button",
-     "confidence": 0.75,
+     "block": null,
+     "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/button",
-       "score": 0.75,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "drawn by sgs/cart: rule blockOwnedPart",
+     "rule": "blockOwnedPart",
+     "into": "Home>SiteHeader@7#0/128#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<a href=\"Shop.dc.html\" style=\"font-weight:700;color:#3A2A22;padding:10px\" data-dc-tpl=\"181\">Browse the shop</a>",
      "parent": {
       "draftId": "SiteHeader:176",
       "tag": "div",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "SiteHeader:177",
        "tag": "img",
-       "block": "sgs/responsive-logo"
+       "block": null
       },
       {
        "draftId": "SiteHeader:178",
        "tag": "div",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:179",
        "tag": "p",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "SiteHeader:180",
        "tag": "button",
-       "block": "sgs/button"
+       "block": null
       }
      ],
      "siblingCount": 4,
@@ -78625,13 +78570,13 @@
     "inventoryElements": 11,
     "parts": 0,
     "rows": 11,
-    "skeletonNodes": 11,
-    "expandedNodes": 11,
-    "low": 3,
-    "removed": 0,
+    "skeletonNodes": 1,
+    "expandedNodes": 1,
+    "low": 0,
+    "removed": 10,
     "unresolved": 0,
     "byRule": {
-     "surfaceRoot": 1
+     "blockOwnedPart": 11
     }
    },
    "problems": []
@@ -86579,7 +86524,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -86626,16 +86571,7 @@
        "h": 987.2
       }
      ],
-     "draftId": "Home:65",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/65#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:65"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/66#0",
@@ -86658,7 +86594,7 @@
      "block": "sgs/container",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -86720,16 +86656,7 @@
        "h": 151.2
       }
      ],
-     "draftId": "Home:66",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/66#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:66"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/67#0",
@@ -86753,7 +86680,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -86805,16 +86732,7 @@
        "h": 28
       }
      ],
-     "draftId": "Home:67",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/67#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:67"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/68#0",
@@ -86838,7 +86756,7 @@
      "block": "sgs/heading",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -86890,16 +86808,7 @@
        "h": 34.7
       }
      ],
-     "draftId": "Home:68",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/68#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:68"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/69#0",
@@ -86923,7 +86832,7 @@
      "block": "sgs/text",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -86975,16 +86884,7 @@
        "h": 76.5
       }
      ],
-     "draftId": "Home:69",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/69#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:69"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/70#0",
@@ -87007,7 +86907,7 @@
      "block": "sgs/container",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -87069,16 +86969,7 @@
        "h": 75
       }
      ],
-     "draftId": "Home:70",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/70#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:70"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/71#0",
@@ -87102,7 +86993,7 @@
      "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+     "reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
      "rule": "label",
      "candidates": [
       {
@@ -87149,16 +87040,7 @@
        "h": 17
       }
      ],
-     "draftId": "Home:71",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/71#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:71"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/72#0",
@@ -87182,7 +87064,7 @@
      "block": "sgs/option-picker",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+     "reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
      "rule": "optionSet",
      "candidates": [
       {
@@ -87229,16 +87111,7 @@
        "h": 48
       }
      ],
-     "draftId": "Home:72",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/72#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:72"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/74",
@@ -87424,7 +87297,7 @@
      "block": "sgs/container",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -87486,16 +87359,7 @@
        "h": 131
       }
      ],
-     "draftId": "Home:76",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/76#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:76"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/77#0",
@@ -87519,7 +87383,7 @@
      "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+     "reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
      "rule": "label",
      "candidates": [
       {
@@ -87566,16 +87430,7 @@
        "h": 17
       }
      ],
-     "draftId": "Home:77",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/77#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:77"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/78#0",
@@ -87599,7 +87454,7 @@
      "block": "sgs/option-picker",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+     "reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
      "rule": "optionSet",
      "candidates": [
       {
@@ -87646,16 +87501,7 @@
        "h": 104
       }
      ],
-     "draftId": "Home:78",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/78#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:78"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/80",
@@ -87780,7 +87626,7 @@
      "block": "sgs/container",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -87842,16 +87688,7 @@
        "h": 420
       }
      ],
-     "draftId": "Home:81",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/81#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:81"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/82#0",
@@ -87875,7 +87712,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -87927,16 +87764,7 @@
        "h": 55
       }
      ],
-     "draftId": "Home:82",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/82#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:82"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/83#0",
@@ -87961,7 +87789,7 @@
      "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+     "reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
      "rule": "label",
      "candidates": [
       {
@@ -88008,16 +87836,7 @@
        "h": 17
       }
      ],
-     "draftId": "Home:83",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/83#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:83"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/84#0",
@@ -88042,7 +87861,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -88089,16 +87908,7 @@
        "h": 34
       }
      ],
-     "draftId": "Home:84",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/84#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:84"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/85#0",
@@ -88122,7 +87932,7 @@
      "block": "sgs/option-picker",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+     "reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
      "rule": "optionSet",
      "candidates": [
       {
@@ -88174,16 +87984,7 @@
        "h": 328
       }
      ],
-     "draftId": "Home:85",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/85#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:85"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/87",
@@ -88453,7 +88254,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -88505,16 +88306,7 @@
        "h": 17
       }
      ],
-     "draftId": "Home:89",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/89#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:89"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/90#0",
@@ -88537,7 +88329,7 @@
      "block": "sgs/container",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -88599,16 +88391,7 @@
        "h": 122
       }
      ],
-     "draftId": "Home:90",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/90#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:90"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/91#0",
@@ -88632,7 +88415,7 @@
      "block": "sgs/label",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+     "reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
      "rule": "label",
      "candidates": [
       {
@@ -88679,16 +88462,7 @@
        "h": 17
       }
      ],
-     "draftId": "Home:91",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/91#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:91"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/92#0",
@@ -88712,7 +88486,7 @@
      "block": "sgs/option-picker",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+     "reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
      "rule": "optionSet",
      "candidates": [
       {
@@ -88759,16 +88533,7 @@
        "h": 95
       }
      ],
-     "draftId": "Home:92",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/92#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:92"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/94",
@@ -89261,7 +89026,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -89308,16 +89073,7 @@
        "h": 645.2
       }
      ],
-     "draftId": "Home:100",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/100#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:100"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/101#0",
@@ -89340,7 +89096,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -89397,16 +89153,7 @@
        "h": 303.2
       }
      ],
-     "draftId": "Home:101",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/101#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:101"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/102#0",
@@ -89430,7 +89177,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+     "reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
      "rule": "decorationLayer",
      "candidates": [],
      "action": "remove",
@@ -89476,16 +89223,7 @@
        "h": 299.2
       }
      ],
-     "draftId": "Home:102",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/102#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:102"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/103#0",
@@ -89509,7 +89247,7 @@
      "block": "sgs/container",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -89561,16 +89299,7 @@
        "h": 180
       }
      ],
-     "draftId": "Home:103",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/103#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:103"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/105",
@@ -89595,7 +89324,7 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "38 copies of one template element on 2 surfaces; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+     "reason": "19 copies of one template element; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
      "rule": "decorationLayer",
      "candidates": [],
      "action": "remove",
@@ -89692,7 +89421,7 @@
       }
      ],
      "draftId": "Home:105",
-     "copies": 38,
+     "copies": 19,
      "keys": [
       "Home/105#0",
       "Home/105#1",
@@ -89714,33 +89443,7 @@
       "Home/105#17",
       "Home/105#18"
      ],
-     "proposalReason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/105#0",
-        "Home/105#1",
-        "Home/105#2",
-        "Home/105#3",
-        "Home/105#4",
-        "Home/105#5",
-        "Home/105#6",
-        "Home/105#7",
-        "Home/105#8",
-        "Home/105#9",
-        "Home/105#10",
-        "Home/105#11",
-        "Home/105#12",
-        "Home/105#13",
-        "Home/105#14",
-        "Home/105#15",
-        "Home/105#16",
-        "Home/105#17",
-        "Home/105#18"
-       ]
-      }
-     ]
+     "proposalReason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/106#0",
@@ -89764,7 +89467,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -89816,16 +89519,7 @@
        "h": 57.2
       }
      ],
-     "draftId": "Home:106",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/106#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:106"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/107#0",
@@ -89848,7 +89542,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -89905,16 +89599,7 @@
        "h": 196
       }
      ],
-     "draftId": "Home:107",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/107#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:107"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/108#0",
@@ -89938,7 +89623,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -89990,16 +89675,7 @@
        "h": 72
       }
      ],
-     "draftId": "Home:108",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/108#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:108"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/109#0",
@@ -90024,7 +89700,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90071,16 +89747,7 @@
        "h": 34
       }
      ],
-     "draftId": "Home:109",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/109#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:109"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/110#0",
@@ -90106,7 +89773,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90153,16 +89820,7 @@
        "h": 19
       }
      ],
-     "draftId": "Home:110",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/110#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:110"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/111#0",
@@ -90188,7 +89846,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90235,16 +89893,7 @@
        "h": 15
       }
      ],
-     "draftId": "Home:111",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/111#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:111"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/112#0",
@@ -90269,7 +89918,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90316,16 +89965,7 @@
        "h": 46
       }
      ],
-     "draftId": "Home:112",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/112#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:112"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/113#0",
@@ -90351,7 +89991,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90398,16 +90038,7 @@
        "h": 31
       }
      ],
-     "draftId": "Home:113",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/113#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:113"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/114#0",
@@ -90433,7 +90064,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90480,16 +90111,7 @@
        "h": 15
       }
      ],
-     "draftId": "Home:114",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/114#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:114"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/116#0",
@@ -90513,7 +90135,7 @@
      "block": "sgs/multi-button",
      "confidence": 0.51,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90570,16 +90192,7 @@
        "h": 44
       }
      ],
-     "draftId": "Home:116",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/116#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:116"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/118",
@@ -90604,7 +90217,7 @@
      "block": "sgs/button",
      "confidence": 0.75,
      "low": false,
-     "reason": "4 copies of one template element on 2 surfaces",
+     "reason": "2 copies of one template element",
      "rule": null,
      "candidates": [
       {
@@ -90652,7 +90265,7 @@
       }
      ],
      "draftId": "Home:118",
-     "copies": 4,
+     "copies": 2,
      "keys": [
       "Home/118#0",
       "Home/118#1"
@@ -90661,16 +90274,7 @@
      "otherWords": [
       "Every 4 weeks"
      ],
-     "distinctWords": 2,
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/118#0",
-        "Home/118#1"
-       ]
-      }
-     ]
+     "distinctWords": 2
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/119#0",
@@ -90694,7 +90298,7 @@
      "block": "sgs/container",
      "confidence": 1,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90746,16 +90350,7 @@
        "h": 60
       }
      ],
-     "draftId": "Home:119",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/119#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:119"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/120#0",
@@ -90780,7 +90375,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90827,16 +90422,7 @@
        "h": 19
       }
      ],
-     "draftId": "Home:120",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/120#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:120"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/121#0",
@@ -90861,7 +90447,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90908,16 +90494,7 @@
        "h": 31
       }
      ],
-     "draftId": "Home:121",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/121#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:121"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/122#0",
@@ -90940,7 +90517,7 @@
      "block": "sgs/button",
      "confidence": 0.75,
      "low": false,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -90997,16 +90574,7 @@
        "h": 64
       }
      ],
-     "draftId": "Home:122",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/122#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:122"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/123#0",
@@ -91029,7 +90597,7 @@
      "block": "sgs/text",
      "confidence": 0.25,
      "low": true,
-     "reason": "2 copies of one template element on 2 surfaces",
+     "reason": null,
      "rule": null,
      "candidates": [
       {
@@ -91086,16 +90654,7 @@
        "h": 34
       }
      ],
-     "draftId": "Home:123",
-     "alsoIn": [
-      {
-       "surface": "build-your-zookie",
-       "keys": [
-        "Home/123#0"
-       ]
-      }
-     ],
-     "copies": 2
+     "draftId": "Home:123"
     },
     {
      "rowId": "skeleton:page-home-dc-html:Home/124#0",
@@ -100258,14 +99817,14 @@
      },
      "tag": "section",
      "words": "",
-     "block": "sgs/form",
+     "block": "sgs/choice-flow",
      "confidence": 1,
      "low": false,
-     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
-     "rule": "formHost",
+     "reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row",
+     "rule": "choiceFlow",
      "candidates": [
       {
-       "block": "sgs/form",
+       "block": "sgs/choice-flow",
        "score": 1,
        "share": 1
       }
@@ -100318,15 +99877,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there",
-     "rule": "widthWrapper",
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
      "candidates": [],
-     "action": "unwrap",
+     "action": "absorbed",
      "snippet": "<div data-reveal=\"\" style=\"max-width:1240px;margin:0 auto;background:#F9D5D3;border:2px solid #3A2A22;border-radius:36px;padding:{{ L.boxPad }};display:grid;gri",
      "parent": {
       "draftId": "Home:63",
       "tag": "section",
-      "block": "sgs/form"
+      "block": "sgs/choice-flow"
      },
      "siblings": [],
      "siblingCount": 0,
@@ -100354,23 +99914,2944 @@
       }
      ],
      "draftId": "Home:64"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/65#0",
+     "key": "Home/65#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e5b9b746",
+      "parentTags": [
+       "section",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 70
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" data-dc-tpl=\"65\"> <div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size",
+     "parent": {
+      "draftId": "Home:64",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:100",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1721.9,
+       "w": 588.9,
+       "h": 724.2
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 1986.1,
+       "w": 628,
+       "h": 709.9
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2015.2,
+       "w": 295,
+       "h": 987.2
+      }
+     ],
+     "draftId": "Home:65"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/66#0",
+     "key": "Home/66#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 71
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div data-dc-tpl=\"66\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div> <h2 sty",
+     "parent": {
+      "draftId": "Home:65",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:70",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:76",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:81",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:90",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 4,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1721.9,
+       "w": 588.9,
+       "h": 150.2
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 1986.1,
+       "w": 628,
+       "h": 135.9
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2015.2,
+       "w": 295,
+       "h": 151.2
+      }
+     ],
+     "draftId": "Home:66"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/67#0",
+     "key": "Home/67#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c99acba9",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "ae836562",
+      "line": 72
+     },
+     "tag": "div",
+     "words": "your cookie, your way",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+     "rule": "choiceFlow",
+     "candidates": [],
+     "action": "unresolved",
+     "snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div>",
+     "parent": {
+      "draftId": "Home:66",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:68",
+       "tag": "h2",
+       "block": null
+      },
+      {
+       "draftId": "Home:69",
+       "tag": "p",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1721.9,
+       "w": 588.9,
+       "h": 28
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 1986.1,
+       "w": 628,
+       "h": 28
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2015.2,
+       "w": 295,
+       "h": 28
+      }
+     ],
+     "draftId": "Home:67"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/68#0",
+     "key": "Home/68#0",
+     "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "7e0fa315",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "88c8559f",
+      "line": 73
+     },
+     "tag": "h2",
+     "words": "Build your Zookie",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: the flow title (sgs/choice-flow title)",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<h2 style=\"margin:4px 0 8px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h2 }};line-height:1.02;letter-spacing:-0.015em\" data-dc-tpl=\"",
+     "parent": {
+      "draftId": "Home:66",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:67",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:69",
+       "tag": "p",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1753.9,
+       "w": 588.9,
+       "h": 59.2
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2018.1,
+       "w": 628,
+       "h": 44.9
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2047.2,
+       "w": 295,
+       "h": 34.7
+      }
+     ],
+     "draftId": "Home:68"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/69#0",
+     "key": "Home/69#0",
+     "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "9fcdc40e",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "5825abf6",
+      "line": 74
+     },
+     "tag": "p",
+     "words": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+     "rule": "choiceFlow",
+     "candidates": [],
+     "action": "unresolved",
+     "snippet": "<p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3C31;max-width:520px\" data-dc-tpl=\"69\">Nothing sits on a shelf. Pick a base, your chips and a fruit, ",
+     "parent": {
+      "draftId": "Home:66",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:67",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:68",
+       "tag": "h2",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1821.1,
+       "w": 520,
+       "h": 51
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2071,
+       "w": 520,
+       "h": 51
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2089.9,
+       "w": 295,
+       "h": 76.5
+      }
+     ],
+     "draftId": "Home:69"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/70#0",
+     "key": "Home/70#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 76
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 1 \"Base\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div data-dc-tpl=\"70\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"71\">1 · Base</di",
+     "parent": {
+      "draftId": "Home:65",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:66",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:76",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:81",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:90",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 4,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1894.1,
+       "w": 588.9,
+       "h": 75
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2144,
+       "w": 628,
+       "h": 75
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2188.4,
+       "w": 295,
+       "h": 75
+      }
+     ],
+     "draftId": "Home:70"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/71#0",
+     "key": "Home/71#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d14a126",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "cb9b2116",
+      "line": 76
+     },
+     "tag": "div",
+     "words": "1 · Base",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 1 \"Base\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"71\">1 · Base</div>",
+     "parent": {
+      "draftId": "Home:70",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:72",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1894.1,
+       "w": 588.9,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2144,
+       "w": 628,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2188.4,
+       "w": 295,
+       "h": 17
+      }
+     ],
+     "draftId": "Home:71"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/72#0",
+     "key": "Home/72#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 77
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 1 \"Base\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"72\"><sc-for list=\"{{ bases }}\" as=\"o\" hint-placeholder-count=\"3\" data-dc-tpl=\"73\"><button sc-camel",
+     "parent": {
+      "draftId": "Home:70",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:71",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1921.1,
+       "w": 588.9,
+       "h": 48
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2171,
+       "w": 628,
+       "h": 48
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2215.4,
+       "w": 295,
+       "h": 48
+      }
+     ],
+     "draftId": "Home:72"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/76#0",
+     "key": "Home/76#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 78
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 2 \"Chips\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div data-dc-tpl=\"76\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"77\">2 · Chips</d",
+     "parent": {
+      "draftId": "Home:65",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:66",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:70",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:81",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:90",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 4,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1991.1,
+       "w": 588.9,
+       "h": 75
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2241,
+       "w": 628,
+       "h": 75
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2285.4,
+       "w": 295,
+       "h": 131
+      }
+     ],
+     "draftId": "Home:76"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/77#0",
+     "key": "Home/77#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d14a126",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "4dc4e0e1",
+      "line": 78
+     },
+     "tag": "div",
+     "words": "2 · Chips",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 2 \"Chips\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"77\">2 · Chips</div>",
+     "parent": {
+      "draftId": "Home:76",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:78",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 1991.1,
+       "w": 588.9,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2241,
+       "w": 628,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2285.4,
+       "w": 295,
+       "h": 17
+      }
+     ],
+     "draftId": "Home:77"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/78#0",
+     "key": "Home/78#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 79
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 2 \"Chips\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"78\"><sc-for list=\"{{ chips }}\" as=\"o\" hint-placeholder-count=\"4\" data-dc-tpl=\"79\"><button sc-camel",
+     "parent": {
+      "draftId": "Home:76",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:77",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2018.1,
+       "w": 588.9,
+       "h": 48
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2268,
+       "w": 628,
+       "h": 48
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2312.4,
+       "w": 295,
+       "h": 104
+      }
+     ],
+     "draftId": "Home:78"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/81#0",
+     "key": "Home/81#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 80
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 3 \"Flavours\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div data-dc-tpl=\"81\"><div style=\"display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px\" data-dc-tpl=\"82\"><span style=\"font-size:14px",
+     "parent": {
+      "draftId": "Home:65",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:66",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:70",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:76",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:90",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 4,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2088.1,
+       "w": 588.9,
+       "h": 214
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2338,
+       "w": 628,
+       "h": 214
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2438.4,
+       "w": 295,
+       "h": 420
+      }
+     ],
+     "draftId": "Home:81"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/82#0",
+     "key": "Home/82#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "3ca36f58",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 80
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 3 \"Flavours\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin-bottom:10px\" data-dc-tpl=\"82\"><span style=\"font-size:14px;font-weight:700;lette",
+     "parent": {
+      "draftId": "Home:81",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:85",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:89",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2088.1,
+       "w": 588.9,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2338,
+       "w": 628,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2438.4,
+       "w": 295,
+       "h": 55
+      }
+     ],
+     "draftId": "Home:82"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/83#0",
+     "key": "Home/83#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "4715e8f2",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "d530b127",
+      "line": 80
+     },
+     "tag": "span",
+     "words": "3 · Flavours",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 3 \"Flavours\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase\" data-dc-tpl=\"83\">3 · Flavours</span>",
+     "parent": {
+      "draftId": "Home:82",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:84",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2088.1,
+       "w": 97.1,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2338,
+       "w": 97.1,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2438.4,
+       "w": 97.1,
+       "h": 17
+      }
+     ],
+     "draftId": "Home:83"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/84#0",
+     "key": "Home/84#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "d1ce9cd1",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "29f09391",
+      "line": 80
+     },
+     "tag": "span",
+     "words": "Pick up to 3 and we’ll split your box between them",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 3 \"Flavours\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span>",
+     "parent": {
+      "draftId": "Home:82",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:83",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 265.1,
+       "y": 2088.1,
+       "w": 318.2,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 177.1,
+       "y": 2338,
+       "w": 318.2,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2459.4,
+       "w": 295,
+       "h": 34
+      }
+     ],
+     "draftId": "Home:84"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/85#0",
+     "key": "Home/85#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2a2f14b5",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 81
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 3 \"Flavours\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:8px\" data-dc-tpl=\"85\"><sc-for list=\"{{ flavs }}\" as=\"o\" hint-placeholder-count=\"0\" data-dc-tpl=\"86\"><button sc-camel",
+     "parent": {
+      "draftId": "Home:81",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:82",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:89",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2115.1,
+       "w": 588.9,
+       "h": 160
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2365,
+       "w": 628,
+       "h": 160
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2503.4,
+       "w": 295,
+       "h": 328
+      }
+     ],
+     "draftId": "Home:85"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/89#0",
+     "key": "Home/89#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "7c22a4aa",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "6453f9ac",
+      "line": 82
+     },
+     "tag": "div",
+     "words": "Your 20: 10 strawberry · 10 mango",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 3 \"Flavours\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"margin-top:10px;font-size:14px;font-weight:700\" data-dc-tpl=\"89\">{{ split }}</div>",
+     "parent": {
+      "draftId": "Home:81",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:82",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:85",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2285.1,
+       "w": 588.9,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2535,
+       "w": 628,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2841.4,
+       "w": 295,
+       "h": 17
+      }
+     ],
+     "draftId": "Home:89"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/90#0",
+     "key": "Home/90#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 83
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 4 \"How many\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div data-dc-tpl=\"90\"><div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"91\">4 · How many",
+     "parent": {
+      "draftId": "Home:65",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:66",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:70",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:76",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:81",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 4,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2324.1,
+       "w": 588.9,
+       "h": 122
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2574,
+       "w": 628,
+       "h": 122
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2880.4,
+       "w": 295,
+       "h": 122
+      }
+     ],
+     "draftId": "Home:90"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/91#0",
+     "key": "Home/91#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d14a126",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "3303638d",
+      "line": 83
+     },
+     "tag": "div",
+     "words": "4 · How many",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 4 \"How many\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px\" data-dc-tpl=\"91\">4 · How many</div>",
+     "parent": {
+      "draftId": "Home:90",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:92",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2324.1,
+       "w": 588.9,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2574,
+       "w": 628,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2880.4,
+       "w": 295,
+       "h": 17
+      }
+     ],
+     "draftId": "Home:91"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/92#0",
+     "key": "Home/92#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d736ae7b",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 84
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 4 \"How many\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px;padding-top:6px\" data-dc-tpl=\"92\"><sc-for list=\"{{ sizes }}\" as=\"o\" hint-place",
+     "parent": {
+      "draftId": "Home:90",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:91",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 158,
+       "y": 2351.1,
+       "w": 588.9,
+       "h": 95
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2601,
+       "w": 628,
+       "h": 95
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 2907.4,
+       "w": 295,
+       "h": 95
+      }
+     ],
+     "draftId": "Home:92"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/100#0",
+     "key": "Home/100#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "912d8301",
+      "parentTags": [
+       "section",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 86
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:flex;flex-direction:column;gap:16px;min-width:0\" data-dc-tpl=\"100\"> <div style=\"position:relative;background:#FFFAF0;border:2px solid #3A2A2",
+     "parent": {
+      "draftId": "Home:64",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:65",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 1721.9,
+       "w": 471.1,
+       "h": 724.2
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2736,
+       "w": 628,
+       "h": 639.6
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3034.4,
+       "w": 295,
+       "h": 645.2
+      }
+     ],
+     "draftId": "Home:100"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/101#0",
+     "key": "Home/101#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "98d8e1de",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 87
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"position:relative;background:#FFFAF0;border:2px solid #3A2A22;border-radius:28px;padding:28px 20px 20px;display:flex;flex-direction:column;align-ite",
+     "parent": {
+      "draftId": "Home:100",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:107",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:122",
+       "tag": "button",
+       "block": null
+      },
+      {
+       "draftId": "Home:123",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 1721.9,
+       "w": 471.1,
+       "h": 363.2
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 2736,
+       "w": 628,
+       "h": 314.6
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3034.4,
+       "w": 295,
+       "h": 303.2
+      }
+     ],
+     "draftId": "Home:101"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/102#0",
+     "key": "Home/102#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "2cedc1d7",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 88
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"position:absolute;inset:0;background:radial-gradient(circle at 50% 42%, #FCEBBE 0 34%, transparent 35%)\" data-dc-tpl=\"102\"></div>",
+     "parent": {
+      "draftId": "Home:101",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:103",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:106",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 812.9,
+       "y": 1723.9,
+       "w": 467.1,
+       "h": 359.2
+      },
+      {
+       "width": 768,
+       "x": 72,
+       "y": 2738,
+       "w": 624,
+       "h": 310.6
+      },
+      {
+       "width": 375,
+       "x": 42,
+       "y": 3036.4,
+       "w": 291,
+       "h": 299.2
+      }
+     ],
+     "draftId": "Home:102"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/103#0",
+     "key": "Home/103#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "f614090c",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 89
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div ref=\"{{ cookieRef }}\" role=\"img\" aria-label=\"{{ summary }}\" style=\"position:relative;width:{{ L.cookie }};height:{{ L.cookie }};border-radius:48% 52% 50% 5",
+     "parent": {
+      "draftId": "Home:101",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:102",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:106",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 926.4,
+       "y": 1751.9,
+       "w": 240,
+       "h": 240
+      },
+      {
+       "width": 768,
+       "x": 274,
+       "y": 2766,
+       "w": 220,
+       "h": 220
+      },
+      {
+       "width": 375,
+       "x": 97.5,
+       "y": 3064.4,
+       "w": 180,
+       "h": 180
+      }
+     ],
+     "draftId": "Home:103"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/105",
+     "key": "Home/105",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "5c657b7c",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 90
+     },
+     "tag": "span",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "19 copies of one template element; drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"position:absolute;left:{{ d.x }};top:{{ d.y }};width:{{ d.s }};height:{{ d.s }};border-radius:{{ d.r }};background:{{ d.c }};transform:translate(-5",
+     "parent": {
+      "draftId": "Home:103",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      },
+      {
+       "draftId": "Home:105",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 18,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 984.5,
+       "y": 1814.7,
+       "w": 20,
+       "h": 20
+      },
+      {
+       "width": 768,
+       "x": 326.5,
+       "y": 2822.8,
+       "w": 20,
+       "h": 20
+      },
+      {
+       "width": 375,
+       "x": 138.8,
+       "y": 3109.2,
+       "w": 20,
+       "h": 20
+      }
+     ],
+     "draftId": "Home:105",
+     "copies": 19,
+     "keys": [
+      "Home/105#0",
+      "Home/105#1",
+      "Home/105#2",
+      "Home/105#3",
+      "Home/105#4",
+      "Home/105#5",
+      "Home/105#6",
+      "Home/105#7",
+      "Home/105#8",
+      "Home/105#9",
+      "Home/105#10",
+      "Home/105#11",
+      "Home/105#12",
+      "Home/105#13",
+      "Home/105#14",
+      "Home/105#15",
+      "Home/105#16",
+      "Home/105#17",
+      "Home/105#18"
+     ],
+     "proposalReason": "drawn by sgs/choice-flow: rule choiceFlow"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/106#0",
+     "key": "Home/106#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "e7dae277",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "55364dfa",
+      "line": 92
+     },
+     "tag": "div",
+     "words": "20 × Classic oat, milk choc chips, strawberry & mango",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+     "rule": "choiceFlow",
+     "candidates": [],
+     "action": "unresolved",
+     "snippet": "<div style=\"position:relative;font-family:'Caveat',cursive;font-size:26px;text-align:center;line-height:1.1\" data-dc-tpl=\"106\">{{ summary }}</div>",
+     "parent": {
+      "draftId": "Home:101",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:102",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:103",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 832.9,
+       "y": 2005.9,
+       "w": 427.1,
+       "h": 57.2
+      },
+      {
+       "width": 768,
+       "x": 143.7,
+       "y": 3000,
+       "w": 480.6,
+       "h": 28.6
+      },
+      {
+       "width": 375,
+       "x": 62,
+       "y": 3258.4,
+       "w": 251,
+       "h": 57.2
+      }
+     ],
+     "draftId": "Home:106"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/107#0",
+     "key": "Home/107#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fc658fd8",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 94
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: rule choiceFlow",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:grid;gap:10px\" data-dc-tpl=\"107\"> <button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:",
+     "parent": {
+      "draftId": "Home:100",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:101",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:122",
+       "tag": "button",
+       "block": null
+      },
+      {
+       "draftId": "Home:123",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 2101.1,
+       "w": 471.1,
+       "h": 196
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 3066.6,
+       "w": 628,
+       "h": 196
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3353.5,
+       "w": 295,
+       "h": 196
+      }
+     ],
+     "draftId": "Home:107"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/108#0",
+     "key": "Home/108#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "61819b03",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 95
+     },
+     "tag": "button",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+     "rule": "choiceFlow",
+     "candidates": [],
+     "action": "unresolved",
+     "snippet": "<button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg ",
+     "parent": {
+      "draftId": "Home:107",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:116",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:119",
+       "tag": "button",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 2101.1,
+       "w": 471.1,
+       "h": 72
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 3066.6,
+       "w": 628,
+       "h": 72
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3353.5,
+       "w": 295,
+       "h": 72
+      }
+     ],
+     "draftId": "Home:108"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/109#0",
+     "key": "Home/109#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "c2154e41",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button"
+      ],
+      "textHash": "1505",
+      "line": 95
+     },
+     "tag": "span",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/108#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"display:flex;flex-direction:column\" data-dc-tpl=\"109\"><span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"110\">Subscribe &amp; save 10%</span",
+     "parent": {
+      "draftId": "Home:108",
+      "tag": "button",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:112",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 828.9,
+       "y": 2120.1,
+       "w": 175,
+       "h": 34
+      },
+      {
+       "width": 768,
+       "x": 88,
+       "y": 3085.6,
+       "w": 175,
+       "h": 34
+      },
+      {
+       "width": 375,
+       "x": 58,
+       "y": 3372.5,
+       "w": 175,
+       "h": 34
+      }
+     ],
+     "draftId": "Home:109"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/110#0",
+     "key": "Home/110#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "14f5fbb8",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button",
+       "span"
+      ],
+      "textHash": "d01dadce",
+      "line": 95
+     },
+     "tag": "span",
+     "words": "Subscribe & save 10%",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/108#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"110\">Subscribe &amp; save 10%</span>",
+     "parent": {
+      "draftId": "Home:109",
+      "tag": "span",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:111",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 828.9,
+       "y": 2120.1,
+       "w": 175,
+       "h": 19
+      },
+      {
+       "width": 768,
+       "x": 88,
+       "y": 3085.6,
+       "w": 175,
+       "h": 19
+      },
+      {
+       "width": 375,
+       "x": 58,
+       "y": 3372.5,
+       "w": 175,
+       "h": 19
+      }
+     ],
+     "draftId": "Home:110"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/111#0",
+     "key": "Home/111#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "feea9976",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button",
+       "span"
+      ],
+      "textHash": "7051f7a5",
+      "line": 95
+     },
+     "tag": "span",
+     "words": "Skip, swap or cancel any time",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/108#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"111\">Skip, swap or cancel any time</span>",
+     "parent": {
+      "draftId": "Home:109",
+      "tag": "span",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:110",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 828.9,
+       "y": 2139.1,
+       "w": 175,
+       "h": 15
+      },
+      {
+       "width": 768,
+       "x": 88,
+       "y": 3104.6,
+       "w": 175,
+       "h": 15
+      },
+      {
+       "width": 375,
+       "x": 58,
+       "y": 3391.5,
+       "w": 175,
+       "h": 15
+      }
+     ],
+     "draftId": "Home:111"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/112#0",
+     "key": "Home/112#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "d3c7f313",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button"
+      ],
+      "textHash": "1505",
+      "line": 95
+     },
+     "tag": "span",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/108#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"display:flex;flex-direction:column;align-items:flex-end\" data-dc-tpl=\"112\"><span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl",
+     "parent": {
+      "draftId": "Home:108",
+      "tag": "button",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:109",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 1197.1,
+       "y": 2114.1,
+       "w": 66.9,
+       "h": 46
+      },
+      {
+       "width": 768,
+       "x": 613.1,
+       "y": 3079.6,
+       "w": 66.9,
+       "h": 46
+      },
+      {
+       "width": 375,
+       "x": 250.1,
+       "y": 3366.5,
+       "w": 66.9,
+       "h": 46
+      }
+     ],
+     "draftId": "Home:112"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/113#0",
+     "key": "Home/113#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "fe6d8d78",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button",
+       "span"
+      ],
+      "textHash": "987d5926",
+      "line": 95
+     },
+     "tag": "span",
+     "words": "£19.35",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/108#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"113\">{{ subTxt }}</span>",
+     "parent": {
+      "draftId": "Home:112",
+      "tag": "span",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:114",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 1197.1,
+       "y": 2114.1,
+       "w": 66.9,
+       "h": 31
+      },
+      {
+       "width": 768,
+       "x": 613.1,
+       "y": 3079.6,
+       "w": 66.9,
+       "h": 31
+      },
+      {
+       "width": 375,
+       "x": 250.1,
+       "y": 3366.5,
+       "w": 66.9,
+       "h": 31
+      }
+     ],
+     "draftId": "Home:113"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/114#0",
+     "key": "Home/114#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "7d33852b",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button",
+       "span"
+      ],
+      "textHash": "9820f9ee",
+      "line": 95
+     },
+     "tag": "span",
+     "words": "£21.50",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/108#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-size:13px;color:#6B5646;text-decoration:line-through\" data-dc-tpl=\"114\">{{ onceTxt }}</span>",
+     "parent": {
+      "draftId": "Home:112",
+      "tag": "span",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:113",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 1227.5,
+       "y": 2145.1,
+       "w": 36.5,
+       "h": 15
+      },
+      {
+       "width": 768,
+       "x": 643.5,
+       "y": 3110.6,
+       "w": 36.5,
+       "h": 15
+      },
+      {
+       "width": 375,
+       "x": 280.5,
+       "y": 3397.5,
+       "w": 36.5,
+       "h": 15
+      }
+     ],
+     "draftId": "Home:114"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/116#0",
+     "key": "Home/116#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "804ad66d",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 97
+     },
+     "tag": "div",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: question 5 \"Home/116\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\" data-dc-tpl=\"116\"><sc-for list=\"{{ freqs }}\" as=\"f\" hint-placeholder-count=\"2\" data-dc-tpl=\"117\"",
+     "parent": {
+      "draftId": "Home:107",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:108",
+       "tag": "button",
+       "block": null
+      },
+      {
+       "draftId": "Home:119",
+       "tag": "button",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 2183.1,
+       "w": 471.1,
+       "h": 44
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 3148.6,
+       "w": 628,
+       "h": 44
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3435.5,
+       "w": 295,
+       "h": 44
+      }
+     ],
+     "draftId": "Home:116"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/118",
+     "key": "Home/118",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "e8b6e997",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "4ca71c25",
+      "line": 97
+     },
+     "tag": "button",
+     "words": "Every 2 weeks",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "2 copies of one template element; drawn by sgs/choice-flow: question 5 \"Home/116\", sgs/choice-flow-question",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<button sc-camel-on-click=\"{{ f.pick }}\" style=\"min-height:44px;border-radius:999px;border:2px solid #3A2A22;background:{{ f.bg }};font-size:14px;font-weight:70",
+     "parent": {
+      "draftId": "Home:116",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:118",
+       "tag": "button",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 2183.1,
+       "w": 231.6,
+       "h": 44
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 3148.6,
+       "w": 310,
+       "h": 44
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3435.5,
+       "w": 143.5,
+       "h": 44
+      }
+     ],
+     "draftId": "Home:118",
+     "copies": 2,
+     "keys": [
+      "Home/118#0",
+      "Home/118#1"
+     ],
+     "proposalReason": "drawn by sgs/choice-flow: question 5 \"Home/116\", sgs/choice-flow-question",
+     "otherWords": [
+      "Every 4 weeks"
+     ],
+     "distinctWords": 2
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/119#0",
+     "key": "Home/119#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "",
+      "styleHash": "f3c747ce",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div"
+      ],
+      "textHash": "1505",
+      "line": 99
+     },
+     "tag": "button",
+     "words": "",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+     "rule": "choiceFlow",
+     "candidates": [],
+     "action": "unresolved",
+     "snippet": "<button sc-camel-on-click=\"{{ pickOnce }}\" aria-pressed=\"{{ isOnce }}\" style=\"min-height:60px;border-radius:20px;border:2px solid #3A2A22;background:{{ once.bg ",
+     "parent": {
+      "draftId": "Home:107",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:108",
+       "tag": "button",
+       "block": null
+      },
+      {
+       "draftId": "Home:116",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 2,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 2237.1,
+       "w": 471.1,
+       "h": 60
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 3202.6,
+       "w": 628,
+       "h": 60
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3489.5,
+       "w": 295,
+       "h": 60
+      }
+     ],
+     "draftId": "Home:119"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/120#0",
+     "key": "Home/120#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "14f5fbb8",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button"
+      ],
+      "textHash": "9ca89076",
+      "line": 99
+     },
+     "tag": "span",
+     "words": "One-off box",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/119#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"120\">One-off box</span>",
+     "parent": {
+      "draftId": "Home:119",
+      "tag": "button",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:121",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 828.9,
+       "y": 2257.6,
+       "w": 88,
+       "h": 19
+      },
+      {
+       "width": 768,
+       "x": 88,
+       "y": 3223.1,
+       "w": 88,
+       "h": 19
+      },
+      {
+       "width": 375,
+       "x": 58,
+       "y": 3510,
+       "w": 88,
+       "h": 19
+      }
+     ],
+     "draftId": "Home:120"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/121#0",
+     "key": "Home/121#0",
+     "fingerprint": {
+      "tag": "span",
+      "cls": "",
+      "styleHash": "fe6d8d78",
+      "parentTags": [
+       "section",
+       "div",
+       "div",
+       "div",
+       "button"
+      ],
+      "textHash": "9820f9ee",
+      "line": 99
+     },
+     "tag": "span",
+     "words": "£21.50",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "inside the gap row Home/119#0",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"121\">{{ onceTxt }}</span>",
+     "parent": {
+      "draftId": "Home:119",
+      "tag": "button",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:120",
+       "tag": "span",
+       "block": null
+      }
+     ],
+     "siblingCount": 1,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 1196.9,
+       "y": 2251.6,
+       "w": 67.1,
+       "h": 31
+      },
+      {
+       "width": 768,
+       "x": 612.9,
+       "y": 3217.1,
+       "w": 67.1,
+       "h": 31
+      },
+      {
+       "width": 375,
+       "x": 249.9,
+       "y": 3504,
+       "w": 67.1,
+       "h": 31
+      }
+     ],
+     "draftId": "Home:121"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/122#0",
+     "key": "Home/122#0",
+     "fingerprint": {
+      "tag": "button",
+      "cls": "scp0 scp1",
+      "styleHash": "58579cdd",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "a8e428b9",
+      "line": 101
+     },
+     "tag": "button",
+     "words": "Subscribe · £19.35",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/choice-flow: the add-to-bag result (sgs/choice-flow-result action add-to-bag)",
+     "rule": "choiceFlow",
+     "into": "Home/63#0",
+     "candidates": [],
+     "action": "absorbed",
+     "snippet": "<button sc-camel-on-click=\"{{ add }}\" style=\"height:64px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size",
+     "parent": {
+      "draftId": "Home:100",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:101",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:107",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:123",
+       "tag": "div",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 2313.1,
+       "w": 471.1,
+       "h": 64
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 3278.6,
+       "w": 628,
+       "h": 64
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3565.5,
+       "w": 295,
+       "h": 64
+      }
+     ],
+     "draftId": "Home:122"
+    },
+    {
+     "rowId": "skeleton:build-your-zookie:Home/123#0",
+     "key": "Home/123#0",
+     "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "d31fb78c",
+      "parentTags": [
+       "section",
+       "div",
+       "div"
+      ],
+      "textHash": "ebe5e5ff",
+      "line": 102
+     },
+     "tag": "div",
+     "words": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+     "rule": "choiceFlow",
+     "candidates": [],
+     "action": "unresolved",
+     "snippet": "<div style=\"font-size:14px;font-weight:600;text-align:center\" data-dc-tpl=\"123\">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>",
+     "parent": {
+      "draftId": "Home:100",
+      "tag": "div",
+      "block": null
+     },
+     "siblings": [
+      {
+       "draftId": "Home:101",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:107",
+       "tag": "div",
+       "block": null
+      },
+      {
+       "draftId": "Home:122",
+       "tag": "button",
+       "block": null
+      }
+     ],
+     "siblingCount": 3,
+     "boxes": [
+      {
+       "width": 1440,
+       "x": 810.9,
+       "y": 2393.1,
+       "w": 471.1,
+       "h": 17
+      },
+      {
+       "width": 768,
+       "x": 70,
+       "y": 3358.6,
+       "w": 628,
+       "h": 17
+      },
+      {
+       "width": 375,
+       "x": 40,
+       "y": 3645.5,
+       "w": 295,
+       "h": 34
+      }
+     ],
+     "draftId": "Home:123"
     }
    ],
    "counts": {
     "inventoryElements": 106,
     "parts": 0,
     "rows": 106,
-    "skeletonNodes": 41,
-    "expandedNodes": 41,
-    "low": 12,
-    "removed": 65,
-    "unresolved": 0,
+    "skeletonNodes": 13,
+    "expandedNodes": 13,
+    "low": 0,
+    "removed": 99,
+    "unresolved": 6,
     "byRule": {
-     "formHost": 1,
-     "widthWrapper": 1,
-     "label": 4,
-     "optionSet": 48,
-     "decorationLayer": 20
+     "choiceFlow": 106
     }
    },
    "problems": []
@@ -117650,14 +120131,14 @@
      },
      "tag": "a",
      "words": "Show 4 gifts ↓",
-     "block": "sgs/form",
+     "block": "sgs/choice-flow",
      "confidence": 1,
      "low": false,
-     "reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
-     "rule": "formHost",
+     "reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row",
+     "rule": "choiceFlow",
      "candidates": [
       {
-       "block": "sgs/form",
+       "block": "sgs/choice-flow",
        "score": 1,
        "share": 1
       }
@@ -117703,7 +120184,7 @@
     "removed": 0,
     "unresolved": 0,
     "byRule": {
-     "formHost": 1
+     "choiceFlow": 1
     }
    },
    "problems": []
@@ -147464,90 +149945,90 @@
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/128#0",
    "rowType": "skeleton-block",
-   "contentHash": "cfaa951a4556c8e575a17dfdee0abe1db27230c741f3287e407084c6aa31c6a3",
+   "contentHash": "29e28f24fd100b74adb1728bc43463a70e5945839e5a937ebc1138c8b58fa0f3",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/129#0",
    "rowType": "skeleton-block",
-   "contentHash": "7952c10b49eb056848c3d357a9af5d655742b4b364a0e1d728fff684ea573713",
+   "contentHash": "f89eaf582c536f3e92329a21365c18b14fcf490aed870b6608fddf28bbe49044",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/130#0",
    "rowType": "skeleton-block",
-   "contentHash": "1f84ae3ad927c500456dd4211e75faafa9355db768bd196ab337d05defa8f171",
+   "contentHash": "6c87f8d8bce57ff3b33a03f874e5a37907b88bf7d2de4771abc810b08f42f7b1",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/131#0",
    "rowType": "skeleton-block",
-   "contentHash": "d300044e5a269a4f3ea803e1dc3bbe833c7a2279324524f19a4b0a4ba704aa88",
+   "contentHash": "48f9453c48cfa0772d39f655047fb732cb615c6340d695f16faf5d4474f5e08d",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/132#0",
    "rowType": "skeleton-block",
-   "contentHash": "0645b9429cb20b8239bbb0df0c3dbc2d480ae52f1f73f00e0644f7bd76a012c4",
+   "contentHash": "b47673633a64084047edebfac87090e9ac5ff410efa89c536569e59946c3bfcd",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/176#0",
    "rowType": "skeleton-block",
-   "contentHash": "784a3ad75f73d07e7d42fc220604845cadf559687e620564b60f93b3ab453c80",
+   "contentHash": "8b6863f486ccf8fe6e9c34cc7d01a85cd410a03743e76f91b720d6e3faecd480",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/177#0",
    "rowType": "skeleton-block",
-   "contentHash": "75fcfe313035a5962b96b85be9ff6b3aee62d9d36d6cec76e9e05ab975b28ccd",
+   "contentHash": "396a76163a35cd2564fec0398954eb815eb90b50f507fa5ac34afe1d430eb572",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/178#0",
    "rowType": "skeleton-block",
-   "contentHash": "87ce9c1797bdb4a9af73e9473a9723bcf95319931f11e10a16e4138a420bb613",
+   "contentHash": "bbfd1f40eab7260768e42568099863a83c296861ce7887aff65795e20c191a75",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/179#0",
    "rowType": "skeleton-block",
-   "contentHash": "790bcba145081a5cbbda60f73e2f736fa2ff864d2b7c099a5812fdd5cf6e124d",
+   "contentHash": "82f3e55ba2ebfda66783b6764facd78b2b4fcdce8c9166da738328da0b742ea5",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/180#0",
    "rowType": "skeleton-block",
-   "contentHash": "5af7a1c336708c7e62b1b8013a525af584532ef88f5d2b7b70558450ef1598d3",
+   "contentHash": "71dc20787c2085d362f78e146867a8269814bdbd3ffeecaa8355c289c0d09c96",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/181#0",
    "rowType": "skeleton-block",
-   "contentHash": "af57d6997a278cb23c4b96a5623d74cdb0a9ca528e67257c840f2a0c921f23ed",
+   "contentHash": "45c8ccff4d92d688b3ac72b4cc18c140cc102dd19fb628d9564cdcd861ac1314",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:site-footer:Home>SiteFooter@250#0/2#0",
@@ -149744,18 +152225,346 @@
   {
    "rowId": "skeleton:build-your-zookie:Home/63#0",
    "rowType": "skeleton-block",
-   "contentHash": "78c67b0d413db283c621c33a57b7c597406113fb5272df2d415752f004bda734",
+   "contentHash": "60cc9be894cd16d05051664b103af99f1164a38cdf5d53fed76dde9993359c53",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:build-your-zookie:Home/64#0",
    "rowType": "skeleton-block",
-   "contentHash": "1b65ad20552a6675fc017145668655e0eab16f06c561d2d92f97f03aac948b5e",
+   "contentHash": "1127762f7ffbae5a177587066e5e950581af21ab67140b09edb052663b91be0a",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/65#0",
+   "rowType": "skeleton-block",
+   "contentHash": "3743cb452e5d62e343c4686a92668cd7e0e3b4aa608a1ac5fb00674a8b38949d",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/66#0",
+   "rowType": "skeleton-block",
+   "contentHash": "612fb1de00200bb1b9c39e0024bcd0a1ff8459f782e5bd9cbb3129846b35c30e",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/67#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4c25cd5ea14ee2fcc31e5da8b4030f559fb5c6492fa202a2db38b619e061d1ef",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/68#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4c922080221132be793c2f360277d202eca682d9a6fe4c402e107fb80c10e8f4",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/69#0",
+   "rowType": "skeleton-block",
+   "contentHash": "340e5989100d5491d11c324ed45a3920eaea5d78c2158255c268cbd56f791018",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/70#0",
+   "rowType": "skeleton-block",
+   "contentHash": "ca9a773e27bcae2a23ffdd8576492a87067f990ff68197e230b5f078a893fc07",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/71#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4fafb9703c24e1f604fe91ab438deac5892309f2c1529e681175a79938c62d48",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/72#0",
+   "rowType": "skeleton-block",
+   "contentHash": "534a0b219fc2c2c5700007c3a4336b87a0d29e435ce5db06ceecca4e15412f49",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/76#0",
+   "rowType": "skeleton-block",
+   "contentHash": "7721524701e06251a458ee72330683df5b9a133ebfb1f0bb5c898d612a1aac20",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/77#0",
+   "rowType": "skeleton-block",
+   "contentHash": "9e79ff38ce8b3732e7b2f62212ee45ebdc18a66d8c19762b285e0cdb0038974d",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/78#0",
+   "rowType": "skeleton-block",
+   "contentHash": "bbf0bf442a8cea2d5c249f892c48aa29e9cda45144ae54eda5b20af1ea6dc43b",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/81#0",
+   "rowType": "skeleton-block",
+   "contentHash": "6fada5a612f4fe10636b1ec73b7be8c459eadeaef830537bfdf2b73ef62f326a",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/82#0",
+   "rowType": "skeleton-block",
+   "contentHash": "ea3617c8306b93aadf4550f2cf68f8a0217f21c8b3978a53150e5e280b802541",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/83#0",
+   "rowType": "skeleton-block",
+   "contentHash": "758992ef9a9e50900f422dddc65f3f84ba8c29baccd2ca8e997905b2ec7d19cb",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/84#0",
+   "rowType": "skeleton-block",
+   "contentHash": "c92a6a850ef79b214378118851ece1cc7f926c5e43d6f2422a41d2f992aaed4b",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/85#0",
+   "rowType": "skeleton-block",
+   "contentHash": "68571457a311cab1f6b24be3f2151b5cc9bbeeb6ad2916a40e4c3edc03da59d5",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/89#0",
+   "rowType": "skeleton-block",
+   "contentHash": "5510b6f2f75e3d13991f87878a04a8337bf7506b5835383484b4add51a42a2ea",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/90#0",
+   "rowType": "skeleton-block",
+   "contentHash": "5642cf739303250db3d7a329299efd115994583c17149ebc130ba3708881a28b",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/91#0",
+   "rowType": "skeleton-block",
+   "contentHash": "f7f75c8f7a7a350cdd93395b309b78519474bd387b93f811fd1a59a868c814a2",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/92#0",
+   "rowType": "skeleton-block",
+   "contentHash": "1368c1f48bce8efa8cfa675ec0d5af8efaa5bc95a709b1b1fa0101ab99ebd352",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/100#0",
+   "rowType": "skeleton-block",
+   "contentHash": "38366b54ab548a6f60a2adbd73c9008b0532a146bbfd643e67f66f9a0f8ab8bd",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/101#0",
+   "rowType": "skeleton-block",
+   "contentHash": "ea1c00a76ae6557e222e5c93efb37b07c8387d040cd42d427cc04dd83cbaaedf",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/102#0",
+   "rowType": "skeleton-block",
+   "contentHash": "128c1cf9c143675fe215016d6aded9a8adf064a7e173d0e2adbdb71d1411ebbf",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/103#0",
+   "rowType": "skeleton-block",
+   "contentHash": "0f0a969d88cb37f552376856cf01b6ac6ab188eda55513153f75547296387e3c",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/105",
+   "rowType": "skeleton-block",
+   "contentHash": "385dfd57f19cfc36d2b1fddc186568b78244ffe7d9da0b24c0796e930eae3137",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/106#0",
+   "rowType": "skeleton-block",
+   "contentHash": "0267688248684acef7232bed211b5c927f5ae45ed723c2f1fff91c9c32529787",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/107#0",
+   "rowType": "skeleton-block",
+   "contentHash": "63360612e1dac26cb35544b5874e40be6cef4dd23b76e45d2f2ad6d24db1ce2f",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/108#0",
+   "rowType": "skeleton-block",
+   "contentHash": "5a685e4b499831c6e209a9d3b4cf79da022e9cf9127c40f55b2cec024d4cf557",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/109#0",
+   "rowType": "skeleton-block",
+   "contentHash": "7bd6aaf9767e62747a3bf19b2fe7899bc010cf803eebfaba56d8d25efb7f62a4",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/110#0",
+   "rowType": "skeleton-block",
+   "contentHash": "4d001e4d24b2385e5c063e7ec02ebe37696c1096de857876378326da450dc318",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/111#0",
+   "rowType": "skeleton-block",
+   "contentHash": "1cbddf89a57faac0b5bdbcfdf7ec88fbe1e1e2eed21a94fc03febe484c57a835",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/112#0",
+   "rowType": "skeleton-block",
+   "contentHash": "08cd8e02ac362a36f5da81ec7984875a085cab1cf1799c0f06769343ccf92225",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/113#0",
+   "rowType": "skeleton-block",
+   "contentHash": "ca7e0e98621b0391f6f98806d0c34193c520395c038bde1e213abe6d6a04ab06",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/114#0",
+   "rowType": "skeleton-block",
+   "contentHash": "70722e63da2838e16cdadb6011252663acd067b95941bdd107503a7e65e50018",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/116#0",
+   "rowType": "skeleton-block",
+   "contentHash": "f9bc5278103704ef430b71db278f6ddf16d0b23dbd2daa4bd910315cdac64f98",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/118",
+   "rowType": "skeleton-block",
+   "contentHash": "e5be775dafe27d211151e5152baa46840b875cf8ffe345aa73f2fec95f2d9fb3",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/119#0",
+   "rowType": "skeleton-block",
+   "contentHash": "f0f1dc27e4e3bf421635bd84c48b361c53a3f136ae996617206357a8e523d527",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/120#0",
+   "rowType": "skeleton-block",
+   "contentHash": "81e743dd8917b2695a7fb2e13b8c529c69bcf4d797f88d5e39f22624353c6094",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/121#0",
+   "rowType": "skeleton-block",
+   "contentHash": "c3a70796452218ce99f777df9a2f0cbcc76b5a01d0ffd4f67272db272b623bb2",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/122#0",
+   "rowType": "skeleton-block",
+   "contentHash": "d14ed1563085207c65cd9d90d906a69997aabe549d5429418fa3b2b25c35d4cf",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
+  },
+  {
+   "rowId": "skeleton:build-your-zookie:Home/123#0",
+   "rowType": "skeleton-block",
+   "contentHash": "c00b607c5069de063071d296e73febd103403a8253f7c7636cf91039fa358bb1",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:page-shop-dc-html:Shop/8#0",
@@ -151496,10 +154305,10 @@
   {
    "rowId": "skeleton:gift-finder:Gifts/24#0",
    "rowType": "skeleton-block",
-   "contentHash": "766643e9e947ce81807a083940bffc506b52a2542e0fc3dc5f090f94fbe18dc9",
+   "contentHash": "22c68baaf5d90958c31c96a3623676379d26611af9fb2436d9594a6964a2d9ed",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-19T01:02:50.451Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null
   },
   {
    "rowId": "skeleton:gift-note-preview:Gifts/61#0",
