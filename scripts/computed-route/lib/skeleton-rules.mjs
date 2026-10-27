@@ -18,6 +18,7 @@ import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
 import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
+import { makeFieldGroups } from './skeleton-field-groups.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -246,9 +247,36 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// A hidden input is no visible field, so the text beside it is never that field's text.
 	const visibleControl = ( k ) => !! controlBlock( k ) && 'hidden' !== String( k.attrs?.type || '' ).toLowerCase();
-	// A field's own wrapper: an element holding exactly one visible control, that control a child of it. An element holding
-	// two or more controls (a row of fields, the form itself) is no field's wrapper, so its text is no field's text.
-	const holdsControl = ( p ) => !! p && m.blockKids( p ).some( visibleControl ) && 1 === desc( p ).filter( visibleControl ).length;
+	// A group of chips that each carry a pressed or checked state (a loop of chips, or two or more): its chips, or null.
+	const chipGroup = ( e ) => {
+		const chips = R.optionSet ? m.blockKids( e ) : [];
+		const chosen = ( k ) => 'button' === view.realTag( k ) && ( null != view.attr( k, 'aria-pressed' ) || null != view.attr( k, 'aria-checked' ) );
+		return chips.length && chips.every( chosen ) && ( chips.length >= 2 || view.repeated( chips[ 0 ] ) ) ? chips : null;
+	};
+	// A chip group the form submits (rule optionSetForm): inside a form element, or on a form surface when it filters no list.
+	// Its chips, or null.
+	const tilesMemo = new Map();
+	const tilesField = ( e ) => {
+		if ( ! tilesMemo.has( e.key ) ) {
+			const chips = R.optionSetForm ? chipGroup( e ) : null;
+			tilesMemo.set( e.key, chips && ( inFormElement( e ) || ( 'form' === surface.kind && ! ( R.optionSetFilter && narrowsList( chips[ 0 ] ) ) ) ) ? chips : null );
+		}
+		return tilesMemo.get( e.key );
+	};
+	// Whether the element sits in a form: on a form surface, or under a form element (its template chain or its rendered parents).
+	const inAnyForm = ( e ) => {
+		for ( let p = m.byKey[ e.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
+			if ( 'form' === view.realTag( p ) ) {
+				return true;
+			}
+		}
+		return 'form' === surface.kind || inFormElement( e );
+	};
+	// The form's fields: a control, or a field group (a tiles field, a radio or checkbox group) that is one field of several
+	// controls (lib/skeleton-field-groups.mjs). A field's own wrapper holds exactly one field, that field a child of it; an
+	// element holding two or more fields (a row of fields, the form itself) is no field's wrapper, so its text is no field's text.
+	const groups = makeFieldGroups( { m, view, controlBlock, visibleControl, tilesField, inForm: inAnyForm, F: R.formControl || {} } );
+	const holdsControl = groups.holdsField;
 	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
 	// field's wrapper beside the control, or in a <label> there (two levels up at most).
 	const fieldText = ( e ) => {
@@ -258,23 +286,28 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const p = m.byKey[ e.parentKey ];
 		return holdsControl( p ) || ( !! p && 'label' === p.tag && holdsControl( m.byKey[ p.parentKey ] ) ) || ( 'label' === e.tag && holdsControl( p ) );
 	};
-	// The words a field's removed texts carried, as the field block's own settings: the label (the <label> naming the
-	// control, else the first text in its wrapper), whether it is required, and the remaining hint. A required marker
-	// ("*") and a character count ("0 / 800") are drawn by the field block itself.
-	// The texts are read in the field's own wrapper (holdsControl): the <label> round the control, or the element around
-	// that label when it holds no other control, else the control's parent. A label's own words are its text too.
+	// The words a field's removed texts carried, as the field block's own settings: the label (the <label> naming the field, else
+	// the first text in its wrapper: a group's <legend>), whether it is required (a control marked required, or a required marker
+	// "*" beside the label), and the remaining hint. The marker and a character count ("0 / 800") are drawn by the field block
+	// itself. e is the control, or a field group's element (a tiles field, a radio or checkbox group), whose options' words are
+	// never the field's.
+	// The texts are read in the field's own wrapper (holdsControl): the element around the field's <label> when it holds no
+	// other field, else the field's parent, else (a group) the group's own element. A label's own words are its text too, and
+	// so are the words of a group element that is its own wrapper.
 	const fieldContent = ( e, block ) => {
+		const group = groups.groupAt( e );
+		const skip = new Set( group ? group.options.map( ( o ) => o.el ) : [ e ] );
 		const p = m.byKey[ e.parentKey ];
 		const up = p && 'label' === p.tag ? m.byKey[ p.parentKey ] : null;
-		const scope = [ up, p ].find( holdsControl ) || null;
+		const scope = [ up, p, ...( group ? [ e ] : [] ) ].find( holdsControl ) || null;
 		const drawn = ( t ) => /^\*$/.test( t ) || /^\d+\s*\/\s*\d+$/.test( t );
 		const texts = [];
 		const visit = ( k ) => {
-			if ( k === e ) {
+			if ( skip.has( k ) ) {
 				return;
 			}
-			if ( ( k !== scope || 'label' === k.tag ) && m.words( k ) && ! controlBlock( k ) ) {
-				texts.push( { el: k, text: m.words( k ).replace( /\s*\*$/, '' ).trim() } );
+			if ( ( k !== scope || 'label' === k.tag || k === e ) && m.words( k ) && ! controlBlock( k ) ) {
+				texts.push( { el: k, raw: m.words( k ).trim(), text: m.words( k ).replace( /\s*\*$/, '' ).trim() } );
 			}
 			m.blockKids( k ).forEach( visit );
 		};
@@ -284,13 +317,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const named = texts.find( ( t ) => 'label' === t.el.tag || 'label' === m.byKey[ t.el.parentKey ]?.tag );
 		const label = ( named || texts.find( ( t ) => t.text && ! drawn( t.text ) ) )?.text || '';
 		const help = texts.filter( ( t ) => t.text && t.text !== label && ! drawn( t.text ) ).map( ( t ) => t.text ).join( ' ' );
+		const marked = texts.some( ( t ) => /\*$/.test( t.raw ) );
 		const out = {};
 		const has = ( n ) => !! facts.attr?.( block, n );
 		if ( label && has( 'label' ) ) {
 			out.label = label;
 		}
-		if ( has( 'required' ) && required( e ) ) {
+		if ( has( 'required' ) && ( marked || ( group ? group.members : [ e ] ).some( required ) ) ) {
 			out.required = true;
+		}
+		if ( group?.block && has( 'options' ) ) {
+			out.options = group.options.map( ( o ) => ( { value: o.value, label: o.label } ) );
 		}
 		if ( help && has( 'helpText' ) ) {
 			out.helpText = help;
@@ -385,13 +422,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// block whatever its tag (a wizard drawn in a <div>): the saved form's root must be the form block, which the linked embed renders.
 		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
-		// settings, and a <label> wrapped around the control goes so the field takes its place.
+		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
+		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.
 		( { e } ) => {
+			const group = R.formControl ? groups.groupAt( e ) : null;
+			if ( 'choice' === group?.kind ) {
+				return v( 'formControl', { block: group.block, absorb: true, attributes: fieldContent( e, group.block ) } );
+			}
 			const block = controlBlock( e );
 			if ( block ) {
 				return v( 'formControl', { block, absorb: true, attributes: fieldContent( e, block ) } );
 			}
-			if ( R.formControl && 'label' === e.tag && m.blockKids( e ).some( ( k ) => controlBlock( k ) ) ) {
+			if ( R.formControl && 'label' === e.tag && m.blockKids( e ).some( ( k ) => controlBlock( k ) || groups.groupAt( k ) ) ) {
 				return v( 'formControl', { action: 'unwrap' } );
 			}
 			return fieldText( e ) ? v( 'formControl', { action: 'remove', reason: R.formControl.fieldTextReason } ) : null;
@@ -643,19 +685,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// surface is filtered by it carries the hand-over to wire that filter (`optionSetFilter`). On a form surface drawn
 		// without a <form> (its root is the form block by rule formHost: a wizard in a <div>) a group that filters no list is
 		// the form's tiles field too.
+		// The tiles field's label, required marker and hint are its own settings, read as any field's (fieldContent).
 		( { e } ) => {
-			const chips = R.optionSet ? m.blockKids( e ) : [];
-			const chosen = ( k ) => 'button' === view.realTag( k ) && ( null != view.attr( k, 'aria-pressed' ) || null != view.attr( k, 'aria-checked' ) );
-			if ( ! ( chips.length && chips.every( chosen ) && ( chips.length >= 2 || view.repeated( chips[ 0 ] ) ) ) ) {
+			const chips = chipGroup( e );
+			if ( ! chips ) {
 				return null;
 			}
-			if ( R.optionSetForm && inFormElement( e ) ) {
-				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: {}, absorb: true } );
+			if ( tilesField( e ) ) {
+				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: fieldContent( e, R.optionSetForm.block ), absorb: true } );
 			}
 			const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );
-			if ( R.optionSetForm && ! filter && 'form' === surface.kind ) {
-				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: {}, absorb: true } );
-			}
 			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
 		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling
