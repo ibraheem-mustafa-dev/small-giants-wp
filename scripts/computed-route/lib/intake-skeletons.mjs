@@ -51,8 +51,22 @@ const slug = ( s ) => String( s ).toLowerCase().replace( /[^a-z0-9]+/g, '-' ).re
 // shared panel condition).
 const tplsOf = ( r ) => ( null == r.template_tpl_id ? [] : [].concat( r.template_tpl_id ).map( String ) );
 
+// The tab panels of a menu record that holds several panels as states of one record: every state that opens it (not
+// "closed" or "default", setting a value) sets the same state keys, each to its own values (`{ mega: "sun" }`,
+// `{ mega: "brands" }`), so each state shows its own panel. Returns those states, or [] for a menu with one open state
+// (a hover state with no keys is no panel), states over different keys, or any other kind of record (a drawer's "open,
+// empty" and "open, with items" are one surface's variants).
+export function tabPanels( r ) {
+	const open = 'menu' === r.kind ? ( r.states || [] ).filter( ( st ) => ! /^(closed|default)$/i.test( st.name || '' ) && Object.values( st.state_keys || {} ).some( ( v ) => null != v ) ) : [];
+	const keysOf = ( st ) => Object.keys( st.state_keys ).sort().join( ',' );
+	const same = open.every( ( st ) => keysOf( st ) === keysOf( open[ 0 ] ) );
+	const own = new Set( open.map( ( st ) => JSON.stringify( Object.keys( st.state_keys ).sort().map( ( k ) => st.state_keys[ k ] ) ) ) ).size === open.length;
+	return open.length > 1 && same && own ? open : [];
+}
+
 // Surface roots from `folder/surfaces.json` (or `records`), checked against the census. Returns { surfaces, parts, gaps }:
-// surfaces [{ id, name, kind, component, rootTpl, tpls, route, slug, selector }], parts [{ id, name, kind, parent, why }].
+// surfaces [{ id, name, kind, component, rootTpl, tpls, route, slug, selector, panel? (the tab state a panel surface of a
+// several-panel menu record opens, tabPanels) }], parts [{ id, name, kind, parent, why }].
 export function surfaceRoots( { folder, census, records = null } ) {
 	const gaps = [];
 	let recs = records;
@@ -88,13 +102,18 @@ export function surfaceRoots( { folder, census, records = null } ) {
 			parts.push( { id: r.id, name: r.name, kind: r.kind, parent: r.parent ?? null, why: `a ${ r.kind } is a state or part of ${ r.parent ? `surface ${ r.parent }` : 'the page it shows on' }, read with it` } );
 			continue;
 		}
-		let s = 'page' === r.kind ? `page-${ slug( '/' === r.route ? 'home' : r.route ) }` : slug( r.name );
-		for ( let i = 2; slugs.has( s ); i++ ) {
-			s = `${ s.replace( /-\d+$/, '' ) }-${ i }`;
+		// A menu record holding several tab panels is one surface per panel, each opened by its own tab's state.
+		const panels = tabPanels( r );
+		for ( const panel of panels.length ? panels : [ null ] ) {
+			const base = 'page' === r.kind ? `page-${ slug( '/' === r.route ? 'home' : r.route ) }` : slug( panel ? `${ r.name } ${ panel.name }` : r.name );
+			let s = base;
+			for ( let i = 2; slugs.has( s ); i++ ) {
+				s = `${ s.replace( /-\d+$/, '' ) }-${ i }`;
+			}
+			slugs.add( s );
+			const rootTpl = tpls.at( -1 );
+			surfaces.push( { id: r.id, name: panel ? `${ r.name }: ${ panel.name }` : r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: panel ? [ panel ] : r.states || [], openedBy: r.opened_by ?? null, ...( panel ? { panel: panel.name } : {} ) } );
 		}
-		slugs.add( s );
-		const rootTpl = tpls.at( -1 );
-		surfaces.push( { id: r.id, name: r.name, kind: r.kind, component: r.dc, rootTpl, tpls, route: r.route ?? null, slug: s, rootTag: elements.get( `${ r.dc }:${ rootTpl }` ).detail.tag, selector: `[${ ROOT_MARK }="${ s }"]`, states: r.states || [], openedBy: r.opened_by ?? null } );
 	}
 	// A census CPT element (by tag) in a component that no record of a claiming kind names.
 	const claimed = ( component, kinds ) => recs.some( ( r ) => r.dc === component && kinds.includes( r.kind ) );
@@ -371,7 +390,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const runs = [];
 	const fail = ( s, error, into = { out, gaps } ) => {
 		into.gaps.push( gap( 'skeleton', `${ s.component }:${ s.rootTpl }`, `${ s.slug }: ${ error }` ) );
-		into.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, inventory: null, rows: [], counts: null, problems: [], gap: error } );
+		into.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, ...( s.panel ? { panel: s.panel } : {} ), inventory: null, rows: [], counts: null, problems: [], gap: error } );
 	};
 	// The client's own built posts (a header, drawer or mega menu it already built), keyed by surfaces.json id or slug.
 	const builtFile = path.join( repo, 'sites', client, 'build', 'skeleton', 'built-surfaces.json' );
@@ -444,7 +463,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						const other = open ? Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] ) : [];
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, ...( other.length ? { statesAt: Object.fromEntries( other ) } : {} ), tried: open.tried };
 						r.proposal.stripRoots?.forEach( ( k ) => absorbed.set( k, s.slug ) );
-						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
+						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, ...( s.panel ? { panel: s.panel } : {} ), root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );
 					} catch ( e ) {
 						fail( s, e.message.split( '\n' )[ 0 ], u );

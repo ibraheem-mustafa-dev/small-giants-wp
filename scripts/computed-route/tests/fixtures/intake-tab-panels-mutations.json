@@ -1,0 +1,13 @@
+[
+ {"file": "lib/intake-skeletons.mjs", "find": "const panels = tabPanels( r );", "replace": "const panels = [];", "why": "a several-panel menu record is one surface per panel"},
+ {"file": "lib/intake-skeletons.mjs", "find": "const open = 'menu' === r.kind ? ( r.states", "replace": "const open = true ? ( r.states", "why": "only a menu record is split (a drawer's open variants are one surface)"},
+ {"file": "lib/intake-skeletons.mjs", "find": "! /^(closed|default)$/i.test( st.name || '' ) && Object.values", "replace": "Object.values", "why": "a closed state is no panel"},
+ {"file": "lib/intake-skeletons.mjs", "find": "Object.values( st.state_keys || {} ).some( ( v ) => null != v ) ) : [];", "replace": "true ) : [];", "why": "a state setting no value (a hover state) is no panel"},
+ {"file": "lib/intake-skeletons.mjs", "find": "return open.length > 1 && same && own ? open : [];", "replace": "return open.length > 0 && same && own ? open : [];", "why": "a menu with one open state stays one surface"},
+ {"file": "lib/intake-skeletons.mjs", "find": "return open.length > 1 && same && own ? open : [];", "replace": "return open.length > 1 && own ? open : [];", "why": "states over different keys are no tabs"},
+ {"file": "lib/intake-skeletons.mjs", "find": "return open.length > 1 && same && own ? open : [];", "replace": "return open.length > 1 && same ? open : [];", "why": "two states with one value are one panel"},
+ {"file": "lib/intake-skeletons.mjs", "find": "slug( panel ? `${ r.name } ${ panel.name }` : r.name )", "replace": "slug( r.name )", "why": "each panel surface is named after its tab"},
+ {"file": "lib/intake-skeletons.mjs", "find": "states: panel ? [ panel ] : r.states || [],", "replace": "states: r.states || [],", "why": "each panel surface opens only its own tab"},
+ {"file": "lib/intake-skeletons.mjs", "find": "openedBy: r.opened_by ?? null, ...( panel ? { panel: panel.name } : {} ) } );", "replace": "openedBy: r.opened_by ?? null } );", "why": "the surface names its panel"},
+ {"file": "lib/intake-skeletons.mjs", "find": "route: s.route, ...( s.panel ? { panel: s.panel } : {} ), root:", "replace": "route: s.route, root:", "why": "the skeleton entry names its panel, the manifest's link"}
+]

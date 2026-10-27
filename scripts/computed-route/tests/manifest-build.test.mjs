@@ -128,6 +128,47 @@ test( 'a mega menu open state keeps setting state null', () => {
 	assert.deepEqual( run( [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ) ], records ).entries[ 'mega-m' ].states, { open: null } );
 } );
 
+// One mega menu record whose panels are states of one key (each tab a `{ mega: <tab> }` state), and one page-map row per
+// panel titled "<label> mega menu" (lib/page-map-names.mjs).
+test( 'MUST FAIL: each panel row of a mega menu record holding several panels keeps only the state its label names', () => {
+	const panels = [ { name: 'closed', state_keys: { mega: null } }, { name: 'Sunglasses', state_keys: { mega: 'sun' } }, { name: 'Brands', state_keys: { mega: 'brands' } }, { name: 'Lenses', state_keys: { mega: 'lenses' } } ];
+	const records = [ rec( 'S-4', 'menu', 'Mega menu', panels, { dc: 'Site' } ) ];
+	const facts = { state: { Site: { keys: [ 'mega' ], widthKeys: [] } } };
+	const rows = [ row( 'sgs_mega_menu', 'mega-menu-sunglasses', 1, { title: 'Sunglasses mega menu' } ), row( 'sgs_mega_menu', 'mega-menu-brands', 2, { title: 'Brands mega menu' } ), row( 'sgs_mega_menu', 'mega-menu-lenses', 3, { title: 'Lenses mega menu' } ) ];
+	const { entries } = run( rows, records, { facts } );
+	assert.deepEqual( Object.keys( entries[ 'mega-menu-brands' ].states ), [ 'brands' ], 'the Brands panel opens the Brands tab, not the first' );
+	assert.deepEqual( Object.keys( entries[ 'mega-menu-sunglasses' ].states ), [ 'sunglasses' ] );
+	assert.deepEqual( Object.keys( entries[ 'mega-menu-lenses' ].states ), [ 'lenses' ] );
+	// Negative controls: a panel whose label names no state keeps every state, and a drawer titled after a state is not narrowed.
+	assert.deepEqual( Object.keys( run( [ row( 'sgs_mega_menu', 'mega-menu-help', 4, { title: 'Help mega menu' } ) ], records, { facts } ).entries[ 'mega-menu-help' ].states ), [ 'sunglasses', 'brands', 'lenses' ] );
+	const drawer = [ rec( 'S-5', 'drawer', 'Brands', panels, { dc: 'Site' } ) ];
+	assert.deepEqual( Object.keys( run( [ row( 'sgs_drawer', 'brands', 5, { title: 'Brands mega menu' } ) ], drawer, { facts } ).entries[ 'drawer-brands' ].states ), [ 'sunglasses', 'brands', 'lenses' ] );
+} );
+
+// Intake reads such a record as one skeleton per tab panel (lib/intake-skeletons.mjs::tabPanels), each naming its `panel`.
+test( 'MUST FAIL: each panel row links to the intake skeleton read with its own tab open, and a stale kept link gives way', () => {
+	const panels = [ { name: 'closed', state_keys: { mega: null } }, { name: 'Sunglasses', state_keys: { mega: 'sun' } }, { name: 'Brands', state_keys: { mega: 'brands' } } ];
+	const records = [ rec( 'S-4', 'menu', 'Mega menu', panels, { dc: 'Site' } ) ];
+	const facts = { state: { Site: { keys: [ 'mega' ], widthKeys: [] } } };
+	const intake = { skeletons: { 'mega-menu-sunglasses': { id: 'S-4', panel: 'Sunglasses' }, 'mega-menu-brands': { id: 'S-4', panel: 'Brands' }, header: { id: 'S-3' } } };
+	const rows = [ row( 'sgs_mega_menu', 'menu-sunglasses', 1, { title: 'Sunglasses mega menu' } ), row( 'sgs_mega_menu', 'menu-brands', 2, { title: 'Brands mega menu' } ) ];
+	const { entries, noIntake } = run( rows, records, { facts, intake } );
+	assert.equal( entries[ 'mega-menu-brands' ].intakeSurface, 'mega-menu-brands', 'the Brands panel is built from the Brands skeleton' );
+	assert.equal( entries[ 'mega-menu-sunglasses' ].intakeSurface, 'mega-menu-sunglasses' );
+	assert.deepEqual( noIntake, [] );
+	// A kept link naming a skeleton intake no longer holds (the one shared skeleton) follows intake; a kept live link stays.
+	const existing = { 'mega-menu-brands': { intakeSurface: 'mega-menu' }, 'mega-menu-sunglasses': { intakeSurface: 'header' } };
+	const kept = run( rows, records, { facts, intake, existing } ).entries;
+	assert.equal( kept[ 'mega-menu-brands' ].intakeSurface, 'mega-menu-brands' );
+	assert.equal( kept[ 'mega-menu-sunglasses' ].intakeSurface, 'header', 'a hand-set link to a skeleton intake holds is kept' );
+	// Negative controls: a label naming no panel links nothing; a record read as one skeleton links it whatever the title.
+	assert.equal( run( [ row( 'sgs_mega_menu', 'menu-help', 3, { title: 'Help mega menu' } ) ], records, { facts, intake } ).entries[ 'mega-menu-help' ].intakeSurface, undefined );
+	const one = { skeletons: { 'mega-menu': { id: 'S-4', panel: 'Sunglasses' } } };
+	assert.equal( run( [ rows[ 1 ] ], records, { facts, intake: one } ).entries[ 'mega-menu-brands' ].intakeSurface, 'mega-menu' );
+	const drawer = row( 'sgs_drawer', 'brands', 4, { title: 'Brands', draftId: 'surfaces.json S-4' } );
+	assert.equal( run( [ drawer ], records, { facts, intake } ).entries[ 'drawer-brands' ].intakeSurface, undefined, 'only a mega menu row picks a panel by its label' );
+} );
+
 test( "'link hover' is dropped and listed as a pointer state", () => {
 	const records = [ rec( 'S-1', 'menu', 'M', [ { name: 'open', state_keys: {} }, { name: 'link hover', state_keys: {} } ] ) ];
 	const out = run( [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ) ], records );
@@ -462,14 +503,14 @@ test( 'a hand-set draftUrl wins: draftDir and draftIndex are not added beside it
 	assert.equal( run( [ row( 'page', 'a', 1 ) ], [], { existing: { a: {} } } ).entries.a.draftDir, 'sites/acme/handoff' );
 } );
 
-test( 'intakeSurface is the slug of the intake skeleton with the matched record id, never by position; a hand-set value is kept', () => {
+test( 'intakeSurface is the slug of the intake skeleton with the matched record id, never by position; a hand-set value naming a skeleton intake holds is kept', () => {
 	const records = [ rec( 'S-3', 'header', 'Sticky header' ) ];
 	const intake = { skeletons: { 'top-bar': { id: 'S-1' }, 'sticky-header': { id: 'S-3' }, footer: { id: 'S-14' } } };
 	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake } ).entries.header.intakeSurface, 'sticky-header' );
 	const swapped = { skeletons: { footer: { id: 'S-14' }, 'sticky-header': { id: 'S-3' } } };
 	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake: swapped } ).entries.header.intakeSurface, 'sticky-header' );
-	const kept = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake, existing: { header: { intakeSurface: 'hand-set' } } } );
-	assert.equal( kept.entries.header.intakeSurface, 'hand-set' );
+	const kept = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake, existing: { header: { intakeSurface: 'top-bar' } } } );
+	assert.equal( kept.entries.header.intakeSurface, 'top-bar' );
 	assert.equal( kept.noIntake.length, 0 );
 } );
 
