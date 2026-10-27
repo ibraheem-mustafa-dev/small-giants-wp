@@ -1,0 +1,21 @@
+[
+	{ "file": "lib/site-build-flow-links.mjs", "find": "'product' === r.postType && r.opensFlow", "replace": "r.opensFlow", "why": "a non-product row links products" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "! SLUG.test( r.opensFlow ) || ! flows.has( r.opensFlow )", "replace": "! SLUG.test( r.opensFlow )", "why": "a flow no row holds passes" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "if ( live.length > 1 ) {", "replace": "if ( false ) {", "why": "two live rows naming different flows pass" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "slugs.filter( ( s ) => SLUG.test( s ) )", "replace": "slugs", "why": "a slug that is no slug reaches the PHP" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "'post_status' => 'publish', 'numberposts'", "replace": "'post_status' => 'any', 'numberposts'", "why": "drafts and private products are linked too" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "if ( 'live' !== row.collection ) {", "replace": "if ( false ) {", "why": "a static product row links every product" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "( pending ? notes : problems ).push(", "replace": "notes.push(", "why": "a missing flow never stops the run" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "( pending ? notes : problems ).push(", "replace": "problems.push(", "why": "a whole build's dry run stops on a flow its posts phase would make" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "if ( ! state.products?.length ) {", "replace": "if ( false ) {", "why": "an empty shop says nothing" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\t\t\tif ( p.calibration ) {", "replace": "\t\t\tif ( false ) {", "why": "the calibration product is linked" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\t\t\tif ( p.flow === row.opensFlow ) {\n\t\t\t\tcontinue;\n\t\t\t}", "replace": "", "why": "an already linked product is planned again" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\t\t\tif ( p.flow ) {", "replace": "\t\t\tif ( false ) {", "why": "another flow's link is overwritten" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "Number.isInteger( a.id ) && SLUG.test( a.to )", "replace": "true", "why": "a non-integer id or bad slug reaches the write" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\tif ( ! slugs.length ) {\n\t\tlog(", "replace": "\tif ( false ) {\n\t\tlog(", "why": "a map with no flow link still reads the site" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "{ pending: pending && ! apply }", "replace": "{ pending }", "why": "pending lets an apply past a missing flow" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\tif ( plan.problems.length ) {", "replace": "\tif ( false ) {", "why": "problems never stop the run" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\tif ( ! apply ) {\n\t\tlog( `${ plan.actions.length }", "replace": "\tif ( false ) {\n\t\tlog( `${ plan.actions.length }", "why": "a dry run writes" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "if ( done.wrong.length || again.actions.length || again.problems.length ) {", "replace": "if ( again.problems.length ) {", "why": "a read-back mismatch passes" },
+	{ "file": "lib/site-build-flow-links.mjs", "find": "\tconst again = planFlowLinks( rows, readFlowState( runPhp, slugs ) );", "replace": "\tconst again = { actions: [], problems: [] };", "why": "no fresh read after the write" }
+]
