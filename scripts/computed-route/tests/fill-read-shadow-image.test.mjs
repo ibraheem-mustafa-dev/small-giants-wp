@@ -1,6 +1,7 @@
 // The page read's image (lib/fill-read-collect.mjs, snap.img): a custom element that draws its picture in its open shadow
 // root (an image placeholder element keeping a second copy of the picture for its editing chrome) is that one image; an
-// empty placeholder, two different pictures and a light-DOM wrapper of two images are no single image.
+// empty placeholder, two different pictures and a light-DOM wrapper of two images are no single image. An element drawing
+// two or more pictures lists them in document order (snap.pictures).
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -71,4 +72,13 @@ test( 'an empty placeholder and a placeholder showing two different pictures are
 test( 'negative control: two light-DOM images are still two, and a figure keeps its one image and caption', () => {
 	assert.equal( img( '5:' ), null );
 	assert.deepEqual( img( '6:' ), { tag: 'figure', src: PIC, alt: 'Loaf', caption: 'Fresh' } );
+} );
+
+test( 'MUST FAIL: an element drawing two or more pictures lists each in document order, one placeholder\'s copies of one address once', () => {
+	const pictures = ( id ) => read.widths[ 1440 ][ id ].pictures;
+	assert.deepEqual( pictures( '0:' ), [ PIC, PIC, OTHER, PIC, PIC, PIC, PIC ] );
+	assert.deepEqual( pictures( '5:' ), [ PIC, PIC ] );
+	// One picture is the element's image, not a list.
+	assert.equal( pictures( '1:' ), null );
+	assert.equal( pictures( '2:' ), null );
 } );

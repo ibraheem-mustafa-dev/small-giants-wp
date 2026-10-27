@@ -30,10 +30,21 @@ const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, 
 // The client's media map, or null when media-upload has not written one.
 export const readMediaMap = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : null );
 
-// The image settings of one block from the DB: [{ alt, url }] for each `image-alt` row that names its URL setting.
-export function imageSlots( db, block ) {
-	return db.prepare( "SELECT attr_name, alt_companion_attr FROM block_attributes WHERE block_slug = ? AND role = 'image-alt' AND alt_companion_attr IS NOT NULL ORDER BY attr_name" )
+// The image settings of one block from the DB: [{ alt, url }] for each `image-alt` row that names its URL setting. A
+// block whose DB rows name none (an image held as content, such as a split hero's picture) takes its block.json's
+// image trios instead: a string `<name>Url` with an integer `<name>Id` and a string `<name>Alt` beside it.
+export function imageSlots( db, block, schema = null ) {
+	const rows = db.prepare( "SELECT attr_name, alt_companion_attr FROM block_attributes WHERE block_slug = ? AND role = 'image-alt' AND alt_companion_attr IS NOT NULL ORDER BY attr_name" )
 		.all( block ).map( ( r ) => ( { alt: r.attr_name, url: r.alt_companion_attr } ) );
+	return rows.length || ! schema ? rows : schemaImageSlots( schema );
+}
+
+// The image trios of a block.json's attributes: [{ alt, url }] for each string `<name>Url` whose `<name>Id` is an integer
+// and whose `<name>Alt` is a string (`splitMediaImageUrl`, `splitMediaImageId`, `splitMediaImageAlt`).
+export function schemaImageSlots( schema ) {
+	const typeOf = ( name ) => [].concat( schema?.[ name ]?.type ?? [] )[ 0 ];
+	return Object.keys( schema || {} ).filter( ( k ) => /.Url$/.test( k ) && 'string' === typeOf( k ) ).map( ( url ) => url.replace( /Url$/, '' ) )
+		.filter( ( base ) => 'integer' === typeOf( `${ base }Id` ) && 'string' === typeOf( `${ base }Alt` ) ).sort().map( ( base ) => ( { alt: `${ base }Alt`, url: `${ base }Url` } ) );
 }
 
 // A draft image address as a path inside the draft: the query and fragment removed, the draft's own origin removed,
@@ -186,6 +197,11 @@ export function mediaDecisions( { slots, schema, attributes = {}, img, media = {
 	}
 	return out;
 }
+
+// Whether a skeleton handover is settled by the node's picture: the page editor's presence row on the node's own element
+// (a split hero's "choose the image" row) once the node's image settings hold the draft's attachment. checks: the
+// `checks` mediaDecisions returned for the node (one per image it wrote or found already held).
+export const pictureSettles = ( h, checks ) => ( checks || [] ).length > 0 && 'content-page' === h?.owner && 'presence' === h?.kind && '' === ( h?.slot ?? '' );
 
 // The render check (FR-48-58's identity): the painted image URL on the built page is the attachment the clone mapped.
 // painted: the URL the page paints; id: the attachment id Fill wrote. Returns { ok, reason }.

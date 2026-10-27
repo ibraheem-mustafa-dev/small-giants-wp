@@ -119,6 +119,17 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		const imgs = el.matches( 'img' ) ? [ el ] : [ ...el.querySelectorAll( 'img' ), ...drawn.filter( ( i, n ) => drawn.findIndex( ( j ) => imgSrc( j ) === imgSrc( i ) ) === n ) ];
 		const cap = el.matches( 'figure' ) ? el.querySelector( 'figcaption' ) : null;
 		snap.img = 1 === imgs.length ? { tag: el.localName, src: imgSrc( imgs[ 0 ] ), alt: imgs[ 0 ].getAttribute( 'alt' ), caption: cap ? ( cap.textContent || '' ).replace( /\s+/g, ' ' ).trim() : null } : null;
+		// Every picture the element draws when it draws two or more, in document order (one image placeholder's copies of one
+		// address count once), so a list block can give each of its items the picture the draft draws in that item.
+		const pictures = [];
+		for ( const n of [ el, ...el.querySelectorAll( '*' ) ] ) {
+			if ( n.matches( 'img' ) && '' !== imgSrc( n ) ) {
+				pictures.push( imgSrc( n ) );
+			}
+			const own = shadowImgs( n ).map( imgSrc ).filter( Boolean );
+			pictures.push( ...own.filter( ( s, k ) => own.indexOf( s ) === k ) );
+		}
+		snap.pictures = pictures.length > 1 ? pictures : null;
 		// The one embedded frame this element is or holds (a map): its address, the filter it paints and its height.
 		const frames = el.matches( 'iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'iframe' ) ];
 		snap.embed = 1 === frames.length ? { src: frames[ 0 ].getAttribute( 'src' ) ?? '', filter: getComputedStyle( frames[ 0 ] ).filter, h: frames[ 0 ].getBoundingClientRect().height } : null;
