@@ -96,11 +96,14 @@ final class LengthStringSettingsTest extends TestCase {
 		$base = array( 'layout' => 'grid', 'columns' => array( 'desktop' => 3, 'mobile' => 2 ) );
 		$css  = $this->render_block( 'sgs/container', $base + array( 'minColumnWidth' => array( 'desktop' => '20rem', 'mobile' => '9rem' ) ), array(), array(), '', true )['css'];
 		$this->assertMatchesRegularExpression( '/^(?:(?!@media).)*max\(20rem,/s', $css, 'the desktop basis prints before any media query' );
+		$this->assertMatchesRegularExpression( '/@media \(max-width:1023px\)\{[^{}]*\{grid-template-columns:[^}]*max\(20rem,/', $css, 'tablet inherits the desktop basis' );
 		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^{}]*\{grid-template-columns:[^}]*max\(9rem,/', $css, 'the mobile basis prints inside the 767px media query' );
+		$this->assertStringNotContainsString( 'var(--sgs-col-basis,16rem)', $css, 'control: a set basis replaces the built-in one' );
 
 		$css = $this->render_block( 'sgs/container', $base + array( 'minColumnWidth' => array( 'desktop' => self::HOSTILE ) ), array(), array(), '', true )['css'];
 		$this->assertStringNotContainsString( 'body{', $css );
-		$this->assertStringContainsString( 'repeat(', $css, 'a refused value falls back to the built-in basis' );
+		$this->assertStringNotContainsString( '10px;', $css, 'no part of the refused value prints' );
+		$this->assertStringContainsString( 'max(var(--sgs-col-basis,16rem),', $css, 'a refused value falls back to the built-in basis' );
 	}
 
 	public function test_separator_width_and_thickness_print_per_device(): void {

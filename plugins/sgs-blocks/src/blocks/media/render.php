@@ -291,7 +291,7 @@ foreach ( array(
  *
  * Implements the CANONICAL cascade: a tier with no value of its own inherits
  * from the next WIDEST tier that has one — mobile -> tablet -> desktop. This
- * matches `sgs_resolve_tier()` (includes/helpers-responsive.php:685-694) and
+ * matches `includes/helpers-responsive.php::sgs_resolve_tier()` and
  * Spec 35 D3/D5, which warn against a second inheritance mechanism.
  *
  * ⛔ The hand-rolled per-family rules this replaced got ONE case wrong: with a

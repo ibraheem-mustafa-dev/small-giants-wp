@@ -108,8 +108,8 @@ function inject_child_sizing( $block_content, $block ) {
 	require_once __DIR__ . '/render-helpers.php';
 	require_once __DIR__ . '/helpers-scoped-instance-vars.php';
 
-	// A blank tier inherits the tier above: sgs_resolve_tier() reads only
-	// null/'inherit' as inherit, so normalise '' to null first.
+	// A blank tier inherits the tier above (sgs_resolve_tier() reads null and ''
+	// as inherit); anything that is not a non-empty string becomes null too.
 	$normalise = static function ( $obj ): array {
 		$out = array();
 		foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {

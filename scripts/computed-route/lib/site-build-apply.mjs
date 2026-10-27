@@ -73,10 +73,11 @@ export const TEST_ORDER_META = '_sgs_site_run_test_order';
 
 // The PHP making one order with the site's first published product, so the order confirmation template has an order to
 // show: status `pending`, which sends no customer or admin email (WooCommerce mails on the move to processing, on-hold
-// or completed), marked with TEST_ORDER_META. With `customer` (a login) the order is that user's own, as the account
-// block's latest-order card needs (lib/calibrate-order.mjs); without it the order is a guest's. Prints { id, url } (the
-// order-received address with its key), or { error } when the site has no WooCommerce, no product or no such user.
-export function testOrderPhp( { customer = null } = {} ) {
+// or completed), marked with `meta` (TEST_ORDER_META, or calibration's own key, so neither deletes the other's order).
+// With `customer` (a login) the order is that user's own, as the account block's latest-order card needs
+// (lib/calibrate-order.mjs); without it the order is a guest's. Prints { id, url } (the order-received address with its
+// key), or { error } when the site has no WooCommerce, no product or no such user.
+export function testOrderPhp( { customer = null, meta = TEST_ORDER_META } = {} ) {
 	const login = null === customer ? null : `'${ String( customer ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;
 	return `<?php
 if ( ! function_exists( 'wc_create_order' ) ) { echo wp_json_encode( array( 'error' => 'WooCommerce is not active' ) ); return; }
@@ -91,18 +92,18 @@ $o->set_billing_first_name( 'Test' );
 $o->set_billing_last_name( 'Order' );
 $o->set_billing_email( 'test-order@example.invalid' );
 $o->calculate_totals();
-$o->update_meta_data( '${ TEST_ORDER_META }', '1' );
+$o->update_meta_data( '${ meta }', '1' );
 $o->save();
 echo wp_json_encode( array( 'id' => $o->get_id(), 'url' => $o->get_checkout_order_received_url() ) );
 `;
 }
 
-// The PHP deleting every order the site run marked as a test order (TEST_ORDER_META); prints how many.
-export function deleteTestOrdersPhp() {
+// The PHP deleting every order marked with `meta` (the site run's TEST_ORDER_META by default); prints how many.
+export function deleteTestOrdersPhp( { meta = TEST_ORDER_META } = {} ) {
 	return `<?php
 $n = 0;
 if ( function_exists( 'wc_get_orders' ) ) {
-	foreach ( wc_get_orders( array( 'limit' => -1, 'status' => 'any', 'meta_key' => '${ TEST_ORDER_META }', 'meta_value' => '1' ) ) as $o ) { $o->delete( true ); $n++; }
+	foreach ( wc_get_orders( array( 'limit' => -1, 'status' => 'any', 'meta_key' => '${ meta }', 'meta_value' => '1' ) ) as $o ) { $o->delete( true ); $n++; }
 }
 echo wp_json_encode( array( 'deleted' => $n ) );
 `;

@@ -133,8 +133,11 @@ def allowed(rel, unit, line):
 
 
 # A unit name assembled at run time: `${name}Unit` in a template literal, `+ 'Unit'` in JS, `. 'Unit'` in PHP.
-RUNTIME_UNIT = re.compile(r"""\$\{[^}]*\}Unit(?![A-Za-z0-9_])|[+.]\s*['"]Unit['"]""")
-RUNTIME_SUFFIXES = {'.js', '.mjs', '.jsx', '.ts', '.tsx', '.php'}
+# Interpolation in each scanned language (JS `${x}Unit`, PHP "{$x}Unit", a Python f-string's {x}Unit), a `+`/`.` join
+# or `concat()` with a quoted or backticked 'Unit', and a `%sUnit` format. A bare `{x}Unit` is prose (a comment naming
+# the pattern), never code, so it is not matched.
+RUNTIME_UNIT = re.compile(r"""\$\{[^}]*\}Unit(?![A-Za-z0-9_])|\{\$[^}]*\}Unit(?![A-Za-z0-9_])|\bf(['"])[^'"]*\{[^{}]*\}Unit(?![A-Za-z0-9_])|[+.]\s*['"`]Unit['"`]|concat\(\s*['"`]Unit['"`]|%sUnit(?![A-Za-z0-9_])""")
+RUNTIME_SUFFIXES = {'.js', '.mjs', '.jsx', '.ts', '.tsx', '.php', '.py'}
 
 # repo-relative path -> (the reason the runtime-built name is not a reader of a retired pair, the text each allowed line
 # carries). A line without one of the texts is still flagged, so a new runtime-built name added to an allowed file later
@@ -149,6 +152,10 @@ ALLOW_RUNTIME = {
     'scripts/computed-route/tests/resolve-size-keyword.test.mjs':
         ("the test asks the framework DB whether the block declares `<attr>Unit` before expecting a unit-bearing write",
          ('unit.get( r.block_slug, `${ r.attr_name }Unit` )',)),
+    'plugins/sgs-blocks/scripts/build-tier-fixture-page.py':
+        ("the fixture builder reads `<prop>Unit` only when the block's own declared attributes (blk['attrs']) carry it",
+         ("if f'{prop}Unit' in blk['attrs']:", "f'numeric (sibling {prop}Unit attr supplies the CSS unit)'",
+          "unit_attr = f'{prop}Unit'")),
     'plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js':
         ("the gate looks `<attr>Unit` up in the block's own attributes and composes a default only when the block declares it",
          ('allAttrs[ `${ attrName }Unit` ]',)),
@@ -479,6 +486,13 @@ def self_test():
         ALLOW_RUNTIME[rel] = ('a test entry', ('attrs[`${k}Unit`]', 'attrs[`${ name }Unit`]', "name + 'Unit'"))
         assert check(survey(tmp, 'sgs/b', moved)) == 0, 'negative control: every runtime-built line allowed'
         del ALLOW_RUNTIME[rel]
+
+        # Every other runtime syntax is seen; prose naming the pattern in a comment is not.
+        (blocks / 'a' / 'edit.js').write_text("a[k + `Unit`];\na[name.concat('Unit')];\nsprintf('%sUnit', k);\n// the sibling `{attr}Unit` attribute\n", encoding='utf-8')
+        (blocks / 'a' / 'render.php').write_text('<?php $u = $attributes["{$name}Unit"];\n', encoding='utf-8')
+        (blocks / 'a' / 'probe.py').write_text("u = attrs[f'{prop}Unit']\n# a `{prop}Unit` sibling\n", encoding='utf-8')
+        got = sorted((r['file'].rsplit('/', 1)[1], r['line']) for r in survey(tmp, 'sgs/b', moved)['runtime'])
+        assert got == [('edit.js', 1), ('edit.js', 2), ('edit.js', 3), ('probe.py', 1), ('render.php', 1)], got
         print('self-test: OK')
         return 0
     finally:

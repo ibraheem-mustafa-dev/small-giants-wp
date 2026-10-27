@@ -131,5 +131,33 @@
     "tier": "desktop",
     "default": "auto",
     "expect": { "value": "auto", "inherited": true }
+  },
+  {
+    "name": "Case 20: control - a 0 mobile value is its own, not inherited",
+    "value": { "desktop": 8, "mobile": 0 },
+    "tier": "mobile",
+    "default": null,
+    "expect": { "value": 0, "inherited": false }
+  },
+  {
+    "name": "Case 21: control - a false tablet value is its own, not inherited",
+    "value": { "desktop": true, "tablet": false },
+    "tier": "tablet",
+    "default": false,
+    "expect": { "value": false, "inherited": false }
+  },
+  {
+    "name": "Case 22: control - a '0' mobile value is its own, not inherited",
+    "value": { "desktop": "8px", "mobile": "0" },
+    "tier": "mobile",
+    "default": null,
+    "expect": { "value": "0", "inherited": false }
+  },
+  {
+    "name": "Case 23: an empty mobile and an empty tablet both inherit desktop",
+    "value": { "desktop": "240px", "tablet": "", "mobile": "" },
+    "tier": "mobile",
+    "default": null,
+    "expect": { "value": "240px", "inherited": true }
   }
 ]

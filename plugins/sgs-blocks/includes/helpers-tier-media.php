@@ -326,8 +326,8 @@ if ( ! function_exists( 'sgs_tier_media_toggle_css' ) ) {
 	 *
 	 * Implements the CANONICAL upward cascade: a tier with no value of its own
 	 * inherits from the next WIDEST tier that HAS one — mobile -> tablet ->
-	 * desktop. This matches `sgs_resolve_tier()`
-	 * (includes/helpers-responsive.php:685-694), whose mobile branch recurses to
+	 * desktop. This matches
+	 * `includes/helpers-responsive.php::sgs_resolve_tier()`, whose mobile branch recurses to
 	 * tablet, and Spec 35 D3/D5. D4 warns against a second inheritance mechanism,
 	 * so this must not invent its own.
 	 *
