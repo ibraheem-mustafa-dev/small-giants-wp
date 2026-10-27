@@ -6,10 +6,13 @@
 // image of a block whose DB rows name no image setting is found from its block.json image trio (lib/fill-media.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { parseLogic } from '../lib/intake-ast.mjs';
 import { listItems, loopItems, currentItems, holeField } from '../lib/fill-list-items.mjs';
-import { listContentWrites, listTarget, matchFields, listDecisions, withPictures, applyChildren, keyRole } from '../lib/fill-list-content.mjs';
+import { listContentWrites, listTarget, matchFields, listDecisions, withPictures, applyChildren, keyRole, loadItemRoles, ITEM_ROLES, ITEM_ROLES_FILE } from '../lib/fill-list-content.mjs';
 import { imageSlots, schemaImageSlots, pictureSettles } from '../lib/fill-media.mjs';
 
 const C = 'Demo';
@@ -228,6 +231,34 @@ test( 'roles: a key takes its first role, a field each role in order, a tie goes
 	assert.deepEqual( matchFields( [ { name: 'avatar', image: true }, { name: 'name', image: false } ], keys ).map, { avatar: 'avatarMedia', name: 'reviewerName' } );
 	// With no author key, a name is a title.
 	assert.deepEqual( matchFields( [ { name: 'name', image: false } ], [ { key: 'title' } ] ).map, { name: 'title' } );
+} );
+
+test( 'MUST FAIL: a key\'s later role takes a field when the block\'s item has no key of that primary role (a team member\'s name takes the draft title)', () => {
+	// sgs/team-member's item keys as the DB lists them (photo, name, role, bio): `name` is an author first and a title second.
+	const member = [ { key: 'photo' }, { key: 'name' }, { key: 'role' }, { key: 'bio' } ];
+	const got = matchFields( [ { name: 'image', image: true }, { name: 'title', image: false }, { name: 'position', image: false }, { name: 'description', image: false } ], member );
+	assert.deepEqual( got.map, { image: 'photo', title: 'name', position: 'role', description: 'bio' } );
+	assert.deepEqual( got.unmatched, [] );
+	// A product's `text` (a quote first, a description second) takes the draft description; with a quote key beside it, the
+	// quote key keeps quotes and `text` is never preferred over a key whose primary role is the field's.
+	assert.deepEqual( matchFields( [ { name: 'description', image: false } ], [ { key: 'name' }, { key: 'text' } ] ).map, { description: 'text' } );
+	assert.deepEqual( matchFields( [ { name: 'heading', image: false } ], [ { key: 'reviewerName' }, { key: 'title' } ] ).map, { heading: 'title' }, 'a key whose primary role is the field\'s wins over one naming it later' );
+	assert.deepEqual( matchFields( [ { name: 'customer', image: false }, { name: 'heading', image: false } ], [ { key: 'name' }, { key: 'title' } ] ).map, { customer: 'name', heading: 'title' } );
+} );
+
+test( 'the item-role vocabulary is data: a file breaking its schema or naming a role twice is refused', () => {
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'item-roles-' ) );
+	fs.copyFileSync( ITEM_ROLES_FILE.replace( /\.json$/, '.schema.json' ), path.join( dir, 'item-roles.schema.json' ) );
+	const write = ( data ) => {
+		fs.writeFileSync( path.join( dir, 'item-roles.json' ), JSON.stringify( data ) );
+		return path.join( dir, 'item-roles.json' );
+	};
+	assert.deepEqual( loadItemRoles( write( { roles: [ { role: 'title', words: [ 'title' ] } ] } ) ).map( ( [ r, w ] ) => [ r, [ ...w ] ] ), [ [ 'title', [ 'title' ] ] ] );
+	assert.throws( () => loadItemRoles( write( { roles: [ { role: 'title', words: [ 'Title' ] } ] } ) ), /does not match/ );
+	assert.throws( () => loadItemRoles( write( { roles: [ { role: 'title', words: [ 'title' ] }, { role: 'title', words: [ 'name' ] } ] } ) ), /names "title" twice/ );
+	assert.throws( () => loadItemRoles( write( { roles: [ { role: 'title', words: /title/.source } ] } ) ), /does not match/ );
+	fs.rmSync( dir, { recursive: true, force: true } );
+	assert.ok( ITEM_ROLES.length > 0 && ITEM_ROLES.every( ( [ r, w ] ) => 'string' === typeof r && w.size > 0 ), 'the committed vocabulary loads' );
 } );
 
 test( 'list targets come from the DB: one content array, else one child block', () => {
