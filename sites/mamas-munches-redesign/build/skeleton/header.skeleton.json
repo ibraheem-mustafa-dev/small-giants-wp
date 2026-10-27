@@ -154,13 +154,13 @@
 										"tpl": "Root>SiteHeader@7#0/39#0"
 									},
 									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
-										"tpl": "Root>SiteHeader@7#0/49#0"
+										"tpl": "Root>SiteHeader@7#0/17#0"
 									},
 									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
-										"tpl": "Root>SiteHeader@7#0/53#0"
+										"tpl": "Root>SiteHeader@7#0/18#0"
 									},
 									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
-										"tpl": "Root>SiteHeader@7#0/54#0"
+										"tpl": "Root>SiteHeader@7#0/19#0"
 									},
 									".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": {
 										"tpl": "Root>SiteHeader@7#0/20#0"
@@ -262,6 +262,30 @@
 									"line": 28
 								},
 								"innerBlocks": []
+							},
+							{
+								"name": "sgs/cart",
+								"attributes": {
+									"displayMode": "drawer",
+									"triggerStyle": "icon",
+									"ariaLabel": "Open basket"
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/28#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "scpe",
+									"styleHash": "f48e789b",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 29
+								},
+								"innerBlocks": []
 							}
 						]
 					},
@@ -361,6 +385,37 @@
 								"draftSlots": {
 									".sgs-icon__shape > .sgs-icon__glyph > svg": {
 										"tpl": "Root>SiteHeader@7#0/46#0"
+									}
+								}
+							},
+							{
+								"name": "sgs/cart",
+								"attributes": {
+									"displayMode": "drawer",
+									"triggerStyle": "pill",
+									"pillLabel": "Basket",
+									"pillCountStyle": "bubble",
+									"showZero": true
+								},
+								"draftRef": {
+									"tpl": "Root>SiteHeader@7#0/49#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "scpc",
+									"styleHash": "28f26ccf",
+									"parentTags": [
+										"header",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 48
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-cart__trigger > .sgs-cart__icon > svg": {
+										"tpl": "Root>SiteHeader@7#0/50#0"
 									}
 								}
 							}

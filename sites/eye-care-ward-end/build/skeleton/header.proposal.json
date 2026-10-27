@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T16:06:57.222Z",
-	"inventory": "2026-10-27T16:06:56.941Z",
-	"source": "http://127.0.0.1:50785/",
+	"generated": "2026-10-27T19:34:49.186Z",
+	"inventory": "2026-10-27T19:34:48.747Z",
+	"source": "http://127.0.0.1:53330/",
 	"surface": "header",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [
@@ -44,23 +44,36 @@
 	"counts": {
 		"inventoryElements": 60,
 		"parts": 24,
-		"rows": 36,
-		"skeletonNodes": 28,
-		"expandedNodes": 28,
-		"low": 12,
-		"removed": 9,
+		"rows": 41,
+		"skeletonNodes": 23,
+		"expandedNodes": 23,
+		"low": 10,
+		"removed": 19,
 		"unresolved": 0,
 		"byRule": {
 			"headerSlots": 1,
 			"widthWrapper": 1,
-			"navigation": 6,
-			"label": 1,
+			"navigation": 11,
+			"drawerOpener": 5,
 			"wholeCardLink": 1,
 			"siteInfoLink": 1,
-			"solitaryIcon": 1
+			"solitaryIcon": 1,
+			"blockPartOpener": 3
 		}
 	},
-	"widthAlternatives": [],
+	"widthAlternatives": [
+		{
+			"key": "Root/17#0",
+			"into": "Root/15#0",
+			"block": "sgs/nav-bar-menu",
+			"widths": [
+				375,
+				768
+			],
+			"words": "",
+			"reason": "an element shown only at 375 and 768px inside a block that draws its own content: no setting holds a per-width alternative"
+		}
+	],
 	"problems": [],
 	"rows": [
 		{
@@ -535,12 +548,23 @@
 			"slots": {
 				".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
 					"tpl": "Root/23#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
+					"tpl": "Root/17#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
+					"tpl": "Root/18#0"
+				},
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
+					"tpl": "Root/21#0"
 				}
 			},
 			"slotNotes": [
 				"no draft child is rendered by a \"current\" sc-if, so no current child slot",
 				"no draft child holds a glyph element, so no glyph slot",
-				"0 width thresholds show this navigation, so no collapse point"
+				"0 width thresholds show this navigation, so no collapse point",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon",
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3): the draft has no element for .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
 			]
 		},
 		{
@@ -664,35 +688,22 @@
 			"tag": "button",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": "rule drawerOpener",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "drawerOpener",
+			"into": "Root/15#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_17_0@375.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ toggleMenu }}\" aria-label=\"Menu\" style=\"background:none;border:0;padding:8px;margin-left:-8px;display:flex;align-items:center;gap:10px;min-height:44px\" data-dc-tpl=\"17\"> <span style=\"display:flex;flex-direction:column;gap:5px\" data-dc-tpl=\"18\"> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span> <span style=\"display:block;wi",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 19,
@@ -700,35 +711,22 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "drawerOpener",
+			"into": "Root/15#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_18_0@375.png"
 			},
 			"snippet": "<span style=\"display:flex;flex-direction:column;gap:5px\" data-dc-tpl=\"18\"> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"20\"></span> </span>",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 20,
@@ -737,13 +735,14 @@
 			"depth": 5,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block",
-			"source": "client decision",
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": null,
+			"stale": "the client decision for Root/19#0 (remove) no longer applies: the element before it draws this element",
+			"rule": "drawerOpener",
+			"into": "Root/15#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -759,13 +758,14 @@
 			"depth": 5,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block",
-			"source": "client decision",
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": null,
 			"confidence": 1,
 			"low": false,
-			"stale": null,
-			"rule": null,
+			"stale": "the client decision for Root/20#0 (remove) no longer applies: the element before it draws this element",
+			"rule": "drawerOpener",
+			"into": "Root/15#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -780,33 +780,136 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "Menu",
-			"block": "sgs/label",
-			"action": null,
-			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
-			"source": "rule label",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "label",
-			"candidates": [
-				{
-					"block": "sgs/label",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
-					]
-				}
-			],
+			"rule": "drawerOpener",
+			"into": "Root/15#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"display:{{ hideOnMobile }};font-size:12.5px;letter-spacing:.1em\" data-dc-tpl=\"21\">Menu</span>",
-			"attributes": {
-				"text": "Menu"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 23,
+			"key": "Root/17#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: an element shown only at 375 and 768px inside a block that draws its own content: no setting holds a per-width alternative",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/15#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_17_0@375.png"
+			},
+			"snippet": "<button sc-camel-on-click=\"{{ toggleMenu }}\" aria-label=\"Menu\" style=\"background:none;border:0;padding:8px;margin-left:-8px;display:flex;align-items:center;gap:10px;min-height:44px\" data-dc-tpl=\"17\"> <span style=\"display:flex;flex-direction:column;gap:5px\" data-dc-tpl=\"18\"> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span> <span style=\"display:block;wi",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root/18#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: an element shown only at 375 and 768px inside a block that draws its own content: no setting holds a per-width alternative",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/15#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_18_0@375.png"
+			},
+			"snippet": "<span style=\"display:flex;flex-direction:column;gap:5px\" data-dc-tpl=\"18\"> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"20\"></span> </span>",
+			"attributes": {}
+		},
+		{
+			"order": 25,
+			"key": "Root/19#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: an element shown only at 375 and 768px inside a block that draws its own content: no setting holds a per-width alternative",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/19#0 (remove) no longer applies: sgs/nav-bar-menu draws this element",
+			"rule": "navigation",
+			"into": "Root/15#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_19_0@375.png"
+			},
+			"snippet": "<span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root/20#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: an element shown only at 375 and 768px inside a block that draws its own content: no setting holds a per-width alternative",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": "the client decision for Root/20#0 (remove) no longer applies: sgs/nav-bar-menu draws this element",
+			"rule": "navigation",
+			"into": "Root/15#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_20_0@375.png"
+			},
+			"snippet": "<span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"20\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root/21#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Menu",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/nav-bar-menu: an element shown only at 375 and 768px inside a block that draws its own content: no setting holds a per-width alternative",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "navigation",
+			"into": "Root/15#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:{{ hideOnMobile }};font-size:12.5px;letter-spacing:.1em\" data-dc-tpl=\"21\">Menu</span>",
+			"attributes": {}
+		},
+		{
+			"order": 28,
 			"key": "Root/28#0",
 			"tag": "a",
 			"depth": 2,
@@ -841,7 +944,7 @@
 			}
 		},
 		{
-			"order": 24,
+			"order": 29,
 			"key": "Root/29#0",
 			"tag": "img",
 			"depth": 3,
@@ -886,7 +989,7 @@
 			}
 		},
 		{
-			"order": 25,
+			"order": 30,
 			"key": "Root/30#0",
 			"tag": "span",
 			"depth": 3,
@@ -922,7 +1025,7 @@
 			}
 		},
 		{
-			"order": 26,
+			"order": 31,
 			"key": "Root/31#0",
 			"tag": "span",
 			"depth": 4,
@@ -964,7 +1067,7 @@
 			"note": "typed brand name \"EYE CARE BIRMINGHAM\" is the logo block"
 		},
 		{
-			"order": 27,
+			"order": 32,
 			"key": "Root/32#0",
 			"tag": "span",
 			"depth": 4,
@@ -987,7 +1090,7 @@
 			"into": "Root/31#0"
 		},
 		{
-			"order": 28,
+			"order": 33,
 			"key": "Root/33#0",
 			"tag": "div",
 			"depth": 2,
@@ -1024,7 +1127,7 @@
 			}
 		},
 		{
-			"order": 29,
+			"order": 34,
 			"key": "Root/35#0",
 			"tag": "a",
 			"depth": 3,
@@ -1067,7 +1170,7 @@
 			}
 		},
 		{
-			"order": 30,
+			"order": 35,
 			"key": "Root/38#0",
 			"tag": "a",
 			"depth": 3,
@@ -1101,7 +1204,7 @@
 			}
 		},
 		{
-			"order": 31,
+			"order": 36,
 			"key": "Root/39#0",
 			"tag": "a",
 			"depth": 3,
@@ -1135,7 +1238,7 @@
 			}
 		},
 		{
-			"order": 32,
+			"order": 37,
 			"key": "Root/40#0",
 			"tag": "button",
 			"depth": 3,
@@ -1174,28 +1277,26 @@
 			}
 		},
 		{
-			"order": 33,
+			"order": 38,
 			"key": "Root/46#0",
 			"tag": "button",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
+			"block": "sgs/cart",
 			"action": null,
-			"reason": null,
-			"source": null,
+			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-24 (Bag drawer), which the page map holds as the drawer part \"Your bag\" of the cart row",
+			"source": "rule blockPartOpener",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "blockPartOpener",
 			"candidates": [
 				{
-					"block": "sgs/container",
+					"block": "sgs/cart",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+						"rule blockPartOpener: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-24 (Bag drawer), which the page map holds as the drawer part \"Your bag\" of the cart row"
 					]
 				}
 			],
@@ -1208,76 +1309,60 @@
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ openBag }}\" aria-label=\"Bag\" style=\"position:relative;background:none;border:1px solid #141414;border-radius:999px;padding: {{ bagPad }};min-height:38px;min-width:44px;justify-content:center;display:flex;align-items:center;gap:8px;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;transition:background .25s,color .25s\" style-hover=\"background:#141414;color",
 			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
+				"displayMode": "drawer",
+				"triggerStyle": "pill",
+				"pillLabel": "Bag",
+				"pillCountStyle": "bubble",
+				"showZero": true,
+				"ariaLabel": "Bag"
 			}
 		},
 		{
-			"order": 34,
+			"order": 39,
 			"key": "Root/47#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "Bag",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/cart: rule blockPartOpener",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "blockPartOpener",
+			"into": "Root/46#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_47_0@1440.png"
 			},
 			"snippet": "<span style=\"display: {{ bagWordDisplay }}\" data-dc-tpl=\"47\">Bag</span>",
-			"attributes": {
-				"text": "Bag"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 35,
+			"order": 40,
 			"key": "Root/51#0",
 			"tag": "span",
 			"depth": 4,
 			"words": "0",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/cart: rule blockPartOpener",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "blockPartOpener",
+			"into": "Root/46#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_51_0@375.png",
 				"1440": "shots/Root_51_0@1440.png"
 			},
 			"snippet": "<span key=\"{{ bagCount }}\" style=\"position: {{ badgePos }};top:-6px;right:-6px;display:inline-flex;min-width:20px;height:20px;border-radius:999px;background:var(--acc,#9C8B78);color:#fff;font-size:11px;align-items:center;justify-content:center;padding:0 6px;animation:pop .5s cubic-bezier(.2,.7,.2,1)\" data-dc-tpl=\"51\">{{ bagCount }}</span>",
-			"attributes": {
-				"text": "0"
-			}
+			"attributes": {}
 		}
 	]
 }

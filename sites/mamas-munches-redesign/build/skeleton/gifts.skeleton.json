@@ -655,7 +655,8 @@
 																	{
 																		"name": "sgs/button",
 																		"attributes": {
-																			"label": "Zookies"
+																			"label": "Zookies",
+																			"url": "/product/zookies/"
 																		},
 																		"draftRef": {
 																			"tpl": "Root>ProductCard@40#0/5#0"
@@ -677,14 +678,7 @@
 																			"textHash": "a97420cb",
 																			"line": 9
 																		},
-																		"innerBlocks": [],
-																		"handover": [
-																			{
-																				"owner": "product-data",
-																				"kind": "link",
-																				"detail": "draft link \"Product.dc.html?id=zookies\" goes to the draft route \"Product.dc.html\": the draft product \"zookies\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																			}
-																		]
+																		"innerBlocks": []
 																	},
 																	{
 																		"name": "sgs/text",
@@ -958,7 +952,8 @@
 																	{
 																		"name": "sgs/button",
 																		"attributes": {
-																			"label": "Taster Trio"
+																			"label": "Taster Trio",
+																			"url": "/product/taster-trio/"
 																		},
 																		"draftRef": {
 																			"tpl": "Root>ProductCard@40#1/5#0"
@@ -980,14 +975,7 @@
 																			"textHash": "70e26b00",
 																			"line": 9
 																		},
-																		"innerBlocks": [],
-																		"handover": [
-																			{
-																				"owner": "product-data",
-																				"kind": "link",
-																				"detail": "draft link \"Product.dc.html?id=trial\" goes to the draft route \"Product.dc.html\": the draft product \"trial\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																			}
-																		]
+																		"innerBlocks": []
 																	},
 																	{
 																		"name": "sgs/text",
@@ -1261,7 +1249,8 @@
 																	{
 																		"name": "sgs/button",
 																		"attributes": {
-																			"label": "New Baby Gift Box"
+																			"label": "New Baby Gift Box",
+																			"url": "/product/new-baby-gift-box/"
 																		},
 																		"draftRef": {
 																			"tpl": "Root>ProductCard@40#2/5#0"
@@ -1283,14 +1272,7 @@
 																			"textHash": "eacd19e8",
 																			"line": 9
 																		},
-																		"innerBlocks": [],
-																		"handover": [
-																			{
-																				"owner": "product-data",
-																				"kind": "link",
-																				"detail": "draft link \"Product.dc.html?id=giftbox\" goes to the draft route \"Product.dc.html\": the draft product \"giftbox\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																			}
-																		]
+																		"innerBlocks": []
 																	},
 																	{
 																		"name": "sgs/text",
@@ -1564,7 +1546,8 @@
 																	{
 																		"name": "sgs/button",
 																		"attributes": {
-																			"label": "40-Day Care Bundle"
+																			"label": "40-Day Care Bundle",
+																			"url": "/product/40-day-care-bundle/"
 																		},
 																		"draftRef": {
 																			"tpl": "Root>ProductCard@40#3/5#0"
@@ -1586,14 +1569,7 @@
 																			"textHash": "550b4971",
 																			"line": 9
 																		},
-																		"innerBlocks": [],
-																		"handover": [
-																			{
-																				"owner": "product-data",
-																				"kind": "link",
-																				"detail": "draft link \"Product.dc.html?id=care40\" goes to the draft route \"Product.dc.html\": the draft product \"care40\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																			}
-																		]
+																		"innerBlocks": []
 																	},
 																	{
 																		"name": "sgs/text",
@@ -2690,7 +2666,8 @@
 									{
 										"name": "sgs/button",
 										"attributes": {
-											"label": "£40"
+											"label": "£40",
+											"url": "/product/baby-shower-gift-card/"
 										},
 										"draftRef": {
 											"tpl": "Root/82#0"
@@ -2709,14 +2686,7 @@
 											"textHash": "b841402",
 											"line": 93
 										},
-										"innerBlocks": [],
-										"handover": [
-											{
-												"owner": "product-data",
-												"kind": "link",
-												"detail": "draft link \"Product.dc.html?id=giftcard\" goes to the draft route \"Product.dc.html\": the draft product \"giftcard\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-											}
-										]
+										"innerBlocks": []
 									}
 								]
 							}

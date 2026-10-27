@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T15:57:16.271Z",
-	"inventory": "2026-10-27T15:57:15.513Z",
-	"source": "http://127.0.0.1:63057/",
+	"generated": "2026-10-27T19:30:50.262Z",
+	"inventory": "2026-10-27T19:30:48.399Z",
+	"source": "http://127.0.0.1:65274/",
 	"surface": "page-home-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -215,7 +215,7 @@
 			"key": "Root/12#0",
 			"tag": "div",
 			"depth": 4,
-			"words": "good afternoon, mama",
+			"words": "good evening, mama",
 			"block": "sgs/container",
 			"action": null,
 			"reason": null,
@@ -722,7 +722,8 @@
 			},
 			"snippet": "<a href=\"Product.dc.html?id=trial\" style=\"color:#3A2A22\" data-dc-tpl=\"27\">New? Taster Trio, 3 for £5 →</a>",
 			"attributes": {
-				"label": "New? Taster Trio, 3 for £5 →"
+				"label": "New? Taster Trio, 3 for £5 →",
+				"url": "/product/taster-trio/"
 			}
 		},
 		{
@@ -5038,11 +5039,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardAction",
-			"handover": {
-				"owner": "product-data",
-				"kind": "link",
-				"detail": "draft link \"Product.dc.html?id=giftbox\" goes to the draft route \"Product.dc.html\": the draft product \"giftbox\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-			},
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -5060,7 +5056,8 @@
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"143\">→</span>",
 			"attributes": {
-				"label": "→"
+				"label": "→",
+				"url": "/product/new-baby-gift-box/"
 			}
 		},
 		{
@@ -5387,11 +5384,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardAction",
-			"handover": {
-				"owner": "product-data",
-				"kind": "link",
-				"detail": "draft link \"Product.dc.html?id=care40\" goes to the draft route \"Product.dc.html\": the draft product \"care40\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-			},
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -5409,7 +5401,8 @@
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"143\">→</span>",
 			"attributes": {
-				"label": "→"
+				"label": "→",
+				"url": "/product/40-day-care-bundle/"
 			}
 		},
 		{
@@ -5736,11 +5729,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardAction",
-			"handover": {
-				"owner": "product-data",
-				"kind": "link",
-				"detail": "draft link \"Product.dc.html?id=giftcard\" goes to the draft route \"Product.dc.html\": the draft product \"giftcard\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-			},
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -5758,7 +5746,8 @@
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"143\">→</span>",
 			"attributes": {
-				"label": "→"
+				"label": "→",
+				"url": "/product/baby-shower-gift-card/"
 			}
 		},
 		{
@@ -6085,11 +6074,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardAction",
-			"handover": {
-				"owner": "product-data",
-				"kind": "link",
-				"detail": "draft link \"Product.dc.html?id=trial\" goes to the draft route \"Product.dc.html\": the draft product \"trial\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-			},
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -6107,7 +6091,8 @@
 			},
 			"snippet": "<span aria-hidden=\"true\" style=\"width:36px;height:36px;border-radius:999px;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:center\" data-dc-tpl=\"143\">→</span>",
 			"attributes": {
-				"label": "→"
+				"label": "→",
+				"url": "/product/taster-trio/"
 			}
 		},
 		{
@@ -6603,11 +6588,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "wholeCardLink",
-			"handover": {
-				"owner": "product-data",
-				"kind": "link",
-				"detail": "draft link \"Product.dc.html?id=giftcard\" goes to the draft route \"Product.dc.html\": the draft product \"giftcard\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-			},
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -6626,7 +6606,8 @@
 			"snippet": "<a data-reveal=\"\" href=\"Product.dc.html?id=giftcard\" style=\"background:#FCEBBE;border:2px solid #3A2A22;border-radius:24px;padding:22px 24px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;text-decoration:none;color:#3A2A22;transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s\" style-hover=\"transform:translate(-4px,-4px);box-shadow:8px 8px 0 #3A2A22\" data-dc-tp",
 			"attributes": {
 				"tagName": "div",
-				"layout": "grid"
+				"layout": "grid",
+				"sgsBlockLink": "/product/baby-shower-gift-card/"
 			}
 		},
 		{

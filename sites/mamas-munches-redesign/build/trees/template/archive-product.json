@@ -542,6 +542,7 @@
                 "attributes": {
                   "tagName": "div",
                   "layout": "stack",
+                  "sgsBlockLink": "/product/zookies/",
                   "className": "cr-ref-shop-20",
                   "backgroundColour": "custom-mm-yellow-soft",
                   "borderWidth": {

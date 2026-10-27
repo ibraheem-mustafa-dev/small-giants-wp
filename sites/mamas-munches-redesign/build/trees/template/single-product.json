@@ -2423,6 +2423,7 @@
                                     "name": "sgs/button",
                                     "attributes": {
                                       "label": "Taster Trio",
+                                      "url": "/product/taster-trio/",
                                       "className": "cr-ref-product-80",
                                       "fontFamily": "heading",
                                       "fontSize": {
@@ -2725,6 +2726,7 @@
                                     "name": "sgs/button",
                                     "attributes": {
                                       "label": "New Baby Gift Box",
+                                      "url": "/product/new-baby-gift-box/",
                                       "className": "cr-ref-product-91",
                                       "fontFamily": "heading",
                                       "fontSize": {
@@ -3030,6 +3032,7 @@
                                     "name": "sgs/button",
                                     "attributes": {
                                       "label": "40-Day Care Bundle",
+                                      "url": "/product/40-day-care-bundle/",
                                       "className": "cr-ref-product-102",
                                       "fontFamily": "heading",
                                       "fontSize": {

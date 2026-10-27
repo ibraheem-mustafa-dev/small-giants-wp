@@ -54,7 +54,7 @@
 								"div",
 								"div"
 							],
-							"textHash": "ad8695ce",
+							"textHash": "fea11592",
 							"line": 16
 						},
 						"innerBlocks": [
@@ -277,7 +277,8 @@
 							{
 								"name": "sgs/button",
 								"attributes": {
-									"label": "New? Taster Trio, 3 for £5 →"
+									"label": "New? Taster Trio, 3 for £5 →",
+									"url": "/product/taster-trio/"
 								},
 								"draftRef": {
 									"tpl": "Root/27#0"
@@ -296,14 +297,7 @@
 									"textHash": "147aee63",
 									"line": 25
 								},
-								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "product-data",
-										"kind": "link",
-										"detail": "draft link \"Product.dc.html?id=trial\" goes to the draft route \"Product.dc.html\": the draft product \"trial\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-									}
-								]
+								"innerBlocks": []
 							}
 						]
 					},
@@ -1417,7 +1411,8 @@
 															{
 																"name": "sgs/button",
 																"attributes": {
-																	"label": "→"
+																	"label": "→",
+																	"url": "/product/new-baby-gift-box/"
 																},
 																"draftRef": {
 																	"tpl": "Root/143#0"
@@ -1438,14 +1433,7 @@
 																	"textHash": "29437",
 																	"line": 123
 																},
-																"innerBlocks": [],
-																"handover": [
-																	{
-																		"owner": "product-data",
-																		"kind": "link",
-																		"detail": "draft link \"Product.dc.html?id=giftbox\" goes to the draft route \"Product.dc.html\": the draft product \"giftbox\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																	}
-																]
+																"innerBlocks": []
 															}
 														]
 													}
@@ -1677,7 +1665,8 @@
 															{
 																"name": "sgs/button",
 																"attributes": {
-																	"label": "→"
+																	"label": "→",
+																	"url": "/product/40-day-care-bundle/"
 																},
 																"draftRef": {
 																	"tpl": "Root/143#1"
@@ -1698,14 +1687,7 @@
 																	"textHash": "29437",
 																	"line": 123
 																},
-																"innerBlocks": [],
-																"handover": [
-																	{
-																		"owner": "product-data",
-																		"kind": "link",
-																		"detail": "draft link \"Product.dc.html?id=care40\" goes to the draft route \"Product.dc.html\": the draft product \"care40\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																	}
-																]
+																"innerBlocks": []
 															}
 														]
 													}
@@ -1937,7 +1919,8 @@
 															{
 																"name": "sgs/button",
 																"attributes": {
-																	"label": "→"
+																	"label": "→",
+																	"url": "/product/baby-shower-gift-card/"
 																},
 																"draftRef": {
 																	"tpl": "Root/143#2"
@@ -1958,14 +1941,7 @@
 																	"textHash": "29437",
 																	"line": 123
 																},
-																"innerBlocks": [],
-																"handover": [
-																	{
-																		"owner": "product-data",
-																		"kind": "link",
-																		"detail": "draft link \"Product.dc.html?id=giftcard\" goes to the draft route \"Product.dc.html\": the draft product \"giftcard\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																	}
-																]
+																"innerBlocks": []
 															}
 														]
 													}
@@ -2197,7 +2173,8 @@
 															{
 																"name": "sgs/button",
 																"attributes": {
-																	"label": "→"
+																	"label": "→",
+																	"url": "/product/taster-trio/"
 																},
 																"draftRef": {
 																	"tpl": "Root/143#3"
@@ -2218,14 +2195,7 @@
 																	"textHash": "29437",
 																	"line": 123
 																},
-																"innerBlocks": [],
-																"handover": [
-																	{
-																		"owner": "product-data",
-																		"kind": "link",
-																		"detail": "draft link \"Product.dc.html?id=trial\" goes to the draft route \"Product.dc.html\": the draft product \"trial\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-																	}
-																]
+																"innerBlocks": []
 															}
 														]
 													}
@@ -2541,7 +2511,8 @@
 										"name": "sgs/container",
 										"attributes": {
 											"tagName": "div",
-											"layout": "grid"
+											"layout": "grid",
+											"sgsBlockLink": "/product/baby-shower-gift-card/"
 										},
 										"draftRef": {
 											"tpl": "Root/157#0"
@@ -2665,13 +2636,6 @@
 														"innerBlocks": []
 													}
 												]
-											}
-										],
-										"handover": [
-											{
-												"owner": "product-data",
-												"kind": "link",
-												"detail": "draft link \"Product.dc.html?id=giftcard\" goes to the draft route \"Product.dc.html\": the draft product \"giftcard\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
 											}
 										]
 									}
@@ -5453,7 +5417,7 @@
 										"draftFingerprint": {
 											"tag": "button",
 											"cls": "",
-											"styleHash": "412f9ce6",
+											"styleHash": "cc522f5e",
 											"parentTags": [
 												"main",
 												"section",
@@ -5474,7 +5438,7 @@
 										"draftFingerprint": {
 											"tag": "button",
 											"cls": "",
-											"styleHash": "cc522f5e",
+											"styleHash": "412f9ce6",
 											"parentTags": [
 												"main",
 												"section",

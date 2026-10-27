@@ -7,9 +7,9 @@ export default {
 	refPrefix: "cr-ref-",
 	divergences: "../divergences.json",
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
-	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"63\"]:not(.sc-host .sc-host *)","live":".cr-ref-flow-choice-flow-build-your-zookie-0"} },
-	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"63\"]:not(.sc-host .sc-host *)","live":".cr-ref-flow-choice-flow-build-your-zookie-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:63057/" },
+	auto: { root: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"66\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"63\"]:not(.sc-host .sc-host *)))","live":":has(> :is(.cr-ref-flow-choice-flow-build-your-zookie-0)):has(> :is(.cr-ref-flow-choice-flow-build-your-zookie-4))"} },
+	linkRoot: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"66\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"63\"]:not(.sc-host .sc-host *)))","live":":has(> :is(.cr-ref-flow-choice-flow-build-your-zookie-0)):has(> :is(.cr-ref-flow-choice-flow-build-your-zookie-4))"},
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:65274/" },
 	live: { url: "http://localhost:8084/" },
 	states: [ { name: "default", fullPage: true } ],
 	pairs: [],

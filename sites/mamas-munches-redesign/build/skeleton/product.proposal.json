@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T15:58:23.182Z",
-	"inventory": "2026-10-27T15:58:22.850Z",
-	"source": "http://127.0.0.1:57156/",
+	"generated": "2026-10-27T19:29:01.702Z",
+	"inventory": "2026-10-27T19:29:00.592Z",
+	"source": "http://127.0.0.1:65275/",
 	"surface": "page-product-dc-html-id-zookies",
 	"siteName": null,
 	"surfaceParts": [
@@ -4712,7 +4712,8 @@
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
 			"attributes": {
-				"label": "Taster Trio"
+				"label": "Taster Trio",
+				"url": "/product/taster-trio/"
 			}
 		},
 		{
@@ -5123,7 +5124,8 @@
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
 			"attributes": {
-				"label": "New Baby Gift Box"
+				"label": "New Baby Gift Box",
+				"url": "/product/new-baby-gift-box/"
 			}
 		},
 		{
@@ -5527,7 +5529,8 @@
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
 			"attributes": {
-				"label": "40-Day Care Bundle"
+				"label": "40-Day Care Bundle",
+				"url": "/product/40-day-care-bundle/"
 			}
 		},
 		{

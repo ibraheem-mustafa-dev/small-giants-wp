@@ -1,9 +1,103 @@
 [
 	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "div"
+		},
+		"draftRef": {
+			"tpl": "Root/66#0"
+		},
+		"draftFingerprint": {
+			"tag": "div",
+			"cls": "",
+			"styleHash": "1505",
+			"parentTags": [
+				"section",
+				"div",
+				"div"
+			],
+			"textHash": "1505",
+			"line": 71
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "your cookie, your way"
+				},
+				"draftRef": {
+					"tpl": "Root/67#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "c99acba9",
+					"parentTags": [
+						"section",
+						"div",
+						"div",
+						"div"
+					],
+					"textHash": "ae836562",
+					"line": 72
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"content": "Build your Zookie"
+				},
+				"draftRef": {
+					"tpl": "Root/68#0"
+				},
+				"draftFingerprint": {
+					"tag": "h2",
+					"cls": "",
+					"styleHash": "7e0fa315",
+					"parentTags": [
+						"section",
+						"div",
+						"div",
+						"div"
+					],
+					"textHash": "88c8559f",
+					"line": 73
+				},
+				"innerBlocks": []
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh."
+				},
+				"draftRef": {
+					"tpl": "Root/69#0"
+				},
+				"draftFingerprint": {
+					"tag": "p",
+					"cls": "",
+					"styleHash": "9fcdc40e",
+					"parentTags": [
+						"section",
+						"div",
+						"div",
+						"div"
+					],
+					"textHash": "5825abf6",
+					"line": 74
+				},
+				"innerBlocks": []
+			}
+		]
+	},
+	{
 		"name": "sgs/choice-flow",
 		"attributes": {
 			"flowLayout": "compact",
-			"title": "Build your Zookie"
+			"showPricePanel": true,
+			"summaryPosition": "end",
+			"stageNote": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35"
 		},
 		"draftRef": {
 			"tpl": "Root/63#0"
@@ -38,6 +132,7 @@
 								}
 							]
 						},
+						"innerBlocks": [],
 						"draftRef": {
 							"tpl": "Root/70#0"
 						},
@@ -53,7 +148,11 @@
 							"textHash": "1505",
 							"line": 76
 						},
-						"innerBlocks": []
+						"draftSlots": {
+							".sgs-choice-flow-question__title": {
+								"tpl": "Root/71#0"
+							}
+						}
 					}
 				]
 			},
@@ -86,6 +185,7 @@
 								}
 							]
 						},
+						"innerBlocks": [],
 						"draftRef": {
 							"tpl": "Root/76#0"
 						},
@@ -101,7 +201,11 @@
 							"textHash": "1505",
 							"line": 78
 						},
-						"innerBlocks": []
+						"draftSlots": {
+							".sgs-choice-flow-question__title": {
+								"tpl": "Root/77#0"
+							}
+						}
 					}
 				]
 			},
@@ -118,6 +222,7 @@
 							"intro": "Pick up to 3 and we’ll split your box between them",
 							"options": []
 						},
+						"innerBlocks": [],
 						"draftRef": {
 							"tpl": "Root/81#0"
 						},
@@ -133,7 +238,14 @@
 							"textHash": "1505",
 							"line": 80
 						},
-						"innerBlocks": []
+						"draftSlots": {
+							".sgs-choice-flow-question__title": {
+								"tpl": "Root/83#0"
+							},
+							".sgs-choice-flow-question__intro": {
+								"tpl": "Root/84#0"
+							}
+						}
 					}
 				]
 			},
@@ -162,6 +274,7 @@
 								}
 							]
 						},
+						"innerBlocks": [],
 						"draftRef": {
 							"tpl": "Root/90#0"
 						},
@@ -177,7 +290,61 @@
 							"textHash": "1505",
 							"line": 83
 						},
-						"innerBlocks": []
+						"draftSlots": {
+							".sgs-choice-flow-question__title": {
+								"tpl": "Root/91#0"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": ""
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"question": "",
+							"options": [
+								{
+									"label": "Subscribe & save 10%",
+									"value": "subscribe-save-10",
+									"description": "Skip, swap or cancel any time",
+									"isDefault": true,
+									"nextStepId": "5"
+								},
+								{
+									"label": "One-off box",
+									"value": "one-off-box",
+									"nextStepId": "6"
+								}
+							],
+							"showNextStepInline": true
+						},
+						"innerBlocks": [],
+						"draftRef": {
+							"tpl": "Root/107#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "fc658fd8",
+							"parentTags": [
+								"section",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 94
+						},
+						"draftSlots": {
+							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+								"tpl": "Root/111#0"
+							}
+						}
 					}
 				]
 			},
@@ -202,6 +369,7 @@
 								}
 							]
 						},
+						"innerBlocks": [],
 						"draftRef": {
 							"tpl": "Root/116#0"
 						},
@@ -217,8 +385,7 @@
 							],
 							"textHash": "1505",
 							"line": 97
-						},
-						"innerBlocks": []
+						}
 					}
 				]
 			},
@@ -240,11 +407,21 @@
 				]
 			}
 		],
+		"draftSlots": {
+			".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": {
+				"tpl": "Root/123#0"
+			}
+		},
 		"handover": [
 			{
 				"owner": "product-data",
 				"kind": "text",
 				"detail": "question 4 \"How many\": the option prices (£9.50, £21.50, £38.00) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there"
+			},
+			{
+				"owner": "product-data",
+				"kind": "text",
+				"detail": "the choice between the pressable buttons in Home/107: the option prices (£19.35, £21.50) are the product's own prices (FR-43-10): set them on the product"
 			}
 		]
 	}

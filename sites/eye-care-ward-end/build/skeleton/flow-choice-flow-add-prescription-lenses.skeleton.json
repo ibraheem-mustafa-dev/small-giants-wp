@@ -74,6 +74,7 @@
 							],
 							"pricePrefix": "from"
 						},
+						"innerBlocks": [],
 						"draftRef": {
 							"tpl": "Root/1322#0"
 						},
@@ -89,7 +90,17 @@
 							"textHash": "1505",
 							"line": 2225
 						},
-						"innerBlocks": []
+						"draftSlots": {
+							".sgs-choice-flow-question__title": {
+								"tpl": "Root/1324#0"
+							},
+							".sgs-choice-flow-question__intro": {
+								"tpl": "Root/1325#0"
+							},
+							".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": {
+								"tpl": "Root/1340#0"
+							}
+						}
 					}
 				]
 			},
@@ -321,6 +332,26 @@
 				]
 			}
 		],
+		"draftSlots": {
+			".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-logo": {
+				"tpl": "Root/1286#0"
+			},
+			".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow": {
+				"tpl": "Root/1287#0"
+			},
+			".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions": {
+				"tpl": "Root/1443#0"
+			},
+			".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": {
+				"tpl": "Root/1315#0"
+			},
+			".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note": {
+				"tpl": "Root/1432#0"
+			},
+			".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(2) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-info-toggle": {
+				"tpl": "Root/1341#0"
+			}
+		},
 		"handover": [
 			{
 				"owner": "product-data",

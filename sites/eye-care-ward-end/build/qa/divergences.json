@@ -1703,5 +1703,39 @@
       "tier": 768,
       "distance": 16
     }
+  },
+  {
+    "id": "D-153",
+    "scope": "header",
+    "node": "cr-ref-header-11",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1072px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1072,
+      "tier": 1024,
+      "distance": 48
+    }
+  },
+  {
+    "id": "D-154",
+    "scope": "header",
+    "node": "cr-ref-header-17",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1072px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1072,
+      "tier": 1024,
+      "distance": 48
+    }
   }
 ]

@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-27T16:11:02.375Z",
+	"generated": "2026-10-27T19:36:24.232Z",
 	"inventory": "2026-10-27T13:41:20.006Z",
 	"source": "http://127.0.0.1:63054/Eye%20Care%20Birmingham.dc.html",
 	"surface": "lens-configurator",
@@ -133,7 +133,7 @@
 			"words": "",
 			"block": "sgs/choice-flow",
 			"action": null,
-			"reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row",
+			"reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row",
 			"source": "rule choiceFlow",
 			"confidence": 1,
 			"low": false,
@@ -145,7 +145,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule choiceFlow: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row"
+						"rule choiceFlow: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row"
 					]
 				}
 			],
@@ -172,6 +172,26 @@
 					"url": "https://wa.me/4479605978",
 					"text": "Happy to talk it through — message me and we'll choose together.",
 					"source": "url"
+				}
+			},
+			"slots": {
+				".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-logo": {
+					"tpl": "Root/1286#0"
+				},
+				".sgs-choice-flow__chrome-header > .sgs-choice-flow__chrome-eyebrow": {
+					"tpl": "Root/1287#0"
+				},
+				".sgs-choice-flow__footer > .sgs-choice-flow__footer-row > .sgs-choice-flow__footer-actions": {
+					"tpl": "Root/1443#0"
+				},
+				".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": {
+					"tpl": "Root/1315#0"
+				},
+				".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-choice-flow__summary-note": {
+					"tpl": "Root/1432#0"
+				},
+				".sgs-choice-flow__body > .sgs-choice-flow__inner > .sgs-container:nth-of-type(2) > .sgs-choice-flow-question > .sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-info-toggle": {
+					"tpl": "Root/1341#0"
 				}
 			}
 		},

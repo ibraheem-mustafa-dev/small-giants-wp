@@ -450,7 +450,8 @@
 								"name": "sgs/container",
 								"attributes": {
 									"tagName": "div",
-									"layout": "stack"
+									"layout": "stack",
+									"sgsBlockLink": "/product/zookies/"
 								},
 								"draftRef": {
 									"tpl": "Root/39#0"
@@ -646,9 +647,9 @@
 								],
 								"handover": [
 									{
-										"owner": "product-data",
+										"owner": "behaviour",
 										"kind": "link",
-										"detail": "draft link \"Product.dc.html?id=zookies&sub=1\" goes to the draft route \"Product.dc.html\": the draft product \"zookies\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+										"detail": "draft link \"Product.dc.html?id=zookies&sub=1\" opens /product/zookies/; its draft query ?sub=1 has no site address and is dropped"
 									}
 								]
 							}

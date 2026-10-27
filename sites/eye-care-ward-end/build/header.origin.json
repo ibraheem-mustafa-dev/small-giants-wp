@@ -174,61 +174,14 @@
       "line": 558
     },
     "slots": {
-      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": "Root/23#0"
+      ".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": "Root/23#0",
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": "Root/17#0",
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": "Root/18#0",
+      ".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": "Root/21#0"
     },
     "draft": "10edcc3a998d8e4f"
   },
   "cr-ref-header-12": {
-    "tpl": "Root/17#0",
-    "fingerprint": {
-      "tag": "button",
-      "cls": "",
-      "styleHash": "a2c9e8ee",
-      "parentTags": [
-        "header",
-        "div",
-        "nav"
-      ],
-      "textHash": "1505",
-      "line": 560
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-header-13": {
-    "tpl": "Root/18#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "99b6a44b",
-      "parentTags": [
-        "header",
-        "div",
-        "nav",
-        "button"
-      ],
-      "textHash": "1505",
-      "line": 561
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-header-14": {
-    "tpl": "Root/21#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "1d7726a",
-      "parentTags": [
-        "header",
-        "div",
-        "nav",
-        "button"
-      ],
-      "textHash": "7c804cd6",
-      "line": 565
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-header-15": {
     "tpl": "Root/28#0",
     "fingerprint": {
       "tag": "a",
@@ -243,7 +196,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-16": {
+  "cr-ref-header-13": {
     "tpl": "Root/29#0",
     "fingerprint": {
       "tag": "img",
@@ -259,7 +212,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-17": {
+  "cr-ref-header-14": {
     "tpl": "Root/30#0",
     "fingerprint": {
       "tag": "span",
@@ -275,7 +228,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-18": {
+  "cr-ref-header-15": {
     "tpl": "Root/31#0",
     "fingerprint": {
       "tag": "span",
@@ -292,7 +245,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-19": {
+  "cr-ref-header-16": {
     "tpl": "Root/33#0",
     "fingerprint": {
       "tag": "div",
@@ -307,7 +260,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-20": {
+  "cr-ref-header-17": {
     "tpl": "Root/35#0",
     "fingerprint": {
       "tag": "a",
@@ -326,7 +279,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-21": {
+  "cr-ref-header-18": {
     "tpl": "Root/38#0",
     "fingerprint": {
       "tag": "a",
@@ -342,7 +295,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-22": {
+  "cr-ref-header-19": {
     "tpl": "Root/39#0",
     "fingerprint": {
       "tag": "a",
@@ -358,7 +311,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-23": {
+  "cr-ref-header-20": {
     "tpl": "Root/40#0",
     "fingerprint": {
       "tag": "button",
@@ -377,7 +330,7 @@
     },
     "draft": "10edcc3a998d8e4f"
   },
-  "cr-ref-header-24": {
+  "cr-ref-header-21": {
     "tpl": "Root/46#0",
     "fingerprint": {
       "tag": "button",
@@ -390,40 +343,6 @@
       ],
       "textHash": "1505",
       "line": 595
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-header-25": {
-    "tpl": "Root/47#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "6fdf5917",
-      "parentTags": [
-        "header",
-        "div",
-        "div",
-        "button"
-      ],
-      "textHash": "b87c701",
-      "line": 596
-    },
-    "draft": "10edcc3a998d8e4f"
-  },
-  "cr-ref-header-26": {
-    "tpl": "Root/51#0",
-    "fingerprint": {
-      "tag": "span",
-      "cls": "",
-      "styleHash": "6a5ac802",
-      "parentTags": [
-        "header",
-        "div",
-        "div",
-        "button"
-      ],
-      "textHash": "2b595",
-      "line": 598
     },
     "draft": "10edcc3a998d8e4f"
   }

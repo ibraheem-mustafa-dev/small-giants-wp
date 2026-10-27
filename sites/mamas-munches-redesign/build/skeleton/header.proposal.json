@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T16:06:32.084Z",
-	"inventory": "2026-10-27T16:06:31.749Z",
-	"source": "http://127.0.0.1:63057/",
+	"generated": "2026-10-27T19:35:40.889Z",
+	"inventory": "2026-10-27T19:35:40.508Z",
+	"source": "http://127.0.0.1:65274/",
 	"surface": "site-header-announcement-strip-bar",
 	"siteName": null,
 	"surfaceParts": [
@@ -54,16 +54,17 @@
 		"inventoryElements": 45,
 		"parts": 12,
 		"rows": 33,
-		"skeletonNodes": 17,
-		"expandedNodes": 17,
+		"skeletonNodes": 19,
+		"expandedNodes": 19,
 		"low": 8,
-		"removed": 16,
+		"removed": 14,
 		"unresolved": 0,
 		"byRule": {
 			"headerSlots": 1,
 			"widthWrapper": 1,
 			"typedDivider": 2,
-			"drawerOpener": 8,
+			"drawerOpener": 4,
+			"blockPartOpener": 4,
 			"navigation": 6
 		}
 	},
@@ -410,7 +411,7 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"reason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
 			"source": "rule drawerOpener",
 			"confidence": 1,
 			"low": false,
@@ -433,7 +434,7 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
 			"source": null,
 			"confidence": 1,
 			"low": false,
@@ -456,7 +457,7 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
 			"source": null,
 			"confidence": 1,
 			"low": false,
@@ -479,7 +480,7 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"reason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
 			"source": null,
 			"confidence": 1,
 			"low": false,
@@ -650,16 +651,24 @@
 			"tag": "button",
 			"depth": 3,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
-			"source": "rule drawerOpener",
+			"block": "sgs/cart",
+			"action": null,
+			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row",
+			"source": "rule blockPartOpener",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawerOpener",
-			"into": "Root>SiteHeader@7#0/38#0",
-			"candidates": [],
+			"rule": "blockPartOpener",
+			"candidates": [
+				{
+					"block": "sgs/cart",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule blockPartOpener: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row"
+					]
+				}
+			],
 			"parts": [
 				"Root>SiteHeader@7#0/29#0"
 			],
@@ -667,7 +676,11 @@
 				"375": "shots/Root_SiteHeader_7_0_28_0@375.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" aria-label=\"Open basket\" style=\"position:relative;width:48px;height:48px;border:0;background:transparent;border-radius:999px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#3A2A22;padding:0\" style-hover=\"background:#F9D5D3\" data-dc-tpl=\"28\"> <svg width=\"24\" height=\"24\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:cu",
-			"attributes": {}
+			"attributes": {
+				"displayMode": "drawer",
+				"triggerStyle": "icon",
+				"ariaLabel": "Open basket"
+			}
 		},
 		{
 			"order": 19,
@@ -823,13 +836,13 @@
 					"tpl": "Root>SiteHeader@7#0/39#0"
 				},
 				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
-					"tpl": "Root>SiteHeader@7#0/49#0"
+					"tpl": "Root>SiteHeader@7#0/17#0"
 				},
 				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
-					"tpl": "Root>SiteHeader@7#0/53#0"
+					"tpl": "Root>SiteHeader@7#0/18#0"
 				},
 				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
-					"tpl": "Root>SiteHeader@7#0/54#0"
+					"tpl": "Root>SiteHeader@7#0/19#0"
 				},
 				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3)": {
 					"tpl": "Root>SiteHeader@7#0/20#0"
@@ -840,15 +853,7 @@
 				"no draft child holds a glyph element, so no glyph slot",
 				"0 width thresholds show this navigation, so no collapse point",
 				"sgs/nav-bar-menu stands in Root>SiteHeader@7#0/16#0 where its Root>SiteHeader@7#0/17#0 part is, beside the wrapper's other content",
-				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon",
-				"sgs/nav-bar-menu stays beside Root>SiteHeader@7#0/23#0: Root>SiteHeader@7#0/23#0 is not inside the node Root>SiteHeader@7#0/38#0 stands in",
-				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon",
-				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1): the draft has no element for .sgs-nav-bar-menu__burger-icon",
-				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2): the draft has no element for .sgs-nav-bar-menu__burger-icon",
-				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3): the draft has no element for .sgs-nav-bar-menu__burger-icon",
-				"sgs/nav-bar-menu stays beside Root>SiteHeader@7#0/44#0: the elements holding Root>SiteHeader@7#0/49#0 render at Root>SiteHeader@7#0/38#0's widths",
-				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon",
-				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(3): the draft has no element for .sgs-nav-bar-menu__burger-bar:nth-of-type(3)"
+				".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon: the draft has no element for .sgs-nav-bar-menu__burger-icon"
 			],
 			"placedIn": "Root>SiteHeader@7#0/16#0"
 		},
@@ -1049,16 +1054,24 @@
 			"tag": "button",
 			"depth": 3,
 			"words": "",
-			"block": null,
-			"action": "absorbed",
-			"reason": "a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
-			"source": "rule drawerOpener",
+			"block": "sgs/cart",
+			"action": null,
+			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row",
+			"source": "rule blockPartOpener",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawerOpener",
-			"into": "Root>SiteHeader@7#0/38#0",
-			"candidates": [],
+			"rule": "blockPartOpener",
+			"candidates": [
+				{
+					"block": "sgs/cart",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule blockPartOpener: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part \"Basket\" of the cart row"
+					]
+				}
+			],
 			"parts": [
 				"Root>SiteHeader@7#0/50#0"
 			],
@@ -1066,7 +1079,18 @@
 				"1440": "shots/Root_SiteHeader_7_0_49_0@1440.png"
 			},
 			"snippet": "<button sc-camel-on-click=\"{{ openBasket }}\" style=\"height:48px;padding:0 18px 0 14px;border:2px solid #3A2A22;background:#FFFAF0;border-radius:999px;display:flex;align-items:center;gap:8px;cursor:pointer;color:#3A2A22;font-size:15px;font-weight:700;box-shadow:3px 3px 0 #3A2A22;transition:transform .2s, box-shadow .2s, background .2s\" style-hover=\"background:#F9CF6E;transform:translate(-2px,-2px);",
-			"attributes": {}
+			"attributes": {
+				"displayMode": "drawer",
+				"triggerStyle": "pill",
+				"pillLabel": "Basket",
+				"pillCountStyle": "bubble",
+				"showZero": true
+			},
+			"slots": {
+				".sgs-cart__trigger > .sgs-cart__icon > svg": {
+					"tpl": "Root>SiteHeader@7#0/50#0"
+				}
+			}
 		},
 		{
 			"order": 31,
@@ -1076,13 +1100,13 @@
 			"words": "Basket",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"reason": "drawn by sgs/cart: rule blockPartOpener",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawerOpener",
-			"into": "Root>SiteHeader@7#0/38#0",
+			"rule": "blockPartOpener",
+			"into": "Root>SiteHeader@7#0/49#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1099,13 +1123,13 @@
 			"words": "0",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it",
+			"reason": "drawn by sgs/cart: rule blockPartOpener",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "drawerOpener",
-			"into": "Root>SiteHeader@7#0/38#0",
+			"rule": "blockPartOpener",
+			"into": "Root>SiteHeader@7#0/49#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {

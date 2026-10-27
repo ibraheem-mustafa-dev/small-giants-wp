@@ -247,91 +247,23 @@
 						"draftSlots": {
 							".sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link": {
 								"tpl": "Root/23#0"
-							}
-						},
-						"widthVariants": [
-							{
-								"key": "Root/17#0",
-								"shown": [
-									375,
-									768
-								]
-							}
-						]
-					},
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div",
-							"layout": "flex"
-						},
-						"draftRef": {
-							"tpl": "Root/17#0"
-						},
-						"draftFingerprint": {
-							"tag": "button",
-							"cls": "",
-							"styleHash": "a2c9e8ee",
-							"parentTags": [
-								"header",
-								"div",
-								"nav"
-							],
-							"textHash": "1505",
-							"line": 560
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root/18#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "99b6a44b",
-									"parentTags": [
-										"header",
-										"div",
-										"nav",
-										"button"
-									],
-									"textHash": "1505",
-									"line": 561
-								},
-								"innerBlocks": []
 							},
-							{
-								"name": "sgs/label",
-								"attributes": {
-									"text": "Menu"
-								},
-								"draftRef": {
-									"tpl": "Root/21#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "1d7726a",
-									"parentTags": [
-										"header",
-										"div",
-										"nav",
-										"button"
-									],
-									"textHash": "7c804cd6",
-									"line": 565
-								},
-								"innerBlocks": []
+							".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger": {
+								"tpl": "Root/17#0"
+							},
+							".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(1)": {
+								"tpl": "Root/18#0"
+							},
+							".sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(2)": {
+								"tpl": "Root/21#0"
 							}
-						],
-						"widthShown": [
-							375,
-							768
+						},
+						"handover": [
+							{
+								"owner": "behaviour",
+								"kind": "presence",
+								"detail": "Root/17#0: an element shown only at 375 and 768px inside a block that draws its own content: no setting holds a per-width alternative"
+							}
 						]
 					},
 					{
@@ -573,10 +505,14 @@
 								}
 							},
 							{
-								"name": "sgs/container",
+								"name": "sgs/cart",
 								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
+									"displayMode": "drawer",
+									"triggerStyle": "pill",
+									"pillLabel": "Bag",
+									"pillCountStyle": "bubble",
+									"showZero": true,
+									"ariaLabel": "Bag"
 								},
 								"draftRef": {
 									"tpl": "Root/46#0"
@@ -593,54 +529,7 @@
 									"textHash": "1505",
 									"line": 595
 								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Bag"
-										},
-										"draftRef": {
-											"tpl": "Root/47#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "6fdf5917",
-											"parentTags": [
-												"header",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "b87c701",
-											"line": 596
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "0"
-										},
-										"draftRef": {
-											"tpl": "Root/51#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "6a5ac802",
-											"parentTags": [
-												"header",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "2b595",
-											"line": 598
-										},
-										"innerBlocks": []
-									}
-								]
+								"innerBlocks": []
 							}
 						]
 					}

@@ -1,5 +1,72 @@
 {
   "cr-ref-flow-choice-flow-build-your-zookie-0": {
+    "tpl": "Root/66#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "1505",
+      "parentTags": [
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 71
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-flow-choice-flow-build-your-zookie-1": {
+    "tpl": "Root/67#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "c99acba9",
+      "parentTags": [
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "ae836562",
+      "line": 72
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-flow-choice-flow-build-your-zookie-2": {
+    "tpl": "Root/68#0",
+    "fingerprint": {
+      "tag": "h2",
+      "cls": "",
+      "styleHash": "7e0fa315",
+      "parentTags": [
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "88c8559f",
+      "line": 73
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-flow-choice-flow-build-your-zookie-3": {
+    "tpl": "Root/69#0",
+    "fingerprint": {
+      "tag": "p",
+      "cls": "",
+      "styleHash": "9fcdc40e",
+      "parentTags": [
+        "section",
+        "div",
+        "div",
+        "div"
+      ],
+      "textHash": "5825abf6",
+      "line": 74
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-flow-choice-flow-build-your-zookie-4": {
     "tpl": "Root/63#0",
     "fingerprint": {
       "tag": "section",
@@ -9,9 +76,12 @@
       "textHash": "1505",
       "line": 68
     },
+    "slots": {
+      ".sgs-choice-flow__body > .sgs-choice-flow__summary > .sgs-choice-flow__summary-toggle > .sgs-choice-flow__summary-body > .sgs-choice-flow__summary-note": "Root/123#0"
+    },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-flow-choice-flow-build-your-zookie-2": {
+  "cr-ref-flow-choice-flow-build-your-zookie-6": {
     "tpl": "Root/70#0",
     "fingerprint": {
       "tag": "div",
@@ -25,9 +95,12 @@
       "textHash": "1505",
       "line": 76
     },
+    "slots": {
+      ".sgs-choice-flow-question__title": "Root/71#0"
+    },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-flow-choice-flow-build-your-zookie-4": {
+  "cr-ref-flow-choice-flow-build-your-zookie-8": {
     "tpl": "Root/76#0",
     "fingerprint": {
       "tag": "div",
@@ -41,9 +114,12 @@
       "textHash": "1505",
       "line": 78
     },
+    "slots": {
+      ".sgs-choice-flow-question__title": "Root/77#0"
+    },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-flow-choice-flow-build-your-zookie-6": {
+  "cr-ref-flow-choice-flow-build-your-zookie-10": {
     "tpl": "Root/81#0",
     "fingerprint": {
       "tag": "div",
@@ -57,9 +133,13 @@
       "textHash": "1505",
       "line": 80
     },
+    "slots": {
+      ".sgs-choice-flow-question__title": "Root/83#0",
+      ".sgs-choice-flow-question__intro": "Root/84#0"
+    },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-flow-choice-flow-build-your-zookie-8": {
+  "cr-ref-flow-choice-flow-build-your-zookie-12": {
     "tpl": "Root/90#0",
     "fingerprint": {
       "tag": "div",
@@ -73,9 +153,31 @@
       "textHash": "1505",
       "line": 83
     },
+    "slots": {
+      ".sgs-choice-flow-question__title": "Root/91#0"
+    },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-flow-choice-flow-build-your-zookie-10": {
+  "cr-ref-flow-choice-flow-build-your-zookie-14": {
+    "tpl": "Root/107#0",
+    "fingerprint": {
+      "tag": "div",
+      "cls": "",
+      "styleHash": "fc658fd8",
+      "parentTags": [
+        "section",
+        "div",
+        "div"
+      ],
+      "textHash": "1505",
+      "line": 94
+    },
+    "slots": {
+      ".sgs-choice-flow-question__options > .sgs-choice-flow-question__option:nth-of-type(1) > .sgs-choice-flow-question__option-button > .sgs-choice-flow-question__option-description": "Root/111#0"
+    },
+    "draft": "4cd995654ff1103b"
+  },
+  "cr-ref-flow-choice-flow-build-your-zookie-16": {
     "tpl": "Root/116#0",
     "fingerprint": {
       "tag": "div",

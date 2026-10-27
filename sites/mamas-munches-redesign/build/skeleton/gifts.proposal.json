@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T15:54:27.692Z",
-	"inventory": "2026-10-27T15:54:27.295Z",
-	"source": "http://127.0.0.1:60247/",
+	"generated": "2026-10-27T19:28:40.627Z",
+	"inventory": "2026-10-27T19:28:37.927Z",
+	"source": "http://127.0.0.1:65273/",
 	"surface": "page-gifts-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -1355,7 +1355,8 @@
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
 			"attributes": {
-				"label": "Zookies"
+				"label": "Zookies",
+				"url": "/product/zookies/"
 			}
 		},
 		{
@@ -1766,7 +1767,8 @@
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
 			"attributes": {
-				"label": "Taster Trio"
+				"label": "Taster Trio",
+				"url": "/product/taster-trio/"
 			}
 		},
 		{
@@ -2177,7 +2179,8 @@
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
 			"attributes": {
-				"label": "New Baby Gift Box"
+				"label": "New Baby Gift Box",
+				"url": "/product/new-baby-gift-box/"
 			}
 		},
 		{
@@ -2588,7 +2591,8 @@
 			},
 			"snippet": "<a href=\"{{ href }}\" style=\"font-family:'Young Serif',Georgia,serif;font-size:{{ nameSize }};line-height:1.15;color:#3A2A22;text-decoration:none\" data-dc-tpl=\"5\">{{ name }}</a>",
 			"attributes": {
-				"label": "40-Day Care Bundle"
+				"label": "40-Day Care Bundle",
+				"url": "/product/40-day-care-bundle/"
 			}
 		},
 		{
@@ -4306,11 +4310,6 @@
 			"low": false,
 			"stale": null,
 			"rule": "cardAction",
-			"handover": {
-				"owner": "product-data",
-				"kind": "link",
-				"detail": "draft link \"Product.dc.html?id=giftcard\" goes to the draft route \"Product.dc.html\": the draft product \"giftcard\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
-			},
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -4327,7 +4326,8 @@
 			},
 			"snippet": "<span style=\"background:#FFFAF0;border:2px solid #3A2A22;border-radius:999px;padding:6px 14px;font-weight:700\" data-dc-tpl=\"82\">£40</span>",
 			"attributes": {
-				"label": "£40"
+				"label": "£40",
+				"url": "/product/baby-shower-gift-card/"
 			}
 		}
 	]

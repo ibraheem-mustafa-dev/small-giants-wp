@@ -3,12 +3,17 @@
 import base from './flow-choice-flow-build-your-zookie.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-flow-choice-flow-build-your-zookie-0", text: false, structure: false, draft: {"tpl":"Root/63#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-0" },
-	{ name: "gen-flow-choice-flow-build-your-zookie-2", text: false, structure: false, draft: {"tpl":"Root/70#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-2" },
-	{ name: "gen-flow-choice-flow-build-your-zookie-4", text: false, structure: false, draft: {"tpl":"Root/76#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-4" },
-	{ name: "gen-flow-choice-flow-build-your-zookie-6", text: false, structure: false, draft: {"tpl":"Root/81#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-6" },
-	{ name: "gen-flow-choice-flow-build-your-zookie-8", text: false, structure: false, draft: {"tpl":"Root/90#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-8" },
-	{ name: "gen-flow-choice-flow-build-your-zookie-10", text: false, structure: false, draft: {"tpl":"Root/116#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-10" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-0", text: false, structure: false, draft: {"tpl":"Root/66#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-0" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-1", text: false, structure: false, draft: {"tpl":"Root/67#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-1" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-2", text: false, structure: false, draft: {"tpl":"Root/68#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-2" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-3", text: false, structure: false, draft: {"tpl":"Root/69#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-3" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-4", text: false, structure: false, draft: {"tpl":"Root/63#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-4" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-6", text: false, structure: false, draft: {"tpl":"Root/70#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-6" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-8", text: false, structure: false, draft: {"tpl":"Root/76#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-8" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-10", text: false, structure: false, draft: {"tpl":"Root/81#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-10" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-12", text: false, structure: false, draft: {"tpl":"Root/90#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-12" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-14", text: false, structure: false, draft: {"tpl":"Root/107#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-14" },
+	{ name: "gen-flow-choice-flow-build-your-zookie-16", text: false, structure: false, draft: {"tpl":"Root/116#0"}, live: ".cr-ref-flow-choice-flow-build-your-zookie-16" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.
