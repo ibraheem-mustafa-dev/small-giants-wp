@@ -153,15 +153,16 @@ async function main() {
 		for ( const ex of targetsOf.examples ) {
 			const res = await sweep.page.request.get( ex.url ).catch( () => null );
 			const first = res?.ok() ? ( await res.json() )[ 0 ] : null;
-			first?.permalink ? targetsOf.pages.push( { ...ex, url: first.permalink, example: first.name } ) : notes.push( `page map ${ ex.key }: the Store API lists no ${ ex.kind } to open (${ res ? res.status() : 'no answer' })` );
+			first?.permalink ? targetsOf.pages.push( { ...ex, url: first.permalink, permalink: first.permalink, example: first.name } ) : notes.push( `page map ${ ex.key }: the Store API lists no ${ ex.kind } to open (${ res ? res.status() : 'no answer' })` );
 		}
 		// A page row's permalink from the public REST API (wp/v2), so the page loads at the address a visitor uses (a
 		// `?page_id=` address of WooCommerce's shop page is redirected elsewhere); the `?page_id=` address stands when
-		// the API does not answer.
+		// the API does not answer. The permalink is also the address the menu check matches a link against, whatever the
+		// page then redirects to (an empty basket's checkout loads the cart).
 		for ( const p of targetsOf.pages.filter( ( x ) => x.row && ! x.example && null != x.row.id ) ) {
 			const res = await sweep.page.request.get( `${ base }/wp-json/wp/v2/${ 'post' === p.row.postType ? 'posts' : 'pages' }/${ p.row.id }?_fields=link` ).catch( () => null );
 			const link = res?.ok() ? ( await res.json() ).link : null;
-			link && ( p.url = link );
+			link && Object.assign( p, { url: link, permalink: link } );
 		}
 		const loaded = [];
 		for ( const p of targetsOf.pages ) {
@@ -204,7 +205,8 @@ async function main() {
 			await context.close();
 			const headerRows = rows.filter( ( r ) => ( r.menus || [] ).some( ( m ) => 'header' === m.menu ) ).map( ( r ) => {
 				const hit = loaded.find( ( p ) => p.row === r );
-				return { key: `${ r.postType }:${ r.slug }`, title: r.title, url: hit?.finalUrl && ! hit.example ? hit.finalUrl : null };
+				const at = hit?.permalink || hit?.finalUrl;
+				return { key: `${ r.postType }:${ r.slug }`, title: r.title, url: at && ! hit.example ? at : null };
 			} );
 			const draftLinks = new Map();
 			for ( const p of loaded ) {
