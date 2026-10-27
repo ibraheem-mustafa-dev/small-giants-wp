@@ -1688,6 +1688,17 @@
       {
         "variant": "brands",
         "brandsEyebrow": "Our brands"
+      },
+      {
+        "metadata": {
+          "name": "sgs-cal-mega-drawer"
+        }
+      },
+      {
+        "style": "cards",
+        "metadata": {
+          "name": "sgs-cal-mega-drawer"
+        }
       }
     ]
   },

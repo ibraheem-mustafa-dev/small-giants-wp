@@ -35,7 +35,12 @@ sync_site() {
   install -m 644 "$tj" "$dir/wp-content/themes/sgs-theme/theme.json"
   rm -f "$tj"
 
-  chown -R www-data:www-data "$dir/wp-content/plugins" "$dir/wp-content/themes"
+  # Mirror-only must-use plugins (calibration's render-context switch, scripts/local-wp/mu-plugins/): installed here,
+  # never deployed to a hosted site.
+  mkdir -p "$dir/wp-content/mu-plugins"
+  install -m 644 "$REPO"/scripts/local-wp/mu-plugins/*.php "$dir/wp-content/mu-plugins/"
+
+  chown -R www-data:www-data "$dir/wp-content/plugins" "$dir/wp-content/themes" "$dir/wp-content/mu-plugins"
   sudo -u www-data wp --path="$dir" cache flush
 }
 

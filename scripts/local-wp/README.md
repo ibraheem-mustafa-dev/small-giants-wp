@@ -20,6 +20,7 @@ Run the `wsl` commands below from PowerShell: Git Bash rewrites `/mnt/c/...` int
 ## Safety
 
 - `wp-content/mu-plugins/local-block-mail.php` blocks all outgoing email (`pre_wp_mail` returns false).
+- `wp-content/mu-plugins/sgs-calibration-context.php` (source `scripts/local-wp/mu-plugins/`, installed by `sync-build.sh`): renders an `sgs/mega-panel` whose metadata name is `sgs-cal-mega-drawer` in the drawer context, so calibration measures the panel's drawer settings (`calibration-fixtures.json` mega-panel variants). Mirror-only; never deployed.
 - `WP_ENVIRONMENT_TYPE` is `local` and WP-Cron is disabled.
 - LiteSpeed Cache is deactivated on Sandybrown; the Hostinger must-use plugins are moved to `wp-content/mu-plugins-disabled/`.
 
