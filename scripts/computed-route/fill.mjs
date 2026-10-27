@@ -46,6 +46,7 @@ import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
+import { listContentWrites, logicReader, applyChildren } from './lib/fill-list-content.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
@@ -187,6 +188,10 @@ export async function fillSurface( o ) {
 		const calFor = calibrationLoader( entry.site, o.cache );
 		const shopRecord = loadShopParts( buildDir );
 		const shopTargets = shopPartTargets( { record: shopRecord, nodes, facts, rootComponent: intakeParts.rootComponent, db, calFor } );
+		// The skeleton inventory beside the skeleton: the draft rendered on this surface (the list pass reads a loop's copies
+		// from it) and the place of each slot's draft element (a part drawn outside its block's).
+		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
+		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
 		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
@@ -256,6 +261,14 @@ export async function fillSurface( o ) {
 		result.unmapped.push( ...forms.unmapped );
 		result.settled.push( ...forms.settled );
 		result.notes.push( ...forms.notes );
+		// FR-48-82: a block holding a list (an array setting, or one kind of child block) takes the items the draft draws,
+		// read from the surface's skeleton inventory and the draft's logic (lib/fill-list-content.mjs); the logic is read from
+		// the draft folder (--draft-dir, else the surface's `draftDir`, else the client's handoff folder), also when the draft is served by URL.
+		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor: logicReader( o.draftDir || path.join( repo, entry.draftDir || path.join( 'sites', o.client, 'handoff' ) ) ), db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
+		result.writes.push( ...listed.writes );
+		result.unmapped.push( ...listed.unmapped );
+		result.handover.push( ...listed.handover );
+		result.notes.push( ...listed.notes );
 		// FR-48-60 to FR-48-62: the draft's own values of the shop parts (build/shop-parts.json) on the blocks that hold them.
 		const shop = shopPartWrites( { record: shopRecord, nodes, flat, refOf, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ), writes: result.writes } );
 		result.writes.push( ...shop.writes );
@@ -320,12 +333,11 @@ export async function fillSurface( o ) {
 		const steps = sweepSteps( reads.sweep, ( id ) => ( { node: refOf( flat[ Number( id.split( ':' )[ 0 ] ) ] ), slot: id.slice( id.indexOf( ':' ) + 1 ) } ) );
 		const report = fillReport( { client: o.client, surface: o.surface, draft: o.draftDir ? `${ o.draftDir } (served locally)` : url, nodes: nodes.length, targets: nodes.reduce( ( t, n ) => t + n.targets.length, 0 ), ...result, steps, entrances, snapshotPatch: { file: patchFile, entries: states.patchEntries }, sweepSkipped: false === o.sweep } );
 		const divergences = fs.existsSync( ledgerFile ) ? path.relative( outDir, ledgerFile ).split( path.sep ).join( '/' ) : null;
-		// The skeleton inventory beside the skeleton places each slot's draft element (a part drawn outside its block's).
-		const invFile = o.skeleton.replace( /\.skeleton\.json$/, '.inventory.json' );
-		const inventory = invFile !== o.skeleton && fs.existsSync( invFile ) ? JSON.parse( fs.readFileSync( invFile, 'utf8' ) ) : null;
 		const cfg = walkerConfigs( { surface: o.surface, nodes, tree, inventory, draftUrl: readUrl, liveUrl: o.liveUrl, open: o.open || null, opener: opener?.state ? { ...opener, openedAt: openedAt( opener, reads.opener?.widths ) } : null, divergences, state: Object.keys( entry.states || {} )[ 0 ] || 'opening' } );
 		const put = ( name, text ) => fs.writeFileSync( path.join( outDir, name ), text );
 		writeOrigin();
+		// A list host's new children join the tree last: every pass above reads the tree by its skeleton's node indices.
+		applyChildren( flat, listed.children );
 		put( 'filled.tree.json', `${ JSON.stringify( tree, null, 2 ) }\n` );
 		siteOptions && put( 'site-options.json', `${ JSON.stringify( siteOptions, null, 2 ) }\n` );
 		put( 'fill-report.md', report.markdown );

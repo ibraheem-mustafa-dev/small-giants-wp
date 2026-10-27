@@ -434,8 +434,22 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const first = scope ? desc( scope ).find( ( x ) => m.els.indexOf( x ) < order && specHit( R.openStatus, all( x ) ) && desc( x ).length <= 2 ) : null;
 			return first ? v( 'openStatus', { action: 'absorbed', into: first.key } ) : v( 'openStatus', { block: R.openStatus?.block, attributes: { displayType: 'open-status' }, absorb: true } );
 		},
-		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time.
-		( { text, kidsB } ) => ( kidsB.length && kidsB.length <= ( R.hoursRows?.maxParts ?? 3 ) && kidsB.every( ( k ) => ! m.blockKids( k ).length ) && specHit( facts.decisions.siteInfoPatterns?.hours, text ) && text.length <= ( R.hoursRows?.maxChars ?? 80 ) ?v( 'hoursRows', { block: R.hoursRows?.block, attributes: { displayType: 'hours', hoursLayout: 'rows' }, absorb: true } ) : null ),
+		// An hours row: a few pieces of text (a day, its times) and nothing nested, reading as a day and a clock time. The
+		// block draws the whole week from Site Info, so the first row of a run of sibling hours rows is the block and every
+		// later sibling row is absorbed into it (one table, never one table per row).
+		( { e } ) => {
+			const isRow = ( x ) => {
+				const kids = m.blockKids( x );
+				const words = all( x );
+				return kids.length && kids.length <= ( R.hoursRows?.maxParts ?? 3 ) && kids.every( ( k ) => ! m.blockKids( k ).length ) && specHit( facts.decisions.siteInfoPatterns?.hours, words ) && words.length <= ( R.hoursRows?.maxChars ?? 80 );
+			};
+			if ( ! isRow( e ) ) {
+				return null;
+			}
+			const order = m.els.indexOf( e );
+			const first = m.els.find( ( x ) => x.parentKey === e.parentKey && m.els.indexOf( x ) < order && isRow( x ) );
+			return first ? v( 'hoursRows', { action: 'absorbed', into: first.key } ) : v( 'hoursRows', { block: R.hoursRows?.block, attributes: { displayType: 'hours', hoursLayout: 'rows' }, absorb: true } );
+		},
 		// A link or button that is one action: a pill (a label and an icon) is one button; a card (two or more pieces of
 		// text, or a heading) is a container whose whole box is the link.
 		( { e, text, kidsB } ) => {

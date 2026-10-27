@@ -4,7 +4,7 @@ import { PSEUDO_PROPS, CONTEXT_PROPS } from '../../parity/lib/collect.mjs';
 import { blockSchema, fluidForm } from './resolve.mjs';
 import { setAttr } from './tree.mjs';
 import { usedValueTarget } from './solve-rows.mjs';
-import { PROPS, READ_WIDTHS } from './fill-read.mjs';
+import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
 import { INHERITED, resolveProperty, notPainted, gapPaintsNothing } from './fill-prop.mjs';
@@ -151,10 +151,10 @@ export function ownerKeeps( st, rec, ref, target, prop, w, settingSlot ) {
 export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	const slot = `${ target.slot }${ layer || '' }`;
 	// Fill's list without the context reads (direction, column-count, column-width: read so canon() and the equivalence
-	// rules can judge a value, never written from the computed read, so they stay only in the element's other properties
-	// the resolver judges with, `allDrafts`); beyond it, every property the code declares on the element at a read width
-	// (FR-48-8), a declared column-count among them.
-	const own = PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) );
+	// rules can judge a value) and the tie reads (TIE_PROPS: read so the resolver can break a tie), never written from the
+	// computed read, so they stay only in the element's other properties the resolver judges with, `allDrafts`); beyond
+	// it, every property the code declares on the element at a read width (FR-48-8), a declared column-count among them.
+	const own = PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) && ! TIE_PROPS.includes( p ) );
 	const extra = layer ? [] : [ ...new Set( READ_WIDTHS.flatMap( ( w ) => Object.keys( extraProps( st.reads.declared?.[ w ]?.[ target.id ], own ) ) ) ) ].sort();
 	const ids = layer ? PSEUDO_PROPS.filter( ( p ) => 'content' !== p ) : [ ...own, ...extra ];
 	// The element's context per width for canon() (lib/fill-held.mjs::elementContext); a painted layer is judged without one.
@@ -165,7 +165,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	// A value that paints nothing at a width (lib/fill-prop.mjs::notPainted: a gap on a box laying out no flex or grid items,
 	// an outline or border side with no width, a decoration with no line, a 0s transition) is left out there and recorded
 	// as a settled row with its reason (notPaintedWhy), never dropped silently.
-	const allDrafts = Object.fromEntries( ( layer ? ids : [ ...new Set( [ ...ids, ...CONTEXT_PROPS ] ) ] ).map( ( p ) => [ p, Object.fromEntries( Object.entries( draftOf( snaps, ( s ) => valueAt( s, p ) ) ).filter( ( [ w ] ) => {
+	const allDrafts = Object.fromEntries( ( layer ? ids : [ ...new Set( [ ...ids, ...CONTEXT_PROPS, ...TIE_PROPS ] ) ] ).map( ( p ) => [ p, Object.fromEntries( Object.entries( draftOf( snaps, ( s ) => valueAt( s, p ) ) ).filter( ( [ w ] ) => {
 		if ( layer || ! notPainted( p, snaps[ w ].styles || {}, snaps[ w ] ) ) {
 			return true;
 		}

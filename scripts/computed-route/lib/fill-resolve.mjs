@@ -7,7 +7,7 @@ import { setAttr, refOf } from './tree.mjs';
 import { knownPaths, OWNED } from './fill-prop.mjs';
 import { presenceDecisions, textDecisions, linkDecisions } from './fill-presence.mjs';
 import { linkAttrDecisions, blockSupportsAnchor } from './fill-link-attrs.mjs';
-import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf } from './fill-media.mjs';
+import { imageSlots, mediaDecisions, nestedImage, factImage, pictureSlotOf, pictureSettles } from './fill-media.mjs';
 import { mapDecisions } from './fill-map.mjs';
 import { iconDecisions } from './fill-icon.mjs';
 import { handoverEntry } from './fill-handover.mjs';
@@ -79,11 +79,12 @@ function fillContent( st, rec, ref, cal ) {
 	take( presenceDecisions( { calibration: cal, schema: blockSchema( rec.name ), attributes: node.attributes || {}, evidence } ) );
 	take( textDecisions( { calibration: cal, attributes: node.attributes || {}, slots: words, leaf: 0 === rec.children.length } ) );
 	take( linkDecisions( { calibration: cal, attributes: node.attributes || {}, slots: hrefs, origin: st.origin, pages: st.pages } ) );
-	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
+	take( linkAttrDecisions( { calibration: cal, schema: blockSchema( rec.name ) || {}, anchor: blockSupportsAnchor( rec.name ), attributes: node.attributes || {}, slots: linkFacts, imageAlts: imageSlots( st.db, rec.name, blockSchema( rec.name ) ).map( ( s ) => s.alt ), pictureSlot: pictureSlotOf( atDesktop ) } ) );
 	// The fact record speaks for the element the image is drawn by: the target whose slot is the image's own (a nested image names its slot).
 	const image = nestedImage( atDesktop );
 	const imageTarget = rec.targets.find( ( t ) => t.slot === ( image?.slot ?? '' ) && t.finder?.tpl ) ?? rec.targets.find( ( t ) => t.finder?.tpl );
-	take( mediaDecisions( { slots: imageSlots( st.db, rec.name ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: image, media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } ) );
+	const media = mediaDecisions( { slots: imageSlots( st.db, rec.name, blockSchema( rec.name ) ), schema: blockSchema( rec.name ), attributes: node.attributes || {}, img: image, media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );
+	take( media );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
@@ -92,6 +93,10 @@ function fillContent( st, rec, ref, cal ) {
 	// A skeleton's own statement that something lives outside the tree turns the matching UNMAPPED row into handover.
 	for ( const h of skeletonNode.handover || [] ) {
 		const slot = h.slot ?? '';
+		if ( pictureSettles( h, media.checks ) ) {
+			st.out.notes.push( `${ ref } ${ rec.name }: the skeleton's handover "${ h.detail }" is settled: Fill wrote the draft's picture` );
+			continue;
+		}
 		const draft = 'text' === h.kind ? words[ slot ] : 'link' === h.kind ? hrefs[ slot ] : 'presence' === h.kind ? ( '' === slot ? 'shown' : ( evidence[ slot ] ? 'shown' : 'hidden' ) ) : h.detail;
 		st.out.handover.push( handoverEntry( { owner: h.owner, kind: h.kind, node: ref, block: rec.name, slot, evidence: { key: h.kind, draft: draft ?? '', width: 1440 }, reason: h.detail } ) );
 	}

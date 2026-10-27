@@ -1366,11 +1366,11 @@
 			"note": "CSS styling: Fill reads the computed value per width, resolves it to a token or literal through calibration, triage checks the live page"
 		},
 		"block-setting:content:array": {
-			"recognise": null,
-			"write": null,
+			"recognise": "scripts/computed-route/lib/fill-list-items.mjs#listItems",
+			"write": "scripts/computed-route/lib/fill-list-content.mjs#listContentWrites",
 			"check": null,
 			"wave": "content, media and icons",
-			"note": "content values Fill does not read yet (media URLs and IDs, alt text, icons, ratings, structured content)"
+			"note": "item arrays: Fill reads the list the draft draws (an sc-for loop's rendered copies, or every item behind a current-item display, from the logic) and writes it into the block's one content array (sgs/timeline entries, sgs/process-steps steps; tests/fill-list-content.test.mjs); no live check compares the built items with the draft's yet"
 		},
 		"block-setting:content:number": {
 			"recognise": null,
