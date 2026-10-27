@@ -185,14 +185,18 @@ export function refGate( blocks, fixtures, refs, exists, site ) {
 
 // How to run `wp` on a target: a WSL mirror (its pluginDir names the distro and root) or a hosted site over SSH, as the
 // user Claude on both, so a command that needs a capability (setting the active header) passes on a mirror too.
+// The largest WP-CLI reply read back: a content sync reads every built post's content in one call, past Node's 1 MB
+// default, which fails as ENOBUFS.
+const WP_OUTPUT_MAX = 256 * 1024 * 1024;
+
 export function wpCommand( target, site, repo ) {
 	const wsl = String( target.pluginDir || '' ).match( /^\/\/wsl\.localhost\/([^/]+)(\/.+)\/wp-content\/plugins\/sgs-blocks\/?$/ );
 	if ( wsl ) {
-		return ( args, input ) => execFileSync( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input } );
+		return ( args, input ) => execFileSync( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
 	}
 	const root = hostedRoot( site, repo );
 	const quote = ( a ) => `'${ String( a ).replace( /'/g, `'\\''` ) }'`;
-	return ( args, input ) => execFileSync( 'ssh', [ ...SSH, `cd ${ quote( root ) } && wp ${ args.map( quote ).join( ' ' ) } --user=Claude` ], { encoding: 'utf8', timeout: 120000, input } );
+	return ( args, input ) => execFileSync( 'ssh', [ ...SSH, `cd ${ quote( root ) } && wp ${ args.map( quote ).join( ' ' ) } --user=Claude` ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
 }
 
 // The file `wp eval-file -` reads for a PHP body: one opening tag, whether or not the body carries its own (the PHP
