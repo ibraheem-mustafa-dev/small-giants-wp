@@ -599,7 +599,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
 	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
-	const rail = 'shop' === region?.role ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
+	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [] } ) : null;

@@ -12,7 +12,7 @@ export const TOGGLE_MODS = [ 'enabled', 'source', 'attribute', 'term', 'label' ]
 
 // The boolean facet the toggle shows: { facet, notes }, facet null when the catalogue has none.
 export function toggleFacet( catalogue ) {
-	const all = writtenFacets( catalogue ).filter( ( f ) => 'boolean' === f.kind && f.terms?.length );
+	const all = writtenFacets( catalogue ).filter( ( f ) => 'boolean' === f.kind );
 	return { facet: all[ 0 ] || null, notes: all.slice( 1 ).map( ( f ) => `the boolean facet "${ f.label }" has no toggle: the theme holds one on-off filter, given to "${ all[ 0 ].label }"` ) };
 }
 
@@ -70,7 +70,7 @@ export function runToggle( { catalogue, runPhp, apply, log, error } ) {
 	if ( ! apply || 'set' !== plan.action ) {
 		return 0;
 	}
-	Object.keys( plan.set ).length && runPhp( toggleApplyPhp( plan.set ) );
+	runPhp( toggleApplyPhp( plan.set ) );
 	const again = planToggle( catalogue, parse( runPhp( toggleStatePhp( facet ) ) ) );
 	if ( 'exists' !== again.action ) {
 		error( `FAILED: the on-off filter is not set after the write: ${ again.say }` );

@@ -1,7 +1,7 @@
 // Spec 48 FR-48-61: a true-or-false catalogue facet is the theme's on-off filter, so the catalogue step of the site build
 // sets the theme mods the theme's toggle reads (lib/site-build-catalogue-toggle.mjs), fills only what the site lacks, never
-// overwrites a differing value, and reads its write back. Against an in-memory site. Tests marked MUST FAIL fail before
-// the toggle step.
+// overwrites a differing value, and reads its write back. Against an in-memory site. The test marked MUST FAIL fails on
+// the catalogue step before the toggle; tests/fixtures/catalogue/toggle-mutations.json breaks each mechanism.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -35,7 +35,7 @@ const lines = () => {
 	return { out, log: ( l ) => out.push( l ), error: ( l ) => out.push( `E ${ l }` ) };
 };
 
-test( 'MUST FAIL: the boolean facet\'s toggle is set on a site without one: enabled, from the attribute, its slug and term slug; the theme labels it', () => {
+test( 'the boolean facet\'s toggle is set on a site without one: enabled, from the attribute, its slug and term slug; the theme labels it', () => {
 	const s = siteWith();
 	const l = lines();
 	assert.equal( runToggle( { catalogue: CATALOGUE(), runPhp: s.runPhp, apply: true, log: l.log, error: l.error } ), 0 );
@@ -44,13 +44,13 @@ test( 'MUST FAIL: the boolean facet\'s toggle is set on a site without one: enab
 	assert.ok( l.out.some( ( x ) => /the theme labels it "<term> only"/.test( x ) ) );
 } );
 
-test( 'MUST FAIL: the draft\'s toggle text is the label; the term slug is the one WooCommerce gave the term', () => {
+test( 'the draft\'s toggle text is the label; the term slug is the one WooCommerce gave the term', () => {
 	const s = siteWith( {}, 'polarised-2' );
-	const catalogue = { facets: [ facet( 'polarised', 'Polarised', 'boolean', { toggleLabel: 'Polarised lenses only' } ) ] };
+	const catalogue = { facets: [ facet( 'polarised', 'Polarised', 'boolean', { toggleLabel: 'Polarised lenses only', terms: [ { name: 'Polarised lenses', swatch: null } ] } ) ] };
 	assert.equal( runToggle( { catalogue, runPhp: s.runPhp, apply: true, log: () => {}, error: () => {} } ), 0 );
 	assert.equal( s.writes[ 0 ].sgs_shop_filter_boolean_label, 'Polarised lenses only' );
 	assert.equal( s.writes[ 0 ].sgs_shop_filter_boolean_term, 'polarised-2' );
-	assert.deepEqual( decode( toggleStatePhp( catalogue.facets[ 0 ] ) ), { mods: TOGGLE_MODS, tax: 'pa_polarised', term: 'Polarised' } );
+	assert.deepEqual( decode( toggleStatePhp( catalogue.facets[ 0 ] ) ), { mods: TOGGLE_MODS, tax: 'pa_polarised', term: 'Polarised lenses' } );
 } );
 
 test( 'a site already holding the toggle plans nothing and writes nothing; a dry run never writes', () => {
@@ -66,7 +66,7 @@ test( 'a site already holding the toggle plans nothing and writes nothing; a dry
 	assert.ok( l.out.some( ( x ) => /on-off filter: theme mods for pa_polarised term polarised/.test( x ) ) );
 } );
 
-test( 'MUST FAIL: a differing value the site holds is never overwritten: the toggle is left and named', () => {
+test( 'a differing value the site holds is never overwritten: the toggle is left and named', () => {
 	const s = siteWith( { sgs_shop_filter_boolean_enabled: true, sgs_shop_filter_boolean_attribute: 'lens-type', sgs_shop_filter_boolean_term: 'polarised' } );
 	const l = lines();
 	assert.equal( runToggle( { catalogue: CATALOGUE(), runPhp: s.runPhp, apply: true, log: l.log, error: l.error } ), 0 );
@@ -74,9 +74,11 @@ test( 'MUST FAIL: a differing value the site holds is never overwritten: the tog
 	assert.ok( l.out.some( ( x ) => /left the on-off filter: the site's sgs_shop_filter_boolean_attribute is "lens-type"/.test( x ) ) );
 	// A switched-off toggle is unset, not a differing choice.
 	assert.equal( planToggle( CATALOGUE(), { mods: { sgs_shop_filter_boolean_enabled: false }, termSlug: 'polarised' } ).action, 'set' );
+	// A term not made yet (a dry run before the facets) never reads as a differing term.
+	assert.equal( planToggle( CATALOGUE(), { mods: { sgs_shop_filter_boolean_term: 'polarised' }, termSlug: '' } ).action, 'set' );
 } );
 
-test( 'MUST FAIL: a write the site does not keep fails the step; a term not made yet is planned and fails an apply', () => {
+test( 'a write the site does not keep fails the step; a term not made yet is planned and fails an apply', () => {
 	const s = siteWith( {}, 'polarised', { sticky: false } );
 	const l = lines();
 	assert.equal( runToggle( { catalogue: CATALOGUE(), runPhp: s.runPhp, apply: true, log: l.log, error: l.error } ), 1 );

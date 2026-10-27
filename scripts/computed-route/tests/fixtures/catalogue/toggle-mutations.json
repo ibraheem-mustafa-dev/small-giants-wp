@@ -1,0 +1,21 @@
+[
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "writtenFacets( catalogue ).filter( ( f ) => 'boolean' === f.kind );", "replace": "writtenFacets( catalogue );", "why": "any facet becomes the on-off filter" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "notes: all.slice( 1 ).map(", "replace": "notes: [].map(", "why": "a second boolean facet is dropped silently" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "sgs_shop_filter_boolean_source: 'attribute',", "replace": "sgs_shop_filter_boolean_source: 'tag',", "why": "the toggle reads a product tag" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "sgs_shop_filter_boolean_attribute: facet.slug,", "replace": "sgs_shop_filter_boolean_attribute: `pa_${ facet.slug }`,", "why": "the attribute slug carries the taxonomy prefix the theme adds itself" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "sgs_shop_filter_boolean_label: facet.toggleLabel || ''", "replace": "sgs_shop_filter_boolean_label: ''", "why": "the draft's toggle text is lost" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "const blank = ( v ) => null == v || '' === v || false === v;", "replace": "const blank = ( v ) => null == v || '' === v;", "why": "a switched-off toggle reads as a differing choice" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "( 'sgs_shop_filter_boolean_enabled' === k ? on( a ) === on( b ) :", "replace": "( false ? on( a ) === on( b ) :", "why": "an enabled '1' differs from true" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "( k ) => ! blank( mods[ k ] ) && ! same(", "replace": "( k ) => ! same(", "why": "an unset mod reads as a differing value" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": " && ! ( 'sgs_shop_filter_boolean_term' === k && ! want[ k ] ) );", "replace": " );", "why": "a term not made yet reads as a differing term" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "( [ k, v ] ) => blank( mods[ k ] ) && ! blank( v ) ) );", "replace": "( [ , v ] ) => ! blank( v ) ) );", "why": "values the site already holds are written again" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "return Object.keys( set ).length || ! state.termSlug ? {", "replace": "return Object.keys( set ).length ? {", "why": "a term not made yet reads as a set toggle" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "\t\treturn { action: 'left', set: {},", "replace": "\t\treturn { action: 'set', set: Object.fromEntries( differ.map( ( k ) => [ k, want[ k ] ] ) ),", "why": "a differing value is overwritten" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "if ( ! apply || 'set' !== plan.action ) {", "replace": "if ( ! apply ) {", "why": "a left toggle is written and fails" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "if ( ! apply || 'set' !== plan.action ) {", "replace": "if ( 'set' !== plan.action ) {", "why": "a dry run writes" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "\tif ( 'exists' !== again.action ) {", "replace": "\tif ( false ) {", "why": "a write the site does not keep passes" },
+	{ "file": "lib/site-build-catalogue-toggle.mjs", "find": "term: facet.terms[ 0 ].name } ) }' ), true );", "replace": "term: facet.label } ) }' ), true );", "why": "the term is looked up by the facet's label, not its term" },
+	{ "file": "lib/site-build-catalogue.mjs", "find": "\t\trunToggle( { catalogue, runPhp, apply, log, error } );\n", "replace": "", "why": "the dry run never plans the toggle" },
+	{ "file": "lib/site-build-catalogue.mjs", "find": "\tconst toggleFailed = runToggle( { catalogue, runPhp, apply, log, error } );", "replace": "\tconst toggleFailed = 0;", "why": "the apply never sets the toggle" },
+	{ "file": "lib/site-build-catalogue.mjs", "find": "\tif ( toggleFailed ) {\n\t\treturn 1;\n\t}\n", "replace": "", "why": "a failed toggle passes the step" }
+]

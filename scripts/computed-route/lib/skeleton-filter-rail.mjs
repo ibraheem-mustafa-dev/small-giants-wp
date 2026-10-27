@@ -45,7 +45,6 @@ export function filterRail( { m, region, filters, rule, money } ) {
 		return out;
 	};
 	const under = ( e, a ) => ancestors( e ).includes( a );
-	const order = new Map( m.els.map( ( e, i ) => [ e.key, i ] ) );
 	const outside = m.els.filter( ( e ) => shown( e ) && ! under( e, listing ) );
 	const notes = [];
 	const found = [];
@@ -64,10 +63,10 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	const first = ancestors( found[ 0 ].label );
 	const top = first.find( ( a ) => under( listing, a ) && found.every( ( x ) => under( x.label, a ) ) );
 	const branches = new Set( found.map( ( x ) => ancestors( x.label ).find( ( a ) => a.parentKey === top?.key )?.key ) );
-	if ( ! top || 1 !== branches.size || branches.has( undefined ) ) {
+	const rail = 1 === branches.size ? m.byKey[ [ ...branches ][ 0 ] ] : null;
+	if ( ! rail ) {
 		return { note: `the facet labels (${ found.map( ( x ) => x.label.key ).join( ', ' ) }) sit in ${ branches.size } branches beside the product listing, so no filter rail is placed` };
 	}
-	const rail = m.byKey[ [ ...branches ][ 0 ] ];
 	// A facet's group: its label's highest ancestor below the rail holding no other facet's label.
 	const groupOf = ( label ) => {
 		const others = found.map( ( x ) => x.label ).filter( ( l ) => l !== label );
@@ -79,17 +78,17 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	const amount = new RegExp( money );
 	const named = ( text, list ) => ( list || [] ).filter( ( n ) => n && text.includes( n ) ).length >= 2;
 	const groups = [];
-	for ( const g of parent ? m.els.filter( ( e ) => e.parentKey === parent.key && shown( e ) ) : found.map( ( x ) => x.group ) ) {
+	for ( const g of parent ? m.els.filter( ( e ) => e.parentKey === parent.key && shown( e ) ) : m.els.filter( ( e ) => found.some( ( x ) => x.group === e ) ) ) {
 		const hit = found.find( ( x ) => x.group === g );
 		if ( hit ) {
 			groups.push( { kind: 'facet', group: g, label: hit.label, facet: hit.facet } );
 			continue;
 		}
-		// Another group of the rail: its label is its first shown element with words of its own.
-		const label = m.els.filter( ( e ) => shown( e ) && squash( m.words( e ) ) && ( e === g || under( e, g ) ) ).sort( ( a, b ) => order.get( a.key ) - order.get( b.key ) )[ 0 ];
-		const text = String( g.allText ?? '' ).slice( label ? squash( m.words( label ) ).length : 0 );
+		// Another group of the rail: its label is its first shown element (in the draft's order) with words of its own.
+		const label = m.els.find( ( e ) => shown( e ) && squash( m.words( e ) ) && ( e === g || under( e, g ) ) );
+		const text = String( g.allText ?? '' );
 		const kind = amount.test( text ) ? 'price' : named( text, filters.brands ) ? 'brand' : named( text, filters.categories ) ? 'category' : null;
-		kind && label ? groups.push( { kind, group: g, label } ) : notes.push( `the rail's group ${ g.key }${ label ? ` "${ squash( m.words( label ) ) }"` : '' } filters nothing the catalogue holds, so it is not placed` );
+		kind ? groups.push( { kind, group: g, label } ) : notes.push( `the rail's group ${ g.key }${ label ? ` "${ squash( m.words( label ) ) }"` : '' } filters nothing the catalogue holds, so it is not placed` );
 	}
 	// A group is open when it shows anything beside the child holding its label.
 	const open = ( x ) => m.els.some( ( c ) => c.parentKey === x.group.key && shown( c ) && ! ( c === x.label || under( x.label, c ) ) );
@@ -97,7 +96,7 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
 	const heading = ( x, swatches ) => ( {
 		name: rule.heading.block,
-		attributes: { ...rule.heading.attributes, content: x.facet ? x.facet.label : squash( m.words( x.label ) ), className: [ rule.heading.className, open( x ) && rule.heading.openClass, swatches && rule.heading.swatchClass ].filter( Boolean ).join( ' ' ) },
+		attributes: { ...rule.heading.attributes, content: squash( m.words( x.label ) ), className: [ rule.heading.className, open( x ) && rule.heading.openClass, swatches && rule.heading.swatchClass ].filter( Boolean ).join( ' ' ) },
 		innerBlocks: [],
 		draftKey: x.label.key,
 	} );

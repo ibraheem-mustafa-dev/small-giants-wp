@@ -58,13 +58,18 @@ const card = ( i, y ) => [
 const RAIL = [
 	el( 'Root/4#0', 'Root/3#0', 'aside', '', { depth: 2 } ),
 	el( 'Root/5#0', 'Root/4#0', 'div', '', { depth: 3 } ),
-	...group( 0, 'Shade', [ { tag: 'button', words: 'Ink' }, { tag: 'button', words: 'Sand' } ] ),
+	...group( 0, 'Shade', [ { tag: 'input', attrs: { type: 'search' } }, { tag: 'button', words: 'Ink' }, { tag: 'button', words: 'Sand' } ] ),
 	...group( 1, 'Kind' ),
 	...group( 2, 'Price', [ { tag: 'span', words: 'up to £40' } ] ),
 	...group( 3, 'Brand', [ { tag: 'span', words: 'Acme 4' }, { tag: 'span', words: 'Bolt 2' } ] ),
 	...group( 4, 'Fit', [ { tag: 'input', attrs: { type: 'checkbox' } }, { tag: 'span', words: 'Adults' } ] ),
-	el( 'Root/20#0', 'Root/5#0', 'label', '', { depth: 4, all: 'Lined only' } ),
-	el( 'Root/21#0', 'Root/20#0', 'span', 'Lined only', { depth: 5 } ),
+	// A group labelled with a variation axis's label: the product page's choice, never a shop filter.
+	...group( 5, 'Size' ),
+	// The on-off row, labelled with the boolean facet's own label: the theme's toggle draws it.
+	el( 'Root/20#0', 'Root/5#0', 'label', '', { depth: 4, all: 'Lined' } ),
+	el( 'Root/21#0', 'Root/20#0', 'span', 'Lined', { depth: 5 } ),
+	// A copy of a label never shown (a closed phone drawer's) is no label.
+	el( 'Root/22#0', 'Root/4#0', 'span', 'Kind', { depth: 3, visible: { 375: false, 768: false, 1440: false } } ),
 ];
 const SHOP = [
 	el( 'Root/1#0', null, 'div', '', { depth: 0 } ),
@@ -106,7 +111,8 @@ test( 'MUST FAIL: the shop\'s filter rail is WooCommerce\'s product filters insi
 	assert.equal( aside.innerBlocks.length, 1, 'nothing of the draft\'s rail is built beside the filters' );
 	assert.deepEqual( proposal.filterRail.groups.map( ( g ) => [ g.kind, g.facet ?? null ] ), [ [ 'facet', 'shade' ], [ 'facet', 'kind' ], [ 'price', null ], [ 'brand', null ], [ 'facet', 'fit' ] ] );
 	assert.deepEqual( proposal.filterRail.attributeIds, IDS );
-	assert.ok( proposal.filterRail.notes.some( ( n ) => /Root\/20#0 "Lined only" filters nothing/.test( n ) ), 'the on-off row is the theme\'s toggle, listed, never a block' );
+	assert.ok( proposal.filterRail.notes.some( ( n ) => /Root\/20#0 "Lined" filters nothing/.test( n ) ), 'the on-off row is the theme\'s toggle, listed, never a block' );
+	assert.ok( proposal.filterRail.notes.some( ( n ) => /Root\/6#5 "Size" filters nothing/.test( n ) ), 'a variation axis is no shop filter' );
 	assert.ok( proposal.rows.some( ( r ) => 'Root/8#0' === r.key && 'absorbed' === r.action ), 'the draft\'s group labels are absorbed into the rail' );
 } );
 
@@ -146,6 +152,9 @@ test( 'categories the catalogue holds are a category filter; a group the catalog
 	const none = run( els, { ...SHOP_ROLE(), filters: { facets: FACETS, brands: [], categories: [] } } );
 	assert.ok( none.proposal.filterRail.notes.some( ( n ) => /Root\/6#3 "Brand" filters nothing the catalogue holds/.test( n ) ) );
 	assert.equal( find( none.skeleton, named( 'woocommerce/product-filter-taxonomy' ) ), null );
+	// One name the catalogue holds is a coincidence, not a list of them.
+	const one = run( SHOP.map( ( e ) => ( 'Root/6#3' === e.key ? { ...e, allText: 'Brand Acme 4' } : e ) ), SHOP_ROLE() );
+	assert.equal( find( one.skeleton, named( 'woocommerce/product-filter-taxonomy' ) ), null );
 } );
 
 test( 'no rail without the structure: no catalogue, no placeable facet, another page role, labels only in the listing, or labels in two branches', () => {
@@ -163,6 +172,14 @@ test( 'no rail without the structure: no catalogue, no placeable facet, another 
 	const r = run( split, SHOP_ROLE() );
 	absent( r );
 	assert.match( r.proposal.filterRail.note, /sit in 2 branches beside the product listing/ );
+} );
+
+test( 'facet groups under different parents place the facet groups alone, in the draft\'s order', () => {
+	// The Kind and Fit groups sit in a wrapper of their own: the rail has no one list of groups to read the others from.
+	const nested = [ ...SHOP.map( ( e ) => ( [ 'Root/6#1', 'Root/6#4' ].includes( e.key ) ? { ...e, parentKey: 'Root/24#0' } : e ) ), el( 'Root/24#0', 'Root/5#0', 'div', '', { depth: 4 } ) ];
+	// The catalogue lists the facets in another order than the draft shows them.
+	const { skeleton } = run( nested, SHOP_ROLE( [ ...FACETS ].reverse() ) );
+	assert.deepEqual( groupsOf( find( skeleton, named( 'woocommerce/product-filters' ) ) ), [ 'h:Shade', 'attribute#21', 'h:Kind', 'attribute#22', 'h:Fit', 'attribute#23' ] );
 } );
 
 test( 'a facet label shown twice places no group for it and says so; the rest of the rail stands', () => {
@@ -185,7 +202,7 @@ test( 'MUST FAIL: the carried attribute id is the site\'s catalogue.json record,
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-rail-' ) );
 	const build = path.join( repo, 'sites', 'demo', 'build' );
 	fs.mkdirSync( build, { recursive: true } );
-	fs.writeFileSync( path.join( build, 'catalogue.json' ), JSON.stringify( { sites: { 'site-a': { attributes: { shade: 21, bad: 0 } }, 'eye-care-clone-test': { attributes: { shade: 31 } }, 'local-eye-care': { attributes: {} } } } ) );
+	fs.writeFileSync( path.join( build, 'catalogue.json' ), JSON.stringify( { sites: { 'site-a': { attributes: { shade: 21, bad: -3 } }, 'eye-care-clone-test': { attributes: { shade: 31 } }, 'local-eye-care': { attributes: {} } } } ) );
 	const c = carriedIds( { repo, client: 'demo', site: 'site-a' } );
 	assert.deepEqual( c.attribute( 'shade' ), { id: 21 } );
 	assert.match( c.attribute( 'kind' ).reason, /records no attribute for kind on site-a/ );
