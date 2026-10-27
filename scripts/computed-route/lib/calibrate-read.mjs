@@ -160,8 +160,8 @@ export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 	return { visible, toggle: !! toggle };
 }
 
-// The longest a pass waits for its settle or settleGone selector.
-const SETTLE_TIMEOUT_MS = 30000;
+// The longest a pass waits for its settle or settleGone selector: a page of ~95 wishlist panels draws its rows at about two a second.
+const SETTLE_TIMEOUT_MS = 120000;
 
 // Reads every instance at each width; state instances again under their trigger; scroll instances (and every default
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
