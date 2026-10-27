@@ -148807,5 +148807,12 @@
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z"
   }
- ]
+ ],
+ "catalogue": {
+  "products": [],
+  "gaps": [],
+  "notes": [
+   "the page map has no live product row, so the draft sells nothing through WooCommerce and has no catalogue"
+  ]
+ }
 }

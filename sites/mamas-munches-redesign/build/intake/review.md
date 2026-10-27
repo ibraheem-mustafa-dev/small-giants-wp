@@ -4,12 +4,13 @@ Taken on 2026-10-27T15:34:36.289Z; manifest 1.0, files hash d5ed630059b071ef.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1589; 798 need reading, 791 are confident proposals that Accept all covers (skeleton block choices 764, missing features 27).
+Rows: 1561; 790 need reading, 771 are confident proposals that Accept all covers (skeleton block choices 744, missing features 27).
 
 Not defects counted, not listed: breakpoint 6, reached-when-forced 204, render-wins 713.
 
 Marks per section (first value = Accept all):
 - Page map: `accept`, `edit:<field>=<value>`, `drop`
+- Draft catalogue: `accept`, `drop`
 - Palette roles: `accept`, `role:<slug>[,<slug>...]`, `one-off`
 - Site Info: `accept`, `edit:<value>`, `drop`
 - Flags: `accept-flagged`, `not-flagged`
@@ -23,7 +24,7 @@ Marks per section (first value = Accept all):
 
 ## Page map (page-map)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -44,9 +45,25 @@ Accept all: [ ]
 | `page:shop:shop` | Shop.dc.html → All Zookies (shop, live, archive-product) | shop | footer-shop #1, header #1, drawer-menu-links #1 | accept |
 | `page:template:order-confirmation` | Confirmation.dc.html → Order confirmed (template, static, order-confirmation) | order-confirmation |  | accept |
 
+## Draft catalogue (catalogue)
+
+Accept all: [x]
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `catalogue-gap:*:facet:1` | gap (facet) * | recorded, not built | the shop filters on "occ" (Gifts.dc.html); the catalogue writes categories only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet |  |
+| `catalogue-gap:giftcard:open-amount:4` | gap (open-amount) giftcard | recorded, not built | the shopper picks the amount paid (£15, £25, £40): sold as one variation per amount; redeeming it later as store credit needs a gift-card plugin, which WooCommerce core does not have |  |
+| `catalogue-gap:zookies:multi-choice:2` | gap (multi-choice) zookies | recorded, not built | choice "flav" lets the shopper pick several of Vanilla, Chocolate, Strawberry, Mango, Banana, Coffee, Mint, Caramel, Coconut, Pistachio, Honey: a WooCommerce variation holds one value per attribute, so it needs a product add-ons field; recorded, not built |  |
+| `catalogue-gap:zookies:switch:3` | gap (switch) zookies | recorded, not built | choice "sub" is an on/off switch that multiplies the price by 0.9; when on, the shopper also picks "freq" (2, 4): WooCommerce core holds no recurring or price-changing switch (a recurring order needs WooCommerce Subscriptions or an equivalent plugin); recorded, not built |  |
+| `catalogue:care40` | 40-Day Care Bundle (simple, from £42) | /product/40-day-care-bundle/ |  |  |
+| `catalogue:giftbox` | New Baby Gift Box (simple, from £15) | /product/new-baby-gift-box/ |  |  |
+| `catalogue:giftcard` | Baby Shower Gift Card (variable, from £15, 3 variations) | /product/baby-shower-gift-card/ |  |  |
+| `catalogue:trial` | Taster Trio (simple, from £5) | /product/taster-trio/ |  |  |
+| `catalogue:zookies` | Zookies (variable, from £9.5, 24 variations) | /product/zookies/ |  |  |
+
 ## Palette roles (palette-role)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -90,7 +107,7 @@ Accept all: [ ]
 
 ## Site Info (site-info)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -102,7 +119,7 @@ Accept all: [ ]
 
 ## Flags (flag)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -113,7 +130,7 @@ Accept all: [ ]
 
 ## Missing features (missing-feature)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -154,18 +171,7 @@ Accept all: [ ]
 
 ## Skeleton block choices (skeleton-block)
 
-Accept all: [ ]
-
-### Needs a decision (unresolved): no block (6)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:build-your-zookie:Home/106#0` | build-your-zookie Home/106#0 <div> "20 × Classic oat, milk choc chips, strawberry & mango" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
-| `skeleton:build-your-zookie:Home/108#0` | build-your-zookie Home/108#0 <button> | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
-| `skeleton:build-your-zookie:Home/119#0` | build-your-zookie Home/119#0 <button> | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
-| `skeleton:build-your-zookie:Home/123#0` | build-your-zookie Home/123#0 <div> "Baked fresh for you · with you in 3–5 days · free UK delivery over £35" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
-| `skeleton:build-your-zookie:Home/67#0` | build-your-zookie Home/67#0 <div> "your cookie, your way" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
-| `skeleton:build-your-zookie:Home/69#0` | build-your-zookie Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
+Accept all: [x]
 
 ### Needs a decision (low): block:sgs/business-info (1)
 
@@ -190,14 +196,13 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/48#0` | page-home-dc-html Home/48#0 <img> | block:sgs/media | 0.29 | accept |
 | `skeleton:page-home-dc-html:Home/56#0` | page-home-dc-html Home/56#0 <img> | block:sgs/media | 0.29 | accept |
 
-### Needs a decision (low): block:sgs/multi-button (14)
+### Needs a decision (low): block:sgs/multi-button (13)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-account-dc-html:Account/22#0` | page-account-dc-html Account/22#0 <div> | block:sgs/multi-button | 0.51 | accept |
 | `skeleton:page-basket-dc-html:Basket/68#0` | page-basket-dc-html Basket/68#0 <div> | block:sgs/multi-button | 0.51 | accept |
 | `skeleton:page-checkout-dc-html:Checkout/35#0` | page-checkout-dc-html Checkout/35#0 <div> | block:sgs/multi-button | 0.51: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:page-home-dc-html:Home/116#0` | page-home-dc-html Home/116#0 <div> | block:sgs/multi-button | 0.51 | accept |
 | `skeleton:page-home-dc-html:Home/146#0` | page-home-dc-html Home/146#0 <div> | block:sgs/multi-button | 0.51 | accept |
 | `skeleton:page-home-dc-html:Home/149#0` | page-home-dc-html Home/149#0 <div> | block:sgs/multi-button | 0.51 | accept |
 | `skeleton:page-home-dc-html:Home/20#0` | page-home-dc-html Home/20#0 <div> | block:sgs/multi-button | 0.51 | accept |
@@ -227,10 +232,11 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/13#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/13#0 <header> | block:sgs/site-header | 0.58 | accept |
 
-### Needs a decision (low): block:sgs/text (171)
+### Needs a decision (low): block:sgs/text (161)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:build-your-zookie:Home/67#0` | build-your-zookie Home/67#0 <div> "your cookie, your way" | block:sgs/text | 0.25 |  |
 | `skeleton:contact-form:Contact/47#0` | contact-form Contact/47#0 <div> "What’s it about?" | block:sgs/text | 0.25 | accept |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/105#0` | nav-drawer-left Home>SiteHeader@7#0/105#0 <div> "say hello" | block:sgs/text | 0.25 | accept |
 | `skeleton:nav-drawer-left:Home>SiteHeader@7#0/127#0` | nav-drawer-left Home>SiteHeader@7#0/127#0 <span> "8 reviews on Trustpilot ↗" | block:sgs/text | 0.25 | accept |
@@ -317,14 +323,6 @@ Accept all: [ ]
 | `skeleton:page-help-dc-html:Help/79#0` | page-help-dc-html Help/79#0 <b> "Privacy policy" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-help-dc-html:Help/82#0` | page-help-dc-html Help/82#0 <b> "Terms & conditions" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-help-dc-html:Help/87#0` | page-help-dc-html Help/87#0 <span> "Message Zainab" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/106#0` | page-home-dc-html Home/106#0 <div> "20 × Classic oat, milk choc chips, strawberry & mango" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/110#0` | page-home-dc-html Home/110#0 <span> "Subscribe & save 10%" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/111#0` | page-home-dc-html Home/111#0 <span> "Skip, swap or cancel any time" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/113#0` | page-home-dc-html Home/113#0 <span> "£19.35" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/114#0` | page-home-dc-html Home/114#0 <span> "£21.50" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/120#0` | page-home-dc-html Home/120#0 <span> "One-off box" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/121#0` | page-home-dc-html Home/121#0 <span> "£21.50" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/123#0` | page-home-dc-html Home/123#0 <div> "Baked fresh for you · with you in 3–5 days · free UK delivery over £35" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-home-dc-html:Home/128#0` | page-home-dc-html Home/128#0 <div> "gifts for new mums" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-home-dc-html:Home/13#0` | page-home-dc-html Home/13#0 <span> "✦" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-home-dc-html:Home/139` | page-home-dc-html Home/139 <span> "New Baby Gift Box" | block:sgs/text | 0.25: 4 copies of one template element | accept |
@@ -365,9 +363,6 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/52#0` | page-home-dc-html Home/52#0 <span> "Build your own box, or subscribe and save 10% on every one." | block:sgs/text | 0.25 | accept |
 | `skeleton:page-home-dc-html:Home/59#0` | page-home-dc-html Home/59#0 <span> "I’m spoiling a new mum" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-home-dc-html:Home/60#0` | page-home-dc-html Home/60#0 <span> "Gift boxes, gift cards and a note from you, with the prices left off." | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/67#0` | page-home-dc-html Home/67#0 <div> "your cookie, your way" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/84#0` | page-home-dc-html Home/84#0 <span> "Pick up to 3 and we’ll split your box between them" | block:sgs/text | 0.25 | accept |
-| `skeleton:page-home-dc-html:Home/89#0` | page-home-dc-html Home/89#0 <div> "Your 20: 10 strawberry · 10 mango" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/111#0` | page-product-dc-html-id-zookies Product/111#0 <span> "✦" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/113#0` | page-product-dc-html-id-zookies Product/113#0 <span> "→" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/115#0` | page-product-dc-html-id-zookies Product/115#0 <span> "£" | block:sgs/text | 0.25 | accept |
@@ -435,6 +430,15 @@ Accept all: [ ]
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/180#0` | basket-drawer-right Home>SiteHeader@7#0/180#0 <button> "Add a Taster Trio · £5" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:basket-drawer-right:Home>SiteHeader@7#0/181#0` | basket-drawer-right Home>SiteHeader@7#0/181#0 <a> "Browse the shop" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 
+### Settled by rule blockPartOpener: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part "Basket" of the cart row (4)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/28#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/28#0 <button> | block:sgs/cart | 1: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part "Basket" of the cart row |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/49#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/49#0 <button> | block:sgs/cart | 1: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-04 (Basket drawer (right)), which the page map holds as the drawer part "Basket" of the cart row |  |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/53#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/53#0 <span> "Basket" | absorbed | 1: drawn by sgs/cart: rule blockPartOpener | accept |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/54#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/54#0 <span> "0" | absorbed | 1: drawn by sgs/cart: rule blockPartOpener | accept |
+
 ### Settled by rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) (6)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
@@ -465,75 +469,34 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop/40#0` | page-shop-dc-html Shop/40#0 <span> "never run out" | block:sgs/heading | 1: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label | accept |
 | `skeleton:page-shop-dc-html:Shop/47#0` | page-shop-dc-html Shop/47#0 <span> "buying for someone?" | block:sgs/heading | 1: the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label | accept |
 
-### Settled by rule choiceFlow: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row (38)
+### Settled by rule choiceFlow: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row (3)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:build-your-zookie:Home/100#0` | build-your-zookie Home/100#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/101#0` | build-your-zookie Home/101#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/102#0` | build-your-zookie Home/102#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/103#0` | build-your-zookie Home/103#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/105` | build-your-zookie Home/105 <span> | absorbed | 1: 19 copies of one template element; drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/107#0` | build-your-zookie Home/107#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/109#0` | build-your-zookie Home/109#0 <span> | absorbed | 1: inside the gap row Home/108#0 | accept |
-| `skeleton:build-your-zookie:Home/110#0` | build-your-zookie Home/110#0 <span> "Subscribe & save 10%" | absorbed | 1: inside the gap row Home/108#0 | accept |
-| `skeleton:build-your-zookie:Home/111#0` | build-your-zookie Home/111#0 <span> "Skip, swap or cancel any time" | absorbed | 1: inside the gap row Home/108#0 | accept |
-| `skeleton:build-your-zookie:Home/112#0` | build-your-zookie Home/112#0 <span> | absorbed | 1: inside the gap row Home/108#0 | accept |
-| `skeleton:build-your-zookie:Home/113#0` | build-your-zookie Home/113#0 <span> "£19.35" | absorbed | 1: inside the gap row Home/108#0 | accept |
-| `skeleton:build-your-zookie:Home/114#0` | build-your-zookie Home/114#0 <span> "£21.50" | absorbed | 1: inside the gap row Home/108#0 | accept |
-| `skeleton:build-your-zookie:Home/116#0` | build-your-zookie Home/116#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 5 "Home/116", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/118` | build-your-zookie Home/118 <button> "Every 2 weeks" | absorbed | 1: 2 copies of one template element; drawn by sgs/choice-flow: question 5 "Home/116", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/120#0` | build-your-zookie Home/120#0 <span> "One-off box" | absorbed | 1: inside the gap row Home/119#0 | accept |
-| `skeleton:build-your-zookie:Home/121#0` | build-your-zookie Home/121#0 <span> "£21.50" | absorbed | 1: inside the gap row Home/119#0 | accept |
-| `skeleton:build-your-zookie:Home/122#0` | build-your-zookie Home/122#0 <button> "Subscribe · £19.35" | absorbed | 1: drawn by sgs/choice-flow: the add-to-bag result (sgs/choice-flow-result action add-to-bag) | accept |
-| `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row | accept |
+| `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row | accept |
 | `skeleton:build-your-zookie:Home/64#0` | build-your-zookie Home/64#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/65#0` | build-your-zookie Home/65#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/66#0` | build-your-zookie Home/66#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
-| `skeleton:build-your-zookie:Home/68#0` | build-your-zookie Home/68#0 <h2> "Build your Zookie" | absorbed | 1: drawn by sgs/choice-flow: the flow title (sgs/choice-flow title) | accept |
-| `skeleton:build-your-zookie:Home/70#0` | build-your-zookie Home/70#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/71#0` | build-your-zookie Home/71#0 <div> "1 · Base" | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/72#0` | build-your-zookie Home/72#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/76#0` | build-your-zookie Home/76#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/77#0` | build-your-zookie Home/77#0 <div> "2 · Chips" | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/78#0` | build-your-zookie Home/78#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/81#0` | build-your-zookie Home/81#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/82#0` | build-your-zookie Home/82#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/83#0` | build-your-zookie Home/83#0 <span> "3 · Flavours" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/84#0` | build-your-zookie Home/84#0 <span> "Pick up to 3 and we’ll split your box between them" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/85#0` | build-your-zookie Home/85#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/89#0` | build-your-zookie Home/89#0 <div> "Your 20: 10 strawberry · 10 mango" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/90#0` | build-your-zookie Home/90#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/91#0` | build-your-zookie Home/91#0 <div> "4 · How many" | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question | accept |
-| `skeleton:build-your-zookie:Home/92#0` | build-your-zookie Home/92#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question | accept |
-| `skeleton:gift-finder:Gifts/24#0` | gift-finder Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row | accept |
+| `skeleton:gift-finder:Gifts/24#0` | gift-finder Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row | accept |
 
-### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (9)
+### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (7)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-gifts-dc-html:Gifts/30#0` | page-gifts-dc-html Gifts/30#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:page-gifts-dc-html:Gifts/67#0` | page-gifts-dc-html Gifts/67#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
-| `skeleton:page-home-dc-html:Home/102#0` | page-home-dc-html Home/102#0 <div> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
-| `skeleton:page-home-dc-html:Home/105` | page-home-dc-html Home/105 <span> | remove | 1: 19 copies of one template element; a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:page-home-dc-html:Home/154#0` | page-home-dc-html Home/154#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:page-home-dc-html:Home/165#0` | page-home-dc-html Home/165#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:page-home-dc-html:Home/18#0` | page-home-dc-html Home/18#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:page-home-dc-html:Home/197#0` | page-home-dc-html Home/197#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:page-home-dc-html:Home/198#0` | page-home-dc-html Home/198#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 
-### Settled by rule drawerOpener: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it (8)
+### Settled by rule drawerOpener: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) (4)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/17#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/17#0 <button> | absorbed | 1: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/18#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/18#0 <span> | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/19#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/19#0 <span> | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/20#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/20#0 <span> | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/28#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/28#0 <button> | absorbed | 1: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/49#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/49#0 <button> | absorbed | 1: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/53#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/53#0 <span> "Basket" | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
-| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/54#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/54#0 <span> "0" | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/17#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/17#0 <button> | absorbed | 1: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/18#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/18#0 <span> | absorbed | 1: drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/19#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/19#0 <span> | absorbed | 1: drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/20#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/20#0 <span> | absorbed | 1: drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
 
 ### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (13)
 
@@ -635,7 +598,7 @@ Accept all: [ ]
 | `skeleton:product-buy-box:Product/108#0` | product-buy-box Product/108#0 <button> "Add to basket · £21.50" | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
 | `skeleton:product-gift-note:Product/93#0` | product-gift-note Product/93#0 <div> | block:sgs/form | 1: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part | accept |
 
-### Settled by rule formLink: a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25) (16)
+### Settled by rule formLink: a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25) (68)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -655,6 +618,58 @@ Accept all: [ ]
 | `skeleton:page-contact-dc-html:Contact/65#0` | page-contact-dc-html Contact/65#0 <label> "Message" | absorbed | 1: drawn by sgs/form: rule formLink | accept |
 | `skeleton:page-contact-dc-html:Contact/66#0` | page-contact-dc-html Contact/66#0 <textarea> | absorbed | 1: drawn by sgs/form: rule formLink | accept |
 | `skeleton:page-contact-dc-html:Contact/67#0` | page-contact-dc-html Contact/67#0 <button> "Send message →" | absorbed | 1: drawn by sgs/form: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/100#0` | page-home-dc-html Home/100#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/101#0` | page-home-dc-html Home/101#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/102#0` | page-home-dc-html Home/102#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/103#0` | page-home-dc-html Home/103#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/105` | page-home-dc-html Home/105 <span> | absorbed | 1: 38 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/106#0` | page-home-dc-html Home/106#0 <div> "20 × Classic oat, milk choc chips, strawberry & mango" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/107#0` | page-home-dc-html Home/107#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/108#0` | page-home-dc-html Home/108#0 <button> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/109#0` | page-home-dc-html Home/109#0 <span> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/110#0` | page-home-dc-html Home/110#0 <span> "Subscribe & save 10%" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/111#0` | page-home-dc-html Home/111#0 <span> "Skip, swap or cancel any time" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/112#0` | page-home-dc-html Home/112#0 <span> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/113#0` | page-home-dc-html Home/113#0 <span> "£19.35" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/114#0` | page-home-dc-html Home/114#0 <span> "£21.50" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/116#0` | page-home-dc-html Home/116#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/118` | page-home-dc-html Home/118 <button> "Every 2 weeks" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/119#0` | page-home-dc-html Home/119#0 <button> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/120#0` | page-home-dc-html Home/120#0 <span> "One-off box" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/121#0` | page-home-dc-html Home/121#0 <span> "£21.50" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/122#0` | page-home-dc-html Home/122#0 <button> "Subscribe · £19.35" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/123#0` | page-home-dc-html Home/123#0 <div> "Baked fresh for you · with you in 3–5 days · free UK delivery over £35" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/64#0` | page-home-dc-html Home/64#0 <div> | block:sgs/choice-flow | 1: a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25) |  |
+| `skeleton:page-home-dc-html:Home/65#0` | page-home-dc-html Home/65#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/66#0` | page-home-dc-html Home/66#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/67#0` | page-home-dc-html Home/67#0 <div> "your cookie, your way" | absorbed | 1: drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/68#0` | page-home-dc-html Home/68#0 <h2> "Build your Zookie" | absorbed | 1: drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/69#0` | page-home-dc-html Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | absorbed | 1: drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/70#0` | page-home-dc-html Home/70#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/71#0` | page-home-dc-html Home/71#0 <div> "1 · Base" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/72#0` | page-home-dc-html Home/72#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/74` | page-home-dc-html Home/74 <button> "Classic oat" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/75` | page-home-dc-html Home/75 <span> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/76#0` | page-home-dc-html Home/76#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/77#0` | page-home-dc-html Home/77#0 <div> "2 · Chips" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/78#0` | page-home-dc-html Home/78#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/80` | page-home-dc-html Home/80 <button> "Milk choc" | absorbed | 1: 8 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/81#0` | page-home-dc-html Home/81#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/82#0` | page-home-dc-html Home/82#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/83#0` | page-home-dc-html Home/83#0 <span> "3 · Flavours" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/84#0` | page-home-dc-html Home/84#0 <span> "Pick up to 3 and we’ll split your box between them" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/85#0` | page-home-dc-html Home/85#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/87` | page-home-dc-html Home/87 <button> "Vanilla" | absorbed | 1: 22 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/88` | page-home-dc-html Home/88 <span> "✓" | absorbed | 1: 22 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/89#0` | page-home-dc-html Home/89#0 <div> "Your 20: 10 strawberry · 10 mango" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/90#0` | page-home-dc-html Home/90#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/91#0` | page-home-dc-html Home/91#0 <div> "4 · How many" | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/92#0` | page-home-dc-html Home/92#0 <div> | absorbed | 1: 2 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink |  |
+| `skeleton:page-home-dc-html:Home/94` | page-home-dc-html Home/94 <button> | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/95` | page-home-dc-html Home/95 <span> "8" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/96` | page-home-dc-html Home/96 <span> "£9.50" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/97` | page-home-dc-html Home/97 <span> "£1.19 each" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
+| `skeleton:page-home-dc-html:Home/99` | page-home-dc-html Home/99 <span> "Most popular" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/choice-flow: rule formLink | accept |
 
 ### Settled by rule headerSlots: a strip above the header's main bar is its top row (1)
 
@@ -734,7 +749,7 @@ Accept all: [ ]
 | `skeleton:page-shop-dc-html:Shop/11#0` | page-shop-dc-html Shop/11#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 | `skeleton:page-signin-dc-html:SignIn/10#0` | page-signin-dc-html SignIn/10#0 <div> | unwrap | 1: inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays | accept |
 
-### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (23)
+### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (19)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -750,10 +765,6 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/218#0` | page-home-dc-html Home/218#0 <span> "★★★★★" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-home-dc-html:Home/226` | page-home-dc-html Home/226 <span> "★★★★★" | block:sgs/label | 1: 6 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-home-dc-html:Home/39#0` | page-home-dc-html Home/39#0 <span> "Baked" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
-| `skeleton:page-home-dc-html:Home/71#0` | page-home-dc-html Home/71#0 <div> "1 · Base" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
-| `skeleton:page-home-dc-html:Home/77#0` | page-home-dc-html Home/77#0 <div> "2 · Chips" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
-| `skeleton:page-home-dc-html:Home/83#0` | page-home-dc-html Home/83#0 <span> "3 · Flavours" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
-| `skeleton:page-home-dc-html:Home/91#0` | page-home-dc-html Home/91#0 <div> "4 · How many" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/129` | page-product-dc-html-id-zookies Product/129 <span> "★★★★★" | block:sgs/label | 1: 3 copies of one template element; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/19#0` | page-product-dc-html-id-zookies Product/19#0 <span> "Build your own" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/34#0` | page-product-dc-html-id-zookies Product/34#0 <div> "1 · How many" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
@@ -796,24 +807,10 @@ Accept all: [ ]
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/42#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/42#0 <a> "Help" | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation | accept |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/43#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/43#0 <a> "Contact" | absorbed | 1: drawn by sgs/nav-bar-menu: rule navigation | accept |
 
-### Settled by rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it (39)
+### Settled by rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it (25)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:page-home-dc-html:Home/72#0` | page-home-dc-html Home/72#0 <div> | block:sgs/option-picker | 1: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it | accept |
-| `skeleton:page-home-dc-html:Home/74` | page-home-dc-html Home/74 <button> "Classic oat" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/75` | page-home-dc-html Home/75 <span> | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/78#0` | page-home-dc-html Home/78#0 <div> | block:sgs/option-picker | 1: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it | accept |
-| `skeleton:page-home-dc-html:Home/80` | page-home-dc-html Home/80 <button> "Milk choc" | absorbed | 1: 8 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/85#0` | page-home-dc-html Home/85#0 <div> | block:sgs/option-picker | 1: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it | accept |
-| `skeleton:page-home-dc-html:Home/87` | page-home-dc-html Home/87 <button> "Vanilla" | absorbed | 1: 22 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/88` | page-home-dc-html Home/88 <span> "✓" | absorbed | 1: 22 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/92#0` | page-home-dc-html Home/92#0 <div> | block:sgs/option-picker | 1: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it | accept |
-| `skeleton:page-home-dc-html:Home/94` | page-home-dc-html Home/94 <button> | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/95` | page-home-dc-html Home/95 <span> "8" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/96` | page-home-dc-html Home/96 <span> "£9.50" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/97` | page-home-dc-html Home/97 <span> "£1.19 each" | absorbed | 1: 6 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
-| `skeleton:page-home-dc-html:Home/99` | page-home-dc-html Home/99 <span> "Most popular" | absorbed | 1: 4 copies of one template element on 2 surfaces; drawn by sgs/option-picker: rule optionSet | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/35#0` | page-product-dc-html-id-zookies Product/35#0 <div> | block:sgs/option-picker | 1: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/37` | page-product-dc-html-id-zookies Product/37 <button> | absorbed | 1: 3 copies of one template element; drawn by sgs/option-picker: rule optionSet | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/38` | page-product-dc-html-id-zookies Product/38 <span> "8" | absorbed | 1: 3 copies of one template element; drawn by sgs/option-picker: rule optionSet | accept |
@@ -948,10 +945,13 @@ Accept all: [ ]
 | `skeleton:site-footer:Home>SiteFooter@250#0/4#0` | site-footer Home>SiteFooter@250#0/4#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 | `skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/6#0` | site-header-announcement-strip-bar Home>SiteHeader@7#0/6#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
-### Confident proposals (Accept all covers these) (364)
+### Confident proposals (Accept all covers these) (347)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:build-your-zookie:Home/66#0` | build-your-zookie Home/66#0 <div> | block:sgs/container | 0.75 |  |
+| `skeleton:build-your-zookie:Home/68#0` | build-your-zookie Home/68#0 <h2> "Build your Zookie" | block:sgs/heading | 0.75 |  |
+| `skeleton:build-your-zookie:Home/69#0` | build-your-zookie Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | block:sgs/text | 0.75 |  |
 | `skeleton:checkout-form:Checkout/106#0` | checkout-form Checkout/106#0 <fieldset> | block:sgs/container | 1 | accept |
 | `skeleton:checkout-form:Checkout/32#0` | checkout-form Checkout/32#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:checkout-form:Checkout/42#0` | checkout-form Checkout/42#0 <fieldset> | block:sgs/container | 1 | accept |
@@ -1113,17 +1113,7 @@ Accept all: [ ]
 | `skeleton:page-help-dc-html:Help/81#0` | page-help-dc-html Help/81#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-help-dc-html:Help/83#0` | page-help-dc-html Help/83#0 <p> "Terms text to be supplied." | block:sgs/text | 0.75 | accept |
 | `skeleton:page-help-dc-html:Help/85#0` | page-help-dc-html Help/85#0 <span> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/100#0` | page-home-dc-html Home/100#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/101#0` | page-home-dc-html Home/101#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/103#0` | page-home-dc-html Home/103#0 <div> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/107#0` | page-home-dc-html Home/107#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/108#0` | page-home-dc-html Home/108#0 <button> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/109#0` | page-home-dc-html Home/109#0 <span> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/112#0` | page-home-dc-html Home/112#0 <span> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/118` | page-home-dc-html Home/118 <button> "Every 2 weeks" | block:sgs/button | 0.75: 2 copies of one template element | accept |
-| `skeleton:page-home-dc-html:Home/119#0` | page-home-dc-html Home/119#0 <button> | block:sgs/container | 1 | accept |
 | `skeleton:page-home-dc-html:Home/12#0` | page-home-dc-html Home/12#0 <div> "good morning, mama" | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/122#0` | page-home-dc-html Home/122#0 <button> "Subscribe · £19.35" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-home-dc-html:Home/124#0` | page-home-dc-html Home/124#0 <section> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home-dc-html:Home/125#0` | page-home-dc-html Home/125#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home-dc-html:Home/126#0` | page-home-dc-html Home/126#0 <div> | block:sgs/container | 1 | accept |
@@ -1204,17 +1194,7 @@ Accept all: [ ]
 | `skeleton:page-home-dc-html:Home/57#0` | page-home-dc-html Home/57#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-home-dc-html:Home/61#0` | page-home-dc-html Home/61#0 <span> "Shop gifts" | block:sgs/container | 1 | accept |
 | `skeleton:page-home-dc-html:Home/63#0` | page-home-dc-html Home/63#0 <section> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/64#0` | page-home-dc-html Home/64#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/65#0` | page-home-dc-html Home/65#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/66#0` | page-home-dc-html Home/66#0 <div> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/68#0` | page-home-dc-html Home/68#0 <h2> "Build your Zookie" | block:sgs/heading | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/69#0` | page-home-dc-html Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | block:sgs/text | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/70#0` | page-home-dc-html Home/70#0 <div> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/76#0` | page-home-dc-html Home/76#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-home-dc-html:Home/8#0` | page-home-dc-html Home/8#0 <main> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/81#0` | page-home-dc-html Home/81#0 <div> | block:sgs/container | 0.75 | accept |
-| `skeleton:page-home-dc-html:Home/82#0` | page-home-dc-html Home/82#0 <div> | block:sgs/container | 1 | accept |
-| `skeleton:page-home-dc-html:Home/90#0` | page-home-dc-html Home/90#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/10#0` | page-product-dc-html-id-zookies Product/10#0 <a> "Home" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/108#0` | page-product-dc-html-id-zookies Product/108#0 <button> "Add to basket · £21.50" | block:sgs/button | 0.75 | accept |
 | `skeleton:page-product-dc-html-id-zookies:Product/109#0` | page-product-dc-html-id-zookies Product/109#0 <div> | block:sgs/container | 1 | accept |
@@ -1319,7 +1299,7 @@ Accept all: [ ]
 
 ## Inventory diffs (inventory-diff)
 
-Accept all: [ ]
+Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|

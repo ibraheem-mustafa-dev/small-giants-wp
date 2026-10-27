@@ -4,12 +4,13 @@ Taken on 2026-10-27T14:57:20.709Z; manifest 1.0, files hash 262dd0304564cd78.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review eye-care-ward-end`.
 
-Rows: 1503; 788 need reading, 715 are confident proposals that Accept all covers (skeleton block choices 678, missing features 37).
+Rows: 1520; 803 need reading, 717 are confident proposals that Accept all covers (skeleton block choices 680, missing features 37).
 
 Not defects counted, not listed: breakpoint 46, prop-variant 91, reached-when-forced 242, render-wins 1270.
 
 Marks per section (first value = Accept all):
 - Page map: `accept`, `edit:<field>=<value>`, `drop`
+- Draft catalogue: `accept`, `drop`
 - Palette roles: `accept`, `role:<slug>[,<slug>...]`, `one-off`
 - Site Info: `accept`, `edit:<value>`, `drop`
 - Flags: `accept-flagged`, `not-flagged`
@@ -48,6 +49,30 @@ Accept all: [ ]
 | `page:sgs_modal:modal-size-guide` | (no route) → Size guide (sgs_modal, static) | modal-size-guide |  | accept |
 | `page:shop:shop` | shop → Sunglasses (shop, live, archive-product) | shop | drawer-1 #1 | accept |
 | `page:template:order-confirmation` | done → Order confirmed (template, static, order-confirmation) | order-confirmation |  | accept |
+
+## Draft catalogue (catalogue)
+
+Accept all: [ ]
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `catalogue-gap:*:facet:1` | gap (facet) * | recorded, not built | the shop filters on "shape", "cols", "mat", "ftype", "hinge", "nose", "eye", "pol", "gender" (Eye Care Birmingham.dc.html); the catalogue writes brands only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet | accept |
+| `catalogue:1` | Aviator Classic (variable, from £139, 3 variations, no image) | /frames/ray-ban-aviator-classic/ |  | accept |
+| `catalogue:10` | FZ6001 (variable, from £169, 3 variations, no image) | /frames/ferrari-scuderia-fz6001/ |  | accept |
+| `catalogue:11` | SDS Shockwave (variable, from £59, 3 variations, no image) | /frames/superdry-sds-shockwave/ |  | accept |
+| `catalogue:12` | Shield (variable, from £339, 3 variations, no image) | /frames/balenciaga-shield/ |  | accept |
+| `catalogue:13` | Lewis 10 (variable, from £99, 3 variations, no image) | /frames/police-lewis-10/ |  | accept |
+| `catalogue:14` | DG4268 (variable, from £215, 3 variations, no image) | /frames/dolce-and-gabbana-dg4268/ |  | accept |
+| `catalogue:15` | Chelsea (variable, from £109, 3 variations, no image) | /frames/michael-kors-chelsea/ |  | accept |
+| `catalogue:16` | EA4033 (variable, from £115, 3 variations, no image) | /frames/emporio-armani-ea4033/ |  | accept |
+| `catalogue:2` | Oversized Cat-Eye (variable, from £289, 3 variations) | /frames/gucci-oversized-cat-eye/ |  | accept |
+| `catalogue:3` | Holbrook (variable, from £119, 3 variations) | /frames/oakley-holbrook/ |  | accept |
+| `catalogue:4` | Symbole (variable, from £239, 3 variations, no image) | /frames/prada-symbole/ |  | accept |
+| `catalogue:5` | Original Wayfarer (variable, from £129, 3 variations) | /frames/ray-ban-original-wayfarer/ |  | accept |
+| `catalogue:6` | Round Metal (variable, from £135, 3 variations) | /frames/ray-ban-round-metal/ |  | accept |
+| `catalogue:7` | Medusa Biggie (variable, from £199, 3 variations, no image) | /frames/versace-medusa-biggie/ |  | accept |
+| `catalogue:8` | PLD 6003/N (variable, from £59, 3 variations, no image) | /frames/polaroid-pld-6003-n/ |  | accept |
+| `catalogue:9` | Carrera 1055/S (variable, from £109, 3 variations, no image) | /frames/carrera-carrera-1055-s/ |  | accept |
 
 ## Palette roles (palette-role)
 
@@ -261,13 +286,11 @@ Accept all: [ ]
 |---|---|---|---|---|
 | `skeleton:page-home:Eye Care Birmingham/209#0` | page-home Eye Care Birmingham/209#0 <div> | block:sgs/social-icons | 0.51 | accept |
 
-### Needs a decision (low): block:sgs/text (110)
+### Needs a decision (low): block:sgs/text (108)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:header:Eye Care Birmingham/10` | header Eye Care Birmingham/10 <span> "100% genuine, supplied direct by the brands" | block:sgs/text | 0.25: 8 copies of one template element | accept |
-| `skeleton:header:Eye Care Birmingham/47#0` | header Eye Care Birmingham/47#0 <span> "Bag" | block:sgs/text | 0.25 | accept |
-| `skeleton:header:Eye Care Birmingham/51#0` | header Eye Care Birmingham/51#0 <span> "0" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-about:Eye Care Birmingham/616#0` | page-about Eye Care Birmingham/616#0 <div> "BSc (Hons)" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-about:Eye Care Birmingham/619#0` | page-about Eye Care Birmingham/619#0 <div> "MCOptom" | block:sgs/text | 0.25 | accept |
 | `skeleton:page-about:Eye Care Birmingham/622#0` | page-about Eye Care Birmingham/622#0 <div> "DipTp(IP)" | block:sgs/text | 0.25 | accept |
@@ -399,11 +422,19 @@ Accept all: [ ]
 | `skeleton:bag-drawer:Eye Care Birmingham/1206#0` | bag-drawer Eye Care Birmingham/1206#0 <div> "Nothing in here yet." | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 | `skeleton:bag-drawer:Eye Care Birmingham/1207#0` | bag-drawer Eye Care Birmingham/1207#0 <button> "Shop sunglasses" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 
-### Settled by rule choiceFlow: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row (53)
+### Settled by rule blockPartOpener: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-24 (Bag drawer), which the page map holds as the drawer part "Your bag" of the cart row (3)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:lens-configurator:Eye Care Birmingham/1283#0` | lens-configurator Eye Care Birmingham/1283#0 <div> | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row | accept |
+| `skeleton:header:Eye Care Birmingham/46#0` | header Eye Care Birmingham/46#0 <button> | block:sgs/cart | 1: the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-24 (Bag drawer), which the page map holds as the drawer part "Your bag" of the cart row | accept |
+| `skeleton:header:Eye Care Birmingham/47#0` | header Eye Care Birmingham/47#0 <span> "Bag" | absorbed | 1: drawn by sgs/cart: rule blockPartOpener | accept |
+| `skeleton:header:Eye Care Birmingham/51#0` | header Eye Care Birmingham/51#0 <span> "0" | absorbed | 1: drawn by sgs/cart: rule blockPartOpener | accept |
+
+### Settled by rule choiceFlow: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row (53)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:lens-configurator:Eye Care Birmingham/1283#0` | lens-configurator Eye Care Birmingham/1283#0 <div> | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row | accept |
 | `skeleton:lens-configurator:Eye Care Birmingham/1284#0` | lens-configurator Eye Care Birmingham/1284#0 <div> | absorbed | 1: drawn by sgs/choice-flow: the flow header (sgs/choice-flow showHeader, closeLabel) | accept |
 | `skeleton:lens-configurator:Eye Care Birmingham/1285#0` | lens-configurator Eye Care Birmingham/1285#0 <div> | absorbed | 1: drawn by sgs/choice-flow: the flow header (sgs/choice-flow showHeader, closeLabel) | accept |
 | `skeleton:lens-configurator:Eye Care Birmingham/1286#0` | lens-configurator Eye Care Birmingham/1286#0 <img> | absorbed | 1: drawn by sgs/choice-flow: the flow header (sgs/choice-flow showHeader, closeLabel) | accept |
@@ -480,6 +511,16 @@ Accept all: [ ]
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-product:Eye Care Birmingham/374#0` | page-product Eye Care Birmingham/374#0 <span> | remove | 1: a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19) | accept |
+
+### Settled by rule drawerOpener: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) (5)
+
+| Row | Shows | Proposed | Confidence or reason | Mark |
+|---|---|---|---|---|
+| `skeleton:header:Eye Care Birmingham/17` | header Eye Care Birmingham/17 <button> | absorbed | 1: 2 copies of one template element; a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/18` | header Eye Care Birmingham/18 <span> | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/19` | header Eye Care Birmingham/19 <span> | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/20` | header Eye Care Birmingham/20 <span> | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
+| `skeleton:header:Eye Care Birmingham/21` | header Eye Care Birmingham/21 <span> "Menu" | absorbed | 1: 2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener) | accept |
 
 ### Settled by rule drawsChildren: the block each sits in draws it (each row's reason names that block) (14)
 
@@ -630,11 +671,10 @@ Accept all: [ ]
 | `skeleton:page-contact:Eye Care Birmingham/679#0` | page-contact Eye Care Birmingham/679#0 <div> "Mon–Sat 9.30–17.30 Collections by arrangement" | block:sgs/business-info | 1: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it | accept |
 | `skeleton:page-contact:Eye Care Birmingham/680#0` | page-contact Eye Care Birmingham/680#0 <div> "Hours" | absorbed | 1: drawn by sgs/business-info: rule hoursRows | accept |
 
-### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (45)
+### Settled by rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number (44)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:header:Eye Care Birmingham/21#0` | header Eye Care Birmingham/21#0 <span> "Menu" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1167#0` | mobile-menu Eye Care Birmingham/1167#0 <span> "EYE CARE" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-about:Eye Care Birmingham/604#0` | page-about Eye Care Birmingham/604#0 <p> "About Eye Care" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
 | `skeleton:page-account:Eye Care Birmingham/922#0` | page-account Eye Care Birmingham/922#0 <p> "My account" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
@@ -786,7 +826,7 @@ Accept all: [ ]
 | `skeleton:header:Eye Care Birmingham/8#0` | header Eye Care Birmingham/8#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 | `skeleton:mega-menu:Eye Care Birmingham/54#0` | mega-menu Eye Care Birmingham/54#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
-### Confident proposals (Accept all covers these) (393)
+### Confident proposals (Accept all covers these) (388)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -817,17 +857,12 @@ Accept all: [ ]
 | `skeleton:footer:Eye Care Birmingham/1159#0` | footer Eye Care Birmingham/1159#0 <a> "Privacy" | block:sgs/button | 0.75 | accept |
 | `skeleton:footer:Eye Care Birmingham/1160#0` | footer Eye Care Birmingham/1160#0 <a> "Terms" | block:sgs/button | 0.75 | accept |
 | `skeleton:header:Eye Care Birmingham/14#0` | header Eye Care Birmingham/14#0 <div> | block:sgs/site-header-row | 1 | accept |
-| `skeleton:header:Eye Care Birmingham/17#0` | header Eye Care Birmingham/17#0 <button> | block:sgs/container | 1 | accept |
-| `skeleton:header:Eye Care Birmingham/18#0` | header Eye Care Birmingham/18#0 <span> | block:sgs/container | 1 | accept |
-| `skeleton:header:Eye Care Birmingham/19#0` | header Eye Care Birmingham/19#0 <span> | remove | 1: Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block | accept |
-| `skeleton:header:Eye Care Birmingham/20#0` | header Eye Care Birmingham/20#0 <span> | remove | 1: Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block | accept |
 | `skeleton:header:Eye Care Birmingham/30#0` | header Eye Care Birmingham/30#0 <span> | block:sgs/container | 1 | accept |
 | `skeleton:header:Eye Care Birmingham/31#0` | header Eye Care Birmingham/31#0 <span> "EYE CARE" | block:sgs/responsive-logo | 0.8 | accept |
 | `skeleton:header:Eye Care Birmingham/32#0` | header Eye Care Birmingham/32#0 <span> "BIRMINGHAM" | absorbed | 0.8: part of the typed brand name; the logo block carries it | accept |
 | `skeleton:header:Eye Care Birmingham/33#0` | header Eye Care Birmingham/33#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:header:Eye Care Birmingham/38#0` | header Eye Care Birmingham/38#0 <a> "About Eye Care" | block:sgs/button | 0.75 | accept |
 | `skeleton:header:Eye Care Birmingham/39#0` | header Eye Care Birmingham/39#0 <a> "Help" | block:sgs/button | 0.75 | accept |
-| `skeleton:header:Eye Care Birmingham/46#0` | header Eye Care Birmingham/46#0 <button> | block:sgs/container | 1 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1166#0` | mobile-menu Eye Care Birmingham/1166#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1168#0` | mobile-menu Eye Care Birmingham/1168#0 <button> "×" | block:sgs/button | 0.75 | accept |
 | `skeleton:mobile-menu:Eye Care Birmingham/1180#0` | mobile-menu Eye Care Birmingham/1180#0 <div> | block:sgs/container | 1 | accept |

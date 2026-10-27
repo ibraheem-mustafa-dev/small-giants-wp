@@ -10,6 +10,7 @@ Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, de
 
 Marks per section (first value = Accept all):
 - Page map: `accept`, `edit:<field>=<value>`, `drop`
+- Draft catalogue: `accept`, `drop`
 - Palette roles: `accept`, `role:<slug>[,<slug>...]`, `one-off`
 - Site Info: `accept`, `edit:<value>`, `drop`
 - Flags: `accept-flagged`, `not-flagged`

@@ -58047,7 +58047,8 @@
    "postType": "product",
    "collection": "live",
    "flags": [],
-   "id": null
+   "id": null,
+   "opensFlow": "choice-flow-add-prescription-lenses"
   },
   {
    "route": "lenses",
@@ -75923,7 +75924,7 @@
       {
        "draftId": "Eye Care Birmingham:17",
        "tag": "button",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:24",
@@ -75988,7 +75989,7 @@
       {
        "draftId": "Eye Care Birmingham:17",
        "tag": "button",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:23",
@@ -76053,7 +76054,7 @@
       {
        "draftId": "Eye Care Birmingham:17",
        "tag": "button",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:23",
@@ -76118,7 +76119,7 @@
       {
        "draftId": "Eye Care Birmingham:17",
        "tag": "button",
-       "block": "sgs/container"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:23",
@@ -76194,8 +76195,8 @@
      "draftId": "Eye Care Birmingham:27"
     },
     {
-     "rowId": "skeleton:header:Eye Care Birmingham/17#0",
-     "key": "Eye Care Birmingham/17#0",
+     "rowId": "skeleton:header:Eye Care Birmingham/17",
+     "key": "Eye Care Birmingham/17",
      "fingerprint": {
       "tag": "button",
       "cls": "",
@@ -76210,19 +76211,14 @@
      },
      "tag": "button",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "2 copies of one template element; a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+     "rule": "drawerOpener",
+     "into": "Eye Care Birmingham/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<button sc-camel-on-click=\"{{ toggleMenu }}\" aria-label=\"Menu\" style=\"background:none;border:0;padding:8px;margin-left:-8px;display:flex;align-items:center;gap:",
      "parent": {
       "draftId": "Eye Care Birmingham:15",
@@ -76268,11 +76264,17 @@
        "h": 44
       }
      ],
-     "draftId": "Eye Care Birmingham:17"
+     "draftId": "Eye Care Birmingham:17",
+     "copies": 2,
+     "keys": [
+      "Eye Care Birmingham/17#0",
+      "Eye Care Birmingham/17#0"
+     ],
+     "proposalReason": "a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
     },
     {
-     "rowId": "skeleton:header:Eye Care Birmingham/18#0",
-     "key": "Eye Care Birmingham/18#0",
+     "rowId": "skeleton:header:Eye Care Birmingham/18",
+     "key": "Eye Care Birmingham/18",
      "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -76288,30 +76290,25 @@
      },
      "tag": "span",
      "words": "",
-     "block": "sgs/container",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/container",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+     "rule": "drawerOpener",
+     "into": "Eye Care Birmingham/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<span style=\"display:flex;flex-direction:column;gap:5px\" data-dc-tpl=\"18\"> <span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"1",
      "parent": {
       "draftId": "Eye Care Birmingham:17",
       "tag": "button",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:21",
        "tag": "span",
-       "block": "sgs/label"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -76331,11 +76328,17 @@
        "h": 8
       }
      ],
-     "draftId": "Eye Care Birmingham:18"
+     "draftId": "Eye Care Birmingham:18",
+     "copies": 2,
+     "keys": [
+      "Eye Care Birmingham/18#0",
+      "Eye Care Birmingham/18#0"
+     ],
+     "proposalReason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
     },
     {
-     "rowId": "skeleton:header:Eye Care Birmingham/19#0",
-     "key": "Eye Care Birmingham/19#0",
+     "rowId": "skeleton:header:Eye Care Birmingham/19",
+     "key": "Eye Care Birmingham/19",
      "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -76355,15 +76358,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block",
-     "rule": null,
+     "reason": "2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+     "rule": "drawerOpener",
+     "into": "Eye Care Birmingham/15#0",
      "candidates": [],
-     "action": "remove",
+     "action": "absorbed",
      "snippet": "<span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"19\"></span>",
      "parent": {
       "draftId": "Eye Care Birmingham:18",
       "tag": "span",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
@@ -76389,11 +76393,17 @@
        "h": 1.5
       }
      ],
-     "draftId": "Eye Care Birmingham:19"
+     "draftId": "Eye Care Birmingham:19",
+     "copies": 2,
+     "keys": [
+      "Eye Care Birmingham/19#0",
+      "Eye Care Birmingham/19#0"
+     ],
+     "proposalReason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
     },
     {
-     "rowId": "skeleton:header:Eye Care Birmingham/20#0",
-     "key": "Eye Care Birmingham/20#0",
+     "rowId": "skeleton:header:Eye Care Birmingham/20",
+     "key": "Eye Care Birmingham/20",
      "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -76413,15 +76423,16 @@
      "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "Bean marked remove in the intake review on 2026-10-26: the element is absorbed into its parent block",
-     "rule": null,
+     "reason": "2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+     "rule": "drawerOpener",
+     "into": "Eye Care Birmingham/15#0",
      "candidates": [],
-     "action": "remove",
+     "action": "absorbed",
      "snippet": "<span style=\"display:block;width:22px;height:1.5px;background:#141414\" data-dc-tpl=\"20\"></span>",
      "parent": {
       "draftId": "Eye Care Birmingham:18",
       "tag": "span",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
@@ -76447,11 +76458,17 @@
        "h": 1.5
       }
      ],
-     "draftId": "Eye Care Birmingham:20"
+     "draftId": "Eye Care Birmingham:20",
+     "copies": 2,
+     "keys": [
+      "Eye Care Birmingham/20#0",
+      "Eye Care Birmingham/20#0"
+     ],
+     "proposalReason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
     },
     {
-     "rowId": "skeleton:header:Eye Care Birmingham/21#0",
-     "key": "Eye Care Birmingham/21#0",
+     "rowId": "skeleton:header:Eye Care Birmingham/21",
+     "key": "Eye Care Birmingham/21",
      "fingerprint": {
       "tag": "span",
       "cls": "",
@@ -76467,30 +76484,25 @@
      },
      "tag": "span",
      "words": "Menu",
-     "block": "sgs/label",
+     "block": null,
      "confidence": 1,
      "low": false,
-     "reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
-     "rule": "label",
-     "candidates": [
-      {
-       "block": "sgs/label",
-       "score": 1,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "reason": "2 copies of one template element; drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)",
+     "rule": "drawerOpener",
+     "into": "Eye Care Birmingham/15#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<span style=\"display:{{ hideOnMobile }};font-size:12.5px;letter-spacing:.1em\" data-dc-tpl=\"21\">Menu</span>",
      "parent": {
       "draftId": "Eye Care Birmingham:17",
       "tag": "button",
-      "block": "sgs/container"
+      "block": null
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:18",
        "tag": "span",
-       "block": "sgs/container"
+       "block": null
       }
      ],
      "siblingCount": 1,
@@ -76503,7 +76515,13 @@
        "h": 16
       }
      ],
-     "draftId": "Eye Care Birmingham:21"
+     "draftId": "Eye Care Birmingham:21",
+     "copies": 2,
+     "keys": [
+      "Eye Care Birmingham/21#0",
+      "Eye Care Birmingham/21#0"
+     ],
+     "proposalReason": "drawn by the element before it: a button or link whose click handler opens a surface of kind drawer is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it; the handler opens the drawer when it writes a state key (a toggle included) that one of the drawer's surfaces.json states holds at true (lib/skeleton-handler-opens.mjs), or when the drawer's opened_by words name it; a control opening a drawer the page map hands to a block is that block first (rules.blockPartOpener)"
     },
     {
      "rowId": "skeleton:header:Eye Care Birmingham/28#0",
@@ -76989,7 +77007,7 @@
       {
        "draftId": "Eye Care Birmingham:46",
        "tag": "button",
-       "block": "sgs/container"
+       "block": "sgs/cart"
       }
      ],
      "siblingCount": 4,
@@ -77059,7 +77077,7 @@
       {
        "draftId": "Eye Care Birmingham:46",
        "tag": "button",
-       "block": "sgs/container"
+       "block": "sgs/cart"
       }
      ],
      "siblingCount": 4,
@@ -77129,7 +77147,7 @@
       {
        "draftId": "Eye Care Birmingham:46",
        "tag": "button",
-       "block": "sgs/container"
+       "block": "sgs/cart"
       }
      ],
      "siblingCount": 4,
@@ -77199,7 +77217,7 @@
       {
        "draftId": "Eye Care Birmingham:46",
        "tag": "button",
-       "block": "sgs/container"
+       "block": "sgs/cart"
       }
      ],
      "siblingCount": 4,
@@ -77245,14 +77263,14 @@
      },
      "tag": "button",
      "words": "",
-     "block": "sgs/container",
+     "block": "sgs/cart",
      "confidence": 1,
      "low": false,
-     "reason": null,
-     "rule": null,
+     "reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23); it opens S-24 (Bag drawer), which the page map holds as the drawer part \"Your bag\" of the cart row",
+     "rule": "blockPartOpener",
      "candidates": [
       {
-       "block": "sgs/container",
+       "block": "sgs/cart",
        "score": 1,
        "share": 1
       }
@@ -77330,24 +77348,19 @@
      },
      "tag": "span",
      "words": "Bag",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/cart: rule blockPartOpener",
+     "rule": "blockPartOpener",
+     "into": "Eye Care Birmingham/46#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<span style=\"display: {{ bagWordDisplay }}\" data-dc-tpl=\"47\">Bag</span>",
      "parent": {
       "draftId": "Eye Care Birmingham:46",
       "tag": "button",
-      "block": "sgs/container"
+      "block": "sgs/cart"
      },
      "siblings": [
       {
@@ -77358,7 +77371,7 @@
       {
        "draftId": "Eye Care Birmingham:51",
        "tag": "span",
-       "block": "sgs/text"
+       "block": null
       }
      ],
      "siblingCount": 2,
@@ -77398,30 +77411,25 @@
      },
      "tag": "span",
      "words": "0",
-     "block": "sgs/text",
-     "confidence": 0.25,
-     "low": true,
-     "reason": null,
-     "rule": null,
-     "candidates": [
-      {
-       "block": "sgs/text",
-       "score": 0.25,
-       "share": 1
-      }
-     ],
-     "action": null,
+     "block": null,
+     "confidence": 1,
+     "low": false,
+     "reason": "drawn by sgs/cart: rule blockPartOpener",
+     "rule": "blockPartOpener",
+     "into": "Eye Care Birmingham/46#0",
+     "candidates": [],
+     "action": "absorbed",
      "snippet": "<span key=\"{{ bagCount }}\" style=\"position: {{ badgePos }};top:-6px;right:-6px;display:inline-flex;min-width:20px;height:20px;border-radius:999px;background:var",
      "parent": {
       "draftId": "Eye Care Birmingham:46",
       "tag": "button",
-      "block": "sgs/container"
+      "block": "sgs/cart"
      },
      "siblings": [
       {
        "draftId": "Eye Care Birmingham:47",
        "tag": "span",
-       "block": "sgs/text"
+       "block": null
       },
       {
        "draftId": "Eye Care Birmingham:48",
@@ -77459,20 +77467,21 @@
    "counts": {
     "inventoryElements": 60,
     "parts": 24,
-    "rows": 36,
-    "skeletonNodes": 28,
-    "expandedNodes": 28,
-    "low": 12,
-    "removed": 9,
+    "rows": 41,
+    "skeletonNodes": 23,
+    "expandedNodes": 23,
+    "low": 10,
+    "removed": 19,
     "unresolved": 0,
     "byRule": {
      "headerSlots": 1,
      "widthWrapper": 1,
-     "navigation": 6,
-     "label": 1,
+     "navigation": 11,
+     "drawerOpener": 5,
      "wholeCardLink": 1,
      "siteInfoLink": 1,
-     "solitaryIcon": 1
+     "solitaryIcon": 1,
+     "blockPartOpener": 3
     }
    },
    "problems": []
@@ -129900,7 +129909,7 @@
      "block": "sgs/choice-flow",
      "confidence": 1,
      "low": false,
-     "reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row",
+     "reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow the words the flow holds no setting for are ordinary blocks beside it in its post (the linked flow renders every top-level block, FR-43-6), and only a control none of these holds is a gap row",
      "rule": "choiceFlow",
      "candidates": [
       {
@@ -140138,6 +140147,142 @@
    "carriedFrom": "2026-10-26T21:15:22.158Z"
   },
   {
+   "rowId": "catalogue:1",
+   "rowType": "catalogue",
+   "contentHash": "3b0be46a1c2437214e2a65b2f6921db07f46afb91725e82c5e9780276dd22683",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:2",
+   "rowType": "catalogue",
+   "contentHash": "096a1a4d42a219b8426a6a1fc29c93ae12d9e24cd592bd098505fc27fcfa6fb8",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:3",
+   "rowType": "catalogue",
+   "contentHash": "4664d185b74f2d05454fa3699bbd60258a8246875daa6d864318dcdcc8986abf",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:4",
+   "rowType": "catalogue",
+   "contentHash": "c4feb25f9a2ba58aeeaa77e3ab069013663fae4792b2628bf57e6363a3820ee9",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:5",
+   "rowType": "catalogue",
+   "contentHash": "328c2710b0d09731aa2fb6564b04baf946de779f4e1c203c4f9e65296846513b",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:6",
+   "rowType": "catalogue",
+   "contentHash": "0773aa51933a1e701f47c1bc884612da97fbf4120e123978d2906957baa7fc87",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:7",
+   "rowType": "catalogue",
+   "contentHash": "cf5ca9cdd600f032c7c40906905f35c5527a208cc1cdcf20b213a7dc87971933",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:8",
+   "rowType": "catalogue",
+   "contentHash": "ed37da35246c957f18e054e897b222354c8f158055606da1b28fdaf63ae0b9cb",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:9",
+   "rowType": "catalogue",
+   "contentHash": "d95aa494f75f9c14341b63da6292f24ff2e1cd9297dcf360ef09834a4ab5f075",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:10",
+   "rowType": "catalogue",
+   "contentHash": "4aa349d7503c367ddf55aad89ca0f535ee4d1bf2c344b594328903918c2e2839",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:11",
+   "rowType": "catalogue",
+   "contentHash": "0c8294848b61336f1ae2d8624e7d1ae4875679e7e0ee6eb28dbe1f896f36cc89",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:12",
+   "rowType": "catalogue",
+   "contentHash": "f93c52f0c03ee7187a50c4a2c018ac1d10b901fe57ca9de4190312488a15748c",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:13",
+   "rowType": "catalogue",
+   "contentHash": "3ff552bca1db8669314b083844758352d837e8c25592f740b3ec31a7692b5e5d",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:14",
+   "rowType": "catalogue",
+   "contentHash": "ee665ef2579b45b6c50749668f611ee85afeec7a1862c84af4d22b0583c2ccd8",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:15",
+   "rowType": "catalogue",
+   "contentHash": "8f4a0f9988ebfe7d1dc7430e51caf3fd9c8f6e5e71908eb9528f835ae9bbfa65",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue:16",
+   "rowType": "catalogue",
+   "contentHash": "22e17ad0594fdb23b21456365076e5462c2940957768886d8ada6cef37d1c444",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "catalogue-gap:*:facet:1",
+   "rowType": "catalogue",
+   "contentHash": "d34b208468aa58e50ee0850ac931a40f6d720fb3908dc077836d4a8d7b0378ea",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
    "rowId": "palette:--ink",
    "rowType": "palette-role",
    "contentHash": "945b5f64515138d469a998e5ae4ae346aaee777d0161f6a5d7a0e4a17ba858ab",
@@ -141074,44 +141219,44 @@
    "carriedFrom": "2026-10-26T21:15:22.158Z"
   },
   {
-   "rowId": "skeleton:header:Eye Care Birmingham/17#0",
+   "rowId": "skeleton:header:Eye Care Birmingham/17",
    "rowType": "skeleton-block",
-   "contentHash": "22a81da2e58f7e7bb86f5e73934bfa9653029ac41a10c7f8d71ccd58c6af2ab0",
-   "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
-  },
-  {
-   "rowId": "skeleton:header:Eye Care Birmingham/18#0",
-   "rowType": "skeleton-block",
-   "contentHash": "1a0f3221598521bb67c0bfaad7e0c581d5aed1b714b0e43f8071cc2ec7c6f454",
-   "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
-  },
-  {
-   "rowId": "skeleton:header:Eye Care Birmingham/19#0",
-   "rowType": "skeleton-block",
-   "contentHash": "b3d62e9b027513191f46181c588fbacdf01b96ff9245c326b2191dc431c1c23a",
+   "contentHash": "94ef9f9eb66c30381989b3db17f4421d7932fa2f647a7462d064eaa97d673ee0",
    "mark": "accept",
    "markedOn": "2026-10-27",
    "carriedFrom": "2026-10-27T14:57:20.709Z"
   },
   {
-   "rowId": "skeleton:header:Eye Care Birmingham/20#0",
+   "rowId": "skeleton:header:Eye Care Birmingham/18",
    "rowType": "skeleton-block",
-   "contentHash": "edea010f174322ba70bcb128c5f0562759464eb088426d6859c25aaf15564c04",
+   "contentHash": "9d09d67ada80324abe561fb44177af333f7a36083c7d833fd6239866b3d37b19",
    "mark": "accept",
    "markedOn": "2026-10-27",
    "carriedFrom": "2026-10-27T14:57:20.709Z"
   },
   {
-   "rowId": "skeleton:header:Eye Care Birmingham/21#0",
+   "rowId": "skeleton:header:Eye Care Birmingham/19",
    "rowType": "skeleton-block",
-   "contentHash": "755c370824a353dbb872a0da712c8ebf90812b5e18985b39319409c223f58b08",
+   "contentHash": "3462932192d64c199022b3afba0c9974709f09f20dc26f6e819f5a1979da4d9e",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "skeleton:header:Eye Care Birmingham/20",
+   "rowType": "skeleton-block",
+   "contentHash": "d7c51bdb3ba5a5123f5323e26344b89b944308321188dc70c37278bd2d3fa57e",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
+  },
+  {
+   "rowId": "skeleton:header:Eye Care Birmingham/21",
+   "rowType": "skeleton-block",
+   "contentHash": "a53c7b8722b4652d8aece0fd016f7dfd4d7057943078e2d2e52c8bece6926c94",
+   "mark": "accept",
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
   },
   {
    "rowId": "skeleton:header:Eye Care Birmingham/28#0",
@@ -141196,26 +141341,26 @@
   {
    "rowId": "skeleton:header:Eye Care Birmingham/46#0",
    "rowType": "skeleton-block",
-   "contentHash": "eb7971cbc926acd0f2c26c90ad091a5a0f752364a11effdab5ff0cee17ef63f3",
+   "contentHash": "6f3ac75317c40825162f37eedb5212d7df609aa3bc0bab3e40bd1b088f08465d",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
   },
   {
    "rowId": "skeleton:header:Eye Care Birmingham/47#0",
    "rowType": "skeleton-block",
-   "contentHash": "2670d8daa2a61c0039df6cd2296ece6921570593108c1750331d7c91cdbcc584",
+   "contentHash": "b4b5611f635c79c2c46f8d3c1a178ffb9248973446dc11a22a7434de60ace22f",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
   },
   {
    "rowId": "skeleton:header:Eye Care Birmingham/51#0",
    "rowType": "skeleton-block",
-   "contentHash": "5a6d627375b0f0419f5de784166ae3de0fd07c9ba3d81ce88d51ed1db3460908",
+   "contentHash": "1963effe376652575cd9ef129350ed3f80cc965fee2fbc7805f94e2e744d6261",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": "2026-10-27T14:57:20.709Z"
   },
   {
    "rowId": "skeleton:mega-menu:Eye Care Birmingham/53#0",
@@ -151993,5 +152138,161 @@
    "markedOn": "2026-10-27",
    "carriedFrom": "2026-10-27T14:57:20.709Z"
   }
- ]
+ ],
+ "catalogue": {
+  "products": [
+   {
+    "draftId": "1",
+    "name": "Aviator Classic",
+    "type": "variable",
+    "price": 139,
+    "variations": 3,
+    "address": "/frames/ray-ban-aviator-classic/",
+    "image": false
+   },
+   {
+    "draftId": "2",
+    "name": "Oversized Cat-Eye",
+    "type": "variable",
+    "price": 289,
+    "variations": 3,
+    "address": "/frames/gucci-oversized-cat-eye/",
+    "image": true
+   },
+   {
+    "draftId": "3",
+    "name": "Holbrook",
+    "type": "variable",
+    "price": 119,
+    "variations": 3,
+    "address": "/frames/oakley-holbrook/",
+    "image": true
+   },
+   {
+    "draftId": "4",
+    "name": "Symbole",
+    "type": "variable",
+    "price": 239,
+    "variations": 3,
+    "address": "/frames/prada-symbole/",
+    "image": false
+   },
+   {
+    "draftId": "5",
+    "name": "Original Wayfarer",
+    "type": "variable",
+    "price": 129,
+    "variations": 3,
+    "address": "/frames/ray-ban-original-wayfarer/",
+    "image": true
+   },
+   {
+    "draftId": "6",
+    "name": "Round Metal",
+    "type": "variable",
+    "price": 135,
+    "variations": 3,
+    "address": "/frames/ray-ban-round-metal/",
+    "image": true
+   },
+   {
+    "draftId": "7",
+    "name": "Medusa Biggie",
+    "type": "variable",
+    "price": 199,
+    "variations": 3,
+    "address": "/frames/versace-medusa-biggie/",
+    "image": false
+   },
+   {
+    "draftId": "8",
+    "name": "PLD 6003/N",
+    "type": "variable",
+    "price": 59,
+    "variations": 3,
+    "address": "/frames/polaroid-pld-6003-n/",
+    "image": false
+   },
+   {
+    "draftId": "9",
+    "name": "Carrera 1055/S",
+    "type": "variable",
+    "price": 109,
+    "variations": 3,
+    "address": "/frames/carrera-carrera-1055-s/",
+    "image": false
+   },
+   {
+    "draftId": "10",
+    "name": "FZ6001",
+    "type": "variable",
+    "price": 169,
+    "variations": 3,
+    "address": "/frames/ferrari-scuderia-fz6001/",
+    "image": false
+   },
+   {
+    "draftId": "11",
+    "name": "SDS Shockwave",
+    "type": "variable",
+    "price": 59,
+    "variations": 3,
+    "address": "/frames/superdry-sds-shockwave/",
+    "image": false
+   },
+   {
+    "draftId": "12",
+    "name": "Shield",
+    "type": "variable",
+    "price": 339,
+    "variations": 3,
+    "address": "/frames/balenciaga-shield/",
+    "image": false
+   },
+   {
+    "draftId": "13",
+    "name": "Lewis 10",
+    "type": "variable",
+    "price": 99,
+    "variations": 3,
+    "address": "/frames/police-lewis-10/",
+    "image": false
+   },
+   {
+    "draftId": "14",
+    "name": "DG4268",
+    "type": "variable",
+    "price": 215,
+    "variations": 3,
+    "address": "/frames/dolce-and-gabbana-dg4268/",
+    "image": false
+   },
+   {
+    "draftId": "15",
+    "name": "Chelsea",
+    "type": "variable",
+    "price": 109,
+    "variations": 3,
+    "address": "/frames/michael-kors-chelsea/",
+    "image": false
+   },
+   {
+    "draftId": "16",
+    "name": "EA4033",
+    "type": "variable",
+    "price": 115,
+    "variations": 3,
+    "address": "/frames/emporio-armani-ea4033/",
+    "image": false
+   }
+  ],
+  "gaps": [
+   {
+    "draftId": "*",
+    "kind": "facet",
+    "detail": "the shop filters on \"shape\", \"cols\", \"mat\", \"ftype\", \"hinge\", \"nose\", \"eye\", \"pol\", \"gender\" (Eye Care Birmingham.dc.html); the catalogue writes brands only, so each of these is recorded on its product (facets) and has no WooCommerce attribute yet"
+   }
+  ],
+  "notes": []
+ }
 }

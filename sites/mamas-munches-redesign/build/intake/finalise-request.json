@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-27T15:45:40.124Z",
+	"generated": "2026-10-27T19:19:51.643Z",
 	"client": "mamas-munches-redesign",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
@@ -7,11 +7,11 @@
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
 		"surfaces": 15,
-		"rows": 207
+		"rows": 190
 	},
 	"surfaces": {
 		"site-header-announcement-strip-bar": {
-			"generated": "2026-10-27T15:45:40.117Z",
+			"generated": "2026-10-27T19:19:51.635Z",
 			"surface": "site-header-announcement-strip-bar",
 			"source": "intake.json skeletons[\"site-header-announcement-strip-bar\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -400,7 +400,7 @@
 						{
 							"draftId": "SiteHeader:28",
 							"tag": "button",
-							"block": null
+							"block": "sgs/cart"
 						}
 					],
 					"confidence": 0.5,
@@ -427,7 +427,7 @@
 							"key": "Home>SiteHeader@7#0/28#0",
 							"tag": "button",
 							"words": "",
-							"block": null
+							"block": "sgs/cart"
 						}
 					],
 					"siblingCount": 1,
@@ -520,7 +520,7 @@
 						{
 							"draftId": "SiteHeader:49",
 							"tag": "button",
-							"block": null
+							"block": "sgs/cart"
 						}
 					],
 					"confidence": 0.5,
@@ -547,7 +547,7 @@
 							"key": "Home>SiteHeader@7#0/49#0",
 							"tag": "button",
 							"words": "",
-							"block": null
+							"block": "sgs/cart"
 						}
 					],
 					"siblingCount": 1,
@@ -564,7 +564,7 @@
 			]
 		},
 		"nav-drawer-left": {
-			"generated": "2026-10-27T15:45:40.119Z",
+			"generated": "2026-10-27T19:19:51.635Z",
 			"surface": "nav-drawer-left",
 			"source": "intake.json skeletons[\"nav-drawer-left\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1150,7 +1150,7 @@
 			]
 		},
 		"site-footer": {
-			"generated": "2026-10-27T15:45:40.120Z",
+			"generated": "2026-10-27T19:19:51.636Z",
 			"surface": "site-footer",
 			"source": "intake.json skeletons[\"site-footer\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -1538,7 +1538,7 @@
 			]
 		},
 		"page-home-dc-html": {
-			"generated": "2026-10-27T15:45:40.121Z",
+			"generated": "2026-10-27T19:19:51.638Z",
 			"surface": "page-home-dc-html",
 			"source": "intake.json skeletons[\"page-home-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -2634,893 +2634,6 @@
 							"y": 1783.2,
 							"w": 177,
 							"h": 72
-						}
-					]
-				},
-				{
-					"key": "Home/67#0",
-					"element": {
-						"tag": "div",
-						"words": "your cookie, your way",
-						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div>"
-					},
-					"parent": {
-						"draftId": "Home:66",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:68",
-							"tag": "h2",
-							"block": "sgs/heading"
-						},
-						{
-							"draftId": "Home:69",
-							"tag": "p",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/67#0",
-					"draftId": "Home:67",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/66#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/68#0",
-							"tag": "h2",
-							"words": "Build your Zookie",
-							"block": "sgs/heading"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 158,
-							"y": 1721.9,
-							"w": 588.9,
-							"h": 28
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 1986.1,
-							"w": 628,
-							"h": 28
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 2015.2,
-							"w": 295,
-							"h": 28
-						}
-					]
-				},
-				{
-					"key": "Home/84#0",
-					"element": {
-						"tag": "span",
-						"words": "Pick up to 3 and we’ll split your box between them",
-						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"84\">Pick up to 3 and we’ll split your box between them</span>"
-					},
-					"parent": {
-						"draftId": "Home:82",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:83",
-							"tag": "span",
-							"block": "sgs/label"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/84#0",
-					"draftId": "Home:84",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/83#0",
-							"tag": "span",
-							"words": "3 · Flavours",
-							"block": "sgs/label"
-						},
-						{
-							"key": "Home/85#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/option-picker"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 265.1,
-							"y": 2088.1,
-							"w": 318.2,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 177.1,
-							"y": 2338,
-							"w": 318.2,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 2459.4,
-							"w": 295,
-							"h": 34
-						}
-					]
-				},
-				{
-					"key": "Home/89#0",
-					"element": {
-						"tag": "div",
-						"words": "Your 20: 10 strawberry · 10 mango",
-						"snippet": "<div style=\"margin-top:10px;font-size:14px;font-weight:700\" data-dc-tpl=\"89\">{{ split }}</div>"
-					},
-					"parent": {
-						"draftId": "Home:81",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:82",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Home:85",
-							"tag": "div",
-							"block": "sgs/option-picker"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/89#0",
-					"draftId": "Home:89",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/88",
-							"tag": "span",
-							"words": "✓",
-							"block": null
-						},
-						{
-							"key": "Home/90#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 158,
-							"y": 2285.1,
-							"w": 588.9,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 2535,
-							"w": 628,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 2841.4,
-							"w": 295,
-							"h": 17
-						}
-					]
-				},
-				{
-					"key": "Home/106#0",
-					"element": {
-						"tag": "div",
-						"words": "20 × Classic oat, milk choc chips, strawberry & mango",
-						"snippet": "<div style=\"position:relative;font-family:'Caveat',cursive;font-size:26px;text-align:center;line-height:1.1\" data-dc-tpl=\"106\">{{ summary }}</div>"
-					},
-					"parent": {
-						"draftId": "Home:101",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:102",
-							"tag": "div",
-							"block": null
-						},
-						{
-							"draftId": "Home:103",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/106#0",
-					"draftId": "Home:106",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/105",
-							"tag": "span",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Home/107#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 832.9,
-							"y": 2005.9,
-							"w": 427.1,
-							"h": 57.2
-						},
-						{
-							"width": 768,
-							"x": 143.7,
-							"y": 3000,
-							"w": 480.6,
-							"h": 28.6
-						},
-						{
-							"width": 375,
-							"x": 62,
-							"y": 3258.4,
-							"w": 251,
-							"h": 57.2
-						}
-					]
-				},
-				{
-					"key": "Home/110#0",
-					"element": {
-						"tag": "span",
-						"words": "Subscribe & save 10%",
-						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"110\">Subscribe &amp; save 10%</span>"
-					},
-					"parent": {
-						"draftId": "Home:109",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:111",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/110#0",
-					"draftId": "Home:110",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/109#0",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/111#0",
-							"tag": "span",
-							"words": "Skip, swap or cancel any time",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 828.9,
-							"y": 2120.1,
-							"w": 175,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 88,
-							"y": 3085.6,
-							"w": 175,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 58,
-							"y": 3372.5,
-							"w": 175,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Home/111#0",
-					"element": {
-						"tag": "span",
-						"words": "Skip, swap or cancel any time",
-						"snippet": "<span style=\"font-size:13px;color:#5E4A3D\" data-dc-tpl=\"111\">Skip, swap or cancel any time</span>"
-					},
-					"parent": {
-						"draftId": "Home:109",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:110",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/111#0",
-					"draftId": "Home:111",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/110#0",
-							"tag": "span",
-							"words": "Subscribe & save 10%",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Home/112#0",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 828.9,
-							"y": 2139.1,
-							"w": 175,
-							"h": 15
-						},
-						{
-							"width": 768,
-							"x": 88,
-							"y": 3104.6,
-							"w": 175,
-							"h": 15
-						},
-						{
-							"width": 375,
-							"x": 58,
-							"y": 3391.5,
-							"w": 175,
-							"h": 15
-						}
-					]
-				},
-				{
-					"key": "Home/113#0",
-					"element": {
-						"tag": "span",
-						"words": "£19.35",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"113\">{{ subTxt }}</span>"
-					},
-					"parent": {
-						"draftId": "Home:112",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:114",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/113#0",
-					"draftId": "Home:113",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/112#0",
-							"tag": "span",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/114#0",
-							"tag": "span",
-							"words": "£21.50",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1197.1,
-							"y": 2114.1,
-							"w": 66.9,
-							"h": 31
-						},
-						{
-							"width": 768,
-							"x": 613.1,
-							"y": 3079.6,
-							"w": 66.9,
-							"h": 31
-						},
-						{
-							"width": 375,
-							"x": 250.1,
-							"y": 3366.5,
-							"w": 66.9,
-							"h": 31
-						}
-					]
-				},
-				{
-					"key": "Home/114#0",
-					"element": {
-						"tag": "span",
-						"words": "£21.50",
-						"snippet": "<span style=\"font-size:13px;color:#6B5646;text-decoration:line-through\" data-dc-tpl=\"114\">{{ onceTxt }}</span>"
-					},
-					"parent": {
-						"draftId": "Home:112",
-						"tag": "span",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:113",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/114#0",
-					"draftId": "Home:114",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/113#0",
-							"tag": "span",
-							"words": "£19.35",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Home/116#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/multi-button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1227.5,
-							"y": 2145.1,
-							"w": 36.5,
-							"h": 15
-						},
-						{
-							"width": 768,
-							"x": 643.5,
-							"y": 3110.6,
-							"w": 36.5,
-							"h": 15
-						},
-						{
-							"width": 375,
-							"x": 280.5,
-							"y": 3397.5,
-							"w": 36.5,
-							"h": 15
-						}
-					]
-				},
-				{
-					"key": "Home/116#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px\" data-dc-tpl=\"116\"><sc-for list=\"{{ freqs }}\" as=\"f\" hint-placeholder-count=\"2\" data-dc-tpl=\"117\""
-					},
-					"parent": {
-						"draftId": "Home:107",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:108",
-							"tag": "button",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Home:119",
-							"tag": "button",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.51,
-					"candidates": [
-						{
-							"block": "sgs/multi-button",
-							"score": 0.75,
-							"share": 0.682
-						},
-						{
-							"block": "sgs/container",
-							"score": 0.35,
-							"share": 0.318
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/116#0",
-					"draftId": "Home:116",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/114#0",
-							"tag": "span",
-							"words": "£21.50",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Home/118",
-							"tag": "button",
-							"words": "Every 2 weeks",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 810.9,
-							"y": 2183.1,
-							"w": 471.1,
-							"h": 44
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 3148.6,
-							"w": 628,
-							"h": 44
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 3435.5,
-							"w": 295,
-							"h": 44
-						}
-					]
-				},
-				{
-					"key": "Home/120#0",
-					"element": {
-						"tag": "span",
-						"words": "One-off box",
-						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"120\">One-off box</span>"
-					},
-					"parent": {
-						"draftId": "Home:119",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:121",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/120#0",
-					"draftId": "Home:120",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/119#0",
-							"tag": "button",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/121#0",
-							"tag": "span",
-							"words": "£21.50",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 828.9,
-							"y": 2257.6,
-							"w": 88,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 88,
-							"y": 3223.1,
-							"w": 88,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 58,
-							"y": 3510,
-							"w": 88,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Home/121#0",
-					"element": {
-						"tag": "span",
-						"words": "£21.50",
-						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:22px\" data-dc-tpl=\"121\">{{ onceTxt }}</span>"
-					},
-					"parent": {
-						"draftId": "Home:119",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:120",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/121#0",
-					"draftId": "Home:121",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/120#0",
-							"tag": "span",
-							"words": "One-off box",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Home/122#0",
-							"tag": "button",
-							"words": "Subscribe · £19.35",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1196.9,
-							"y": 2251.6,
-							"w": 67.1,
-							"h": 31
-						},
-						{
-							"width": 768,
-							"x": 612.9,
-							"y": 3217.1,
-							"w": 67.1,
-							"h": 31
-						},
-						{
-							"width": 375,
-							"x": 249.9,
-							"y": 3504,
-							"w": 67.1,
-							"h": 31
-						}
-					]
-				},
-				{
-					"key": "Home/123#0",
-					"element": {
-						"tag": "div",
-						"words": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
-						"snippet": "<div style=\"font-size:14px;font-weight:600;text-align:center\" data-dc-tpl=\"123\">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>"
-					},
-					"parent": {
-						"draftId": "Home:100",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:101",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Home:107",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Home:122",
-							"tag": "button",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-home-dc-html:Home/123#0",
-					"draftId": "Home:123",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/122#0",
-							"tag": "button",
-							"words": "Subscribe · £19.35",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Home/124#0",
-							"tag": "section",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 3,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 810.9,
-							"y": 2393.1,
-							"w": 471.1,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 3358.6,
-							"w": 628,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 3645.5,
-							"w": 295,
-							"h": 34
 						}
 					]
 				},
@@ -6231,7 +5344,7 @@
 			]
 		},
 		"build-your-zookie": {
-			"generated": "2026-10-27T15:45:40.121Z",
+			"generated": "2026-10-27T19:19:51.639Z",
 			"surface": "build-your-zookie",
 			"source": "intake.json skeletons[\"build-your-zookie\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -6247,39 +5360,45 @@
 					"parent": {
 						"draftId": "Home:66",
 						"tag": "div",
-						"block": null
+						"block": "sgs/container"
 					},
 					"siblings": [
 						{
 							"draftId": "Home:68",
 							"tag": "h2",
-							"block": null
+							"block": "sgs/heading"
 						},
 						{
 							"draftId": "Home:69",
 							"tag": "p",
-							"block": null
+							"block": "sgs/text"
 						}
 					],
-					"confidence": 1,
-					"candidates": [],
-					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
 					"rowId": "skeleton:build-your-zookie:Home/67#0",
 					"draftId": "Home:67",
-					"action": "unresolved",
+					"action": null,
 					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/66#0",
 							"tag": "div",
 							"words": "",
-							"block": null
+							"block": "sgs/container"
 						},
 						{
 							"key": "Home/68#0",
 							"tag": "h2",
 							"words": "Build your Zookie",
-							"block": null
+							"block": "sgs/heading"
 						}
 					],
 					"siblingCount": 2,
@@ -6306,360 +5425,11 @@
 							"h": 28
 						}
 					]
-				},
-				{
-					"key": "Home/69#0",
-					"element": {
-						"tag": "p",
-						"words": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
-						"snippet": "<p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3C31;max-width:520px\" data-dc-tpl=\"69\">Nothing sits on a shelf. Pick a base, your chips and a fruit, "
-					},
-					"parent": {
-						"draftId": "Home:66",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Home:67",
-							"tag": "div",
-							"block": null
-						},
-						{
-							"draftId": "Home:68",
-							"tag": "h2",
-							"block": null
-						}
-					],
-					"confidence": 1,
-					"candidates": [],
-					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
-					"rowId": "skeleton:build-your-zookie:Home/69#0",
-					"draftId": "Home:69",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/68#0",
-							"tag": "h2",
-							"words": "Build your Zookie",
-							"block": null
-						},
-						{
-							"key": "Home/70#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 158,
-							"y": 1821.1,
-							"w": 520,
-							"h": 51
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 2071,
-							"w": 520,
-							"h": 51
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 2089.9,
-							"w": 295,
-							"h": 76.5
-						}
-					]
-				},
-				{
-					"key": "Home/106#0",
-					"element": {
-						"tag": "div",
-						"words": "20 × Classic oat, milk choc chips, strawberry & mango",
-						"snippet": "<div style=\"position:relative;font-family:'Caveat',cursive;font-size:26px;text-align:center;line-height:1.1\" data-dc-tpl=\"106\">{{ summary }}</div>"
-					},
-					"parent": {
-						"draftId": "Home:101",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Home:102",
-							"tag": "div",
-							"block": null
-						},
-						{
-							"draftId": "Home:103",
-							"tag": "div",
-							"block": null
-						}
-					],
-					"confidence": 1,
-					"candidates": [],
-					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
-					"rowId": "skeleton:build-your-zookie:Home/106#0",
-					"draftId": "Home:106",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/105",
-							"tag": "span",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Home/107#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 832.9,
-							"y": 2005.9,
-							"w": 427.1,
-							"h": 57.2
-						},
-						{
-							"width": 768,
-							"x": 143.7,
-							"y": 3000,
-							"w": 480.6,
-							"h": 28.6
-						},
-						{
-							"width": 375,
-							"x": 62,
-							"y": 3258.4,
-							"w": 251,
-							"h": 57.2
-						}
-					]
-				},
-				{
-					"key": "Home/108#0",
-					"element": {
-						"tag": "button",
-						"words": "",
-						"snippet": "<button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg "
-					},
-					"parent": {
-						"draftId": "Home:107",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Home:116",
-							"tag": "div",
-							"block": null
-						},
-						{
-							"draftId": "Home:119",
-							"tag": "button",
-							"block": null
-						}
-					],
-					"confidence": 1,
-					"candidates": [],
-					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
-					"rowId": "skeleton:build-your-zookie:Home/108#0",
-					"draftId": "Home:108",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/107#0",
-							"tag": "div",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Home/109#0",
-							"tag": "span",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 810.9,
-							"y": 2101.1,
-							"w": 471.1,
-							"h": 72
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 3066.6,
-							"w": 628,
-							"h": 72
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 3353.5,
-							"w": 295,
-							"h": 72
-						}
-					]
-				},
-				{
-					"key": "Home/119#0",
-					"element": {
-						"tag": "button",
-						"words": "",
-						"snippet": "<button sc-camel-on-click=\"{{ pickOnce }}\" aria-pressed=\"{{ isOnce }}\" style=\"min-height:60px;border-radius:20px;border:2px solid #3A2A22;background:{{ once.bg "
-					},
-					"parent": {
-						"draftId": "Home:107",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Home:108",
-							"tag": "button",
-							"block": null
-						},
-						{
-							"draftId": "Home:116",
-							"tag": "div",
-							"block": null
-						}
-					],
-					"confidence": 1,
-					"candidates": [],
-					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
-					"rowId": "skeleton:build-your-zookie:Home/119#0",
-					"draftId": "Home:119",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/118",
-							"tag": "button",
-							"words": "Every 2 weeks",
-							"block": null
-						},
-						{
-							"key": "Home/120#0",
-							"tag": "span",
-							"words": "One-off box",
-							"block": null
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 810.9,
-							"y": 2237.1,
-							"w": 471.1,
-							"h": 60
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 3202.6,
-							"w": 628,
-							"h": 60
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 3489.5,
-							"w": 295,
-							"h": 60
-						}
-					]
-				},
-				{
-					"key": "Home/123#0",
-					"element": {
-						"tag": "div",
-						"words": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
-						"snippet": "<div style=\"font-size:14px;font-weight:600;text-align:center\" data-dc-tpl=\"123\">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>"
-					},
-					"parent": {
-						"draftId": "Home:100",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "Home:101",
-							"tag": "div",
-							"block": null
-						},
-						{
-							"draftId": "Home:107",
-							"tag": "div",
-							"block": null
-						},
-						{
-							"draftId": "Home:122",
-							"tag": "button",
-							"block": null
-						}
-					],
-					"confidence": 1,
-					"candidates": [],
-					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
-					"rowId": "skeleton:build-your-zookie:Home/123#0",
-					"draftId": "Home:123",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Home/122#0",
-							"tag": "button",
-							"words": "Subscribe · £19.35",
-							"block": null
-						}
-					],
-					"siblingCount": 3,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 810.9,
-							"y": 2393.1,
-							"w": 471.1,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 70,
-							"y": 3358.6,
-							"w": 628,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 3645.5,
-							"w": 295,
-							"h": 34
-						}
-					]
 				}
 			]
 		},
 		"page-shop-dc-html": {
-			"generated": "2026-10-27T15:45:40.122Z",
+			"generated": "2026-10-27T19:19:51.640Z",
 			"surface": "page-shop-dc-html",
 			"source": "intake.json skeletons[\"page-shop-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -7590,7 +6360,7 @@
 			]
 		},
 		"page-product-dc-html-id-zookies": {
-			"generated": "2026-10-27T15:45:40.122Z",
+			"generated": "2026-10-27T19:19:51.640Z",
 			"surface": "page-product-dc-html-id-zookies",
 			"source": "intake.json skeletons[\"page-product-dc-html-id-zookies\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -8618,7 +7388,7 @@
 			]
 		},
 		"page-gifts-dc-html": {
-			"generated": "2026-10-27T15:45:40.123Z",
+			"generated": "2026-10-27T19:19:51.641Z",
 			"surface": "page-gifts-dc-html",
 			"source": "intake.json skeletons[\"page-gifts-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -10203,7 +8973,7 @@
 			]
 		},
 		"page-basket-dc-html": {
-			"generated": "2026-10-27T15:45:40.123Z",
+			"generated": "2026-10-27T19:19:51.641Z",
 			"surface": "page-basket-dc-html",
 			"source": "intake.json skeletons[\"page-basket-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -11528,7 +10298,7 @@
 			]
 		},
 		"page-checkout-dc-html": {
-			"generated": "2026-10-27T15:45:40.123Z",
+			"generated": "2026-10-27T19:19:51.642Z",
 			"surface": "page-checkout-dc-html",
 			"source": "intake.json skeletons[\"page-checkout-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13173,7 +11943,7 @@
 			]
 		},
 		"page-contact-dc-html": {
-			"generated": "2026-10-27T15:45:40.124Z",
+			"generated": "2026-10-27T19:19:51.642Z",
 			"surface": "page-contact-dc-html",
 			"source": "intake.json skeletons[\"page-contact-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13586,7 +12356,7 @@
 			]
 		},
 		"contact-form": {
-			"generated": "2026-10-27T15:45:40.124Z",
+			"generated": "2026-10-27T19:19:51.642Z",
 			"surface": "contact-form",
 			"source": "intake.json skeletons[\"contact-form\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -13666,7 +12436,7 @@
 			]
 		},
 		"page-help-dc-html": {
-			"generated": "2026-10-27T15:45:40.124Z",
+			"generated": "2026-10-27T19:19:51.642Z",
 			"surface": "page-help-dc-html",
 			"source": "intake.json skeletons[\"page-help-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -15257,7 +14027,7 @@
 			]
 		},
 		"page-signin-dc-html": {
-			"generated": "2026-10-27T15:45:40.124Z",
+			"generated": "2026-10-27T19:19:51.642Z",
 			"surface": "page-signin-dc-html",
 			"source": "intake.json skeletons[\"page-signin-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -15814,7 +14584,7 @@
 			]
 		},
 		"page-account-dc-html": {
-			"generated": "2026-10-27T15:45:40.124Z",
+			"generated": "2026-10-27T19:19:51.642Z",
 			"surface": "page-account-dc-html",
 			"source": "intake.json skeletons[\"page-account-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
