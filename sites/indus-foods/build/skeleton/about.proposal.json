@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:38:26.877Z",
-	"inventory": "2026-10-27T00:38:26.443Z",
-	"source": "http://127.0.0.1:50068/#/about",
+	"generated": "2026-10-27T15:54:00.140Z",
+	"inventory": "2026-10-27T15:53:59.832Z",
+	"source": "http://127.0.0.1:58069/#/about",
 	"surface": "page-about",
 	"siteName": null,
 	"surfaceParts": [],
@@ -534,7 +534,7 @@
 			"snippet": "<a href=\"{{ c.href }}\" data-mag=\"\" style=\"font-weight:600;padding:15px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;background:{{ c.bg }};color:{{ c.fg }};border:2px solid {{ c.border }};box-shadow:0 8px 18px -8px rgba(0,0,0,.45);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-sh",
 			"attributes": {
 				"label": "Read our story",
-				"url": "#/our-story"
+				"url": "/about/our-story/"
 			}
 		},
 		{
@@ -570,7 +570,7 @@
 			"snippet": "<a href=\"{{ c.href }}\" data-mag=\"\" style=\"font-weight:600;padding:15px 26px;border-radius:999px;font-size:16px;display:inline-flex;align-items:center;gap:10px;background:{{ c.bg }};color:{{ c.fg }};border:2px solid {{ c.border }};box-shadow:0 8px 18px -8px rgba(0,0,0,.45);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-sh",
 			"attributes": {
 				"label": "Apply for a trade account",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		},
 		{
@@ -3768,7 +3768,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/our-story"
+				"url": "/about/our-story/"
 			}
 		},
 		{
@@ -4047,7 +4047,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/certifications"
+				"url": "/about/certifications/"
 			}
 		},
 		{
@@ -4326,7 +4326,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/community"
+				"url": "/about/community/"
 			}
 		},
 		{
@@ -4605,7 +4605,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/sustainability"
+				"url": "/about/sustainability/"
 			}
 		},
 		{
@@ -4884,7 +4884,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/careers"
+				"url": "/about/careers/"
 			}
 		},
 		{
@@ -5163,7 +5163,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		},
 		{
@@ -5442,7 +5442,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/food-service"
+				"url": "/food-service/"
 			}
 		},
 		{
@@ -5721,7 +5721,7 @@
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;font-weight:700;font-size:15px;color:#0A7EA8;\" data-dc-tpl=\"493\">Learn more {{ arrowIcon }}</span>",
 			"attributes": {
 				"label": "Learn more",
-				"url": "#/brands"
+				"url": "/brands/"
 			}
 		},
 		{
@@ -6154,7 +6154,7 @@
 			"snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
 			"attributes": {
 				"label": "Become a Trade Customer",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		},
 		{

@@ -2290,7 +2290,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Contact the team",
-													"url": "#/contact"
+													"url": "/contact/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"

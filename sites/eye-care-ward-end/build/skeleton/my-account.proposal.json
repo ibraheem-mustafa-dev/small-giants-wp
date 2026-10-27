@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:30:29.566Z",
-	"inventory": "2026-10-27T01:30:28.999Z",
-	"source": "http://127.0.0.1:49156/#@state/page=signin",
+	"generated": "2026-10-27T16:05:34.500Z",
+	"inventory": "2026-10-27T16:05:34.366Z",
+	"source": "http://127.0.0.1:50785/#@state/page=signin",
 	"surface": "page-signin",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [
@@ -241,7 +241,7 @@
 			"words": "",
 			"block": "sgs/account",
 			"action": null,
-			"reason": "the account page is an ordinary page (Bean, 2026-10-26; eye-care-test's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (2 password field(s))",
+			"reason": "the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (2 password field(s))",
 			"source": "rule commerceRegion",
 			"confidence": 1,
 			"low": false,
@@ -253,7 +253,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule commerceRegion: the account page is an ordinary page (Bean, 2026-10-26; eye-care-test's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (2 password field(s))"
+						"rule commerceRegion: the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard (2 password field(s))"
 					]
 				}
 			],

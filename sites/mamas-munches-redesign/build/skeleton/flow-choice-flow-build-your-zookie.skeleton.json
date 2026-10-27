@@ -1,7 +1,10 @@
 [
 	{
-		"name": "sgs/form",
-		"attributes": {},
+		"name": "sgs/choice-flow",
+		"attributes": {
+			"flowLayout": "compact",
+			"title": "Build your Zookie"
+		},
 		"draftRef": {
 			"tpl": "Root/63#0"
 		},
@@ -15,122 +18,25 @@
 		},
 		"innerBlocks": [
 			{
-				"name": "sgs/container",
+				"name": "sgs/form-step",
 				"attributes": {
-					"tagName": "div",
-					"layout": "stack"
-				},
-				"draftRef": {
-					"tpl": "Root/65#0"
-				},
-				"draftFingerprint": {
-					"tag": "div",
-					"cls": "",
-					"styleHash": "e5b9b746",
-					"parentTags": [
-						"section",
-						"div"
-					],
-					"textHash": "1505",
-					"line": 70
+					"label": "Base"
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/container",
+						"name": "sgs/choice-flow-question",
 						"attributes": {
-							"tagName": "div"
-						},
-						"draftRef": {
-							"tpl": "Root/66#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "1505",
-							"parentTags": [
-								"section",
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 71
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "your cookie, your way"
+							"question": "Base",
+							"options": [
+								{
+									"label": "Classic oat",
+									"value": "classic-oat"
 								},
-								"draftRef": {
-									"tpl": "Root/67#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "c99acba9",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "ae836562",
-									"line": 72
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/heading",
-								"attributes": {
-									"content": "Build your Zookie"
-								},
-								"draftRef": {
-									"tpl": "Root/68#0"
-								},
-								"draftFingerprint": {
-									"tag": "h2",
-									"cls": "",
-									"styleHash": "7e0fa315",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "88c8559f",
-									"line": 73
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh."
-								},
-								"draftRef": {
-									"tpl": "Root/69#0"
-								},
-								"draftFingerprint": {
-									"tag": "p",
-									"cls": "",
-									"styleHash": "9fcdc40e",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "5825abf6",
-									"line": 74
-								},
-								"innerBlocks": []
-							}
-						]
-					},
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div"
+								{
+									"label": "Vegan oat",
+									"value": "vegan-oat"
+								}
+							]
 						},
 						"draftRef": {
 							"tpl": "Root/70#0"
@@ -147,57 +53,38 @@
 							"textHash": "1505",
 							"line": 76
 						},
-						"innerBlocks": [
-							{
-								"name": "sgs/label",
-								"attributes": {
-									"text": "1 · Base"
-								},
-								"draftRef": {
-									"tpl": "Root/71#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "d14a126",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "cb9b2116",
-									"line": 76
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/option-picker",
-								"attributes": {},
-								"draftRef": {
-									"tpl": "Root/72#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2a2f14b5",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 77
-								},
-								"innerBlocks": []
-							}
-						]
-					},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Chips"
+				},
+				"innerBlocks": [
 					{
-						"name": "sgs/container",
+						"name": "sgs/choice-flow-question",
 						"attributes": {
-							"tagName": "div"
+							"question": "Chips",
+							"options": [
+								{
+									"label": "Milk choc",
+									"value": "milk-choc"
+								},
+								{
+									"label": "White choc",
+									"value": "white-choc"
+								},
+								{
+									"label": "Dark choc",
+									"value": "dark-choc"
+								},
+								{
+									"label": "No chips",
+									"value": "no-chips"
+								}
+							]
 						},
 						"draftRef": {
 							"tpl": "Root/76#0"
@@ -214,57 +101,22 @@
 							"textHash": "1505",
 							"line": 78
 						},
-						"innerBlocks": [
-							{
-								"name": "sgs/label",
-								"attributes": {
-									"text": "2 · Chips"
-								},
-								"draftRef": {
-									"tpl": "Root/77#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "d14a126",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "4dc4e0e1",
-									"line": 78
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/option-picker",
-								"attributes": {},
-								"draftRef": {
-									"tpl": "Root/78#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2a2f14b5",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 79
-								},
-								"innerBlocks": []
-							}
-						]
-					},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Flavours"
+				},
+				"innerBlocks": [
 					{
-						"name": "sgs/container",
+						"name": "sgs/choice-flow-question",
 						"attributes": {
-							"tagName": "div"
+							"question": "Flavours",
+							"intro": "Pick up to 3 and we’ll split your box between them",
+							"options": []
 						},
 						"draftRef": {
 							"tpl": "Root/81#0"
@@ -281,130 +133,34 @@
 							"textHash": "1505",
 							"line": 80
 						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root/82#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "3ca36f58",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 80
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/label",
-										"attributes": {
-											"text": "3 · Flavours"
-										},
-										"draftRef": {
-											"tpl": "Root/83#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "4715e8f2",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "d530b127",
-											"line": 80
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Pick up to 3 and we’ll split your box between them"
-										},
-										"draftRef": {
-											"tpl": "Root/84#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "d1ce9cd1",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "29f09391",
-											"line": 80
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/option-picker",
-								"attributes": {},
-								"draftRef": {
-									"tpl": "Root/85#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2a2f14b5",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 81
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "Your 20: 10 strawberry · 10 mango"
-								},
-								"draftRef": {
-									"tpl": "Root/89#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "7c22a4aa",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "6453f9ac",
-									"line": 82
-								},
-								"innerBlocks": []
-							}
-						]
-					},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "How many"
+				},
+				"innerBlocks": [
 					{
-						"name": "sgs/container",
+						"name": "sgs/choice-flow-question",
 						"attributes": {
-							"tagName": "div"
+							"question": "How many",
+							"options": [
+								{
+									"label": "8",
+									"value": "8"
+								},
+								{
+									"label": "20",
+									"value": "20"
+								},
+								{
+									"label": "40",
+									"value": "40"
+								}
+							]
 						},
 						"draftRef": {
 							"tpl": "Root/90#0"
@@ -421,543 +177,75 @@
 							"textHash": "1505",
 							"line": 83
 						},
-						"innerBlocks": [
-							{
-								"name": "sgs/label",
-								"attributes": {
-									"text": "4 · How many"
-								},
-								"draftRef": {
-									"tpl": "Root/91#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "d14a126",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "3303638d",
-									"line": 83
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/option-picker",
-								"attributes": {},
-								"draftRef": {
-									"tpl": "Root/92#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "d736ae7b",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 84
-								},
-								"innerBlocks": []
-							}
-						]
+						"innerBlocks": []
 					}
 				]
 			},
 			{
-				"name": "sgs/container",
+				"name": "sgs/form-step",
 				"attributes": {
-					"tagName": "div",
-					"layout": "stack"
-				},
-				"draftRef": {
-					"tpl": "Root/100#0"
-				},
-				"draftFingerprint": {
-					"tag": "div",
-					"cls": "",
-					"styleHash": "912d8301",
-					"parentTags": [
-						"section",
-						"div"
-					],
-					"textHash": "1505",
-					"line": 86
+					"label": ""
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/container",
+						"name": "sgs/choice-flow-question",
 						"attributes": {
-							"tagName": "div",
-							"layout": "stack"
+							"question": "",
+							"options": [
+								{
+									"label": "Every 2 weeks",
+									"value": "every-2-weeks"
+								},
+								{
+									"label": "Every 4 weeks",
+									"value": "every-4-weeks"
+								}
+							]
 						},
 						"draftRef": {
-							"tpl": "Root/101#0"
+							"tpl": "Root/116#0"
 						},
 						"draftFingerprint": {
 							"tag": "div",
 							"cls": "",
-							"styleHash": "98d8e1de",
+							"styleHash": "804ad66d",
 							"parentTags": [
 								"section",
+								"div",
 								"div",
 								"div"
 							],
 							"textHash": "1505",
-							"line": 87
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div"
-								},
-								"draftRef": {
-									"tpl": "Root/103#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "f614090c",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 89
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "20 × Classic oat, milk choc chips, strawberry & mango"
-								},
-								"draftRef": {
-									"tpl": "Root/106#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "e7dae277",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "55364dfa",
-									"line": 92
-								},
-								"innerBlocks": []
-							}
-						]
-					},
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div",
-							"layout": "grid"
-						},
-						"draftRef": {
-							"tpl": "Root/107#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "fc658fd8",
-							"parentTags": [
-								"section",
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 94
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root/108#0"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "",
-									"styleHash": "61819b03",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 95
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root/109#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "c2154e41",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "1505",
-											"line": 95
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Subscribe & save 10%"
-												},
-												"draftRef": {
-													"tpl": "Root/110#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "14f5fbb8",
-													"parentTags": [
-														"section",
-														"div",
-														"div",
-														"div",
-														"button",
-														"span"
-													],
-													"textHash": "d01dadce",
-													"line": 95
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Skip, swap or cancel any time"
-												},
-												"draftRef": {
-													"tpl": "Root/111#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "feea9976",
-													"parentTags": [
-														"section",
-														"div",
-														"div",
-														"div",
-														"button",
-														"span"
-													],
-													"textHash": "7051f7a5",
-													"line": 95
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root/112#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "d3c7f313",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "1505",
-											"line": 95
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "£19.35"
-												},
-												"draftRef": {
-													"tpl": "Root/113#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "fe6d8d78",
-													"parentTags": [
-														"section",
-														"div",
-														"div",
-														"div",
-														"button",
-														"span"
-													],
-													"textHash": "987d5926",
-													"line": 95
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "£21.50"
-												},
-												"draftRef": {
-													"tpl": "Root/114#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "7d33852b",
-													"parentTags": [
-														"section",
-														"div",
-														"div",
-														"div",
-														"button",
-														"span"
-													],
-													"textHash": "9820f9ee",
-													"line": 95
-												},
-												"innerBlocks": []
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/multi-button",
-								"attributes": {
-									"layout": "grid"
-								},
-								"draftRef": {
-									"tpl": "Root/116#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "804ad66d",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 97
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "Every 2 weeks"
-										},
-										"draftRef": {
-											"tpl": "Root/118#0"
-										},
-										"draftFingerprint": {
-											"tag": "button",
-											"cls": "",
-											"styleHash": "e8b6e997",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "4ca71c25",
-											"line": 97
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "Every 4 weeks"
-										},
-										"draftRef": {
-											"tpl": "Root/118#1"
-										},
-										"draftFingerprint": {
-											"tag": "button",
-											"cls": "",
-											"styleHash": "408a4a1e",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "e69db523",
-											"line": 97
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root/119#0"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "",
-									"styleHash": "f3c747ce",
-									"parentTags": [
-										"section",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 99
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "One-off box"
-										},
-										"draftRef": {
-											"tpl": "Root/120#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "14f5fbb8",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "9ca89076",
-											"line": 99
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "£21.50"
-										},
-										"draftRef": {
-											"tpl": "Root/121#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "fe6d8d78",
-											"parentTags": [
-												"section",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "9820f9ee",
-											"line": 99
-										},
-										"innerBlocks": []
-									}
-								]
-							}
-						]
-					},
-					{
-						"name": "sgs/button",
-						"attributes": {
-							"label": "Subscribe · £19.35"
-						},
-						"draftRef": {
-							"tpl": "Root/122#0"
-						},
-						"draftFingerprint": {
-							"tag": "button",
-							"cls": "scp0 scp1",
-							"styleHash": "58579cdd",
-							"parentTags": [
-								"section",
-								"div",
-								"div"
-							],
-							"textHash": "a8e428b9",
-							"line": 101
+							"line": 97
 						},
 						"innerBlocks": []
-					},
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": ""
+				},
+				"innerBlocks": [
 					{
-						"name": "sgs/text",
+						"name": "sgs/choice-flow-result",
 						"attributes": {
-							"text": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35"
-						},
-						"draftRef": {
-							"tpl": "Root/123#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "d31fb78c",
-							"parentTags": [
-								"section",
-								"div",
-								"div"
-							],
-							"textHash": "ebe5e5ff",
-							"line": 102
+							"heading": "",
+							"action": "add-to-bag",
+							"buttonShowsTotal": true
 						},
 						"innerBlocks": []
 					}
 				]
 			}
 		],
-		"draftSlots": {
-			".sgs-container__inner": {
-				"tpl": "Root/64#0"
+		"handover": [
+			{
+				"owner": "product-data",
+				"kind": "text",
+				"detail": "question 4 \"How many\": the option prices (£9.50, £21.50, £38.00) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there"
 			}
-		}
+		]
 	}
 ]

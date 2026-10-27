@@ -107,7 +107,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Apply For A Trade Account",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/209#0"
@@ -132,7 +132,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Request Our Catalogue",
-									"url": "#/catalogue"
+									"url": "/catalogue/"
 								},
 								"draftRef": {
 									"tpl": "Root/210#0"
@@ -531,7 +531,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Top Ethnic Food Services",
-													"url": "#/food-service"
+													"url": "/food-service/"
 												},
 												"draftRef": {
 													"tpl": "Root/237#0"
@@ -677,7 +677,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Food Manufacturer",
-													"url": "#/manufacturing"
+													"url": "/manufacturing/"
 												},
 												"draftRef": {
 													"tpl": "Root/237#1"
@@ -823,7 +823,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Food Retailer",
-													"url": "#/retail"
+													"url": "/retail/"
 												},
 												"draftRef": {
 													"tpl": "Root/237#2"
@@ -969,7 +969,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "UK Food Wholesaler",
-													"url": "#/wholesale"
+													"url": "/wholesale/"
 												},
 												"draftRef": {
 													"tpl": "Root/237#3"
@@ -1697,7 +1697,7 @@
 										"name": "sgs/button",
 										"attributes": {
 											"label": "Read our story",
-											"url": "#/our-story"
+											"url": "/about/our-story/"
 										},
 										"draftRef": {
 											"tpl": "Root/254#0"
@@ -2105,7 +2105,7 @@
 										"name": "sgs/button",
 										"attributes": {
 											"label": "Start your application",
-											"url": "#/apply"
+											"url": "/apply/"
 										},
 										"draftRef": {
 											"tpl": "Root/306#0"
@@ -2246,11 +2246,11 @@
 									"items": [
 										{
 											"text": "Apply For A Trade Account",
-											"url": "#/apply"
+											"url": "/apply/"
 										},
 										{
 											"text": "Request Our Catalogue",
-											"url": "#/catalogue"
+											"url": "/catalogue/"
 										}
 									]
 								},

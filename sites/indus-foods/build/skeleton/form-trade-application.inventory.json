@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-23T19:46:52.989Z",
-  "source": "http://127.0.0.1:64611/Indus%20Foods%20Website%20v2.dc.html#/apply",
+  "generated": "2026-10-27T14:09:29.924Z",
+  "source": "http://127.0.0.1:58385/Indus%20Foods%20Website%20v2.dc.html#/apply",
   "root": "[data-sgs-skeleton-root=\"trade-account-application\"]",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -7903,7 +7903,7 @@
       "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
     },
     "route": {
-      "commit": "916eba5911241c1499a107fb7a3da66ba0a20f4e"
+      "commit": "5892ce78973c218d477af956c380a4d83e583f7f"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:29:16.684Z",
-	"inventory": "2026-10-27T00:29:16.160Z",
-	"source": "http://127.0.0.1:50068/",
+	"generated": "2026-10-27T16:33:46.401Z",
+	"inventory": "2026-10-27T16:33:45.821Z",
+	"source": "http://127.0.0.1:58069/",
 	"surface": "sticky-header",
 	"siteName": null,
 	"surfaceParts": [
@@ -294,7 +294,7 @@
 			"snippet": "<a href=\"#/apply\" style=\"display:inline-flex;align-items:center;gap:7px;background:#FFFFFF;color:#0A7EA8;border-radius:999px;padding:6px 14px;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.15);transition:transform .2s,box-shadow .25s,background .2s,color .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2);background:#D8",
 			"attributes": {
 				"label": "Register For A Trade Account",
-				"url": "#/apply"
+				"url": "/apply/"
 			},
 			"strip": "Root/9#0",
 			"builtPost": {
@@ -952,7 +952,7 @@
 			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:10px 18px;font-size:17px;font-weight:600;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s,color .2s;\" style-hover=\"t",
 			"attributes": {
 				"label": "Register For A Trade Account",
-				"url": "#/apply"
+				"url": "/apply/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -1673,7 +1673,7 @@
 			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"flex-shrink:0;display:inline-flex;align-items:center;gap:8px;background:#0A7EA8;color:#FFFFFF;border:2px solid #0A7EA8;border-radius:999px;padding:12px 22px;font-size:17px;font-weight:600;white-space:nowrap;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s,color .2s;\" style-hover=\"t",
 			"attributes": {
 				"label": "Register For A Trade Account",
-				"url": "#/apply"
+				"url": "/apply/"
 			},
 			"builtPost": {
 				"site": "sandybrown",

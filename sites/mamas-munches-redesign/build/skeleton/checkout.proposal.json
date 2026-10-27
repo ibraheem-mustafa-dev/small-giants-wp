@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:16:57.281Z",
-	"inventory": "2026-10-27T01:16:56.484Z",
-	"source": "http://127.0.0.1:61308/",
+	"generated": "2026-10-27T15:53:48.560Z",
+	"inventory": "2026-10-27T15:53:48.196Z",
+	"source": "http://127.0.0.1:65074/",
 	"surface": "page-checkout-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -65,18 +65,18 @@
 		"rule": 1
 	},
 	"counts": {
-		"inventoryElements": 116,
-		"parts": 3,
-		"rows": 113,
-		"skeletonNodes": 83,
-		"expandedNodes": 83,
+		"inventoryElements": 106,
+		"parts": 0,
+		"rows": 106,
+		"skeletonNodes": 67,
+		"expandedNodes": 67,
 		"low": 26,
-		"removed": 30,
+		"removed": 39,
 		"unresolved": 0,
 		"byRule": {
-			"alignWrapper": 1,
-			"formHost": 1,
-			"formControl": 22,
+			"hero": 1,
+			"heroInner": 13,
+			"formControl": 21,
 			"optionSetForm": 18
 		}
 	},
@@ -85,8 +85,8 @@
 	"rows": [
 		{
 			"order": 0,
-			"key": "Root/6#0",
-			"tag": "div",
+			"key": "Root/16#0",
+			"tag": "main",
 			"depth": 0,
 			"words": "",
 			"block": "sgs/container",
@@ -103,292 +103,42 @@
 					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_6_0@375.png",
-				"1440": "shots/Root_6_0@1440.png"
-			},
-			"snippet": "<div data-screen-label=\"Checkout\" style=\"background:#FBF3DC;min-height:100vh\" data-dc-tpl=\"6\"> <header style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"7\"> <div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"8\"> <a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font",
-			"attributes": {
-				"tagName": "div"
-			}
-		},
-		{
-			"order": 1,
-			"key": "Root/7#0",
-			"tag": "header",
-			"depth": 1,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
 						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
 						"no row block fits: a generic wrapper"
 					]
 				}
 			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_7_0@375.png",
-				"1440": "shots/Root_7_0@1440.png"
-			},
-			"snippet": "<header style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"7\"> <div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"8\"> <a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center\" data-dc-tpl=\"9\">← Basket</a> <a hre",
-			"attributes": {
-				"tagName": "header"
-			}
-		},
-		{
-			"order": 2,
-			"key": "Root/8#0",
-			"tag": "div",
-			"depth": 2,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"grid\" (draft display)"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_8_0@375.png",
-				"1440": "shots/Root_8_0@1440.png"
-			},
-			"snippet": "<div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"8\"> <a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center\" data-dc-tpl=\"9\">← Basket</a> <a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"10\"><img src=\"assets/",
-			"attributes": {
-				"tagName": "div",
-				"layout": "grid"
-			}
-		},
-		{
-			"order": 3,
-			"key": "Root/9#0",
-			"tag": "a",
-			"depth": 3,
-			"words": "← Basket",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_9_0@375.png",
-				"1440": "shots/Root_9_0@1440.png"
-			},
-			"snippet": "<a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center\" data-dc-tpl=\"9\">← Basket</a>",
-			"attributes": {
-				"label": "← Basket",
-				"url": "Basket.dc.html"
-			}
-		},
-		{
-			"order": 4,
-			"key": "Root/10#0",
-			"tag": "a",
-			"depth": 3,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_10_0@375.png",
-				"1440": "shots/Root_10_0@1440.png"
-			},
-			"snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"10\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\"></a>",
-			"attributes": {
-				"tagName": "div"
-			}
-		},
-		{
-			"order": 5,
-			"key": "Root/11#0",
-			"tag": "img",
-			"depth": 4,
-			"words": "",
-			"block": "sgs/responsive-logo",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.66,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/responsive-logo",
-					"score": 0.85,
-					"share": 0.773,
-					"evidence": [
-						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
-						"logo image: logo-horizontal.png / alt \"Mama's Munches\" (an image whose file name, alt text or class says it is the brand mark)"
-					]
-				},
-				{
-					"block": "sgs/media",
-					"score": 0.25,
-					"share": 0.227,
-					"evidence": [
-						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_11_0@375.png",
-				"1440": "shots/Root_11_0@1440.png"
-			},
-			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\">",
-			"attributes": {
-				"logoId": 91
-			},
-			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
-			}
-		},
-		{
-			"order": 6,
-			"key": "Root/12#0",
-			"tag": "span",
-			"depth": 3,
-			"words": "Secure checkout",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
-			"parts": [
-				"Root/13#0"
-			],
-			"screenshots": {
-				"375": "shots/Root_12_0@375.png",
-				"1440": "shots/Root_12_0@1440.png"
-			},
-			"snippet": "<span style=\"justify-self:end;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px\" data-dc-tpl=\"12\"><svg width=\"16\" height=\"16\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2.2\" data-dc-tpl=\"13\"><rect x=\"5\" y=\"11\" width=\"14\" height=\"10\" rx=\"2\" data-dc-tpl=\"14\"></rect><path d=\"M8 11V8a4 4 0 0 1 8 0v3\" data-dc-tpl=\"15\"></path></svg>{{ secureTxt }",
-			"attributes": {
-				"text": "Secure checkout"
-			}
-		},
-		{
-			"order": 7,
-			"key": "Root/16#0",
-			"tag": "main",
-			"depth": 1,
-			"words": "",
-			"block": null,
-			"action": "unwrap",
-			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
-			"source": "rule alignWrapper",
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "alignWrapper",
-			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_16_0@375.png",
 				"1440": "shots/Root_16_0@1440.png"
 			},
 			"snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"16\"> <div style=\"max-width:1160px;margin:0 auto;display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start\" data-dc-tpl=\"17\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"18\"> <button sc-camel-on-click=\"{{ toggleSum }}\" style=\"width:100%;min-height:60px;border:2px solid #3A2A22;border-radius:20px;back",
-			"attributes": {}
+			"attributes": {
+				"tagName": "main"
+			}
 		},
 		{
-			"order": 8,
+			"order": 1,
 			"key": "Root/17#0",
 			"tag": "div",
-			"depth": 2,
+			"depth": 1,
 			"words": "",
-			"block": "sgs/container",
+			"block": "sgs/hero",
 			"action": null,
-			"reason": null,
-			"source": null,
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)",
+			"source": "rule hero",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "hero",
 			"candidates": [
 				{
-					"block": "sgs/container",
+					"block": "sgs/hero",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+						"rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
 					]
 				}
 			],
@@ -399,15 +149,14 @@
 			},
 			"snippet": "<div style=\"max-width:1160px;margin:0 auto;display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start\" data-dc-tpl=\"17\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"18\"> <button sc-camel-on-click=\"{{ toggleSum }}\" style=\"width:100%;min-height:60px;border:2px solid #3A2A22;border-radius:20px;background:#F9D5D3;padding:0 18px;display:flex;justify-c",
 			"attributes": {
-				"tagName": "div",
 				"layout": "grid"
 			}
 		},
 		{
-			"order": 9,
+			"order": 2,
 			"key": "Root/19#0",
 			"tag": "button",
-			"depth": 3,
+			"depth": 2,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -440,10 +189,10 @@
 			}
 		},
 		{
-			"order": 10,
+			"order": 3,
 			"key": "Root/20#0",
 			"tag": "span",
-			"depth": 4,
+			"depth": 3,
 			"words": "Show order summary ▾",
 			"block": "sgs/text",
 			"action": null,
@@ -473,10 +222,10 @@
 			}
 		},
 		{
-			"order": 11,
+			"order": 4,
 			"key": "Root/21#0",
 			"tag": "span",
-			"depth": 4,
+			"depth": 3,
 			"words": "£30.45",
 			"block": "sgs/text",
 			"action": null,
@@ -506,79 +255,56 @@
 			}
 		},
 		{
-			"order": 12,
+			"order": 5,
 			"key": "Root/31#0",
 			"tag": "form",
-			"depth": 3,
+			"depth": 2,
 			"words": "",
-			"block": "sgs/form",
-			"action": null,
-			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
-			"source": "rule formHost",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "formHost",
-			"candidates": [
-				{
-					"block": "sgs/form",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_31_0@375.png",
 				"1440": "shots/Root_31_0@1440.png"
 			},
 			"snippet": "<form sc-camel-on-submit=\"{{ pay }}\" style=\"display:flex;flex-direction:column;gap:22px;min-width:0\" data-dc-tpl=\"31\"> <div data-dc-tpl=\"32\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"33\">last bit, promise</div> <h1 style=\"margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1\" data-dc-tpl",
-			"attributes": {
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 13,
+			"order": 6,
 			"key": "Root/32#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 4 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_32_0@375.png",
 				"1440": "shots/Root_32_0@1440.png"
 			},
 			"snippet": "<div data-dc-tpl=\"32\"> <div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"33\">last bit, promise</div> <h1 style=\"margin:4px 0 16px;font-family:'Young Serif',Georgia,serif;font-weight:400;font-size:{{ L.h1 }};line-height:1\" data-dc-tpl=\"34\">Checkout</h1> <div style=\"display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px\" data-dc-tpl=\"35\"> <button type=",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 14,
+			"order": 7,
 			"key": "Root/33#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "last bit, promise",
 			"block": "sgs/text",
 			"action": null,
@@ -609,10 +335,10 @@
 			}
 		},
 		{
-			"order": 15,
+			"order": 8,
 			"key": "Root/34#0",
 			"tag": "h1",
-			"depth": 5,
+			"depth": 4,
 			"words": "Checkout",
 			"block": "sgs/heading",
 			"action": null,
@@ -644,10 +370,10 @@
 			}
 		},
 		{
-			"order": 16,
+			"order": 9,
 			"key": "Root/35#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": "sgs/multi-button",
 			"action": null,
@@ -687,10 +413,10 @@
 			}
 		},
 		{
-			"order": 17,
+			"order": 10,
 			"key": "Root/36#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Apple Pay",
 			"block": "sgs/button",
 			"action": null,
@@ -722,10 +448,10 @@
 			}
 		},
 		{
-			"order": 18,
+			"order": 11,
 			"key": "Root/37#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Google Pay",
 			"block": "sgs/button",
 			"action": null,
@@ -757,10 +483,10 @@
 			}
 		},
 		{
-			"order": 19,
+			"order": 12,
 			"key": "Root/38#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "PayPal",
 			"block": "sgs/button",
 			"action": null,
@@ -792,10 +518,10 @@
 			}
 		},
 		{
-			"order": 20,
+			"order": 13,
 			"key": "Root/39#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "or pay by card",
 			"block": "sgs/container",
 			"action": null,
@@ -829,10 +555,10 @@
 			}
 		},
 		{
-			"order": 21,
+			"order": 14,
 			"key": "Root/40#0",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": "sgs/separator",
 			"action": null,
@@ -861,10 +587,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 22,
+			"order": 15,
 			"key": "Root/41#0",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": "sgs/separator",
 			"action": null,
@@ -893,47 +619,33 @@
 			"attributes": {}
 		},
 		{
-			"order": 23,
+			"order": 16,
 			"key": "Root/42#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_42_0@375.png",
 				"1440": "shots/Root_42_0@1440.png"
 			},
 			"snippet": "<fieldset style=\"border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"42\"> <legend style=\"font-family:'Young Serif',serif;font-size:22px;padding:0 8px\" data-dc-tpl=\"43\">1 · Your details</legend> <sc-if value=\"{{ signedIn }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"44\"> <div style",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 24,
+			"order": 17,
 			"key": "Root/43#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "1 · Your details",
 			"block": "sgs/text",
 			"action": null,
@@ -964,10 +676,10 @@
 			}
 		},
 		{
-			"order": 25,
+			"order": 18,
 			"key": "Root/50#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "Checking out as a guest.",
 			"block": "sgs/container",
 			"action": null,
@@ -999,10 +711,10 @@
 			}
 		},
 		{
-			"order": 26,
+			"order": 19,
 			"key": "Root/51#0",
 			"tag": "a",
-			"depth": 6,
+			"depth": 5,
 			"words": "Have an account? Sign in",
 			"block": "sgs/button",
 			"action": null,
@@ -1031,14 +743,14 @@
 			"snippet": "<a href=\"SignIn.dc.html?next=checkout\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"51\">Have an account? Sign in</a>",
 			"attributes": {
 				"label": "Have an account? Sign in",
-				"url": "SignIn.dc.html?next=checkout"
+				"url": "/my-account/"
 			}
 		},
 		{
-			"order": 27,
+			"order": 20,
 			"key": "Root/52#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Email",
 			"block": null,
 			"action": "unwrap",
@@ -1058,10 +770,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 28,
+			"order": 21,
 			"key": "Root/53#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": "sgs/form-field-email",
 			"action": null,
@@ -1099,10 +811,10 @@
 			}
 		},
 		{
-			"order": 29,
+			"order": 22,
 			"key": "Root/54#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Mobile, for delivery updates (optional)",
 			"block": null,
 			"action": "unwrap",
@@ -1122,10 +834,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 30,
+			"order": 23,
 			"key": "Root/55#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": "sgs/form-field-phone",
 			"action": null,
@@ -1162,45 +874,33 @@
 			}
 		},
 		{
-			"order": 31,
+			"order": 24,
 			"key": "Root/57#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_57_0@375.png",
 				"1440": "shots/Root_57_0@1440.png"
 			},
 			"snippet": "<div style=\"border:2px dashed #3A2A22;border-radius:18px;padding:10px 16px\" data-dc-tpl=\"57\"> <label style=\"display:flex;align-items:center;gap:12px;cursor:pointer;min-height:52px\" data-dc-tpl=\"58\"> <input type=\"checkbox\" checked=\"{{ makeAcct }}\" sc-camel-on-change=\"{{ toggleAcct }}\" style=\"width:24px;height:24px;accent-color:#EE8088;flex:none\" data-dc-tpl=\"59\"> <span style=\"display:flex;flex-dire",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 32,
+			"order": 25,
 			"key": "Root/58#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "unwrap",
@@ -1220,10 +920,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 33,
+			"order": 26,
 			"key": "Root/59#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": "sgs/form-field-checkbox",
 			"action": null,
@@ -1254,19 +954,19 @@
 			}
 		},
 		{
-			"order": 34,
+			"order": 27,
 			"key": "Root/60#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
-			"action": "remove",
-			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
-			"source": "rule formControl",
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "formControl",
+			"rule": "heroInner",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1277,93 +977,101 @@
 			"attributes": {}
 		},
 		{
-			"order": 35,
+			"order": 28,
 			"key": "Root/61#0",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "Create an account (optional)",
-			"block": null,
-			"action": "remove",
-			"reason": "inside a removed element (Root/60#0)",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_61_0@375.png",
 				"1440": "shots/Root_61_0@1440.png"
 			},
 			"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"61\">Create an account (optional)</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "Create an account (optional)"
+			}
 		},
 		{
-			"order": 36,
+			"order": 29,
 			"key": "Root/62#0",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "See your bake dates and manage subscriptions online.",
-			"block": null,
-			"action": "remove",
-			"reason": "inside a removed element (Root/60#0)",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
-			"low": false,
+			"confidence": 0.25,
+			"low": true,
 			"stale": null,
 			"rule": null,
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_62_0@375.png",
 				"1440": "shots/Root_62_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"62\">See your bake dates and manage subscriptions online.</span>",
-			"attributes": {}
+			"attributes": {
+				"text": "See your bake dates and manage subscriptions online."
+			}
 		},
 		{
-			"order": 37,
+			"order": 30,
 			"key": "Root/71#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_71_0@375.png",
 				"1440": "shots/Root_71_0@1440.png"
 			},
 			"snippet": "<fieldset style=\"border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"71\"> <legend style=\"font-family:'Young Serif',serif;font-size:22px;padding:0 8px\" data-dc-tpl=\"72\">2 · Who’s it for?</legend> <div style=\"display:grid;grid-template-columns:1fr 1fr;gap:10px\" data-dc-tpl=\"73\"> <button t",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 38,
+			"order": 31,
 			"key": "Root/72#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "2 · Who’s it for?",
 			"block": "sgs/text",
 			"action": null,
@@ -1394,10 +1102,10 @@
 			}
 		},
 		{
-			"order": 39,
+			"order": 32,
 			"key": "Root/73#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": "sgs/form-field-tiles",
 			"action": null,
@@ -1426,10 +1134,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 40,
+			"order": 33,
 			"key": "Root/74#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Send to my address",
 			"block": null,
 			"action": "absorbed",
@@ -1450,10 +1158,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 41,
+			"order": 34,
 			"key": "Root/75#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "for me",
 			"block": null,
 			"action": "absorbed",
@@ -1474,10 +1182,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 42,
+			"order": 35,
 			"key": "Root/76#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Send to someone else",
 			"block": null,
 			"action": "absorbed",
@@ -1498,10 +1206,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 43,
+			"order": 36,
 			"key": "Root/77#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "it’s a gift ♥",
 			"block": null,
 			"action": "absorbed",
@@ -1522,47 +1230,33 @@
 			"attributes": {}
 		},
 		{
-			"order": 44,
+			"order": 37,
 			"key": "Root/85#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_85_0@375.png",
 				"1440": "shots/Root_85_0@1440.png"
 			},
 			"snippet": "<fieldset style=\"border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"85\"> <legend style=\"font-family:'Young Serif',serif;font-size:22px;padding:0 8px\" data-dc-tpl=\"86\">{{ addrTitle }}</legend> <div style=\"display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end\" data-dc-tpl=",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 45,
+			"order": 38,
 			"key": "Root/86#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "3 · Delivery",
 			"block": "sgs/text",
 			"action": null,
@@ -1593,10 +1287,10 @@
 			}
 		},
 		{
-			"order": 46,
+			"order": 39,
 			"key": "Root/87#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -1630,10 +1324,10 @@
 			}
 		},
 		{
-			"order": 47,
+			"order": 40,
 			"key": "Root/88#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Postcode",
 			"block": null,
 			"action": "unwrap",
@@ -1653,10 +1347,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 48,
+			"order": 41,
 			"key": "Root/89#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -1693,10 +1387,10 @@
 			}
 		},
 		{
-			"order": 49,
+			"order": 42,
 			"key": "Root/90#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Find address",
 			"block": "sgs/button",
 			"action": null,
@@ -1728,10 +1422,10 @@
 			}
 		},
 		{
-			"order": 50,
+			"order": 43,
 			"key": "Root/91#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Address line 1",
 			"block": null,
 			"action": "unwrap",
@@ -1751,10 +1445,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 51,
+			"order": 44,
 			"key": "Root/92#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -1791,10 +1485,10 @@
 			}
 		},
 		{
-			"order": 52,
+			"order": 45,
 			"key": "Root/93#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -1828,10 +1522,10 @@
 			}
 		},
 		{
-			"order": 53,
+			"order": 46,
 			"key": "Root/94#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Address line 2 (optional)",
 			"block": null,
 			"action": "unwrap",
@@ -1851,10 +1545,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 54,
+			"order": 47,
 			"key": "Root/95#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -1891,10 +1585,10 @@
 			}
 		},
 		{
-			"order": 55,
+			"order": 48,
 			"key": "Root/96#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Town or city",
 			"block": null,
 			"action": "unwrap",
@@ -1914,10 +1608,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 56,
+			"order": 49,
 			"key": "Root/97#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -1954,10 +1648,10 @@
 			}
 		},
 		{
-			"order": 57,
+			"order": 50,
 			"key": "Root/98#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": "sgs/form-field-tiles",
 			"action": null,
@@ -1986,10 +1680,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 58,
+			"order": 51,
 			"key": "Root/100#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2010,10 +1704,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 59,
+			"order": 52,
 			"key": "Root/101#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2033,10 +1727,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 60,
+			"order": 53,
 			"key": "Root/102#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2057,10 +1751,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 61,
+			"order": 54,
 			"key": "Root/103#0",
 			"tag": "b",
-			"depth": 8,
+			"depth": 7,
 			"words": "Royal Mail Tracked 48",
 			"block": null,
 			"action": "absorbed",
@@ -2081,10 +1775,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 62,
+			"order": 55,
 			"key": "Root/104#0",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "Arrives 2–3 days after the bake",
 			"block": null,
 			"action": "absorbed",
@@ -2105,10 +1799,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 63,
+			"order": 56,
 			"key": "Root/105#0",
 			"tag": "b",
-			"depth": 7,
+			"depth": 6,
 			"words": "£3.95",
 			"block": null,
 			"action": "absorbed",
@@ -2129,10 +1823,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 64,
+			"order": 57,
 			"key": "Root/100#1",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2153,10 +1847,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 65,
+			"order": 58,
 			"key": "Root/101#1",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2176,10 +1870,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 66,
+			"order": 59,
 			"key": "Root/102#1",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2200,10 +1894,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 67,
+			"order": 60,
 			"key": "Root/103#1",
 			"tag": "b",
-			"depth": 8,
+			"depth": 7,
 			"words": "Royal Mail Tracked 24",
 			"block": null,
 			"action": "absorbed",
@@ -2224,10 +1918,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 68,
+			"order": 61,
 			"key": "Root/104#1",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "Arrives the day after the bake",
 			"block": null,
 			"action": "absorbed",
@@ -2248,10 +1942,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 69,
+			"order": 62,
 			"key": "Root/105#1",
 			"tag": "b",
-			"depth": 7,
+			"depth": 6,
 			"words": "£5.45",
 			"block": null,
 			"action": "absorbed",
@@ -2272,47 +1966,33 @@
 			"attributes": {}
 		},
 		{
-			"order": 70,
+			"order": 63,
 			"key": "Root/106#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_106_0@375.png",
 				"1440": "shots/Root_106_0@1440.png"
 			},
 			"snippet": "<fieldset style=\"border:2px solid #3A2A22;border-radius:26px;background:#FFFAF0;padding:{{ L.boxPad }};margin:0;min-width:0;display:flex;flex-direction:column;gap:14px\" data-dc-tpl=\"106\"> <legend style=\"font-family:'Young Serif',serif;font-size:22px;padding:0 8px\" data-dc-tpl=\"107\">4 · Payment</legend> <label style=\"display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:15px\" data-dc",
-			"attributes": {
-				"tagName": "div",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 71,
+			"order": 64,
 			"key": "Root/107#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "4 · Payment",
 			"block": "sgs/text",
 			"action": null,
@@ -2343,10 +2023,10 @@
 			}
 		},
 		{
-			"order": 72,
+			"order": 65,
 			"key": "Root/108#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Card number",
 			"block": null,
 			"action": "unwrap",
@@ -2366,10 +2046,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 73,
+			"order": 66,
 			"key": "Root/109#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -2406,10 +2086,10 @@
 			}
 		},
 		{
-			"order": 74,
+			"order": 67,
 			"key": "Root/110#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -2443,10 +2123,10 @@
 			}
 		},
 		{
-			"order": 75,
+			"order": 68,
 			"key": "Root/111#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Expiry",
 			"block": null,
 			"action": "unwrap",
@@ -2466,10 +2146,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 76,
+			"order": 69,
 			"key": "Root/112#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -2506,10 +2186,10 @@
 			}
 		},
 		{
-			"order": 77,
+			"order": 70,
 			"key": "Root/113#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Security code",
 			"block": null,
 			"action": "unwrap",
@@ -2529,10 +2209,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 78,
+			"order": 71,
 			"key": "Root/114#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -2569,10 +2249,10 @@
 			}
 		},
 		{
-			"order": 79,
+			"order": 72,
 			"key": "Root/115#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts.",
 			"block": "sgs/container",
 			"action": null,
@@ -2604,10 +2284,10 @@
 			}
 		},
 		{
-			"order": 80,
+			"order": 73,
 			"key": "Root/116#0",
 			"tag": "a",
-			"depth": 5,
+			"depth": 4,
 			"words": "Full allergen info",
 			"block": "sgs/button",
 			"action": null,
@@ -2636,14 +2316,14 @@
 			"snippet": "<a href=\"Help.dc.html#allergens\" style=\"font-weight:700;color:#3A2A22\" data-dc-tpl=\"116\">Full allergen info</a>",
 			"attributes": {
 				"label": "Full allergen info",
-				"url": "Help.dc.html#allergens"
+				"url": "/help/#allergens"
 			}
 		},
 		{
-			"order": 81,
+			"order": 74,
 			"key": "Root/117#0",
 			"tag": "button",
-			"depth": 4,
+			"depth": 3,
 			"words": "Pay £30.45",
 			"block": "sgs/button",
 			"action": null,
@@ -2675,10 +2355,10 @@
 			}
 		},
 		{
-			"order": 82,
+			"order": 75,
 			"key": "Root/118#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "By placing your order you agree to our .",
 			"block": "sgs/container",
 			"action": null,
@@ -2710,10 +2390,10 @@
 			}
 		},
 		{
-			"order": 83,
+			"order": 76,
 			"key": "Root/119#0",
 			"tag": "a",
-			"depth": 5,
+			"depth": 4,
 			"words": "terms",
 			"block": "sgs/button",
 			"action": null,
@@ -2742,50 +2422,36 @@
 			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"119\">terms</a>",
 			"attributes": {
 				"label": "terms",
-				"url": "Help.dc.html#legal"
+				"url": "/help/#legal"
 			}
 		},
 		{
-			"order": 84,
+			"order": 77,
 			"key": "Root/121#0",
 			"tag": "aside",
-			"depth": 3,
+			"depth": 2,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 8 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_121_0@1440.png"
 			},
 			"snippet": "<aside style=\"position:sticky;top:24px;background:#F9D5D3;border:2px solid #3A2A22;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:8px 8px 0 #3A2A22\" data-dc-tpl=\"121\"> <div style=\"font-family:'Young Serif',serif;font-size:24px\" data-dc-tpl=\"122\">Your order</div> <sc-for list=\"{{ items }}\" as=\"it\" hint-placeholder-count=\"0\" data-dc-tpl=\"123\"><div style=\"displ",
-			"attributes": {
-				"tagName": "aside",
-				"layout": "stack"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 85,
+			"order": 78,
 			"key": "Root/122#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "Your order",
 			"block": "sgs/text",
 			"action": null,
@@ -2815,10 +2481,10 @@
 			}
 		},
 		{
-			"order": 86,
+			"order": 79,
 			"key": "Root/124#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -2851,44 +2517,32 @@
 			}
 		},
 		{
-			"order": 87,
+			"order": 80,
 			"key": "Root/125#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_125_0@1440.png"
 			},
 			"snippet": "<div style=\"position:relative;width:56px;height:56px;border-radius:12px;border:2px solid #3A2A22;background-image:{{ it.bg }};background-size:cover;background-position:center\" data-dc-tpl=\"125\"><span style=\"position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;border-radius:99px;background:#3A2A22;color:#FFFAF0;font-size:12px;font-weight:700;display:flex;align-items:center;justify-conte",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 88,
+			"order": 81,
 			"key": "Root/126#0",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "1",
 			"block": "sgs/text",
 			"action": null,
@@ -2918,44 +2572,32 @@
 			}
 		},
 		{
-			"order": 89,
+			"order": 82,
 			"key": "Root/127#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_127_0@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"127\"><div style=\"font-weight:700;font-size:15px\" data-dc-tpl=\"128\">{{ it.name }}</div><div style=\"font-size:13px;color:#4E3C31\" data-dc-tpl=\"129\">{{ it.variant }}</div></div>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 90,
+			"order": 83,
 			"key": "Root/128#0",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "Zookies · 20 pack",
 			"block": "sgs/text",
 			"action": null,
@@ -2985,10 +2627,10 @@
 			}
 		},
 		{
-			"order": 91,
+			"order": 84,
 			"key": "Root/129#0",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "Oat · Milk choc · Strawberry",
 			"block": "sgs/text",
 			"action": null,
@@ -3018,10 +2660,10 @@
 			}
 		},
 		{
-			"order": 92,
+			"order": 85,
 			"key": "Root/130#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£21.50",
 			"block": "sgs/text",
 			"action": null,
@@ -3051,10 +2693,10 @@
 			}
 		},
 		{
-			"order": 93,
+			"order": 86,
 			"key": "Root/124#1",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -3087,44 +2729,32 @@
 			}
 		},
 		{
-			"order": 94,
+			"order": 87,
 			"key": "Root/125#1",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_125_1@1440.png"
 			},
 			"snippet": "<div style=\"position:relative;width:56px;height:56px;border-radius:12px;border:2px solid #3A2A22;background-image:{{ it.bg }};background-size:cover;background-position:center\" data-dc-tpl=\"125\"><span style=\"position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;border-radius:99px;background:#3A2A22;color:#FFFAF0;font-size:12px;font-weight:700;display:flex;align-items:center;justify-conte",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 95,
+			"order": 88,
 			"key": "Root/126#1",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "1",
 			"block": "sgs/text",
 			"action": null,
@@ -3154,44 +2784,32 @@
 			}
 		},
 		{
-			"order": 96,
+			"order": 89,
 			"key": "Root/127#1",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
+			"rule": "heroInner",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_127_1@1440.png"
 			},
 			"snippet": "<div style=\"min-width:0\" data-dc-tpl=\"127\"><div style=\"font-weight:700;font-size:15px\" data-dc-tpl=\"128\">{{ it.name }}</div><div style=\"font-size:13px;color:#4E3C31\" data-dc-tpl=\"129\">{{ it.variant }}</div></div>",
-			"attributes": {
-				"tagName": "div"
-			}
+			"attributes": {}
 		},
 		{
-			"order": 97,
+			"order": 90,
 			"key": "Root/128#1",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "Taster Trio",
 			"block": "sgs/text",
 			"action": null,
@@ -3221,10 +2839,10 @@
 			}
 		},
 		{
-			"order": 98,
+			"order": 91,
 			"key": "Root/129#1",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "3 Classic Zookies",
 			"block": "sgs/text",
 			"action": null,
@@ -3254,10 +2872,10 @@
 			}
 		},
 		{
-			"order": 99,
+			"order": 92,
 			"key": "Root/130#1",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£5.00",
 			"block": "sgs/text",
 			"action": null,
@@ -3287,10 +2905,10 @@
 			}
 		},
 		{
-			"order": 100,
+			"order": 93,
 			"key": "Root/131#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -3323,10 +2941,10 @@
 			}
 		},
 		{
-			"order": 101,
+			"order": 94,
 			"key": "Root/132#0",
 			"tag": "input",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
@@ -3361,10 +2979,10 @@
 			}
 		},
 		{
-			"order": 102,
+			"order": 95,
 			"key": "Root/133#0",
 			"tag": "button",
-			"depth": 5,
+			"depth": 4,
 			"words": "Apply",
 			"block": "sgs/button",
 			"action": null,
@@ -3395,10 +3013,10 @@
 			}
 		},
 		{
-			"order": 103,
+			"order": 96,
 			"key": "Root/134#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -3431,10 +3049,10 @@
 			}
 		},
 		{
-			"order": 104,
+			"order": 97,
 			"key": "Root/135#0",
 			"tag": "span",
-			"depth": 5,
+			"depth": 4,
 			"words": "Subtotal",
 			"block": "sgs/text",
 			"action": null,
@@ -3464,10 +3082,10 @@
 			}
 		},
 		{
-			"order": 105,
+			"order": 98,
 			"key": "Root/136#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£26.50",
 			"block": "sgs/text",
 			"action": null,
@@ -3497,10 +3115,10 @@
 			}
 		},
 		{
-			"order": 106,
+			"order": 99,
 			"key": "Root/137#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -3533,10 +3151,10 @@
 			}
 		},
 		{
-			"order": 107,
+			"order": 100,
 			"key": "Root/138#0",
 			"tag": "span",
-			"depth": 5,
+			"depth": 4,
 			"words": "Delivery",
 			"block": "sgs/text",
 			"action": null,
@@ -3566,10 +3184,10 @@
 			}
 		},
 		{
-			"order": 108,
+			"order": 101,
 			"key": "Root/139#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£3.95",
 			"block": "sgs/text",
 			"action": null,
@@ -3599,10 +3217,10 @@
 			}
 		},
 		{
-			"order": 109,
+			"order": 102,
 			"key": "Root/140#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -3635,10 +3253,10 @@
 			}
 		},
 		{
-			"order": 110,
+			"order": 103,
 			"key": "Root/141#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "Total",
 			"block": "sgs/text",
 			"action": null,
@@ -3668,10 +3286,10 @@
 			}
 		},
 		{
-			"order": 111,
+			"order": 104,
 			"key": "Root/142#0",
 			"tag": "span",
-			"depth": 5,
+			"depth": 4,
 			"words": "£30.45",
 			"block": "sgs/text",
 			"action": null,
@@ -3701,10 +3319,10 @@
 			}
 		},
 		{
-			"order": 112,
+			"order": 105,
 			"key": "Root/143#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "Baked fresh for you · with you in 3–5 days",
 			"block": "sgs/text",
 			"action": null,

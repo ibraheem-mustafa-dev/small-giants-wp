@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T00:11:34.823Z",
-  "source": "http://127.0.0.1:61964/#@state/page=help",
+  "generated": "2026-10-27T16:03:07.344Z",
+  "source": "http://127.0.0.1:50785/#@state/page=help",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {

@@ -1,17 +1,17 @@
 {
-	"generated": "2026-10-26T11:41:33.871Z",
+	"generated": "2026-10-27T15:45:40.124Z",
 	"client": "mamas-munches-redesign",
 	"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 	"picksFile": "finalise-picks.json",
 	"picksShape": "{ \"<surface>\": [ <one answerShape entry per row of that surface> ] }",
 	"context": "Built from intake.json rows: the element is the row (tag, words, snippet); candidate evidence lines are not kept there. parent, siblings (the nearest 12 in document order; siblingCount is the full number) and boxes (375, 768, 1440; x and y are page coordinates) come from the skeleton inventory, null where it held none. neighbours are the rows before and after it in the surface.",
 	"counts": {
-		"surfaces": 13,
-		"rows": 203
+		"surfaces": 15,
+		"rows": 207
 	},
 	"surfaces": {
 		"site-header-announcement-strip-bar": {
-			"generated": "2026-10-26T11:41:33.867Z",
+			"generated": "2026-10-27T15:45:40.117Z",
 			"surface": "site-header-announcement-strip-bar",
 			"source": "intake.json skeletons[\"site-header-announcement-strip-bar\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -119,61 +119,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/7#0",
 					"draftId": "SiteHeader:7",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/7#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/7#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/7#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/7#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/7#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/7#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/7#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/7#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/6#0",
@@ -255,61 +205,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/10#0",
 					"draftId": "SiteHeader:10",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/10#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/10#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/10#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/10#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/10#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/10#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/10#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/10#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/9#0",
@@ -377,61 +277,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/12#0",
 					"draftId": "SiteHeader:12",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/12#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/12#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/12#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/12#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/12#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/12#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/12#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/12#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/11#0",
@@ -440,7 +290,7 @@
 							"block": null
 						},
 						{
-							"key": "Home>SiteHeader@7#0/35#0",
+							"key": "Home>SiteHeader@7#0/15#0",
 							"tag": "div",
 							"words": "",
 							"block": "sgs/site-header-row"
@@ -472,6 +322,133 @@
 					]
 				},
 				{
+					"key": "Home>SiteHeader@7#0/22#0",
+					"element": {
+						"tag": "img",
+						"words": "",
+						"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto;display:block\" data-dc-tpl=\"22\">"
+					},
+					"parent": {
+						"draftId": "SiteHeader:21",
+						"tag": "a",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.66,
+					"candidates": [
+						{
+							"block": "sgs/responsive-logo",
+							"score": 0.85,
+							"share": 0.773
+						},
+						{
+							"block": "sgs/media",
+							"score": 0.25,
+							"share": 0.227
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/22#0",
+					"draftId": "SiteHeader:22",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/21#0",
+							"tag": "a",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/23#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 768,
+							"x": 300,
+							"y": 36,
+							"w": 168,
+							"h": 56
+						},
+						{
+							"width": 375,
+							"x": 115.5,
+							"y": 40,
+							"w": 144,
+							"h": 48
+						}
+					]
+				},
+				{
+					"key": "Home>SiteHeader@7#0/24#0",
+					"element": {
+						"tag": "a",
+						"words": "",
+						"snippet": "<a href=\"{{ acctHref }}\" aria-label=\"{{ acctLabel }}\" aria-current=\"{{ cur.account }}\" style=\"width:48px;height:48px;border-radius:999px;display:flex;align-item"
+					},
+					"parent": {
+						"draftId": "SiteHeader:23",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "SiteHeader:28",
+							"tag": "button",
+							"block": null
+						}
+					],
+					"confidence": 0.5,
+					"candidates": [
+						{
+							"block": "sgs/icon",
+							"score": 0.5,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/24#0",
+					"draftId": "SiteHeader:24",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home>SiteHeader@7#0/23#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home>SiteHeader@7#0/28#0",
+							"tag": "button",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 768,
+							"x": 652,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						},
+						{
+							"width": 375,
+							"x": 271,
+							"y": 40,
+							"w": 48,
+							"h": 48
+						}
+					]
+				},
+				{
 					"key": "Home>SiteHeader@7#0/37#0",
 					"element": {
 						"tag": "img",
@@ -497,61 +474,11 @@
 							"share": 0.227
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/37#0",
 					"draftId": "SiteHeader:37",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/37#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/37#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/37#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/37#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/37#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/37#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/37#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/37#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/36#0",
@@ -604,61 +531,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-header-announcement-strip-bar:Home>SiteHeader@7#0/45#0",
 					"draftId": "SiteHeader:45",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/45#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/45#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/45#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/45#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/45#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/45#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/45#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/45#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/44#0",
@@ -687,7 +564,7 @@
 			]
 		},
 		"nav-drawer-left": {
-			"generated": "2026-10-26T11:41:33.868Z",
+			"generated": "2026-10-27T15:45:40.119Z",
 			"surface": "nav-drawer-left",
 			"source": "intake.json skeletons[\"nav-drawer-left\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -725,61 +602,11 @@
 							"share": 0.227
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/58#0",
 					"draftId": "SiteHeader:58",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/58#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/58#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/58#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/58#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/58#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/58#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/58#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/58#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/57#0",
@@ -846,61 +673,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/61#0",
 					"draftId": "SiteHeader:61",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/61#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/61#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/61#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/61#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/61#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/61#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/61#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/61#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/60#0",
@@ -972,61 +749,11 @@
 							"share": 0.412
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/64#0",
 					"draftId": "SiteHeader:64",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/64#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/64#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/64#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/64#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/64#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/64#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/64#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/64#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/63#0",
@@ -1093,61 +820,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/67#0",
 					"draftId": "SiteHeader:67",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/67#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/67#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/67#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/67#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/67#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/67#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/67#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/67#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/66#0",
@@ -1219,61 +896,11 @@
 							"share": 0.412
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/69#0",
 					"draftId": "SiteHeader:69",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/69#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/69#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/69#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/69#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/69#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/69#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/69#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/69#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/68#0",
@@ -1340,61 +967,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/72#0",
 					"draftId": "SiteHeader:72",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/72#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/72#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/72#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/72#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/72#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/72#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/72#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/72#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/71#0",
@@ -1461,61 +1038,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/105#0",
 					"draftId": "SiteHeader:105",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/105#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/105#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/105#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/105#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/105#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/105#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/105#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/105#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/104#0",
@@ -1582,61 +1109,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:nav-drawer-left:Home>SiteHeader@7#0/127#0",
 					"draftId": "SiteHeader:127",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/127#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/127#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/127#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/127#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/127#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/127#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/127#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/127#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteHeader@7#0/126#0",
@@ -1672,397 +1149,8 @@
 				}
 			]
 		},
-		"basket-drawer-right": {
-			"generated": "2026-10-26T11:41:33.868Z",
-			"surface": "basket-drawer-right",
-			"source": "intake.json skeletons[\"basket-drawer-right\"]",
-			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
-			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
-			"rows": [
-				{
-					"key": "Home>SiteHeader@7#0/131#0",
-					"element": {
-						"tag": "span",
-						"words": "( 0 )",
-						"snippet": "<span style=\"font-family:Karla;font-size:16px;color:#6B5646\" data-dc-tpl=\"131\">({{ count }})</span>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:130",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "9 copies of one template element on 9 surfaces",
-					"rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/131#0",
-					"draftId": "SiteHeader:131",
-					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/131#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/131#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/131#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/131#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/131#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/131#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/131#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/131#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Home>SiteHeader@7#0/130#0",
-							"tag": "div",
-							"words": "Your basket",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home>SiteHeader@7#0/132#0",
-							"tag": "button",
-							"words": "×",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1629.3,
-							"y": 27,
-							"w": 20.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 957.3,
-							"y": 27,
-							"w": 20.9,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 561.1,
-							"y": 27,
-							"w": 20.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Home>SiteHeader@7#0/177#0",
-					"element": {
-						"tag": "img",
-						"words": "",
-						"snippet": "<img src=\"assets/logo-round.png\" alt=\"\" style=\"width:120px;height:auto\" data-dc-tpl=\"177\">"
-					},
-					"parent": {
-						"draftId": "SiteHeader:176",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:178",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "SiteHeader:179",
-							"tag": "p",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "SiteHeader:180",
-							"tag": "button",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "SiteHeader:181",
-							"tag": "a",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.66,
-					"candidates": [
-						{
-							"block": "sgs/responsive-logo",
-							"score": 0.85,
-							"share": 0.773
-						},
-						{
-							"block": "sgs/media",
-							"score": 0.25,
-							"share": 0.227
-						}
-					],
-					"reason": "8 copies of one template element on 8 surfaces",
-					"rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/177#0",
-					"draftId": "SiteHeader:177",
-					"action": null,
-					"copies": 8,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/177#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/177#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/177#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/177#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/177#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/177#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/177#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Home>SiteHeader@7#0/176#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home>SiteHeader@7#0/178#0",
-							"tag": "div",
-							"words": "Your basket is empty",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 4,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1622,
-							"y": 309.4,
-							"w": 120,
-							"h": 114.2
-						},
-						{
-							"width": 768,
-							"x": 950,
-							"y": 309.4,
-							"w": 120,
-							"h": 114.2
-						},
-						{
-							"width": 375,
-							"x": 521.3,
-							"y": 309.4,
-							"w": 120,
-							"h": 114.2
-						}
-					]
-				},
-				{
-					"key": "Home>SiteHeader@7#0/178#0",
-					"element": {
-						"tag": "div",
-						"words": "Your basket is empty",
-						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:26px\" data-dc-tpl=\"178\">Your basket is empty</div>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:176",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:177",
-							"tag": "img",
-							"block": "sgs/responsive-logo"
-						},
-						{
-							"draftId": "SiteHeader:179",
-							"tag": "p",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "SiteHeader:180",
-							"tag": "button",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "SiteHeader:181",
-							"tag": "a",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "8 copies of one template element on 8 surfaces",
-					"rowId": "skeleton:basket-drawer-right:Home>SiteHeader@7#0/178#0",
-					"draftId": "SiteHeader:178",
-					"action": null,
-					"copies": 8,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteHeader@7#0/178#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/178#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/178#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/178#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/178#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/178#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/178#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Home>SiteHeader@7#0/177#0",
-							"tag": "img",
-							"words": "",
-							"block": "sgs/responsive-logo"
-						},
-						{
-							"key": "Home>SiteHeader@7#0/179#0",
-							"tag": "p",
-							"words": "New to Zookies? The Taster Trio is 3 cookies for £5, postage included.",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 4,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1547.1,
-							"y": 437.6,
-							"w": 269.8,
-							"h": 37
-						},
-						{
-							"width": 768,
-							"x": 875.1,
-							"y": 437.6,
-							"w": 269.8,
-							"h": 37
-						},
-						{
-							"width": 375,
-							"x": 446.3,
-							"y": 437.6,
-							"w": 269.8,
-							"h": 37
-						}
-					]
-				}
-			]
-		},
 		"site-footer": {
-			"generated": "2026-10-26T11:41:33.868Z",
+			"generated": "2026-10-27T15:45:40.120Z",
 			"surface": "site-footer",
 			"source": "intake.json skeletons[\"site-footer\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -2095,61 +1183,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/7#0",
 					"draftId": "SiteFooter:7",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteFooter@250#0/7#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteFooter@51#0/7#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteFooter@83#0/7#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteFooter@73#0/7#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteFooter@80#0/7#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteFooter@89#0/7#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteFooter@106#0/7#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteFooter@212#0/7#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteFooter@250#0/6#0",
@@ -2221,61 +1259,11 @@
 							"share": 0.227
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/26#0",
 					"draftId": "SiteFooter:26",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteFooter@250#0/26#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteFooter@51#0/26#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteFooter@83#0/26#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteFooter@73#0/26#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteFooter@80#0/26#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteFooter@89#0/26#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteFooter@106#0/26#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteFooter@212#0/26#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteFooter@250#0/25#0",
@@ -2347,61 +1335,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/42#0",
 					"draftId": "SiteFooter:42",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteFooter@250#0/42#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteFooter@51#0/42#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteFooter@83#0/42#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteFooter@73#0/42#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteFooter@80#0/42#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteFooter@89#0/42#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteFooter@106#0/42#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteFooter@212#0/42#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteFooter@250#0/41#0",
@@ -2442,131 +1380,6 @@
 					]
 				},
 				{
-					"key": "Home>SiteFooter@250#0/54#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"height:8px\" data-dc-tpl=\"54\"></div>"
-					},
-					"parent": {
-						"draftId": "SiteFooter:20",
-						"tag": "div",
-						"block": null
-					},
-					"siblings": [
-						{
-							"draftId": "SiteFooter:21",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "SiteFooter:27",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "SiteFooter:55",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "9 copies of one template element on 9 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/54#0",
-					"draftId": "SiteFooter:54",
-					"action": "unresolved",
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteFooter@250#0/54#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteFooter@51#0/54#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteFooter@83#0/54#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteFooter@73#0/54#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteFooter@80#0/54#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteFooter@89#0/54#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteFooter@106#0/54#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteFooter@212#0/54#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Home>SiteFooter@250#0/50#0",
-							"tag": "a",
-							"words": "",
-							"block": "sgs/icon"
-						},
-						{
-							"key": "Home>SiteFooter@250#0/55#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 3,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 100,
-							"y": 7602.5,
-							"w": 1240,
-							"h": 8
-						},
-						{
-							"width": 768,
-							"x": 32,
-							"y": 9384.2,
-							"w": 704,
-							"h": 8
-						},
-						{
-							"width": 375,
-							"x": 20,
-							"y": 10203.2,
-							"w": 335,
-							"h": 8
-						}
-					]
-				},
-				{
 					"key": "Home>SiteFooter@250#0/57#0",
 					"element": {
 						"tag": "span",
@@ -2603,61 +1416,11 @@
 							"share": 0.318
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/57#0",
 					"draftId": "SiteFooter:57",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteFooter@250#0/57#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteFooter@51#0/57#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteFooter@83#0/57#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteFooter@73#0/57#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteFooter@80#0/57#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteFooter@89#0/57#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteFooter@106#0/57#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteFooter@212#0/57#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteFooter@250#0/56#0",
@@ -2734,61 +1497,11 @@
 							"share": 0.5
 						}
 					],
-					"reason": "9 copies of one template element on 9 surfaces",
+					"reason": null,
 					"rowId": "skeleton:site-footer:Home>SiteFooter@250#0/60#0",
 					"draftId": "SiteFooter:60",
 					"action": null,
-					"copies": 9,
-					"alsoIn": [
-						{
-							"surface": "page-home-dc-html",
-							"keys": [
-								"Home>SiteFooter@250#0/60#0"
-							]
-						},
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteFooter@51#0/60#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteFooter@83#0/60#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteFooter@73#0/60#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteFooter@80#0/60#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteFooter@89#0/60#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteFooter@106#0/60#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteFooter@212#0/60#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home>SiteFooter@250#0/59#0",
@@ -2825,335 +1538,12 @@
 			]
 		},
 		"page-home-dc-html": {
-			"generated": "2026-10-26T11:41:33.869Z",
+			"generated": "2026-10-27T15:45:40.121Z",
 			"surface": "page-home-dc-html",
 			"source": "intake.json skeletons[\"page-home-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
-				{
-					"key": "Home>SiteHeader@7#0/38#0",
-					"element": {
-						"tag": "nav",
-						"words": "",
-						"snippet": "<nav aria-label=\"Main\" style=\"display:flex;justify-content:center;gap:2px\" data-dc-tpl=\"38\"> <a href=\"Shop.dc.html\" aria-current=\"{{ cur.shop }}\" style=\"padding"
-					},
-					"parent": {
-						"draftId": "SiteHeader:35",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:36",
-							"tag": "a",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "SiteHeader:44",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.51,
-					"candidates": [
-						{
-							"block": "sgs/multi-button",
-							"score": 0.75,
-							"share": 0.682
-						},
-						{
-							"block": "sgs/container",
-							"score": 0.35,
-							"share": 0.318
-						}
-					],
-					"reason": "8 copies of one template element on 8 surfaces",
-					"rowId": "skeleton:page-home-dc-html:Home>SiteHeader@7#0/38#0",
-					"draftId": "SiteHeader:38",
-					"action": null,
-					"copies": 8,
-					"alsoIn": [
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/38#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/38#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/38#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/38#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/38#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/38#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/38#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Home>SiteHeader@7#0/35#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home>SiteHeader@7#0/39#0",
-							"tag": "a",
-							"words": "Shop",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 344,
-							"y": 52.5,
-							"w": 732.8,
-							"h": 43
-						}
-					]
-				},
-				{
-					"key": "Home>SiteHeader@7#0/53#0",
-					"element": {
-						"tag": "span",
-						"words": "Basket",
-						"snippet": "<span data-dc-tpl=\"53\">Basket</span>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:49",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:50",
-							"tag": "svg",
-							"block": null
-						},
-						{
-							"draftId": "SiteHeader:54",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "8 copies of one template element on 8 surfaces",
-					"rowId": "skeleton:page-home-dc-html:Home>SiteHeader@7#0/53#0",
-					"draftId": "SiteHeader:53",
-					"action": null,
-					"copies": 8,
-					"alsoIn": [
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/53#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/53#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/53#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/53#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/53#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/53#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/53#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Home>SiteHeader@7#0/49#0",
-							"tag": "button",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home>SiteHeader@7#0/54#0",
-							"tag": "span",
-							"words": "0",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1200.8,
-							"y": 65,
-							"w": 49.2,
-							"h": 18
-						}
-					]
-				},
-				{
-					"key": "Home>SiteHeader@7#0/54#0",
-					"element": {
-						"tag": "span",
-						"words": "0",
-						"snippet": "<span style=\"min-width:22px;height:22px;border-radius:999px;background:#EE8088;color:#3A2A22;font-size:12px;display:flex;align-items:center;justify-content:cent"
-					},
-					"parent": {
-						"draftId": "SiteHeader:49",
-						"tag": "button",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:50",
-							"tag": "svg",
-							"block": null
-						},
-						{
-							"draftId": "SiteHeader:53",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "8 copies of one template element on 8 surfaces",
-					"rowId": "skeleton:page-home-dc-html:Home>SiteHeader@7#0/54#0",
-					"draftId": "SiteHeader:54",
-					"action": null,
-					"copies": 8,
-					"alsoIn": [
-						{
-							"surface": "page-shop-dc-html",
-							"keys": [
-								"Shop>SiteHeader@7#0/54#0"
-							]
-						},
-						{
-							"surface": "page-gifts-dc-html",
-							"keys": [
-								"Gifts>SiteHeader@7#0/54#0"
-							]
-						},
-						{
-							"surface": "page-basket-dc-html",
-							"keys": [
-								"Basket>SiteHeader@7#0/54#0"
-							]
-						},
-						{
-							"surface": "page-contact-dc-html",
-							"keys": [
-								"Contact>SiteHeader@7#0/54#0"
-							]
-						},
-						{
-							"surface": "page-help-dc-html",
-							"keys": [
-								"Help>SiteHeader@7#0/54#0"
-							]
-						},
-						{
-							"surface": "page-signin-dc-html",
-							"keys": [
-								"SignIn>SiteHeader@7#0/54#0"
-							]
-						},
-						{
-							"surface": "page-account-dc-html",
-							"keys": [
-								"Account>SiteHeader@7#0/54#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Home>SiteHeader@7#0/53#0",
-							"tag": "span",
-							"words": "Basket",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Home>SiteHeader@7#0/56#0",
-							"tag": "aside",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1258,
-							"y": 63,
-							"w": 22,
-							"h": 22
-						}
-					]
-				},
 				{
 					"key": "Home/13#0",
 					"element": {
@@ -4279,19 +2669,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/67#0",
 					"draftId": "Home:67",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/67#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/66#0",
@@ -4358,19 +2740,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/84#0",
 					"draftId": "Home:84",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/84#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/83#0",
@@ -4442,19 +2816,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/89#0",
 					"draftId": "Home:89",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/89#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/88",
@@ -4526,19 +2892,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/106#0",
 					"draftId": "Home:106",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/106#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/105",
@@ -4605,19 +2963,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/110#0",
 					"draftId": "Home:110",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/110#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/109#0",
@@ -4684,19 +3034,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/111#0",
 					"draftId": "Home:111",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/111#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/110#0",
@@ -4763,19 +3105,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/113#0",
 					"draftId": "Home:113",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/113#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/112#0",
@@ -4842,19 +3176,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/114#0",
 					"draftId": "Home:114",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/114#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/113#0",
@@ -4931,19 +3257,11 @@
 							"share": 0.318
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/116#0",
 					"draftId": "Home:116",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/116#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/114#0",
@@ -5010,19 +3328,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/120#0",
 					"draftId": "Home:120",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/120#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/119#0",
@@ -5089,19 +3399,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/121#0",
 					"draftId": "Home:121",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/121#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/120#0",
@@ -5178,19 +3480,11 @@
 							"share": 1
 						}
 					],
-					"reason": "2 copies of one template element on 2 surfaces",
+					"reason": null,
 					"rowId": "skeleton:page-home-dc-html:Home/123#0",
 					"draftId": "Home:123",
 					"action": null,
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "build-your-zookie",
-							"keys": [
-								"Home/123#0"
-							]
-						}
-					],
+					"copies": 1,
 					"neighbours": [
 						{
 							"key": "Home/122#0",
@@ -5298,77 +3592,6 @@
 							"y": 3837.5,
 							"w": 335,
 							"h": 28
-						}
-					]
-				},
-				{
-					"key": "Home/136",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"width:100%;height:100%;background-image:{{ t.bgImg }};background-size:{{ t.size }};background-position:center;background-repeat:no-repeat\" data-dc-t"
-					},
-					"parent": {
-						"draftId": "Home:135",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Home:137",
-							"tag": "span",
-							"block": "sgs/label"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "4 copies of one template element; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-home-dc-html:Home/136",
-					"draftId": "Home:136",
-					"action": "unresolved",
-					"copies": 4,
-					"keys": [
-						"Home/136#0",
-						"Home/136#1",
-						"Home/136#2",
-						"Home/136#3"
-					],
-					"neighbours": [
-						{
-							"key": "Home/135",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Home/137",
-							"tag": "span",
-							"words": "Just had a baby",
-							"block": "sgs/label"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 98.7,
-							"y": 2848.7,
-							"w": 296.2,
-							"h": 222.4
-						},
-						{
-							"width": 768,
-							"x": 30.4,
-							"y": 3683.5,
-							"w": 343.4,
-							"h": 258.1
-						},
-						{
-							"width": 375,
-							"x": 18.8,
-							"y": 4030.7,
-							"w": 253.8,
-							"h": 190.3
 						}
 					]
 				},
@@ -5625,6 +3848,130 @@
 							"y": 4351.5,
 							"w": 33.1,
 							"h": 28.6
+						}
+					]
+				},
+				{
+					"key": "Home/146#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div style=\"display:flex;gap:8px\" data-dc-tpl=\"146\"><sc-for list=\"{{ giftDots }}\" as=\"d\" hint-placeholder-count=\"0\" data-dc-tpl=\"147\"><button sc-camel-on-click="
+					},
+					"parent": {
+						"draftId": "Home:145",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:149",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/146#0",
+					"draftId": "Home:146",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/145#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Home/148",
+							"tag": "button",
+							"words": "",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 375,
+							"x": 20,
+							"y": 4442.2,
+							"w": 94,
+							"h": 12
+						}
+					]
+				},
+				{
+					"key": "Home/149#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div style=\"display:flex;gap:10px\" data-dc-tpl=\"149\"> <button sc-camel-on-click=\"{{ giftPrev }}\" aria-label=\"Previous gift\" style=\"width:48px;height:48px;border"
+					},
+					"parent": {
+						"draftId": "Home:145",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Home:146",
+							"tag": "div",
+							"block": "sgs/multi-button"
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-home-dc-html:Home/149#0",
+					"draftId": "Home:149",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/148",
+							"tag": "button",
+							"words": "",
+							"block": "sgs/button"
+						},
+						{
+							"key": "Home/150#0",
+							"tag": "button",
+							"words": "←",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 375,
+							"x": 249,
+							"y": 4424.2,
+							"w": 106,
+							"h": 48
 						}
 					]
 				},
@@ -7883,8 +6230,436 @@
 				}
 			]
 		},
+		"build-your-zookie": {
+			"generated": "2026-10-27T15:45:40.121Z",
+			"surface": "build-your-zookie",
+			"source": "intake.json skeletons[\"build-your-zookie\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Home/67#0",
+					"element": {
+						"tag": "div",
+						"words": "your cookie, your way",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"67\">your cookie, your way</div>"
+					},
+					"parent": {
+						"draftId": "Home:66",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:68",
+							"tag": "h2",
+							"block": null
+						},
+						{
+							"draftId": "Home:69",
+							"tag": "p",
+							"block": null
+						}
+					],
+					"confidence": 1,
+					"candidates": [],
+					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+					"rowId": "skeleton:build-your-zookie:Home/67#0",
+					"draftId": "Home:67",
+					"action": "unresolved",
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/66#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home/68#0",
+							"tag": "h2",
+							"words": "Build your Zookie",
+							"block": null
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 158,
+							"y": 1721.9,
+							"w": 588.9,
+							"h": 28
+						},
+						{
+							"width": 768,
+							"x": 70,
+							"y": 1986.1,
+							"w": 628,
+							"h": 28
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 2015.2,
+							"w": 295,
+							"h": 28
+						}
+					]
+				},
+				{
+					"key": "Home/69#0",
+					"element": {
+						"tag": "p",
+						"words": "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh.",
+						"snippet": "<p style=\"margin:0;font-size:17px;line-height:1.5;color:#4E3C31;max-width:520px\" data-dc-tpl=\"69\">Nothing sits on a shelf. Pick a base, your chips and a fruit, "
+					},
+					"parent": {
+						"draftId": "Home:66",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:67",
+							"tag": "div",
+							"block": null
+						},
+						{
+							"draftId": "Home:68",
+							"tag": "h2",
+							"block": null
+						}
+					],
+					"confidence": 1,
+					"candidates": [],
+					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+					"rowId": "skeleton:build-your-zookie:Home/69#0",
+					"draftId": "Home:69",
+					"action": "unresolved",
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/68#0",
+							"tag": "h2",
+							"words": "Build your Zookie",
+							"block": null
+						},
+						{
+							"key": "Home/70#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 158,
+							"y": 1821.1,
+							"w": 520,
+							"h": 51
+						},
+						{
+							"width": 768,
+							"x": 70,
+							"y": 2071,
+							"w": 520,
+							"h": 51
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 2089.9,
+							"w": 295,
+							"h": 76.5
+						}
+					]
+				},
+				{
+					"key": "Home/106#0",
+					"element": {
+						"tag": "div",
+						"words": "20 × Classic oat, milk choc chips, strawberry & mango",
+						"snippet": "<div style=\"position:relative;font-family:'Caveat',cursive;font-size:26px;text-align:center;line-height:1.1\" data-dc-tpl=\"106\">{{ summary }}</div>"
+					},
+					"parent": {
+						"draftId": "Home:101",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:102",
+							"tag": "div",
+							"block": null
+						},
+						{
+							"draftId": "Home:103",
+							"tag": "div",
+							"block": null
+						}
+					],
+					"confidence": 1,
+					"candidates": [],
+					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+					"rowId": "skeleton:build-your-zookie:Home/106#0",
+					"draftId": "Home:106",
+					"action": "unresolved",
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/105",
+							"tag": "span",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home/107#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 832.9,
+							"y": 2005.9,
+							"w": 427.1,
+							"h": 57.2
+						},
+						{
+							"width": 768,
+							"x": 143.7,
+							"y": 3000,
+							"w": 480.6,
+							"h": 28.6
+						},
+						{
+							"width": 375,
+							"x": 62,
+							"y": 3258.4,
+							"w": 251,
+							"h": 57.2
+						}
+					]
+				},
+				{
+					"key": "Home/108#0",
+					"element": {
+						"tag": "button",
+						"words": "",
+						"snippet": "<button sc-camel-on-click=\"{{ pickSub }}\" aria-pressed=\"{{ isSub }}\" style=\"min-height:72px;border-radius:20px;border:2px solid #3A2A22;background:{{ subOpt.bg "
+					},
+					"parent": {
+						"draftId": "Home:107",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:116",
+							"tag": "div",
+							"block": null
+						},
+						{
+							"draftId": "Home:119",
+							"tag": "button",
+							"block": null
+						}
+					],
+					"confidence": 1,
+					"candidates": [],
+					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+					"rowId": "skeleton:build-your-zookie:Home/108#0",
+					"draftId": "Home:108",
+					"action": "unresolved",
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/107#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Home/109#0",
+							"tag": "span",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 810.9,
+							"y": 2101.1,
+							"w": 471.1,
+							"h": 72
+						},
+						{
+							"width": 768,
+							"x": 70,
+							"y": 3066.6,
+							"w": 628,
+							"h": 72
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 3353.5,
+							"w": 295,
+							"h": 72
+						}
+					]
+				},
+				{
+					"key": "Home/119#0",
+					"element": {
+						"tag": "button",
+						"words": "",
+						"snippet": "<button sc-camel-on-click=\"{{ pickOnce }}\" aria-pressed=\"{{ isOnce }}\" style=\"min-height:60px;border-radius:20px;border:2px solid #3A2A22;background:{{ once.bg "
+					},
+					"parent": {
+						"draftId": "Home:107",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:108",
+							"tag": "button",
+							"block": null
+						},
+						{
+							"draftId": "Home:116",
+							"tag": "div",
+							"block": null
+						}
+					],
+					"confidence": 1,
+					"candidates": [],
+					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+					"rowId": "skeleton:build-your-zookie:Home/119#0",
+					"draftId": "Home:119",
+					"action": "unresolved",
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/118",
+							"tag": "button",
+							"words": "Every 2 weeks",
+							"block": null
+						},
+						{
+							"key": "Home/120#0",
+							"tag": "span",
+							"words": "One-off box",
+							"block": null
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 810.9,
+							"y": 2237.1,
+							"w": 471.1,
+							"h": 60
+						},
+						{
+							"width": 768,
+							"x": 70,
+							"y": 3202.6,
+							"w": 628,
+							"h": 60
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 3489.5,
+							"w": 295,
+							"h": 60
+						}
+					]
+				},
+				{
+					"key": "Home/123#0",
+					"element": {
+						"tag": "div",
+						"words": "Baked fresh for you · with you in 3–5 days · free UK delivery over £35",
+						"snippet": "<div style=\"font-size:14px;font-weight:600;text-align:center\" data-dc-tpl=\"123\">Baked fresh for you · with you in 3–5 days · free UK delivery over £35</div>"
+					},
+					"parent": {
+						"draftId": "Home:100",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Home:101",
+							"tag": "div",
+							"block": null
+						},
+						{
+							"draftId": "Home:107",
+							"tag": "div",
+							"block": null
+						},
+						{
+							"draftId": "Home:122",
+							"tag": "button",
+							"block": null
+						}
+					],
+					"confidence": 1,
+					"candidates": [],
+					"reason": "the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference",
+					"rowId": "skeleton:build-your-zookie:Home/123#0",
+					"draftId": "Home:123",
+					"action": "unresolved",
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Home/122#0",
+							"tag": "button",
+							"words": "Subscribe · £19.35",
+							"block": null
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 810.9,
+							"y": 2393.1,
+							"w": 471.1,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 70,
+							"y": 3358.6,
+							"w": 628,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 3645.5,
+							"w": 295,
+							"h": 34
+						}
+					]
+				}
+			]
+		},
 		"page-shop-dc-html": {
-			"generated": "2026-10-26T11:41:33.869Z",
+			"generated": "2026-10-27T15:45:40.122Z",
 			"surface": "page-shop-dc-html",
 			"source": "intake.json skeletons[\"page-shop-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -8074,11 +6849,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 2 surfaces",
+					"reason": "12 copies of one template element on 3 surfaces",
 					"rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/9",
 					"draftId": "ProductCard:9",
 					"action": null,
-					"copies": 9,
+					"copies": 12,
 					"keys": [
 						"Shop>ProductCard@31#0/9#0",
 						"Shop>ProductCard@31#1/9#0",
@@ -8092,6 +6867,14 @@
 						"£42"
 					],
 					"alsoIn": [
+						{
+							"surface": "page-product-dc-html-id-zookies",
+							"keys": [
+								"Product>ProductCard@139#0/9#0",
+								"Product>ProductCard@139#1/9#0",
+								"Product>ProductCard@139#2/9#0"
+							]
+						},
 						{
 							"surface": "page-gifts-dc-html",
 							"keys": [
@@ -8168,11 +6951,11 @@
 							"share": 1
 						}
 					],
-					"reason": "9 copies of one template element on 2 surfaces",
+					"reason": "12 copies of one template element on 3 surfaces",
 					"rowId": "skeleton:page-shop-dc-html:Shop>ProductCard@31/10",
 					"draftId": "ProductCard:10",
 					"action": null,
-					"copies": 9,
+					"copies": 12,
 					"keys": [
 						"Shop>ProductCard@31#0/10#0",
 						"Shop>ProductCard@31#1/10#0",
@@ -8186,6 +6969,14 @@
 						"6 deliveries"
 					],
 					"alsoIn": [
+						{
+							"surface": "page-product-dc-html-id-zookies",
+							"keys": [
+								"Product>ProductCard@139#0/10#0",
+								"Product>ProductCard@139#1/10#0",
+								"Product>ProductCard@139#2/10#0"
+							]
+						},
 						{
 							"surface": "page-gifts-dc-html",
 							"keys": [
@@ -8768,7 +7559,7 @@
 							"key": "Shop/50#0",
 							"tag": "div",
 							"words": "",
-							"block": null
+							"block": "sgs/media"
 						}
 					],
 					"siblingCount": 2,
@@ -8795,76 +7586,1039 @@
 							"h": 38
 						}
 					]
-				},
+				}
+			]
+		},
+		"page-product-dc-html-id-zookies": {
+			"generated": "2026-10-27T15:45:40.122Z",
+			"surface": "page-product-dc-html-id-zookies",
+			"source": "intake.json skeletons[\"page-product-dc-html-id-zookies\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
 				{
-					"key": "Shop/50#0",
+					"key": "Product/14#0",
 					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"height:100%;min-height:200px;background:url(assets/photo-gift-heart.jpg) center / cover;border-left:{{ L.giftBorder }}\" data-dc-tpl=\"50\"></div>"
+						"tag": "span",
+						"words": "Zookies",
+						"snippet": "<span data-dc-tpl=\"14\">{{ p.name }}</span>"
 					},
 					"parent": {
-						"draftId": "Shop:45",
-						"tag": "a",
+						"draftId": "Product:9",
+						"tag": "nav",
 						"block": "sgs/container"
 					},
 					"siblings": [
 						{
-							"draftId": "Shop:46",
-							"tag": "div",
-							"block": "sgs/container"
+							"draftId": "Product:10",
+							"tag": "a",
+							"block": "sgs/button"
+						},
+						{
+							"draftId": "Product:11",
+							"tag": "span",
+							"block": null
+						},
+						{
+							"draftId": "Product:12",
+							"tag": "a",
+							"block": "sgs/button"
+						},
+						{
+							"draftId": "Product:13",
+							"tag": "span",
+							"block": null
 						}
 					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-shop-dc-html:Shop/50#0",
-					"draftId": "Shop:50",
-					"action": "unresolved",
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/14#0",
+					"draftId": "Product:14",
+					"action": null,
 					"copies": 1,
 					"neighbours": [
 						{
-							"key": "Shop/49#0",
+							"key": "Product/13#0",
 							"tag": "span",
-							"words": "Baby showers, new arrivals and the first 40 days.",
-							"block": "sgs/text"
+							"words": "/",
+							"block": null
 						},
 						{
-							"key": "Shop/51#0",
+							"key": "Product/15#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": "sgs/hero"
+						}
+					],
+					"siblingCount": 4,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 216.8,
+							"y": 153,
+							"w": 51.8,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 148.8,
+							"y": 125,
+							"w": 51.8,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 136.8,
+							"y": 115,
+							"w": 51.8,
+							"h": 17
+						}
+					]
+				},
+				{
+					"key": "Product/20#0",
+					"element": {
+						"tag": "div",
+						"words": "baked with love",
+						"snippet": "<div style=\"position:absolute;right:14px;bottom:14px;background:#EE8088;border:2px solid #3A2A22;padding:6px 20px 6px 12px;clip-path:polygon(0 0,100% 0,88% 50%,"
+					},
+					"parent": {
+						"draftId": "Product:17",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Product:19",
+							"tag": "span",
+							"block": "sgs/label"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/20#0",
+					"draftId": "Product:20",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/19#0",
+							"tag": "span",
+							"words": "Build your own",
+							"block": "sgs/label"
+						},
+						{
+							"key": "Product/21#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/multi-button"
 						}
 					],
 					"siblingCount": 1,
 					"boxes": [
 						{
 							"width": 1440,
-							"x": 862.6,
-							"y": 2192.5,
-							"w": 475.4,
-							"h": 200
+							"x": 536.2,
+							"y": 725.2,
+							"w": 151.5,
+							"h": 54.3
 						},
 						{
 							"width": 768,
-							"x": 442.3,
-							"y": 1950.2,
-							"w": 291.7,
-							"h": 207
+							"x": 199.9,
+							"y": 428.9,
+							"w": 151.5,
+							"h": 54.3
 						},
 						{
 							"width": 375,
-							"x": 22,
-							"y": 2356.2,
-							"w": 331,
-							"h": 200
+							"x": 188.9,
+							"y": 419.9,
+							"w": 151.5,
+							"h": 54.3
+						}
+					]
+				},
+				{
+					"key": "Product/21#0",
+					"element": {
+						"tag": "div",
+						"words": "",
+						"snippet": "<div style=\"display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:4px 2px 6px\" data-dc-tpl=\"21\"> <sc-for list=\"{{ thumbs }}\" as=\"g\" hint-placeholde"
+					},
+					"parent": {
+						"draftId": "Product:16",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Product:17",
+							"tag": "div",
+							"block": null
+						}
+					],
+					"confidence": 0.51,
+					"candidates": [
+						{
+							"block": "sgs/multi-button",
+							"score": 0.75,
+							"share": 0.682
+						},
+						{
+							"block": "sgs/container",
+							"score": 0.35,
+							"share": 0.318
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/21#0",
+					"draftId": "Product:21",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/20#0",
+							"tag": "div",
+							"words": "baked with love",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Product/23",
+							"tag": "button",
+							"words": "",
+							"block": "sgs/button"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 100,
+							"y": 804.3,
+							"w": 602.3,
+							"h": 98
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 508,
+							"w": 334,
+							"h": 86
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 499,
+							"w": 335,
+							"h": 74
+						}
+					]
+				},
+				{
+					"key": "Product/26#0",
+					"element": {
+						"tag": "div",
+						"words": "build your own box",
+						"snippet": "<div style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"26\">{{ eyebrow }}</div>"
+					},
+					"parent": {
+						"draftId": "Product:25",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Product:27",
+							"tag": "h1",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Product:28",
+							"tag": "a",
+							"block": "sgs/button"
+						},
+						{
+							"draftId": "Product:30",
+							"tag": "p",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/26#0",
+					"draftId": "Product:26",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/25#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Product/27#0",
+							"tag": "h1",
+							"words": "Zookies",
+							"block": "sgs/heading"
+						}
+					],
+					"siblingCount": 3,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 766.3,
+							"y": 188,
+							"w": 573.7,
+							"h": 28
+						},
+						{
+							"width": 768,
+							"x": 402,
+							"y": 160,
+							"w": 334,
+							"h": 28
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 597,
+							"w": 335,
+							"h": 28
+						}
+					]
+				},
+				{
+					"key": "Product/57#0",
+					"element": {
+						"tag": "span",
+						"words": "Up to 3, split evenly",
+						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"57\">Up to 3, split evenly</span>"
+					},
+					"parent": {
+						"draftId": "Product:55",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Product:56",
+							"tag": "span",
+							"block": "sgs/label"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/57#0",
+					"draftId": "Product:57",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/56#0",
+							"tag": "span",
+							"words": "4 · Flavours",
+							"block": "sgs/label"
+						},
+						{
+							"key": "Product/58#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/option-picker"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 903.1,
+							"y": 733.2,
+							"w": 123.9,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 534.8,
+							"y": 770.4,
+							"w": 123.9,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 144.8,
+							"y": 1197.4,
+							"w": 123.9,
+							"h": 17
+						}
+					]
+				},
+				{
+					"key": "Product/62#0",
+					"element": {
+						"tag": "div",
+						"words": "All 20 strawberry",
+						"snippet": "<div style=\"margin-top:10px;font-size:14px;font-weight:700\" data-dc-tpl=\"62\">{{ split }}</div>"
+					},
+					"parent": {
+						"draftId": "Product:54",
+						"tag": "div",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Product:55",
+							"tag": "div",
+							"block": "sgs/container"
+						},
+						{
+							"draftId": "Product:58",
+							"tag": "div",
+							"block": "sgs/option-picker"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/62#0",
+					"draftId": "Product:62",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/61",
+							"tag": "span",
+							"words": "✓",
+							"block": null
+						},
+						{
+							"key": "Product/63#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/option-picker"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 796.3,
+							"y": 924.2,
+							"w": 513.7,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 428,
+							"y": 1123.4,
+							"w": 282,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 38,
+							"y": 1550.4,
+							"w": 299,
+							"h": 17
+						}
+					]
+				},
+				{
+					"key": "Product/97#0",
+					"element": {
+						"tag": "span",
+						"words": "Send it as a gift",
+						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"97\">Send it as a gift</span>"
+					},
+					"parent": {
+						"draftId": "Product:96",
+						"tag": "span",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Product:98",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/97#0",
+					"draftId": "Product:97",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/96#0",
+							"tag": "span",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Product/98#0",
+							"tag": "span",
+							"words": "Add a note. We’ll leave the prices off.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 829.3,
+							"y": 1179.2,
+							"w": 229.6,
+							"h": 19
+						},
+						{
+							"width": 768,
+							"x": 465,
+							"y": 1375.4,
+							"w": 229.6,
+							"h": 19
+						},
+						{
+							"width": 375,
+							"x": 83,
+							"y": 1798.4,
+							"w": 229.6,
+							"h": 19
+						}
+					]
+				},
+				{
+					"key": "Product/98#0",
+					"element": {
+						"tag": "span",
+						"words": "Add a note. We’ll leave the prices off.",
+						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"98\">Add a note. We’ll leave the prices off.</span>"
+					},
+					"parent": {
+						"draftId": "Product:96",
+						"tag": "span",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Product:97",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/98#0",
+					"draftId": "Product:98",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/97#0",
+							"tag": "span",
+							"words": "Send it as a gift",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Product/102#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 829.3,
+							"y": 1198.2,
+							"w": 229.6,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 465,
+							"y": 1394.4,
+							"w": 229.6,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 83,
+							"y": 1817.4,
+							"w": 229.6,
+							"h": 17
+						}
+					]
+				},
+				{
+					"key": "Product/111#0",
+					"element": {
+						"tag": "span",
+						"words": "✦",
+						"snippet": "<span style=\"flex:none;width:36px;height:36px;border-radius:999px;background:#F9D5D3;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:ce"
+					},
+					"parent": {
+						"draftId": "Product:110",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/111#0",
+					"draftId": "Product:111",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/110#0",
+							"tag": "div",
+							"words": "Baked fresh when you order",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Product/112#0",
+							"tag": "div",
+							"words": "With you in 3–5 days",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 766.3,
+							"y": 1345.2,
+							"w": 36,
+							"h": 36
+						},
+						{
+							"width": 768,
+							"x": 402,
+							"y": 1541.4,
+							"w": 36,
+							"h": 36
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 1964.4,
+							"w": 36,
+							"h": 36
+						}
+					]
+				},
+				{
+					"key": "Product/113#0",
+					"element": {
+						"tag": "span",
+						"words": "→",
+						"snippet": "<span style=\"flex:none;width:36px;height:36px;border-radius:999px;background:#FCEBBE;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:ce"
+					},
+					"parent": {
+						"draftId": "Product:112",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/113#0",
+					"draftId": "Product:113",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/112#0",
+							"tag": "div",
+							"words": "With you in 3–5 days",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Product/114#0",
+							"tag": "div",
+							"words": "Free UK delivery over £35",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 960.9,
+							"y": 1345.2,
+							"w": 36,
+							"h": 36
+						},
+						{
+							"width": 768,
+							"x": 402,
+							"y": 1587.4,
+							"w": 36,
+							"h": 36
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 2010.4,
+							"w": 36,
+							"h": 36
+						}
+					]
+				},
+				{
+					"key": "Product/115#0",
+					"element": {
+						"tag": "span",
+						"words": "£",
+						"snippet": "<span style=\"flex:none;width:36px;height:36px;border-radius:999px;background:#FFFAF0;border:2px solid #3A2A22;display:flex;align-items:center;justify-content:ce"
+					},
+					"parent": {
+						"draftId": "Product:114",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/115#0",
+					"draftId": "Product:115",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/114#0",
+							"tag": "div",
+							"words": "Free UK delivery over £35",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Product/116#0",
+							"tag": "div",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1155.4,
+							"y": 1345.2,
+							"w": 36,
+							"h": 36
+						},
+						{
+							"width": 768,
+							"x": 402,
+							"y": 1633.4,
+							"w": 36,
+							"h": 36
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 2056.4,
+							"w": 36,
+							"h": 36
+						}
+					]
+				},
+				{
+					"key": "Product/120",
+					"element": {
+						"tag": "span",
+						"words": "+",
+						"snippet": "<span aria-hidden=\"true\" style=\"flex:none;width:32px;height:32px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;display:flex;align-items:center"
+					},
+					"parent": {
+						"draftId": "Product:119",
+						"tag": "button",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": "4 copies of one template element",
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/120",
+					"draftId": "Product:120",
+					"action": null,
+					"copies": 4,
+					"keys": [
+						"Product/120#0",
+						"Product/120#1",
+						"Product/120#2",
+						"Product/120#3"
+					],
+					"neighbours": [
+						{
+							"key": "Product/119",
+							"tag": "button",
+							"words": "Ingredients & allergens",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Product/122#0",
+							"tag": "p",
+							"words": "Every Zookie contains oats (gluten), brewer’s yeast, flaxseed and fenugreek, plus eggs and milk unless you choose the vegan base. Fenugreek is a legume and may cross-react with peanut or soy allergies. Made in a kitchen that also handles tree nuts.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 1281.4,
+							"y": 1412.6,
+							"w": 45.3,
+							"h": 45.3
+						},
+						{
+							"width": 768,
+							"x": 677.4,
+							"y": 1700.7,
+							"w": 45.3,
+							"h": 45.3
+						},
+						{
+							"width": 375,
+							"x": 296.4,
+							"y": 2123.7,
+							"w": 45.3,
+							"h": 45.3
+						}
+					]
+				},
+				{
+					"key": "Product/124#0",
+					"element": {
+						"tag": "div",
+						"words": "real mums, real words",
+						"snippet": "<div data-reveal=\"\" style=\"font-family:'Caveat',cursive;font-size:28px;color:#8E3444;line-height:1\" data-dc-tpl=\"124\">real mums, real words</div>"
+					},
+					"parent": {
+						"draftId": "Product:123",
+						"tag": "section",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Product:125",
+							"tag": "h2",
+							"block": "sgs/heading"
+						},
+						{
+							"draftId": "Product:126",
+							"tag": "div",
+							"block": "sgs/container"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/124#0",
+					"draftId": "Product:124",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Product/123#0",
+							"tag": "section",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Product/125#0",
+							"tag": "h2",
+							"words": "What people are saying",
+							"block": "sgs/heading"
+						}
+					],
+					"siblingCount": 2,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 100,
+							"y": 1907.2,
+							"w": 1240,
+							"h": 28
+						},
+						{
+							"width": 768,
+							"x": 32,
+							"y": 2243.4,
+							"w": 704,
+							"h": 28
+						},
+						{
+							"width": 375,
+							"x": 20,
+							"y": 2650.4,
+							"w": 335,
+							"h": 28
+						}
+					]
+				},
+				{
+					"key": "Product/133",
+					"element": {
+						"tag": "b",
+						"words": "KA",
+						"snippet": "<b data-dc-tpl=\"133\">{{ r.name }}</b>"
+					},
+					"parent": {
+						"draftId": "Product:132",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": "3 copies of one template element",
+					"rowId": "skeleton:page-product-dc-html-id-zookies:Product/133",
+					"draftId": "Product:133",
+					"action": null,
+					"copies": 3,
+					"keys": [
+						"Product/133#0",
+						"Product/133#1",
+						"Product/133#2"
+					],
+					"otherWords": [
+						"mariahzaini",
+						"Mrs MIM"
+					],
+					"neighbours": [
+						{
+							"key": "Product/132",
+							"tag": "div",
+							"words": "· June 2026",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Product/134#0",
+							"tag": "section",
+							"words": "",
+							"block": "sgs/container"
+						}
+					],
+					"siblingCount": 0,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 127.8,
+							"y": 2263.3,
+							"w": 18.2,
+							"h": 17.3
+						},
+						{
+							"width": 768,
+							"x": 61.3,
+							"y": 2762.4,
+							"w": 18.2,
+							"h": 17.3
+						},
+						{
+							"width": 375,
+							"x": 31.5,
+							"y": 3107.4,
+							"w": 18.2,
+							"h": 17.3
 						}
 					]
 				}
 			]
 		},
 		"page-gifts-dc-html": {
-			"generated": "2026-10-26T11:41:33.869Z",
+			"generated": "2026-10-27T15:45:40.123Z",
 			"surface": "page-gifts-dc-html",
 			"source": "intake.json skeletons[\"page-gifts-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -9124,71 +8878,6 @@
 					]
 				},
 				{
-					"key": "Gifts/27#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"aspect-ratio:3 / 4;background:url(assets/photo-gift-heart.jpg) center / cover;border-radius:4px\" data-dc-tpl=\"27\"></div>"
-					},
-					"parent": {
-						"draftId": "Gifts:26",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Gifts:28",
-							"tag": "div",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-gifts-dc-html:Gifts/27#0",
-					"draftId": "Gifts:27",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Gifts/26#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Gifts/28#0",
-							"tag": "div",
-							"words": "wrapped with love",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 792.8,
-							"y": 241.8,
-							"w": 333.3,
-							"h": 424
-						},
-						{
-							"width": 768,
-							"x": 433.5,
-							"y": 286.9,
-							"w": 191.4,
-							"h": 243.5
-						},
-						{
-							"width": 375,
-							"x": 33.8,
-							"y": 880.2,
-							"w": 204.3,
-							"h": 260
-						}
-					]
-				},
-				{
 					"key": "Gifts/28#0",
 					"element": {
 						"tag": "div",
@@ -9204,7 +8893,7 @@
 						{
 							"draftId": "Gifts:27",
 							"tag": "div",
-							"block": null
+							"block": "sgs/media"
 						}
 					],
 					"confidence": 0.25,
@@ -9225,7 +8914,7 @@
 							"key": "Gifts/27#0",
 							"tag": "div",
 							"words": "",
-							"block": null
+							"block": "sgs/media"
 						},
 						{
 							"key": "Gifts/29#0",
@@ -10514,774 +10203,12 @@
 			]
 		},
 		"page-basket-dc-html": {
-			"generated": "2026-10-26T11:41:33.870Z",
+			"generated": "2026-10-27T15:45:40.123Z",
 			"surface": "page-basket-dc-html",
 			"source": "intake.json skeletons[\"page-basket-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
-				{
-					"key": "Basket>SiteHeader@7#0/135#0",
-					"element": {
-						"tag": "div",
-						"words": "You’re £8.50 away from free UK delivery",
-						"snippet": "<div style=\"font-size:15px;font-weight:700\" data-dc-tpl=\"135\">{{ freeMsg }}</div>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:134",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:136",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/135#0",
-					"draftId": "SiteHeader:135",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7#0/134#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket>SiteHeader@7#0/136#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1482,
-							"y": 83,
-							"w": 400,
-							"h": 18
-						},
-						{
-							"width": 768,
-							"x": 810,
-							"y": 83,
-							"w": 400,
-							"h": 18
-						},
-						{
-							"width": 375,
-							"x": 413.8,
-							"y": 83,
-							"w": 335,
-							"h": 18
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7#0/137#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"height:100%;width:{{ freePct }};background:#EE8088;border-radius:99px;transition:width .4s\" data-dc-tpl=\"137\"></div>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:136",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/137#0",
-					"draftId": "SiteHeader:137",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7#0/136#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket>SiteHeader@7#0/138#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1482,
-							"y": 109,
-							"w": 302.8,
-							"h": 8
-						},
-						{
-							"width": 768,
-							"x": 810,
-							"y": 109,
-							"w": 302.8,
-							"h": 8
-						},
-						{
-							"width": 375,
-							"x": 413.8,
-							"y": 109,
-							"w": 253.6,
-							"h": 8
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7/141",
-					"element": {
-						"tag": "img",
-						"words": "",
-						"snippet": "<img src=\"{{ it.img }}\" alt=\"\" style=\"width:76px;height:76px;border-radius:14px;object-fit:cover;background:#F9D5D3\" data-dc-tpl=\"141\">"
-					},
-					"parent": {
-						"draftId": "SiteHeader:140",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:142",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "SiteHeader:149",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.29,
-					"candidates": [
-						{
-							"block": "sgs/media",
-							"score": 0.5,
-							"share": 0.588
-						},
-						{
-							"block": "sgs/responsive-logo",
-							"score": 0.35,
-							"share": 0.412
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7/141",
-					"draftId": "SiteHeader:141",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket>SiteHeader@7#0/141#0",
-						"Basket>SiteHeader@7#0/141#1"
-					],
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7/140",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket>SiteHeader@7/142",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1482,
-							"y": 152,
-							"w": 76,
-							"h": 76
-						},
-						{
-							"width": 768,
-							"x": 810,
-							"y": 152,
-							"w": 76,
-							"h": 76
-						},
-						{
-							"width": 375,
-							"x": 413.8,
-							"y": 152,
-							"w": 76,
-							"h": 76
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7/143",
-					"element": {
-						"tag": "div",
-						"words": "Zookies · 20 pack",
-						"snippet": "<div style=\"font-family:'Young Serif',serif;font-size:17px;line-height:1.2\" data-dc-tpl=\"143\">{{ it.name }}</div>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:142",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:144",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "SiteHeader:145",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7/143",
-					"draftId": "SiteHeader:143",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket>SiteHeader@7#0/143#0",
-						"Basket>SiteHeader@7#0/143#1"
-					],
-					"otherWords": [
-						"Taster Trio"
-					],
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7/142",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket>SiteHeader@7/144",
-							"tag": "div",
-							"words": "Oat · Milk choc · Strawberry",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1572,
-							"y": 152,
-							"w": 245.3,
-							"h": 20.4
-						},
-						{
-							"width": 768,
-							"x": 900,
-							"y": 152,
-							"w": 245.3,
-							"h": 20.4
-						},
-						{
-							"width": 375,
-							"x": 503.8,
-							"y": 152,
-							"w": 180.3,
-							"h": 20.4
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7/144",
-					"element": {
-						"tag": "div",
-						"words": "Oat · Milk choc · Strawberry",
-						"snippet": "<div style=\"font-size:14px;color:#6B5646;margin-top:2px\" data-dc-tpl=\"144\">{{ it.variant }}</div>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:142",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:143",
-							"tag": "div",
-							"block": "sgs/text"
-						},
-						{
-							"draftId": "SiteHeader:145",
-							"tag": "div",
-							"block": "sgs/container"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7/144",
-					"draftId": "SiteHeader:144",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket>SiteHeader@7#0/144#0",
-						"Basket>SiteHeader@7#0/144#1"
-					],
-					"otherWords": [
-						"3 Classic Zookies"
-					],
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7/143",
-							"tag": "div",
-							"words": "Zookies · 20 pack",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket>SiteHeader@7/145",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1572,
-							"y": 174.4,
-							"w": 245.3,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 900,
-							"y": 174.4,
-							"w": 245.3,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 503.8,
-							"y": 174.4,
-							"w": 180.3,
-							"h": 17
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7/147",
-					"element": {
-						"tag": "span",
-						"words": "1",
-						"snippet": "<span style=\"min-width:22px;text-align:center;font-weight:700\" data-dc-tpl=\"147\">{{ it.qty }}</span>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:145",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:146",
-							"tag": "button",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "SiteHeader:148",
-							"tag": "button",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7/147",
-					"draftId": "SiteHeader:147",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket>SiteHeader@7#0/147#0",
-						"Basket>SiteHeader@7#0/147#1"
-					],
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7/146",
-							"tag": "button",
-							"words": "−",
-							"block": "sgs/button"
-						},
-						{
-							"key": "Basket>SiteHeader@7/148",
-							"tag": "button",
-							"words": "+",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1617,
-							"y": 211.9,
-							"w": 22,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 945,
-							"y": 211.9,
-							"w": 22,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 548.8,
-							"y": 211.9,
-							"w": 22,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7/150",
-					"element": {
-						"tag": "div",
-						"words": "£21.50",
-						"snippet": "<div style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"150\">{{ it.total }}</div>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:149",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:151",
-							"tag": "button",
-							"block": "sgs/button"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": "2 copies of one template element",
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7/150",
-					"draftId": "SiteHeader:150",
-					"action": null,
-					"copies": 2,
-					"keys": [
-						"Basket>SiteHeader@7#0/150#0",
-						"Basket>SiteHeader@7#0/150#1"
-					],
-					"otherWords": [
-						"£5.00"
-					],
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7/149",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket>SiteHeader@7/151",
-							"tag": "button",
-							"words": "Remove",
-							"block": "sgs/button"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1834.1,
-							"y": 152,
-							"w": 47.9,
-							"h": 19
-						},
-						{
-							"width": 768,
-							"x": 1162.1,
-							"y": 152,
-							"w": 47.9,
-							"h": 19
-						},
-						{
-							"width": 375,
-							"x": 700.9,
-							"y": 152,
-							"w": 47.9,
-							"h": 19
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7#0/170#0",
-					"element": {
-						"tag": "span",
-						"words": "Subtotal",
-						"snippet": "<span data-dc-tpl=\"170\">Subtotal</span>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:169",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:171",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/170#0",
-					"draftId": "SiteHeader:170",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7#0/169#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket>SiteHeader@7#0/171#0",
-							"tag": "span",
-							"words": "£26.50",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1482,
-							"y": 718,
-							"w": 74.2,
-							"h": 22
-						},
-						{
-							"width": 768,
-							"x": 810,
-							"y": 718,
-							"w": 74.2,
-							"h": 22
-						},
-						{
-							"width": 375,
-							"x": 413.8,
-							"y": 718,
-							"w": 74.2,
-							"h": 22
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7#0/171#0",
-					"element": {
-						"tag": "span",
-						"words": "£26.50",
-						"snippet": "<span data-dc-tpl=\"171\">{{ subText }}</span>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:169",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:170",
-							"tag": "span",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/171#0",
-					"draftId": "SiteHeader:171",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7#0/170#0",
-							"tag": "span",
-							"words": "Subtotal",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket>SiteHeader@7#0/172#0",
-							"tag": "div",
-							"words": "Baked fresh for you · with you in 3–5 days",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1823.6,
-							"y": 718,
-							"w": 58.4,
-							"h": 22
-						},
-						{
-							"width": 768,
-							"x": 1151.6,
-							"y": 718,
-							"w": 58.4,
-							"h": 22
-						},
-						{
-							"width": 375,
-							"x": 690.4,
-							"y": 718,
-							"w": 58.4,
-							"h": 22
-						}
-					]
-				},
-				{
-					"key": "Basket>SiteHeader@7#0/172#0",
-					"element": {
-						"tag": "div",
-						"words": "Baked fresh for you · with you in 3–5 days",
-						"snippet": "<div style=\"font-size:14px;color:#6B5646;margin:4px 0 14px\" data-dc-tpl=\"172\">Baked fresh for you · with you in 3–5 days</div>"
-					},
-					"parent": {
-						"draftId": "SiteHeader:168",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "SiteHeader:169",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "SiteHeader:173",
-							"tag": "a",
-							"block": "sgs/icon-list"
-						},
-						{
-							"draftId": "SiteHeader:174",
-							"tag": "a",
-							"block": "sgs/icon-list"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-basket-dc-html:Basket>SiteHeader@7#0/172#0",
-					"draftId": "SiteHeader:172",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket>SiteHeader@7#0/171#0",
-							"tag": "span",
-							"words": "£26.50",
-							"block": "sgs/text"
-						},
-						{
-							"key": "Basket>SiteHeader@7#0/173#0",
-							"tag": "a",
-							"words": "Checkout securely",
-							"block": "sgs/icon-list"
-						}
-					],
-					"siblingCount": 3,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 1482,
-							"y": 744,
-							"w": 400,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 810,
-							"y": 744,
-							"w": 400,
-							"h": 17
-						},
-						{
-							"width": 375,
-							"x": 413.8,
-							"y": 744,
-							"w": 335,
-							"h": 17
-						}
-					]
-				},
 				{
 					"key": "Basket/10#0",
 					"element": {
@@ -11292,7 +10219,7 @@
 					"parent": {
 						"draftId": "Basket:9",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": "sgs/hero"
 					},
 					"siblings": [
 						{
@@ -11324,7 +10251,7 @@
 							"key": "Basket/9#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": "sgs/hero"
 						},
 						{
 							"key": "Basket/11#0",
@@ -11433,13 +10360,13 @@
 					"parent": {
 						"draftId": "Basket:24",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
 							"draftId": "Basket:26",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": null
 						}
 					],
 					"confidence": 0.25,
@@ -11460,13 +10387,13 @@
 							"key": "Basket/24#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Basket/26#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						}
 					],
 					"siblingCount": 1,
@@ -11495,139 +10422,6 @@
 					]
 				},
 				{
-					"key": "Basket/27#0",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"height:100%;width:{{ freePct }};background:#EE8088;transition:width .5s cubic-bezier(.2,.8,.2,1)\" data-dc-tpl=\"27\"></div>"
-					},
-					"parent": {
-						"draftId": "Basket:26",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-basket-dc-html:Basket/27#0",
-					"draftId": "Basket:27",
-					"action": "unresolved",
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Basket/26#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket/29",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 124,
-							"y": 338,
-							"w": 508.8,
-							"h": 10
-						},
-						{
-							"width": 768,
-							"x": 56,
-							"y": 292,
-							"w": 496.7,
-							"h": 10
-						},
-						{
-							"width": 375,
-							"x": 44,
-							"y": 270,
-							"w": 217.3,
-							"h": 10
-						}
-					]
-				},
-				{
-					"key": "Basket/30",
-					"element": {
-						"tag": "div",
-						"words": "",
-						"snippet": "<div style=\"width:{{ L.thumb }};height:{{ L.thumb }};border-radius:16px;border:2px solid #3A2A22;background-color:#F9D5D3;background-image:{{ it.bg }};backgroun"
-					},
-					"parent": {
-						"draftId": "Basket:29",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Basket:31",
-							"tag": "div",
-							"block": "sgs/container"
-						},
-						{
-							"draftId": "Basket:40",
-							"tag": "div",
-							"block": "sgs/text"
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "2 copies of one template element; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-basket-dc-html:Basket/30",
-					"draftId": "Basket:30",
-					"action": "unresolved",
-					"copies": 2,
-					"keys": [
-						"Basket/30#0",
-						"Basket/30#1"
-					],
-					"neighbours": [
-						{
-							"key": "Basket/29",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Basket/31",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 2,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 116,
-							"y": 400,
-							"w": 104,
-							"h": 104
-						},
-						{
-							"width": 768,
-							"x": 48,
-							"y": 356.2,
-							"w": 96,
-							"h": 96
-						},
-						{
-							"width": 375,
-							"x": 36,
-							"y": 391.9,
-							"w": 72,
-							"h": 72
-						}
-					]
-				},
-				{
 					"key": "Basket/32",
 					"element": {
 						"tag": "div",
@@ -11637,7 +10431,7 @@
 					"parent": {
 						"draftId": "Basket:31",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -11676,7 +10470,7 @@
 							"key": "Basket/31",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Basket/33",
@@ -11720,7 +10514,7 @@
 					"parent": {
 						"draftId": "Basket:31",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -11889,12 +10683,12 @@
 						{
 							"draftId": "Basket:30",
 							"tag": "div",
-							"block": null
+							"block": "sgs/container"
 						},
 						{
 							"draftId": "Basket:31",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": null
 						}
 					],
 					"confidence": 0.25,
@@ -11928,7 +10722,7 @@
 							"key": "Basket/41#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						}
 					],
 					"siblingCount": 2,
@@ -11953,6 +10747,148 @@
 							"y": 332,
 							"w": 61,
 							"h": 28
+						}
+					]
+				},
+				{
+					"key": "Basket/45#0",
+					"element": {
+						"tag": "span",
+						"words": "This is a gift",
+						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"45\">This is a gift</span>"
+					},
+					"parent": {
+						"draftId": "Basket:44",
+						"tag": "span",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Basket:46",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-basket-dc-html:Basket/45#0",
+					"draftId": "Basket:45",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Basket/44#0",
+							"tag": "span",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Basket/46#0",
+							"tag": "span",
+							"words": "Add a note. The prices stay off the packing slip.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 165,
+							"y": 712,
+							"w": 297.8,
+							"h": 19
+						},
+						{
+							"width": 768,
+							"x": 97,
+							"y": 658.8,
+							"w": 297.8,
+							"h": 19
+						},
+						{
+							"width": 375,
+							"x": 85,
+							"y": 769.2,
+							"w": 248,
+							"h": 19
+						}
+					]
+				},
+				{
+					"key": "Basket/46#0",
+					"element": {
+						"tag": "span",
+						"words": "Add a note. The prices stay off the packing slip.",
+						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"46\">Add a note. The prices stay off the packing slip.</span>"
+					},
+					"parent": {
+						"draftId": "Basket:44",
+						"tag": "span",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Basket:45",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-basket-dc-html:Basket/46#0",
+					"draftId": "Basket:46",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Basket/45#0",
+							"tag": "span",
+							"words": "This is a gift",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Basket/56#0",
+							"tag": "aside",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 165,
+							"y": 731,
+							"w": 297.8,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 97,
+							"y": 677.8,
+							"w": 297.8,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 85,
+							"y": 788.2,
+							"w": 248,
+							"h": 34
 						}
 					]
 				},
@@ -12392,7 +11328,7 @@
 					"parent": {
 						"draftId": "Basket:56",
 						"tag": "aside",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -12498,7 +11434,7 @@
 					"parent": {
 						"draftId": "Basket:56",
 						"tag": "aside",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -12592,104 +11528,29 @@
 			]
 		},
 		"page-checkout-dc-html": {
-			"generated": "2026-10-26T11:41:33.870Z",
+			"generated": "2026-10-27T15:45:40.123Z",
 			"surface": "page-checkout-dc-html",
 			"source": "intake.json skeletons[\"page-checkout-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
 			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
 			"rows": [
 				{
-					"key": "Checkout/11#0",
-					"element": {
-						"tag": "img",
-						"words": "",
-						"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\">"
-					},
-					"parent": {
-						"draftId": "Checkout:10",
-						"tag": "a",
-						"block": "sgs/container"
-					},
-					"siblings": [],
-					"confidence": 0.66,
-					"candidates": [
-						{
-							"block": "sgs/responsive-logo",
-							"score": 0.85,
-							"share": 0.773
-						},
-						{
-							"block": "sgs/media",
-							"score": 0.25,
-							"share": 0.227
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/11#0",
-					"draftId": "Checkout:11",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Checkout/10#0",
-							"tag": "a",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Checkout/12#0",
-							"tag": "span",
-							"words": "Secure checkout",
-							"block": "sgs/text"
-						}
-					],
-					"siblingCount": 0,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 645,
-							"y": 11,
-							"w": 150,
-							"h": 50
-						},
-						{
-							"width": 768,
-							"x": 309,
-							"y": 11,
-							"w": 150,
-							"h": 50
-						},
-						{
-							"width": 375,
-							"x": 127.5,
-							"y": 16,
-							"w": 120,
-							"h": 40
-						}
-					]
-				},
-				{
-					"key": "Checkout/12#0",
+					"key": "Checkout/20#0",
 					"element": {
 						"tag": "span",
-						"words": "Secure checkout",
-						"snippet": "<span style=\"justify-self:end;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px\" data-dc-tpl=\"12\"><svg width=\"16\" height=\"16\" sc-camel-view"
+						"words": "Show order summary ▾",
+						"snippet": "<span data-dc-tpl=\"20\">{{ sumLabel }}</span>"
 					},
 					"parent": {
-						"draftId": "Checkout:8",
-						"tag": "div",
+						"draftId": "Checkout:19",
+						"tag": "button",
 						"block": "sgs/container"
 					},
 					"siblings": [
 						{
-							"draftId": "Checkout:9",
-							"tag": "a",
-							"block": "sgs/button"
-						},
-						{
-							"draftId": "Checkout:10",
-							"tag": "a",
-							"block": "sgs/container"
+							"draftId": "Checkout:21",
+							"tag": "span",
+							"block": "sgs/text"
 						}
 					],
 					"confidence": 0.25,
@@ -12701,46 +11562,89 @@
 						}
 					],
 					"reason": null,
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/12#0",
-					"draftId": "Checkout:12",
+					"rowId": "skeleton:page-checkout-dc-html:Checkout/20#0",
+					"draftId": "Checkout:20",
 					"action": null,
 					"copies": 1,
 					"neighbours": [
 						{
-							"key": "Checkout/11#0",
-							"tag": "img",
+							"key": "Checkout/19#0",
+							"tag": "button",
 							"words": "",
-							"block": "sgs/responsive-logo"
+							"block": "sgs/container"
 						},
 						{
-							"key": "Checkout/16#0",
-							"tag": "main",
+							"key": "Checkout/21#0",
+							"tag": "span",
+							"words": "£30.45",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 375,
+							"x": 36,
+							"y": 109.5,
+							"w": 179,
+							"h": 21
+						}
+					]
+				},
+				{
+					"key": "Checkout/21#0",
+					"element": {
+						"tag": "span",
+						"words": "£30.45",
+						"snippet": "<span style=\"font-family:'Young Serif',serif;font-size:20px\" data-dc-tpl=\"21\">{{ totalText }}</span>"
+					},
+					"parent": {
+						"draftId": "Checkout:19",
+						"tag": "button",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Checkout:20",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-checkout-dc-html:Checkout/21#0",
+					"draftId": "Checkout:21",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/20#0",
+							"tag": "span",
+							"words": "Show order summary ▾",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Checkout/31#0",
+							"tag": "form",
 							"words": "",
 							"block": null
 						}
 					],
-					"siblingCount": 2,
+					"siblingCount": 1,
 					"boxes": [
 						{
-							"width": 1440,
-							"x": 1147.5,
-							"y": 27.5,
-							"w": 132.5,
-							"h": 17
-						},
-						{
-							"width": 768,
-							"x": 615.5,
-							"y": 27.5,
-							"w": 132.5,
-							"h": 17
-						},
-						{
 							"width": 375,
-							"x": 287.5,
-							"y": 27.5,
-							"w": 67.5,
-							"h": 17
+							"x": 275.1,
+							"y": 106,
+							"w": 63.9,
+							"h": 28
 						}
 					]
 				},
@@ -12754,7 +11658,7 @@
 					"parent": {
 						"draftId": "Checkout:32",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -12799,7 +11703,7 @@
 							"key": "Checkout/32#0",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/34#0",
@@ -12843,7 +11747,7 @@
 					"parent": {
 						"draftId": "Checkout:32",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -12928,152 +11832,6 @@
 					]
 				},
 				{
-					"key": "Checkout/40#0",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"flex:1;border-top:2px dashed rgba(58,42,34,.3)\" data-dc-tpl=\"40\"></span>"
-					},
-					"parent": {
-						"draftId": "Checkout:39",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:41",
-							"tag": "span",
-							"block": null
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/40#0",
-					"draftId": "Checkout:40",
-					"action": "unresolved",
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/40#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Checkout/39#0",
-							"tag": "div",
-							"words": "or pay by card",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Checkout/41#0",
-							"tag": "span",
-							"words": "",
-							"block": null
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 140,
-							"y": 295.5,
-							"w": 263.1,
-							"h": 2
-						},
-						{
-							"width": 768,
-							"x": 28,
-							"y": 275.5,
-							"w": 297.4,
-							"h": 2
-						},
-						{
-							"width": 375,
-							"x": 16,
-							"y": 331.5,
-							"w": 112.9,
-							"h": 2
-						}
-					]
-				},
-				{
-					"key": "Checkout/41#0",
-					"element": {
-						"tag": "span",
-						"words": "",
-						"snippet": "<span style=\"flex:1;border-top:2px dashed rgba(58,42,34,.3)\" data-dc-tpl=\"41\"></span>"
-					},
-					"parent": {
-						"draftId": "Checkout:39",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Checkout:40",
-							"tag": "span",
-							"block": null
-						}
-					],
-					"confidence": 0,
-					"candidates": [],
-					"reason": "2 copies of one template element on 2 surfaces; no block fits this element: decide it with skeleton.mjs decide",
-					"rowId": "skeleton:page-checkout-dc-html:Checkout/41#0",
-					"draftId": "Checkout:41",
-					"action": "unresolved",
-					"copies": 2,
-					"alsoIn": [
-						{
-							"surface": "checkout-form",
-							"keys": [
-								"Checkout/41#0"
-							]
-						}
-					],
-					"neighbours": [
-						{
-							"key": "Checkout/40#0",
-							"tag": "span",
-							"words": "",
-							"block": null
-						},
-						{
-							"key": "Checkout/42#0",
-							"tag": "fieldset",
-							"words": "",
-							"block": "sgs/container"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 520.3,
-							"y": 295.5,
-							"w": 263.1,
-							"h": 2
-						},
-						{
-							"width": 768,
-							"x": 442.6,
-							"y": 275.5,
-							"w": 297.4,
-							"h": 2
-						},
-						{
-							"width": 375,
-							"x": 246.1,
-							"y": 331.5,
-							"w": 112.9,
-							"h": 2
-						}
-					]
-				},
-				{
 					"key": "Checkout/43#0",
 					"element": {
 						"tag": "legend",
@@ -13083,7 +11841,7 @@
 					"parent": {
 						"draftId": "Checkout:42",
 						"tag": "fieldset",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -13104,7 +11862,7 @@
 						{
 							"draftId": "Checkout:57",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": null
 						}
 					],
 					"confidence": 0.25,
@@ -13133,7 +11891,7 @@
 							"key": "Checkout/42#0",
 							"tag": "fieldset",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/50#0",
@@ -13168,6 +11926,148 @@
 					]
 				},
 				{
+					"key": "Checkout/61#0",
+					"element": {
+						"tag": "span",
+						"words": "Create an account (optional)",
+						"snippet": "<span style=\"font-weight:700;font-size:16px\" data-dc-tpl=\"61\">Create an account (optional)</span>"
+					},
+					"parent": {
+						"draftId": "Checkout:60",
+						"tag": "span",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Checkout:62",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-checkout-dc-html:Checkout/61#0",
+					"draftId": "Checkout:61",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/60#0",
+							"tag": "span",
+							"words": "",
+							"block": null
+						},
+						{
+							"key": "Checkout/62#0",
+							"tag": "span",
+							"words": "See your bake dates and manage subscriptions online.",
+							"block": "sgs/text"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 229,
+							"y": 614,
+							"w": 348.6,
+							"h": 19
+						},
+						{
+							"width": 768,
+							"x": 113,
+							"y": 592,
+							"w": 348.6,
+							"h": 19
+						},
+						{
+							"width": 375,
+							"x": 95,
+							"y": 654,
+							"w": 228,
+							"h": 19
+						}
+					]
+				},
+				{
+					"key": "Checkout/62#0",
+					"element": {
+						"tag": "span",
+						"words": "See your bake dates and manage subscriptions online.",
+						"snippet": "<span style=\"font-size:14px;color:#5E4A3D\" data-dc-tpl=\"62\">See your bake dates and manage subscriptions online.</span>"
+					},
+					"parent": {
+						"draftId": "Checkout:60",
+						"tag": "span",
+						"block": null
+					},
+					"siblings": [
+						{
+							"draftId": "Checkout:61",
+							"tag": "span",
+							"block": "sgs/text"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:page-checkout-dc-html:Checkout/62#0",
+					"draftId": "Checkout:62",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Checkout/61#0",
+							"tag": "span",
+							"words": "Create an account (optional)",
+							"block": "sgs/text"
+						},
+						{
+							"key": "Checkout/71#0",
+							"tag": "fieldset",
+							"words": "",
+							"block": null
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 229,
+							"y": 633,
+							"w": 348.6,
+							"h": 17
+						},
+						{
+							"width": 768,
+							"x": 113,
+							"y": 611,
+							"w": 348.6,
+							"h": 17
+						},
+						{
+							"width": 375,
+							"x": 95,
+							"y": 673,
+							"w": 228,
+							"h": 34
+						}
+					]
+				},
+				{
 					"key": "Checkout/72#0",
 					"element": {
 						"tag": "legend",
@@ -13177,7 +12077,7 @@
 					"parent": {
 						"draftId": "Checkout:71",
 						"tag": "fieldset",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -13212,7 +12112,7 @@
 							"key": "Checkout/71#0",
 							"tag": "fieldset",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/73#0",
@@ -13256,7 +12156,7 @@
 					"parent": {
 						"draftId": "Checkout:85",
 						"tag": "fieldset",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -13306,7 +12206,7 @@
 							"key": "Checkout/85#0",
 							"tag": "fieldset",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/87#0",
@@ -13350,7 +12250,7 @@
 					"parent": {
 						"draftId": "Checkout:106",
 						"tag": "fieldset",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -13390,7 +12290,7 @@
 							"key": "Checkout/106#0",
 							"tag": "fieldset",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/108#0",
@@ -13434,7 +12334,7 @@
 					"parent": {
 						"draftId": "Checkout:121",
 						"tag": "aside",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -13491,7 +12391,7 @@
 							"key": "Checkout/121#0",
 							"tag": "aside",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/124",
@@ -13528,7 +12428,7 @@
 					"parent": {
 						"draftId": "Checkout:125",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [],
 					"confidence": 0.25,
@@ -13553,13 +12453,13 @@
 							"key": "Checkout/125",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/127",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						}
 					],
 					"siblingCount": 0,
@@ -13590,7 +12490,7 @@
 					"parent": {
 						"draftId": "Checkout:127",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -13624,7 +12524,7 @@
 							"key": "Checkout/127",
 							"tag": "div",
 							"words": "",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"key": "Checkout/129",
@@ -13661,7 +12561,7 @@
 					"parent": {
 						"draftId": "Checkout:127",
 						"tag": "div",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -13738,12 +12638,12 @@
 						{
 							"draftId": "Checkout:125",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": null
 						},
 						{
 							"draftId": "Checkout:127",
 							"tag": "div",
-							"block": "sgs/container"
+							"block": null
 						}
 					],
 					"confidence": 0.25,
@@ -14192,7 +13092,7 @@
 					"parent": {
 						"draftId": "Checkout:121",
 						"tag": "aside",
-						"block": "sgs/container"
+						"block": null
 					},
 					"siblings": [
 						{
@@ -14273,7 +13173,7 @@
 			]
 		},
 		"page-contact-dc-html": {
-			"generated": "2026-10-26T11:41:33.870Z",
+			"generated": "2026-10-27T15:45:40.124Z",
 			"surface": "page-contact-dc-html",
 			"source": "intake.json skeletons[\"page-contact-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -14508,77 +13408,6 @@
 					]
 				},
 				{
-					"key": "Contact/47#0",
-					"element": {
-						"tag": "div",
-						"words": "What’s it about?",
-						"snippet": "<div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div>"
-					},
-					"parent": {
-						"draftId": "Contact:46",
-						"tag": "div",
-						"block": "sgs/container"
-					},
-					"siblings": [
-						{
-							"draftId": "Contact:48",
-							"tag": "div",
-							"block": "sgs/form-field-tiles"
-						}
-					],
-					"confidence": 0.25,
-					"candidates": [
-						{
-							"block": "sgs/text",
-							"score": 0.25,
-							"share": 1
-						}
-					],
-					"reason": null,
-					"rowId": "skeleton:page-contact-dc-html:Contact/47#0",
-					"draftId": "Contact:47",
-					"action": null,
-					"copies": 1,
-					"neighbours": [
-						{
-							"key": "Contact/46#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
-						},
-						{
-							"key": "Contact/48#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/form-field-tiles"
-						}
-					],
-					"siblingCount": 1,
-					"boxes": [
-						{
-							"width": 1440,
-							"x": 142,
-							"y": 909.1,
-							"w": 631.2,
-							"h": 18
-						},
-						{
-							"width": 768,
-							"x": 66,
-							"y": 858,
-							"w": 636,
-							"h": 18
-						},
-						{
-							"width": 375,
-							"x": 40,
-							"y": 1324.8,
-							"w": 295,
-							"h": 18
-						}
-					]
-				},
-				{
 					"key": "Contact/75#0",
 					"element": {
 						"tag": "div",
@@ -14727,12 +13556,6 @@
 							"tag": "span",
 							"words": "→",
 							"block": null
-						},
-						{
-							"key": "Contact/80#0",
-							"tag": "div",
-							"words": "",
-							"block": "sgs/container"
 						}
 					],
 					"siblingCount": 5,
@@ -14762,8 +13585,88 @@
 				}
 			]
 		},
+		"contact-form": {
+			"generated": "2026-10-27T15:45:40.124Z",
+			"surface": "contact-form",
+			"source": "intake.json skeletons[\"contact-form\"]",
+			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
+			"answerShape": "[ { \"key\": \"<row key>\", \"block\": \"<slug>\" | null, \"remove\": true | false, \"attributes\": { }, \"confidence\": 0..1, \"reason\": \"<one sentence>\" } ]",
+			"rows": [
+				{
+					"key": "Contact/47#0",
+					"element": {
+						"tag": "div",
+						"words": "What’s it about?",
+						"snippet": "<div style=\"font-weight:700;font-size:15px;margin-bottom:8px\" data-dc-tpl=\"47\">What’s it about?</div>"
+					},
+					"parent": {
+						"draftId": "Contact:46",
+						"tag": "div",
+						"block": "sgs/container"
+					},
+					"siblings": [
+						{
+							"draftId": "Contact:48",
+							"tag": "div",
+							"block": "sgs/form-field-tiles"
+						}
+					],
+					"confidence": 0.25,
+					"candidates": [
+						{
+							"block": "sgs/text",
+							"score": 0.25,
+							"share": 1
+						}
+					],
+					"reason": null,
+					"rowId": "skeleton:contact-form:Contact/47#0",
+					"draftId": "Contact:47",
+					"action": null,
+					"copies": 1,
+					"neighbours": [
+						{
+							"key": "Contact/46#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/container"
+						},
+						{
+							"key": "Contact/48#0",
+							"tag": "div",
+							"words": "",
+							"block": "sgs/form-field-tiles"
+						}
+					],
+					"siblingCount": 1,
+					"boxes": [
+						{
+							"width": 1440,
+							"x": 142,
+							"y": 909.1,
+							"w": 631.2,
+							"h": 18
+						},
+						{
+							"width": 768,
+							"x": 66,
+							"y": 858,
+							"w": 636,
+							"h": 18
+						},
+						{
+							"width": 375,
+							"x": 40,
+							"y": 1324.8,
+							"w": 295,
+							"h": 18
+						}
+					]
+				}
+			]
+		},
 		"page-help-dc-html": {
-			"generated": "2026-10-26T11:41:33.870Z",
+			"generated": "2026-10-27T15:45:40.124Z",
 			"surface": "page-help-dc-html",
 			"source": "intake.json skeletons[\"page-help-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -16354,7 +15257,7 @@
 			]
 		},
 		"page-signin-dc-html": {
-			"generated": "2026-10-26T11:41:33.871Z",
+			"generated": "2026-10-27T15:45:40.124Z",
 			"surface": "page-signin-dc-html",
 			"source": "intake.json skeletons[\"page-signin-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",
@@ -16544,11 +15447,19 @@
 							"share": 0.318
 						}
 					],
-					"reason": null,
+					"reason": "2 copies of one template element on 2 surfaces",
 					"rowId": "skeleton:page-signin-dc-html:SignIn/36#0",
 					"draftId": "SignIn:36",
 					"action": null,
-					"copies": 1,
+					"copies": 2,
+					"alsoIn": [
+						{
+							"surface": "sign-in",
+							"keys": [
+								"SignIn/36#0"
+							]
+						}
+					],
 					"neighbours": [
 						{
 							"key": "SignIn/33#0",
@@ -16903,7 +15814,7 @@
 			]
 		},
 		"page-account-dc-html": {
-			"generated": "2026-10-26T11:41:33.871Z",
+			"generated": "2026-10-27T15:45:40.124Z",
 			"surface": "page-account-dc-html",
 			"source": "intake.json skeletons[\"page-account-dc-html\"]",
 			"prompt": "scripts/computed-route/prompts/skeleton-finaliser.md",

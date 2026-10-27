@@ -2,166 +2,23 @@
 	{
 		"name": "sgs/container",
 		"attributes": {
-			"tagName": "div"
+			"tagName": "main"
 		},
 		"draftRef": {
-			"tpl": "Root/6#0"
+			"tpl": "Root/16#0"
 		},
 		"draftFingerprint": {
-			"tag": "div",
+			"tag": "main",
 			"cls": "",
-			"styleHash": "36f1ce99",
+			"styleHash": "921abb52",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 9
+			"line": 17
 		},
 		"innerBlocks": [
 			{
-				"name": "sgs/container",
+				"name": "sgs/hero",
 				"attributes": {
-					"tagName": "header"
-				},
-				"draftRef": {
-					"tpl": "Root/7#0"
-				},
-				"draftFingerprint": {
-					"tag": "header",
-					"cls": "",
-					"styleHash": "3a84cc93",
-					"parentTags": [
-						"div"
-					],
-					"textHash": "1505",
-					"line": 10
-				},
-				"innerBlocks": [
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div",
-							"layout": "grid"
-						},
-						"draftRef": {
-							"tpl": "Root/8#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "f2a35d20",
-							"parentTags": [
-								"div",
-								"header"
-							],
-							"textHash": "1505",
-							"line": 11
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/button",
-								"attributes": {
-									"label": "← Basket",
-									"url": "Basket.dc.html"
-								},
-								"draftRef": {
-									"tpl": "Root/9#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "",
-									"styleHash": "6fb1f72c",
-									"parentTags": [
-										"div",
-										"header",
-										"div"
-									],
-									"textHash": "de0f445f",
-									"line": 12
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div"
-								},
-								"draftRef": {
-									"tpl": "Root/10#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "",
-									"styleHash": "1505",
-									"parentTags": [
-										"div",
-										"header",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 13
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/responsive-logo",
-										"attributes": {
-											"logoId": 91
-										},
-										"draftRef": {
-											"tpl": "Root/11#0"
-										},
-										"draftFingerprint": {
-											"tag": "img",
-											"cls": "",
-											"styleHash": "9b41e79e",
-											"parentTags": [
-												"div",
-												"header",
-												"div",
-												"a"
-											],
-											"textHash": "1505",
-											"line": 13
-										},
-										"innerBlocks": [],
-										"handover": [
-											{
-												"owner": "site-info",
-												"kind": "presence",
-												"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "Secure checkout"
-								},
-								"draftRef": {
-									"tpl": "Root/12#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "f51d6702",
-									"parentTags": [
-										"div",
-										"header",
-										"div"
-									],
-									"textHash": "65f725da",
-									"line": 14
-								},
-								"innerBlocks": []
-							}
-						]
-					}
-				]
-			},
-			{
-				"name": "sgs/container",
-				"attributes": {
-					"tagName": "div",
 					"layout": "grid"
 				},
 				"draftRef": {
@@ -172,7 +29,6 @@
 					"cls": "",
 					"styleHash": "c5bdf46",
 					"parentTags": [
-						"div",
 						"main"
 					],
 					"textHash": "1505",
@@ -193,7 +49,6 @@
 							"cls": "",
 							"styleHash": "642cdeb",
 							"parentTags": [
-								"div",
 								"main",
 								"div"
 							],
@@ -214,7 +69,6 @@
 									"cls": "",
 									"styleHash": "1505",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"button"
@@ -237,7 +91,6 @@
 									"cls": "",
 									"styleHash": "fe6e953a",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"button"
@@ -250,1838 +103,1541 @@
 						]
 					},
 					{
-						"name": "sgs/form",
+						"name": "sgs/text",
 						"attributes": {
-							"layout": "stack"
+							"text": "last bit, promise"
 						},
 						"draftRef": {
-							"tpl": "Root/31#0"
+							"tpl": "Root/33#0"
 						},
 						"draftFingerprint": {
-							"tag": "form",
+							"tag": "div",
 							"cls": "",
-							"styleHash": "e5b9b746",
+							"styleHash": "c99acba9",
 							"parentTags": [
-								"div",
 								"main",
+								"div",
+								"form",
+								"div"
+							],
+							"textHash": "5e3f9c23",
+							"line": 30
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Checkout"
+						},
+						"draftRef": {
+							"tpl": "Root/34#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "78052474",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"div"
+							],
+							"textHash": "5609b82d",
+							"line": 31
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/multi-button",
+						"attributes": {
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/35#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "30432208",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
 								"div"
 							],
 							"textHash": "1505",
-							"line": 28
+							"line": 32
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div"
-								},
-								"draftRef": {
-									"tpl": "Root/32#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "1505",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"form"
-									],
-									"textHash": "1505",
-									"line": 29
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "last bit, promise"
-										},
-										"draftRef": {
-											"tpl": "Root/33#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "c99acba9",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"div"
-											],
-											"textHash": "5e3f9c23",
-											"line": 30
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/heading",
-										"attributes": {
-											"content": "Checkout"
-										},
-										"draftRef": {
-											"tpl": "Root/34#0"
-										},
-										"draftFingerprint": {
-											"tag": "h1",
-											"cls": "",
-											"styleHash": "78052474",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"div"
-											],
-											"textHash": "5609b82d",
-											"line": 31
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/multi-button",
-										"attributes": {
-											"layout": "grid"
-										},
-										"draftRef": {
-											"tpl": "Root/35#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "30432208",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 32
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "Apple Pay"
-												},
-												"draftRef": {
-													"tpl": "Root/36#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "8bf5f591",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"div",
-														"div"
-													],
-													"textHash": "6f6a4a5",
-													"line": 33
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "Google Pay"
-												},
-												"draftRef": {
-													"tpl": "Root/37#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "bf1544b",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"div",
-														"div"
-													],
-													"textHash": "1cf1f24",
-													"line": 34
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "PayPal"
-												},
-												"draftRef": {
-													"tpl": "Root/38#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "ece5d437",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"div",
-														"div"
-													],
-													"textHash": "c8fbb410",
-													"line": 35
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root/39#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "590bb41e",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"div"
-											],
-											"textHash": "3112559f",
-											"line": 37
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/separator",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root/40#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "ea3a5ed2",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 37
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/separator",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root/41#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "ea3a5ed2",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 37
-												},
-												"innerBlocks": []
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root/42#0"
-								},
-								"draftFingerprint": {
-									"tag": "fieldset",
-									"cls": "",
-									"styleHash": "cbead210",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"form"
-									],
-									"textHash": "1505",
-									"line": 40
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "1 · Your details"
-										},
-										"draftRef": {
-											"tpl": "Root/43#0"
-										},
-										"draftFingerprint": {
-											"tag": "legend",
-											"cls": "",
-											"styleHash": "481bef00",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "4b9aad30",
-											"line": 41
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/50#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "c9376813",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "51724e0",
-											"line": 46
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "Have an account? Sign in",
-													"url": "SignIn.dc.html?next=checkout"
-												},
-												"draftRef": {
-													"tpl": "Root/51#0"
-												},
-												"draftFingerprint": {
-													"tag": "a",
-													"cls": "",
-													"styleHash": "a99853ab",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div"
-													],
-													"textHash": "f172ecba",
-													"line": 46
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/form-field-email",
-										"attributes": {
-											"label": "Email",
-											"required": true,
-											"helpText": "1 · Your details Checking out as a guest. Have an account? Sign in Mobile, for delivery updates (optional) Create an account (optional) See your bake dates and manage subscriptions online."
-										},
-										"draftRef": {
-											"tpl": "Root/53#0"
-										},
-										"draftFingerprint": {
-											"tag": "input",
-											"cls": "",
-											"styleHash": "7d4cb8c5",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset",
-												"label"
-											],
-											"textHash": "1505",
-											"line": 48
-										},
-										"innerBlocks": [],
-										"draftSlots": {
-											".sgs-form-field__input": {
-												"tpl": "Root/53#0"
-											}
-										}
-									},
-									{
-										"name": "sgs/form-field-phone",
-										"attributes": {
-											"label": "Email",
-											"helpText": "1 · Your details Checking out as a guest. Have an account? Sign in Mobile, for delivery updates (optional) Create an account (optional) See your bake dates and manage subscriptions online."
-										},
-										"draftRef": {
-											"tpl": "Root/55#0"
-										},
-										"draftFingerprint": {
-											"tag": "input",
-											"cls": "",
-											"styleHash": "7d4cb8c5",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset",
-												"label"
-											],
-											"textHash": "1505",
-											"line": 49
-										},
-										"innerBlocks": [],
-										"draftSlots": {
-											".sgs-form-field__input": {
-												"tpl": "Root/55#0"
-											}
-										}
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/57#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "55f0f1d8",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "1505",
-											"line": 51
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/form-field-checkbox",
-												"attributes": {
-													"label": "Create an account (optional)",
-													"helpText": "See your bake dates and manage subscriptions online."
-												},
-												"draftRef": {
-													"tpl": "Root/59#0"
-												},
-												"draftFingerprint": {
-													"tag": "input",
-													"cls": "",
-													"styleHash": "8ff7552a",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div",
-														"label"
-													],
-													"textHash": "1505",
-													"line": 53
-												},
-												"innerBlocks": []
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root/71#0"
-								},
-								"draftFingerprint": {
-									"tag": "fieldset",
-									"cls": "",
-									"styleHash": "cbead210",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"form"
-									],
-									"textHash": "1505",
-									"line": 67
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "2 · Who’s it for?"
-										},
-										"draftRef": {
-											"tpl": "Root/72#0"
-										},
-										"draftFingerprint": {
-											"tag": "legend",
-											"cls": "",
-											"styleHash": "481bef00",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "996ffa23",
-											"line": 68
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/form-field-tiles",
-										"attributes": {},
-										"draftRef": {
-											"tpl": "Root/73#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "89293b14",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "1505",
-											"line": 69
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root/85#0"
-								},
-								"draftFingerprint": {
-									"tag": "fieldset",
-									"cls": "",
-									"styleHash": "cbead210",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"form"
-									],
-									"textHash": "1505",
-									"line": 80
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "3 · Delivery"
-										},
-										"draftRef": {
-											"tpl": "Root/86#0"
-										},
-										"draftFingerprint": {
-											"tag": "legend",
-											"cls": "",
-											"styleHash": "481bef00",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "268674fd",
-											"line": 81
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "grid"
-										},
-										"draftRef": {
-											"tpl": "Root/87#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "dff96956",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "1505",
-											"line": 82
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/form-field-text",
-												"attributes": {
-													"label": "Postcode",
-													"helpText": "Find address"
-												},
-												"draftRef": {
-													"tpl": "Root/89#0"
-												},
-												"draftFingerprint": {
-													"tag": "input",
-													"cls": "",
-													"styleHash": "78d7e60e",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div",
-														"label"
-													],
-													"textHash": "1505",
-													"line": 83
-												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-form-field__input": {
-														"tpl": "Root/89#0"
-													}
-												}
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "Find address"
-												},
-												"draftRef": {
-													"tpl": "Root/90#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "2dd230c5",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div"
-													],
-													"textHash": "4f9e9616",
-													"line": 84
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/form-field-text",
-										"attributes": {
-											"label": "Postcode",
-											"helpText": "3 · Delivery Find address Address line 1 Address line 2 (optional) Town or city Royal Mail Tracked 48 Arrives 2–3 days after the bake £3.95 Royal Mail Tracked 24 Arrives the day after the bake £5.45"
-										},
-										"draftRef": {
-											"tpl": "Root/92#0"
-										},
-										"draftFingerprint": {
-											"tag": "input",
-											"cls": "",
-											"styleHash": "7d4cb8c5",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset",
-												"label"
-											],
-											"textHash": "1505",
-											"line": 86
-										},
-										"innerBlocks": [],
-										"draftSlots": {
-											".sgs-form-field__input": {
-												"tpl": "Root/92#0"
-											}
-										}
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "grid"
-										},
-										"draftRef": {
-											"tpl": "Root/93#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "89270990",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "1505",
-											"line": 87
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/form-field-text",
-												"attributes": {
-													"label": "Address line 2 (optional)",
-													"helpText": "Town or city"
-												},
-												"draftRef": {
-													"tpl": "Root/95#0"
-												},
-												"draftFingerprint": {
-													"tag": "input",
-													"cls": "",
-													"styleHash": "7d4cb8c5",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div",
-														"label"
-													],
-													"textHash": "1505",
-													"line": 88
-												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-form-field__input": {
-														"tpl": "Root/95#0"
-													}
-												}
-											},
-											{
-												"name": "sgs/form-field-text",
-												"attributes": {
-													"label": "Address line 2 (optional)",
-													"helpText": "Town or city"
-												},
-												"draftRef": {
-													"tpl": "Root/97#0"
-												},
-												"draftFingerprint": {
-													"tag": "input",
-													"cls": "",
-													"styleHash": "7d4cb8c5",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div",
-														"label"
-													],
-													"textHash": "1505",
-													"line": 89
-												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-form-field__input": {
-														"tpl": "Root/97#0"
-													}
-												}
-											}
-										]
-									},
-									{
-										"name": "sgs/form-field-tiles",
-										"attributes": {},
-										"draftRef": {
-											"tpl": "Root/98#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "9a259e7a",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "1505",
-											"line": 91
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root/106#0"
-								},
-								"draftFingerprint": {
-									"tag": "fieldset",
-									"cls": "",
-									"styleHash": "cbead210",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"form"
-									],
-									"textHash": "1505",
-									"line": 98
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "4 · Payment"
-										},
-										"draftRef": {
-											"tpl": "Root/107#0"
-										},
-										"draftFingerprint": {
-											"tag": "legend",
-											"cls": "",
-											"styleHash": "481bef00",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "14f01cfc",
-											"line": 99
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/form-field-text",
-										"attributes": {
-											"label": "Card number",
-											"helpText": "4 · Payment Expiry Security code"
-										},
-										"draftRef": {
-											"tpl": "Root/109#0"
-										},
-										"draftFingerprint": {
-											"tag": "input",
-											"cls": "",
-											"styleHash": "7d4cb8c5",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset",
-												"label"
-											],
-											"textHash": "1505",
-											"line": 100
-										},
-										"innerBlocks": [],
-										"draftSlots": {
-											".sgs-form-field__input": {
-												"tpl": "Root/109#0"
-											}
-										}
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "grid"
-										},
-										"draftRef": {
-											"tpl": "Root/110#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "89270990",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"fieldset"
-											],
-											"textHash": "1505",
-											"line": 101
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/form-field-text",
-												"attributes": {
-													"label": "Expiry",
-													"helpText": "Security code"
-												},
-												"draftRef": {
-													"tpl": "Root/112#0"
-												},
-												"draftFingerprint": {
-													"tag": "input",
-													"cls": "",
-													"styleHash": "7d4cb8c5",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div",
-														"label"
-													],
-													"textHash": "1505",
-													"line": 102
-												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-form-field__input": {
-														"tpl": "Root/112#0"
-													}
-												}
-											},
-											{
-												"name": "sgs/form-field-text",
-												"attributes": {
-													"label": "Expiry",
-													"helpText": "Security code"
-												},
-												"draftRef": {
-													"tpl": "Root/114#0"
-												},
-												"draftFingerprint": {
-													"tag": "input",
-													"cls": "",
-													"styleHash": "7d4cb8c5",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"form",
-														"fieldset",
-														"div",
-														"label"
-													],
-													"textHash": "1505",
-													"line": 103
-												},
-												"innerBlocks": [],
-												"draftSlots": {
-													".sgs-form-field__input": {
-														"tpl": "Root/114#0"
-													}
-												}
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div"
-								},
-								"draftRef": {
-									"tpl": "Root/115#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "52be4a4c",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"form"
-									],
-									"textHash": "c5e0b94",
-									"line": 107
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "Full allergen info",
-											"url": "Help.dc.html#allergens"
-										},
-										"draftRef": {
-											"tpl": "Root/116#0"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "",
-											"styleHash": "a99853ab",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"div"
-											],
-											"textHash": "2a908bc2",
-											"line": 107
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
 								"name": "sgs/button",
 								"attributes": {
-									"label": "Pay £30.45"
+									"label": "Apple Pay"
 								},
 								"draftRef": {
-									"tpl": "Root/117#0"
+									"tpl": "Root/36#0"
 								},
 								"draftFingerprint": {
 									"tag": "button",
-									"cls": "scp0 scp1",
-									"styleHash": "7ce77d78",
+									"cls": "",
+									"styleHash": "8bf5f591",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
-										"form"
+										"form",
+										"div",
+										"div"
 									],
-									"textHash": "eb04f962",
-									"line": 108
+									"textHash": "6f6a4a5",
+									"line": 33
 								},
 								"innerBlocks": []
 							},
 							{
-								"name": "sgs/container",
+								"name": "sgs/button",
 								"attributes": {
-									"tagName": "div"
+									"label": "Google Pay"
 								},
 								"draftRef": {
-									"tpl": "Root/118#0"
+									"tpl": "Root/37#0"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "button",
 									"cls": "",
-									"styleHash": "286cf4a1",
+									"styleHash": "bf1544b",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
-										"form"
+										"form",
+										"div",
+										"div"
 									],
-									"textHash": "94085835",
-									"line": 109
+									"textHash": "1cf1f24",
+									"line": 34
 								},
-								"innerBlocks": [
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "terms",
-											"url": "Help.dc.html#legal"
-										},
-										"draftRef": {
-											"tpl": "Root/119#0"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "",
-											"styleHash": "ef1f56a3",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"form",
-												"div"
-											],
-											"textHash": "ae998d8",
-											"line": 109
-										},
-										"innerBlocks": []
-									}
-								]
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "PayPal"
+								},
+								"draftRef": {
+									"tpl": "Root/38#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "ece5d437",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "c8fbb410",
+									"line": 35
+								},
+								"innerBlocks": []
 							}
 						]
 					},
 					{
 						"name": "sgs/container",
 						"attributes": {
-							"tagName": "aside",
-							"layout": "stack"
+							"tagName": "div",
+							"layout": "flex"
 						},
 						"draftRef": {
-							"tpl": "Root/121#0"
+							"tpl": "Root/39#0"
 						},
 						"draftFingerprint": {
-							"tag": "aside",
+							"tag": "div",
 							"cls": "",
-							"styleHash": "56593495",
+							"styleHash": "590bb41e",
 							"parentTags": [
-								"div",
 								"main",
+								"div",
+								"form",
 								"div"
 							],
+							"textHash": "3112559f",
+							"line": 37
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/separator",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/40#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "ea3a5ed2",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 37
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/separator",
+								"attributes": {},
+								"draftRef": {
+									"tpl": "Root/41#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "ea3a5ed2",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"div",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 37
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "1 · Your details"
+						},
+						"draftRef": {
+							"tpl": "Root/43#0"
+						},
+						"draftFingerprint": {
+							"tag": "legend",
+							"cls": "",
+							"styleHash": "481bef00",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "4b9aad30",
+							"line": 41
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/50#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "c9376813",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "51724e0",
+							"line": 46
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Have an account? Sign in",
+									"url": "/my-account/"
+								},
+								"draftRef": {
+									"tpl": "Root/51#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "a99853ab",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div"
+									],
+									"textHash": "f172ecba",
+									"line": 46
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"SignIn.dc.html?next=checkout\" opens /my-account/; its draft query ?next=checkout has no site address and is dropped"
+									}
+								]
+							}
+						]
+					},
+					{
+						"name": "sgs/form-field-email",
+						"attributes": {
+							"label": "Email",
+							"required": true,
+							"helpText": "1 · Your details Checking out as a guest. Have an account? Sign in Mobile, for delivery updates (optional) Create an account (optional) See your bake dates and manage subscriptions online."
+						},
+						"draftRef": {
+							"tpl": "Root/53#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "7d4cb8c5",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset",
+								"label"
+							],
 							"textHash": "1505",
-							"line": 113
+							"line": 48
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/53#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-phone",
+						"attributes": {
+							"label": "Email",
+							"helpText": "1 · Your details Checking out as a guest. Have an account? Sign in Mobile, for delivery updates (optional) Create an account (optional) See your bake dates and manage subscriptions online."
+						},
+						"draftRef": {
+							"tpl": "Root/55#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "7d4cb8c5",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset",
+								"label"
+							],
+							"textHash": "1505",
+							"line": 49
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/55#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/form-field-checkbox",
+						"attributes": {
+							"label": "Create an account (optional)",
+							"helpText": "See your bake dates and manage subscriptions online."
+						},
+						"draftRef": {
+							"tpl": "Root/59#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "8ff7552a",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset",
+								"div",
+								"label"
+							],
+							"textHash": "1505",
+							"line": 53
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Create an account (optional)"
+						},
+						"draftRef": {
+							"tpl": "Root/61#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "14f5fbb8",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset",
+								"div",
+								"label",
+								"span"
+							],
+							"textHash": "dfecb3a0",
+							"line": 54
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "See your bake dates and manage subscriptions online."
+						},
+						"draftRef": {
+							"tpl": "Root/62#0"
+						},
+						"draftFingerprint": {
+							"tag": "span",
+							"cls": "",
+							"styleHash": "d1ce9cd1",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset",
+								"div",
+								"label",
+								"span"
+							],
+							"textHash": "cee60a16",
+							"line": 54
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "2 · Who’s it for?"
+						},
+						"draftRef": {
+							"tpl": "Root/72#0"
+						},
+						"draftFingerprint": {
+							"tag": "legend",
+							"cls": "",
+							"styleHash": "481bef00",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "996ffa23",
+							"line": 68
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/73#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "89293b14",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "1505",
+							"line": 69
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "3 · Delivery"
+						},
+						"draftRef": {
+							"tpl": "Root/86#0"
+						},
+						"draftFingerprint": {
+							"tag": "legend",
+							"cls": "",
+							"styleHash": "481bef00",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "268674fd",
+							"line": 81
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/87#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "dff96956",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "1505",
+							"line": 82
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Postcode",
+									"helpText": "Find address"
+								},
+								"draftRef": {
+									"tpl": "Root/89#0"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "",
+									"styleHash": "78d7e60e",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div",
+										"label"
+									],
+									"textHash": "1505",
+									"line": 83
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root/89#0"
+									}
+								}
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Find address"
+								},
+								"draftRef": {
+									"tpl": "Root/90#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "2dd230c5",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div"
+									],
+									"textHash": "4f9e9616",
+									"line": 84
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Postcode",
+							"helpText": "3 · Delivery Find address Address line 1 Address line 2 (optional) Town or city Royal Mail Tracked 48 Arrives 2–3 days after the bake £3.95 Royal Mail Tracked 24 Arrives the day after the bake £5.45"
+						},
+						"draftRef": {
+							"tpl": "Root/92#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "7d4cb8c5",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset",
+								"label"
+							],
+							"textHash": "1505",
+							"line": 86
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/92#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/93#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "89270990",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "1505",
+							"line": 87
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Address line 2 (optional)",
+									"helpText": "Town or city"
+								},
+								"draftRef": {
+									"tpl": "Root/95#0"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "",
+									"styleHash": "7d4cb8c5",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div",
+										"label"
+									],
+									"textHash": "1505",
+									"line": 88
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root/95#0"
+									}
+								}
+							},
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Address line 2 (optional)",
+									"helpText": "Town or city"
+								},
+								"draftRef": {
+									"tpl": "Root/97#0"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "",
+									"styleHash": "7d4cb8c5",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div",
+										"label"
+									],
+									"textHash": "1505",
+									"line": 89
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root/97#0"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {},
+						"draftRef": {
+							"tpl": "Root/98#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "9a259e7a",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "1505",
+							"line": 91
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "4 · Payment"
+						},
+						"draftRef": {
+							"tpl": "Root/107#0"
+						},
+						"draftFingerprint": {
+							"tag": "legend",
+							"cls": "",
+							"styleHash": "481bef00",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "14f01cfc",
+							"line": 99
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Card number",
+							"helpText": "4 · Payment Expiry Security code"
+						},
+						"draftRef": {
+							"tpl": "Root/109#0"
+						},
+						"draftFingerprint": {
+							"tag": "input",
+							"cls": "",
+							"styleHash": "7d4cb8c5",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset",
+								"label"
+							],
+							"textHash": "1505",
+							"line": 100
+						},
+						"innerBlocks": [],
+						"draftSlots": {
+							".sgs-form-field__input": {
+								"tpl": "Root/109#0"
+							}
+						}
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/110#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "89270990",
+							"parentTags": [
+								"main",
+								"div",
+								"form",
+								"fieldset"
+							],
+							"textHash": "1505",
+							"line": 101
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Expiry",
+									"helpText": "Security code"
+								},
+								"draftRef": {
+									"tpl": "Root/112#0"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "",
+									"styleHash": "7d4cb8c5",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div",
+										"label"
+									],
+									"textHash": "1505",
+									"line": 102
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root/112#0"
+									}
+								}
+							},
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Expiry",
+									"helpText": "Security code"
+								},
+								"draftRef": {
+									"tpl": "Root/114#0"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "",
+									"styleHash": "7d4cb8c5",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"fieldset",
+										"div",
+										"label"
+									],
+									"textHash": "1505",
+									"line": 103
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root/114#0"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/115#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "52be4a4c",
+							"parentTags": [
+								"main",
+								"div",
+								"form"
+							],
+							"textHash": "c5e0b94",
+							"line": 107
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Full allergen info",
+									"url": "/help/#allergens"
+								},
+								"draftRef": {
+									"tpl": "Root/116#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "a99853ab",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"div"
+									],
+									"textHash": "2a908bc2",
+									"line": 107
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Pay £30.45"
+						},
+						"draftRef": {
+							"tpl": "Root/117#0"
+						},
+						"draftFingerprint": {
+							"tag": "button",
+							"cls": "scp0 scp1",
+							"styleHash": "7ce77d78",
+							"parentTags": [
+								"main",
+								"div",
+								"form"
+							],
+							"textHash": "eb04f962",
+							"line": 108
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"draftRef": {
+							"tpl": "Root/118#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "286cf4a1",
+							"parentTags": [
+								"main",
+								"div",
+								"form"
+							],
+							"textHash": "94085835",
+							"line": 109
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "terms",
+									"url": "/help/#legal"
+								},
+								"draftRef": {
+									"tpl": "Root/119#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "",
+									"styleHash": "ef1f56a3",
+									"parentTags": [
+										"main",
+										"div",
+										"form",
+										"div"
+									],
+									"textHash": "ae998d8",
+									"line": 109
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Your order"
+						},
+						"draftRef": {
+							"tpl": "Root/122#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "fe70c6be",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "8921cfda",
+							"line": 114
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/124#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "611ead9b",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 115
 						},
 						"innerBlocks": [
 							{
 								"name": "sgs/text",
 								"attributes": {
-									"text": "Your order"
+									"text": "1"
 								},
 								"draftRef": {
-									"tpl": "Root/122#0"
+									"tpl": "Root/126#0"
 								},
 								"draftFingerprint": {
-									"tag": "div",
+									"tag": "span",
 									"cls": "",
-									"styleHash": "fe70c6be",
+									"styleHash": "698cb1ba",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
-										"aside"
+										"aside",
+										"div",
+										"div"
 									],
-									"textHash": "8921cfda",
-									"line": 114
+									"textHash": "2b594",
+									"line": 115
 								},
 								"innerBlocks": []
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "grid"
-								},
-								"draftRef": {
-									"tpl": "Root/124#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "611ead9b",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"aside"
-									],
-									"textHash": "1505",
-									"line": 115
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/125#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "24927004",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 115
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "1"
-												},
-												"draftRef": {
-													"tpl": "Root/126#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "698cb1ba",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "2b594",
-													"line": 115
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/127#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "73effcfd",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 115
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Zookies · 20 pack"
-												},
-												"draftRef": {
-													"tpl": "Root/128#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "14f3461b",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "6c6045a7",
-													"line": 115
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Oat · Milk choc · Strawberry"
-												},
-												"draftRef": {
-													"tpl": "Root/129#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "93b65cdb",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "ba3ff8e6",
-													"line": 115
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "£21.50"
-										},
-										"draftRef": {
-											"tpl": "Root/130#0"
-										},
-										"draftFingerprint": {
-											"tag": "b",
-											"cls": "",
-											"styleHash": "1505",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "9820f9ee",
-											"line": 115
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "grid"
-								},
-								"draftRef": {
-									"tpl": "Root/124#1"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "611ead9b",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"aside"
-									],
-									"textHash": "1505",
-									"line": 115
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/125#1"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "8e56b553",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 115
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "1"
-												},
-												"draftRef": {
-													"tpl": "Root/126#1"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "698cb1ba",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "2b594",
-													"line": 115
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/127#1"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "73effcfd",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 115
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Taster Trio"
-												},
-												"draftRef": {
-													"tpl": "Root/128#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "14f3461b",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "70e26b00",
-													"line": 115
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "3 Classic Zookies"
-												},
-												"draftRef": {
-													"tpl": "Root/129#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "93b65cdb",
-													"parentTags": [
-														"div",
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "b4191abc",
-													"line": 115
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "£5.00"
-										},
-										"draftRef": {
-											"tpl": "Root/130#1"
-										},
-										"draftFingerprint": {
-											"tag": "b",
-											"cls": "",
-											"styleHash": "1505",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "fcdb29fd",
-											"line": 115
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "grid"
-								},
-								"draftRef": {
-									"tpl": "Root/131#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "a7ff4267",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"aside"
-									],
-									"textHash": "1505",
-									"line": 116
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/form-field-text",
-										"attributes": {
-											"label": "Apply"
-										},
-										"draftRef": {
-											"tpl": "Root/132#0"
-										},
-										"draftFingerprint": {
-											"tag": "input",
-											"cls": "",
-											"styleHash": "b8b1959b",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 116
-										},
-										"innerBlocks": [],
-										"draftSlots": {
-											".sgs-form-field__input": {
-												"tpl": "Root/132#0"
-											}
-										}
-									},
-									{
-										"name": "sgs/button",
-										"attributes": {
-											"label": "Apply"
-										},
-										"draftRef": {
-											"tpl": "Root/133#0"
-										},
-										"draftFingerprint": {
-											"tag": "button",
-											"cls": "",
-											"styleHash": "b25f4fcf",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "c487271",
-											"line": 116
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root/134#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "bc532c8",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"aside"
-									],
-									"textHash": "1505",
-									"line": 117
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Subtotal"
-										},
-										"draftRef": {
-											"tpl": "Root/135#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "1505",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "65edeb43",
-											"line": 117
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "£26.50"
-										},
-										"draftRef": {
-											"tpl": "Root/136#0"
-										},
-										"draftFingerprint": {
-											"tag": "b",
-											"cls": "",
-											"styleHash": "1505",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "98207509",
-											"line": 117
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root/137#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "5938c221",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"aside"
-									],
-									"textHash": "1505",
-									"line": 118
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Delivery"
-										},
-										"draftRef": {
-											"tpl": "Root/138#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "1505",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "cfd6a179",
-											"line": 118
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "£3.95"
-										},
-										"draftRef": {
-											"tpl": "Root/139#0"
-										},
-										"draftFingerprint": {
-											"tag": "b",
-											"cls": "",
-											"styleHash": "1505",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "fcdc3057",
-											"line": 118
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root/140#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "bf400274",
-									"parentTags": [
-										"div",
-										"main",
-										"div",
-										"aside"
-									],
-									"textHash": "1505",
-									"line": 119
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Total"
-										},
-										"draftRef": {
-											"tpl": "Root/141#0"
-										},
-										"draftFingerprint": {
-											"tag": "b",
-											"cls": "",
-											"styleHash": "c9366051",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "d9a4b27",
-											"line": 119
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "£30.45"
-										},
-										"draftRef": {
-											"tpl": "Root/142#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "fe394bbb",
-											"parentTags": [
-												"div",
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "9856b6ea",
-											"line": 119
-										},
-										"innerBlocks": []
-									}
-								]
 							},
 							{
 								"name": "sgs/text",
 								"attributes": {
-									"text": "Baked fresh for you · with you in 3–5 days"
+									"text": "Zookies · 20 pack"
 								},
 								"draftRef": {
-									"tpl": "Root/143#0"
+									"tpl": "Root/128#0"
 								},
 								"draftFingerprint": {
 									"tag": "div",
 									"cls": "",
-									"styleHash": "1324bbe5",
+									"styleHash": "14f3461b",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
-										"aside"
+										"aside",
+										"div",
+										"div"
 									],
-									"textHash": "3750f9d5",
-									"line": 120
+									"textHash": "6c6045a7",
+									"line": 115
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Oat · Milk choc · Strawberry"
+								},
+								"draftRef": {
+									"tpl": "Root/129#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "93b65cdb",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div",
+										"div"
+									],
+									"textHash": "ba3ff8e6",
+									"line": 115
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "£21.50"
+								},
+								"draftRef": {
+									"tpl": "Root/130#0"
+								},
+								"draftFingerprint": {
+									"tag": "b",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "9820f9ee",
+									"line": 115
 								},
 								"innerBlocks": []
 							}
 						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/124#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "611ead9b",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 115
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "1"
+								},
+								"draftRef": {
+									"tpl": "Root/126#1"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "698cb1ba",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div",
+										"div"
+									],
+									"textHash": "2b594",
+									"line": 115
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Taster Trio"
+								},
+								"draftRef": {
+									"tpl": "Root/128#1"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "14f3461b",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div",
+										"div"
+									],
+									"textHash": "70e26b00",
+									"line": 115
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "3 Classic Zookies"
+								},
+								"draftRef": {
+									"tpl": "Root/129#1"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "93b65cdb",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div",
+										"div"
+									],
+									"textHash": "b4191abc",
+									"line": 115
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "£5.00"
+								},
+								"draftRef": {
+									"tpl": "Root/130#1"
+								},
+								"draftFingerprint": {
+									"tag": "b",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "fcdb29fd",
+									"line": 115
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "grid"
+						},
+						"draftRef": {
+							"tpl": "Root/131#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "a7ff4267",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 116
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/form-field-text",
+								"attributes": {
+									"label": "Apply"
+								},
+								"draftRef": {
+									"tpl": "Root/132#0"
+								},
+								"draftFingerprint": {
+									"tag": "input",
+									"cls": "",
+									"styleHash": "b8b1959b",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 116
+								},
+								"innerBlocks": [],
+								"draftSlots": {
+									".sgs-form-field__input": {
+										"tpl": "Root/132#0"
+									}
+								}
+							},
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Apply"
+								},
+								"draftRef": {
+									"tpl": "Root/133#0"
+								},
+								"draftFingerprint": {
+									"tag": "button",
+									"cls": "",
+									"styleHash": "b25f4fcf",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "c487271",
+									"line": 116
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/134#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "bc532c8",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 117
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Subtotal"
+								},
+								"draftRef": {
+									"tpl": "Root/135#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "65edeb43",
+									"line": 117
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "£26.50"
+								},
+								"draftRef": {
+									"tpl": "Root/136#0"
+								},
+								"draftFingerprint": {
+									"tag": "b",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "98207509",
+									"line": 117
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/137#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "5938c221",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 118
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Delivery"
+								},
+								"draftRef": {
+									"tpl": "Root/138#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "cfd6a179",
+									"line": 118
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "£3.95"
+								},
+								"draftRef": {
+									"tpl": "Root/139#0"
+								},
+								"draftFingerprint": {
+									"tag": "b",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "fcdc3057",
+									"line": 118
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/140#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "bf400274",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "1505",
+							"line": 119
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Total"
+								},
+								"draftRef": {
+									"tpl": "Root/141#0"
+								},
+								"draftFingerprint": {
+									"tag": "b",
+									"cls": "",
+									"styleHash": "c9366051",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "d9a4b27",
+									"line": 119
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "£30.45"
+								},
+								"draftRef": {
+									"tpl": "Root/142#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "fe394bbb",
+									"parentTags": [
+										"main",
+										"div",
+										"aside",
+										"div"
+									],
+									"textHash": "9856b6ea",
+									"line": 119
+								},
+								"innerBlocks": []
+							}
+						]
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Baked fresh for you · with you in 3–5 days"
+						},
+						"draftRef": {
+							"tpl": "Root/143#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "1324bbe5",
+							"parentTags": [
+								"main",
+								"div",
+								"aside"
+							],
+							"textHash": "3750f9d5",
+							"line": 120
+						},
+						"innerBlocks": []
 					}
 				]
 			}

@@ -9,8 +9,8 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"TradeApplication\"][data-dc-tpl=\"466\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-form-trade-application-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"TradeApplication\"][data-dc-tpl=\"466\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-form-trade-application-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:50068/#/apply" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:58069/#/apply" },
 	live: { url: "http://localhost:8083/apply/" },
-	states: [ { name: "resting", fullPage: true } ],
+	states: [ { name: "in-progress", fullPage: true } ],
 	pairs: [],
 };

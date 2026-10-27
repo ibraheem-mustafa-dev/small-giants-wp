@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T00:13:27.717Z",
-  "source": "http://127.0.0.1:61964/",
+  "generated": "2026-10-27T16:06:56.941Z",
+  "source": "http://127.0.0.1:50785/",
   "root": "header",
   "beside": [
     {
@@ -2037,7 +2037,7 @@
       "snippet": "<div style=\"display: {{ tickerDisplay }};width: {{ tickerW }};animation: {{ tickerAnim }};max-width:1440px;margin:0 auto;justify-content: {{ tickerJustify }};flex-wrap: {{ tickerWrap }};gap: {{ tickerGap }};padding: {{ tickerPad }}\" style-hover=\"animation-play-state:paused\" data-dc-tpl=\"8\"> <sc-for list=\"{{ ticker }}\" as=\"t\" hint-placeholder-count=\"4\" data-dc-tpl=\"9\"> <span style=\"padding: {{ tick",
       "box": {
         "375": {
-          "x": -138.4,
+          "x": -139.2,
           "y": 11,
           "w": 1440,
           "h": 18.8
@@ -2099,7 +2099,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": -138.4,
+          "x": -139.2,
           "y": 11,
           "w": 325.7,
           "h": 18.8
@@ -2162,7 +2162,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": -118.4,
+          "x": -119.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2222,7 +2222,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": -115.9,
+          "x": -116.7,
           "y": 14.1,
           "w": 10,
           "h": 12.5
@@ -2283,7 +2283,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 187.3,
+          "x": 186.5,
           "y": 11,
           "w": 370.7,
           "h": 18.8
@@ -2346,7 +2346,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 207.3,
+          "x": 206.5,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2406,7 +2406,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 207.9,
+          "x": 207.1,
           "y": 17.3,
           "w": 12.5,
           "h": 7.8
@@ -2467,7 +2467,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 558,
+          "x": 557.2,
           "y": 11,
           "w": 325.6,
           "h": 18.8
@@ -2525,7 +2525,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 578,
+          "x": 577.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2580,7 +2580,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 579.2,
+          "x": 578.4,
           "y": 16.6,
           "w": 12.5,
           "h": 6.9
@@ -2636,7 +2636,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 883.6,
+          "x": 882.8,
           "y": 11,
           "w": 319.1,
           "h": 18.8
@@ -2694,7 +2694,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 903.6,
+          "x": 902.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2749,7 +2749,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 905.4,
+          "x": 904.6,
           "y": 14.8,
           "w": 11.3,
           "h": 11.3
@@ -2805,7 +2805,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 1202.6,
+          "x": 1201.8,
           "y": 11,
           "w": 325.7,
           "h": 18.8
@@ -2858,7 +2858,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 1222.6,
+          "x": 1221.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2908,7 +2908,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 1225.1,
+          "x": 1224.3,
           "y": 14.1,
           "w": 10,
           "h": 12.5
@@ -2960,7 +2960,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 1528.3,
+          "x": 1527.5,
           "y": 11,
           "w": 370.7,
           "h": 18.8
@@ -3013,7 +3013,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 1548.3,
+          "x": 1547.5,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -3063,7 +3063,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 1549,
+          "x": 1548.2,
           "y": 17.3,
           "w": 12.5,
           "h": 7.8
@@ -3115,7 +3115,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 1899,
+          "x": 1898.2,
           "y": 11,
           "w": 325.6,
           "h": 18.8
@@ -3168,7 +3168,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 1919,
+          "x": 1918.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -3218,7 +3218,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 1920.3,
+          "x": 1919.5,
           "y": 16.6,
           "w": 12.5,
           "h": 6.9
@@ -3270,7 +3270,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 2224.6,
+          "x": 2223.8,
           "y": 11,
           "w": 319.1,
           "h": 18.8
@@ -3323,7 +3323,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 2244.6,
+          "x": 2243.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -3373,7 +3373,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 2246.5,
+          "x": 2245.7,
           "y": 14.8,
           "w": 11.3,
           "h": 11.3

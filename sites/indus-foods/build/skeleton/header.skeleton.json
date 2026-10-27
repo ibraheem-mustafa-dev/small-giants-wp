@@ -55,7 +55,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Register For A Trade Account",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/13#0"
@@ -271,7 +271,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Register For A Trade Account",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/58#0"
@@ -343,7 +343,7 @@
 						"name": "sgs/button",
 						"attributes": {
 							"label": "Register For A Trade Account",
-							"url": "#/apply"
+							"url": "/apply/"
 						},
 						"draftRef": {
 							"tpl": "Root/54#0"

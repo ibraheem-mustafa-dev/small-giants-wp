@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-26T23:45:53.944Z",
-  "source": "http://127.0.0.1:58797/#@state/page=checkout",
+  "generated": "2026-10-27T16:05:16.994Z",
+  "source": "http://127.0.0.1:50785/#@state/page=checkout",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {

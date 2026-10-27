@@ -456,7 +456,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Become a Trade Customer",
-													"url": "#/apply"
+													"url": "/apply/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"

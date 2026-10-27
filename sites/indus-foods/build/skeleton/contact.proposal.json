@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:04:57.085Z",
-	"inventory": "2026-10-27T01:04:56.901Z",
-	"source": "http://127.0.0.1:50068/#/contact",
+	"generated": "2026-10-27T16:21:15.338Z",
+	"inventory": "2026-10-27T16:21:14.859Z",
+	"source": "http://127.0.0.1:58069/#/contact",
 	"surface": "page-contact",
 	"siteName": null,
 	"surfaceParts": [
@@ -308,7 +308,7 @@
 			"snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
 			"attributes": {
 				"label": "Contact",
-				"url": "#/contact"
+				"url": "/contact/"
 			}
 		},
 		{
@@ -713,7 +713,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/contact"
+				"sgsBlockLink": "/contact/"
 			}
 		},
 		{

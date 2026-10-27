@@ -2,162 +2,20 @@
 	{
 		"name": "sgs/container",
 		"attributes": {
-			"tagName": "div"
+			"tagName": "main"
 		},
 		"draftRef": {
-			"tpl": "Root/6#0"
+			"tpl": "Root/16#0"
 		},
 		"draftFingerprint": {
-			"tag": "div",
+			"tag": "main",
 			"cls": "",
-			"styleHash": "36f1ce99",
+			"styleHash": "921abb52",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 9
+			"line": 17
 		},
 		"innerBlocks": [
-			{
-				"name": "sgs/container",
-				"attributes": {
-					"tagName": "header"
-				},
-				"draftRef": {
-					"tpl": "Root/7#0"
-				},
-				"draftFingerprint": {
-					"tag": "header",
-					"cls": "",
-					"styleHash": "3a84cc93",
-					"parentTags": [
-						"div"
-					],
-					"textHash": "1505",
-					"line": 10
-				},
-				"innerBlocks": [
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div",
-							"layout": "grid"
-						},
-						"draftRef": {
-							"tpl": "Root/8#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "f2a35d20",
-							"parentTags": [
-								"div",
-								"header"
-							],
-							"textHash": "1505",
-							"line": 11
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/button",
-								"attributes": {
-									"label": "← Basket",
-									"url": "Basket.dc.html"
-								},
-								"draftRef": {
-									"tpl": "Root/9#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "",
-									"styleHash": "6fb1f72c",
-									"parentTags": [
-										"div",
-										"header",
-										"div"
-									],
-									"textHash": "de0f445f",
-									"line": 12
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div"
-								},
-								"draftRef": {
-									"tpl": "Root/10#0"
-								},
-								"draftFingerprint": {
-									"tag": "a",
-									"cls": "",
-									"styleHash": "1505",
-									"parentTags": [
-										"div",
-										"header",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 13
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/responsive-logo",
-										"attributes": {
-											"logoId": 91
-										},
-										"draftRef": {
-											"tpl": "Root/11#0"
-										},
-										"draftFingerprint": {
-											"tag": "img",
-											"cls": "",
-											"styleHash": "9b41e79e",
-											"parentTags": [
-												"div",
-												"header",
-												"div",
-												"a"
-											],
-											"textHash": "1505",
-											"line": 13
-										},
-										"innerBlocks": [],
-										"handover": [
-											{
-												"owner": "site-info",
-												"kind": "presence",
-												"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "Secure checkout"
-								},
-								"draftRef": {
-									"tpl": "Root/12#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "f51d6702",
-									"parentTags": [
-										"div",
-										"header",
-										"div"
-									],
-									"textHash": "65f725da",
-									"line": 14
-								},
-								"innerBlocks": []
-							}
-						]
-					}
-				]
-			},
 			{
 				"name": "core/post-content",
 				"attributes": {},
@@ -185,7 +43,6 @@
 					"cls": "",
 					"styleHash": "642cdeb",
 					"parentTags": [
-						"div",
 						"main",
 						"div"
 					],
@@ -206,7 +63,6 @@
 							"cls": "",
 							"styleHash": "1505",
 							"parentTags": [
-								"div",
 								"main",
 								"div",
 								"button"
@@ -229,7 +85,6 @@
 							"cls": "",
 							"styleHash": "fe6e953a",
 							"parentTags": [
-								"div",
 								"main",
 								"div",
 								"button"

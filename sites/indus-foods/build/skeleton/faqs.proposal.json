@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:04:56.708Z",
-	"inventory": "2026-10-27T01:04:56.514Z",
-	"source": "http://127.0.0.1:50068/#/faqs",
+	"generated": "2026-10-27T16:21:17.852Z",
+	"inventory": "2026-10-27T16:21:17.605Z",
+	"source": "http://127.0.0.1:58069/#/faqs",
 	"surface": "page-faqs",
 	"siteName": null,
 	"surfaceParts": [
@@ -306,7 +306,7 @@
 			"snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
 			"attributes": {
 				"label": "Trade",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		},
 		{
@@ -2532,7 +2532,7 @@
 			"snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
 			"attributes": {
 				"label": "Contact us",
-				"url": "#/contact"
+				"url": "/contact/"
 			}
 		},
 		{

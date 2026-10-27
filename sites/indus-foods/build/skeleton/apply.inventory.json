@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T00:59:38.153Z",
-  "source": "http://127.0.0.1:50068/#/apply",
+  "generated": "2026-10-27T16:12:45.184Z",
+  "source": "http://127.0.0.1:58069/#/apply",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -767,22 +767,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
       "box": {
         "375": {
-          "x": 21.1,
-          "y": 178.2,
-          "w": 482.1,
-          "h": 482.1
+          "x": 31.2,
+          "y": 166.3,
+          "w": 501.1,
+          "h": 501.1
         },
         "768": {
-          "x": 419.3,
-          "y": 168.8,
-          "w": 486.2,
-          "h": 486.2
+          "x": 412.2,
+          "y": 157.7,
+          "w": 492.3,
+          "h": 492.3
         },
         "1440": {
-          "x": 1082.3,
-          "y": 214.6,
-          "w": 502.5,
-          "h": 502.5
+          "x": 1076.9,
+          "y": 210.4,
+          "w": 491,
+          "h": 491
         }
       },
       "visible": {

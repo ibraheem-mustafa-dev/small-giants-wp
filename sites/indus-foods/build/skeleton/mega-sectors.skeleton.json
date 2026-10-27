@@ -148,7 +148,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Explore Food Service",
-									"url": "#/food-service"
+									"url": "/food-service/"
 								},
 								"draftRef": {
 									"tpl": "Root/93#0"
@@ -302,7 +302,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Explore Manufacturing",
-									"url": "#/manufacturing"
+									"url": "/manufacturing/"
 								},
 								"draftRef": {
 									"tpl": "Root/93#1"
@@ -456,7 +456,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Explore Retail",
-									"url": "#/retail"
+									"url": "/retail/"
 								},
 								"draftRef": {
 									"tpl": "Root/93#2"
@@ -610,7 +610,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Explore Wholesale",
-									"url": "#/wholesale"
+									"url": "/wholesale/"
 								},
 								"draftRef": {
 									"tpl": "Root/93#3"

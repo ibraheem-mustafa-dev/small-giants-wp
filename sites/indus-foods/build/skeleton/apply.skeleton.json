@@ -75,7 +75,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Trade",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/326#0"

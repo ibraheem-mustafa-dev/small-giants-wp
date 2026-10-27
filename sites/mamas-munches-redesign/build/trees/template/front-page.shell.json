@@ -3,15 +3,12 @@
     {
       "name": "sgs/container",
       "attributes": {
-        "tagName": "div",
+        "tagName": "main",
         "className": "cr-ref-home-0",
-        "backgroundColour": "surface",
         "minHeight": {
-          "mobile": "812px",
-          "desktop": "900px"
+          "desktop": "0px"
         },
-        "textColourHover": "primary-text",
-        "backgroundColourHover": "surface"
+        "textColourHover": "primary-text"
       }
     }
   ],
@@ -20,15 +17,12 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "tagName": "div",
+          "tagName": "main",
           "className": "cr-ref-home-0",
-          "backgroundColour": "surface",
           "minHeight": {
-            "mobile": "812px",
-            "desktop": "900px"
+            "desktop": "0px"
           },
-          "textColourHover": "primary-text",
-          "backgroundColourHover": "surface"
+          "textColourHover": "primary-text"
         }
       }
     ]

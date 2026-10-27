@@ -75,7 +75,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Contact",
-									"url": "#/contact"
+									"url": "/contact/"
 								},
 								"draftRef": {
 									"tpl": "Root/326#0"
@@ -281,7 +281,7 @@
 												"attributes": {
 													"tagName": "div",
 													"layout": "flex",
-													"sgsBlockLink": "#/contact"
+													"sgsBlockLink": "/contact/"
 												},
 												"draftRef": {
 													"tpl": "Root/531#0"

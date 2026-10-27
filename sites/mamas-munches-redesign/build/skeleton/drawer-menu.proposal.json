@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:39:52.517Z",
-	"inventory": "2026-10-27T01:39:52.344Z",
-	"source": "http://127.0.0.1:59886/",
+	"generated": "2026-10-27T16:08:25.467Z",
+	"inventory": "2026-10-27T16:08:25.224Z",
+	"source": "http://127.0.0.1:63057/",
 	"surface": "nav-drawer-left",
 	"siteName": null,
 	"surfaceParts": [],
@@ -318,7 +318,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack",
-				"sgsBlockLink": "Shop.dc.html"
+				"sgsBlockLink": "/shop/"
 			}
 		},
 		{
@@ -499,7 +499,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "stack",
-				"sgsBlockLink": "Gifts.dc.html"
+				"sgsBlockLink": "/gifts/"
 			}
 		},
 		{
@@ -714,7 +714,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Shop all",
-				"url": "Shop.dc.html"
+				"url": "/shop/"
 			}
 		},
 		{
@@ -776,8 +776,7 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Zookies",
-				"url": "Product.dc.html?id=zookies"
+				"text": "Zookies"
 			}
 		},
 		{
@@ -839,8 +838,7 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Taster Trio",
-				"url": "Product.dc.html?id=trial"
+				"text": "Taster Trio"
 			}
 		},
 		{
@@ -903,7 +901,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Gifts",
-				"url": "Gifts.dc.html"
+				"url": "/gifts/"
 			}
 		},
 		{
@@ -965,8 +963,7 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Subscribe & save",
-				"url": "Product.dc.html?id=zookies&sub=1"
+				"text": "Subscribe & save"
 			}
 		},
 		{
@@ -1029,7 +1026,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Help & FAQs",
-				"url": "Help.dc.html"
+				"url": "/help/"
 			}
 		},
 		{
@@ -1092,7 +1089,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Contact",
-				"url": "Contact.dc.html"
+				"url": "/contact/"
 			}
 		},
 		{
@@ -1258,7 +1255,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Sign in",
-				"url": "SignIn.dc.html"
+				"url": "/my-account/"
 			}
 		},
 		{
@@ -1297,7 +1294,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Create account",
-				"url": "SignIn.dc.html?mode=register"
+				"url": "/my-account/"
 			}
 		},
 		{
@@ -1436,7 +1433,7 @@
 			"unit": "list",
 			"item": {
 				"text": "WhatsApp",
-				"url": "Contact.dc.html"
+				"url": "/contact/"
 			}
 		},
 		{

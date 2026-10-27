@@ -3,16 +3,10 @@
 import base from './template-checkout.fill-base.mjs';
 
 const generated = [
-	{ name: "gen-template-checkout-0", text: false, structure: false, draft: {"tpl":"Root/6#0"}, live: ".cr-ref-template-checkout-0" },
-	{ name: "gen-template-checkout-1", text: false, structure: false, draft: {"tpl":"Root/7#0"}, live: ".cr-ref-template-checkout-1" },
-	{ name: "gen-template-checkout-2", text: false, structure: false, draft: {"tpl":"Root/8#0"}, live: ".cr-ref-template-checkout-2" },
-	{ name: "gen-template-checkout-3", text: false, structure: false, draft: {"tpl":"Root/9#0"}, live: ".cr-ref-template-checkout-3" },
-	{ name: "gen-template-checkout-4", text: false, structure: false, draft: {"tpl":"Root/10#0"}, live: ".cr-ref-template-checkout-4" },
-	{ name: "gen-template-checkout-5", text: false, structure: false, draft: {"tpl":"Root/11#0"}, live: ".cr-ref-template-checkout-5" },
-	{ name: "gen-template-checkout-6", text: false, structure: false, draft: {"tpl":"Root/12#0"}, live: ".cr-ref-template-checkout-6" },
-	{ name: "gen-template-checkout-8", text: false, structure: false, draft: {"tpl":"Root/19#0"}, live: ".cr-ref-template-checkout-8" },
-	{ name: "gen-template-checkout-9", text: false, structure: false, draft: {"tpl":"Root/20#0"}, live: ".cr-ref-template-checkout-9" },
-	{ name: "gen-template-checkout-10", text: false, structure: false, draft: {"tpl":"Root/21#0"}, live: ".cr-ref-template-checkout-10" },
+	{ name: "gen-template-checkout-0", text: false, structure: false, draft: {"tpl":"Root/16#0"}, live: ".cr-ref-template-checkout-0" },
+	{ name: "gen-template-checkout-2", text: false, structure: false, draft: {"tpl":"Root/19#0"}, live: ".cr-ref-template-checkout-2" },
+	{ name: "gen-template-checkout-3", text: false, structure: false, draft: {"tpl":"Root/20#0"}, live: ".cr-ref-template-checkout-3" },
+	{ name: "gen-template-checkout-4", text: false, structure: false, draft: {"tpl":"Root/21#0"}, live: ".cr-ref-template-checkout-4" },
 ];
 
 // Hand pairs measuring a paired block's draft element on an element inside the block: moved to the block root.

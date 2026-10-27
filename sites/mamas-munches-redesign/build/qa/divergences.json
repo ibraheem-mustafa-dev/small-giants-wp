@@ -1203,5 +1203,362 @@
       "tier": 768,
       "distance": 16
     }
+  },
+  {
+    "id": "D-73",
+    "scope": "contact",
+    "node": "cr-ref-contact-1",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 752px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 752,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-74",
+    "scope": "product",
+    "node": "cr-ref-product-6",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 752px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 752,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-75",
+    "scope": "product",
+    "node": "cr-ref-product-58",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 784px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 784,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-76",
+    "scope": "product",
+    "node": "cr-ref-product-64",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 784px snapped to the 768px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 784,
+      "tier": 768,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-77",
+    "scope": "product",
+    "node": "cr-ref-product-64",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 800px snapped to the 768px tier (distance 32px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 800,
+      "tier": 768,
+      "distance": 32
+    }
+  },
+  {
+    "id": "D-78",
+    "scope": "product",
+    "node": "cr-ref-product-64",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 976px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 976,
+      "tier": 1024,
+      "distance": 48
+    }
+  },
+  {
+    "id": "D-79",
+    "scope": "product",
+    "node": "cr-ref-product-64",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1008px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1008,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-80",
+    "scope": "product",
+    "node": "cr-ref-product-70",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 800px snapped to the 768px tier (distance 32px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 800,
+      "tier": 768,
+      "distance": 32
+    }
+  },
+  {
+    "id": "D-81",
+    "scope": "product",
+    "node": "cr-ref-product-70",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1008px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1008,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-82",
+    "scope": "home",
+    "node": "cr-ref-home-171",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1056px snapped to the 1024px tier (distance 32px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1056,
+      "tier": 1024,
+      "distance": 32
+    }
+  },
+  {
+    "id": "D-83",
+    "scope": "home",
+    "node": "cr-ref-home-171",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1072px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1072,
+      "tier": 1024,
+      "distance": 48
+    }
+  },
+  {
+    "id": "D-84",
+    "scope": "home",
+    "node": "cr-ref-home-180",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 800px snapped to the 768px tier (distance 32px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 800,
+      "tier": 768,
+      "distance": 32
+    }
+  },
+  {
+    "id": "D-85",
+    "scope": "home",
+    "node": "cr-ref-home-180",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1040px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1040,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-86",
+    "scope": "home",
+    "node": "cr-ref-home-180",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1072px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1072,
+      "tier": 1024,
+      "distance": 48
+    }
+  },
+  {
+    "id": "D-87",
+    "scope": "home",
+    "node": "cr-ref-home-189",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1040px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1040,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-88",
+    "scope": "home",
+    "node": "cr-ref-home-189",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1072px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1072,
+      "tier": 1024,
+      "distance": 48
+    }
+  },
+  {
+    "id": "D-89",
+    "scope": "home",
+    "node": "cr-ref-home-207",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1072px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1072,
+      "tier": 1024,
+      "distance": 48
+    }
+  },
+  {
+    "id": "D-90",
+    "scope": "home",
+    "node": "cr-ref-home-216",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 800px snapped to the 768px tier (distance 32px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 800,
+      "tier": 768,
+      "distance": 32
+    }
+  },
+  {
+    "id": "D-91",
+    "scope": "home",
+    "node": "cr-ref-home-216",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1072px snapped to the 1024px tier (distance 48px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1072,
+      "tier": 1024,
+      "distance": 48
+    }
+  },
+  {
+    "id": "D-92",
+    "scope": "home",
+    "node": "cr-ref-home-223",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1008px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1008,
+      "tier": 1024,
+      "distance": 16
+    }
+  },
+  {
+    "id": "D-93",
+    "scope": "home",
+    "node": "cr-ref-home-224",
+    "state": "*",
+    "property": "breakpoint",
+    "expected": {
+      "rule": "breakpoint-snap"
+    },
+    "reason": "the draft's width threshold 1008px snapped to the 1024px tier (distance 16px, within 5% of the tier)",
+    "decided": "2026-10-27 FR-48-50",
+    "snap": {
+      "draft": 1008,
+      "tier": 1024,
+      "distance": 16
+    }
   }
 ]

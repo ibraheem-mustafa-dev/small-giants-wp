@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:36:08.967Z",
-	"inventory": "2026-10-23T19:45:59.020Z",
-	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-10-27T16:42:47.621Z",
+	"inventory": "2026-10-27T13:53:21.255Z",
+	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "trade-mega-menu",
 	"siteName": null,
 	"surfaceParts": [],
@@ -130,7 +130,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/apply"
+				"sgsBlockLink": "/apply/"
 			}
 		},
 		{
@@ -288,7 +288,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/catalogue"
+				"sgsBlockLink": "/catalogue/"
 			}
 		},
 		{
@@ -446,7 +446,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/delivery"
+				"sgsBlockLink": "/delivery/"
 			}
 		},
 		{
@@ -604,7 +604,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/faqs"
+				"sgsBlockLink": "/faqs/"
 			}
 		},
 		{
@@ -762,7 +762,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/terms"
+				"sgsBlockLink": "/terms/"
 			}
 		},
 		{
@@ -1135,7 +1135,7 @@
 			"snippet": "<a href=\"{{ activePanel.feature.href }}\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"83\">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>",
 			"attributes": {
 				"label": "Apply now",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		}
 	]

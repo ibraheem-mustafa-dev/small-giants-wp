@@ -36,7 +36,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/our-story"
+							"sgsBlockLink": "/about/our-story/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#0"
@@ -151,7 +151,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/certifications"
+							"sgsBlockLink": "/about/certifications/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#1"
@@ -266,7 +266,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/community"
+							"sgsBlockLink": "/about/community/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#2"
@@ -381,7 +381,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/sustainability"
+							"sgsBlockLink": "/about/sustainability/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#3"
@@ -496,7 +496,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/careers"
+							"sgsBlockLink": "/about/careers/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#4"
@@ -611,7 +611,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/blog"
+							"sgsBlockLink": "/blog/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#5"
@@ -872,7 +872,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Read our story",
-									"url": "#/our-story"
+									"url": "/about/our-story/"
 								},
 								"draftRef": {
 									"tpl": "Root/83#0"

@@ -36,7 +36,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/apply"
+							"sgsBlockLink": "/apply/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#0"
@@ -151,7 +151,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/catalogue"
+							"sgsBlockLink": "/catalogue/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#1"
@@ -266,7 +266,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/delivery"
+							"sgsBlockLink": "/delivery/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#2"
@@ -381,7 +381,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/faqs"
+							"sgsBlockLink": "/faqs/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#3"
@@ -496,7 +496,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "flex",
-							"sgsBlockLink": "#/terms"
+							"sgsBlockLink": "/terms/"
 						},
 						"draftRef": {
 							"tpl": "Root/70#4"
@@ -757,7 +757,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Apply now",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/83#0"

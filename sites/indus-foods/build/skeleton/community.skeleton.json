@@ -1604,7 +1604,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Get in touch",
-													"url": "#/contact"
+													"url": "/contact/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"

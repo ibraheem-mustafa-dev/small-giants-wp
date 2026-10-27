@@ -4,5 +4,5 @@ title = "SGS gitleaks config"
 useDefault = true
 
 [allowlist]
-description = "A motion token reference such as token:distance.2xl reads as a generic API key to the entropy rule; it is a theme token name, not a secret."
-regexes = ['''^(?:distance|duration|easing)\.[0-9][0-9a-z-]*$''']
+description = "Two shapes read as generic API keys to the entropy rule and are not secrets: a motion token reference such as token:distance.2xl (a theme token name), and a draft element record key such as TradeApplication/33 or Home>SiteHeader@7#0/18#0 (a component name and template position, written in skeleton and intake records)."
+regexes = ['''^(?:distance|duration|easing)\.[0-9][0-9a-z-]*$''', '''^[A-Z][A-Za-z0-9 ]*(?:>[A-Za-z0-9 ]+@[0-9]+(?:#[0-9]+)?)*/[0-9]+(?:#[0-9]+)?$''']

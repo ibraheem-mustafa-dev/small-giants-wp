@@ -75,7 +75,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Brands",
-									"url": "#/brands"
+									"url": "/brands/"
 								},
 								"draftRef": {
 									"tpl": "Root/326#0"
@@ -376,7 +376,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brand-sanam"
+											"sgsBlockLink": "/brands/sanam/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#0"
@@ -500,7 +500,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brand-shan"
+											"sgsBlockLink": "/brands/shan/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#1"
@@ -624,7 +624,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brand-green-leaf"
+											"sgsBlockLink": "/brands/green-leaf/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#2"
@@ -748,7 +748,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brand-lemon-tree"
+											"sgsBlockLink": "/brands/lemon-tree/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#3"
@@ -872,7 +872,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brands"
+											"sgsBlockLink": "/brands/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#4"
@@ -996,7 +996,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brands"
+											"sgsBlockLink": "/brands/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#5"
@@ -1120,7 +1120,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brands"
+											"sgsBlockLink": "/brands/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#6"
@@ -1244,7 +1244,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brands"
+											"sgsBlockLink": "/brands/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#7"
@@ -1368,7 +1368,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brands"
+											"sgsBlockLink": "/brands/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#8"
@@ -1492,7 +1492,7 @@
 										"attributes": {
 											"tagName": "div",
 											"layout": "stack",
-											"sgsBlockLink": "#/brands"
+											"sgsBlockLink": "/brands/"
 										},
 										"draftRef": {
 											"tpl": "Root/501#9"
@@ -1904,7 +1904,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Explore Sanam",
-													"url": "#/brand-sanam"
+													"url": "/brands/sanam/"
 												},
 												"draftRef": {
 													"tpl": "Root/393#0"
@@ -2228,7 +2228,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Talk to us",
-													"url": "#/contact"
+													"url": "/contact/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"
@@ -2253,7 +2253,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Request catalogue",
-													"url": "#/catalogue"
+													"url": "/catalogue/"
 												},
 												"draftRef": {
 													"tpl": "Root/526#0"

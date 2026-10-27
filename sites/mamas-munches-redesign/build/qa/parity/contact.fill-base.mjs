@@ -7,9 +7,9 @@ export default {
 	refPrefix: "cr-ref-",
 	divergences: "../divergences.json",
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
-	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host *)","live":".cr-ref-contact-0"} },
-	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host *)","live":".cr-ref-contact-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:62688/" },
+	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"8\"]:not(.sc-host .sc-host *)","live":".cr-ref-contact-0"} },
+	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"8\"]:not(.sc-host .sc-host *)","live":".cr-ref-contact-0"},
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:54163/" },
 	live: { url: "http://localhost:8084/contact/" },
 	states: [ { name: "mobile", fullPage: true } ],
 	pairs: [],

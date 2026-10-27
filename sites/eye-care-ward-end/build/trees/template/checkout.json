@@ -1101,10 +1101,10 @@
                         },
                         "devices": {
                           "mobile": {
-                            "duration": 449
+                            "duration": 451
                           },
                           "tablet": {
-                            "duration": 450
+                            "duration": 449
                           }
                         }
                       }

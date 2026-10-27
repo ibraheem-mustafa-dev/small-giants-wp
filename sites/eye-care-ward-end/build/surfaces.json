@@ -429,7 +429,10 @@
     "states": {
       "open-side-by-side": null,
       "open-stacked": null
-    }
+    },
+    "provides": [
+      "sgs/choice-flow:choice-flow-add-prescription-lenses"
+    ]
   },
   "mega-menu-sunglasses": {
     "tree": "trees/sgs_mega_menu/mega-menu-sunglasses.json",

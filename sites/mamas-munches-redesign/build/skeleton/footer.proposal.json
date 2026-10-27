@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:35:37.678Z",
-	"inventory": "2026-10-27T01:35:37.475Z",
-	"source": "http://127.0.0.1:59886/",
+	"generated": "2026-10-27T16:04:36.540Z",
+	"inventory": "2026-10-27T16:04:36.182Z",
+	"source": "http://127.0.0.1:63057/",
 	"surface": "site-footer",
 	"siteName": null,
 	"surfaceParts": [],
@@ -1115,7 +1115,7 @@
 			"unit": "list",
 			"item": {
 				"text": "All Zookies",
-				"url": "Shop.dc.html"
+				"url": "/shop/"
 			}
 		},
 		{
@@ -1154,7 +1154,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Build your box",
-				"url": "Home.dc.html#build"
+				"url": "/#build"
 			}
 		},
 		{
@@ -1192,8 +1192,7 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Subscribe & save",
-				"url": "Product.dc.html?id=zookies&sub=1"
+				"text": "Subscribe & save"
 			}
 		},
 		{
@@ -1232,7 +1231,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Gifts",
-				"url": "Gifts.dc.html"
+				"url": "/gifts/"
 			}
 		},
 		{
@@ -1270,8 +1269,7 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Taster Trio",
-				"url": "Product.dc.html?id=trial"
+				"text": "Taster Trio"
 			}
 		},
 		{
@@ -1397,7 +1395,7 @@
 			"unit": "list",
 			"item": {
 				"text": "FAQs",
-				"url": "Help.dc.html"
+				"url": "/help/"
 			}
 		},
 		{
@@ -1436,7 +1434,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Delivery",
-				"url": "Help.dc.html#delivery"
+				"url": "/help/#delivery"
 			}
 		},
 		{
@@ -1475,7 +1473,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Allergens",
-				"url": "Help.dc.html#allergens"
+				"url": "/help/#allergens"
 			}
 		},
 		{
@@ -1514,7 +1512,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Contact",
-				"url": "Contact.dc.html"
+				"url": "/contact/"
 			}
 		},
 		{
@@ -1945,7 +1943,7 @@
 			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"58\">Privacy</a>",
 			"attributes": {
 				"label": "Privacy",
-				"url": "Help.dc.html#legal"
+				"url": "/help/#legal"
 			}
 		},
 		{
@@ -1981,7 +1979,7 @@
 			"snippet": "<a href=\"Help.dc.html#legal\" style=\"color:#3A2A22\" data-dc-tpl=\"59\">Terms</a>",
 			"attributes": {
 				"label": "Terms",
-				"url": "Help.dc.html#legal"
+				"url": "/help/#legal"
 			}
 		},
 		{

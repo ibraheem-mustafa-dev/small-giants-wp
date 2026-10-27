@@ -150,7 +150,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Read our story",
-									"url": "#/our-story"
+									"url": "/about/our-story/"
 								},
 								"draftRef": {
 									"tpl": "Root/338#0"
@@ -176,7 +176,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Apply for a trade account",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/338#1"
@@ -1126,7 +1126,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/our-story"
+															"url": "/about/our-story/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#0"
@@ -1332,7 +1332,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/certifications"
+															"url": "/about/certifications/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#1"
@@ -1538,7 +1538,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/community"
+															"url": "/about/community/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#2"
@@ -1744,7 +1744,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/sustainability"
+															"url": "/about/sustainability/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#3"
@@ -1950,7 +1950,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/careers"
+															"url": "/about/careers/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#4"
@@ -2156,7 +2156,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/apply"
+															"url": "/apply/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#5"
@@ -2362,7 +2362,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/food-service"
+															"url": "/food-service/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#6"
@@ -2568,7 +2568,7 @@
 														"name": "sgs/button",
 														"attributes": {
 															"label": "Learn more",
-															"url": "#/brands"
+															"url": "/brands/"
 														},
 														"draftRef": {
 															"tpl": "Root/493#7"
@@ -2823,7 +2823,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Become a Trade Customer",
-													"url": "#/apply"
+													"url": "/apply/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"

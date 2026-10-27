@@ -5,15 +5,12 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "tagName": "div",
+          "tagName": "main",
           "className": "cr-ref-my-account-0",
-          "backgroundColour": "surface",
           "minHeight": {
-            "mobile": "812px",
-            "desktop": "900px"
+            "desktop": "0px"
           },
-          "textColourHover": "primary-text",
-          "backgroundColourHover": "surface"
+          "textColourHover": "primary-text"
         }
       }
     ],
@@ -21,15 +18,12 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "tagName": "div",
+          "tagName": "main",
           "className": "cr-ref-contact-0",
-          "backgroundColour": "surface",
           "minHeight": {
-            "mobile": "812px",
-            "desktop": "900px"
+            "desktop": "0px"
           },
-          "textColourHover": "primary-text",
-          "backgroundColourHover": "surface"
+          "textColourHover": "primary-text"
         }
       }
     ],
@@ -37,15 +31,12 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "tagName": "div",
+          "tagName": "main",
           "className": "cr-ref-gifts-0",
-          "backgroundColour": "surface",
           "minHeight": {
-            "mobile": "812px",
-            "desktop": "900px"
+            "desktop": "0px"
           },
-          "textColourHover": "primary-text",
-          "backgroundColourHover": "surface"
+          "textColourHover": "primary-text"
         }
       }
     ],
@@ -53,15 +44,12 @@
       {
         "name": "sgs/container",
         "attributes": {
-          "tagName": "div",
+          "tagName": "main",
           "className": "cr-ref-help-0",
-          "backgroundColour": "surface",
           "minHeight": {
-            "mobile": "812px",
-            "desktop": "900px"
+            "desktop": "0px"
           },
-          "textColourHover": "primary-text",
-          "backgroundColourHover": "surface"
+          "textColourHover": "primary-text"
         }
       }
     ]

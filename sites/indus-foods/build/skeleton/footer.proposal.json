@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:29:36.201Z",
-	"inventory": "2026-10-27T00:29:35.581Z",
-	"source": "http://127.0.0.1:50068/",
+	"generated": "2026-10-27T16:39:10.514Z",
+	"inventory": "2026-10-27T16:39:10.106Z",
+	"source": "http://127.0.0.1:58069/",
 	"surface": "footer",
 	"siteName": null,
 	"surfaceParts": [],
@@ -31,19 +31,19 @@
 		"inventoryElements": 96,
 		"parts": 13,
 		"rows": 83,
-		"skeletonNodes": 47,
-		"expandedNodes": 51,
+		"skeletonNodes": 46,
+		"expandedNodes": 50,
 		"low": 0,
-		"removed": 31,
+		"removed": 32,
 		"unresolved": 0,
 		"byRule": {
 			"widthWrapper": 2,
 			"footerSlots": 3,
 			"wholeCardLink": 2,
 			"solitaryIcon": 3,
-			"label": 5,
+			"label": 3,
+			"openStatus": 3,
 			"hoursRows": 12,
-			"openStatus": 1,
 			"homeLink": 1,
 			"logoElement": 1,
 			"drawsChildren": 10,
@@ -699,22 +699,22 @@
 			"key": "Root/673#0",
 			"tag": "span",
 			"depth": 5,
-			"words": "Closed",
-			"block": "sgs/label",
+			"words": "Open now",
+			"block": "sgs/business-info",
 			"action": null,
-			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
-			"source": "rule label",
+			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
+			"source": "rule openStatus",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "label",
+			"rule": "openStatus",
 			"candidates": [
 				{
-					"block": "sgs/label",
+					"block": "sgs/business-info",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+						"rule openStatus: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours"
 					]
 				}
 			],
@@ -724,7 +724,9 @@
 				"1440": "shots/Root_673_0@1440.png"
 			},
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 12px;border-radius:999px;background:{{ hoursNow.bg }};color:{{ hoursNow.fg }};white-space:nowrap;\" data-dc-tpl=\"673\"><span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>{{ hoursNow.label }}</s",
-			"attributes": {}
+			"attributes": {
+				"displayType": "open-status"
+			}
 		},
 		{
 			"order": 19,
@@ -734,12 +736,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"reason": "drawn by sgs/business-info: rule openStatus",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "label",
+			"rule": "openStatus",
 			"into": "Root/673#0",
 			"candidates": [],
 			"parts": [],
@@ -1119,33 +1121,23 @@
 			"key": "Root/680#0",
 			"tag": "span",
 			"depth": 4,
-			"words": "Opens at 9:30am",
-			"block": "sgs/business-info",
-			"action": null,
+			"words": "Closes at 5pm today",
+			"block": null,
+			"action": "absorbed",
 			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
 			"source": "rule openStatus",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "openStatus",
-			"candidates": [
-				{
-					"block": "sgs/business-info",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule openStatus: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours"
-					]
-				}
-			],
+			"into": "Root/673#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_680_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:15px;color:#C9D4DE;\" data-dc-tpl=\"680\">{{ hoursNow.sub }}</span>",
-			"attributes": {
-				"displayType": "open-status"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 34,
@@ -1692,7 +1684,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Certifications",
-				"url": "#/certifications"
+				"url": "/about/certifications/"
 			}
 		},
 		{
@@ -1754,7 +1746,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Trade",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		},
 		{
@@ -1816,7 +1808,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Brands",
-				"url": "#/brands"
+				"url": "/brands/"
 			}
 		},
 		{
@@ -1878,7 +1870,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Delivery & Logistics",
-				"url": "#/delivery"
+				"url": "/delivery/"
 			}
 		},
 		{
@@ -1940,7 +1932,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Terms & Conditions",
-				"url": "#/terms"
+				"url": "/terms/"
 			}
 		},
 		{
@@ -2002,7 +1994,7 @@
 			"unit": "list",
 			"item": {
 				"text": "Blog",
-				"url": "#/blog"
+				"url": "/blog/"
 			}
 		},
 		{
@@ -2060,7 +2052,7 @@
 			"snippet": "<a href=\"#/apply\" data-mag=\"\" style=\"margin-top:28px;display:inline-flex;align-items:center;gap:10px;background:#D8CA50;color:#2C3E50;font-weight:700;font-size:16px;padding:14px 24px;border-radius:999px;box-shadow:0 10px 20px -10px rgba(0,0,0,.6);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .2s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px ",
 			"attributes": {
 				"label": "Apply For A Trade Account",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		},
 		{

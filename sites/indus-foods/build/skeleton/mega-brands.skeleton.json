@@ -138,7 +138,7 @@
 						"name": "sgs/button",
 						"attributes": {
 							"label": "View All Brands",
-							"url": "#/brands"
+							"url": "/brands/"
 						},
 						"draftRef": {
 							"tpl": "Root/105#0"

@@ -4,7 +4,7 @@ Taken on 2026-10-27T15:34:36.289Z; manifest 1.0, files hash d5ed630059b071ef.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review mamas-munches-redesign`.
 
-Rows: 1589; 799 need reading, 790 are confident proposals that Accept all covers (skeleton block choices 764, missing features 26).
+Rows: 1589; 798 need reading, 791 are confident proposals that Accept all covers (skeleton block choices 764, missing features 27).
 
 Not defects counted, not listed: breakpoint 6, reached-when-forced 204, render-wins 713.
 
@@ -23,7 +23,7 @@ Marks per section (first value = Accept all):
 
 ## Page map (page-map)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -46,7 +46,7 @@ Accept all: [x]
 
 ## Palette roles (palette-role)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -90,7 +90,7 @@ Accept all: [x]
 
 ## Site Info (site-info)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -102,7 +102,7 @@ Accept all: [x]
 
 ## Flags (flag)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -113,11 +113,10 @@ Accept all: [x]
 
 ## Missing features (missing-feature)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:coverage:html:fieldset` | **changed** html:fieldset seen 8 times in the draft: seen but unsupported | gap:shop, forms and data | html:fieldset has no clone path yet (has nothing; wave shop, forms and data) |  |
 | `missing:handler@Home:132/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | difference |
 | `missing:handler@Home:222/template:onPointerMove` | Home: an element that reacts to the pointer position (onPointerMove) | no block proposed | pointer-tracking: no block capability or fx effect named for it in the framework database | gap:behaviour |
 
@@ -148,24 +147,25 @@ Accept all: [x]
 | `missing:coverage:html-attr:global.inputmode` | html-attr:global.inputmode seen 3 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:global.inputmode has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:html-attr:input.checked` | html-attr:input.checked seen 6 times in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.checked has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:html-attr:input.minlength` | html-attr:input.minlength seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | html-attr:input.minlength has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
+| `missing:coverage:html:fieldset` | html:fieldset seen 8 times in the draft: seen but unsupported | gap:shop, forms and data | html:fieldset has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:html:legend` | html:legend seen 4 times in the draft: seen but unsupported | gap:shop, forms and data | html:legend has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:input-type:date` | input-type:date seen 1 time in the draft: seen but unsupported | gap:shop, forms and data | input-type:date has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 | `missing:coverage:input-type:password` | input-type:password seen 7 times in the draft: seen but unsupported | gap:shop, forms and data | input-type:password has no clone path yet (has nothing; wave shop, forms and data) | gap:shop, forms and data |
 
 ## Skeleton block choices (skeleton-block)
 
-Accept all: [x]
+Accept all: [ ]
 
 ### Needs a decision (unresolved): no block (6)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:build-your-zookie:Home/106#0` | build-your-zookie Home/106#0 <div> "20 × Classic oat, milk choc chips, strawberry & mango" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference |  |
-| `skeleton:build-your-zookie:Home/108#0` | build-your-zookie Home/108#0 <button> | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference |  |
-| `skeleton:build-your-zookie:Home/119#0` | build-your-zookie Home/119#0 <button> | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference |  |
-| `skeleton:build-your-zookie:Home/123#0` | build-your-zookie Home/123#0 <div> "Baked fresh for you · with you in 3–5 days · free UK delivery over £35" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference |  |
-| `skeleton:build-your-zookie:Home/67#0` | build-your-zookie Home/67#0 <div> "your cookie, your way" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference |  |
-| `skeleton:build-your-zookie:Home/69#0` | build-your-zookie Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference |  |
+| `skeleton:build-your-zookie:Home/106#0` | build-your-zookie Home/106#0 <div> "20 × Classic oat, milk choc chips, strawberry & mango" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
+| `skeleton:build-your-zookie:Home/108#0` | build-your-zookie Home/108#0 <button> | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
+| `skeleton:build-your-zookie:Home/119#0` | build-your-zookie Home/119#0 <button> | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
+| `skeleton:build-your-zookie:Home/123#0` | build-your-zookie Home/123#0 <div> "Baked fresh for you · with you in 3–5 days · free UK delivery over £35" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
+| `skeleton:build-your-zookie:Home/67#0` | build-your-zookie Home/67#0 <div> "your cookie, your way" | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
+| `skeleton:build-your-zookie:Home/69#0` | build-your-zookie Home/69#0 <p> "Nothing sits on a shelf. Pick a base, your chips and a fruit, and Zainab bakes your box fresh." | no block | 1: the choice flow (Spec 43) holds no setting for this element: build it, map it to a flow setting or record it as a deliberate difference | accept |
 
 ### Needs a decision (low): block:sgs/business-info (1)
 
@@ -423,17 +423,17 @@ Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/128#0` | basket-drawer-right Home>SiteHeader@7#0/128#0 <aside> | block:sgs/cart | 1: the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part "Basket" of the cart row |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/129#0` | basket-drawer-right Home>SiteHeader@7#0/129#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/130#0` | basket-drawer-right Home>SiteHeader@7#0/130#0 <div> "Your basket" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/131#0` | basket-drawer-right Home>SiteHeader@7#0/131#0 <span> "( 0 )" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/132#0` | basket-drawer-right Home>SiteHeader@7#0/132#0 <button> "×" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/176#0` | basket-drawer-right Home>SiteHeader@7#0/176#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/177#0` | basket-drawer-right Home>SiteHeader@7#0/177#0 <img> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/178#0` | basket-drawer-right Home>SiteHeader@7#0/178#0 <div> "Your basket is empty" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/179#0` | basket-drawer-right Home>SiteHeader@7#0/179#0 <p> "New to Zookies? The Taster Trio is 3 cookies for £5, postage included." | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/180#0` | basket-drawer-right Home>SiteHeader@7#0/180#0 <button> "Add a Taster Trio · £5" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
-| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/181#0` | basket-drawer-right Home>SiteHeader@7#0/181#0 <a> "Browse the shop" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart |  |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/128#0` | basket-drawer-right Home>SiteHeader@7#0/128#0 <aside> | block:sgs/cart | 1: the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87); the page map holds this surface as the drawer part "Basket" of the cart row | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/129#0` | basket-drawer-right Home>SiteHeader@7#0/129#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/130#0` | basket-drawer-right Home>SiteHeader@7#0/130#0 <div> "Your basket" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/131#0` | basket-drawer-right Home>SiteHeader@7#0/131#0 <span> "( 0 )" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/132#0` | basket-drawer-right Home>SiteHeader@7#0/132#0 <button> "×" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/176#0` | basket-drawer-right Home>SiteHeader@7#0/176#0 <div> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/177#0` | basket-drawer-right Home>SiteHeader@7#0/177#0 <img> | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/178#0` | basket-drawer-right Home>SiteHeader@7#0/178#0 <div> "Your basket is empty" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/179#0` | basket-drawer-right Home>SiteHeader@7#0/179#0 <p> "New to Zookies? The Taster Trio is 3 cookies for £5, postage included." | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/180#0` | basket-drawer-right Home>SiteHeader@7#0/180#0 <button> "Add a Taster Trio · £5" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
+| `skeleton:basket-drawer-right:Home>SiteHeader@7#0/181#0` | basket-drawer-right Home>SiteHeader@7#0/181#0 <a> "Browse the shop" | absorbed | 1: drawn by sgs/cart: rule blockOwnedPart | accept |
 
 ### Settled by rule cardAction: a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link) (6)
 
@@ -469,44 +469,44 @@ Accept all: [x]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `skeleton:build-your-zookie:Home/100#0` | build-your-zookie Home/100#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/101#0` | build-your-zookie Home/101#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/102#0` | build-your-zookie Home/102#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/103#0` | build-your-zookie Home/103#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/105` | build-your-zookie Home/105 <span> | absorbed | 1: 19 copies of one template element; drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/107#0` | build-your-zookie Home/107#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/109#0` | build-your-zookie Home/109#0 <span> | absorbed | 1: inside the gap row Home/108#0 |  |
-| `skeleton:build-your-zookie:Home/110#0` | build-your-zookie Home/110#0 <span> "Subscribe & save 10%" | absorbed | 1: inside the gap row Home/108#0 |  |
-| `skeleton:build-your-zookie:Home/111#0` | build-your-zookie Home/111#0 <span> "Skip, swap or cancel any time" | absorbed | 1: inside the gap row Home/108#0 |  |
-| `skeleton:build-your-zookie:Home/112#0` | build-your-zookie Home/112#0 <span> | absorbed | 1: inside the gap row Home/108#0 |  |
-| `skeleton:build-your-zookie:Home/113#0` | build-your-zookie Home/113#0 <span> "£19.35" | absorbed | 1: inside the gap row Home/108#0 |  |
-| `skeleton:build-your-zookie:Home/114#0` | build-your-zookie Home/114#0 <span> "£21.50" | absorbed | 1: inside the gap row Home/108#0 |  |
-| `skeleton:build-your-zookie:Home/116#0` | build-your-zookie Home/116#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 5 "Home/116", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/118` | build-your-zookie Home/118 <button> "Every 2 weeks" | absorbed | 1: 2 copies of one template element; drawn by sgs/choice-flow: question 5 "Home/116", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/120#0` | build-your-zookie Home/120#0 <span> "One-off box" | absorbed | 1: inside the gap row Home/119#0 |  |
-| `skeleton:build-your-zookie:Home/121#0` | build-your-zookie Home/121#0 <span> "£21.50" | absorbed | 1: inside the gap row Home/119#0 |  |
-| `skeleton:build-your-zookie:Home/122#0` | build-your-zookie Home/122#0 <button> "Subscribe · £19.35" | absorbed | 1: drawn by sgs/choice-flow: the add-to-bag result (sgs/choice-flow-result action add-to-bag) |  |
-| `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row |  |
-| `skeleton:build-your-zookie:Home/64#0` | build-your-zookie Home/64#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/65#0` | build-your-zookie Home/65#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/66#0` | build-your-zookie Home/66#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow |  |
-| `skeleton:build-your-zookie:Home/68#0` | build-your-zookie Home/68#0 <h2> "Build your Zookie" | absorbed | 1: drawn by sgs/choice-flow: the flow title (sgs/choice-flow title) |  |
-| `skeleton:build-your-zookie:Home/70#0` | build-your-zookie Home/70#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/71#0` | build-your-zookie Home/71#0 <div> "1 · Base" | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/72#0` | build-your-zookie Home/72#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/76#0` | build-your-zookie Home/76#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/77#0` | build-your-zookie Home/77#0 <div> "2 · Chips" | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/78#0` | build-your-zookie Home/78#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/81#0` | build-your-zookie Home/81#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/82#0` | build-your-zookie Home/82#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/83#0` | build-your-zookie Home/83#0 <span> "3 · Flavours" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/84#0` | build-your-zookie Home/84#0 <span> "Pick up to 3 and we’ll split your box between them" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/85#0` | build-your-zookie Home/85#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/89#0` | build-your-zookie Home/89#0 <div> "Your 20: 10 strawberry · 10 mango" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/90#0` | build-your-zookie Home/90#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/91#0` | build-your-zookie Home/91#0 <div> "4 · How many" | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question |  |
-| `skeleton:build-your-zookie:Home/92#0` | build-your-zookie Home/92#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question |  |
-| `skeleton:gift-finder:Gifts/24#0` | gift-finder Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row |  |
+| `skeleton:build-your-zookie:Home/100#0` | build-your-zookie Home/100#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/101#0` | build-your-zookie Home/101#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/102#0` | build-your-zookie Home/102#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/103#0` | build-your-zookie Home/103#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/105` | build-your-zookie Home/105 <span> | absorbed | 1: 19 copies of one template element; drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/107#0` | build-your-zookie Home/107#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/109#0` | build-your-zookie Home/109#0 <span> | absorbed | 1: inside the gap row Home/108#0 | accept |
+| `skeleton:build-your-zookie:Home/110#0` | build-your-zookie Home/110#0 <span> "Subscribe & save 10%" | absorbed | 1: inside the gap row Home/108#0 | accept |
+| `skeleton:build-your-zookie:Home/111#0` | build-your-zookie Home/111#0 <span> "Skip, swap or cancel any time" | absorbed | 1: inside the gap row Home/108#0 | accept |
+| `skeleton:build-your-zookie:Home/112#0` | build-your-zookie Home/112#0 <span> | absorbed | 1: inside the gap row Home/108#0 | accept |
+| `skeleton:build-your-zookie:Home/113#0` | build-your-zookie Home/113#0 <span> "£19.35" | absorbed | 1: inside the gap row Home/108#0 | accept |
+| `skeleton:build-your-zookie:Home/114#0` | build-your-zookie Home/114#0 <span> "£21.50" | absorbed | 1: inside the gap row Home/108#0 | accept |
+| `skeleton:build-your-zookie:Home/116#0` | build-your-zookie Home/116#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 5 "Home/116", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/118` | build-your-zookie Home/118 <button> "Every 2 weeks" | absorbed | 1: 2 copies of one template element; drawn by sgs/choice-flow: question 5 "Home/116", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/120#0` | build-your-zookie Home/120#0 <span> "One-off box" | absorbed | 1: inside the gap row Home/119#0 | accept |
+| `skeleton:build-your-zookie:Home/121#0` | build-your-zookie Home/121#0 <span> "£21.50" | absorbed | 1: inside the gap row Home/119#0 | accept |
+| `skeleton:build-your-zookie:Home/122#0` | build-your-zookie Home/122#0 <button> "Subscribe · £19.35" | absorbed | 1: drawn by sgs/choice-flow: the add-to-bag result (sgs/choice-flow-result action add-to-bag) | accept |
+| `skeleton:build-your-zookie:Home/63#0` | build-your-zookie Home/63#0 <section> | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row | accept |
+| `skeleton:build-your-zookie:Home/64#0` | build-your-zookie Home/64#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/65#0` | build-your-zookie Home/65#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/66#0` | build-your-zookie Home/66#0 <div> | absorbed | 1: drawn by sgs/choice-flow: rule choiceFlow | accept |
+| `skeleton:build-your-zookie:Home/68#0` | build-your-zookie Home/68#0 <h2> "Build your Zookie" | absorbed | 1: drawn by sgs/choice-flow: the flow title (sgs/choice-flow title) | accept |
+| `skeleton:build-your-zookie:Home/70#0` | build-your-zookie Home/70#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/71#0` | build-your-zookie Home/71#0 <div> "1 · Base" | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/72#0` | build-your-zookie Home/72#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 1 "Base", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/76#0` | build-your-zookie Home/76#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/77#0` | build-your-zookie Home/77#0 <div> "2 · Chips" | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/78#0` | build-your-zookie Home/78#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 2 "Chips", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/81#0` | build-your-zookie Home/81#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/82#0` | build-your-zookie Home/82#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/83#0` | build-your-zookie Home/83#0 <span> "3 · Flavours" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/84#0` | build-your-zookie Home/84#0 <span> "Pick up to 3 and we’ll split your box between them" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/85#0` | build-your-zookie Home/85#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/89#0` | build-your-zookie Home/89#0 <div> "Your 20: 10 strawberry · 10 mango" | absorbed | 1: drawn by sgs/choice-flow: question 3 "Flavours", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/90#0` | build-your-zookie Home/90#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/91#0` | build-your-zookie Home/91#0 <div> "4 · How many" | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question | accept |
+| `skeleton:build-your-zookie:Home/92#0` | build-your-zookie Home/92#0 <div> | absorbed | 1: drawn by sgs/choice-flow: question 4 "How many", sgs/choice-flow-question | accept |
+| `skeleton:gift-finder:Gifts/24#0` | gift-finder Gifts/24#0 <a> "Show 4 gifts ↓" | block:sgs/choice-flow | 1: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row | accept |
 
 ### Settled by rule decorationLayer: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in (9)
 
@@ -1319,7 +1319,7 @@ Accept all: [x]
 
 ## Inventory diffs (inventory-diff)
 
-Accept all: [x]
+Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|

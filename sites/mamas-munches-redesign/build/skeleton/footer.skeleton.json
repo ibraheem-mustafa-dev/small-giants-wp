@@ -401,23 +401,21 @@
 											"items": [
 												{
 													"text": "All Zookies",
-													"url": "Shop.dc.html"
+													"url": "/shop/"
 												},
 												{
 													"text": "Build your box",
-													"url": "Home.dc.html#build"
+													"url": "/#build"
 												},
 												{
-													"text": "Subscribe & save",
-													"url": "Product.dc.html?id=zookies&sub=1"
+													"text": "Subscribe & save"
 												},
 												{
 													"text": "Gifts",
-													"url": "Gifts.dc.html"
+													"url": "/gifts/"
 												},
 												{
-													"text": "Taster Trio",
-													"url": "Product.dc.html?id=trial"
+													"text": "Taster Trio"
 												}
 											]
 										},
@@ -438,7 +436,19 @@
 											"textHash": "c63e4e2a",
 											"line": 41
 										},
-										"innerBlocks": []
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "product-data",
+												"kind": "link",
+												"detail": "draft link \"Product.dc.html?id=zookies&sub=1\" goes to the draft route \"Product.dc.html\": the draft product \"zookies\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+											},
+											{
+												"owner": "product-data",
+												"kind": "link",
+												"detail": "draft link \"Product.dc.html?id=trial\" goes to the draft route \"Product.dc.html\": the draft product \"trial\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+											}
+										]
 									}
 								]
 							},
@@ -495,19 +505,19 @@
 											"items": [
 												{
 													"text": "FAQs",
-													"url": "Help.dc.html"
+													"url": "/help/"
 												},
 												{
 													"text": "Delivery",
-													"url": "Help.dc.html#delivery"
+													"url": "/help/#delivery"
 												},
 												{
 													"text": "Allergens",
-													"url": "Help.dc.html#allergens"
+													"url": "/help/#allergens"
 												},
 												{
 													"text": "Contact",
-													"url": "Contact.dc.html"
+													"url": "/contact/"
 												}
 											]
 										},
@@ -717,7 +727,7 @@
 										"name": "sgs/button",
 										"attributes": {
 											"label": "Privacy",
-											"url": "Help.dc.html#legal"
+											"url": "/help/#legal"
 										},
 										"draftRef": {
 											"tpl": "Root>SiteFooter@250#0/58#0"
@@ -742,7 +752,7 @@
 										"name": "sgs/button",
 										"attributes": {
 											"label": "Terms",
-											"url": "Help.dc.html#legal"
+											"url": "/help/#legal"
 										},
 										"draftRef": {
 											"tpl": "Root>SiteFooter@250#0/59#0"

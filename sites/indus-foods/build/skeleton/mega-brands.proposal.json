@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:36:03.612Z",
-	"inventory": "2026-10-23T19:45:08.190Z",
-	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-10-27T16:41:07.802Z",
+	"inventory": "2026-10-27T13:52:35.862Z",
+	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "brands-mega-menu",
 	"siteName": null,
 	"surfaceParts": [],
@@ -865,7 +865,7 @@
 			"snippet": "<a href=\"#/brands\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;width:fit-content;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"105\">{{ activePanel.cta }} {{ arrowIcon }}</a>",
 			"attributes": {
 				"label": "View All Brands",
-				"url": "#/brands"
+				"url": "/brands/"
 			},
 			"builtPost": {
 				"site": "sandybrown",

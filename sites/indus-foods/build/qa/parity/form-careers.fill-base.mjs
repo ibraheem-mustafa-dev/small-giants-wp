@@ -9,8 +9,8 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"550\"]:not(.sc-host .sc-host *)","live":".cr-ref-form-careers-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"550\"]:not(.sc-host .sc-host *)","live":".cr-ref-form-careers-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:50068/#/careers" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:58069/#/careers" },
 	live: { url: "http://localhost:8083/about/careers/" },
-	states: [ { name: "resting", fullPage: true } ],
+	states: [ { name: "editing", fullPage: true } ],
 	pairs: [],
 };

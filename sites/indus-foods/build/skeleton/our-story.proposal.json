@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:38:54.287Z",
-	"inventory": "2026-10-27T00:38:53.826Z",
-	"source": "http://127.0.0.1:50068/#/our-story",
+	"generated": "2026-10-27T15:53:57.491Z",
+	"inventory": "2026-10-27T15:53:56.511Z",
+	"source": "http://127.0.0.1:58069/#/our-story",
 	"surface": "page-our-story",
 	"siteName": null,
 	"surfaceParts": [],
@@ -4226,7 +4226,7 @@
 			"snippet": "<a href=\"{{ b.link.href }}\" style=\"display:inline-flex;align-items:center;gap:8px;margin-top:30px;color:#1E2A3C;font-weight:700;font-size:15px;border-bottom:2px solid var(--acc,#D8CA50);padding-bottom:4px;transition:color .2s,gap .2s;\" style-hover=\"color:#0A7EA8;gap:12px\" data-dc-tpl=\"393\">{{ b.link.label }} {{ arrowIcon }}</a>",
 			"attributes": {
 				"label": "See our certifications",
-				"url": "#/certifications"
+				"url": "/about/certifications/"
 			}
 		},
 		{
@@ -4761,7 +4761,7 @@
 			"snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
 			"attributes": {
 				"label": "Become a Trade Customer",
-				"url": "#/apply"
+				"url": "/apply/"
 			}
 		},
 		{

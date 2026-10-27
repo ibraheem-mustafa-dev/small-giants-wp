@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:34:09.977Z",
-	"inventory": "2026-10-23T19:44:14.789Z",
-	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-10-27T16:41:01.093Z",
+	"inventory": "2026-10-27T13:51:47.280Z",
+	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "sectors-mega-menu",
 	"siteName": null,
 	"surfaceParts": [],
@@ -334,7 +334,7 @@
 			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
 			"attributes": {
 				"label": "Explore Food Service",
-				"url": "#/food-service"
+				"url": "/food-service/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -597,7 +597,7 @@
 			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
 			"attributes": {
 				"label": "Explore Manufacturing",
-				"url": "#/manufacturing"
+				"url": "/manufacturing/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -860,7 +860,7 @@
 			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
 			"attributes": {
 				"label": "Explore Retail",
-				"url": "#/retail"
+				"url": "/retail/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -1123,7 +1123,7 @@
 			"snippet": "<div style=\"display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-weight:700;font-size:15px;\" data-dc-tpl=\"93\">{{ card.cta }} {{ arrowIcon }}</div>",
 			"attributes": {
 				"label": "Explore Wholesale",
-				"url": "#/wholesale"
+				"url": "/wholesale/"
 			},
 			"builtPost": {
 				"site": "sandybrown",

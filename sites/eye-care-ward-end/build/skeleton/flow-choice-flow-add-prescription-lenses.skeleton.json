@@ -1,0 +1,367 @@
+[
+	{
+		"name": "sgs/choice-flow",
+		"attributes": {
+			"flowLayout": "showcase",
+			"stepCountLabel": "Question",
+			"showHeader": true,
+			"closeStyle": "text",
+			"closeLabel": "Close",
+			"skipLabel": "Skip the lenses",
+			"skipPrompt": "Frame only?",
+			"skipAddsToBag": true,
+			"continueLabel": "Continue",
+			"showPricePanel": true,
+			"summaryPosition": "start",
+			"summaryBaseLabel": "Frame",
+			"summaryPendingLabel": "Lenses",
+			"summaryPendingText": "not chosen yet",
+			"stageNote": "Not sure which to pick?",
+			"stageNoteLink": {
+				"url": "https://wa.me/4479605978",
+				"text": "Happy to talk it through — message me and we'll choose together.",
+				"source": "url"
+			}
+		},
+		"draftRef": {
+			"tpl": "Root/1283#0"
+		},
+		"draftFingerprint": {
+			"tag": "div",
+			"cls": "sgs-lens-configurator",
+			"styleHash": "b75df390",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 2167
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "What will you use them for?"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"question": "What will you use them for?",
+							"intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
+							"options": [
+								{
+									"label": "Distance",
+									"value": "distance",
+									"description": "Driving, walking about, everyday wear.",
+									"helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance."
+								},
+								{
+									"label": "Reading",
+									"value": "reading",
+									"description": "Close work, in the sun.",
+									"helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these."
+								},
+								{
+									"label": "Varifocal",
+									"value": "varifocal",
+									"description": "Near and far in one lens, no line.",
+									"helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person."
+								},
+								{
+									"label": "No prescription",
+									"value": "no-prescription",
+									"description": "Keep the lenses they come with.",
+									"helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later."
+								}
+							],
+							"pricePrefix": "from"
+						},
+						"draftRef": {
+							"tpl": "Root/1322#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "54d831a3",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 2225
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "How thin would you like them?"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"question": "How thin would you like them?",
+							"intro": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it.",
+							"options": [
+								{
+									"label": "Standard · 1.5",
+									"value": "standard-1-5",
+									"description": "Fine for most prescriptions up to about ±2.00.",
+									"helpText": "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible difference and cost you money for nothing."
+								},
+								{
+									"label": "Thin · 1.6",
+									"value": "thin-1-6",
+									"description": "Around 20% thinner. For ±2.00 to ±4.00.",
+									"helpText": "Noticeably slimmer at the edge and lighter on your nose. The usual choice once your prescription gets past about ±2.00."
+								},
+								{
+									"label": "Extra thin · 1.67",
+									"value": "extra-thin-1-67",
+									"description": "Around 35% thinner. For ±4.00 to ±6.00.",
+									"helpText": "Worth it for a stronger prescription — it stops the lens edge standing proud of the frame and reduces the way strong lenses distort how your eyes look."
+								},
+								{
+									"label": "Ultra thin · 1.74",
+									"value": "ultra-thin-1-74",
+									"description": "The thinnest made. For ±6.00 and above.",
+									"helpText": "The thinnest lens material available. If your prescription is strong, this is the difference between glasses you want to wear and glasses you tolerate."
+								}
+							]
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "What finish?"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"question": "What finish?",
+							"intro": "All of them block 100% of UV and come scratch-resistant. Watch the frame on the left change as you pick.",
+							"options": [
+								{
+									"label": "Tinted to match",
+									"value": "tinted-to-match",
+									"description": "Same colour and depth as the original lenses.",
+									"helpText": "I match the tint to the lenses the brand fitted, so the frame looks exactly as designed. Nobody will know they're prescription."
+								},
+								{
+									"label": "Polarised",
+									"value": "polarised",
+									"description": "Kills glare off water, roads and windscreens.",
+									"helpText": "A filter that cuts reflected glare rather than just dimming everything. If you drive a lot or spend time near water, this is the upgrade worth paying for."
+								},
+								{
+									"label": "Light-reactive",
+									"value": "light-reactive",
+									"description": "Clear indoors, dark outside in under a minute.",
+									"helpText": "One pair that works indoors and out. Worth knowing they react to UV, so they stay lighter behind a car windscreen."
+								},
+								{
+									"label": "Clear",
+									"value": "clear",
+									"description": "Turn them into everyday glasses.",
+									"helpText": "Sunglasses frames make excellent everyday glasses. Anti-reflective coating both sides, included."
+								}
+							]
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Your prescription"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"question": "Your prescription",
+							"eyebrow": "Last bit — and it can wait",
+							"intro": "It needs to be under two years old and from a UK optician — whoever tested your eyes has to give you a copy if you ask. You don't need it to hand right now.",
+							"options": [
+								{
+									"label": "Send it later",
+									"value": "send-it-later",
+									"description": "Order now and I'll WhatsApp you a link for it. Nothing gets made until it arrives.",
+									"nextStepId": "4"
+								},
+								{
+									"label": "Upload a photo",
+									"value": "upload-a-photo",
+									"description": "A phone photo of the paper copy is fine.",
+									"nextStepId": "5"
+								},
+								{
+									"label": "Type it in",
+									"value": "type-it-in",
+									"description": "If you've got the numbers in front of you.",
+									"nextStepId": "6"
+								}
+							],
+							"showNextStepInline": true
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Your prescription"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-result",
+						"attributes": {
+							"heading": "Perfect — order now and I'll WhatsApp you a link for it.",
+							"body": "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut them I refund the lenses in full.",
+							"action": "add-to-bag",
+							"addToBasketLabel": "Add to bag",
+							"buttonShowsTotal": true
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Your prescription"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-file",
+						"attributes": {
+							"label": "Drop a photo or screenshot here"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/choice-flow-result",
+						"attributes": {
+							"heading": "",
+							"action": "add-to-bag",
+							"addToBasketLabel": "Add to bag",
+							"buttonShowsTotal": true
+						},
+						"innerBlocks": []
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Your prescription"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-number",
+						"attributes": {
+							"label": "Right sphere"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-number",
+						"attributes": {
+							"label": "Right cylinder"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-number",
+						"attributes": {
+							"label": "Right axis"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-number",
+						"attributes": {
+							"label": "Left sphere"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-number",
+						"attributes": {
+							"label": "Left cylinder"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-number",
+						"attributes": {
+							"label": "Left axis"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/choice-flow-result",
+						"attributes": {
+							"heading": "",
+							"body": "Copy the numbers exactly, including the + or −. If a box is empty or says “DS”, leave it blank. I read every prescription myself before anything is cut.",
+							"action": "add-to-bag",
+							"addToBasketLabel": "Add to bag",
+							"buttonShowsTotal": true
+						},
+						"innerBlocks": []
+					}
+				]
+			}
+		],
+		"handover": [
+			{
+				"owner": "product-data",
+				"kind": "text",
+				"detail": "question 1 \"What will you use them for?\": the option prices (from £59, from £129, £0) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there"
+			},
+			{
+				"owner": "content-page",
+				"kind": "presence",
+				"detail": "question 1 \"What will you use them for?\": each option shows a picture: choose each option's image (FR-43-15)"
+			},
+			{
+				"owner": "product-data",
+				"kind": "text",
+				"detail": "question 2 \"How thin would you like them?\": the option prices (included, +£30, +£60, +£100) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there"
+			},
+			{
+				"owner": "content-page",
+				"kind": "presence",
+				"detail": "question 2 \"How thin would you like them?\": each option shows a picture: choose each option's image (FR-43-15)"
+			},
+			{
+				"owner": "content-page",
+				"kind": "text",
+				"detail": "question 2 \"How thin would you like them?\": the badge \"Most people pick this\" shows on some options: set it on those options"
+			},
+			{
+				"owner": "product-data",
+				"kind": "text",
+				"detail": "question 3 \"What finish?\": the option prices (included, +£40, +£70) come from the add-on price list (FR-43-17): name the question's price group and enter the prices there"
+			},
+			{
+				"owner": "content-page",
+				"kind": "text",
+				"detail": "question 4 \"Your prescription\": the badge \"Easiest\" shows on some options: set it on those options"
+			},
+			{
+				"owner": "site-info",
+				"kind": "presence",
+				"detail": "the flow header shows a logo: choose it in the flow's header logo setting (headerLogo)"
+			}
+		]
+	}
+]

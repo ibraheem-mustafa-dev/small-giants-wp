@@ -1,142 +1,127 @@
 {
-  "header": {
-    "tree": "trees/sgs_header/header.json",
-    "intakeSurface": "sticky-header",
+  "template-front-page": {
+    "tree": "trees/template/front-page.json",
     "envFile": ".claude/secrets/local-indus.env",
     "envKey": "LOCALINDUS",
     "site": "local-indus",
     "target": {
-      "postId": 201
+      "template": "front-page"
     },
     "canvas": true,
-    "walker": "qa/parity/header.fill-base.mjs",
-    "walkerFull": "qa/parity/header.fill.mjs",
-    "draftDir": "sites/indus-foods/handoff",
-    "draftIndex": "Indus Foods Website v2.dc.html",
-    "states": {
-      "desktop-nav": null,
-      "desktop-with-cta-pill": null,
-      "compact-1024-hamburger": null,
-      "tablet-cta-pill": null,
-      "current-section": "current",
-      "scrolled": "scrolled",
-      "nav-label-magnet": null
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "home"
+      ]
     },
-    "provides": [
-      "core/template-part:header"
-    ]
-  },
-  "drawer-site-menu": {
-    "tree": "trees/sgs_drawer/site-menu.json",
-    "intakeSurface": "mobile-tablet-drawer",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "postId": 203
-    },
-    "canvas": true,
-    "walker": "qa/parity/drawer-site-menu.fill-base.mjs",
-    "walkerFull": "qa/parity/drawer-site-menu.fill.mjs",
-    "draftDir": "sites/indus-foods/handoff",
-    "draftIndex": "Indus Foods Website v2.dc.html",
     "states": {
-      "open": null
+      "resting": null
     }
   },
-  "footer": {
-    "tree": "trees/sgs_footer/footer.json",
-    "intakeSurface": "footer",
+  "template-home": {
+    "tree": "trees/template/home.json",
     "envFile": ".claude/secrets/local-indus.env",
     "envKey": "LOCALINDUS",
     "site": "local-indus",
     "target": {
-      "postId": 205
+      "template": "home"
     },
     "canvas": true,
-    "walker": "qa/parity/footer.fill-base.mjs",
-    "walkerFull": "qa/parity/footer.fill.mjs",
-    "draftDir": "sites/indus-foods/handoff",
-    "draftIndex": "Indus Foods Website v2.dc.html",
-    "states": {
-      "open-now": null,
-      "closed": null,
-      "today-row-highlighted": null
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "blog"
+      ]
     },
-    "provides": [
-      "core/template-part:footer"
-    ]
-  },
-  "mega-about": {
-    "tree": "trees/sgs_mega_menu/about.json",
-    "intakeSurface": "about-mega-menu",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "postId": 155
-    },
-    "canvas": true,
-    "walker": "qa/parity/mega-about.fill-base.mjs",
-    "walkerFull": "qa/parity/mega-about.fill.mjs",
-    "draftDir": "sites/indus-foods/handoff",
-    "draftIndex": "Indus Foods Website v2.dc.html",
     "states": {
-      "open": null
+      "resting": null
     }
   },
-  "mega-sectors": {
-    "tree": "trees/sgs_mega_menu/sectors.json",
-    "intakeSurface": "sectors-mega-menu",
+  "template-page": {
+    "tree": "trees/template/page.json",
     "envFile": ".claude/secrets/local-indus.env",
     "envKey": "LOCALINDUS",
     "site": "local-indus",
     "target": {
-      "postId": 157
+      "template": "page"
     },
     "canvas": true,
-    "walker": "qa/parity/mega-sectors.fill-base.mjs",
-    "walkerFull": "qa/parity/mega-sectors.fill.mjs",
-    "draftDir": "sites/indus-foods/handoff",
-    "draftIndex": "Indus Foods Website v2.dc.html",
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "about",
+        "our-story",
+        "certifications",
+        "community",
+        "sustainability",
+        "careers",
+        "food-service",
+        "manufacturing",
+        "retail",
+        "wholesale",
+        "brands",
+        "sanam",
+        "shan",
+        "green-leaf",
+        "lemon-tree",
+        "apply",
+        "catalogue",
+        "delivery",
+        "terms",
+        "contact",
+        "faqs"
+      ]
+    },
     "states": {
-      "open": null
+      "resting": null
     }
   },
-  "mega-brands": {
-    "tree": "trees/sgs_mega_menu/brands.json",
-    "intakeSurface": "brands-mega-menu",
+  "template-archive": {
+    "tree": "trees/template/archive.json",
     "envFile": ".claude/secrets/local-indus.env",
     "envKey": "LOCALINDUS",
     "site": "local-indus",
     "target": {
-      "postId": 159
+      "template": "archive"
     },
     "canvas": true,
-    "walker": "qa/parity/mega-brands.fill-base.mjs",
-    "walkerFull": "qa/parity/mega-brands.fill.mjs",
-    "draftDir": "sites/indus-foods/handoff",
-    "draftIndex": "Indus Foods Website v2.dc.html",
+    "copy": {
+      "from": "page"
+    },
     "states": {
-      "open": null
+      "resting": null
     }
   },
-  "mega-trade": {
-    "tree": "trees/sgs_mega_menu/trade.json",
-    "intakeSurface": "trade-mega-menu",
+  "template-search": {
+    "tree": "trees/template/search.json",
     "envFile": ".claude/secrets/local-indus.env",
     "envKey": "LOCALINDUS",
     "site": "local-indus",
     "target": {
-      "postId": 161
+      "template": "search"
     },
     "canvas": true,
-    "walker": "qa/parity/mega-trade.fill-base.mjs",
-    "walkerFull": "qa/parity/mega-trade.fill.mjs",
-    "draftDir": "sites/indus-foods/handoff",
-    "draftIndex": "Indus Foods Website v2.dc.html",
+    "copy": {
+      "from": "page"
+    },
     "states": {
-      "open": null
+      "resting": null
+    }
+  },
+  "template-404": {
+    "tree": "trees/template/404.json",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "template": "404"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
     }
   },
   "home": {
@@ -579,7 +564,7 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/post-post-1",
     "states": {
-      "resting": null
+      "default": null
     },
     "contentOnly": true
   },
@@ -599,7 +584,7 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/post-post-2",
     "states": {
-      "resting": null
+      "default": null
     },
     "contentOnly": true
   },
@@ -619,7 +604,7 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/post-post-3",
     "states": {
-      "resting": null
+      "default": null
     },
     "contentOnly": true
   },
@@ -639,7 +624,7 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/post-post-4",
     "states": {
-      "resting": null
+      "default": null
     },
     "contentOnly": true
   },
@@ -659,7 +644,7 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/post-post-5",
     "states": {
-      "resting": null
+      "default": null
     },
     "contentOnly": true
   },
@@ -679,7 +664,7 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/post-post-6",
     "states": {
-      "resting": null
+      "default": null
     },
     "contentOnly": true
   },
@@ -699,7 +684,11 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/contact",
     "states": {
-      "resting": null
+      "editing": null,
+      "topic-selected": null,
+      "field-focused": null,
+      "validation-errors": null,
+      "sending": null
     },
     "provides": [
       "sgs/form:enquiry"
@@ -721,7 +710,8 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/careers",
     "states": {
-      "resting": null
+      "editing": null,
+      "prefilled-from-a-role-or-team": null
     },
     "provides": [
       "sgs/form:careers"
@@ -743,11 +733,151 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/catalogue",
     "states": {
-      "resting": null
+      "editing": null
     },
     "provides": [
       "sgs/form:catalogue"
     ]
+  },
+  "header": {
+    "tree": "trees/sgs_header/header.json",
+    "intakeSurface": "sticky-header",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "postId": 201
+    },
+    "canvas": true,
+    "walker": "qa/parity/header.fill-base.mjs",
+    "walkerFull": "qa/parity/header.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "desktop-nav": null,
+      "desktop-with-cta-pill": null,
+      "compact-1024-hamburger": null,
+      "tablet-cta-pill": null,
+      "current-section": "current",
+      "scrolled": "scrolled",
+      "nav-label-magnet": null
+    },
+    "provides": [
+      "core/template-part:header"
+    ]
+  },
+  "drawer-site-menu": {
+    "tree": "trees/sgs_drawer/site-menu.json",
+    "intakeSurface": "mobile-tablet-drawer",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "postId": 203
+    },
+    "canvas": true,
+    "walker": "qa/parity/drawer-site-menu.fill-base.mjs",
+    "walkerFull": "qa/parity/drawer-site-menu.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "footer": {
+    "tree": "trees/sgs_footer/footer.json",
+    "intakeSurface": "footer",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "postId": 205
+    },
+    "canvas": true,
+    "walker": "qa/parity/footer.fill-base.mjs",
+    "walkerFull": "qa/parity/footer.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open-now": null,
+      "closed": null,
+      "today-row-highlighted": null
+    },
+    "provides": [
+      "core/template-part:footer"
+    ]
+  },
+  "mega-about": {
+    "tree": "trees/sgs_mega_menu/about.json",
+    "intakeSurface": "about-mega-menu",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "postId": 155
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-about.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-about.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "mega-sectors": {
+    "tree": "trees/sgs_mega_menu/sectors.json",
+    "intakeSurface": "sectors-mega-menu",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "postId": 157
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-sectors.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-sectors.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "mega-brands": {
+    "tree": "trees/sgs_mega_menu/brands.json",
+    "intakeSurface": "brands-mega-menu",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "postId": 159
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-brands.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-brands.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
+  },
+  "mega-trade": {
+    "tree": "trees/sgs_mega_menu/trade.json",
+    "intakeSurface": "trade-mega-menu",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "postId": 161
+    },
+    "canvas": true,
+    "walker": "qa/parity/mega-trade.fill-base.mjs",
+    "walkerFull": "qa/parity/mega-trade.fill.mjs",
+    "draftDir": "sites/indus-foods/handoff",
+    "draftIndex": "Indus Foods Website v2.dc.html",
+    "states": {
+      "open": null
+    }
   },
   "form-trade-application": {
     "tree": "trees/sgs_form/trade-application.json",
@@ -765,136 +895,16 @@
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/apply",
     "states": {
-      "resting": null
+      "in-progress": null,
+      "draft-restored": null,
+      "validation-errors": null,
+      "checklist-open": null,
+      "stepper-labels": null,
+      "side-help-desktop-compact": null
     },
     "provides": [
       "sgs/form:trade-application"
     ]
-  },
-  "template-front-page": {
-    "tree": "trees/template/front-page.json",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "template": "front-page"
-    },
-    "canvas": true,
-    "copy": {
-      "from": "pages",
-      "surfaces": [
-        "home"
-      ]
-    },
-    "states": {
-      "resting": null
-    }
-  },
-  "template-home": {
-    "tree": "trees/template/home.json",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "template": "home"
-    },
-    "canvas": true,
-    "copy": {
-      "from": "pages",
-      "surfaces": [
-        "blog"
-      ]
-    },
-    "states": {
-      "resting": null
-    }
-  },
-  "template-page": {
-    "tree": "trees/template/page.json",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "template": "page"
-    },
-    "canvas": true,
-    "copy": {
-      "from": "pages",
-      "surfaces": [
-        "about",
-        "our-story",
-        "certifications",
-        "community",
-        "sustainability",
-        "careers",
-        "food-service",
-        "manufacturing",
-        "retail",
-        "wholesale",
-        "brands",
-        "sanam",
-        "shan",
-        "green-leaf",
-        "lemon-tree",
-        "apply",
-        "catalogue",
-        "delivery",
-        "terms",
-        "contact",
-        "faqs"
-      ]
-    },
-    "states": {
-      "resting": null
-    }
-  },
-  "template-archive": {
-    "tree": "trees/template/archive.json",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "template": "archive"
-    },
-    "canvas": true,
-    "copy": {
-      "from": "page"
-    },
-    "states": {
-      "resting": null
-    }
-  },
-  "template-search": {
-    "tree": "trees/template/search.json",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "template": "search"
-    },
-    "canvas": true,
-    "copy": {
-      "from": "page"
-    },
-    "states": {
-      "resting": null
-    }
-  },
-  "template-404": {
-    "tree": "trees/template/404.json",
-    "envFile": ".claude/secrets/local-indus.env",
-    "envKey": "LOCALINDUS",
-    "site": "local-indus",
-    "target": {
-      "template": "404"
-    },
-    "canvas": true,
-    "copy": {
-      "from": "page"
-    },
-    "states": {
-      "resting": null
-    }
   },
   "template-single": {
     "tree": "trees/template/single.json",

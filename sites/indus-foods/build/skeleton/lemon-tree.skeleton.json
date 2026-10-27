@@ -77,7 +77,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Brands",
-									"url": "#/brands"
+									"url": "/brands/"
 								},
 								"draftRef": {
 									"tpl": "Root/326#0"
@@ -219,7 +219,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Open a trade account",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/338#0"
@@ -245,7 +245,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "All brands",
-									"url": "#/brands"
+									"url": "/brands/"
 								},
 								"draftRef": {
 									"tpl": "Root/338#1"
@@ -1631,7 +1631,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Become a Trade Customer",
-													"url": "#/apply"
+													"url": "/apply/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"

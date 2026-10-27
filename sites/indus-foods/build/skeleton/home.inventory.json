@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T00:37:24.228Z",
-  "source": "http://127.0.0.1:50068/",
+  "generated": "2026-10-27T15:54:08.564Z",
+  "source": "http://127.0.0.1:58069/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -1489,19 +1489,19 @@
       "box": {
         "375": {
           "x": 20,
-          "y": 642.7,
+          "y": 640.9,
           "w": 335,
           "h": 223.3
         },
         "768": {
           "x": 32,
-          "y": 496.8,
+          "y": 495.4,
           "w": 704,
           "h": 469.3
         },
         "1440": {
           "x": 731,
-          "y": 219.7,
+          "y": 219.3,
           "w": 549,
           "h": 366
         }
@@ -1550,19 +1550,19 @@
       "box": {
         "375": {
           "x": 20,
-          "y": 635.7,
+          "y": 633.9,
           "w": 335,
           "h": 223.3
         },
         "768": {
           "x": 32,
-          "y": 489.8,
+          "y": 488.4,
           "w": 704,
           "h": 469.3
         },
         "1440": {
           "x": 731,
-          "y": 211.7,
+          "y": 211.3,
           "w": 549,
           "h": 366
         }
@@ -1609,19 +1609,19 @@
       "box": {
         "375": {
           "x": 25,
-          "y": 640.7,
+          "y": 638.9,
           "w": 325,
           "h": 213.3
         },
         "768": {
           "x": 37,
-          "y": 494.8,
+          "y": 493.4,
           "w": 694,
           "h": 459.3
         },
         "1440": {
           "x": 736,
-          "y": 216.7,
+          "y": 216.3,
           "w": 539,
           "h": 356
         }
@@ -1913,19 +1913,19 @@
       "snippet": "<div ref=\"{{ setMarqueeEl }}\" style=\"display:flex;gap:14px;width:max-content;padding:10px 0 16px;\" data-dc-tpl=\"222\"> <sc-for list=\"{{ brandTiles }}\" as=\"l\" hint-placeholder-count=\"8\" data-dc-tpl=\"223\"> <a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0",
       "box": {
         "375": {
-          "x": -273,
+          "x": -254.2,
           "y": 1029.1,
           "w": 2506,
           "h": 138
         },
         "768": {
-          "x": -272.2,
+          "x": -258,
           "y": 1171.3,
           "w": 2986,
           "h": 162
         },
         "1440": {
-          "x": -247.5,
+          "x": -243,
           "y": 821,
           "w": 3266,
           "h": 176
@@ -1983,19 +1983,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": -273,
+          "x": -254.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -272.2,
+          "x": -258,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -247.5,
+          "x": -243,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2048,19 +2048,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": -273,
+          "x": -254.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -272.2,
+          "x": -258,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -247.5,
+          "x": -243,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2118,19 +2118,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": -147,
+          "x": -128.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -122.2,
+          "x": -108,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -83.5,
+          "x": -79,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2183,19 +2183,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": -147,
+          "x": -128.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -122.2,
+          "x": -108,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -83.5,
+          "x": -79,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2253,19 +2253,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": -21,
+          "x": -2.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 27.8,
+          "x": 42,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 80.5,
+          "x": 85,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2318,19 +2318,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": -21,
+          "x": -2.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 27.8,
+          "x": 42,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 80.5,
+          "x": 85,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2388,19 +2388,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 105,
+          "x": 123.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 177.8,
+          "x": 192,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 244.5,
+          "x": 249,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2453,19 +2453,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 105,
+          "x": 123.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 177.8,
+          "x": 192,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 244.5,
+          "x": 249,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2523,19 +2523,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 231,
+          "x": 249.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 327.8,
+          "x": 342,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 408.5,
+          "x": 413,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2588,19 +2588,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 231,
+          "x": 249.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 327.8,
+          "x": 342,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 408.5,
+          "x": 413,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2658,19 +2658,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 357,
+          "x": 375.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 477.8,
+          "x": 492,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 572.5,
+          "x": 577,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2723,19 +2723,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 357,
+          "x": 375.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 477.8,
+          "x": 492,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 572.5,
+          "x": 577,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2793,19 +2793,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 483,
+          "x": 501.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 627.8,
+          "x": 642,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 736.5,
+          "x": 741,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2858,19 +2858,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 483,
+          "x": 501.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 627.8,
+          "x": 642,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 736.5,
+          "x": 741,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2928,19 +2928,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 609,
+          "x": 627.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 777.8,
+          "x": 792,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 900.5,
+          "x": 905,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2993,19 +2993,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 609,
+          "x": 627.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 777.8,
+          "x": 792,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 900.5,
+          "x": 905,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3063,19 +3063,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 735,
+          "x": 753.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 927.8,
+          "x": 942,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1064.5,
+          "x": 1069,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3128,19 +3128,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 735,
+          "x": 753.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 927.8,
+          "x": 942,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1064.5,
+          "x": 1069,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3198,19 +3198,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 861,
+          "x": 879.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1077.8,
+          "x": 1092,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1228.5,
+          "x": 1233,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3263,19 +3263,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 861,
+          "x": 879.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1077.8,
+          "x": 1092,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1228.5,
+          "x": 1233,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3333,19 +3333,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 987,
+          "x": 1005.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1227.8,
+          "x": 1242,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1392.5,
+          "x": 1397,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3398,19 +3398,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 987,
+          "x": 1005.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1227.8,
+          "x": 1242,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1392.5,
+          "x": 1397,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3468,19 +3468,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1113,
+          "x": 1131.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1377.8,
+          "x": 1392,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1556.5,
+          "x": 1561,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3533,19 +3533,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1113,
+          "x": 1131.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1377.8,
+          "x": 1392,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1556.5,
+          "x": 1561,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3603,19 +3603,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1239,
+          "x": 1257.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1527.8,
+          "x": 1542,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1720.5,
+          "x": 1725,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3668,19 +3668,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1239,
+          "x": 1257.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1527.8,
+          "x": 1542,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1720.5,
+          "x": 1725,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3738,19 +3738,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1365,
+          "x": 1383.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1677.8,
+          "x": 1692,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1884.5,
+          "x": 1889,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3803,19 +3803,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1365,
+          "x": 1383.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1677.8,
+          "x": 1692,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1884.5,
+          "x": 1889,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3873,19 +3873,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1491,
+          "x": 1509.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1827.8,
+          "x": 1842,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2048.5,
+          "x": 2053,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3938,19 +3938,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1491,
+          "x": 1509.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1827.8,
+          "x": 1842,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2048.5,
+          "x": 2053,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4008,19 +4008,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1617,
+          "x": 1635.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1977.8,
+          "x": 1992,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2212.5,
+          "x": 2217,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4073,19 +4073,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1617,
+          "x": 1635.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1977.8,
+          "x": 1992,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2212.5,
+          "x": 2217,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4143,19 +4143,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1743,
+          "x": 1761.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2127.8,
+          "x": 2142,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2376.5,
+          "x": 2381,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4208,19 +4208,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1743,
+          "x": 1761.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2127.8,
+          "x": 2142,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2376.5,
+          "x": 2381,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4278,19 +4278,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1869,
+          "x": 1887.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2277.8,
+          "x": 2292,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2540.5,
+          "x": 2545,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4343,19 +4343,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1869,
+          "x": 1887.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2277.8,
+          "x": 2292,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2540.5,
+          "x": 2545,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4413,19 +4413,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1995,
+          "x": 2013.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2427.8,
+          "x": 2442,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2704.5,
+          "x": 2709,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4478,19 +4478,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1995,
+          "x": 2013.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2427.8,
+          "x": 2442,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2704.5,
+          "x": 2709,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4548,19 +4548,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 2121,
+          "x": 2139.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2577.8,
+          "x": 2592,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2868.5,
+          "x": 2873,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4613,19 +4613,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 2121,
+          "x": 2139.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2577.8,
+          "x": 2592,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2868.5,
+          "x": 2873,
           "y": 831,
           "w": 150,
           "h": 150
@@ -11829,19 +11829,19 @@
       "box": {
         "375": {
           "x": 20,
-          "y": 5732.3,
+          "y": 5731.4,
           "w": 335,
           "h": 170
         },
         "768": {
           "x": 32,
-          "y": 4477,
+          "y": 4476.3,
           "w": 704,
           "h": 200
         },
         "1440": {
           "x": 852.8,
-          "y": 3101.3,
+          "y": 3101.2,
           "w": 387.2,
           "h": 300
         }
@@ -11891,19 +11891,19 @@
       "box": {
         "375": {
           "x": 102.5,
-          "y": 5732.3,
+          "y": 5731.4,
           "w": 170,
           "h": 170
         },
         "768": {
           "x": 284,
-          "y": 4477,
+          "y": 4476.3,
           "w": 200,
           "h": 200
         },
         "1440": {
           "x": 896.4,
-          "y": 3101.3,
+          "y": 3101.2,
           "w": 300,
           "h": 300
         }
@@ -11950,19 +11950,19 @@
       "box": {
         "375": {
           "x": 108.5,
-          "y": 5738.3,
+          "y": 5737.4,
           "w": 158,
           "h": 158
         },
         "768": {
           "x": 290,
-          "y": 4483,
+          "y": 4482.3,
           "w": 188,
           "h": 188
         },
         "1440": {
           "x": 902.4,
-          "y": 3107.3,
+          "y": 3107.2,
           "w": 288,
           "h": 288
         }

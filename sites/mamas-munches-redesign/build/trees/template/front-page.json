@@ -10,30 +10,15 @@
     "name": "sgs/container",
     "attributes": {
       "tagName": "main",
-      "anchor": "main",
-      "contentWidth": {
-        "desktop": "full"
-      }
+      "className": "cr-ref-home-0",
+      "minHeight": {
+        "desktop": "0px"
+      },
+      "textColourHover": "primary-text"
     },
     "innerBlocks": [
       {
-        "name": "sgs/container",
-        "attributes": {
-          "tagName": "div",
-          "className": "cr-ref-home-0",
-          "backgroundColour": "surface",
-          "minHeight": {
-            "mobile": "812px",
-            "desktop": "900px"
-          },
-          "textColourHover": "primary-text",
-          "backgroundColourHover": "surface"
-        },
-        "innerBlocks": [
-          {
-            "name": "core/post-content"
-          }
-        ]
+        "name": "core/post-content"
       }
     ]
   },

@@ -75,7 +75,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Trade",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/326#0"
@@ -1568,7 +1568,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Contact us",
-													"url": "#/contact"
+													"url": "/contact/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"

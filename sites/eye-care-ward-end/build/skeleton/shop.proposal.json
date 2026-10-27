@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-26T23:39:23.407Z",
-	"inventory": "2026-10-26T23:39:22.634Z",
-	"source": "http://127.0.0.1:58797/#@state/page=shop",
+	"generated": "2026-10-27T15:57:17.400Z",
+	"inventory": "2026-10-27T15:57:16.085Z",
+	"source": "http://127.0.0.1:50785/#@state/page=shop",
 	"surface": "page-shop",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [
@@ -7954,7 +7954,7 @@
 			"words": "",
 			"block": "woocommerce/product-collection",
 			"action": null,
-			"reason": "WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built eye-care-test archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 16 mounted cards showing a price)",
+			"reason": "WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 16 mounted cards showing a price)",
 			"source": "rule commerceRegion",
 			"confidence": 1,
 			"low": false,
@@ -7966,7 +7966,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built eye-care-test archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 16 mounted cards showing a price)"
+						"rule commerceRegion: WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440 (a loop of 16 mounted cards showing a price)"
 					]
 				}
 			],

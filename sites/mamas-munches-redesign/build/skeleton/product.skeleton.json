@@ -2,1845 +2,20 @@
 	{
 		"name": "sgs/container",
 		"attributes": {
-			"tagName": "div"
+			"tagName": "main"
 		},
 		"draftRef": {
-			"tpl": "Root/5#0"
+			"tpl": "Root/7#0"
 		},
 		"draftFingerprint": {
-			"tag": "div",
+			"tag": "main",
 			"cls": "",
-			"styleHash": "36f1ce99",
+			"styleHash": "77d52f6e",
 			"parentTags": [],
 			"textHash": "1505",
-			"line": 8
+			"line": 10
 		},
 		"innerBlocks": [
-			{
-				"name": "sgs/container",
-				"attributes": {
-					"tagName": "div"
-				},
-				"draftRef": {
-					"tpl": "Root/6#0"
-				},
-				"draftFingerprint": {
-					"tag": "div",
-					"cls": "sc-host",
-					"styleHash": "4f14eae1",
-					"parentTags": [
-						"div"
-					],
-					"textHash": "1505",
-					"line": 9
-				},
-				"innerBlocks": [
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div"
-						},
-						"draftRef": {
-							"tpl": "Root>SiteHeader@6#0/4#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "e5c2f6e2",
-							"parentTags": [
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 7
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root>SiteHeader@6#0/5#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "7a03c132",
-									"parentTags": [
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 8
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/6#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "404b98d0",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 9
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "✦ Baked fresh when you order"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/7#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "1505",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "b2d267f9",
-													"line": 10
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "With you in 3–5 days"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/10#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "1505",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "25807db9",
-													"line": 11
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Free UK delivery over £35"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/12#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "1505",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"div",
-														"div"
-													],
-													"textHash": "73ae89d8",
-													"line": 12
-												},
-												"innerBlocks": []
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "header"
-								},
-								"draftRef": {
-									"tpl": "Root>SiteHeader@6#0/13#0"
-								},
-								"draftFingerprint": {
-									"tag": "header",
-									"cls": "",
-									"styleHash": "61c82a47",
-									"parentTags": [
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 16
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "grid"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/15#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "1840b2fc",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"header"
-											],
-											"textHash": "1505",
-											"line": 18
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/16#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "77af20c5",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"header",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 19
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/17#0"
-														},
-														"draftFingerprint": {
-															"tag": "button",
-															"cls": "scp4",
-															"styleHash": "698cff53",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 20
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/21#0"
-												},
-												"draftFingerprint": {
-													"tag": "a",
-													"cls": "",
-													"styleHash": "66f39e17",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"header",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 26
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/responsive-logo",
-														"attributes": {
-															"logoId": 91
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/22#0"
-														},
-														"draftFingerprint": {
-															"tag": "img",
-															"cls": "",
-															"styleHash": "c317d0a5",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"a"
-															],
-															"textHash": "1505",
-															"line": 26
-														},
-														"innerBlocks": [],
-														"handover": [
-															{
-																"owner": "site-info",
-																"kind": "presence",
-																"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-															}
-														]
-													}
-												]
-											},
-											{
-												"name": "sgs/social-icons",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/23#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "639fe7d7",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"header",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 27
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/icon",
-														"attributes": {
-															"linkUrl": "SignIn.dc.html"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/24#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp4",
-															"styleHash": "3f15c87a",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 28
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/28#0"
-														},
-														"draftFingerprint": {
-															"tag": "button",
-															"cls": "scp4",
-															"styleHash": "f48e789b",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 29
-														},
-														"innerBlocks": []
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "grid"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/35#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "5ac0f11d",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"header"
-											],
-											"textHash": "1505",
-											"line": 37
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/36#0"
-												},
-												"draftFingerprint": {
-													"tag": "a",
-													"cls": "",
-													"styleHash": "1505",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"header",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 38
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/responsive-logo",
-														"attributes": {
-															"logoId": 91
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/37#0"
-														},
-														"draftFingerprint": {
-															"tag": "img",
-															"cls": "",
-															"styleHash": "b82fcbef",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"a"
-															],
-															"textHash": "1505",
-															"line": 38
-														},
-														"innerBlocks": [],
-														"handover": [
-															{
-																"owner": "site-info",
-																"kind": "presence",
-																"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-															}
-														]
-													}
-												]
-											},
-											{
-												"name": "sgs/multi-button",
-												"attributes": {
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/38#0"
-												},
-												"draftFingerprint": {
-													"tag": "nav",
-													"cls": "",
-													"styleHash": "b9493ca4",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"header",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 39
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/button",
-														"attributes": {
-															"label": "Shop",
-															"url": "Shop.dc.html"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/39#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp4",
-															"styleHash": "72fdbd7e",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"nav"
-															],
-															"textHash": "7c8a2f61",
-															"line": 40
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/button",
-														"attributes": {
-															"label": "Gifts",
-															"url": "Gifts.dc.html"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/40#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp4",
-															"styleHash": "21108dd3",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"nav"
-															],
-															"textHash": "c65d84a",
-															"line": 41
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/button",
-														"attributes": {
-															"label": "Subscribe & save",
-															"url": "Product.dc.html?id=zookies&sub=1"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/41#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp4",
-															"styleHash": "21108dd3",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"nav"
-															],
-															"textHash": "560c12ca",
-															"line": 42
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/button",
-														"attributes": {
-															"label": "Help",
-															"url": "Help.dc.html"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/42#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp4",
-															"styleHash": "21108dd3",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"nav"
-															],
-															"textHash": "7c860174",
-															"line": 43
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/button",
-														"attributes": {
-															"label": "Contact",
-															"url": "Contact.dc.html"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/43#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp4",
-															"styleHash": "21108dd3",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"nav"
-															],
-															"textHash": "d9d08625",
-															"line": 44
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/44#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "f2ffc6c",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"header",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 46
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/icon",
-														"attributes": {
-															"linkUrl": "SignIn.dc.html"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/45#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp4",
-															"styleHash": "3f15c87a",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 47
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root>SiteHeader@6#0/46#0"
-															}
-														}
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/49#0"
-														},
-														"draftFingerprint": {
-															"tag": "button",
-															"cls": "scp5",
-															"styleHash": "28f26ccf",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"header",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 48
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "Basket"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/53#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "1505",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"header",
-																		"div",
-																		"div",
-																		"button"
-																	],
-																	"textHash": "9f52a52f",
-																	"line": 50
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "0"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/54#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "64c839c",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"header",
-																		"div",
-																		"div",
-																		"button"
-																	],
-																	"textHash": "2b595",
-																	"line": 51
-																},
-																"innerBlocks": []
-															}
-														],
-														"draftSlots": {
-															".sgs-container__svg-bg > svg": {
-																"tpl": "Root>SiteHeader@6#0/50#0"
-															}
-														}
-													}
-												]
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "aside",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root>SiteHeader@6#0/56#0"
-								},
-								"draftFingerprint": {
-									"tag": "aside",
-									"cls": "",
-									"styleHash": "9a2aeb2",
-									"parentTags": [
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 60
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/57#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "b471f6d4",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"aside"
-											],
-											"textHash": "1505",
-											"line": 61
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/responsive-logo",
-												"attributes": {
-													"logoId": 91
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/58#0"
-												},
-												"draftFingerprint": {
-													"tag": "img",
-													"cls": "",
-													"styleHash": "cfd6503b",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 62
-												},
-												"innerBlocks": [],
-												"handover": [
-													{
-														"owner": "site-info",
-														"kind": "presence",
-														"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-													}
-												]
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "×"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/59#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "scp4",
-													"styleHash": "7b985aeb",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "2b572",
-													"line": 63
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Who are you shopping for?"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/61#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "b9485f76",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "b1fd04d0",
-											"line": 66
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "grid"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/62#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "89293b14",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 67
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "stack",
-													"sgsBlockLink": "Shop.dc.html"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/63#0"
-												},
-												"draftFingerprint": {
-													"tag": "a",
-													"cls": "scp6",
-													"styleHash": "1a0a235",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 68
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/media",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/64#0"
-														},
-														"draftFingerprint": {
-															"tag": "img",
-															"cls": "",
-															"styleHash": "5dda3fd1",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"a"
-															],
-															"textHash": "1505",
-															"line": 69
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/65#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "801f5e75",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"a"
-															],
-															"textHash": "1505",
-															"line": 70
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/heading",
-																"attributes": {
-																	"content": "For me"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/66#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "fe592c31",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"a",
-																		"span"
-																	],
-																	"textHash": "96fa8d16",
-																	"line": 70
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "Zookies & trial packs"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/67#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "feea9976",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"a",
-																		"span"
-																	],
-																	"textHash": "899c11e5",
-																	"line": 70
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "stack",
-													"sgsBlockLink": "Gifts.dc.html"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/68#0"
-												},
-												"draftFingerprint": {
-													"tag": "a",
-													"cls": "scp6",
-													"styleHash": "395a82d1",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 72
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/media",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/69#0"
-														},
-														"draftFingerprint": {
-															"tag": "img",
-															"cls": "",
-															"styleHash": "5dda3fd1",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"a"
-															],
-															"textHash": "1505",
-															"line": 73
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/70#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "801f5e75",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"a"
-															],
-															"textHash": "1505",
-															"line": 74
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/heading",
-																"attributes": {
-																	"content": "For a new mum"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/71#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "fe592c31",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"a",
-																		"span"
-																	],
-																	"textHash": "a1767896",
-																	"line": 74
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "Gift boxes & cards"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/72#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "feea9976",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"a",
-																		"span"
-																	],
-																	"textHash": "113543fb",
-																	"line": 74
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/icon-list",
-										"attributes": {
-											"items": [
-												{
-													"text": "Shop all",
-													"url": "Shop.dc.html"
-												},
-												{
-													"text": "Zookies",
-													"url": "Product.dc.html?id=zookies"
-												},
-												{
-													"text": "Taster Trio",
-													"url": "Product.dc.html?id=trial"
-												},
-												{
-													"text": "Gifts",
-													"url": "Gifts.dc.html"
-												},
-												{
-													"text": "Subscribe & save",
-													"url": "Product.dc.html?id=zookies&sub=1"
-												},
-												{
-													"text": "Help & FAQs",
-													"url": "Help.dc.html"
-												},
-												{
-													"text": "Contact",
-													"url": "Contact.dc.html"
-												}
-											]
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/74#0"
-										},
-										"draftFingerprint": {
-											"tag": "a",
-											"cls": "scp7",
-											"styleHash": "4d17abf9",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"aside",
-												"nav"
-											],
-											"textHash": "af5fd20",
-											"line": 79
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/88#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "d6a34f77",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"aside"
-											],
-											"textHash": "1505",
-											"line": 87
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/89#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "1505",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 88
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/icon-list",
-														"attributes": {
-															"items": [
-																{
-																	"text": "Sign in",
-																	"url": "SignIn.dc.html"
-																},
-																{
-																	"text": "Create account",
-																	"url": "SignIn.dc.html?mode=register"
-																}
-															]
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/92#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scp8 scp9",
-															"styleHash": "da25025b",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "c0419d31",
-															"line": 90
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/104#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "1505",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 96
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "say hello"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/105#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "99b4af88",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div"
-															],
-															"textHash": "2a70174c",
-															"line": 97
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon-list",
-														"attributes": {
-															"items": [
-																{
-																	"text": "WhatsApp",
-																	"url": "Contact.dc.html"
-																},
-																{
-																	"text": "",
-																	"siteInfoSource": "email"
-																},
-																{
-																	"text": "Instagram",
-																	"url": "https://www.instagram.com/mamasmunches/"
-																}
-															]
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/107#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scpa scp9",
-															"styleHash": "74005f8a",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "71fcb1bd",
-															"line": 99
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex",
-													"sgsBlockLink": "https://uk.trustpilot.com/review/mamasmunches.com"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/123#0"
-												},
-												"draftFingerprint": {
-													"tag": "a",
-													"cls": "scpb",
-													"styleHash": "25bec23c",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 104
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/heading",
-														"attributes": {
-															"content": "4.3"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/124#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "84be40f5",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"a"
-															],
-															"textHash": "b865b4c",
-															"line": 104
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/125#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "99bb8b6c",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"a"
-															],
-															"textHash": "1505",
-															"line": 104
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/label",
-																"attributes": {
-																	"text": "★★★★★"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/126#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "b91b2c79",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"aside",
-																		"div",
-																		"a",
-																		"span"
-																	],
-																	"textHash": "af1300e0",
-																	"line": 104
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "8 reviews on Trustpilot ↗"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteHeader@6#0/127#0"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "cc979add",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"div",
-																		"aside",
-																		"div",
-																		"a",
-																		"span"
-																	],
-																	"textHash": "7fea3018",
-																	"line": 104
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "aside",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root>SiteHeader@6#0/128#0"
-								},
-								"draftFingerprint": {
-									"tag": "aside",
-									"cls": "",
-									"styleHash": "e1321f2d",
-									"parentTags": [
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 108
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/129#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "7c66c387",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"aside"
-											],
-											"textHash": "1505",
-											"line": 109
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/130#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "fe70c6be",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "a7a6b6de",
-													"line": 110
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/text",
-														"attributes": {
-															"text": "( 0 )"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteHeader@6#0/131#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "abe411b9",
-															"parentTags": [
-																"div",
-																"div",
-																"div",
-																"aside",
-																"div",
-																"div"
-															],
-															"textHash": "63adf94",
-															"line": 110
-														},
-														"innerBlocks": []
-													}
-												]
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "×"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/132#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "scp4",
-													"styleHash": "7b985aeb",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "2b572",
-													"line": 111
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "stack"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteHeader@6#0/176#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "25af0fd8",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"aside"
-											],
-											"textHash": "1505",
-											"line": 163
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/responsive-logo",
-												"attributes": {
-													"logoId": 92
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/177#0"
-												},
-												"draftFingerprint": {
-													"tag": "img",
-													"cls": "",
-													"styleHash": "4c564048",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 164
-												},
-												"innerBlocks": [],
-												"handover": [
-													{
-														"owner": "site-info",
-														"kind": "presence",
-														"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-													}
-												]
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "Your basket is empty"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/178#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "fe6fbefc",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "dfea8bf1",
-													"line": 165
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "New to Zookies? The Taster Trio is 3 cookies for £5, postage included."
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/179#0"
-												},
-												"draftFingerprint": {
-													"tag": "p",
-													"cls": "",
-													"styleHash": "4cd87730",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "699d26dd",
-													"line": 166
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "Add a Taster Trio · £5"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/180#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "scpc",
-													"styleHash": "e66ab0c3",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "3550d081",
-													"line": 167
-												},
-												"innerBlocks": []
-											},
-											{
-												"name": "sgs/button",
-												"attributes": {
-													"label": "Browse the shop",
-													"url": "Shop.dc.html"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteHeader@6#0/181#0"
-												},
-												"draftFingerprint": {
-													"tag": "a",
-													"cls": "",
-													"styleHash": "b2c86332",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"aside",
-														"div"
-													],
-													"textHash": "60eb3946",
-													"line": 168
-												},
-												"innerBlocks": []
-											}
-										]
-									}
-								]
-							}
-						]
-					}
-				]
-			},
 			{
 				"name": "sgs/container",
 				"attributes": {
@@ -1854,7 +29,6 @@
 					"cls": "",
 					"styleHash": "ebee20dc",
 					"parentTags": [
-						"div",
 						"main"
 					],
 					"textHash": "1505",
@@ -1875,7 +49,6 @@
 							"cls": "",
 							"styleHash": "93e74937",
 							"parentTags": [
-								"div",
 								"main",
 								"div"
 							],
@@ -1887,7 +60,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Home",
-									"url": "Home.dc.html"
+									"url": "/"
 								},
 								"draftRef": {
 									"tpl": "Root/10#0"
@@ -1897,7 +70,6 @@
 									"cls": "",
 									"styleHash": "49c1d326",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"nav"
@@ -1911,7 +83,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Shop",
-									"url": "Shop.dc.html"
+									"url": "/shop/"
 								},
 								"draftRef": {
 									"tpl": "Root/12#0"
@@ -1921,7 +93,6 @@
 									"cls": "",
 									"styleHash": "49c1d326",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"nav"
@@ -1944,7 +115,6 @@
 									"cls": "",
 									"styleHash": "1505",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"nav"
@@ -1969,7 +139,6 @@
 							"cls": "",
 							"styleHash": "a525a21b",
 							"parentTags": [
-								"div",
 								"main",
 								"div"
 							],
@@ -1990,7 +159,6 @@
 									"cls": "",
 									"styleHash": "8eec2a5e",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2015,7 +183,6 @@
 									"cls": "",
 									"styleHash": "c13b5b40",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2040,7 +207,6 @@
 									"cls": "",
 									"styleHash": "c5226f44",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2061,7 +227,6 @@
 											"cls": "scp0",
 											"styleHash": "8dd5d9b",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2084,7 +249,6 @@
 											"cls": "scp0",
 											"styleHash": "c48c70b",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2107,7 +271,6 @@
 											"cls": "scp0",
 											"styleHash": "8bb5a20f",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2130,7 +293,6 @@
 											"cls": "scp0",
 											"styleHash": "1a08b8ce",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2157,7 +319,6 @@
 									"cls": "",
 									"styleHash": "c99acba9",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2182,7 +343,6 @@
 									"cls": "",
 									"styleHash": "677e455f",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2207,7 +367,6 @@
 									"cls": "",
 									"styleHash": "fee28b27",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2232,7 +391,6 @@
 									"cls": "",
 									"styleHash": "eeb92759",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2257,7 +415,6 @@
 									"cls": "",
 									"styleHash": "d14a126",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2281,7 +438,6 @@
 									"cls": "",
 									"styleHash": "d737b835",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2307,7 +463,6 @@
 									"cls": "",
 									"styleHash": "d14a126",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2331,7 +486,6 @@
 									"cls": "",
 									"styleHash": "2a2f14b5",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2357,7 +511,6 @@
 									"cls": "",
 									"styleHash": "d14a126",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2381,7 +534,6 @@
 									"cls": "",
 									"styleHash": "2a2f14b5",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2408,7 +560,6 @@
 									"cls": "",
 									"styleHash": "3ca36f58",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2433,7 +584,6 @@
 											"cls": "",
 											"styleHash": "4715e8f2",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2460,7 +610,6 @@
 											"cls": "",
 											"styleHash": "d1ce9cd1",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2487,7 +636,6 @@
 									"cls": "",
 									"styleHash": "2a2f14b5",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2513,7 +661,6 @@
 									"cls": "",
 									"styleHash": "7c22a4aa",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2537,7 +684,6 @@
 									"cls": "",
 									"styleHash": "555b7ab8",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2562,7 +708,6 @@
 									"cls": "",
 									"styleHash": "8ff7552a",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2588,7 +733,6 @@
 									"cls": "",
 									"styleHash": "14f5fbb8",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2615,7 +759,6 @@
 									"cls": "",
 									"styleHash": "d1ce9cd1",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2642,7 +785,6 @@
 									"cls": "scp1 scp2",
 									"styleHash": "3dc42ff8",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2668,7 +810,6 @@
 									"cls": "",
 									"styleHash": "38028851",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2692,7 +833,6 @@
 											"cls": "",
 											"styleHash": "12d10dc4",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2716,7 +856,6 @@
 													"cls": "",
 													"styleHash": "c48d6f58",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"div",
@@ -2745,7 +884,6 @@
 											"cls": "",
 											"styleHash": "12d10dc4",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2769,7 +907,6 @@
 													"cls": "",
 													"styleHash": "f32e8f7c",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"div",
@@ -2798,7 +935,6 @@
 											"cls": "",
 											"styleHash": "12d10dc4",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2822,7 +958,6 @@
 													"cls": "",
 													"styleHash": "6a5ed336",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"div",
@@ -2853,7 +988,6 @@
 									"cls": "",
 									"styleHash": "ee7c9410",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2878,7 +1012,6 @@
 											"cls": "",
 											"styleHash": "147bceab",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2907,7 +1040,6 @@
 									"cls": "",
 									"styleHash": "ef332868",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2934,7 +1066,6 @@
 									"cls": "",
 									"styleHash": "ee7c9410",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -2959,7 +1090,6 @@
 											"cls": "",
 											"styleHash": "e7f14bfa",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -2989,7 +1119,6 @@
 									"cls": "",
 									"styleHash": "ee7c9410",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -3014,7 +1143,6 @@
 											"cls": "",
 											"styleHash": "e7f14bfa",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -3044,7 +1172,6 @@
 									"cls": "",
 									"styleHash": "ee7c9410",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"div",
@@ -3069,7 +1196,6 @@
 											"cls": "",
 											"styleHash": "e7f14bfa",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"div",
@@ -3100,7 +1226,6 @@
 							"cls": "",
 							"styleHash": "fe6300c1",
 							"parentTags": [
-								"div",
 								"main",
 								"div"
 							],
@@ -3121,7 +1246,6 @@
 									"cls": "",
 									"styleHash": "c99acba9",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"section"
@@ -3144,7 +1268,6 @@
 									"cls": "",
 									"styleHash": "57c0e071",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"section"
@@ -3168,7 +1291,6 @@
 									"cls": "",
 									"styleHash": "1c677600",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"section"
@@ -3191,7 +1313,6 @@
 											"cls": "scp3",
 											"styleHash": "f2daba3e",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"section",
@@ -3214,7 +1335,6 @@
 													"cls": "",
 													"styleHash": "35c74aac",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3239,7 +1359,6 @@
 													"cls": "",
 													"styleHash": "e3748a76",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3264,7 +1383,6 @@
 													"cls": "",
 													"styleHash": "c676f983",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3289,7 +1407,6 @@
 													"cls": "",
 													"styleHash": "25d16f6d",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3313,7 +1430,6 @@
 															"cls": "",
 															"styleHash": "1505",
 															"parentTags": [
-																"div",
 																"main",
 																"div",
 																"section",
@@ -3344,7 +1460,6 @@
 											"cls": "scp3",
 											"styleHash": "c27c265d",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"section",
@@ -3367,7 +1482,6 @@
 													"cls": "",
 													"styleHash": "35c74aac",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3392,7 +1506,6 @@
 													"cls": "",
 													"styleHash": "e3748a76",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3417,7 +1530,6 @@
 													"cls": "",
 													"styleHash": "c676f983",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3442,7 +1554,6 @@
 													"cls": "",
 													"styleHash": "25d16f6d",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3466,7 +1577,6 @@
 															"cls": "",
 															"styleHash": "1505",
 															"parentTags": [
-																"div",
 																"main",
 																"div",
 																"section",
@@ -3497,7 +1607,6 @@
 											"cls": "scp3",
 											"styleHash": "6e6917ae",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"section",
@@ -3520,7 +1629,6 @@
 													"cls": "",
 													"styleHash": "35c74aac",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3545,7 +1653,6 @@
 													"cls": "",
 													"styleHash": "e3748a76",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3570,7 +1677,6 @@
 													"cls": "",
 													"styleHash": "c676f983",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3595,7 +1701,6 @@
 													"cls": "",
 													"styleHash": "25d16f6d",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3619,7 +1724,6 @@
 															"cls": "",
 															"styleHash": "1505",
 															"parentTags": [
-																"div",
 																"main",
 																"div",
 																"section",
@@ -3653,7 +1757,6 @@
 							"cls": "",
 							"styleHash": "1cfc7a1",
 							"parentTags": [
-								"div",
 								"main",
 								"div"
 							],
@@ -3674,7 +1777,6 @@
 									"cls": "",
 									"styleHash": "ad43075",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"section"
@@ -3698,7 +1800,6 @@
 									"cls": "",
 									"styleHash": "f644b8d8",
 									"parentTags": [
-										"div",
 										"main",
 										"div",
 										"section"
@@ -3720,7 +1821,6 @@
 											"cls": "",
 											"styleHash": "73effcfd",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"section",
@@ -3743,7 +1843,6 @@
 													"cls": "sc-host",
 													"styleHash": "1505",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -3768,7 +1867,6 @@
 															"cls": "scpd",
 															"styleHash": "95a16264",
 															"parentTags": [
-																"div",
 																"main",
 																"div",
 																"section",
@@ -3793,7 +1891,6 @@
 																	"cls": "",
 																	"styleHash": "f32b036e",
 																	"parentTags": [
-																		"div",
 																		"main",
 																		"div",
 																		"section",
@@ -3821,7 +1918,6 @@
 																	"cls": "",
 																	"styleHash": "2820ce14",
 																	"parentTags": [
-																		"div",
 																		"main",
 																		"div",
 																		"section",
@@ -3837,8 +1933,7 @@
 																	{
 																		"name": "sgs/button",
 																		"attributes": {
-																			"label": "Taster Trio",
-																			"url": "Product.dc.html?id=trial"
+																			"label": "Taster Trio"
 																		},
 																		"draftRef": {
 																			"tpl": "Root>ProductCard@139#0/5#0"
@@ -3848,7 +1943,6 @@
 																			"cls": "",
 																			"styleHash": "b5b0ab3d",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -3861,7 +1955,14 @@
 																			"textHash": "70e26b00",
 																			"line": 9
 																		},
-																		"innerBlocks": []
+																		"innerBlocks": [],
+																		"handover": [
+																			{
+																				"owner": "product-data",
+																				"kind": "link",
+																				"detail": "draft link \"Product.dc.html?id=trial\" goes to the draft route \"Product.dc.html\": the draft product \"trial\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+																			}
+																		]
 																	},
 																	{
 																		"name": "sgs/text",
@@ -3876,7 +1977,6 @@
 																			"cls": "",
 																			"styleHash": "fd1cab74",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -3905,7 +2005,6 @@
 																			"cls": "",
 																			"styleHash": "eb982417",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -3932,7 +2031,6 @@
 																					"cls": "",
 																					"styleHash": "92425b87",
 																					"parentTags": [
-																						"div",
 																						"main",
 																						"div",
 																						"section",
@@ -3961,7 +2059,6 @@
 																					"cls": "",
 																					"styleHash": "feea9976",
 																					"parentTags": [
-																						"div",
 																						"main",
 																						"div",
 																						"section",
@@ -3992,7 +2089,6 @@
 																			"cls": "scp8 scp9",
 																			"styleHash": "5bd0084d",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4028,7 +2124,6 @@
 											"cls": "",
 											"styleHash": "73effcfd",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"section",
@@ -4051,7 +2146,6 @@
 													"cls": "sc-host",
 													"styleHash": "1505",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -4076,7 +2170,6 @@
 															"cls": "scpd",
 															"styleHash": "d0e900f0",
 															"parentTags": [
-																"div",
 																"main",
 																"div",
 																"section",
@@ -4101,7 +2194,6 @@
 																	"cls": "",
 																	"styleHash": "94105535",
 																	"parentTags": [
-																		"div",
 																		"main",
 																		"div",
 																		"section",
@@ -4129,7 +2221,6 @@
 																	"cls": "",
 																	"styleHash": "2820ce14",
 																	"parentTags": [
-																		"div",
 																		"main",
 																		"div",
 																		"section",
@@ -4145,8 +2236,7 @@
 																	{
 																		"name": "sgs/button",
 																		"attributes": {
-																			"label": "New Baby Gift Box",
-																			"url": "Product.dc.html?id=giftbox"
+																			"label": "New Baby Gift Box"
 																		},
 																		"draftRef": {
 																			"tpl": "Root>ProductCard@139#1/5#0"
@@ -4156,7 +2246,6 @@
 																			"cls": "",
 																			"styleHash": "b5b0ab3d",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4169,7 +2258,14 @@
 																			"textHash": "eacd19e8",
 																			"line": 9
 																		},
-																		"innerBlocks": []
+																		"innerBlocks": [],
+																		"handover": [
+																			{
+																				"owner": "product-data",
+																				"kind": "link",
+																				"detail": "draft link \"Product.dc.html?id=giftbox\" goes to the draft route \"Product.dc.html\": the draft product \"giftbox\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+																			}
+																		]
 																	},
 																	{
 																		"name": "sgs/text",
@@ -4184,7 +2280,6 @@
 																			"cls": "",
 																			"styleHash": "fd1cab74",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4213,7 +2308,6 @@
 																			"cls": "",
 																			"styleHash": "eb982417",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4240,7 +2334,6 @@
 																					"cls": "",
 																					"styleHash": "92425b87",
 																					"parentTags": [
-																						"div",
 																						"main",
 																						"div",
 																						"section",
@@ -4269,7 +2362,6 @@
 																					"cls": "",
 																					"styleHash": "feea9976",
 																					"parentTags": [
-																						"div",
 																						"main",
 																						"div",
 																						"section",
@@ -4300,7 +2392,6 @@
 																			"cls": "scp8 scp9",
 																			"styleHash": "5bd0084d",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4336,7 +2427,6 @@
 											"cls": "",
 											"styleHash": "73effcfd",
 											"parentTags": [
-												"div",
 												"main",
 												"div",
 												"section",
@@ -4359,7 +2449,6 @@
 													"cls": "sc-host",
 													"styleHash": "1505",
 													"parentTags": [
-														"div",
 														"main",
 														"div",
 														"section",
@@ -4384,7 +2473,6 @@
 															"cls": "scpd",
 															"styleHash": "4dccaa38",
 															"parentTags": [
-																"div",
 																"main",
 																"div",
 																"section",
@@ -4409,7 +2497,6 @@
 																	"cls": "",
 																	"styleHash": "7de396ec",
 																	"parentTags": [
-																		"div",
 																		"main",
 																		"div",
 																		"section",
@@ -4437,7 +2524,6 @@
 																	"cls": "",
 																	"styleHash": "2820ce14",
 																	"parentTags": [
-																		"div",
 																		"main",
 																		"div",
 																		"section",
@@ -4453,8 +2539,7 @@
 																	{
 																		"name": "sgs/button",
 																		"attributes": {
-																			"label": "40-Day Care Bundle",
-																			"url": "Product.dc.html?id=care40"
+																			"label": "40-Day Care Bundle"
 																		},
 																		"draftRef": {
 																			"tpl": "Root>ProductCard@139#2/5#0"
@@ -4464,7 +2549,6 @@
 																			"cls": "",
 																			"styleHash": "b5b0ab3d",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4477,7 +2561,14 @@
 																			"textHash": "550b4971",
 																			"line": 9
 																		},
-																		"innerBlocks": []
+																		"innerBlocks": [],
+																		"handover": [
+																			{
+																				"owner": "product-data",
+																				"kind": "link",
+																				"detail": "draft link \"Product.dc.html?id=care40\" goes to the draft route \"Product.dc.html\": the draft product \"care40\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+																			}
+																		]
 																	},
 																	{
 																		"name": "sgs/text",
@@ -4492,7 +2583,6 @@
 																			"cls": "",
 																			"styleHash": "fd1cab74",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4521,7 +2611,6 @@
 																			"cls": "",
 																			"styleHash": "eb982417",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4548,7 +2637,6 @@
 																					"cls": "",
 																					"styleHash": "92425b87",
 																					"parentTags": [
-																						"div",
 																						"main",
 																						"div",
 																						"section",
@@ -4577,7 +2665,6 @@
 																					"cls": "",
 																					"styleHash": "feea9976",
 																					"parentTags": [
-																						"div",
 																						"main",
 																						"div",
 																						"section",
@@ -4608,7 +2695,6 @@
 																			"cls": "scp8 scp9",
 																			"styleHash": "5bd0084d",
 																			"parentTags": [
-																				"div",
 																				"main",
 																				"div",
 																				"section",
@@ -4636,1181 +2722,6 @@
 						]
 					}
 				]
-			},
-			{
-				"name": "sgs/container",
-				"attributes": {
-					"tagName": "div",
-					"layout": "flex"
-				},
-				"draftRef": {
-					"tpl": "Root/141#0"
-				},
-				"draftFingerprint": {
-					"tag": "div",
-					"cls": "",
-					"styleHash": "ea7dbbd2",
-					"parentTags": [
-						"div"
-					],
-					"textHash": "1505",
-					"line": 138
-				},
-				"innerBlocks": [
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div"
-						},
-						"draftRef": {
-							"tpl": "Root/142#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "c064b01e",
-							"parentTags": [
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 139
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "£21.50"
-								},
-								"draftRef": {
-									"tpl": "Root/143#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "fe6e953a",
-									"parentTags": [
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "9820f9ee",
-									"line": 139
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/text",
-								"attributes": {
-									"text": "20 Zookies"
-								},
-								"draftRef": {
-									"tpl": "Root/144#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "275881a0",
-									"parentTags": [
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "923ba489",
-									"line": 139
-								},
-								"innerBlocks": []
-							}
-						]
-					},
-					{
-						"name": "sgs/button",
-						"attributes": {
-							"label": "Add to basket"
-						},
-						"draftRef": {
-							"tpl": "Root/145#0"
-						},
-						"draftFingerprint": {
-							"tag": "button",
-							"cls": "",
-							"styleHash": "3f045a1e",
-							"parentTags": [
-								"div",
-								"div"
-							],
-							"textHash": "31c89e55",
-							"line": 140
-						},
-						"innerBlocks": []
-					}
-				]
-			},
-			{
-				"name": "sgs/container",
-				"attributes": {
-					"tagName": "div"
-				},
-				"draftRef": {
-					"tpl": "Root/146#0"
-				},
-				"draftFingerprint": {
-					"tag": "div",
-					"cls": "sc-host",
-					"styleHash": "1505",
-					"parentTags": [
-						"div"
-					],
-					"textHash": "1505",
-					"line": 143
-				},
-				"innerBlocks": [
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "footer"
-						},
-						"draftRef": {
-							"tpl": "Root>SiteFooter@146#0/2#0"
-						},
-						"draftFingerprint": {
-							"tag": "footer",
-							"cls": "",
-							"styleHash": "e5c2f6e2",
-							"parentTags": [
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 3
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "section"
-								},
-								"draftRef": {
-									"tpl": "Root>SiteFooter@146#0/3#0"
-								},
-								"draftFingerprint": {
-									"tag": "section",
-									"cls": "",
-									"styleHash": "92132ddb",
-									"parentTags": [
-										"div",
-										"div",
-										"footer"
-									],
-									"textHash": "1505",
-									"line": 4
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteFooter@146#0/4#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "ebee20dc",
-											"parentTags": [
-												"div",
-												"div",
-												"footer",
-												"section"
-											],
-											"textHash": "1505",
-											"line": 5
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteFooter@146#0/5#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "e16c0349",
-													"parentTags": [
-														"div",
-														"div",
-														"footer",
-														"section",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 6
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/6#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "1505",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"section",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 7
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "fresh out the oven…"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/7#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "9448f64e",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"section",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "32d0fb0c",
-																	"line": 8
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/heading",
-																"attributes": {
-																	"content": "@mamasmunches"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/8#0"
-																},
-																"draftFingerprint": {
-																	"tag": "h2",
-																	"cls": "",
-																	"styleHash": "f5228848",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"section",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "d14148fd",
-																	"line": 9
-																},
-																"innerBlocks": []
-															}
-														]
-													},
-													{
-														"name": "sgs/button",
-														"attributes": {
-															"label": "Follow along",
-															"url": "https://www.instagram.com/mamasmunches/"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/9#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scpe",
-															"styleHash": "2c4a97cb",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"section",
-																"div",
-																"div"
-															],
-															"textHash": "a9296ddf",
-															"line": 11
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-button__icon > svg": {
-																"tpl": "Root>SiteFooter@146#0/10#0"
-															}
-														}
-													}
-												]
-											},
-											{
-												"name": "sgs/gallery",
-												"attributes": {},
-												"draftRef": {
-													"tpl": "Root>SiteFooter@146#0/14#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "546172e2",
-													"parentTags": [
-														"div",
-														"div",
-														"footer",
-														"section",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 16
-												},
-												"innerBlocks": []
-											}
-										]
-									}
-								]
-							},
-							{
-								"name": "sgs/trust-bar",
-								"attributes": {
-									"title": "boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦boost your milk, bite by bite✦baked when you order✦handmade in Birmingham✦one-handed snacking✦"
-								},
-								"draftRef": {
-									"tpl": "Root>SiteFooter@146#0/18#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "c62cf530",
-									"parentTags": [
-										"div",
-										"div",
-										"footer"
-									],
-									"textHash": "d3a12005",
-									"line": 26
-								},
-								"innerBlocks": [],
-								"handover": [
-									{
-										"owner": "content-page",
-										"kind": "presence",
-										"detail": "the strip's items are built by the draft's code (its template holds one text binding): add each item to the trust bar"
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div"
-								},
-								"draftRef": {
-									"tpl": "Root>SiteFooter@146#0/19#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "8ec5a5c3",
-									"parentTags": [
-										"div",
-										"div",
-										"footer"
-									],
-									"textHash": "1505",
-									"line": 28
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root>SiteFooter@146#0/20#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "ebee20dc",
-											"parentTags": [
-												"div",
-												"div",
-												"footer",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 29
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "grid"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteFooter@146#0/21#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "64dfa69",
-													"parentTags": [
-														"div",
-														"div",
-														"footer",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 30
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/22#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "90c7514d",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 31
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/heading",
-																"attributes": {
-																	"content": "Hungry? Of course you are."
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/23#0"
-																},
-																"draftFingerprint": {
-																	"tag": "h2",
-																	"cls": "",
-																	"styleHash": "12343f85",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "aa74720a",
-																	"line": 32
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Build your box →"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/24#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "scpe",
-																	"styleHash": "969f086d",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "7a4fe9f7",
-																	"line": 33
-																},
-																"innerBlocks": []
-															}
-														]
-													},
-													{
-														"name": "sgs/responsive-logo",
-														"attributes": {
-															"logoId": 92
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/26#0"
-														},
-														"draftFingerprint": {
-															"tag": "img",
-															"cls": "scpg",
-															"styleHash": "a7e1ab3f",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 35
-														},
-														"innerBlocks": [],
-														"handover": [
-															{
-																"owner": "site-info",
-																"kind": "presence",
-																"detail": "the logo image: a logo block's image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor"
-															}
-														]
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "grid"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteFooter@146#0/27#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "a407114e",
-													"parentTags": [
-														"div",
-														"div",
-														"footer",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 38
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "nav",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/28#0"
-														},
-														"draftFingerprint": {
-															"tag": "nav",
-															"cls": "",
-															"styleHash": "99bb8b6c",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 39
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/heading",
-																"attributes": {
-																	"content": "shop"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/29#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "7cc84a08",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"nav"
-																	],
-																	"textHash": "7c79aa81",
-																	"line": 40
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/icon-list",
-																"attributes": {
-																	"items": [
-																		{
-																			"text": "All Zookies",
-																			"url": "Shop.dc.html"
-																		},
-																		{
-																			"text": "Build your box",
-																			"url": "Home.dc.html#build"
-																		},
-																		{
-																			"text": "Subscribe & save",
-																			"url": "Product.dc.html?id=zookies&sub=1"
-																		},
-																		{
-																			"text": "Gifts",
-																			"url": "Gifts.dc.html"
-																		},
-																		{
-																			"text": "Taster Trio",
-																			"url": "Product.dc.html?id=trial"
-																		}
-																	]
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/30#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "scph",
-																	"styleHash": "330a228c",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"nav"
-																	],
-																	"textHash": "c63e4e2a",
-																	"line": 41
-																},
-																"innerBlocks": []
-															}
-														]
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "nav",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/35#0"
-														},
-														"draftFingerprint": {
-															"tag": "nav",
-															"cls": "",
-															"styleHash": "99bb8b6c",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 47
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/heading",
-																"attributes": {
-																	"content": "help"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/36#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "7cc84a08",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"nav"
-																	],
-																	"textHash": "7c715c94",
-																	"line": 48
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/icon-list",
-																"attributes": {
-																	"items": [
-																		{
-																			"text": "FAQs",
-																			"url": "Help.dc.html"
-																		},
-																		{
-																			"text": "Delivery",
-																			"url": "Help.dc.html#delivery"
-																		},
-																		{
-																			"text": "Allergens",
-																			"url": "Help.dc.html#allergens"
-																		},
-																		{
-																			"text": "Contact",
-																			"url": "Contact.dc.html"
-																		}
-																	]
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/37#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "scph",
-																	"styleHash": "330a228c",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"nav"
-																	],
-																	"textHash": "7c7df400",
-																	"line": 49
-																},
-																"innerBlocks": []
-															}
-														]
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "stack"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/41#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "b488f10",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 54
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "say hello"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/42#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "87863ea9",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "2a70174c",
-																	"line": 55
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Zainab@mamasmunches.com",
-																	"url": "mailto:Zainab@mamasmunches.com",
-																	"linkSource": "email",
-																	"labelFromSiteInfo": true
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/43#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "scpi",
-																	"styleHash": "4bcbd69f",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "40b3970d",
-																	"line": 56
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/social-icons",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/44#0"
-																},
-																"draftFingerprint": {
-																	"tag": "div",
-																	"cls": "",
-																	"styleHash": "e88c8477",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 57
-																},
-																"innerBlocks": [
-																	{
-																		"name": "sgs/icon",
-																		"attributes": {
-																			"iconSource": "brand",
-																			"brandName": "instagram",
-																			"metadata": {
-																				"bindings": {
-																					"linkUrl": {
-																						"source": "sgs/site-info",
-																						"args": {
-																							"key": "socials.instagram"
-																						}
-																					}
-																				}
-																			}
-																		},
-																		"draftRef": {
-																			"tpl": "Root>SiteFooter@146#0/45#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "a",
-																			"cls": "scpj",
-																			"styleHash": "d49a4803",
-																			"parentTags": [
-																				"div",
-																				"div",
-																				"footer",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 58
-																		},
-																		"innerBlocks": [],
-																		"draftSlots": {
-																			".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																				"tpl": "Root>SiteFooter@146#0/46#0"
-																			}
-																		}
-																	},
-																	{
-																		"name": "sgs/icon",
-																		"attributes": {
-																			"iconSource": "brand",
-																			"brandName": "whatsapp",
-																			"metadata": {
-																				"bindings": {
-																					"linkUrl": {
-																						"source": "sgs/site-info",
-																						"args": {
-																							"key": "socials.whatsapp"
-																						}
-																					}
-																				}
-																			}
-																		},
-																		"draftRef": {
-																			"tpl": "Root>SiteFooter@146#0/50#0"
-																		},
-																		"draftFingerprint": {
-																			"tag": "a",
-																			"cls": "scpj",
-																			"styleHash": "fa8c8d1",
-																			"parentTags": [
-																				"div",
-																				"div",
-																				"footer",
-																				"div",
-																				"div",
-																				"div",
-																				"div",
-																				"div"
-																			],
-																			"textHash": "1505",
-																			"line": 59
-																		},
-																		"innerBlocks": [],
-																		"draftSlots": {
-																			".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																				"tpl": "Root>SiteFooter@146#0/51#0"
-																			}
-																		}
-																	}
-																]
-															}
-														]
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "grid"
-												},
-												"draftRef": {
-													"tpl": "Root>SiteFooter@146#0/55#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "56d4c2a3",
-													"parentTags": [
-														"div",
-														"div",
-														"footer",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 65
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/business-info",
-														"attributes": {
-															"displayType": "copyright",
-															"copyrightPrefix": ""
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/56#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "b694059b",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "da571ed0",
-															"line": 66
-														},
-														"innerBlocks": [],
-														"handover": [
-															{
-																"owner": "site-info",
-																"kind": "text",
-																"detail": "Site Info \"copyright\" must read: © 2026 Mama’s Munches · Registered food business"
-															}
-														]
-													},
-													{
-														"name": "sgs/multi-button",
-														"attributes": {
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/57#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "e1faa8bf",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 67
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Privacy",
-																	"url": "Help.dc.html#legal"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/58#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "",
-																	"styleHash": "ef1f56a3",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "cf47b943",
-																	"line": 67
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Terms",
-																	"url": "Help.dc.html#legal"
-																},
-																"draftRef": {
-																	"tpl": "Root>SiteFooter@146#0/59#0"
-																},
-																"draftFingerprint": {
-																	"tag": "a",
-																	"cls": "",
-																	"styleHash": "ef1f56a3",
-																	"parentTags": [
-																		"div",
-																		"div",
-																		"footer",
-																		"div",
-																		"div",
-																		"div",
-																		"span"
-																	],
-																	"textHash": "d92b8f8",
-																	"line": 67
-																},
-																"innerBlocks": []
-															}
-														]
-													},
-													{
-														"name": "sgs/business-info",
-														"attributes": {
-															"displayType": "attribution"
-														},
-														"draftRef": {
-															"tpl": "Root>SiteFooter@146#0/60#0"
-														},
-														"draftFingerprint": {
-															"tag": "a",
-															"cls": "scpk",
-															"styleHash": "ce17cff9",
-															"parentTags": [
-																"div",
-																"div",
-																"footer",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "3acb3cac",
-															"line": 68
-														},
-														"innerBlocks": [],
-														"handover": [
-															{
-																"owner": "site-info",
-																"kind": "text",
-																"detail": "Site Info \"attribution\" must read: Website by Small Giants Studio"
-															}
-														]
-													}
-												]
-											}
-										]
-									}
-								]
-							}
-						]
-					}
-				]
-			},
-			{
-				"name": "sgs/container",
-				"attributes": {
-					"tagName": "div"
-				},
-				"draftRef": {
-					"tpl": "Root/148#0"
-				},
-				"draftFingerprint": {
-					"tag": "div",
-					"cls": "",
-					"styleHash": "b1dd981b",
-					"parentTags": [
-						"div"
-					],
-					"textHash": "1505",
-					"line": 144
-				},
-				"innerBlocks": []
 			}
 		]
 	}

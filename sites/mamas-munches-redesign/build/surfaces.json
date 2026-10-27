@@ -355,7 +355,10 @@
     "draftIndex": "Gifts.dc.html",
     "states": {
       "moment-budget": null
-    }
+    },
+    "provides": [
+      "sgs/choice-flow:choice-flow-gifts-she-ll-actually-eat"
+    ]
   },
   "flow-choice-flow-build-your-zookie": {
     "tree": "trees/sgs_choice_flow/choice-flow-build-your-zookie.json",
@@ -377,7 +380,10 @@
       "one-off": null,
       "pack-size-tag-chip": null,
       "added": null
-    }
+    },
+    "provides": [
+      "sgs/choice-flow:choice-flow-build-your-zookie"
+    ]
   },
   "footer": {
     "tree": "trees/sgs_footer/footer.json",

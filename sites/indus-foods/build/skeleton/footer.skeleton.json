@@ -403,15 +403,17 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/label",
-										"attributes": {},
+										"name": "sgs/business-info",
+										"attributes": {
+											"displayType": "open-status"
+										},
 										"draftRef": {
 											"tpl": "Root/673#0"
 										},
 										"draftFingerprint": {
 											"tag": "span",
 											"cls": "",
-											"styleHash": "89f864fd",
+											"styleHash": "917d85ef",
 											"parentTags": [
 												"footer",
 												"div",
@@ -419,7 +421,7 @@
 												"div",
 												"div"
 											],
-											"textHash": "a23d92d7",
+											"textHash": "80c90947",
 											"line": 955
 										},
 										"innerBlocks": []
@@ -550,29 +552,6 @@
 										"innerBlocks": []
 									}
 								]
-							},
-							{
-								"name": "sgs/business-info",
-								"attributes": {
-									"displayType": "open-status"
-								},
-								"draftRef": {
-									"tpl": "Root/680#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "2ab719e9",
-									"parentTags": [
-										"footer",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "2210ee1b",
-									"line": 962
-								},
-								"innerBlocks": []
 							}
 						]
 					}
@@ -762,27 +741,27 @@
 									"items": [
 										{
 											"text": "Certifications",
-											"url": "#/certifications"
+											"url": "/about/certifications/"
 										},
 										{
 											"text": "Trade",
-											"url": "#/apply"
+											"url": "/apply/"
 										},
 										{
 											"text": "Brands",
-											"url": "#/brands"
+											"url": "/brands/"
 										},
 										{
 											"text": "Delivery & Logistics",
-											"url": "#/delivery"
+											"url": "/delivery/"
 										},
 										{
 											"text": "Terms & Conditions",
-											"url": "#/terms"
+											"url": "/terms/"
 										},
 										{
 											"text": "Blog",
-											"url": "#/blog"
+											"url": "/blog/"
 										}
 									]
 								},
@@ -809,7 +788,7 @@
 								"name": "sgs/button",
 								"attributes": {
 									"label": "Apply For A Trade Account",
-									"url": "#/apply"
+									"url": "/apply/"
 								},
 								"draftRef": {
 									"tpl": "Root/708#0"

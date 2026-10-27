@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-26T22:15:06.491Z",
-  "source": "http://127.0.0.1:55213/Home.dc.html#build",
+  "generated": "2026-10-27T15:25:19.620Z",
+  "source": "http://127.0.0.1:55293/Home.dc.html#build",
   "root": "[data-sgs-skeleton-root=\"build-your-zookie\"]",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -6245,7 +6245,7 @@
       "tokens/typography.css": "805e2a943a3484599ae1f0e4bd379d207e688ec48237113ea135eb03250e97df"
     },
     "route": {
-      "commit": "e868a2d5a75ce6d4b617e0430dbed8ebcd506d99"
+      "commit": "30aa79ef931168da17b0d324481f5ff60d370343"
     }
   }
 }

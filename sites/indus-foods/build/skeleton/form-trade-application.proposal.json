@@ -1,0 +1,2834 @@
+{
+	"generated": "2026-10-27T16:43:10.110Z",
+	"inventory": "2026-10-27T14:09:29.924Z",
+	"source": "http://127.0.0.1:58385/Indus%20Foods%20Website%20v2.dc.html#/apply",
+	"surface": "trade-account-application",
+	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-53",
+			"kind": "form-step",
+			"name": "Step 1: Tell us about your business",
+			"openedBy": "default; Back from step 2; Edit on Review",
+			"roots": [
+				"TradeApplication/25"
+			]
+		},
+		{
+			"id": "S-54",
+			"kind": "form-step",
+			"name": "Step 2: Where are you based?",
+			"openedBy": "Continue on step 1 when valid (next → go(1)); Edit on Review",
+			"roots": [
+				"TradeApplication/25"
+			]
+		},
+		{
+			"id": "S-55",
+			"kind": "form-step",
+			"name": "Step 3: Who should we speak to?",
+			"openedBy": "Continue on step 2 when valid (next → go(2)); Edit on Review",
+			"roots": [
+				"TradeApplication/25"
+			]
+		},
+		{
+			"id": "S-56",
+			"kind": "form-step",
+			"name": "Step 4: How will you order?",
+			"openedBy": "Continue on step 3 when valid (next → go(3)); Edit on Review",
+			"roots": [
+				"TradeApplication/25"
+			]
+		},
+		{
+			"id": "S-57",
+			"kind": "form-step",
+			"name": "Step 5: Check and submit",
+			"openedBy": "Continue on step 4 when valid (next → go(4)); Edit on Review",
+			"roots": [
+				"TradeApplication/67"
+			]
+		},
+		{
+			"id": "S-58",
+			"kind": "result",
+			"name": "Application received",
+			"openedBy": "Submit on Review (next on the last step): done = true, ref = IND-<6 random digits>, draft cleared",
+			"roots": [
+				"TradeApplication/106"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [
+		{
+			"key": "TradeApplication/49",
+			"field": "aria-pressed",
+			"record": true,
+			"render": false
+		},
+		{
+			"key": "TradeApplication/88",
+			"field": "aria-expanded",
+			"record": true,
+			"render": false
+		}
+	],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 105,
+		"parts": 13,
+		"rows": 92,
+		"skeletonNodes": 68,
+		"expandedNodes": 68,
+		"low": 15,
+		"removed": 23,
+		"unresolved": 1,
+		"byRule": {
+			"formHost": 1,
+			"alignWrapper": 2,
+			"label": 2,
+			"dotMarker": 1,
+			"optionSet": 13,
+			"formControl": 11,
+			"solitaryIcon": 6,
+			"cardHeading": 1,
+			"siteInfoLink": 2
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root>TradeApplication@466#0/6#0",
+			"tag": "div",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/form",
+			"action": null,
+			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
+			"source": "rule formHost",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formHost",
+			"candidates": [
+				{
+					"block": "sgs/form",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start;\" data-dc-tpl=\"6\"> <div style=\"min-width:0;background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);overflow:clip;\" data-dc-tpl=\"7\"> <div style=\"padding:{{ L.pad }};padding-bottom:0;\" data-dc-tpl=\"8\"> <div style=\"display:flex;align-items:cent",
+			"attributes": {
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root>TradeApplication@466#0/7#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"min-width:0;background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);overflow:clip;\" data-dc-tpl=\"7\"> <div style=\"padding:{{ L.pad }};padding-bottom:0;\" data-dc-tpl=\"8\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;\" data-dc-tpl=\"9\"> <span style=\"font-family:'Montserrat'",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 2,
+			"key": "Root>TradeApplication@466#0/8#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"padding:{{ L.pad }};padding-bottom:0;\" data-dc-tpl=\"8\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;\" data-dc-tpl=\"9\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">Step {{ stepNum }} of {{ stepTotal }}<sc-if value=\"{{ L.",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root>TradeApplication@466#0/9#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;\" data-dc-tpl=\"9\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">Step {{ stepNum }} of {{ stepTotal }}<sc-if value=\"{{ L.noLabels }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"11\"> · ",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 4,
+			"key": "Root>TradeApplication@466#0/10#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Step 1 of 5",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">Step {{ stepNum }} of {{ stepTotal }}<sc-if value=\"{{ L.noLabels }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"11\"> · {{ cur.label }}</sc-if></span>",
+			"attributes": {
+				"text": "Step 1 of 5"
+			}
+		},
+		{
+			"order": 5,
+			"key": "Root>TradeApplication@466#0/12#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Saves as you go",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;display:inline-flex;align-items:center;gap:8px;\" data-dc-tpl=\"12\"><span style=\"width:8px;height:8px;border-radius:50%;background:#6EC07A;\" data-dc-tpl=\"13\"></span>{{ savedLabel }}</span>",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 6,
+			"key": "Root>TradeApplication@466#0/13#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a small dot or short bar that holds nothing, is no control and sits beside text is the marker of the block holding the text (a label's dot, a list item's marker, the separator between a row's items); stacked rows of a marker and one piece of text are one list (Bean, 2026-10-19)",
+			"source": "rule dotMarker",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "dotMarker",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:#6EC07A;\" data-dc-tpl=\"13\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root>TradeApplication@466#0/14#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unresolved",
+			"reason": "no block fits this element: decide it with skeleton.mjs decide",
+			"source": null,
+			"confidence": 0,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [
+				"Root>TradeApplication@466#0/15#0"
+			],
+			"screenshots": {},
+			"snippet": "<div style=\"position:relative;height:6px;border-radius:6px;background:#EEF2F5;margin-top:14px;overflow:hidden;\" data-dc-tpl=\"14\"> <span style=\"position:absolute;left:0;top:0;bottom:0;width:{{ progress }};border-radius:6px;background:linear-gradient(90deg,#D8CA50,#2EADE2);transition:width .6s cubic-bezier(.2,.8,.2,1);\" data-dc-tpl=\"15\"></span> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root>TradeApplication@466#0/16#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat({{ stepTotal }},minmax(0,1fr));gap:8px;margin-top:16px;\" data-dc-tpl=\"16\"> <sc-for list=\"{{ steps }}\" as=\"st\" hint-placeholder-count=\"5\" data-dc-tpl=\"17\"> <button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root>TradeApplication@466#0/18#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 10,
+			"key": "Root>TradeApplication@466#0/19#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "1",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {
+				"text": "1"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root>TradeApplication@466#0/21#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Business",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {
+				"text": "Business"
+			}
+		},
+		{
+			"order": 12,
+			"key": "Root>TradeApplication@466#0/18#1",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 13,
+			"key": "Root>TradeApplication@466#0/19#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "2",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {
+				"text": "2"
+			}
+		},
+		{
+			"order": 14,
+			"key": "Root>TradeApplication@466#0/21#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "Premises",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {
+				"text": "Premises"
+			}
+		},
+		{
+			"order": 15,
+			"key": "Root>TradeApplication@466#0/18#2",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root>TradeApplication@466#0/19#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "3",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {
+				"text": "3"
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root>TradeApplication@466#0/21#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "Contact",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {
+				"text": "Contact"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root>TradeApplication@466#0/18#3",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root>TradeApplication@466#0/19#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "4",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {
+				"text": "4"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root>TradeApplication@466#0/21#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "Ordering",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {
+				"text": "Ordering"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root>TradeApplication@466#0/18#4",
+			"tag": "button",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root>TradeApplication@466#0/19#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "5",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {
+				"text": "5"
+			}
+		},
+		{
+			"order": 23,
+			"key": "Root>TradeApplication@466#0/21#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "Review",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {
+				"text": "Review"
+			}
+		},
+		{
+			"order": 24,
+			"key": "Root>TradeApplication@466#0/22#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"source": "rule alignWrapper",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "alignWrapper",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div ref=\"{{ setBody }}\" style=\"padding:{{ L.pad }};padding-top:28px;\" data-dc-tpl=\"22\"> <h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3vw,34px);line-height:1.15;letter-spacing:-.015em;color:#2C3E50;margin:0;\" data-dc-tpl=\"23\">{{ cur.title }}</h2> <p style=\"font-size:17px;color:#4A5563;margin:8px 0 0;max-width:620px;\" data-dc-tpl=\"24\">{{ cur.intro }}</p> <sc-i",
+			"attributes": {}
+		},
+		{
+			"order": 25,
+			"key": "Root>TradeApplication@466#0/23#0",
+			"tag": "h2",
+			"depth": 3,
+			"words": "Tell us about your business",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h2 -> sgs/heading (\"Heading level 2\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3vw,34px);line-height:1.15;letter-spacing:-.015em;color:#2C3E50;margin:0;\" data-dc-tpl=\"23\">{{ cur.title }}</h2>",
+			"attributes": {
+				"content": "Tell us about your business"
+			}
+		},
+		{
+			"order": 26,
+			"key": "Root>TradeApplication@466#0/24#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "The basics we need to set up your account and check your details.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<p style=\"font-size:17px;color:#4A5563;margin:8px 0 0;max-width:620px;\" data-dc-tpl=\"24\">{{ cur.intro }}</p>",
+			"attributes": {
+				"text": "The basics we need to set up your account and check your details."
+			}
+		},
+		{
+			"order": 27,
+			"key": "Root>TradeApplication@466#0/26#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 7 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"grid\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.fieldCols }};gap:20px 18px;margin-top:28px;\" data-dc-tpl=\"26\"> <sc-for list=\"{{ fields }}\" as=\"f\" hint-placeholder-count=\"6\" data-dc-tpl=\"27\"> <div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div st",
+			"attributes": {
+				"tagName": "div",
+				"layout": "grid"
+			}
+		},
+		{
+			"order": 28,
+			"key": "Root>TradeApplication@466#0/28#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 29,
+			"key": "Root>TradeApplication@466#0/33#0",
+			"tag": "label",
+			"depth": 5,
+			"words": "What kind of business are you?",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 30,
+			"key": "Root>TradeApplication@466#0/35#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "*",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {
+				"text": "*"
+			}
+		},
+		{
+			"order": 31,
+			"key": "Root>TradeApplication@466#0/47#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+			"source": "rule optionSet",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px;\" data-dc-tpl=\"47\"> <sc-for list=\"{{ f.chips }}\" as=\"c\" hint-placeholder-count=\"5\" data-dc-tpl=\"48\"> <button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};fon",
+			"attributes": {}
+		},
+		{
+			"order": 32,
+			"key": "Root>TradeApplication@466#0/49#0",
+			"tag": "button",
+			"depth": 6,
+			"words": "Restaurant or takeaway",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 33,
+			"key": "Root>TradeApplication@466#0/49#1",
+			"tag": "button",
+			"depth": 6,
+			"words": "Caterer or events",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 34,
+			"key": "Root>TradeApplication@466#0/49#2",
+			"tag": "button",
+			"depth": 6,
+			"words": "Retailer or convenience",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 35,
+			"key": "Root>TradeApplication@466#0/49#3",
+			"tag": "button",
+			"depth": 6,
+			"words": "Wholesaler or cash & carry",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 36,
+			"key": "Root>TradeApplication@466#0/49#4",
+			"tag": "button",
+			"depth": 6,
+			"words": "Food manufacturer",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 37,
+			"key": "Root>TradeApplication@466#0/49#5",
+			"tag": "button",
+			"depth": 6,
+			"words": "Other",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 38,
+			"key": "Root>TradeApplication@466#0/28#1",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 39,
+			"key": "Root>TradeApplication@466#0/33#1",
+			"tag": "label",
+			"depth": 5,
+			"words": "Trading name",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 40,
+			"key": "Root>TradeApplication@466#0/35#1",
+			"tag": "span",
+			"depth": 6,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root>TradeApplication@466#0/33#1)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {}
+		},
+		{
+			"order": 41,
+			"key": "Root>TradeApplication@466#0/39#0",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;\" st",
+			"attributes": {
+				"label": "Trading name"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>TradeApplication@466#0/39#0"
+				}
+			}
+		},
+		{
+			"order": 42,
+			"key": "Root>TradeApplication@466#0/28#2",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 43,
+			"key": "Root>TradeApplication@466#0/33#2",
+			"tag": "label",
+			"depth": 5,
+			"words": "Registered business name",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 44,
+			"key": "Root>TradeApplication@466#0/39#1",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;\" st",
+			"attributes": {
+				"label": "Registered business name"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>TradeApplication@466#0/39#1"
+				}
+			}
+		},
+		{
+			"order": 45,
+			"key": "Root>TradeApplication@466#0/28#3",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 46,
+			"key": "Root>TradeApplication@466#0/33#3",
+			"tag": "label",
+			"depth": 5,
+			"words": "Business structure",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 47,
+			"key": "Root>TradeApplication@466#0/35#2",
+			"tag": "span",
+			"depth": 6,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root>TradeApplication@466#0/33#3)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {}
+		},
+		{
+			"order": 48,
+			"key": "Root>TradeApplication@466#0/41#0",
+			"tag": "select",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-select",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-select",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [
+				"Root>TradeApplication@466#0/43#0",
+				"Root>TradeApplication@466#0/43#1",
+				"Root>TradeApplication@466#0/43#2",
+				"Root>TradeApplication@466#0/43#3",
+				"Root>TradeApplication@466#0/43#4",
+				"Root>TradeApplication@466#0/43#5"
+			],
+			"screenshots": {},
+			"snippet": "<sc-raw-select id=\"{{ f.id }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;cursor:pointer;\" style-focus=\"border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)\" data-dc-tpl=\"41\"> <sc-for list=\"{{",
+			"attributes": {
+				"label": "Business structure"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>TradeApplication@466#0/41#0"
+				}
+			}
+		},
+		{
+			"order": 49,
+			"key": "Root>TradeApplication@466#0/28#4",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 50,
+			"key": "Root>TradeApplication@466#0/33#4",
+			"tag": "label",
+			"depth": 5,
+			"words": "VAT number",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 51,
+			"key": "Root>TradeApplication@466#0/39#2",
+			"tag": "input",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-text",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-text",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;\" st",
+			"attributes": {
+				"label": "VAT number",
+				"helpText": "Leave blank if you are not VAT registered."
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>TradeApplication@466#0/39#2"
+				}
+			}
+		},
+		{
+			"order": 52,
+			"key": "Root>TradeApplication@466#0/64#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Leave blank if you are not VAT registered.",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"64\">{{ f.hint }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 53,
+			"key": "Root>TradeApplication@466#0/28#5",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 54,
+			"key": "Root>TradeApplication@466#0/33#5",
+			"tag": "label",
+			"depth": 5,
+			"words": "Time trading",
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 55,
+			"key": "Root>TradeApplication@466#0/35#3",
+			"tag": "span",
+			"depth": 6,
+			"words": "*",
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root>TradeApplication@466#0/33#5)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {}
+		},
+		{
+			"order": 56,
+			"key": "Root>TradeApplication@466#0/41#1",
+			"tag": "select",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form-field-select",
+			"action": null,
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formControl",
+			"candidates": [
+				{
+					"block": "sgs/form-field-select",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [
+				"Root>TradeApplication@466#0/43#6",
+				"Root>TradeApplication@466#0/43#7",
+				"Root>TradeApplication@466#0/43#8",
+				"Root>TradeApplication@466#0/43#9",
+				"Root>TradeApplication@466#0/43#10",
+				"Root>TradeApplication@466#0/43#11"
+			],
+			"screenshots": {},
+			"snippet": "<sc-raw-select id=\"{{ f.id }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;cursor:pointer;\" style-focus=\"border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)\" data-dc-tpl=\"41\"> <sc-for list=\"{{",
+			"attributes": {
+				"label": "Time trading"
+			},
+			"slots": {
+				".sgs-form-field__input": {
+					"tpl": "Root>TradeApplication@466#0/41#1"
+				}
+			}
+		},
+		{
+			"order": 57,
+			"key": "Root>TradeApplication@466#0/28#6",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 58,
+			"key": "Root>TradeApplication@466#0/33#6",
+			"tag": "label",
+			"depth": 5,
+			"words": "Food hygiene rating",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a label"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {
+				"text": "Food hygiene rating"
+			}
+		},
+		{
+			"order": 59,
+			"key": "Root>TradeApplication@466#0/47#1",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/option-picker",
+			"action": null,
+			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
+			"source": "rule optionSet",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"candidates": [
+				{
+					"block": "sgs/option-picker",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px;\" data-dc-tpl=\"47\"> <sc-for list=\"{{ f.chips }}\" as=\"c\" hint-placeholder-count=\"5\" data-dc-tpl=\"48\"> <button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};fon",
+			"attributes": {}
+		},
+		{
+			"order": 60,
+			"key": "Root>TradeApplication@466#0/49#6",
+			"tag": "button",
+			"depth": 6,
+			"words": "5",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 61,
+			"key": "Root>TradeApplication@466#0/49#7",
+			"tag": "button",
+			"depth": 6,
+			"words": "4",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 62,
+			"key": "Root>TradeApplication@466#0/49#8",
+			"tag": "button",
+			"depth": 6,
+			"words": "3",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 63,
+			"key": "Root>TradeApplication@466#0/49#9",
+			"tag": "button",
+			"depth": 6,
+			"words": "Awaiting inspection",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 64,
+			"key": "Root>TradeApplication@466#0/49#10",
+			"tag": "button",
+			"depth": 6,
+			"words": "Not applicable",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "optionSet",
+			"into": "Root>TradeApplication@466#0/47#1",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 65,
+			"key": "Root>TradeApplication@466#0/64#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "From your local authority (Food Standards Agency scheme).",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"64\">{{ f.hint }}</span>",
+			"attributes": {
+				"text": "From your local authority (Food Standards Agency scheme)."
+			}
+		},
+		{
+			"order": 66,
+			"key": "Root>TradeApplication@466#0/79#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:{{ L.navWrap }};align-items:center;justify-content:space-between;gap:12px;margin-top:34px;padding:{{ L.navPad }};border-top:1px solid #EEF2F5;position:{{ L.navPos }};bottom:0;z-index:5;background:#FFFFFF;margin-left:{{ L.navM }};margin-right:{{ L.navM }};box-shadow:{{ L.navShadow }};\" data-dc-tpl=\"79\"> <sc-if value=\"{{ canBack }}\" hint-placeholder-val=\"{{ false }",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 67,
+			"key": "Root>TradeApplication@466#0/84#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Takes about 5 minutes · Your progress saves automatically",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"84\">Takes about 5 minutes · Your progress saves automatically</span>",
+			"attributes": {
+				"text": "Takes about 5 minutes · Your progress saves automatically"
+			}
+		},
+		{
+			"order": 68,
+			"key": "Root>TradeApplication@466#0/85#0",
+			"tag": "button",
+			"depth": 4,
+			"words": "Continue",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ next }}\" style=\"flex:{{ L.nextFlex }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:{{ nextBg }};color:{{ nextFg }};border:2px solid {{ nextBg }};border-radius:999px;padding:15px 28px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2",
+			"attributes": {
+				"label": "Continue"
+			}
+		},
+		{
+			"order": 69,
+			"key": "Root>TradeApplication@466#0/86#0",
+			"tag": "aside",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<aside style=\"min-width:0;display:flex;flex-direction:column;gap:16px;position:{{ L.asidePos }};top:110px;order:{{ L.asideOrder }};\" data-dc-tpl=\"86\"> <div style=\"background:#2C3E50;color:#FFFFFF;border-radius:26px;padding:{{ L.ckPad }};\" data-dc-tpl=\"87\"> <button type=\"button\" sc-camel-on-click=\"{{ toggleCk }}\" aria-expanded=\"{{ ckOpen }}\" style=\"width:100%;display:flex;align-items:center;justify",
+			"attributes": {
+				"tagName": "aside",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 70,
+			"key": "Root>TradeApplication@466#0/87#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"background:#2C3E50;color:#FFFFFF;border-radius:26px;padding:{{ L.ckPad }};\" data-dc-tpl=\"87\"> <button type=\"button\" sc-camel-on-click=\"{{ toggleCk }}\" aria-expanded=\"{{ ckOpen }}\" style=\"width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;padding:0;color:#D8CA50;cursor:{{ L.ckCursor }};text-align:left;\" data-dc-tpl=\"88\"><spa",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 71,
+			"key": "Root>TradeApplication@466#0/88#0",
+			"tag": "button",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ toggleCk }}\" aria-expanded=\"{{ ckOpen }}\" style=\"width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;padding:0;color:#D8CA50;cursor:{{ L.ckCursor }};text-align:left;\" data-dc-tpl=\"88\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-tran",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 72,
+			"key": "Root>TradeApplication@466#0/89#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Have these ready",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;\" data-dc-tpl=\"89\">Have these ready</span>",
+			"attributes": {
+				"text": "Have these ready"
+			}
+		},
+		{
+			"order": 73,
+			"key": "Root>TradeApplication@466#0/91#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"display:flex;transform:rotate({{ ckRot }}deg);transition:transform .3s;\" data-dc-tpl=\"91\">{{ chev }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 74,
+			"key": "Root>TradeApplication@466#0/93#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 5 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:2px;margin-top:14px;\" data-dc-tpl=\"93\"> <sc-for list=\"{{ checklist }}\" as=\"ck\" hint-placeholder-count=\"5\" data-dc-tpl=\"94\"> <div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;heigh",
+			"attributes": {
+				"tagName": "div",
+				"layout": "stack"
+			}
+		},
+		{
+			"order": 75,
+			"key": "Root>TradeApplication@466#0/95#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "Your trading and registered business name",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 76,
+			"key": "Root>TradeApplication@466#0/96#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 77,
+			"key": "Root>TradeApplication@466#0/95#1",
+			"tag": "div",
+			"depth": 4,
+			"words": "Companies House and VAT numbers (if you have them)",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 78,
+			"key": "Root>TradeApplication@466#0/96#1",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 79,
+			"key": "Root>TradeApplication@466#0/95#2",
+			"tag": "div",
+			"depth": 4,
+			"words": "Business and delivery address",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 80,
+			"key": "Root>TradeApplication@466#0/96#2",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 81,
+			"key": "Root>TradeApplication@466#0/95#3",
+			"tag": "div",
+			"depth": 4,
+			"words": "Owner or director details",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 82,
+			"key": "Root>TradeApplication@466#0/96#3",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 83,
+			"key": "Root>TradeApplication@466#0/95#4",
+			"tag": "div",
+			"depth": 4,
+			"words": "Two trade references for a credit account",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 84,
+			"key": "Root>TradeApplication@466#0/96#4",
+			"tag": "span",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 85,
+			"key": "Root>TradeApplication@466#0/98#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"background:linear-gradient(135deg,#EBDD78 0%,#D8CA50 100%);border-radius:26px;padding:26px;color:#2C3E50;\" data-dc-tpl=\"98\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;\" data-dc-tpl=\"99\">Need a hand?</span> <p style=\"font-size:16px;margin:8px 0 14px;\" data-dc-tpl=\"100\">Our trade team can complete the application with you over the phone.</p> <a href=",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 86,
+			"key": "Root>TradeApplication@466#0/99#0",
+			"tag": "span",
+			"depth": 3,
+			"words": "Need a hand?",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": "the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)",
+			"source": "rule cardHeading",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "cardHeading",
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule cardHeading: the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;\" data-dc-tpl=\"99\">Need a hand?</span>",
+			"attributes": {
+				"content": "Need a hand?"
+			}
+		},
+		{
+			"order": 87,
+			"key": "Root>TradeApplication@466#0/100#0",
+			"tag": "p",
+			"depth": 3,
+			"words": "Our trade team can complete the application with you over the phone.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<p style=\"font-size:16px;margin:8px 0 14px;\" data-dc-tpl=\"100\">Our trade team can complete the application with you over the phone.</p>",
+			"attributes": {
+				"text": "Our trade team can complete the application with you over the phone."
+			}
+		},
+		{
+			"order": 88,
+			"key": "Root>TradeApplication@466#0/101#0",
+			"tag": "a",
+			"depth": 3,
+			"words": "0121 771 4330",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap:10px;background:#000000;color:#D8CA50;font-weight:700;font-size:16px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#E7D768\" ",
+			"attributes": {
+				"label": "0121 771 4330",
+				"url": "tel:01217714330",
+				"linkSource": "phone",
+				"labelFromSiteInfo": true
+			}
+		},
+		{
+			"order": 89,
+			"key": "Root>TradeApplication@466#0/103#0",
+			"tag": "div",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(135deg,#EBDD78 0%,#D8CA50 100%);border-radius:26px;padding:22px;color:#2C3E50;\" data-dc-tpl=\"103\"><span style=\"font-size:16px;font-weight:600;\" data-dc-tpl=\"104\">Prefer to apply over the phone?</span><a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 90,
+			"key": "Root>TradeApplication@466#0/104#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "Prefer to apply over the phone?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<span style=\"font-size:16px;font-weight:600;\" data-dc-tpl=\"104\">Prefer to apply over the phone?</span>",
+			"attributes": {
+				"text": "Prefer to apply over the phone?"
+			}
+		},
+		{
+			"order": 91,
+			"key": "Root>TradeApplication@466#0/105#0",
+			"tag": "a",
+			"depth": 2,
+			"words": "Call 0121 771 4330",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {},
+			"snippet": "<a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap:10px;background:#000000;color:#D8CA50;font-weight:700;font-size:16px;padding:12px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#E7D768\" ",
+			"attributes": {
+				"label": "Call 0121 771 4330",
+				"url": "tel:01217714330",
+				"linkSource": "phone"
+			}
+		}
+	]
+}

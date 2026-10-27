@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T00:34:06.389Z",
-	"inventory": "2026-10-23T19:43:20.373Z",
-	"source": "http://127.0.0.1:58424/Indus%20Foods%20Website%20v2.dc.html",
+	"generated": "2026-10-27T16:39:10.732Z",
+	"inventory": "2026-10-27T13:51:06.523Z",
+	"source": "http://127.0.0.1:49333/Indus%20Foods%20Website%20v2.dc.html",
 	"surface": "about-mega-menu",
 	"siteName": null,
 	"surfaceParts": [],
@@ -142,7 +142,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/our-story"
+				"sgsBlockLink": "/about/our-story/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -330,7 +330,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/certifications"
+				"sgsBlockLink": "/about/certifications/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -518,7 +518,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/community"
+				"sgsBlockLink": "/about/community/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -706,7 +706,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/sustainability"
+				"sgsBlockLink": "/about/sustainability/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -894,7 +894,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/careers"
+				"sgsBlockLink": "/about/careers/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -1082,7 +1082,7 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex",
-				"sgsBlockLink": "#/blog"
+				"sgsBlockLink": "/blog/"
 			},
 			"builtPost": {
 				"site": "sandybrown",
@@ -1527,7 +1527,7 @@
 			"snippet": "<a href=\"{{ activePanel.feature.href }}\" style=\"display:inline-flex;align-items:center;gap:7px;margin-top:18px;color:#FFFFFF;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:3px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"83\">{{ activePanel.feature.cta }} {{ arrowIcon }}</a>",
 			"attributes": {
 				"label": "Read our story",
-				"url": "#/our-story"
+				"url": "/about/our-story/"
 			},
 			"builtPost": {
 				"site": "sandybrown",

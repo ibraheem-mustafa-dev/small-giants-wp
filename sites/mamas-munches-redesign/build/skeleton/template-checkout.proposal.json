@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:41:23.830Z",
-	"inventory": "2026-10-27T01:41:23.629Z",
-	"source": "http://127.0.0.1:61308/",
+	"generated": "2026-10-27T16:10:48.029Z",
+	"inventory": "2026-10-27T16:10:47.908Z",
+	"source": "http://127.0.0.1:65074/",
 	"surface": "page-checkout-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -45,16 +45,15 @@
 		"block": "core/post-content"
 	},
 	"counts": {
-		"inventoryElements": 116,
-		"parts": 3,
-		"rows": 113,
-		"skeletonNodes": 11,
-		"expandedNodes": 11,
-		"low": 4,
-		"removed": 102,
+		"inventoryElements": 106,
+		"parts": 0,
+		"rows": 106,
+		"skeletonNodes": 5,
+		"expandedNodes": 5,
+		"low": 2,
+		"removed": 101,
 		"unresolved": 0,
 		"byRule": {
-			"alignWrapper": 1,
 			"commerceRegion": 102
 		}
 	},
@@ -63,8 +62,8 @@
 	"rows": [
 		{
 			"order": 0,
-			"key": "Root/6#0",
-			"tag": "div",
+			"key": "Root/16#0",
+			"tag": "main",
 			"depth": 0,
 			"words": "",
 			"block": "sgs/container",
@@ -81,274 +80,26 @@
 					"score": 0.75,
 					"share": 1,
 					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_6_0@375.png",
-				"1440": "shots/Root_6_0@1440.png"
-			},
-			"snippet": "<div data-screen-label=\"Checkout\" style=\"background:#FBF3DC;min-height:100vh\" data-dc-tpl=\"6\"> <header style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"7\"> <div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"8\"> <a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font",
-			"attributes": {
-				"tagName": "div"
-			}
-		},
-		{
-			"order": 1,
-			"key": "Root/7#0",
-			"tag": "header",
-			"depth": 1,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
 						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
 						"no row block fits: a generic wrapper"
 					]
 				}
 			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_7_0@375.png",
-				"1440": "shots/Root_7_0@1440.png"
-			},
-			"snippet": "<header style=\"background:#F5C2C8;border-bottom:2px solid #3A2A22\" data-dc-tpl=\"7\"> <div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"8\"> <a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center\" data-dc-tpl=\"9\">← Basket</a> <a hre",
-			"attributes": {
-				"tagName": "header"
-			}
-		},
-		{
-			"order": 2,
-			"key": "Root/8#0",
-			"tag": "div",
-			"depth": 2,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 3 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"grid\" (draft display)"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_8_0@375.png",
-				"1440": "shots/Root_8_0@1440.png"
-			},
-			"snippet": "<div style=\"max-width:1160px;margin:0 auto;padding:0 20px;height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center\" data-dc-tpl=\"8\"> <a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center\" data-dc-tpl=\"9\">← Basket</a> <a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"10\"><img src=\"assets/",
-			"attributes": {
-				"tagName": "div",
-				"layout": "grid"
-			}
-		},
-		{
-			"order": 3,
-			"key": "Root/9#0",
-			"tag": "a",
-			"depth": 3,
-			"words": "← Basket",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/button",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
-						"block_composition: sgs/button is a leaf; the element holds words and no block children"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_9_0@375.png",
-				"1440": "shots/Root_9_0@1440.png"
-			},
-			"snippet": "<a href=\"Basket.dc.html\" style=\"font-weight:700;color:#3A2A22;font-size:15px;min-height:44px;display:flex;align-items:center\" data-dc-tpl=\"9\">← Basket</a>",
-			"attributes": {
-				"label": "← Basket",
-				"url": "Basket.dc.html"
-			}
-		},
-		{
-			"order": 4,
-			"key": "Root/10#0",
-			"tag": "a",
-			"depth": 3,
-			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.75,
-			"low": false,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 0.75,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_10_0@375.png",
-				"1440": "shots/Root_10_0@1440.png"
-			},
-			"snippet": "<a href=\"Home.dc.html\" aria-label=\"Mama's Munches home\" data-dc-tpl=\"10\"><img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\"></a>",
-			"attributes": {
-				"tagName": "div"
-			}
-		},
-		{
-			"order": 5,
-			"key": "Root/11#0",
-			"tag": "img",
-			"depth": 4,
-			"words": "",
-			"block": "sgs/responsive-logo",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.66,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/responsive-logo",
-					"score": 0.85,
-					"share": 0.773,
-					"evidence": [
-						"block_capabilities: sgs/responsive-logo lists \"logo\"; block_composition: leaf",
-						"logo image: logo-horizontal.png / alt \"Mama's Munches\" (an image whose file name, alt text or class says it is the brand mark)"
-					]
-				},
-				{
-					"block": "sgs/media",
-					"score": 0.25,
-					"share": 0.227,
-					"evidence": [
-						"html_tag_to_core_block: img -> sgs/media (\"Image — atomic media leaf\"), halved: the image is named as a logo"
-					]
-				}
-			],
-			"parts": [],
-			"screenshots": {
-				"375": "shots/Root_11_0@375.png",
-				"1440": "shots/Root_11_0@1440.png"
-			},
-			"snippet": "<img src=\"assets/logo-horizontal.png\" alt=\"Mama's Munches\" style=\"height:{{ logoH }};width:auto\" data-dc-tpl=\"11\">",
-			"attributes": {
-				"logoId": 91
-			},
-			"carried": {
-				"logoId": "media-map.json: sites/mamas-munches-redesign/handoff/assets/logo-horizontal.png"
-			}
-		},
-		{
-			"order": 6,
-			"key": "Root/12#0",
-			"tag": "span",
-			"depth": 3,
-			"words": "Secure checkout",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
-			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
-			"parts": [
-				"Root/13#0"
-			],
-			"screenshots": {
-				"375": "shots/Root_12_0@375.png",
-				"1440": "shots/Root_12_0@1440.png"
-			},
-			"snippet": "<span style=\"justify-self:end;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px\" data-dc-tpl=\"12\"><svg width=\"16\" height=\"16\" sc-camel-view-box=\"0 0 24 24\" style=\"fill:none;stroke:currentColor;stroke-width:2.2\" data-dc-tpl=\"13\"><rect x=\"5\" y=\"11\" width=\"14\" height=\"10\" rx=\"2\" data-dc-tpl=\"14\"></rect><path d=\"M8 11V8a4 4 0 0 1 8 0v3\" data-dc-tpl=\"15\"></path></svg>{{ secureTxt }",
-			"attributes": {
-				"text": "Secure checkout"
-			}
-		},
-		{
-			"order": 7,
-			"key": "Root/16#0",
-			"tag": "main",
-			"depth": 1,
-			"words": "",
-			"block": null,
-			"action": "unwrap",
-			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
-			"source": "rule alignWrapper",
-			"confidence": 1,
-			"low": false,
-			"stale": null,
-			"rule": "alignWrapper",
-			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_16_0@375.png",
 				"1440": "shots/Root_16_0@1440.png"
 			},
 			"snippet": "<main style=\"padding:{{ L.pad }}\" data-dc-tpl=\"16\"> <div style=\"max-width:1160px;margin:0 auto;display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start\" data-dc-tpl=\"17\"> <sc-if value=\"{{ isM }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"18\"> <button sc-camel-on-click=\"{{ toggleSum }}\" style=\"width:100%;min-height:60px;border:2px solid #3A2A22;border-radius:20px;back",
-			"attributes": {}
+			"attributes": {
+				"tagName": "main"
+			}
 		},
 		{
-			"order": 8,
+			"order": 1,
 			"key": "Root/17#0",
 			"tag": "div",
-			"depth": 2,
+			"depth": 1,
 			"words": "",
 			"block": "core/post-content",
 			"action": null,
@@ -378,10 +129,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 9,
+			"order": 2,
 			"key": "Root/31#0",
 			"tag": "form",
-			"depth": 3,
+			"depth": 2,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -402,10 +153,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 10,
+			"order": 3,
 			"key": "Root/32#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -426,10 +177,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 11,
+			"order": 4,
 			"key": "Root/33#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "last bit, promise",
 			"block": null,
 			"action": "absorbed",
@@ -450,10 +201,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 12,
+			"order": 5,
 			"key": "Root/34#0",
 			"tag": "h1",
-			"depth": 5,
+			"depth": 4,
 			"words": "Checkout",
 			"block": null,
 			"action": "absorbed",
@@ -474,10 +225,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 13,
+			"order": 6,
 			"key": "Root/35#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -498,10 +249,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 14,
+			"order": 7,
 			"key": "Root/36#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Apple Pay",
 			"block": null,
 			"action": "absorbed",
@@ -522,10 +273,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 15,
+			"order": 8,
 			"key": "Root/37#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Google Pay",
 			"block": null,
 			"action": "absorbed",
@@ -546,10 +297,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 16,
+			"order": 9,
 			"key": "Root/38#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "PayPal",
 			"block": null,
 			"action": "absorbed",
@@ -570,10 +321,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 17,
+			"order": 10,
 			"key": "Root/39#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "or pay by card",
 			"block": null,
 			"action": "absorbed",
@@ -594,10 +345,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 18,
+			"order": 11,
 			"key": "Root/40#0",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -618,10 +369,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 19,
+			"order": 12,
 			"key": "Root/41#0",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -642,10 +393,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 20,
+			"order": 13,
 			"key": "Root/42#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -666,10 +417,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 21,
+			"order": 14,
 			"key": "Root/43#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "1 · Your details",
 			"block": null,
 			"action": "absorbed",
@@ -690,10 +441,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 22,
+			"order": 15,
 			"key": "Root/50#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "Checking out as a guest.",
 			"block": null,
 			"action": "absorbed",
@@ -714,10 +465,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 23,
+			"order": 16,
 			"key": "Root/51#0",
 			"tag": "a",
-			"depth": 6,
+			"depth": 5,
 			"words": "Have an account? Sign in",
 			"block": null,
 			"action": "absorbed",
@@ -738,10 +489,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 24,
+			"order": 17,
 			"key": "Root/52#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Email",
 			"block": null,
 			"action": "absorbed",
@@ -762,10 +513,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 25,
+			"order": 18,
 			"key": "Root/53#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -786,10 +537,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 26,
+			"order": 19,
 			"key": "Root/54#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Mobile, for delivery updates (optional)",
 			"block": null,
 			"action": "absorbed",
@@ -810,10 +561,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 27,
+			"order": 20,
 			"key": "Root/55#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -834,10 +585,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 28,
+			"order": 21,
 			"key": "Root/57#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -858,10 +609,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 29,
+			"order": 22,
 			"key": "Root/58#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -882,10 +633,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 30,
+			"order": 23,
 			"key": "Root/59#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -905,10 +656,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 31,
+			"order": 24,
 			"key": "Root/60#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -929,10 +680,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 32,
+			"order": 25,
 			"key": "Root/61#0",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "Create an account (optional)",
 			"block": null,
 			"action": "absorbed",
@@ -953,10 +704,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 33,
+			"order": 26,
 			"key": "Root/62#0",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "See your bake dates and manage subscriptions online.",
 			"block": null,
 			"action": "absorbed",
@@ -977,10 +728,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 34,
+			"order": 27,
 			"key": "Root/71#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1001,10 +752,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 35,
+			"order": 28,
 			"key": "Root/72#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "2 · Who’s it for?",
 			"block": null,
 			"action": "absorbed",
@@ -1025,10 +776,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 36,
+			"order": 29,
 			"key": "Root/73#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1049,10 +800,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 37,
+			"order": 30,
 			"key": "Root/74#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Send to my address",
 			"block": null,
 			"action": "absorbed",
@@ -1073,10 +824,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 38,
+			"order": 31,
 			"key": "Root/75#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "for me",
 			"block": null,
 			"action": "absorbed",
@@ -1097,10 +848,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 39,
+			"order": 32,
 			"key": "Root/76#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Send to someone else",
 			"block": null,
 			"action": "absorbed",
@@ -1121,10 +872,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 40,
+			"order": 33,
 			"key": "Root/77#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "it’s a gift ♥",
 			"block": null,
 			"action": "absorbed",
@@ -1145,10 +896,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 41,
+			"order": 34,
 			"key": "Root/85#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1169,10 +920,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 42,
+			"order": 35,
 			"key": "Root/86#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "3 · Delivery",
 			"block": null,
 			"action": "absorbed",
@@ -1193,10 +944,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 43,
+			"order": 36,
 			"key": "Root/87#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1217,10 +968,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 44,
+			"order": 37,
 			"key": "Root/88#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Postcode",
 			"block": null,
 			"action": "absorbed",
@@ -1241,10 +992,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 45,
+			"order": 38,
 			"key": "Root/89#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1265,10 +1016,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 46,
+			"order": 39,
 			"key": "Root/90#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "Find address",
 			"block": null,
 			"action": "absorbed",
@@ -1289,10 +1040,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 47,
+			"order": 40,
 			"key": "Root/91#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Address line 1",
 			"block": null,
 			"action": "absorbed",
@@ -1313,10 +1064,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 48,
+			"order": 41,
 			"key": "Root/92#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1337,10 +1088,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 49,
+			"order": 42,
 			"key": "Root/93#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1361,10 +1112,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 50,
+			"order": 43,
 			"key": "Root/94#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Address line 2 (optional)",
 			"block": null,
 			"action": "absorbed",
@@ -1385,10 +1136,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 51,
+			"order": 44,
 			"key": "Root/95#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1409,10 +1160,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 52,
+			"order": 45,
 			"key": "Root/96#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Town or city",
 			"block": null,
 			"action": "absorbed",
@@ -1433,10 +1184,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 53,
+			"order": 46,
 			"key": "Root/97#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1457,10 +1208,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 54,
+			"order": 47,
 			"key": "Root/98#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1481,10 +1232,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 55,
+			"order": 48,
 			"key": "Root/100#0",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1505,10 +1256,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 56,
+			"order": 49,
 			"key": "Root/101#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1528,10 +1279,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 57,
+			"order": 50,
 			"key": "Root/102#0",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1552,10 +1303,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 58,
+			"order": 51,
 			"key": "Root/103#0",
 			"tag": "b",
-			"depth": 8,
+			"depth": 7,
 			"words": "Royal Mail Tracked 48",
 			"block": null,
 			"action": "absorbed",
@@ -1576,10 +1327,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 59,
+			"order": 52,
 			"key": "Root/104#0",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "Arrives 2–3 days after the bake",
 			"block": null,
 			"action": "absorbed",
@@ -1600,10 +1351,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 60,
+			"order": 53,
 			"key": "Root/105#0",
 			"tag": "b",
-			"depth": 7,
+			"depth": 6,
 			"words": "£3.95",
 			"block": null,
 			"action": "absorbed",
@@ -1624,10 +1375,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 61,
+			"order": 54,
 			"key": "Root/100#1",
 			"tag": "button",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1648,10 +1399,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 62,
+			"order": 55,
 			"key": "Root/101#1",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1671,10 +1422,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 63,
+			"order": 56,
 			"key": "Root/102#1",
 			"tag": "span",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1695,10 +1446,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 64,
+			"order": 57,
 			"key": "Root/103#1",
 			"tag": "b",
-			"depth": 8,
+			"depth": 7,
 			"words": "Royal Mail Tracked 24",
 			"block": null,
 			"action": "absorbed",
@@ -1719,10 +1470,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 65,
+			"order": 58,
 			"key": "Root/104#1",
 			"tag": "span",
-			"depth": 8,
+			"depth": 7,
 			"words": "Arrives the day after the bake",
 			"block": null,
 			"action": "absorbed",
@@ -1743,10 +1494,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 66,
+			"order": 59,
 			"key": "Root/105#1",
 			"tag": "b",
-			"depth": 7,
+			"depth": 6,
 			"words": "£5.45",
 			"block": null,
 			"action": "absorbed",
@@ -1767,10 +1518,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 67,
+			"order": 60,
 			"key": "Root/106#0",
 			"tag": "fieldset",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1791,10 +1542,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 68,
+			"order": 61,
 			"key": "Root/107#0",
 			"tag": "legend",
-			"depth": 5,
+			"depth": 4,
 			"words": "4 · Payment",
 			"block": null,
 			"action": "absorbed",
@@ -1815,10 +1566,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 69,
+			"order": 62,
 			"key": "Root/108#0",
 			"tag": "label",
-			"depth": 5,
+			"depth": 4,
 			"words": "Card number",
 			"block": null,
 			"action": "absorbed",
@@ -1839,10 +1590,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 70,
+			"order": 63,
 			"key": "Root/109#0",
 			"tag": "input",
-			"depth": 6,
+			"depth": 5,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1863,10 +1614,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 71,
+			"order": 64,
 			"key": "Root/110#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1887,10 +1638,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 72,
+			"order": 65,
 			"key": "Root/111#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Expiry",
 			"block": null,
 			"action": "absorbed",
@@ -1911,10 +1662,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 73,
+			"order": 66,
 			"key": "Root/112#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1935,10 +1686,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 74,
+			"order": 67,
 			"key": "Root/113#0",
 			"tag": "label",
-			"depth": 6,
+			"depth": 5,
 			"words": "Security code",
 			"block": null,
 			"action": "absorbed",
@@ -1959,10 +1710,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 75,
+			"order": 68,
 			"key": "Root/114#0",
 			"tag": "input",
-			"depth": 7,
+			"depth": 6,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -1983,10 +1734,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 76,
+			"order": 69,
 			"key": "Root/115#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "Contains oats (gluten), eggs, milk and fenugreek unless you chose the vegan base. Made in a kitchen that handles tree nuts.",
 			"block": null,
 			"action": "absorbed",
@@ -2007,10 +1758,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 77,
+			"order": 70,
 			"key": "Root/116#0",
 			"tag": "a",
-			"depth": 5,
+			"depth": 4,
 			"words": "Full allergen info",
 			"block": null,
 			"action": "absorbed",
@@ -2031,10 +1782,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 78,
+			"order": 71,
 			"key": "Root/117#0",
 			"tag": "button",
-			"depth": 4,
+			"depth": 3,
 			"words": "Pay £30.45",
 			"block": null,
 			"action": "absorbed",
@@ -2055,10 +1806,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 79,
+			"order": 72,
 			"key": "Root/118#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "By placing your order you agree to our .",
 			"block": null,
 			"action": "absorbed",
@@ -2079,10 +1830,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 80,
+			"order": 73,
 			"key": "Root/119#0",
 			"tag": "a",
-			"depth": 5,
+			"depth": 4,
 			"words": "terms",
 			"block": null,
 			"action": "absorbed",
@@ -2103,10 +1854,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 81,
+			"order": 74,
 			"key": "Root/121#0",
 			"tag": "aside",
-			"depth": 3,
+			"depth": 2,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2126,10 +1877,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 82,
+			"order": 75,
 			"key": "Root/122#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "Your order",
 			"block": null,
 			"action": "absorbed",
@@ -2149,10 +1900,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 83,
+			"order": 76,
 			"key": "Root/124#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2172,10 +1923,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 84,
+			"order": 77,
 			"key": "Root/125#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2195,10 +1946,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 85,
+			"order": 78,
 			"key": "Root/126#0",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "1",
 			"block": null,
 			"action": "absorbed",
@@ -2218,10 +1969,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 86,
+			"order": 79,
 			"key": "Root/127#0",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2241,10 +1992,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 87,
+			"order": 80,
 			"key": "Root/128#0",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "Zookies · 20 pack",
 			"block": null,
 			"action": "absorbed",
@@ -2264,10 +2015,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 88,
+			"order": 81,
 			"key": "Root/129#0",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "Oat · Milk choc · Strawberry",
 			"block": null,
 			"action": "absorbed",
@@ -2287,10 +2038,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 89,
+			"order": 82,
 			"key": "Root/130#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£21.50",
 			"block": null,
 			"action": "absorbed",
@@ -2310,10 +2061,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 90,
+			"order": 83,
 			"key": "Root/124#1",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2333,10 +2084,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 91,
+			"order": 84,
 			"key": "Root/125#1",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2356,10 +2107,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 92,
+			"order": 85,
 			"key": "Root/126#1",
 			"tag": "span",
-			"depth": 6,
+			"depth": 5,
 			"words": "1",
 			"block": null,
 			"action": "absorbed",
@@ -2379,10 +2130,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 93,
+			"order": 86,
 			"key": "Root/127#1",
 			"tag": "div",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2402,10 +2153,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 94,
+			"order": 87,
 			"key": "Root/128#1",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "Taster Trio",
 			"block": null,
 			"action": "absorbed",
@@ -2425,10 +2176,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 95,
+			"order": 88,
 			"key": "Root/129#1",
 			"tag": "div",
-			"depth": 6,
+			"depth": 5,
 			"words": "3 Classic Zookies",
 			"block": null,
 			"action": "absorbed",
@@ -2448,10 +2199,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 96,
+			"order": 89,
 			"key": "Root/130#1",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£5.00",
 			"block": null,
 			"action": "absorbed",
@@ -2471,10 +2222,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 97,
+			"order": 90,
 			"key": "Root/131#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2494,10 +2245,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 98,
+			"order": 91,
 			"key": "Root/132#0",
 			"tag": "input",
-			"depth": 5,
+			"depth": 4,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2517,10 +2268,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 99,
+			"order": 92,
 			"key": "Root/133#0",
 			"tag": "button",
-			"depth": 5,
+			"depth": 4,
 			"words": "Apply",
 			"block": null,
 			"action": "absorbed",
@@ -2540,10 +2291,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 100,
+			"order": 93,
 			"key": "Root/134#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2563,10 +2314,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 101,
+			"order": 94,
 			"key": "Root/135#0",
 			"tag": "span",
-			"depth": 5,
+			"depth": 4,
 			"words": "Subtotal",
 			"block": null,
 			"action": "absorbed",
@@ -2586,10 +2337,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 102,
+			"order": 95,
 			"key": "Root/136#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£26.50",
 			"block": null,
 			"action": "absorbed",
@@ -2609,10 +2360,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 103,
+			"order": 96,
 			"key": "Root/137#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2632,10 +2383,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 104,
+			"order": 97,
 			"key": "Root/138#0",
 			"tag": "span",
-			"depth": 5,
+			"depth": 4,
 			"words": "Delivery",
 			"block": null,
 			"action": "absorbed",
@@ -2655,10 +2406,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 105,
+			"order": 98,
 			"key": "Root/139#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "£3.95",
 			"block": null,
 			"action": "absorbed",
@@ -2678,10 +2429,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 106,
+			"order": 99,
 			"key": "Root/140#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "",
 			"block": null,
 			"action": "absorbed",
@@ -2701,10 +2452,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 107,
+			"order": 100,
 			"key": "Root/141#0",
 			"tag": "b",
-			"depth": 5,
+			"depth": 4,
 			"words": "Total",
 			"block": null,
 			"action": "absorbed",
@@ -2724,10 +2475,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 108,
+			"order": 101,
 			"key": "Root/142#0",
 			"tag": "span",
-			"depth": 5,
+			"depth": 4,
 			"words": "£30.45",
 			"block": null,
 			"action": "absorbed",
@@ -2747,10 +2498,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 109,
+			"order": 102,
 			"key": "Root/143#0",
 			"tag": "div",
-			"depth": 4,
+			"depth": 3,
 			"words": "Baked fresh for you · with you in 3–5 days",
 			"block": null,
 			"action": "absorbed",
@@ -2770,10 +2521,10 @@
 			"attributes": {}
 		},
 		{
-			"order": 110,
+			"order": 103,
 			"key": "Root/19#0",
 			"tag": "button",
-			"depth": 3,
+			"depth": 2,
 			"words": "",
 			"block": "sgs/container",
 			"action": null,
@@ -2806,10 +2557,10 @@
 			}
 		},
 		{
-			"order": 111,
+			"order": 104,
 			"key": "Root/20#0",
 			"tag": "span",
-			"depth": 4,
+			"depth": 3,
 			"words": "Show order summary ▾",
 			"block": "sgs/text",
 			"action": null,
@@ -2839,10 +2590,10 @@
 			}
 		},
 		{
-			"order": 112,
+			"order": 105,
 			"key": "Root/21#0",
 			"tag": "span",
-			"depth": 4,
+			"depth": 3,
 			"words": "£30.45",
 			"block": "sgs/text",
 			"action": null,

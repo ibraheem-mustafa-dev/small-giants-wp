@@ -1334,7 +1334,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "See our certifications",
-													"url": "#/certifications"
+													"url": "/about/certifications/"
 												},
 												"draftRef": {
 													"tpl": "Root/393#0"
@@ -1658,7 +1658,7 @@
 												"name": "sgs/button",
 												"attributes": {
 													"label": "Become a Trade Customer",
-													"url": "#/apply"
+													"url": "/apply/"
 												},
 												"draftRef": {
 													"tpl": "Root/525#0"

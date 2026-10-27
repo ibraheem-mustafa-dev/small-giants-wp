@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T01:32:13.009Z",
-	"inventory": "2026-10-26T22:15:30.886Z",
-	"source": "http://127.0.0.1:61524/Gifts.dc.html",
+	"generated": "2026-10-27T16:01:10.796Z",
+	"inventory": "2026-10-27T15:25:38.925Z",
+	"source": "http://127.0.0.1:58525/Gifts.dc.html",
 	"surface": "gift-finder",
 	"siteName": null,
 	"surfaceParts": [],
@@ -20,6 +20,18 @@
 		"logo": 0.5,
 		"rule": 1
 	},
+	"surfaceRole": {
+		"role": "choiceFlow",
+		"row": "choice-flow-gifts-she-ll-actually-eat"
+	},
+	"choiceFlow": {
+		"steps": 0,
+		"questions": 0,
+		"results": 0,
+		"notes": [
+			"no question found under the flow root Gifts/24: no loop of options whose button's handler binds the loop item"
+		]
+	},
 	"counts": {
 		"inventoryElements": 1,
 		"parts": 0,
@@ -30,7 +42,7 @@
 		"removed": 0,
 		"unresolved": 0,
 		"byRule": {
-			"formHost": 1
+			"choiceFlow": 1
 		}
 	},
 	"widthAlternatives": [],
@@ -42,21 +54,21 @@
 			"tag": "a",
 			"depth": 0,
 			"words": "Show 4 gifts ↓",
-			"block": "sgs/form",
+			"block": "sgs/choice-flow",
 			"action": null,
-			"reason": "a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part",
-			"source": "rule formHost",
+			"reason": "a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row",
+			"source": "rule choiceFlow",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "formHost",
+			"rule": "choiceFlow",
 			"candidates": [
 				{
-					"block": "sgs/form",
+					"block": "sgs/choice-flow",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formHost: a draft <form> element is the sgs/form block, whose fields sit inside it and whose field settings (border, background, padding, font) paint every field's input part"
+						"rule choiceFlow: a choice flow is the sgs/choice-flow block family (Spec 43 FR-43-1, FR-43-19, FR-43-24, FR-43-26): one sgs/form-step holding an sgs/choice-flow-question per group of options (each option an entry of the question's options), a panel a question opens underneath a step holding its fields and an sgs/choice-flow-result, the add-to-bag control a result step, and the summary, close, skip and continue pieces the flow's own settings; the draft's elements are absorbed into the flow and every element with words or a control the family cannot hold is a gap row"
 					]
 				}
 			],
@@ -64,8 +76,12 @@
 			"screenshots": {},
 			"snippet": "<a href=\"#results\" style=\"height:56px;border-radius:999px;border:2px solid #3A2A22;background:#F9CF6E;color:#3A2A22;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:4px 4px 0 #3A2A22;transition:transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s, background .2s\" style-hover=\"background:#F9D5D3;transform:translate(-3px,-3px);b",
 			"attributes": {
-				"submitLabel": "Show 4 gifts ↓"
-			}
+				"title": "Show 4 gifts ↓",
+				"flowLayout": "compact"
+			},
+			"slotNotes": [
+				"no question found under the flow root Gifts/24: no loop of options whose button's handler binds the loop item"
+			]
 		}
 	]
 }

@@ -132,7 +132,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "stack",
-							"sgsBlockLink": "Shop.dc.html"
+							"sgsBlockLink": "/shop/"
 						},
 						"draftRef": {
 							"tpl": "Root>SiteHeader@7#0/63#0"
@@ -251,7 +251,7 @@
 						"attributes": {
 							"tagName": "div",
 							"layout": "stack",
-							"sgsBlockLink": "Gifts.dc.html"
+							"sgsBlockLink": "/gifts/"
 						},
 						"draftRef": {
 							"tpl": "Root>SiteHeader@7#0/68#0"
@@ -373,31 +373,28 @@
 					"items": [
 						{
 							"text": "Shop all",
-							"url": "Shop.dc.html"
+							"url": "/shop/"
 						},
 						{
-							"text": "Zookies",
-							"url": "Product.dc.html?id=zookies"
+							"text": "Zookies"
 						},
 						{
-							"text": "Taster Trio",
-							"url": "Product.dc.html?id=trial"
+							"text": "Taster Trio"
 						},
 						{
 							"text": "Gifts",
-							"url": "Gifts.dc.html"
+							"url": "/gifts/"
 						},
 						{
-							"text": "Subscribe & save",
-							"url": "Product.dc.html?id=zookies&sub=1"
+							"text": "Subscribe & save"
 						},
 						{
 							"text": "Help & FAQs",
-							"url": "Help.dc.html"
+							"url": "/help/"
 						},
 						{
 							"text": "Contact",
-							"url": "Contact.dc.html"
+							"url": "/contact/"
 						}
 					]
 				},
@@ -415,7 +412,24 @@
 					"textHash": "af5fd20",
 					"line": 79
 				},
-				"innerBlocks": []
+				"innerBlocks": [],
+				"handover": [
+					{
+						"owner": "product-data",
+						"kind": "link",
+						"detail": "draft link \"Product.dc.html?id=zookies\" goes to the draft route \"Product.dc.html\": the draft product \"zookies\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+					},
+					{
+						"owner": "product-data",
+						"kind": "link",
+						"detail": "draft link \"Product.dc.html?id=trial\" goes to the draft route \"Product.dc.html\": the draft product \"trial\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+					},
+					{
+						"owner": "product-data",
+						"kind": "link",
+						"detail": "draft link \"Product.dc.html?id=zookies&sub=1\" goes to the draft route \"Product.dc.html\": the draft product \"zookies\" has no product in the page map (its product row is WooCommerce's single-product template; products are WooCommerce data); url left empty"
+					}
+				]
 			},
 			{
 				"name": "sgs/container",
@@ -463,11 +477,11 @@
 									"items": [
 										{
 											"text": "Sign in",
-											"url": "SignIn.dc.html"
+											"url": "/my-account/"
 										},
 										{
 											"text": "Create account",
-											"url": "SignIn.dc.html?mode=register"
+											"url": "/my-account/"
 										}
 									]
 								},
@@ -487,7 +501,14 @@
 									"textHash": "c0419d31",
 									"line": 90
 								},
-								"innerBlocks": []
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "behaviour",
+										"kind": "link",
+										"detail": "draft link \"SignIn.dc.html?mode=register\" opens /my-account/; its draft query ?mode=register has no site address and is dropped"
+									}
+								]
 							}
 						]
 					},
@@ -539,7 +560,7 @@
 									"items": [
 										{
 											"text": "WhatsApp",
-											"url": "Contact.dc.html"
+											"url": "/contact/"
 										},
 										{
 											"text": "",
