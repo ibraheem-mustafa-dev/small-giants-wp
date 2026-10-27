@@ -16,6 +16,7 @@ import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { ResponsiveBoxControl, LinkPopoverField, resolveColourToken, SgsColourPanel, SgsLengthControl, fillRow, textRow, SgsBorderControl, TypographyControls, ResponsiveOverride, BOX_UNITS, normaliseResponsiveBox, SgsBoxControl, FlexWrapControl } from '../../components';
 import { NumberControl } from '../../components/primitives';
+import { hasOwnSubmit } from './form-own-submit';
 import { LINK_SOURCES_PAGES } from '../../shared/link-source-options';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
@@ -136,6 +137,12 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		fileLabelBackgroundColourGradient,
 		fileLabelBackgroundColourHoverGradient,
 	} = attributes;
+
+	// A form holding its own submit button (an sgs/button set as a submit button) shows no built-in one, as render.php.
+	const ownSubmit = useSelect(
+		( select ) => hasOwnSubmit( select( 'core/block-editor' ).getBlocks( clientId ) ),
+		[ clientId ]
+	);
 
 	const formSlug = useSelect( ( select ) => {
 		const editor = select( 'core/editor' );
@@ -1381,13 +1388,15 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					>
 						{ __( 'Previous', 'sgs-blocks' ) }
 					</button>
-					<button
-						type="button"
-						className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
-						style={ submitButtonStyle }
-					>
-						{ submitLabel || __( 'Submit', 'sgs-blocks' ) }
-					</button>
+					{ ! ownSubmit && (
+						<button
+							type="button"
+							className={ `sgs-form__button sgs-form__button--submit sgs-form__button--${ submitStyle }` }
+							style={ submitButtonStyle }
+						>
+							{ submitLabel || __( 'Submit', 'sgs-blocks' ) }
+						</button>
+					) }
 				</div>
 				{ /* progressBarColour preview (2026-08-13) — render.php:230-241
 					drives `--sgs-progress-colour` on `.sgs-form__progress`, but the
