@@ -88,7 +88,7 @@ const run = ( root, o = {} ) => {
 	o.drop && Object.keys( b.recs ).filter( ( k ) => 'button' === b.recs[ k ].template.realTag ).forEach( ( k ) => delete b.recs[ k ] );
 	const draft = o.logic ? draftRepo( o.logic ) : { repo: REPO, hash: '' };
 	const rec = { schema: '1', client: 'fixture-client', elements: b.recs, surfaces: {}, sources: { files: { 'Root.dc.html': o.hash ?? draft.hash } } };
-	return proposeSkeleton( { inventory: b.inventory, facts: facts( draft.repo, ...( o.off || [] ) ), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', motion: new Set(), db, factRecord: rec, openers: {} } );
+	return proposeSkeleton( { inventory: b.inventory, facts: facts( draft.repo, ...( o.off || [] ) ), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: 'Fixture', motion: new Set(), db, factRecord: rec, openers: {} } );
 };
 const rows = ( r ) => r.proposal.rows;
 const group = ( r ) => rows( r ).find( ( x ) => 'div' === x.tag && 1 === x.depth ) ?? rows( r ).find( ( x ) => 'div' === x.tag );
@@ -104,6 +104,19 @@ test( 'optionSetForm: a group of pressable chips inside a form element is the ti
 	const off = run( inForm( chips() ), { off: [ 'optionSetForm' ] } );
 	assert.deepEqual( [ group( off ).block, group( off ).rule ], [ 'sgs/option-picker', 'optionSet' ] );
 	assert.deepEqual( [ group( run( inForm( chipLoop() ) ) ).block, group( run( inForm( chipLoop() ) ) ).rule ], [ 'sgs/form-field-tiles', 'optionSetForm' ], 'a loop of chips in a form is one too' );
+} );
+
+test( 'optionSetForm: on a form surface (a wizard drawn without a <form>, whose root is the form block by rule formHost) a chip group is the tiles field; MUST FAIL without the form-surface clause', () => {
+	const r = run( N( 'section', {}, [ N( 'div', {}, [ chips() ] ) ] ), { kind: 'form' } );
+	assert.equal( rows( r ).find( ( x ) => 0 === x.depth ).block, 'sgs/form', 'the surface root is the form' );
+	const g = rows( r ).find( ( x ) => 'div' === x.tag && 2 === x.depth );
+	assert.deepEqual( [ g.block, g.rule ], [ 'sgs/form-field-tiles', 'optionSetForm' ] );
+	const off = run( N( 'section', {}, [ N( 'div', {}, [ chips() ] ) ] ), { kind: 'form', off: [ 'optionSetForm' ] } );
+	assert.equal( rows( off ).find( ( x ) => 'div' === x.tag && 2 === x.depth ).block, 'sgs/option-picker' );
+	const page = run( N( 'section', {}, [ N( 'div', {}, [ chips() ] ) ] ) );
+	assert.equal( rows( page ).find( ( x ) => 'div' === x.tag && 2 === x.depth ).block, 'sgs/option-picker', 'NEGATIVE: the same group on a page surface with no form stays the option picker' );
+	const filter = run( withList( chipLoop() ), { logic: LOGIC(), kind: 'form' } );
+	assert.deepEqual( [ group( filter ).block, group( filter ).rule ], [ 'sgs/option-picker', 'optionSetFilter' ], 'NEGATIVE: on a form surface a group that filters a list stays the filter (a shop\'s filter panel)' );
 } );
 
 test( 'NEGATIVE optionSetForm: a form group that is not a toggle-chip group, and a chip group outside a form, are not tiles', () => {

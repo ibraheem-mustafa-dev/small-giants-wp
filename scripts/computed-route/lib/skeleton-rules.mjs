@@ -659,7 +659,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A group whose block children are all buttons carrying a pressed or checked state (a loop of chips, or two or more) is
 		// a choice the visitor makes: inside a form element it is that form's tiles field (`optionSetForm`); anywhere else it is
 		// an option picker, which draws its own options, and when the chips' handlers write a state key another list on the
-		// surface is filtered by it carries the hand-over to wire that filter (`optionSetFilter`).
+		// surface is filtered by it carries the hand-over to wire that filter (`optionSetFilter`). On a form surface drawn
+		// without a <form> (its root is the form block by rule formHost: a wizard in a <div>) a group that filters no list is
+		// the form's tiles field too.
 		( { e } ) => {
 			const chips = R.optionSet ? m.blockKids( e ) : [];
 			const chosen = ( k ) => 'button' === view.realTag( k ) && ( null != view.attr( k, 'aria-pressed' ) || null != view.attr( k, 'aria-checked' ) );
@@ -670,6 +672,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: {}, absorb: true } );
 			}
 			const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );
+			if ( R.optionSetForm && ! filter && 'form' === surface.kind ) {
+				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: {}, absorb: true } );
+			}
 			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: {}, absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
 		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling

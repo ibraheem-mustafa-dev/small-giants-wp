@@ -14,7 +14,7 @@ import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots } from './skeleton-child-slots.mjs';
 import { partSlots, placePart } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
-import { formStepNodes } from './skeleton-form-steps.mjs';
+import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
 import { fieldInputSlot } from './skeleton-form-slots.mjs';
 import { linkedFormOf } from './skeleton-form-link.mjs';
@@ -333,7 +333,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const rootRow = rowOf[ m.root.key ];
 		rootRow && cls.choiceFlow.notes.length && ( rootRow.slotNotes = [ ...( rootRow.slotNotes || [] ), ...cls.choiceFlow.notes ] );
 	}
-	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null } );
+	const skeleton = flowNode ? [ ...flowSides.before, ...[].concat( rootNode || [] ), ...flowSides.after ] : formStepNodes( formHostNodes( [].concat( rootNode || [] ), { factRecord } ), { factRecord, surfaceKind, component: 'form' === surfaceKind ? view.recordOf( scope?.id )?.dc ?? null : null, ...formStepContext( { m, view, nodeOfKey, rowOf, rows, rules: R, attr: facts.attr } ) } );
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
 	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
