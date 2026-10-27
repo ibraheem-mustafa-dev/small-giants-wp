@@ -167,7 +167,7 @@ const SETTLE_TIMEOUT_MS = 120000;
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
 // { scrolled: { width: { n: read } }, scrollMissed: [n], hoverMissed: [n] (state instances read at no width),
 // hoverWhy: { n: [ '<width>px: <why>' ] } (why each width's read failed: hidden, no instance, or the browser's error) }. The widths are read in parallel, each in its own page of the logged-in context.
-export async function readAll( page, url, instances, { settle = null, settleGone = null } = {} ) {
+export async function readAll( page, url, instances, { settle = null, settleGone = null, owner = { block: 'the block', site: 'this site' } } = {} ) {
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
@@ -178,7 +178,7 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, settle, settleGone } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, settle, settleGone, owner } );
 		} finally {
 			await p.close();
 		}
@@ -323,8 +323,33 @@ async function readUnderTrigger( page, instances, n, inst ) {
 	return read ? { read } : { read: null, why };
 }
 
+// In-page: the text of the editor notice every instance root holds alone, else null. A root counts when it is an
+// `*-editor-notice` element or every element inside it sits within one; an empty root or one with real content does not.
+export function editorNoticeOnlyInPage( [ prefix, count ] ) {
+	const notice = '[class*="editor-notice"]';
+	let text = null;
+	for ( let n = 0; n < count; n++ ) {
+		const root = document.querySelector( `.${ prefix }${ n }` );
+		if ( ! root ) {
+			return null;
+		}
+		const inside = [ ...root.querySelectorAll( '*' ) ];
+		const only = root.matches( notice ) || ( inside.length > 0 && inside.every( ( el ) => el.closest( notice ) && root.contains( el.closest( notice ) ) ) );
+		if ( ! only ) {
+			return null;
+		}
+		text ??= ( root.textContent || '' ).replace( /\s+/g, ' ' ).trim();
+	}
+	return text;
+}
+
+// The block's error when it rendered only its editor notice, else null.
+export function missingDependencyReason( block, site, noticeText ) {
+	return null === noticeText ? null : `${ block } rendered only its editor notice on ${ site } (${ noticeText }): a dependency is missing there; calibrate it on a mirror that has it`;
+}
+
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, settle = null, settleGone = null } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, settle = null, settleGone = null, owner } ) {
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
 	// Attached, not visible: a block may legitimately render hidden at a width (an empty header row), and its elements
@@ -352,6 +377,10 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		await page.waitForSelector( settle, { state: 'attached', timeout: SETTLE_TIMEOUT_MS } ).catch( () => {} );
 	}
 	await page.waitForTimeout( 800 );
+	const noticeText = await page.evaluate( editorNoticeOnlyInPage, [ CAL_PREFIX, instances.length ] );
+	if ( null !== noticeText ) {
+		throw new Error( missingDependencyReason( owner.block, owner.site, noticeText ) );
+	}
 	out[ w ] = await page.evaluate( readInstancesInPage, args( instances ) );
 	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {

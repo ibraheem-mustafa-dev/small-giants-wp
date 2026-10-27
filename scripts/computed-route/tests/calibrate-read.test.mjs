@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { slotFor, WIDTHS } from '../lib/calibrate.mjs';
-import { readInstancesInPage, openToggle, markTargetInPage, missedReason, readAll } from '../lib/calibrate-read.mjs';
+import { readInstancesInPage, openToggle, markTargetInPage, missedReason, readAll, editorNoticeOnlyInPage, missingDependencyReason } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, CAL_PSEUDO_PROPS, CAL_EXTRA_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 
@@ -404,5 +404,36 @@ test( 'MUST FAIL (wishlist sgsHideOnDesktop read dead at random): a pass with se
 	} finally {
 		await browser.close();
 		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );
+
+test( 'MUST FAIL (account on a mirror without WooCommerce): instances holding only an editor notice are named as a missing dependency', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		await page.setContent( `<div class="cr-ref-cal-0 sgs-account"><p class="sgs-account__editor-notice">sgs/account needs  WooCommerce active.</p></div><div class="cr-ref-cal-1 sgs-account"><p class="sgs-account__editor-notice">sgs/account needs WooCommerce active.</p></div>` );
+		const text = await page.evaluate( editorNoticeOnlyInPage, [ 'cr-ref-cal-', 2 ] );
+		assert.equal( text, 'sgs/account needs WooCommerce active.' );
+		assert.equal( missingDependencyReason( 'sgs/account', 'local-indus', text ), 'sgs/account rendered only its editor notice on local-indus (sgs/account needs WooCommerce active.): a dependency is missing there; calibrate it on a mirror that has it' );
+		await page.setContent( `<div class="cr-ref-cal-0 sgs-account__editor-notice">root is the notice</div>` );
+		assert.equal( await page.evaluate( editorNoticeOnlyInPage, [ 'cr-ref-cal-', 1 ] ), 'root is the notice' );
+	} finally {
+		await browser.close();
+	}
+} );
+
+test( 'control: a block rendering real content, an empty root, or content beside a notice is not a missing dependency', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		const check = async ( html ) => { await page.setContent( html ); return page.evaluate( editorNoticeOnlyInPage, [ 'cr-ref-cal-', 1 ] ); };
+		assert.equal( await check( '<div class="cr-ref-cal-0"><nav class="sgs-account__nav">Orders</nav></div>' ), null );
+		assert.equal( await check( '<div class="cr-ref-cal-0"></div>' ), null );
+		assert.equal( await check( '<div class="cr-ref-cal-0"><p class="sgs-x__editor-notice">n</p><nav>Orders</nav></div>' ), null );
+		assert.equal( missingDependencyReason( 'b', 's', null ), null );
+	} finally {
+		await browser.close();
 	}
 } );

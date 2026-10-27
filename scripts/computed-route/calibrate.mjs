@@ -209,11 +209,12 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 		// pass in which its marker shows.
 		// A fixture's `settleGone` holds every pass until no element matches it (a block its script unhides after load).
 		const settleGone = fixture.settleGone || null;
-		const passes = [ await readAll( shared.page, pageUrl, list, { settleGone } ) ];
+		const owner = { block, site };
+		const passes = [ await readAll( shared.page, pageUrl, list, { settleGone, owner } ) ];
 		if ( fixture.basket ) {
 			await setBasket( shared.page, env.url, fixture.basket );
 			try {
-				passes.push( await readAll( shared.page, pageUrl, list, { settleGone } ) );
+				passes.push( await readAll( shared.page, pageUrl, list, { settleGone, owner } ) );
 			} finally {
 				await setBasket( shared.page, env.url, null );
 			}
@@ -224,7 +225,7 @@ async function calibrateBlock( block, { site, target, env, shared, fixtures, sna
 			const runPhp = wpEvalRunner( target, site, REPO );
 			setWishlist( runPhp, env.user, true );
 			try {
-				passes.push( await readAll( shared.page, pageUrl, list, { settle: fixture.wishlist.settle || null, settleGone } ) );
+				passes.push( await readAll( shared.page, pageUrl, list, { settle: fixture.wishlist.settle || null, settleGone, owner } ) );
 			} finally {
 				setWishlist( runPhp, env.user, false );
 			}
