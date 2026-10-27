@@ -7,8 +7,8 @@ import { kebab } from './intake-pagemap-surfaces.mjs';
 // WooCommerce's own pages keep WooCommerce's slugs: the shop `shop`, the cart and checkout pages `cart` and
 // `checkout`, and every page holding a password field (sign-in, register, account details) the one `my-account` page,
 // so two such routes collapse into one row through the twin rule. The account page is an ordinary page (Bean,
-// 2026-10-26: the theme has no account template and needs none; eye-care-test's account page is the theme's page with
-// WooCommerce's account output in it), so it names the `page` template.
+// 2026-10-26: the theme has no account template and needs none; the hand-built reference shop's account page is the
+// theme's page with WooCommerce's account output in it), so it names the `page` template.
 export function wooSlugs( rows, accountPages ) {
 	for ( const r of rows ) {
 		const account = 'page' === r.postType && ! r.template && accountPages.has( r.route );

@@ -128,12 +128,12 @@
 			"roles": {
 				"cart": { "block": "core/post-content", "reason": "the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button" },
 				"checkout": { "block": "core/post-content", "reason": "the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary" },
-				"account": { "block": "sgs/account", "reason": "the account page is an ordinary page (Bean, 2026-10-26; eye-care-test's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard" },
+				"account": { "block": "sgs/account", "reason": "the account page is an ordinary page (Bean, 2026-10-26; the hand-built reference shop's account page is the theme's page with WooCommerce's account output in it): its sign-in and account forms region is sgs/account, WooCommerce's account piece, which draws the forms, the menu and the dashboard" },
 				"shop": {
 					"block": "woocommerce/product-collection",
 					"attributes": { "queryId": 0, "query": { "inherit": true, "perPage": 24, "isProductCollectionBlock": true }, "tagName": "div", "displayLayout": { "type": "flex", "columns": 3, "shrinkColumns": true }, "queryContextIncludes": [ "collection" ] },
 					"inner": [ { "name": "woocommerce/product-template", "innerBlocks": [ { "name": "sgs/product-card", "attributes": { "sourceMode": "wc-product" } } ] } ],
-					"reason": "WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built eye-care-test archive-product copy has them; its column count is the draft's cards per row at 1440"
+					"reason": "WooCommerce's product collection draws the shop's products, each in the site's own sgs/product-card, as the hand-built reference shop's archive-product copy has them; its column count is the draft's cards per row at 1440"
 				}
 			}
 		},
