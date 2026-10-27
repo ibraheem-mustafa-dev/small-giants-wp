@@ -256,15 +256,17 @@ export async function fillSurface( o ) {
 		result.writes = presets.writes;
 		result.notes.push( ...presets.notes );
 		// FR-48-57: each form field's settings from the draft's control and logic (lib/fill-form.mjs).
-		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( o.draftDir, facts, intakeParts.rootComponent ) } );
+		// The draft's logic, read from the draft folder (--draft-dir, else the surface's `draftDir`, else the client's handoff folder),
+		// also when the draft is served by URL: the form's button words and the list items read it.
+		const idxFor = logicReader( o.draftDir || path.join( repo, entry.draftDir || path.join( 'sites', o.client, 'handoff' ) ) );
+		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( o.draftDir, facts, intakeParts.rootComponent ), idxFor } );
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
 		result.settled.push( ...forms.settled );
 		result.notes.push( ...forms.notes );
 		// FR-48-82: a block holding a list (an array setting, or one kind of child block) takes the items the draft draws,
-		// read from the surface's skeleton inventory and the draft's logic (lib/fill-list-content.mjs); the logic is read from
-		// the draft folder (--draft-dir, else the surface's `draftDir`, else the client's handoff folder), also when the draft is served by URL.
-		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor: logicReader( o.draftDir || path.join( repo, entry.draftDir || path.join( 'sites', o.client, 'handoff' ) ) ), db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
+		// read from the surface's skeleton inventory and the draft's logic (lib/fill-list-content.mjs, `idxFor` above).
+		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
 		result.writes.push( ...listed.writes );
 		result.unmapped.push( ...listed.unmapped );
 		result.handover.push( ...listed.handover );
