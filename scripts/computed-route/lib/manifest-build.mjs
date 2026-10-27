@@ -204,10 +204,14 @@ function intakeRecord( row, intake, record ) {
 	return 1 === found.length ? found[ 0 ] : null;
 }
 
-// The slug of intake's skeleton entry whose id is the matched handoff record's id (never by position), or null.
-function intakeSurfaceOf( record, intake ) {
+// The slug of intake's skeleton entry whose id is the matched handoff record's id (never by position), or null. A record
+// intake read as several tab panels (lib/intake-skeletons.mjs::tabPanels, each skeleton naming its `panel` state) links a
+// mega-menu panel row to the panel whose state its label names, as panelStates keeps that one state.
+function intakeSurfaceOf( record, intake, row = null ) {
 	const found = Object.entries( intake?.skeletons || {} ).filter( ( [ , x ] ) => null != record?.id && x?.id === record.id );
-	return 1 === found.length ? found[ 0 ][ 0 ] : null;
+	const label = row && 'menu' === KINDS[ row.postType ] ? walkerKey( megaPanelLabel( row.title ?? '' ) ) : null;
+	const mine = found.length > 1 && label ? found.filter( ( [ , x ] ) => null != x.panel && walkerKey( x.panel ) === label ) : found;
+	return 1 === mine.length ? mine[ 0 ][ 0 ] : null;
 }
 
 const nameSet = ( record ) => [ ...new Set( ( record.states || [] ).map( ( s ) => s.name ) ) ].sort();
@@ -329,7 +333,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		}
 		match.record && ( out.matched[ key ] = match.record.id );
 		// The entry's link to its intake skeleton, through the handoff record both carry; none when intake has no skeleton for it.
-		const intakeSurface = intakeSurfaceOf( match.record, intake );
+		const intakeSurface = intakeSurfaceOf( match.record, intake, row );
 		null === intakeSurface && ! noDraft && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
 		const entry = {
 			tree: isTemplate ? `trees/template/${ row.templateOf.slug }.json` : `trees/${ row.postType }/${ row.slug }.json`,
@@ -363,7 +367,10 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			const added = Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) );
 			added.length && ( out.added[ key ] = added );
 			// The skip is generated truth, never a kept field: it follows the draft.
-			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ) };
+			// A kept intakeSurface naming a skeleton intake no longer holds (a record now read as one skeleton per tab panel)
+			// gives way to the generated link.
+			const stale = intakeSurface && Object.hasOwn( have, 'intakeSurface' ) && ! Object.hasOwn( intake.skeletons, have.intakeSurface );
+			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
 			noDraft || delete entries[ key ].noDraft;
 		} else {
 			entries[ key ] = entry;

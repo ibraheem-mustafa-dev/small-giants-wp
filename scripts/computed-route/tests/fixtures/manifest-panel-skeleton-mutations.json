@@ -1,0 +1,9 @@
+[
+ {"file": "lib/manifest-build.mjs", "find": "const intakeSurface = intakeSurfaceOf( match.record, intake, row );", "replace": "const intakeSurface = intakeSurfaceOf( match.record, intake );", "why": "the row picks its own panel's skeleton"},
+ {"file": "lib/manifest-build.mjs", "find": "const label = row && 'menu' === KINDS[ row.postType ] ? walkerKey( megaPanelLabel( row.title ?? '' ) ) : null;", "replace": "const label = row ? walkerKey( megaPanelLabel( row.title ?? '' ) ) : null;", "why": "only a mega menu row is matched by its label"},
+ {"file": "lib/manifest-build.mjs", "find": "walkerKey( megaPanelLabel( row.title ?? '' ) ) : null;\n\tconst mine", "replace": "walkerKey( row.title ?? '' ) : null;\n\tconst mine", "why": "the label is the title without its mega menu suffix"},
+ {"file": "lib/manifest-build.mjs", "find": "const mine = found.length > 1 && label ?", "replace": "const mine = label ?", "why": "a record read as one skeleton links it whatever the row's title"},
+ {"file": "lib/manifest-build.mjs", "find": "null != x.panel && walkerKey( x.panel ) === label", "replace": "null != x.panel", "why": "the panel whose state the label names, not any panel"},
+ {"file": "lib/manifest-build.mjs", "find": "...( stale ? { intakeSurface } : {} ) };", "replace": "};", "why": "a stale kept link gives way to the generated one"},
+ {"file": "lib/manifest-build.mjs", "find": "&& ! Object.hasOwn( intake.skeletons, have.intakeSurface );", "replace": ";", "why": "a kept link to a skeleton intake holds is kept"}
+]

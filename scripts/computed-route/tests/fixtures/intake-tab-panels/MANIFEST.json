@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "generated": "2026-10-27",
+  "project": "Tab panels fixture",
+  "entry_drafts": [
+    "Home.dc.html"
+  ],
+  "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6",
+  "files": [
+    {
+      "path": "Home.dc.html",
+      "bytes": 1823,
+      "sha256": "ae8f70a7291df6321c5b254369b2e90cfc52dcf58343a2b7444694561dd8d6d7"
+    },
+    {
+      "path": "support.js",
+      "bytes": 66404,
+      "sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6"
+    },
+    {
+      "path": "surfaces.json",
+      "bytes": 796,
+      "sha256": "8b9e5f7d9eadbe1776f3d0f8bfef30210984050426544dfe78e3546e8967bea6"
+    }
+  ]
+}
