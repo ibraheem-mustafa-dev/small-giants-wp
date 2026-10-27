@@ -1,0 +1,481 @@
+{
+ "clients": [
+  "alpha",
+  "beta",
+  "gamma"
+ ],
+ "surfaces": 1,
+ "groups": [
+  {
+   "signature": "block=sgs/b01 | property=p01 | state=default | runStates=all | tier=flat | side=both | reason=r01",
+   "parts": {
+    "block": "sgs/b01",
+    "property": "p01",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r01"
+   },
+   "total": 9,
+   "byClient": {
+    "alpha": 9
+   },
+   "classes": {
+    "F-setting": 9
+   },
+   "examples": [
+    {
+     "client": "alpha",
+     "surface": "home",
+     "element": "el-01",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 01",
+   "owner": "Spec \"32\", tokens, presets"
+  },
+  {
+   "signature": "block=sgs/bM | property=pM | state=default | runStates=all | tier=flat | side=both | reason=rM",
+   "parts": {
+    "block": "sgs/bM",
+    "property": "pM",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "rM"
+   },
+   "total": 8,
+   "byClient": {
+    "alpha": 4,
+    "beta": 3,
+    "gamma": 1
+   },
+   "classes": {
+    "W-route": 5,
+    "held": 3
+   },
+   "examples": [
+    {
+     "client": "alpha",
+     "surface": "home",
+     "element": "el-M",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason M",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b02 | property=p02 | state=default | runStates=all | tier=flat | side=both | reason=r02",
+   "parts": {
+    "block": "sgs/b02",
+    "property": "p02",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r02"
+   },
+   "total": 7,
+   "byClient": {
+    "beta": 7
+   },
+   "classes": {
+    "F-setting": 7
+   },
+   "examples": [
+    {
+     "client": "beta",
+     "surface": "home",
+     "element": "el-02",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 02",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b03 | property=p03 | state=default | runStates=all | tier=flat | side=both | reason=r03",
+   "parts": {
+    "block": "sgs/b03",
+    "property": "p03",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r03"
+   },
+   "total": 5,
+   "byClient": {
+    "gamma": 5
+   },
+   "classes": {
+    "F-setting": 5
+   },
+   "examples": [
+    {
+     "client": "gamma",
+     "surface": "home",
+     "element": "el-03",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 03",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b04 | property=p04 | state=default | runStates=all | tier=flat | side=both | reason=r04",
+   "parts": {
+    "block": "sgs/b04",
+    "property": "p04",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r04"
+   },
+   "total": 5,
+   "byClient": {
+    "alpha": 5
+   },
+   "classes": {
+    "F-setting": 5
+   },
+   "examples": [
+    {
+     "client": "alpha",
+     "surface": "home",
+     "element": "el-04",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 04",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b05 | property=p05 | state=default | runStates=all | tier=flat | side=both | reason=r05",
+   "parts": {
+    "block": "sgs/b05",
+    "property": "p05",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r05"
+   },
+   "total": 4,
+   "byClient": {
+    "beta": 4
+   },
+   "classes": {
+    "F-setting": 4
+   },
+   "examples": [
+    {
+     "client": "beta",
+     "surface": "home",
+     "element": "el-05",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 05",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b06 | property=p06 | state=default | runStates=all | tier=flat | side=both | reason=r06",
+   "parts": {
+    "block": "sgs/b06",
+    "property": "p06",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r06"
+   },
+   "total": 4,
+   "byClient": {
+    "gamma": 4
+   },
+   "classes": {
+    "F-setting": 4
+   },
+   "examples": [
+    {
+     "client": "gamma",
+     "surface": "home",
+     "element": "el-06",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 06",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b07 | property=p07 | state=default | runStates=all | tier=flat | side=both | reason=r07",
+   "parts": {
+    "block": "sgs/b07",
+    "property": "p07",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r07"
+   },
+   "total": 3,
+   "byClient": {
+    "alpha": 3
+   },
+   "classes": {
+    "F-setting": 3
+   },
+   "examples": [
+    {
+     "client": "alpha",
+     "surface": "home",
+     "element": "el-07",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 07",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b08 | property=p08 | state=default | runStates=all | tier=flat | side=both | reason=r08",
+   "parts": {
+    "block": "sgs/b08",
+    "property": "p08",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r08"
+   },
+   "total": 3,
+   "byClient": {
+    "beta": 3
+   },
+   "classes": {
+    "F-setting": 3
+   },
+   "examples": [
+    {
+     "client": "beta",
+     "surface": "home",
+     "element": "el-08",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 08",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b09 | property=p09 | state=default | runStates=all | tier=flat | side=both | reason=r09",
+   "parts": {
+    "block": "sgs/b09",
+    "property": "p09",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r09"
+   },
+   "total": 2,
+   "byClient": {
+    "gamma": 2
+   },
+   "classes": {
+    "F-setting": 2
+   },
+   "examples": [
+    {
+     "client": "gamma",
+     "surface": "home",
+     "element": "el-09",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 09",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b10 | property=p10 | state=default | runStates=all | tier=flat | side=both | reason=r10",
+   "parts": {
+    "block": "sgs/b10",
+    "property": "p10",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r10"
+   },
+   "total": 2,
+   "byClient": {
+    "alpha": 2
+   },
+   "classes": {
+    "F-setting": 2
+   },
+   "examples": [
+    {
+     "client": "alpha",
+     "surface": "home",
+     "element": "el-10",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 10",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b11 | property=p11 | state=default | runStates=all | tier=flat | side=both | reason=r11",
+   "parts": {
+    "block": "sgs/b11",
+    "property": "p11",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r11"
+   },
+   "total": 2,
+   "byClient": {
+    "beta": 2
+   },
+   "classes": {
+    "F-setting": 2
+   },
+   "examples": [
+    {
+     "client": "beta",
+     "surface": "home",
+     "element": "el-11",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 11",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b12 | property=p12 | state=default | runStates=all | tier=flat | side=both | reason=r12",
+   "parts": {
+    "block": "sgs/b12",
+    "property": "p12",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r12"
+   },
+   "total": 1,
+   "byClient": {
+    "gamma": 1
+   },
+   "classes": {
+    "F-setting": 1
+   },
+   "examples": [
+    {
+     "client": "gamma",
+     "surface": "home",
+     "element": "el-12",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 12",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b13 | property=p13 | state=default | runStates=all | tier=flat | side=both | reason=r13",
+   "parts": {
+    "block": "sgs/b13",
+    "property": "p13",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r13"
+   },
+   "total": 1,
+   "byClient": {
+    "alpha": 1
+   },
+   "classes": {
+    "F-setting": 1
+   },
+   "examples": [
+    {
+     "client": "alpha",
+     "surface": "home",
+     "element": "el-13",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 13",
+   "owner": "FR-48-21 Stage 5 gap list"
+  },
+  {
+   "signature": "block=sgs/b14 | property=p14 | state=default | runStates=all | tier=flat | side=both | reason=r14",
+   "parts": {
+    "block": "sgs/b14",
+    "property": "p14",
+    "state": "default",
+    "runStates": "all",
+    "tier": "flat",
+    "side": "both",
+    "reason": "r14"
+   },
+   "total": 1,
+   "byClient": {
+    "beta": 1
+   },
+   "classes": {
+    "F-setting": 1
+   },
+   "examples": [
+    {
+     "client": "beta",
+     "surface": "home",
+     "element": "el-14",
+     "draft": "1px",
+     "live": "2px"
+    }
+   ],
+   "reasonText": "reason 14",
+   "owner": "FR-48-21 Stage 5 gap list"
+  }
+ ],
+ "unclassified": [
+  {
+   "client": "gamma",
+   "surface": "home",
+   "element": "x",
+   "gapClass": "unassessed"
+  }
+ ],
+ "classes": {
+  "total": 58,
+  "counts": {
+   "F-setting": 49,
+   "W-route": 5,
+   "held": 3,
+   "unassessed": 1
+  },
+  "instrument": []
+ }
+}
