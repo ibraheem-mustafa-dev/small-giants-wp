@@ -1,6 +1,6 @@
 {
 	"_meta": {
-		"purpose": "How census-all.mjs reads a walker row and a Fill row into the parts of a mechanism signature (lib/census-mechanism.mjs). The reason classes and their owning Spec 48 items stay in data/census-classes.json; this file holds only the walker and Fill vocabulary the signature needs. composedEffects names longhands the browser composes into one matrix, so one spelling difference is one group."
+		"purpose": "How census-all.mjs reads a walker row and a Fill row into the parts of a mechanism signature (lib/census-mechanism.mjs). The reason classes and their owning Spec 48 items stay in data/census-classes.json; this file holds only the walker and Fill vocabulary the signature needs. A row's block family is the DB's parent-chain root; a block slug the framework DB does not hold (a class-name wrapper or extension the walker read) is `unregisteredBlockPrefix` + the slug, and an element row with no slug at all (an old walker report with no block class and no Fill tree to read one from) is `noBlockFamily`. uncalibratedSettingsPattern reads lib/resolve.mjs's state-setting `uncalibrated` detail (block, settings, state) so the census can cite the slot map's missing settings entries as evidence. composedEffects names longhands the browser composes into one matrix, so one spelling difference is one group."
 	},
 	"interactionKinds": [ "hover", "active", "focus" ],
 	"keyWordKinds": [ "presence", "auto", "link" ],
@@ -9,7 +9,10 @@
 	"effectKind": "effect",
 	"pressState": "active",
 	"noneSide": "none",
-	"fillStatePatterns": [ "\\((hover|active|focus)[^)]*\\)\\s*$", "^(hover|active|focus):", "^width (hover|active|focus)" ],
+	"fillStatePatterns": [ "\\((hover|active|focus)[^)]*\\)\\s*$", "^(hover|active|focus):", "^width (hover|active|focus)", "^uncalibrated: sgs/[\\w-]+ [\\w, ]+ \\((hover|active|focus)\\) not calibrated$" ],
+	"uncalibratedSettingsPattern": "^uncalibrated: (sgs/[\\w-]+) ([\\w, ]+) \\(([\\w-]+)\\) not calibrated$",
+	"unregisteredBlockPrefix": "unregistered:",
+	"noBlockFamily": "(no block read)",
 	"inventoryIdPattern": "^[A-Z]{1,3}-\\d+$",
 	"inventoryIdFamily": "motion-record",
 	"composedEffects": { "transform": [ "transform", "scale", "rotate", "translate" ] },

@@ -8,7 +8,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
-import { blockLookup, walkerItems, surfaceRows, groupRows, propertyFamily, tierPattern, blockFamily, signatureOf } from '../lib/census-mechanism.mjs';
+import { blockLookup, walkerItems, surfaceRows, groupRows, propertyFamily, tierPattern, blockFamily, rowBlockFamily, fillState, signatureOf } from '../lib/census-mechanism.mjs';
 import { censusAll } from '../census-all.mjs';
 
 const ROOT = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
@@ -52,8 +52,6 @@ test( 'the real header data: every row has a signature and the groups name the k
 } );
 
 test( 'MUST FAIL: a row with no signature is unclassified, whichever part is missing', () => {
-	const unknownBlock = census( 'a', 's', null, fillRun( [ unmapped( 'cr-ref-s-1', 'color', 'sgs/ghost' ) ] ) );
-	assert.equal( groupRows( unknownBlock ).unclassified.length, 1 );
 	const unknownReason = census( 'a', 's', null, fillRun( [ unmapped( 'cr-ref-s-1', 'color', 'sgs/pill', 'a reason nobody has named' ) ] ) );
 	assert.equal( groupRows( unknownReason ).unclassified.length, 1 );
 	const joined = census( 'a', 's', report( [ [ 'x', 375, 'p', style( 'cr-ref-s-1', 'color', 'a', 'b' ) ] ] ), fillRun( [ unmapped( 'cr-ref-s-1', 'color', 'sgs/pill', 'a reason nobody has named' ) ] ) );
@@ -150,6 +148,27 @@ test( 'the block family is the root of the parent chain in the framework DB', ()
 	assert.equal( blockFamily( 'sgs/site-header-row', real ), 'sgs/site-header' );
 	assert.equal( blockFamily( 'sgs/button', real ), 'sgs/button' );
 	assert.equal( blockFamily( 'sgs/not-a-block', real ), null );
+} );
+
+test( 'MUST FAIL: a slug the framework DB does not hold is its own unregistered family, and a row with no slug is the no-block family', () => {
+	const [ ghost ] = census( 'a', 's', null, fillRun( [ unmapped( 'cr-ref-s-1', 'color', 'sgs/ghost' ) ] ) );
+	assert.equal( ghost.block, 'unregistered:sgs/ghost' );
+	assert.equal( groupRows( [ ghost ] ).unclassified.length, 0 );
+	const [ pill ] = census( 'a', 's', null, fillRun( [ unmapped( 'cr-ref-s-1', 'color', 'sgs/pill' ) ] ) );
+	assert.equal( pill.block, 'sgs/pill', 'control: a registered block keeps its DB family' );
+	assert.notEqual( signatureOf( ghost ), signatureOf( pill ), 'an unregistered slug never joins a registered block\'s group' );
+	const [ wrapper ] = census( 'a', 's', report( [ [ 'x', 375, 'p', style( 'cr-ref-s-1', 'color', 'a', 'b', { block: 'sgs-form-field' } ) ] ] ), null );
+	assert.equal( wrapper.block, 'unregistered:sgs/form-field', 'a walker class-name slug the DB lacks' );
+	const [ bare ] = census( 'a', 's', report( [ [ 'x', 375, 'p', style( 'cr-ref-s-1', 'color', 'a', 'b', { block: undefined } ) ] ] ), null );
+	assert.equal( bare.block, '(no block read)' );
+	assert.equal( rowBlockFamily( null, lookup ), '(no block read)' );
+	assert.equal( rowBlockFamily( 'sgs/box-row', lookup ), 'sgs/box' );
+} );
+
+test( 'MUST FAIL: a state-setting uncalibrated reason reads its state', () => {
+	assert.equal( fillState( 'uncalibrated: sgs/form submitShadowHover (hover) not calibrated' ), 'hover' );
+	assert.equal( fillState( 'uncalibrated: sgs/form submitShadow, submitShadowX (focus) not calibrated' ), 'focus' );
+	assert.equal( fillState( 'calibration has no reading of box-shadow' ), 'default', 'control: a plain uncalibrated reason is the default state' );
 } );
 
 test( "MUST FAIL: part and effect rows group by what differs, not by the client's part label, and keep their pointer state and missing side", () => {

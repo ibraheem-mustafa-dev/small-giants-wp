@@ -45,7 +45,19 @@
   "file": "lib/census-mechanism.mjs",
   "find": "return row ? row.slug : null;",
   "replace": "return row ? row.slug : slug;",
-  "why": "a block the framework DB lacks is given a family"
+  "why": "a block the framework DB lacks is given its own slug as a registered family"
+ },
+ {
+  "file": "lib/census-mechanism.mjs",
+  "find": "return blockFamily( slug, lookup ) ?? `${ VOCAB.unregisteredBlockPrefix }${ slug }`;",
+  "replace": "return blockFamily( slug, lookup );",
+  "why": "a slug the framework DB lacks gets no family and leaves the census"
+ },
+ {
+  "file": "lib/census-mechanism.mjs",
+  "find": "\t\treturn VOCAB.noBlockFamily;",
+  "replace": "\t\treturn null;",
+  "why": "an element row with no slug gets no family"
  },
  {
   "file": "census-all.mjs",

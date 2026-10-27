@@ -155,7 +155,7 @@ export function walkerItems( report ) {
 }
 
 // The interaction state a Fill row speaks for, read from its reason text.
-function fillState( reason ) {
+export function fillState( reason ) {
 	for ( const re of FILL_STATE ) {
 		const m = re.exec( String( reason ?? '' ) );
 		if ( m ) {
@@ -241,7 +241,16 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 			draft: f.value, live: null, confirm: confirmBy.get( keyOf( f.node, f.slot, f.property, f.state ) ) ?? null
 		} );
 	}
-	return { rows: rows.map( ( r ) => ( { ...r, block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : ( r.slug ? blockFamily( r.slug, lookup ) : null ) } ) ), walk };
+	return { rows: rows.map( ( r ) => ( { ...r, block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : rowBlockFamily( r.slug, lookup ) } ) ), walk };
+}
+
+// An element row's block family: the DB's parent-chain root, `unregistered:<slug>` for a slug the framework DB does not hold
+// (a class-name wrapper or extension such as sgs-form-field), or the no-block family when no slug was read at all.
+export function rowBlockFamily( slug, lookup ) {
+	if ( ! slug ) {
+		return VOCAB.noBlockFamily;
+	}
+	return blockFamily( slug, lookup ) ?? `${ VOCAB.unregisteredBlockPrefix }${ slug }`;
 }
 
 // The signature of a row: its parts joined, or null when any part is missing (a row no signature covers).

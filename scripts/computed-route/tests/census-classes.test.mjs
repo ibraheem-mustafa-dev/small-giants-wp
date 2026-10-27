@@ -42,3 +42,53 @@ test( 'negative control: a near-miss reason keeps its other class or stays uncla
 	assert.equal( u( 'x default-state: sgs/a changes color on hover by itself and the draft does not, and nothing holds it' ), null );
 	assert.equal( h( 'inertia' ), null );
 } );
+
+// One real reason string of each kind the motion, state, link-attribute, presence and media writers raise (the newest Fill
+// runs of three clients), with the class, FR-48-65 class and candidacy its rule states.
+const WRITERS = [
+	[ "a one-shot animation on a route trigger: the draft's route drives it, which no layer or setting holds yet", 'trigger-no-layer', 'F-behaviour', false ],
+	[ "a one-shot animation the draft's state starts: the block publishes no open or named state for this element to play it on (Spec 38A, FR-48-80)", 'trigger-no-layer', 'F-behaviour', false ],
+	[ 'no effect draws this loop (translate moving, normal, 3200ms; tried marquee, ambient-float, ken-burns): a Spec 38 gap', 'trigger-no-layer', 'F-behaviour', false ],
+	[ "the draft drives this hover from an ancestor's hover, and the block declares no item host (supports.sgs.animationItems) for the hover layer's Card hovered source, so it is written to play on the element's own hover", 'trigger-no-layer', 'F-behaviour', false ],
+	[ 'sgs/container has no motion support; the record is also skipped: a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself (Spec 38A §12)', 'reduced-motion', 'held', false ],
+	[ 'sgs/heading has no motion support', 'no-motion-support', 'F-behaviour', false ],
+	[ 'sgs/heading has no motion support; the record is also skipped: status dead-code: the draft never runs it', 'never-runs', 'render-wins', false ],
+	[ 'status no-op: the draft never runs it', 'never-runs', 'render-wins', false ],
+	[ "the code's record names this element, but the render shows no entrance at 375, 768, 1440, so the render wins and nothing is written", 'render-shows-none', 'render-wins', false ],
+	[ "the draft's code starts this loop on route, and the render showed it not running on an untouched page, so nothing is written", 'render-shows-none', 'render-wins', false ],
+	[ 'ripple: sgs/button does not offer ripple (generated-fx-qualifying-blocks.json)', 'effect-not-offered', 'F-behaviour', false ],
+	[ 'a script-written js-style-write on mount: recognised by the behaviour recognisers wave (FR-48-77)', 'script-motion', 'W-route', false ],
+	[ 'PS-005 (css-pseudo, hover) belongs to this surface, but no effect, setting or handover holds it: nothing recognised it, and a run that cannot place a record names it here', 'unaccounted-record', 'W-route', false ],
+	[ 'J-11 maps onto settings of sgs/card-grid; this element is sgs/container', 'behaviour-other-block', 'W-route', false ],
+	[ 'sgs/container declares no tiltMaxAngle setting', 'behaviour-no-setting', 'F-setting', true ],
+	[ "the render's from-pose matches more than one run-time entrance equally", 'entrance-ambiguous', 'W-route', false ],
+	[ "glareOpacity: the glare layers of the [data-tilt] elements differ in glareOpacity (0.42 on a, 0.3 on b): the tilt's one glare layer cannot hold them all, so the glare's own default stands", 'one-layer-value', 'F-setting', true ],
+	[ 'focus-differs: keyboard focus paints with the hover look and the theme focus ring (settings.custom.focus); a different per-element focus look has no setting', 'state-look', 'F-setting', true ],
+	[ "focus-shares-hover: colourTextHover paints the draft's hover color on :focus-visible too, and the draft keeps its resting color on focus; it is not separated", 'state-look', 'F-setting', true ],
+	[ "press: a pressed look is sgs/button's buttonPresets active token (the theme snapshot), not a per-element setting", 'press-token', 'W-route', false ],
+	[ 'state-refused: state "open" of S-09 was not opened: it opened at 375, 768 only, so it was not read at 1024, 1440', 'state-refused', 'W-walker', false ],
+	[ 'clip-path has no hover channel', 'no-hover-channel', 'F-setting', true ],
+	[ 'the block does not declare supports.anchor, so no setting holds its id', 'id-no-setting', 'F-setting', true ],
+	[ 'an id on the nested element ".sgs-x__y" has no setting (anchor belongs to the block\'s root)', 'id-no-setting', 'F-setting', true ],
+	[ 'the draft shows ".sgs-x__badge" and no setting of the block shows it (calibration found it in no default render and in no presence list)', 'presence-no-setting', 'F-setting', true ],
+	[ 'the draft image "https://cdn.example/a.jpg" is not a file of the draft, so it has no uploaded copy; add it to sites/<client>/assets and run media-upload', 'media-unwritten', 'W-route', false ],
+];
+
+test( 'MUST FAIL: each reason kind of the motion, state, link-attribute, presence and media writers lands in its named class', () => {
+	for ( const [ text, cls, fr, candidate ] of WRITERS ) {
+		const rule = u( text );
+		assert.ok( rule, `unclassified: ${ text.slice( 0, 70 ) }` );
+		assert.deepEqual( [ rule.class, rule.frClass, !! rule.candidate ], [ cls, fr, candidate ], text.slice( 0, 70 ) );
+		assert.ok( rule.owner, `${ cls } names an owner` );
+	}
+} );
+
+test( 'negative control: the writer rules keep the earlier classes and refuse near misses', () => {
+	assert.equal( u( 'a reduced-motion rule: the motion model removes motion under prefers-reduced-motion itself' )?.class, 'reduced-motion' );
+	assert.equal( u( 'the render shows motion (an endless animation, a marquee or an SVG animation) on this element, whose block has no motion support to write it to (sgs/heading has no motion support)' )?.class, 'motion', 'a shown loop stays the motion route class' );
+	assert.equal( u( 'no declared part of sgs/card is this element (.x)' )?.class, 'no-declared-part' );
+	assert.equal( u( 'no-setting: sgs/button has no setting for clip-path' )?.class, 'no-setting' );
+	assert.equal( u( 'focus-different: something else' ), null );
+	assert.equal( u( 'status active: the draft runs it' ), null );
+	assert.equal( u( 'J-11 maps onto nothing' ), null );
+} );

@@ -3,10 +3,15 @@
 // row no Fill row and no triage verdict covers. The instrument gates then read the row's block (lib/gap-classes.mjs::
 // instrumentFinding): a NULL-routed, mistagged, uncalibrated or stale fitting setting makes it an I-class row.
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { isCssProperty } from './css-families.mjs';
 import { fromCommand, fromFile, isEvidence, renderEvidence } from './gate-evidence.mjs';
 import { LOOSE } from './resolve.mjs';
 import { GAP_CLASSES, HELD, UNASSESSED, ancestorsOf, classify, gapClassOf, instrumentFinding, staleCheck } from './gap-classes.mjs';
+
+const UNCALIBRATED_SETTINGS = new RegExp( JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'census-mechanisms.json' ), 'utf8' ) ).uncalibratedSettingsPattern );
 
 // The DB-versus-code check per block (memoised): the DB's refresh time against the block's last commit and its uncommitted
 // changes in `repo`. Returns slug -> { pass, class, evidence }.
@@ -45,8 +50,10 @@ export function baseClass( row ) {
 
 // FR-48-66 evidence for a row whose Fill reason is itself I-calibration, read from the calibration cache: the absent slot-map
 // file, the missing paint, or the paint key at the row's slot where no width holds a reading of the row's property. `files`
-// is { slotMap, paint } (paths). The cache's paint is the default (resting) paint, so a row in a state (hover, focus, any
-// state other than `default`) has only the absent slot map as evidence: its state paint was never looked at, so no paint
+// is { slotMap, paint } (paths). A row whose reason names state settings the resolver found uncalibrated (data/census-mechanisms.json
+// uncalibratedSettingsPattern) cites those settings' absent slot-map entries, with any untestedStates note. The cache's paint is
+// the default (resting) paint, so any other row in a state (hover, focus, any state other than `default`) has only the absent
+// slot map as evidence: its state paint was never looked at, so no paint
 // reading proves or disproves it. The readKey named is the paint file's own, else the slot map's. Null where the cache
 // does hold the reading, the row's state paint was not read, or no file is named: the reason is then unproven.
 export function calibrationEvidence( row, cal, files ) {
@@ -55,6 +62,17 @@ export function calibrationEvidence( row, cal, files ) {
 	}
 	if ( ! cal ) {
 		return fromFile( files.slotMap, row.slug, `no calibration slot map for ${ row.slug }` );
+	}
+	// A state setting the resolver found uncalibrated (lib/resolve.mjs: none of the named settings has a slot-map entry):
+	// the slot map's settings entries for those names are the evidence, whatever the row's state.
+	const named = UNCALIBRATED_SETTINGS.exec( String( row.reasonText ?? '' ) );
+	if ( named ) {
+		const attrs = named[ 2 ].split( /,\s*/ ).filter( Boolean );
+		if ( attrs.length && attrs.every( ( a ) => ! Object.hasOwn( cal.settings || {}, a ) ) ) {
+			const untested = ( cal.untestedStates || [] ).filter( ( u ) => attrs.some( ( a ) => String( u ).startsWith( `${ a }:` ) ) );
+			return fromFile( files.slotMap, attrs.map( ( a ) => `settings.${ a }` ).join( ', ' ), untested.length ? `untested: ${ untested.join( '; ' ) }` : `the slot map holds no calibration of ${ attrs.join( ', ' ) } (${ named[ 3 ] })` );
+		}
+		return null;
 	}
 	if ( ! [ undefined, null, 'default' ].includes( row.state ) ) {
 		return null;

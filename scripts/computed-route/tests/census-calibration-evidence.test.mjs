@@ -77,6 +77,18 @@ test( 'MUST FAIL: a state row whose reading lives only in a state paint gets no 
 	assert.ok( isEvidence( calibrationEvidence( row( { state: null } ), cal, files() ) ), 'a null state is the default' );
 } );
 
+test( 'MUST FAIL: a state setting the resolver found uncalibrated cites its absent slot-map entry, with the untested note', () => {
+	const reasonText = 'uncalibrated: sgs/container shadowHover (hover) not calibrated';
+	const cal = { readKey: 'k1', settings: { shadow: {} }, untestedStates: [ 'shadowHover:hover (the element stays hidden)' ], elements: { '': { 1440: { 'box-shadow': 'none' } } } };
+	const rows = classifyRows( [ row( { key: 'box-shadow', property: 'box-shadow', state: 'hover', reasonText } ) ], { db: db(), calFor: () => cal, calFiles: files, freshness: fresh } );
+	assert.deepEqual( rows[ 0 ].gapEvidence, { file: 'cache/container.json', key: 'settings.shadowHover', line: 'untested: shadowHover:hover (the element stays hidden)' } );
+	assert.equal( classCounts( rows ).counts[ 'I-calibration' ], 1 );
+	assert.equal( calibrationEvidence( row( { state: 'hover', reasonText } ), { ...cal, untestedStates: [] }, files() ).line, 'the slot map holds no calibration of shadowHover (hover)' );
+	const calibrated = classifyRows( [ row( { key: 'box-shadow', state: 'hover', reasonText } ) ], { db: db(), calFor: () => ( { ...cal, settings: { shadowHover: {} } } ), calFiles: files, freshness: fresh } );
+	assert.equal( calibrated[ 0 ].gapEvidence, null, 'control: a slot map that does calibrate the setting is no evidence' );
+	assert.throws( () => classCounts( calibrated ), /I-calibration with no evidence for its class/ );
+} );
+
 test( 'MUST FAIL: the evidence names the paint file\'s own readKey', () => {
 	const e = calibrationEvidence( row(), { readKey: 'slotmap-k', paintReadKey: 'paint-k', elements: { '': { 1440: { color: 'red' } } } }, files() );
 	assert.match( e.line, /\(readKey paint-k\)/ );
