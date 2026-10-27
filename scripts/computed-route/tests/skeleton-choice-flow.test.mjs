@@ -5,163 +5,9 @@
 // carries its negative control.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { openDb } from '../lib/db.mjs';
-import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { decisionsProblems } from '../lib/skeleton-facts.mjs';
 import { parseTagId, surfaceRole } from '../lib/skeleton-surface-role.mjs';
-
-const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
-const db = openDb();
-const facts = ( edit = null ) => {
-	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
-	f.decisions = structuredClone( f.decisions );
-	edit && edit( f.decisions.rules );
-	return f;
-};
-
-// A template element: n, tag, parent n, { words, attrs, text: [values] (a text hole), loop: { list n, as } (inside that loop),
-// list: { n } (an sc-for with n items), click (handler), rendered: [copies] (inventory copies; none = not rendered) }.
-const E = ( n, tag, parent, o = {} ) => ( { n, tag, parent, ...o } );
-function build( list, { ids = {}, statics = null } = {} ) {
-	const by = new Map( list.map( ( x ) => [ x.n, x ] ) );
-	const key = ( n ) => `Root/${ n }`;
-	const realParent = ( x ) => {
-		let p = by.get( x.parent );
-		while ( p && /^sc-/.test( p.tag ) ) {
-			p = by.get( p.parent );
-		}
-		return p ?? null;
-	};
-	const chain = ( x ) => {
-		const out = [];
-		for ( let p = by.get( x.parent ); p; p = by.get( p.parent ) ) {
-			out.push( key( p.n ) );
-		}
-		return out;
-	};
-	const loopOf = ( x ) => {
-		for ( let p = by.get( x.parent ); p; p = by.get( p.parent ) ) {
-			if ( 'sc-for' === p.tag ) {
-				return p;
-			}
-		}
-		return null;
-	};
-	const elements = {};
-	for ( const x of list ) {
-		const holes = [];
-		const logic = {};
-		const attrs = { ...( x.attrs || {} ) };
-		if ( x.click ) {
-			attrs.onClick = `{{ ${ x.click } }}`;
-		}
-		if ( x.text ) {
-			holes.push( { id: 'text#0', where: 'text', expr: 'v', path: 'v', whole: false } );
-			const loop = loopOf( x );
-			logic[ 'text#0' ] = { 1440: { v: x.text.map( ( v ) => ( { t: 'string', v } ) ), n: loop ? loop.items : 1, loop: !! loop } };
-		}
-		if ( 'sc-for' === x.tag ) {
-			holes.push( { id: 'attr:list#0', where: 'attr:list', expr: 'xs', path: 'xs', whole: true } );
-			logic[ 'attr:list#0' ] = { 1440: { v: [ { t: 'array', n: x.items } ], n: 1, loop: false } };
-			attrs.as = x.as;
-			attrs.list = '{{ xs }}';
-		}
-		const loop = loopOf( x );
-		elements[ key( x.n ) ] = {
-			template: { key: key( x.n ), component: 'Root', n: String( x.n ), tag: x.tag, realTag: x.tag, attrs, style: { static: [], holes: [] }, pseudo: {}, holes, parent: x.parent ? key( x.parent ) : null, realParent: realParent( x ) ? key( realParent( x ).n ) : null, parentChain: chain( x ),
-				membership: { scIf: [], scFor: loop ? [ { key: key( loop.n ), list: '{{ xs }}', as: loop.as } ] : [], dcImport: [] }, words: x.text ? '{{ v }}' : x.words || '', events: x.click ? [ { name: 'onClick', expr: x.click } ] : [], srcLine: x.n },
-			logic: { holes: logic }, surfaces: [], instances: [], fingerprint: {},
-		};
-	}
-	// The inventory: each rendered copy, its parent the nearest rendered real ancestor.
-	const inv = [];
-	const depth = ( x ) => {
-		let d = 0;
-		for ( let p = realParent( x ); p; p = realParent( p ) ) {
-			d++;
-		}
-		return d;
-	};
-	for ( const x of list.filter( ( y ) => y.rendered ) ) {
-		x.rendered.forEach( ( c ) => {
-			const rp = realParent( x );
-			const pc = rp ? ( rp.rendered?.includes( c ) ? c : 0 ) : null;
-			const words = x.text ? x.text[ c ] ?? '' : x.words || '';
-			inv.push( { key: `Root/${ x.n }#${ c }`, parentKey: rp ? `Root/${ rp.n }#${ pc }` : null, depth: depth( x ), tag: x.tag, template: 'Root', tpl: x.n, attrs: { ...( x.attrs || {} ) }, words, allText: words, membership: [], srcTag: x.tag, srcOwnText: words, snippet: `<${ x.tag } data-dc-tpl="${ x.n }">${ words }</${ x.tag }>`,
-				box: { 375: { x: 0, y: x.n * 10, w: 300, h: 20 }, 768: { x: 0, y: x.n * 10, w: 300, h: 20 }, 1440: { x: 0, y: x.n * 10, w: 300, h: 20 } }, visible: { 375: true, 768: true, 1440: true }, display: 'block', flexDirection: 'row', screenshots: {} } );
-		} );
-	}
-	const surfaces = Object.fromEntries( Object.entries( ids ).map( ( [ id, s ] ) => [ id, { id, kind: s.kind, name: s.name, dc: 'Root', parent: null, roots: [ key( s.root ) ], parts: [], states: [] } ] ) );
-	return { inventory: { generated: 'fixture', source: 'fixture', root: list[ 0 ].tag, checks: {}, elements: inv }, record: { schema: '1', client: 'fixture-client', elements, surfaces, ...( statics ? { logic: { statics } } : {} ) } };
-}
-// A form schema of two steps in the draft's logic: the form passes would wrap any field outside a form in one.
-const SCHEMA = { Root: { entries: [ { name: 'steps', kind: 'array', value: [ { label: 'One', fields: [ { name: 'a' } ] }, { label: 'Two', fields: [ { name: 'b' } ] } ] } ] } };
-
-const R0 = [ 0 ];
-const R01 = [ 0, 1 ];
-// A full-screen flow: a header with Close, a summary aside with a help link, two questions (the second opening two panels), a
-// footer with a skip link and an add-to-bag button holding the total, and one stray line the family cannot hold.
-const FLOW = [
-	E( 1, 'div', null, { attrs: { role: 'dialog' }, rendered: R0 } ),
-	E( 2, 'div', 1, { rendered: R0 } ),
-	E( 3, 'img', 2, { attrs: { src: 'logo.png', alt: '' }, rendered: R0 } ),
-	E( 4, 'button', 2, { words: 'Close', click: 'closeIt', rendered: R0 } ),
-	E( 5, 'aside', 1, { rendered: R0 } ),
-	E( 6, 'div', 5, { words: 'Total', rendered: R0 } ),
-	E( 7, 'a', 5, { attrs: { href: 'https://example.com/help' }, rendered: R0 } ),
-	E( 8, 'span', 7, { words: 'Need a hand?', rendered: R0 } ),
-	E( 9, 'span', 7, { words: 'Message us any time.', rendered: R0 } ),
-	E( 10, 'div', 1, { rendered: R0 } ),
-	E( 11, 'sc-if', 10, { attrs: { value: '{{ q0 }}' } } ),
-	E( 12, 'div', 11, { rendered: R0 } ),
-	E( 13, 'p', 12, { words: 'Question 1 of 2', rendered: R0 } ),
-	E( 14, 'h2', 12, { words: 'Pick a size', rendered: R0 } ),
-	E( 15, 'p', 12, { words: 'Sizes run small.', rendered: R0 } ),
-	E( 16, 'div', 12, { rendered: R0 } ),
-	E( 17, 'sc-for', 16, { items: 2, as: 'o' } ),
-	E( 18, 'div', 17, { rendered: R01 } ),
-	E( 19, 'button', 18, { click: 'o.pick', rendered: R01 } ),
-	E( 20, 'span', 19, { text: [ 'Small', 'Large' ], rendered: R01 } ),
-	E( 21, 'span', 19, { text: [ '+£5', 'included' ], rendered: R01 } ),
-	E( 22, 'span', 19, { text: [ 'Snug fit', 'Roomy fit' ], rendered: R01 } ),
-	E( 23, 'sc-if', 18, { attrs: { value: '{{ o.helpOpen }}' } } ),
-	E( 24, 'div', 23, { text: [ 'Small help', 'Large help' ] } ),
-	E( 25, 'sc-if', 10, { attrs: { value: '{{ q1 }}' } } ),
-	E( 26, 'div', 25 ),
-	E( 27, 'p', 26, { words: 'Almost done' } ),
-	E( 28, 'h2', 26, { words: 'How to send it' } ),
-	E( 29, 'div', 26 ),
-	E( 30, 'sc-for', 29, { items: 2, as: 'm' } ),
-	E( 31, 'button', 30, { click: 'm.pick' } ),
-	E( 32, 'span', 31, { text: [ 'Later', 'Upload' ] } ),
-	E( 33, 'sc-if', 26, { attrs: { value: '{{ later }}' } } ),
-	E( 34, 'div', 33 ),
-	E( 35, 'p', 34, { words: 'We will remind you.' } ),
-	E( 36, 'p', 34, { words: 'Nothing is charged twice.' } ),
-	E( 37, 'sc-if', 26, { attrs: { value: '{{ upload }}' } } ),
-	E( 38, 'label', 37 ),
-	E( 39, 'span', 38, { words: 'Drop it here' } ),
-	E( 40, 'input', 38, { attrs: { type: 'file' } } ),
-	E( 41, 'div', 1, { rendered: R0 } ),
-	E( 42, 'span', 41, { words: 'Frame only?', rendered: R0 } ),
-	E( 43, 'button', 42, { words: 'Skip it', click: 'addBare', rendered: R0 } ),
-	E( 44, 'button', 41, { click: 'addAll', rendered: R0 } ),
-	E( 45, 'span', 44, { words: 'Add to bag', rendered: R0 } ),
-	E( 46, 'span', 44, { text: [ '£20' ], rendered: R0 } ),
-	E( 47, 'p', 1, { words: 'A stray line', rendered: R0 } ),
-	E( 48, 'span', 47, { words: 'with more', rendered: R0 } ),
-	E( 49, 'div', 1, { rendered: R0 } ),
-	E( 50, 'sc-for', 49, { items: 2, as: 'x' } ),
-	E( 51, 'button', 50, { click: 'openAll', text: [ 'Alpha', 'Beta' ], rendered: R01 } ),
-];
-const FLOW_ROW = { slug: 'choice-flow-pick', postType: 'sgs_choice_flow', draftId: 'surfaces.json S-09' };
-const run = ( list, o = {} ) => {
-	const b = build( list, { ids: { 'S-09': { kind: o.kind || 'modal', name: 'Flow', root: list[ 0 ].n } }, statics: o.statics ?? SCHEMA } );
-	return proposeSkeleton( { inventory: b.inventory, facts: o.facts || facts(), surface: 'flow', surfaceKind: o.kind || 'modal', surfaceName: 'Flow', db, factRecord: b.record, openers: {}, pageMap: o.pageMap ?? [ FLOW_ROW ], surfaceId: 'S-09' } );
-};
-const names = ( tree ) => ( JSON.stringify( tree ).match( /"name":"[^"]+"/g ) || [] ).map( ( x ) => x.slice( 8, -1 ) );
+import { E, R0, R01, FLOW, FLOW_ROW, run, names, facts } from './fixtures/choice-flow-fixture.mjs';
 
 test( 'MUST FAIL: a choice-flow surface is sgs/choice-flow with one step per question, its options read from the record, and the panels a question opens', () => {
 	const { skeleton, problems } = run( FLOW );
@@ -191,21 +37,20 @@ test( 'MUST FAIL: a choice-flow surface is sgs/choice-flow with one step per que
 	assert.ok( ! names( run( FLOW, { pageMap: [] } ).skeleton ).some( ( n ) => n.startsWith( 'sgs/choice-flow' ) ) );
 } );
 
-test( 'MUST FAIL: the flow\'s rows: covered pieces name what draws them, a line the family cannot hold is a gap row', () => {
-	const { proposal } = run( FLOW );
+test( 'MUST FAIL: the flow\'s rows: covered pieces name what draws them, a control the family cannot hold is a gap row', () => {
+	const { proposal, skeleton } = run( FLOW );
 	const row = ( k ) => proposal.rows.find( ( r ) => r.key === k );
 	assert.equal( row( 'Root/1#0' ).block, 'sgs/choice-flow' );
 	assert.equal( row( 'Root/1#0' ).rule, 'choiceFlow' );
-	assert.equal( row( 'Root/47#0' ).action, 'unresolved', 'the stray line is a gap row' );
-	assert.match( row( 'Root/47#0' ).reason, /holds no setting/ );
+	assert.notEqual( row( 'Root/47#0' ).rule, 'choiceFlow', 'the stray line is built by the ordinary rules beside the flow' );
+	assert.equal( skeleton.at( -1 ).name, 'sgs/container', 'the stray line and its span sit after the flow' );
 	assert.equal( row( 'Root/20#1' ).action, 'absorbed' );
 	assert.match( row( 'Root/20#1' ).reason, /question 1 "Pick a size"/ );
 	assert.match( row( 'Root/8#0' ).reason, /summary/ );
 	assert.match( row( 'Root/43#0' ).reason, /skip/ );
 	assert.match( row( 'Root/45#0' ).reason, /flow footer/, 'the add-to-bag button sits in the footer bar the flow draws' );
-	assert.match( row( 'Root/48#0' ).reason, /inside the gap row Root\/47#0/ );
 	// A loop of buttons whose handler does not bind the item is no question: its buttons are gap rows.
-	assert.deepEqual( proposal.rows.filter( ( r ) => 'unresolved' === r.action ).map( ( r ) => r.key ), [ 'Root/47#0', 'Root/51#0', 'Root/51#1' ] );
+	assert.deepEqual( proposal.rows.filter( ( r ) => 'unresolved' === r.action ).map( ( r ) => r.key ), [ 'Root/51#0', 'Root/51#1' ] );
 	assert.deepEqual( proposal.choiceFlow, { steps: 4, questions: 2, results: 2, notes: [] } );
 } );
 
@@ -287,6 +132,144 @@ test( 'MUST FAIL: options are listed only when the loop recorded one value per i
 	assert.match( proposal.choiceFlow.notes.join( ' ' ), /question 1 "Pick a size".*not listed/ );
 	// Control: the aligned loop lists both.
 	assert.equal( run( FLOW ).skeleton[ 0 ].innerBlocks[ 0 ].innerBlocks[ 0 ].attributes.options.length, 2 );
+} );
+
+// A compact flow on a page: a heading group (kicker, heading, intro) above two questions; beside them a card with a live line
+// naming the picks, a pair of pressable buttons choosing how to buy (the first, pressed, reveals a frequency question), an
+// add-to-basket button and a note under it.
+const CANVAS = [
+	E( 1, 'section', null, { rendered: R0 } ),
+	E( 2, 'div', 1, { rendered: R0 } ),
+	E( 3, 'div', 2, { rendered: R0 } ),
+	E( 4, 'div', 3, { rendered: R0 } ),
+	E( 5, 'div', 4, { words: 'made your way', rendered: R0 } ),
+	E( 6, 'h2', 4, { words: 'Build a box', rendered: R0 } ),
+	E( 7, 'p', 4, { words: 'Pick what you like and we pack it.', rendered: R0 } ),
+	E( 8, 'div', 3, { rendered: R0 } ),
+	E( 9, 'div', 8, { words: '1 · Base', rendered: R0 } ),
+	E( 10, 'div', 8, { rendered: R0 } ),
+	E( 11, 'sc-for', 10, { items: 2, as: 'o' } ),
+	E( 12, 'button', 11, { click: 'o.pick', text: [ 'Oat', 'Rye' ], rendered: R01 } ),
+	E( 13, 'div', 3, { rendered: R0 } ),
+	E( 14, 'div', 13, { words: '2 · Topping', rendered: R0 } ),
+	E( 15, 'div', 13, { rendered: R0 } ),
+	E( 16, 'sc-for', 15, { items: 2, as: 'o' } ),
+	E( 17, 'button', 16, { click: 'o.pick', text: [ 'Seeds', 'Nuts' ], rendered: R01 } ),
+	E( 18, 'div', 2, { rendered: R0 } ),
+	E( 19, 'div', 18, { rendered: R0 } ),
+	E( 20, 'div', 19, { attrs: { role: 'img' }, rendered: R0 } ),
+	E( 21, 'div', 19, { text: [ 'Oat with seeds' ], rendered: R0 } ),
+	E( 22, 'div', 18, { rendered: R0 } ),
+	E( 23, 'button', 22, { click: 'pickRepeat', pressed: true, rendered: R0 } ),
+	E( 24, 'span', 23, { words: 'Repeat order', rendered: R0 } ),
+	E( 25, 'span', 23, { words: 'Pause any time', rendered: R0 } ),
+	E( 26, 'span', 23, { text: [ '£9.00' ], rendered: R0 } ),
+	E( 27, 'sc-if', 22, { attrs: { value: '{{ is23 }}' } } ),
+	E( 28, 'div', 27, { rendered: R0 } ),
+	E( 29, 'sc-for', 28, { items: 2, as: 'f' } ),
+	E( 30, 'button', 29, { click: 'f.pick', text: [ 'Weekly', 'Monthly' ], rendered: R01 } ),
+	E( 31, 'button', 22, { click: 'pickOnce', pressed: false, rendered: R0 } ),
+	E( 32, 'span', 31, { words: 'Just once', rendered: R0 } ),
+	E( 33, 'button', 18, { click: 'addIt', words: 'Add to basket', rendered: R0 } ),
+	E( 34, 'div', 18, { words: 'Ships in two days', rendered: R0 } ),
+];
+const canvasRun = ( list ) => run( list, { kind: 'form' } );
+const without = ( list, ...ns ) => list.filter( ( x ) => ! ns.includes( x.n ) );
+const gapKeys = ( proposal ) => proposal.rows.filter( ( r ) => 'unresolved' === r.action ).map( ( r ) => r.key );
+
+test( 'MUST FAIL: a live line naming the picks of two questions is the flow summary and the note after the last control its stage note', () => {
+	const { skeleton, proposal } = canvasRun( CANVAS );
+	const flow = skeleton.find( ( n ) => 'sgs/choice-flow' === n.name );
+	assert.equal( flow.attributes.showPricePanel, true );
+	assert.equal( flow.attributes.summaryPosition, 'end', 'the summary sits after the questions in the document' );
+	assert.equal( flow.attributes.stageNote, 'Ships in two days' );
+	const row = ( k ) => proposal.rows.find( ( r ) => r.key === k );
+	assert.match( row( 'Root/21#0' ).reason, /the flow summary/ );
+	assert.match( row( 'Root/19#0' ).reason, /the flow summary/, 'the card holding the live line is the summary panel' );
+	assert.match( row( 'Root/34#0' ).reason, /stageNote/ );
+	// Negative controls: a live line naming one question's picks is no summary, and with no summary panel the note is no stage note.
+	const one = canvasRun( CANVAS.map( ( x ) => ( 21 === x.n ? { ...x, text: [ 'Oat only' ] } : x ) ) ).skeleton.find( ( n ) => 'sgs/choice-flow' === n.name );
+	assert.equal( one.attributes.showPricePanel, undefined );
+	assert.equal( one.attributes.stageNote, undefined );
+	// A note before the last control is no stage note.
+	const early = canvasRun( [ ...without( CANVAS, 34 ), E( 34, 'div', 18, { words: 'Ships in two days', rendered: R0 } ), E( 35, 'button', 18, { click: 'shareIt', words: 'Share', rendered: R0 } ) ] ).skeleton.find( ( n ) => 'sgs/choice-flow' === n.name );
+	assert.equal( early.attributes.stageNote, undefined );
+	// A label of digits alone names nothing: with the second question's options numbers, the line names one question.
+	const digits = CANVAS.map( ( x ) => ( 17 === x.n ? { ...x, text: [ '8', '20' ] } : 21 === x.n ? { ...x, text: [ '20 Oat' ] } : x ) );
+	assert.equal( canvasRun( digits ).skeleton.find( ( n ) => 'sgs/choice-flow' === n.name ).attributes.showPricePanel, undefined );
+} );
+
+test( 'MUST FAIL: pressable buttons choosing one of two are a question whose revealing option opens the revealed question as its step', () => {
+	const { skeleton, proposal } = canvasRun( CANVAS );
+	const flow = skeleton.find( ( n ) => 'sgs/choice-flow' === n.name );
+	const steps = flow.innerBlocks.map( ( s ) => s.innerBlocks.map( ( k ) => [ k.name, k.attributes.question ?? k.attributes.action ] ) );
+	assert.deepEqual( steps, [
+		[ [ 'sgs/choice-flow-question', 'Base' ] ],
+		[ [ 'sgs/choice-flow-question', 'Topping' ] ],
+		[ [ 'sgs/choice-flow-question', '' ] ],
+		[ [ 'sgs/choice-flow-question', '' ] ],
+		[ [ 'sgs/choice-flow-result', 'add-to-bag' ] ],
+	] );
+	assert.deepEqual( flow.innerBlocks[ 2 ].innerBlocks[ 0 ].attributes, { question: '', options: [ { label: 'Repeat order', value: 'repeat-order', description: 'Pause any time', isDefault: true, nextStepId: '3' }, { label: 'Just once', value: 'just-once', nextStepId: '4' } ], showNextStepInline: true } );
+	assert.deepEqual( flow.innerBlocks[ 3 ].innerBlocks[ 0 ].attributes.options.map( ( o ) => o.label ), [ 'Weekly', 'Monthly' ] );
+	assert.ok( flow.handover.some( ( h ) => 'product-data' === h.owner && h.detail.includes( '£9.00' ) ), 'the buttons\' prices are handed over' );
+	const row = ( k ) => proposal.rows.find( ( r ) => r.key === k );
+	assert.match( row( 'Root/23#0' ).reason, /sgs\/choice-flow-question/ );
+	assert.match( row( 'Root/31#0' ).reason, /sgs\/choice-flow-question/ );
+	// Negative controls: buttons with no pressed state, or a lone pressable button, are no question: they stay gap rows.
+	const plain = canvasRun( CANVAS.map( ( x ) => ( [ 23, 31 ].includes( x.n ) ? { ...x, pressed: undefined } : x ) ) );
+	assert.deepEqual( gapKeys( plain.proposal ), [ 'Root/23#0', 'Root/31#0' ] );
+	const lone = canvasRun( without( CANVAS, 31, 32 ) );
+	assert.deepEqual( gapKeys( lone.proposal ), [ 'Root/23#0' ] );
+	// Two pressable buttons inside a loop item are no choice of how to buy: they stay gap rows.
+	const looped = canvasRun( [ ...CANVAS, E( 40, 'div', 3, { rendered: R0 } ), E( 41, 'sc-for', 40, { items: 2, as: 'r' } ), E( 42, 'div', 41, { rendered: R01 } ), E( 43, 'button', 42, { click: 'voteUp', pressed: false, words: 'Up', rendered: R01 } ), E( 44, 'button', 42, { click: 'voteDown', pressed: false, words: 'Down', rendered: R01 } ) ] );
+	assert.deepEqual( gapKeys( looped.proposal ), [ 'Root/43#0', 'Root/44#0', 'Root/43#1', 'Root/44#1' ] );
+	// The choice sits where its buttons sit: a question after it in the document is a later step, the one its other option reaches.
+	const moved = canvasRun( [ ...CANVAS, E( 40, 'div', 18, { rendered: R0 } ), E( 41, 'div', 40, { words: '3 · Extras', rendered: R0 } ), E( 42, 'div', 40, { rendered: R0 } ), E( 43, 'sc-for', 42, { items: 2, as: 'o' } ), E( 44, 'button', 43, { click: 'o.pick', text: [ 'Jam', 'Honey' ], rendered: R01 } ) ] );
+	const movedFlow = moved.skeleton.find( ( n ) => 'sgs/choice-flow' === n.name );
+	assert.deepEqual( movedFlow.innerBlocks.map( ( st ) => st.attributes.label ), [ 'Base', 'Topping', '', '', 'Extras', '' ] );
+	assert.deepEqual( movedFlow.innerBlocks[ 2 ].innerBlocks[ 0 ].attributes.options.map( ( o ) => o.nextStepId ), [ '3', '4' ] );
+	// An option going past the revealed step with no step after it has no next step, and a note says so.
+	const ends = canvasRun( without( CANVAS, 33 ) );
+	const endsFlow = ends.skeleton.find( ( n ) => 'sgs/choice-flow' === n.name );
+	assert.deepEqual( endsFlow.innerBlocks[ 2 ].innerBlocks[ 0 ].attributes.options.map( ( o ) => o.nextStepId ), [ '3', undefined ] );
+	assert.match( ends.proposal.choiceFlow.notes.join( ' ' ), /"Just once" goes past the step another option opens/ );
+} );
+
+test( 'MUST FAIL: words outside the steps are ordinary blocks beside the flow in its post, before or after it by document order', () => {
+	const { skeleton, proposal } = canvasRun( CANVAS );
+	assert.deepEqual( skeleton.map( ( n ) => n.name ), [ 'sgs/container', 'sgs/choice-flow' ], 'the heading group sits before the flow' );
+	assert.deepEqual( names( [ skeleton[ 0 ] ] ), [ 'sgs/container', 'sgs/text', 'sgs/heading', 'sgs/text' ] );
+	assert.equal( skeleton[ 1 ].attributes.title, undefined, 'a heading with words around it is no flow title' );
+	assert.deepEqual( gapKeys( proposal ), [] );
+	for ( const k of [ 'Root/4#0', 'Root/5#0', 'Root/6#0', 'Root/7#0' ] ) {
+		const r = proposal.rows.find( ( x ) => x.key === k );
+		assert.notEqual( r.rule, 'choiceFlow', `${ k } is built by the ordinary rules` );
+		assert.equal( r.into, undefined );
+	}
+	assert.equal( proposal.rows.filter( ( r ) => 'Root/6#0' === r.key ).length, 1, 'one row per element' );
+	const at = ( k ) => proposal.rows.findIndex( ( r ) => r.key === k );
+	assert.ok( at( 'Root/3#0' ) < at( 'Root/4#0' ) && at( 'Root/7#0' ) < at( 'Root/8#0' ), 'the rebuilt rows keep their place in the row book' );
+	// A line after the questions with no summary panel to hold it goes after the flow.
+	const after = canvasRun( CANVAS.map( ( x ) => ( 21 === x.n ? { ...x, text: [ 'Oat only' ] } : x ) ) ).skeleton;
+	assert.deepEqual( after.map( ( n ) => n.name ), [ 'sgs/container', 'sgs/choice-flow', 'sgs/container', 'sgs/text' ], 'the card holding the line, then the note' );
+	// Negative controls: a heading on its own is the flow title; no page-map row, no flow and no siblings.
+	const lone = canvasRun( without( CANVAS, 5, 7 ) ).skeleton;
+	assert.deepEqual( lone.map( ( n ) => n.name ), [ 'sgs/choice-flow' ] );
+	assert.equal( lone[ 0 ].attributes.title, 'Build a box' );
+	assert.ok( ! run( CANVAS, { kind: 'form', pageMap: [] } ).skeleton.some( ( n ) => 'sgs/choice-flow' === n.name ) );
+} );
+
+test( 'MUST FAIL: only a control none of the flow\'s settings, questions or canvas can hold stays a gap row', () => {
+	const extra = [ ...CANVAS, E( 35, 'div', 3, { rendered: R0 } ), E( 36, 'span', 35, { words: 'Tell a friend', rendered: R0 } ), E( 37, 'button', 35, { click: 'shareIt', words: 'Share', rendered: R0 } ) ];
+	const { skeleton, proposal } = canvasRun( extra );
+	assert.deepEqual( gapKeys( proposal ), [ 'Root/36#0', 'Root/37#0' ], 'a text beside a control stays with it as a gap, never moved apart' );
+	assert.deepEqual( skeleton.map( ( n ) => n.name ), [ 'sgs/container', 'sgs/choice-flow', 'sgs/text' ], 'a note before the last control is a block after the flow, no stage note' );
+	assert.equal( skeleton[ 1 ].attributes.stageNote, undefined );
+	// Control: without the share control its words are a block after the flow (beside the note, so neither is the stage note).
+	const words = canvasRun( without( extra, 37 ) );
+	assert.deepEqual( gapKeys( words.proposal ), [] );
+	assert.deepEqual( words.skeleton.map( ( n ) => [ n.name, n.draftRef?.tpl ] ), [ [ 'sgs/container', 'Root/4#0' ], [ 'sgs/choice-flow', 'Root/1#0' ], [ 'sgs/container', 'Root/35#0' ], [ 'sgs/text', 'Root/34#0' ] ], 'in document order: the first column, then the second' );
 } );
 
 // The header's basket drawer: a page-map cart row holds it as a block-owned part.

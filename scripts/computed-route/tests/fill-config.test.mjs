@@ -161,7 +161,7 @@ test( 'MUST FAIL: a state-driven surface\'s walker opens the same draft state Fi
 	const calls = [];
 	const h = { page: { evaluate: async ( fn, arg ) => calls.push( [ fn.name, arg ] ), waitForTimeout: async () => {} }, clickText: async () => calls.push( 'clickText' ) };
 	await cfg.draft.open( h );
-	assert.deepEqual( calls, [ [ 'setStateInPage', { component: 'Root', keys: { active: 1 } } ] ] );
+	assert.deepEqual( calls, [ [ 'logicState', { comp: 'Root', op: 'set', patch: { active: 1 } } ] ] );
 	const plain = await load( walkerConfigs( { surface: 'fx', nodes, tree, draftUrl: 'http://127.0.0.1:1/draft.html', liveUrl: 'http://live/', open: 'About', divergences: null, state: 'opening' } ) );
 	const clicked = [];
 	await plain.draft.open( { clickText: async ( re ) => clicked.push( re ) } );

@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><script src="data.js"></script></head><body>
+<x-dc>
+<main>
+  <h1>Shop</h1>
+  <sc-for list="{{ chips }}" as="c"><button onClick="{{ c.pick }}">{{ c.label }}</button></sc-for>
+  <sc-for list="{{ list }}" as="p"><a href="Item.dc.html?id=box"><h2>{{ p.name }}</h2><p>{{ p.label }}</p></a></sc-for>
+  <a href="Item.dc.html?id=jar&amp;pack=12">Big jar</a>
+  <a href="Item.dc.html?id=jar&amp;gift=1">Jar as a gift</a>
+  <a href="Item.dc.html?id=gone">Old product</a>
+  <sc-for list="{{ reviews }}" as="r"><p>{{ r.name }} {{ r.stars }}</p></sc-for>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { tag: 'all', origin: 'any' };
+  renderVals() {
+    const S = this.state, D = window.SHOPDATA;
+    const all = D ? D.items : [];
+    const inTag = (p, t) => t === 'all' || p.tags.includes(t);
+    const list = all.filter(p => inTag(p, S.tag) && (S.origin === 'any' || p.origin === S.origin));
+    const top = (D ? D.reviews : []).find(r => r.id === 'r1');
+    const coastal = all.filter(p => S.origin === p.origin);
+    const chosen = all.some(p => S.name === p.id);
+    return {
+      list,
+      reviews: D ? D.reviews : [],
+      top,
+      chips: (D ? D.tagNames : []).map(([id, label]) => ({ label, pick: () => this.setState({ tag: id }) }))
+    };
+  }
+}
+</script>
+</body></html>

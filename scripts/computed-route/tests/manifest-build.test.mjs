@@ -623,3 +623,56 @@ test( 'a shop, product or product_cat row is a surface whose target is its templ
 	assert.ok( ! out.unmatched.some( ( u ) => 'shop' === u.key ), 'a shop row matches its route\'s page record' );
 	assert.deepEqual( run( [ row( 'shop', 'shop', 12, { template: 'archive-product' } ) ] ).entries.shop.target, { template: 'archive-product' } );
 } );
+
+// FR-48-87: WooCommerce's own cart, checkout and account pages keep WooCommerce's block, so a draft with no page for one
+// (its basket is a drawer) has nothing to clone there.
+const woo = ( slug, template, extra = {} ) => ( { postType: 'page', slug, title: slug, id: 7, template, route: null, ...extra } );
+
+test( 'MUST FAIL: a WooCommerce page row with no draft page is a named skip, never unresolved or a missing intake surface', () => {
+	const out = run( [ woo( 'cart', 'cart' ), woo( 'checkout', 'checkout', { id: 8 } ), woo( 'my-account', 'page', { id: 9 } ) ], [], { intake: { skeletons: {} } } );
+	assert.deepEqual( out.unresolved, [] );
+	assert.deepEqual( out.noIntake, [] );
+	assert.deepEqual( out.noDraft.map( ( u ) => [ u.key, u.why ] ), [
+		[ 'cart', "no draft page: WooCommerce's own cart page keeps its block" ],
+		[ 'checkout', "no draft page: WooCommerce's own checkout page keeps its block" ],
+		[ 'my-account', "no draft page: WooCommerce's own my account page keeps its block" ],
+	] );
+	assert.equal( out.entries.cart.noDraft, "no draft page: WooCommerce's own cart page keeps its block", 'the entry carries the skip for site-run' );
+	assert.equal( out.entries.cart.intakeSurface, undefined );
+} );
+
+test( 'MUST FAIL: a WooCommerce page whose draft page exists but matches no record still fails, and so does an ordinary page with no draft page', () => {
+	const drafted = run( [ woo( 'cart', 'cart', { route: 'Basket.dc.html' } ) ] );
+	assert.deepEqual( drafted.unresolved.map( ( u ) => [ u.key, u.reason ] ), [ [ 'cart', 'states-unresolved' ] ] );
+	assert.deepEqual( drafted.noDraft, [] );
+	assert.equal( drafted.entries.cart.noDraft, undefined );
+	const plain = run( [ woo( 'about', 'page' ) ] );
+	assert.deepEqual( plain.unresolved.map( ( u ) => u.key ), [ 'about' ], 'a page that is not one of WooCommerce\'s own is never skipped' );
+	assert.deepEqual( plain.noDraft, [] );
+	const named = run( [ woo( 'cart', 'cart', { draftId: 'surfaces.json S-9' } ) ], [ rec( 'S-9', 'page', 'Bag' ) ] );
+	assert.deepEqual( [ named.noDraft, named.unresolved ], [ [], [] ], 'a row whose record matches is read as usual' );
+	assert.equal( named.matched.cart, 'S-9' );
+	assert.equal( named.entries.cart.noDraft, undefined, 'and is never marked as having no draft page' );
+} );
+
+test( 'MUST FAIL: the skip is the generated truth on an existing entry: added when missing, removed once the draft has the page', () => {
+	const added = run( [ woo( 'cart', 'cart' ) ], [], { existing: { cart: { tree: 'trees/page/cart.json', states: { resting: null } } } } );
+	assert.equal( added.entries.cart.noDraft, "no draft page: WooCommerce's own cart page keeps its block" );
+	assert.ok( added.added.cart.includes( 'noDraft' ) );
+	const reworded = run( [ woo( 'cart', 'cart' ) ], [], { existing: { cart: { tree: 'trees/page/cart.json', noDraft: 'no draft page: old' } } } );
+	assert.equal( reworded.entries.cart.noDraft, "no draft page: WooCommerce's own cart page keeps its block", 'an earlier wording is replaced' );
+	const stale = run( [ woo( 'cart', 'cart', { route: 'cart' } ) ], [ rec( 'S-1', 'page', 'Bag', undefined, { page_key: 'cart' } ) ], { existing: { cart: { tree: 'trees/page/cart.json', noDraft: 'no draft page: old' } } } );
+	assert.equal( stale.entries.cart.noDraft, undefined );
+} );
+
+test( 'MUST FAIL: the command exits 0 on a WooCommerce page with no draft page and names the skip', () => {
+	const f = fixture( { rows: [ row( 'page', 'home', 4 ), woo( 'cart', 'cart' ) ] } );
+	const got = f.go();
+	assert.equal( got.status, 0, said( got ) );
+	assert.match( got.stdout, /^no-draft-page cart: no draft page: WooCommerce's own cart page keeps its block$/m );
+	assert.doesNotMatch( got.stdout, /states-unresolved cart|no-intake-surface cart/ );
+	f.done();
+	const g = fixture( { rows: [ row( 'page', 'home', 4 ), woo( 'cart', 'cart', { route: 'Basket.dc.html' } ) ] } );
+	assert.equal( g.go().status, 1, 'negative control: a drafted WooCommerce page that matches nothing still exits 1' );
+	g.done();
+} );
