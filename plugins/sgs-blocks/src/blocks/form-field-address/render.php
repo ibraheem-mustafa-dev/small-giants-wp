@@ -3,8 +3,8 @@
  * Server-side render for Address Field block.
  *
  * Renders a compound address field with optional postcode auto-lookup.
- * Sub-fields are named {fieldName}[line1], {fieldName}[postcode], etc.
- * so they submit as a nested array and arrive at the server as a single key.
+ * Sub-fields submit as <name>-line1, <name>-postcode, etc. (<name> from field_submission_name()); the
+ * postcode lookup box, when shown, submits the postcode.
  *
  * @package SGS\Blocks
  */
@@ -17,8 +17,11 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_submission_name;
 
 $base_fid      = field_id( $attributes['fieldName'] ?? 'unnamed' );
+// Each sub-field submits as <name>-<part> ("site-postcode").
+$base_name     = field_submission_name( $base_fid, $attributes );
 $enable_lookup = $attributes['enableLookup'] ?? false;
 $fields        = $attributes['fields'] ?? array( 'line1', 'line2', 'city', 'county', 'postcode', 'country' );
 
@@ -40,10 +43,11 @@ if ( $enable_lookup && in_array( 'postcode', $fields, true ) ) {
 	echo '<div class="sgs-form-field__address-lookup">';
 	printf(
 		'<label for="%1$s-postcode-lookup" class="screen-reader-text">%2$s</label>
-		 <input type="text" id="%1$s-postcode-lookup" class="sgs-form-field__input" placeholder="%3$s" autocomplete="postal-code" />',
+		 <input type="text" id="%1$s-postcode-lookup" name="%4$s" class="sgs-form-field__input" placeholder="%3$s" autocomplete="postal-code" />',
 		esc_attr( $base_fid ),
 		esc_html__( 'Postcode for address lookup', 'sgs-blocks' ),
-		esc_attr__( 'Enter postcode to find address', 'sgs-blocks' )
+		esc_attr__( 'Enter postcode to find address', 'sgs-blocks' ),
+		esc_attr( $base_name . '-postcode' )
 	);
 	printf(
 		'<button type="button" class="sgs-form-field__lookup-button" data-field-id="%s">%s</button>',
@@ -60,7 +64,7 @@ foreach ( $fields as $field ) {
 	}
 
 	$fid         = $base_fid . '-' . $field;
-	$field_name  = ( $attributes['fieldName'] ?? '' ) . '[' . $field . ']';
+	$field_name  = $base_name . '-' . $field;
 	$placeholder = $field_labels[ $field ];
 
 	// line1 and postcode inherit the parent `required` flag; all others are optional.

@@ -43,6 +43,7 @@ use function SGS\Blocks\Forms\field_help;
 use function SGS\Blocks\Forms\field_error;
 use function SGS\Blocks\Forms\field_close;
 use function SGS\Blocks\Forms\field_id;
+use function SGS\Blocks\Forms\field_submission_name;
 
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
@@ -159,7 +160,7 @@ $multi          = $attributes['multiSelect'] ?? false;
 // columns is read directly by SGS_Container_Wrapper::render() from
 // $attributes['columns'] — no local variable needed here (dead-assignment
 // cleanup).
-$name           = esc_attr( $attributes['fieldName'] ?? '' );
+$name           = field_submission_name( $fid, $attributes );
 $required       = ! empty( $attributes['required'] );
 $help_text      = $attributes['helpText'] ?? '';
 $selected_style = $attributes['selectedStyle'] ?? 'checkmark'; // border | background | checkmark.

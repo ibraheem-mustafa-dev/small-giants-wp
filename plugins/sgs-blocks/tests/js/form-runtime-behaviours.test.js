@@ -383,3 +383,44 @@ describe( 'per-field validation copy (data-sgs-msg-<reason>)', () => {
 		expect( document.getElementById( 'a' ).hasAttribute( 'aria-invalid' ) ).toBe( false );
 	} );
 } );
+
+describe( 'submitted field keys (Spec 04 submission name)', () => {
+	// The key pattern Form_Rest_Submission::validate_fields() accepts; anything else refuses the whole submission.
+	const SERVER_KEY = /^[A-Za-z0-9_-]{1,64}$/;
+
+	async function submitted( setup ) {
+		document.body.innerHTML = formHtml( { steps: 1, saved: false } );
+		const def = loadView();
+		const root = document.querySelector( '[data-form-id]' );
+		root.querySelector( '[name="name"]' ).value = 'Sam';
+		setup( root );
+		global.fetch = jest.fn( () => Promise.resolve( { ok: true, json: () => Promise.resolve( {} ) } ) );
+		mockRef = root.querySelector( 'form' );
+		mockCtx = { currentStep: 0, totalSteps: 1, formId: 'f1' };
+		await run( def.actions.submitForm( { preventDefault() {} } ) );
+		return JSON.parse( global.fetch.mock.calls[ 0 ][ 1 ].body ).fields;
+	}
+
+	it( 'sends a list control under its name without the [] marker, as a list even with one tick', async () => {
+		const fields = await submitted( ( root ) => {
+			root.querySelector( '#f1-b' ).checked = true;
+		} );
+		expect( fields.opts ).toEqual( [ 'b' ] );
+		expect( Object.keys( fields ) ).not.toContain( 'opts[]' );
+	} );
+
+	it( 'collects every ticked value of a list control', async () => {
+		const fields = await submitted( ( root ) => {
+			root.querySelector( '#f1-a' ).checked = true;
+			root.querySelector( '#f1-b' ).checked = true;
+		} );
+		expect( fields.opts ).toEqual( [ 'a', 'b' ] );
+	} );
+
+	it( 'sends no file object (the upload endpoint carries the file) and every key passes the server pattern', async () => {
+		const fields = await submitted( () => {} );
+		expect( fields ).not.toHaveProperty( 'cv' );
+		expect( fields.server ).toBe( 'from-server' );
+		Object.keys( fields ).forEach( ( key ) => expect( key ).toMatch( SERVER_KEY ) );
+	} );
+} );
