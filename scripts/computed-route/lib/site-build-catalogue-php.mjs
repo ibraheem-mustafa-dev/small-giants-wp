@@ -4,6 +4,8 @@
 // seed that preceded this step (find a product by SKU, find-or-create a global attribute and register its taxonomy in
 // this process, find-or-create terms by name, variations keyed by their attribute values, sync the parent, publish last
 // so the product preflight gate sees the variations and image).
+import { facetApplyPhp, facetStatePhp } from './site-build-catalogue-facets.mjs';
+
 const b64 = ( v ) => Buffer.from( JSON.stringify( v ) ).toString( 'base64' );
 
 // The PHP helpers both runs share.
@@ -34,13 +36,15 @@ $sgs_attachment = function ( $img ) {
 `;
 
 // The read: per product { draftId, id, how, fixture, type, status, sku, price, image, gallery, categories, brand, rrp,
-// draftMeta, attributes (pa_ slugs), variations (SKUs), permalink }, every image's attachment id, and the site's
-// WooCommerce facts (active, product base, the brand taxonomy, active plugins).
-export function catalogueStatePhp( products, images ) {
+// draftMeta, attributes (pa_ slugs), variations (SKUs), permalink, facets (per facet slug, its term names) }, every
+// image's attachment id, every facet's attribute (lib/site-build-catalogue-facets.mjs) and the site's WooCommerce facts
+// (active, product base, the brand taxonomy, active plugins). `catalogue` gives the facets.
+export function catalogueStatePhp( products, images, catalogue = {} ) {
 	return `$in = json_decode( base64_decode( '${ b64( products ) }' ), true );
 $imgs = json_decode( base64_decode( '${ b64( images ) }' ), true );
 if ( ! class_exists( 'WooCommerce' ) ) { echo wp_json_encode( array( 'woocommerce' => false ) ); return; }
 ${ HELPERS }
+${ facetStatePhp( catalogue ) }
 $out = array();
 foreach ( $in as $p ) {
 	list( $id, $how ) = $sgs_find( $p );
@@ -57,18 +61,20 @@ foreach ( $in as $p ) {
 			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => (int) get_post_thumbnail_id( $id ), 'gallery' => $wc ? count( $wc->get_gallery_image_ids() ) : 0,
 			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ),
 			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'attributes' => $attrs, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ) );
+		$row['facets'] = $sgs_product_facets( $id );
 	}
 	$out[] = $row;
 }
 $found = array();
 foreach ( $imgs as $key => $img ) { $found[ $key ] = $sgs_attachment( $img ); }
 $permalinks = (array) get_option( 'woocommerce_permalinks', array() );
-echo wp_json_encode( array( 'woocommerce' => true, 'products' => $out, 'images' => $found, 'productBase' => trim( (string) ( $permalinks['product_base'] ?? '' ), '/' ), 'brandTaxonomy' => taxonomy_exists( 'product_brand' ), 'plugins' => array_values( (array) get_option( 'active_plugins', array() ) ) ) );`;
+echo wp_json_encode( array( 'woocommerce' => true, 'products' => $out, 'images' => $found, 'facets' => (object) $facets, 'productBase' => trim( (string) ( $permalinks['product_base'] ?? '' ), '/' ), 'brandTaxonomy' => taxonomy_exists( 'product_brand' ), 'plugins' => array_values( (array) get_option( 'active_plugins', array() ) ) ) );`;
 }
 
 // The write: `steps` is the plan's actions with each product's catalogue record; `uploads` maps an image key to
-// { name, sha, data (base64) } for a draft asset to upload, or { url } to fetch. Prints { done: [ … ], issues: [ … ] }.
-export function catalogueApplyPhp( steps, images, uploads, productBase ) {
+// { name, sha, data (base64) } for a draft asset to upload, or { url } to fetch; `catalogue` gives the facets, made
+// before the products and given to each. Prints { done: [ … ], issues: [ … ] }.
+export function catalogueApplyPhp( steps, images, uploads, productBase, catalogue = {} ) {
 	return `$steps = json_decode( base64_decode( '${ b64( steps ) }' ), true );
 $imgs = json_decode( base64_decode( '${ b64( images ) }' ), true );
 $uploads = json_decode( base64_decode( '${ b64( uploads ) }' ), true );
@@ -128,6 +134,7 @@ $term = function ( $name, $tax ) {
 	$r = wp_insert_term( $name, $tax );
 	return is_wp_error( $r ) ? null : get_term( $r['term_id'], $tax );
 };
+${ facetApplyPhp( catalogue ) }
 foreach ( $steps as $s ) {
 	$p = $s['product'];
 	list( $id ) = $sgs_find( $p );
@@ -219,6 +226,7 @@ foreach ( $steps as $s ) {
 		}
 		WC_Product_Variable::sync( $id );
 	}
+	$sgs_assign_facets( $id, $p, $ours );
 	if ( 'publish' !== get_post_status( $id ) ) {
 		wp_update_post( array( 'ID' => $id, 'post_status' => 'publish' ) );
 	}

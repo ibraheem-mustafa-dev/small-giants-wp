@@ -29,13 +29,12 @@ test( 'shared script: the looked-up, priced list is the catalogue; a list with n
 	assert.deepEqual( catalogueProblems( catalogue ), [] );
 } );
 
-test( 'categories come from the array field the shop page filters on, named by the code\'s own label pairs; any other filter field is a facet gap', () => {
+test( 'categories come from the array field the shop page filters on, named by the code\'s own label pairs; any other filter field is a facet', () => {
 	const { catalogue } = read( 'shared', SHARED_ROWS );
 	assert.deepEqual( byId( catalogue, 'jar' ).categories, [ 'Pantry', 'Sweet things' ] );
-	assert.deepEqual( byId( catalogue, 'jar' ).facets, { origin: 'hills' } );
-	const facet = catalogue.gaps.filter( ( g ) => 'facet' === g.kind );
-	assert.equal( facet.length, 1 );
-	assert.match( facet[ 0 ].detail, /"origin"/ );
+	assert.deepEqual( byId( catalogue, 'jar' ).facets, { origin: [ 'hills' ] } );
+	assert.deepEqual( catalogue.facets.map( ( f ) => [ f.slug, f.kind, f.key, f.terms.map( ( t ) => t.name ) ] ), [ [ 'origin', 'value', 'origin', [ 'hills', 'coast' ] ] ] );
+	assert.equal( catalogue.gaps.filter( ( g ) => 'facet' === g.kind ).length, 0 );
 } );
 
 test( 'a priced whole-number choice is a pack size; with a second choice every combination is a variation priced by the pack', () => {
@@ -92,8 +91,8 @@ test( 'class property: two price fields give price and RRP, images come from the
 	assert.deepEqual( catalogue.products.map( ( p ) => p.image ), [ { url: 'https://images.example.test/a.jpg' }, null, { url: 'https://images.example.test/b.jpg' } ] );
 	assert.deepEqual( catalogue.products[ 0 ].attributes.map( ( a ) => [ a.label, a.options.map( ( o ) => o.term ), a.default ] ), [ [ 'Size', [ 'S', 'M', 'L' ], 'M' ] ] );
 	assert.ok( catalogue.gaps.some( ( g ) => 'slug' === g.kind && '2' === g.draftId ) );
-	const facet = catalogue.gaps.find( ( g ) => 'facet' === g.kind );
-	assert.match( facet.detail, /"fit", "cols"/ );
+	assert.deepEqual( catalogue.facets.map( ( f ) => [ f.field, f.slug, f.terms.map( ( t ) => `${ t.name }${ t.swatch || '' }` ) ] ), [ [ 'fit', 'fit', [ 'Snug', 'Loose' ] ], [ 'cols', 'col', [ 'Black#111111', 'Red#aa2222' ] ] ] );
+	assert.deepEqual( catalogue.products[ 0 ].facets, { fit: [ 'Snug' ], col: [ 'Black', 'Red' ] } );
 	assert.deepEqual( catalogue.products[ 0 ].categories, [] );
 	assert.equal( productAddress( catalogue, catalogue.products[ 2 ] ), '/goods/saltway-harbour-hat/' );
 	assert.deepEqual( catalogueProblems( catalogue ), [] );

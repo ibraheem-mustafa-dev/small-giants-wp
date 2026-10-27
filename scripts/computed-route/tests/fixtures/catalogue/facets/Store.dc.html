@@ -1,0 +1,72 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<sc-if value="{{ isShop }}"><main><h1>Goods</h1>
+  <sc-for list="{{ groups }}" as="g"><h3>{{ g.label }}</h3><sc-for list="{{ g.items }}" as="i"><button onClick="{{ i.toggle }}">{{ i.name }}</button></sc-for></sc-for>
+  <label><span>Lined only</span><span onClick="{{ toggleLined }}" role="switch" aria-checked="{{ lined }}"></span></label>
+  <div><p>Pick a theme</p><sc-for list="{{ themes }}" as="t"><button onClick="{{ t.pick }}" aria-pressed="{{ t.on }}">{{ t.name }}</button></sc-for></div>
+  <sc-for list="{{ results }}" as="p"><a href="#" onClick="{{ p.open }}">{{ p.name }} {{ p.priceLabel }}</a></sc-for>
+</main></sc-if>
+<sc-if value="{{ isProduct }}"><main>
+  <h1>{{ cur.name }}</h1>
+  <sc-for list="{{ sizes }}" as="s"><button onClick="{{ s.pick }}">{{ s.name }}</button></sc-for>
+  <button onClick="{{ addPlain }}">Add</button>
+</main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static TONES = { ink: ['Ink', '#101820'], sand: ['Sand', '#d8c3a5'], moss: ['Moss', '#4a5d23'] };
+  static KINDS = ['Cap', 'Beanie', 'Hood'];
+  static THEMES = [{ id: 'sea', name: 'By the sea' }, { id: 'hill', name: 'Up the hill' }];
+  static GOODS = [
+    { id: 1, name: 'Ridge Cap', price: 30, kind: 'Cap', tones: ['ink', 'sand'], girth: 54, lined: true, fitFor: 'Anyone', weight: 80, make: 'a', season: 'b', theme: 'sea' },
+    { id: 2, name: 'Fold Beanie', price: 20, kind: 'Beanie', tones: ['moss'], girth: 58, lined: false, fitFor: 'Adults', weight: 60, make: 'c', season: 'd', theme: 'dune' },
+    { id: 3, name: 'Storm Hood', price: 45, kind: 'Hood', tones: ['ink'], girth: 62, lined: false, fitFor: 'Children', weight: 120, make: 'e', season: 'f', theme: 'hill' }
+  ];
+  state = { page: 'shop', curId: 1, curSize: 'M', bag: [], f: { kinds: [], tones: [], band: [], lined: false, fitFor: 'All', maxWeight: 200, combo: '', theme: 'sea' } };
+  gbp(n) { return '£' + n.toFixed(2); }
+  go(page, extra) { this.setState(Object.assign({ page }, extra || {})); }
+  renderVals() {
+    const S = this.state, C = Component, f = S.f;
+    const setF = o => this.setState({ f: Object.assign({}, f, o) });
+    const multi = (key, v) => setF({ [key]: f[key].includes(v) ? f[key].filter(x => x !== v) : f[key].concat(v) });
+    const chips = (key, list) => list.map(v => ({ name: v, toggle: () => multi(key, v) }));
+    const group = (key, label, extra) => Object.assign({ key, label, items: [] }, extra);
+    const deco = p => Object.assign({}, p, { priceLabel: this.gbp(p.price), open: () => this.go('product', { curId: p.id }) });
+    const goods = C.GOODS.map(deco);
+    const cur = goods.find(p => p.id === S.curId) || goods[0];
+    const band = p => p.girth <= 55 ? 'Small' : p.girth <= 60 ? 'Medium' : 'Large';
+    const fitList = ['All', 'Adults', 'Children'].map(g => ({ name: g, on: f.fitFor === g, set: () => setF({ fitFor: g }) }));
+    const results = goods.filter(p =>
+      (!f.kinds.length || f.kinds.includes(p.kind)) &&
+      (!f.tones.length || p.tones.some(t => f.tones.includes(t))) &&
+      (!f.band.length || f.band.includes(band(p))) &&
+      (!f.lined || p.lined) &&
+      (f.fitFor === 'All' || p.fitFor === f.fitFor || p.fitFor === 'Anyone') &&
+      p.weight <= f.maxWeight &&
+      (!f.combo || p.make + p.season === f.combo) &&
+      p.theme === f.theme);
+    const chipsOn = [];
+    if (f.lined) chipsOn.push({ label: 'Lined', remove: () => setF({ lined: false }) });
+    const groups = [
+      group('fit', 'Fits', { items: fitList }),
+      group('kind', 'Kind', { items: chips('kinds', C.KINDS) }),
+      group('tone', 'Tone', { items: Object.keys(C.TONES).map(k => ({ name: C.TONES[k][0], toggle: () => multi('tones', k) })) }),
+      group('size', 'Size', { items: chips('band', ['Small', 'Medium', 'Large']) })
+    ];
+    const sizeDefs = [['S', -2], ['M', 0], ['L', 2]];
+    const sizes = sizeDefs.map(s => ({ name: s[0], pick: () => this.setState({ curSize: s[0] }) }));
+    return {
+      isShop: S.page === 'shop', isProduct: S.page === 'product', groups, chipsOn, results, cur, sizes,
+      lined: f.lined, toggleLined: () => setF({ lined: !f.lined }),
+      themes: C.THEMES.map(t => ({ name: t.name, on: f.theme === t.id, pick: () => setF({ theme: t.id }) })),
+      addPlain: () => this.addToBag(cur)
+    };
+  }
+  addToBag(p) {
+    const item = { pid: p.id, size: this.state.curSize };
+    this.setState(s => { const bag = s.bag.slice(); bag.push(item); return { bag }; });
+  }
+}
+</script>
+</body></html>

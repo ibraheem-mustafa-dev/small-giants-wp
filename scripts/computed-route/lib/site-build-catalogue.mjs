@@ -9,6 +9,9 @@
 //     must plan nothing, and records each draft id's product id and permalink in catalogue.json's `sites.<site>`;
 //   - the product base the draft's manifest declares is set when the site's differs; a product's address is then the
 //     one the link resolver writes (lib/draft-link.mjs);
+//   - each facet (a filter the draft's shop offers) is a global attribute with its terms, and each product's terms a
+//     filter-only product attribute (lib/site-build-catalogue-facets.mjs); a product lacking one is completed, and each
+//     facet's attribute id is recorded in `sites.<site>.attributes`;
 //   - a product dropped in the intake review is skipped; the page map is never read or written.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -16,6 +19,7 @@ import path from 'node:path';
 import { catalogueFile, loadCatalogue, productAddress } from './catalogue-read.mjs';
 import { catalogueProblems } from './intake-catalogue-run.mjs';
 import { catalogueApplyPhp, catalogueStatePhp } from './site-build-catalogue-php.mjs';
+import { facetLack, facetSay, planFacets, tallyFacets, writtenFacets } from './site-build-catalogue-facets.mjs';
 
 // The plugins whose presence settles a gap kind: a recurring order (switch gaps) and a gift card (open-amount gaps).
 export const GAP_PLUGINS = { switch: /subscriptions/i, 'open-amount': /gift-?cards?/i };
@@ -39,7 +43,7 @@ const keyOf = ( img ) => ( img ? img.url || img.asset : null );
 const products = ( catalogue ) => catalogue.products.filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 
 // What one found product lacks of its catalogue record (names, for the plan line).
-function missing( p, s, state ) {
+function missing( p, s, state, catalogue ) {
 	const out = [];
 	const ours = s.sku === p.sku;
 	if ( 'simple' === p.type && '' === s.price ) {
@@ -67,18 +71,20 @@ function missing( p, s, state ) {
 		const lack = p.variations.filter( ( v ) => ! s.variations.includes( v.sku ) );
 		lack.length && out.push( `${ lack.length } of ${ p.variations.length } variations` );
 	}
+	out.push( ...facetLack( catalogue, p, s ).map( ( f ) => `filter ${ f }` ) );
 	if ( 'publish' !== s.status ) {
 		out.push( `publishing (now ${ s.status })` );
 	}
 	return out;
 }
 
-// The plan: { actions: [{ draftId, action, say, product, image, gallery }], notes, problems, productBase: { from, to } | null }.
+// The plan: { actions: [{ draftId, action, say, product, image, gallery }], facets: [{ slug, action, say }], notes,
+// problems, productBase: { from, to } | null }.
 export function planCatalogue( catalogue, state ) {
 	const notes = [];
 	const problems = [];
 	if ( ! state.woocommerce ) {
-		return { actions: [], notes, problems: [ 'the site has no active WooCommerce' ], productBase: null };
+		return { actions: [], facets: [], notes, problems: [ 'the site has no active WooCommerce' ], productBase: null };
 	}
 	const want = catalogue.productBase || 'product';
 	const productBase = ( state.productBase || 'product' ) !== want ? { from: state.productBase || 'product', to: want } : null;
@@ -97,7 +103,7 @@ export function planCatalogue( catalogue, state ) {
 			actions.push( { ...step, action: 'left', say: `left ${ p.draftId }: product ${ s.id } is a fixture` } );
 			continue;
 		}
-		const lack = missing( p, s, state );
+		const lack = missing( p, s, state, catalogue );
 		if ( s.type !== p.type ) {
 			notes.push( `${ p.draftId }: product ${ s.id } (found by ${ s.how }) is ${ s.type }, the catalogue's is ${ p.type }; its type is left` );
 		}
@@ -113,6 +119,12 @@ export function planCatalogue( catalogue, state ) {
 			notes.push( plugin ? `${ plugin } is active: the ${ kind } gap(s) of ${ gaps.map( ( g ) => g.draftId ).join( ', ' ) } can be built on it (not done by this step)` : `no ${ 'switch' === kind ? 'subscriptions' : 'gift-card' } plugin is active (wp option active_plugins), so the ${ kind } gap(s) of ${ gaps.map( ( g ) => g.draftId ).join( ', ' ) } stand` );
 		}
 	}
+	actions.filter( ( a ) => 'create' === a.action ).forEach( ( a ) => {
+		a.say += facetSay( catalogue, a.product );
+	} );
+	const facets = planFacets( catalogue, state );
+	notes.push( ...facets.notes );
+	problems.push( ...facets.problems );
 	const bare = actions.filter( ( a ) => 'create' === a.action && 'variable' === a.product.type && ! a.product.image ).map( ( a ) => a.draftId );
 	if ( bare.length ) {
 		notes.push( `the draft shows no image for variable product(s) ${ bare.join( ', ' ) }; the product preflight gate keeps a variable product without one in draft, so --apply reports each as not published until an image is set` );
@@ -120,7 +132,7 @@ export function planCatalogue( catalogue, state ) {
 	if ( catalogue.products.some( ( p ) => p.brand ) && ! state.brandTaxonomy ) {
 		notes.push( 'the site has no product_brand taxonomy (WooCommerce Brands), so brands are not written' );
 	}
-	return { actions, notes, problems, productBase };
+	return { actions, facets: facets.actions, notes, problems, productBase };
 }
 
 export const tallyCatalogue = ( plan ) => Object.fromEntries( [ 'create', 'complete', 'exists', 'left' ].map( ( k ) => [ k, plan.actions.filter( ( a ) => a.action === k ).length ] ) );
@@ -134,7 +146,7 @@ const parseJson = ( text, what ) => {
 	return JSON.parse( s.slice( start ) );
 };
 
-export const readCatalogueState = ( runPhp, catalogue, images ) => parseJson( runPhp( catalogueStatePhp( products( catalogue ).map( ( p ) => ( { draftId: p.draftId, sku: p.sku, slug: p.slug } ) ), images ) ), 'the catalogue read' );
+export const readCatalogueState = ( runPhp, catalogue, images ) => parseJson( runPhp( catalogueStatePhp( products( catalogue ).map( ( p ) => ( { draftId: p.draftId, sku: p.sku, slug: p.slug } ) ), images, catalogue ) ), 'the catalogue read' );
 
 // The uploads an apply needs: every image the site does not hold, with its bytes (an asset) or address.
 function uploadsFor( repo, images, state ) {
@@ -146,7 +158,8 @@ export function recordSite( repo, client, site, state, catalogue ) {
 	const file = catalogueFile( repo, client );
 	const record = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 	const made = Object.fromEntries( state.products.filter( ( s ) => s.id && ! s.fixture ).map( ( s ) => [ s.draftId, { id: s.id, permalink: s.permalink, variations: s.variations.length } ] ) );
-	const next = { ...record, sites: { ...( record.sites || {} ), [ site ]: { builtAt: new Date().toISOString(), products: made } } };
+	const attributes = Object.fromEntries( writtenFacets( catalogue ).filter( ( f ) => state.facets?.[ f.slug ]?.id ).map( ( f ) => [ f.slug, state.facets[ f.slug ].id ] ) );
+	const next = { ...record, sites: { ...( record.sites || {} ), [ site ]: { builtAt: new Date().toISOString(), products: made, ...( Object.keys( attributes ).length ? { attributes } : {} ) } } };
 	const problems = catalogueProblems( next );
 	if ( problems.length ) {
 		throw new Error( `catalogue.json with the ${ site } ids does not validate: ${ problems.join( '; ' ) }` );
@@ -178,23 +191,25 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 	}
 	log( 'catalogue:' );
 	plan.productBase && log( `  product base /${ plan.productBase.from } -> /${ plan.productBase.to }` );
+	plan.facets.forEach( ( a ) => log( `  ${ a.say }` ) );
 	plan.actions.forEach( ( a ) => log( `  ${ a.say }` ) );
 	const t = tallyCatalogue( plan );
+	const ft = tallyFacets( plan );
 	if ( ! apply ) {
-		log( `${ t.create } to create, ${ t.complete } to complete, ${ t.exists } existing, ${ t.left } left (dry run: re-run with --apply)` );
+		log( `${ t.create } to create, ${ t.complete } to complete, ${ t.exists } existing, ${ t.left } left; filter attributes ${ ft.create } to create, ${ ft.complete } to complete, ${ ft.exists } existing (dry run: re-run with --apply)` );
 		return 0;
 	}
 	const steps = plan.actions.filter( ( a ) => 'create' === a.action || 'complete' === a.action );
-	const done = parseJson( runPhp( catalogueApplyPhp( steps, images, uploadsFor( repo, images, state ), plan.productBase ? plan.productBase.to : null ) ), 'the catalogue write' );
+	const done = parseJson( runPhp( catalogueApplyPhp( steps, images, uploadsFor( repo, images, state ), plan.productBase ? plan.productBase.to : null, catalogue ) ), 'the catalogue write' );
 	done.done.forEach( ( d ) => log( `  done: ${ d }` ) );
 	done.issues.forEach( ( d ) => error( `  issue: ${ d }` ) );
 	const after = readCatalogueState( runPhp, catalogue, images );
 	const again = planCatalogue( catalogue, after );
-	const left = again.actions.filter( ( a ) => 'create' === a.action || 'complete' === a.action );
+	const left = [ ...again.facets, ...again.actions ].filter( ( a ) => 'create' === a.action || 'complete' === a.action );
 	const recorded = recordSite( repo, client, site, after, catalogue );
 	log( `catalogue.json: ${ recorded } product id(s) recorded for ${ site }` );
 	if ( done.issues.length || left.length || again.productBase ) {
-		error( `FAILED: a fresh read still plans ${ left.length } product step(s)${ again.productBase ? ' and the product base' : '' }: ${ left.map( ( a ) => a.say ).join( '; ' ) }` );
+		error( `FAILED: a fresh read still plans ${ left.length } product or filter step(s)${ again.productBase ? ' and the product base' : '' }: ${ left.map( ( a ) => a.say ).join( '; ' ) }` );
 		return 1;
 	}
 	log( `${ steps.length } product step(s) run; a fresh read plans 0` );
