@@ -16,7 +16,7 @@
 		"I-unrouted": { "meaning": "a fitting setting has a NULL css_property", "owner": "sgs-update-v2.py" },
 		"I-mistag": { "meaning": "a setting carries the wrong role", "owner": "sgs-update-v2.py" },
 		"I-calibration": { "meaning": "dead, noMarker, untested or absent calibration", "owner": "calibration (Spec 48 §3.2)" },
-		"draft-defect": { "meaning": "FR-48-34's closed list of defects in the draft itself", "owner": "Claude Design, or B5 for Eye Care" },
+		"draft-defect": { "meaning": "FR-48-34's closed list of defects in the draft itself", "owner": "Claude Design, or the client's draft edit" },
 		"render-wins": { "meaning": "the draft's code and render disagree and the rendered value is the target (FR-48-36); reported, never a gap", "owner": "the surface report; Claude Design when the code is the error" },
 		"CLIENT": { "meaning": "a recorded deliberate difference or a client decision", "owner": "the client's ledger" },
 		"held": { "meaning": "a row already held and judged live: the equivalence engine found the value inert, covered, inherited or the block's default, or a reduced-motion record the motion model removes itself; not a gap", "owner": "FR-48-65" },
