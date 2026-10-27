@@ -93,7 +93,7 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 	// The handoff record of the same id carries the states (with the sc-if templates each shows); the draft's width thresholds are intake's.
 	const states = statesOfRecord( { repo, client, id: entry.id } );
 	const thresholds = thresholdsOf( intake.breakpoints );
-	return { slug, kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), states, thresholds };
+	return { slug, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), states, thresholds };
 }
 
 // The intake context and the saved client decisions of a surface as propose and review read them: decisions under the intake
@@ -131,7 +131,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const formLinks = formLinksFor( { repo, client, refs } );
 	// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region (lib/skeleton-commerce-region.mjs).
 	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ) );
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, db } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
