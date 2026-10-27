@@ -1154,8 +1154,10 @@
 			"slug": "sgs/info-box",
 			"attr": "scaleHover",
 			"fields": {
-				"css_state": "hover"
-			}
+				"css_state": "hover",
+				"css_element": "wrapper"
+			},
+			"_why": "css_state hover: scaleHover scales the whole card on hover. 2026-10-27 (calibration state targets): css_element wrapper - render.php sets --sgs-hover-scale on the root and style.css scales `.sgs-info-box.sgs-has-hover-scale:hover`; the classifier filed it under `media`, a class info-box never prints, so calibration hovered nothing."
 		},
 		{
 			"slug": "sgs/team-member",
@@ -7503,14 +7505,6 @@
 				"css_element": null
 			},
 			"_why": "2026-10-21: the mobile-tier logo attachment ID. src/blocks/responsive-logo/render.php reads it as `$mobile_logo_id = absint( $attributes['logoIdMobile'] )` and resolves the mobile image from it; it carries no length, so the max-width the classifier derived is an emission side effect (the logo's width comes from the separate `width` attribute through --logo-width). Same as logoId. Spec 48 5.4 Res 7."
-		},
-		{
-			"slug": "sgs/info-box",
-			"attr": "scaleHover",
-			"fields": {
-				"css_element": "wrapper"
-			},
-			"_why": "2026-10-27 (calibration state targets). scaleHover scales the whole card: render.php sets --sgs-hover-scale on the root and style.css scales `.sgs-info-box.sgs-has-hover-scale:hover`. The classifier filed it under `media`, a class info-box never prints, so calibration hovered nothing."
 		}
 	]
 }
