@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { slotFor, WIDTHS } from '../lib/calibrate.mjs';
-import { readInstancesInPage, openToggle, markTargetInPage, missedReason, readAll } from '../lib/calibrate-read.mjs';
+import { readInstancesInPage, openToggle, markTargetInPage, markOpenedTarget, missedReason, readAll } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, PSEUDO_PROPS, CAL_PSEUDO_PROPS, CAL_EXTRA_PSEUDO_PROPS, TEXT_PSEUDO_PROPS } from '../lib/calibrate-props.mjs';
 import { elementPath } from '../../parity/lib/ref-trace.mjs';
 
@@ -404,5 +404,25 @@ test( 'MUST FAIL (wishlist sgsHideOnDesktop read dead at random): a pass with se
 	} finally {
 		await browser.close();
 		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );
+
+test( 'MUST FAIL (cart checkout hover missed on a slow mirror): an opened panel whose target fills in after a slow fetch is waited for, not read as hidden', async () => {
+	const { chromium } = await import( 'playwright' );
+	const browser = await chromium.launch();
+	try {
+		const page = await browser.newPage();
+		// The panel opens at once, its footer shows 1.5s later (a cart panel waits for the basket fetch).
+		await page.setContent( `<div class="cr-ref-cal-0"><button aria-controls="p" aria-expanded="false" data-cr-toggle onclick="setTimeout(()=>document.querySelector('.sgs-x__checkout').hidden=false,1500)">Bag</button>
+			<div id="p"><a class="sgs-x__checkout" href="#" hidden>Checkout</a></div></div>` );
+		await openToggle( page );
+		const mark = await markOpenedTarget( page, [ 'cr-ref-cal-', 0, '.sgs-x__checkout', null ] );
+		assert.equal( mark.visible, true, 'the target is read once it shows' );
+		const never = await page.evaluate( markTargetInPage, [ 'cr-ref-cal-', 0, '.sgs-x__absent', null ] );
+		assert.equal( never.missing, true );
+		const gone = await markOpenedTarget( page, [ 'cr-ref-cal-', 0, '.sgs-x__absent', null ], 300 );
+		assert.equal( gone.missing, true, 'a selector that matches nothing returns at once' );
+	} finally {
+		await browser.close();
 	}
 } );

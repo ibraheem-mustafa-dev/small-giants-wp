@@ -160,6 +160,25 @@ export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 	return { visible, toggle: !! toggle };
 }
 
+// The longest an opened panel is given to show its target: a panel that fills from a fetch (the cart footer waits for the
+// Store API basket) shows it a few hundred ms to a few seconds after the click, depending on how fast the site answers.
+const OPENED_TARGET_WAIT_MS = 6000;
+
+// Marks the target of an opened panel (markTargetInPage's arguments), re-marking until it is visible, absent from the
+// instance or the wait runs out; returns the last mark. The first poll waits 500ms for the panel's open transition.
+export async function markOpenedTarget( page, markArgs, timeoutMs = OPENED_TARGET_WAIT_MS ) {
+	const deadline = Date.now() + timeoutMs;
+	let first = true;
+	for ( ;; ) {
+		await page.waitForTimeout( first ? 500 : 150 );
+		first = false;
+		const mark = await page.evaluate( markTargetInPage, markArgs );
+		if ( ! mark || mark.visible || mark.missing || Date.now() >= deadline ) {
+			return mark;
+		}
+	}
+}
+
 // The longest a pass waits for its settle or settleGone selector: a page of ~95 wishlist panels draws its rows at about two a second.
 const SETTLE_TIMEOUT_MS = 120000;
 
@@ -275,9 +294,8 @@ async function readUnderTrigger( page, instances, n, inst ) {
 	let opened = false;
 	if ( mark && ! mark.visible && mark.toggle ) {
 		await openToggle( page );
-		await page.waitForTimeout( 500 );
 		opened = true;
-		mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
+		mark = await markOpenedTarget( page, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 	}
 	let read = null;
 	let why = mark?.missing ? `no element matches ${ inst.target }` : ( mark ? 'hidden' : 'no instance' );
