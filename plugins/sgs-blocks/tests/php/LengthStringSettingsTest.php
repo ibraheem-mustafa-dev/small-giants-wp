@@ -88,6 +88,21 @@ final class LengthStringSettingsTest extends TestCase {
 		$this->assertStringContainsString( 'NULL', $out, 'a hostile value falls back to the built-in basis' );
 	}
 
+	/**
+	 * The container prints its per-device column minimum through the real render: the desktop basis in the base rule, the
+	 * mobile basis in the 767px media query, and a hostile string reaches neither.
+	 */
+	public function test_container_min_column_width_prints_per_device_in_the_render(): void {
+		$base = array( 'layout' => 'grid', 'columns' => array( 'desktop' => 3, 'mobile' => 2 ) );
+		$css  = $this->render_block( 'sgs/container', $base + array( 'minColumnWidth' => array( 'desktop' => '20rem', 'mobile' => '9rem' ) ), array(), array(), '', true )['css'];
+		$this->assertMatchesRegularExpression( '/^(?:(?!@media).)*max\(20rem,/s', $css, 'the desktop basis prints before any media query' );
+		$this->assertMatchesRegularExpression( '/@media \(max-width:767px\)\{[^{}]*\{grid-template-columns:[^}]*max\(9rem,/', $css, 'the mobile basis prints inside the 767px media query' );
+
+		$css = $this->render_block( 'sgs/container', $base + array( 'minColumnWidth' => array( 'desktop' => self::HOSTILE ) ), array(), array(), '', true )['css'];
+		$this->assertStringNotContainsString( 'body{', $css );
+		$this->assertStringContainsString( 'repeat(', $css, 'a refused value falls back to the built-in basis' );
+	}
+
 	public function test_separator_width_and_thickness_print_per_device(): void {
 		$css = $this->css( 'sgs/separator', array( 'width' => array( 'desktop' => '60%', 'mobile' => '200px' ), 'thickness' => array( 'desktop' => '2px', 'mobile' => '4px' ) ) );
 		$this->assertStringContainsString( 'width:60%', $css );

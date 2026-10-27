@@ -23,9 +23,10 @@ trait BlockHarnessRenderTrait {
 	 * @param array<string, mixed> $context Ancestor block context.
 	 * @param array<string, mixed> $global_settings Tree wp_get_global_settings() returns (e.g. a derived dark palette).
 	 * @param string               $content Rendered InnerBlocks HTML the block receives as $content ('' passes none).
+	 * @param bool                 $registered Run with the block type registered from its block.json (the harness's --motion-targets mode), so a render that reads supports.sgs.* sees them.
 	 * @return array{html: string, css: string} Rendered HTML and the concatenated <style> CSS.
 	 */
-	private function render_block( string $slug, array $attrs, array $context = array(), array $global_settings = array(), string $content = '' ): array {
+	private function render_block( string $slug, array $attrs, array $context = array(), array $global_settings = array(), string $content = '', bool $registered = false ): array {
 		$harness  = dirname( __DIR__, 2 ) . '/scripts/qa/lib/render-css-harness.php';
 		$attrs_f  = tempnam( sys_get_temp_dir(), 'sgsat' );
 		$context_f = tempnam( sys_get_temp_dir(), 'sgsct' );
@@ -41,6 +42,7 @@ trait BlockHarnessRenderTrait {
 				. ' --attrs-file ' . escapeshellarg( $attrs_f )
 				. ' --context-file ' . escapeshellarg( $context_f )
 				. ' --global-settings-file ' . escapeshellarg( $settings_f )
+				. ( $registered ? ' --motion-targets' : '' )
 				. ( '' !== $content ? ' --content ' . escapeshellarg( $content ) : '' ) . ' 2>&1';
 			$out = (string) shell_exec( $cmd );
 		} finally {

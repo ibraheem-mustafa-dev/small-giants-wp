@@ -92,6 +92,22 @@ function currentIconName( attrs ) {
 // Edit component
 // ---------------------------------------------------------------------------
 
+/**
+ * The canvas width and line thickness at the previewed device: each setting is one length string per device, a
+ * narrower device inherits the wider one, and the value passes the same safety check render.php prints through.
+ *
+ * @param {Object} width     Tier object of length strings.
+ * @param {Object} thickness Tier object of length strings.
+ * @param {string} tier      Previewed device.
+ * @return {{ width: (string|undefined), borderBottomWidth: (string|undefined) }} Canvas style values.
+ */
+export function separatorSizePreview( width, thickness, tier ) {
+	return {
+		width: cssLengthValue( resolveTier( width, tier ).value ?? '' ) || undefined,
+		borderBottomWidth: cssLengthValue( resolveTier( thickness, tier ).value ?? '' ) || undefined,
+	};
+}
+
 export default function Edit( { attributes, setAttributes } ) {
 	const { padding, margin,
 		lineStyle,
@@ -114,8 +130,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	// attr each holding {desktop,tablet,mobile}. A narrower tier inherits the
 	// wider one, as the front-end media rules do; the previewed device decides.
 	const previewTier = usePreviewTier();
-	const widthDesktop = resolveTier( width, previewTier ).value ?? '';
-	const thicknessDesktop = resolveTier( thickness, previewTier ).value ?? '';
+	const { width: previewWidth, borderBottomWidth: previewThickness } = separatorSizePreview( width, thickness, previewTier );
 
 	// ---- Editor-canvas preview (mirrors render.php's scoped output) ----
 	const lineDecls = {};
@@ -123,8 +138,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		lineDecls.borderBottom = '0 none transparent';
 	} else {
 		lineDecls.borderBottomStyle = lineStyle;
-		lineDecls.borderBottomWidth =
-			cssLengthValue( thicknessDesktop ) || undefined;
+		lineDecls.borderBottomWidth = previewThickness;
 		if ( lineGradient ) {
 			// One complete CSS gradient string since D643 — the stops already
 			// carry their own var(--wp--preset--color--x) form, so there is no
@@ -137,7 +151,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	}
 
 	const rootPreviewStyle = {
-		width: cssLengthValue( widthDesktop ) || undefined,
+		width: previewWidth,
 		...alignmentMargin( alignment ),
 		opacity:
 			'number' === typeof opacity && 100 !== opacity

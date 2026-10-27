@@ -20,6 +20,11 @@ WHAT IT FINDS
              code, tests, scripts, theme patterns or the cloning route: an edit.js bridge, a render.php read, a
              writer that still sets it, a stored pattern that still carries it
     allowed  a mention ALLOW names with its reason (another block's own attribute of the same name)
+    runtime  a unit name built while the code runs, which the literal-name search cannot see: a JS/MJS/TS template
+             literal ending in `Unit` built from a variable (`${attr}Unit`) or a `+ 'Unit'` concatenation, and PHP's
+             `. 'Unit'`. A reader built this way outlives its pair unseen, so each site is either removed or listed in
+             ALLOW_RUNTIME with the reason it reads only a name it has checked against the block's schema, or only a
+             typography unit
 
     python check-length-unit-partners.py --survey [--json] [--block <slug>]
     python check-length-unit-partners.py --fix [--apply] --block <slug>   block.json only: <name> becomes
@@ -125,6 +130,61 @@ def allowed(rel, unit, line):
     (or the entry allows the whole file)."""
     entry = ALLOW.get((rel, unit))
     return bool(entry) and (entry[1] is None or any(text in line for text in entry[1]))
+
+
+# A unit name assembled at run time: `${name}Unit` in a template literal, `+ 'Unit'` in JS, `. 'Unit'` in PHP.
+RUNTIME_UNIT = re.compile(r"""\$\{[^}]*\}Unit(?![A-Za-z0-9_])|[+.]\s*['"]Unit['"]""")
+RUNTIME_SUFFIXES = {'.js', '.mjs', '.jsx', '.ts', '.tsx', '.php'}
+
+# repo-relative path -> (the reason the runtime-built name is not a reader of a retired pair, the text each allowed line
+# carries). A line without one of the texts is still flagged, so a new runtime-built name added to an allowed file later
+# fails the check.
+ALLOW_RUNTIME = {
+    'scripts/computed-route/lib/calibrate-markers.mjs':
+        ("the route looks `<attr>Unit` up in the block's own schema and reads it only when the schema declares it",
+         ('schema[ `${ attr }Unit` ]', 'schema[ `${ row.attr_name }Unit` ]')),
+    'scripts/computed-route/lib/resolve.mjs':
+        ("the route looks `<attr>Unit` up in the block's own schema and reads it only when the schema declares it",
+         ('schema[ `${ attr }Unit` ]',)),
+    'scripts/computed-route/tests/resolve-size-keyword.test.mjs':
+        ("the test asks the framework DB whether the block declares `<attr>Unit` before expecting a unit-bearing write",
+         ('unit.get( r.block_slug, `${ r.attr_name }Unit` )',)),
+    'plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js':
+        ("the gate looks `<attr>Unit` up in the block's own attributes and composes a default only when the block declares it",
+         ('allAttrs[ `${ attrName }Unit` ]',)),
+}
+
+
+def runtime_allowed(rel, line):
+    """Whether ALLOW_RUNTIME excuses this runtime-built unit name: its file is listed and the line carries one of its texts."""
+    entry = ALLOW_RUNTIME.get(rel)
+    return bool(entry) and any(text in line for text in entry[1])
+
+
+def runtime_sites(repo):
+    """[(path, line_no, text)] for each line of a scanned JS/MJS/TS/PHP file that builds a unit name at run time and
+    ALLOW_RUNTIME does not excuse."""
+    out = []
+    if (Path(repo) / '.git').exists():
+        res = subprocess.run(['git', '-C', str(repo), 'grep', '-n', '-I', '-P', '-e', RUNTIME_UNIT.pattern, '--', *SCAN],
+                             capture_output=True)
+        if res.returncode not in (0, 1):
+            raise RuntimeError(res.stderr.decode('utf-8', 'replace'))
+        rows = []
+        for raw in res.stdout.decode('utf-8', 'replace').splitlines():
+            rel, line_no, text = raw.split(':', 2)
+            rows.append((rel, int(line_no), text))
+    else:
+        rows = [(p.relative_to(repo).as_posix(), i, line) for p in scan_files(repo)
+                for i, line in enumerate(p.read_text(encoding='utf-8', errors='replace').splitlines(), 1)
+                if RUNTIME_UNIT.search(line)]
+    for rel, i, line in rows:
+        parts = set(Path(rel).parts)
+        skip = SITES_SKIP if rel.startswith('sites/') else SKIP_DIRS
+        if Path(rel).suffix in RUNTIME_SUFFIXES and not skip & parts and rel not in SELF \
+                and RUNTIME_UNIT.search(line) and not runtime_allowed(rel, line):
+            out.append((rel, i, line.strip()[:160]))
+    return out
 
 
 def block_pairs(blocks_dir):
@@ -239,6 +299,7 @@ def survey(repo, block=None, migrated=None):
     return {
         'pairs': [{'block': b, 'setting': base, 'unit': u} for b, base, u, _, _ in pairs],
         'readers': {u: [{'file': f, 'line': n, 'text': t} for f, n, t in rows] for u, rows in sorted(found.items()) if rows},
+        'runtime': [{'file': f, 'line': n, 'text': t} for f, n, t in runtime_sites(repo)],
     }
 
 
@@ -322,13 +383,17 @@ def report(result, as_json):
     for u, rows in result['readers'].items():
         for r in rows:
             print(f"  {u}  {r['file']}:{r['line']}  {r['text']}")
+    print(f"runtime-built unit names: {len(result['runtime'])}")
+    for r in result['runtime']:
+        print(f"  {r['file']}:{r['line']}  {r['text']}")
 
 
 def check(result):
-    n = len(result['pairs']) + sum(len(v) for v in result['readers'].values())
+    n = len(result['pairs']) + sum(len(v) for v in result['readers'].values()) + len(result['runtime'])
     if n:
         report(result, False)
-        print(f"FAIL: {n} pair(s) and reader(s) remain; move each setting to the shared length shape (see --help)")
+        print(f"FAIL: {n} pair(s), reader(s) and runtime-built unit name(s) remain; move each setting to the shared length shape, "
+              f"and list a runtime-built name in ALLOW_RUNTIME only with the reason it is not a reader (see --help)")
         return 1
     print('OK: no single length setting stores a number beside a unit attribute')
     return 0
@@ -400,6 +465,20 @@ def self_test():
         assert allowed('x.py', 'gapUnit', "row = 'fixture: gapUnit'") and not allowed('x.py', 'gapUnit', "a = attrs['gapUnit']"), 'a line-scoped entry allows only its own lines'
         assert not allowed('y.py', 'gapUnit', 'fixture: gapUnit'), 'an entry names its file'
         del ALLOW[('x.py', 'gapUnit')]
+
+        planted = blocks / 'a' / 'edit.js'
+        rel = 'plugins/sgs-blocks/src/blocks/a/edit.js'
+        planted.write_text("const v = attrs[`${k}Unit`];\nconst w = attrs[`${ name }Unit`];\nconst x = attrs[name + 'Unit'];\nconst fine = `${k}Units`;\n", encoding='utf-8')
+        (blocks / 'a' / 'render.php').write_text('<?php $u = $attributes[ $name . "Unit" ];\n', encoding='utf-8')
+        found = survey(tmp, 'sgs/b', moved)['runtime']
+        assert sorted((r['file'], r['line']) for r in found) == [(rel, 1), (rel, 2), (rel, 3), ('plugins/sgs-blocks/src/blocks/a/render.php', 1)], found
+        assert check(survey(tmp, 'sgs/b', moved)) == 1, 'positive: a unit name built at run time fails the check'
+        (blocks / 'a' / 'render.php').write_text('<?php echo 1;\n', encoding='utf-8')
+        ALLOW_RUNTIME[rel] = ('a test entry: the name is checked against the schema first', ('attrs[`${k}Unit`]', 'attrs[`${ name }Unit`]'))
+        assert [r['line'] for r in survey(tmp, 'sgs/b', moved)['runtime']] == [3], 'an allowed line is not flagged; a line outside the entry still is'
+        ALLOW_RUNTIME[rel] = ('a test entry', ('attrs[`${k}Unit`]', 'attrs[`${ name }Unit`]', "name + 'Unit'"))
+        assert check(survey(tmp, 'sgs/b', moved)) == 0, 'negative control: every runtime-built line allowed'
+        del ALLOW_RUNTIME[rel]
         print('self-test: OK')
         return 0
     finally:
