@@ -1,5 +1,5 @@
 {
-	"_about": "Spec 48 FR-48-60, FR-48-61, FR-48-62: the shop part kinds of a draft's buy box, filter and basket drawer and the framework home of each. A unit (lib/shop-parts-read.mjs) is classified by what the draft's code is and does: an entry's `rule` names a structural test in lib/shop-parts.mjs::RULES (element type, ARIA state, position in the region tree, the handler's effect read from the logic's AST), and the first entry in file order whose rule holds takes the unit. A literal text run with no rule of its own joins the part of a unit in its row when that unit's entry takes `labels` (the label beside a value). `hints` are word patterns kept only as a last resort: a unit only a hint names becomes a reported gap row (a missing part that says the words alone named it), never a mapped part. A hint matches when every criterion it names holds: `text` (a regex, case-insensitive, over the unit's ` | `-joined tag, words, aria label, placeholder, input type, handler and href), `tag`, `parent` (the tag a text run sits in), `branch` (the unit's sc-if and sc-for conditions), `kind` (text, control, image or import). Entry ids are unique. `home.settings` are anchored regexes resolved against the framework DB's attributes for `home.block` (an entry whose pattern finds no attribute is refused as stale); `valueFrom: text` writes the unit's literal words into the one setting the pattern names. `home.contains` names a block comment the part or template file must hold. An entry whose rule and hints match no unit of any draft read is refused as stale. `controlsOnly` surfaces take text runs only through an entry with `claimsText`.",
+	"_about": "Spec 48 FR-48-60, FR-48-61, FR-48-62: the shop part kinds of a draft's buy box, filter and basket drawer and the framework home of each. A unit (lib/shop-parts-read.mjs) is classified by what the draft's code is and does: an entry's `rule` names a structural test in lib/shop-parts.mjs::RULES (element type, ARIA state, position in the region tree, the handler's effect read from the logic's AST), and the first entry in file order whose rule holds takes the unit. A literal text run with no rule of its own joins the part of a unit in its row when that unit's entry takes `labels` (the label beside a value). `hints` are word patterns kept only as a last resort: a unit only a hint names becomes a reported gap row (a missing part that says the words alone named it), never a mapped part. A hint matches when every criterion it names holds: `text` (a regex, case-insensitive, over the unit's ` | `-joined tag, words, aria label, placeholder, input type, handler and href), `tag`, `parent` (the tag a text run sits in), `branch` (the unit's sc-if and sc-for conditions), `kind` (text, control, image or import). Entry ids are unique. `home.settings` are anchored regexes resolved against the framework DB's attributes for `home.block` (an entry whose pattern finds no attribute is refused as stale); `valueFrom: text` writes the unit's literal words into the one setting the pattern names; `also` names fixed values written beside those words, only when there are words (each key must be an attribute of `home.block`, or the entry is refused). `home.contains` names a block comment the part or template file must hold. An entry whose rule and hints match no unit of any draft read is refused as stale. `controlsOnly` surfaces take text runs only through an entry with `claimsText`.",
 	"surfaces": {
 		"buybox": {
 			"mainFlow": "buy"
@@ -404,6 +404,7 @@
 			"id": "drawer-add-options",
 			"surface": "drawer",
 			"label": "Line add-options control",
+			"rule": "line-options",
 			"hints": [
 				{
 					"text": "\\.addLens|add options"
@@ -415,7 +416,10 @@
 				"settings": [
 					"^itemAddOptionsLabel$"
 				],
-				"valueFrom": "text"
+				"valueFrom": "text",
+				"also": {
+					"itemShowAddOptions": true
+				}
 			}
 		},
 		{

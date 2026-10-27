@@ -33,6 +33,9 @@ export const RULES = {
 	closes: ( u ) => control( u ) && fx( u ).closes && ! u.facts.loop,
 	count: ( u ) => text( u ) && u.facts.count,
 	'line-edit': ( u ) => control( u ) && !! u.facts.loop && ! u.facts.stepper && u.facts.editsBasket,
+	// A line's own control shown on some lines only, that leaves the surface for somewhere else with that line's item (the
+	// item's product page, where its options open) without changing the basket.
+	'line-options': ( u ) => control( u ) && !! u.facts.loop && u.facts.itemBound && u.facts.itemCond && u.facts.leaves && ! u.facts.stepper && ! u.facts.editsBasket && ! fx( u ).appends,
 	'line-image': ( u ) => 'image' === u.kind && !! u.facts.loop,
 	'line-text': ( u ) => text( u ) && !! u.facts.loop,
 	total: ( u ) => text( u ) && u.facts.money && pureBinding( u ) && ! u.facts.loop,
@@ -98,6 +101,9 @@ export function resolveVocab( vocab, env ) {
 				} ).flat();
 				if ( home.valueFrom && 1 !== home.resolved.length ) {
 					problems.push( `${ e.id }: valueFrom needs exactly one setting, got ${ home.resolved.length }` );
+				}
+				for ( const a of Object.keys( home.also || {} ) ) {
+					names.has( a ) || problems.push( `${ e.id }: no ${ home.block } attribute ${ a } for its fixed value` );
 				}
 			}
 		} else if ( 'part' === home.type || 'template-block' === home.type ) {
@@ -191,7 +197,7 @@ export function matchSurface( kind, units, vocab ) {
 			id: p.id,
 			label: p.label,
 			home: 'setting' === h.type ? { type: h.type, block: h.block, settings: h.resolved } : Object.fromEntries( Object.entries( h ).filter( ( [ k ] ) => 'resolved' !== k ) ),
-			write: value ? { [ h.resolved[ 0 ] ]: value } : null,
+			write: value ? { ...( h.also || {} ), [ h.resolved[ 0 ] ]: value } : null,
 			by: [ ...p.by ].sort(),
 			units: p.units.length,
 			locators: locatorsOf( p.units ),
