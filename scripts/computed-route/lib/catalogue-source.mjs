@@ -179,7 +179,7 @@ export function valueOf( ctx, src, node, bind = new Map(), depth = 0 ) {
 			if ( isUnread( a ) || isUnread( b ) || ( a && 'object' === typeof a ) || ( b && 'object' === typeof b ) ) {
 				return UNREAD;
 			}
-			const ops = { '+': () => a + b, '-': () => a - b, '*': () => a * b, '/': () => a / b, '===': () => a === b, '!==': () => a !== b, '==': () => a === b, '!=': () => a !== b };
+			const ops = { '+': () => a + b, '-': () => a - b, '*': () => a * b, '/': () => a / b, '===': () => a === b, '!==': () => a !== b, '==': () => a === b, '!=': () => a !== b, '<': () => a < b, '<=': () => a <= b, '>': () => a > b, '>=': () => a >= b };
 			return ops[ node.operator ] ? ops[ node.operator ]() : UNREAD;
 		}
 		case 'ArrayExpression': {

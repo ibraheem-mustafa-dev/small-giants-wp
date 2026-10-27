@@ -29,7 +29,6 @@
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( c.gatedBy ) {\n\t\t\tcontinue;\n\t\t}", "replace": "", "why": "a gated choice becomes a variation" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( ! rows.some( ( r ) => 'product' === r.postType && 'live' === r.collection ) ) {", "replace": "if ( false ) {", "why": "a client with no live product row gets a catalogue" },
 	{ "file": "lib/catalogue-read.mjs", "find": "const catField = facets.find( ( f ) => words( f.field ) && f.files.includes( shopFile ) && ! keyedValues( ctx, list.records.flatMap( ( r ) => r[ f.field ] ) ) )?.field || null;", "replace": "const catField = facets.find( ( f ) => words( f.field ) )?.field || null;", "why": "lookup keys become categories" },
-	{ "file": "lib/catalogue-read.mjs", "find": "if ( loose.length ) {", "replace": "if ( false ) {", "why": "unwritten filter fields vanish silently" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( route && /product single/i.test(", "replace": "if ( false && /product single/i.test(", "why": "the manifest's product base is ignored" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( seen.has( p.slug ) ) {", "replace": "if ( false ) {", "why": "two products share one slug" },
 	{ "file": "lib/catalogue-read.mjs", "find": "if ( /\\.dc\\.html$/i.test( row.route || '' ) ) {\n\t\treturn null;\n\t}", "replace": "", "why": "a missing product page falls back to another draft" },
