@@ -58099,6 +58099,11 @@
    "template": "page",
    "menus": [
     {
+     "menu": "header",
+     "position": 4,
+     "parentItem": null
+    },
+    {
      "menu": "drawer-2",
      "position": 2,
      "parentItem": null
@@ -58297,7 +58302,13 @@
    "title": "Sunglasses mega menu",
    "parent": null,
    "template": null,
-   "menus": [],
+   "menus": [
+    {
+     "menu": "header",
+     "position": 1,
+     "parentItem": null
+    }
+   ],
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
@@ -58309,7 +58320,13 @@
    "title": "Brands mega menu",
    "parent": null,
    "template": null,
-   "menus": [],
+   "menus": [
+    {
+     "menu": "header",
+     "position": 2,
+     "parentItem": null
+    }
+   ],
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
@@ -58320,7 +58337,13 @@
    "title": "Lenses mega menu",
    "parent": null,
    "template": null,
-   "menus": [],
+   "menus": [
+    {
+     "menu": "header",
+     "position": 3,
+     "parentItem": null
+    }
+   ],
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
@@ -58331,7 +58354,13 @@
    "title": "Help mega menu",
    "parent": null,
    "template": null,
-   "menus": [],
+   "menus": [
+    {
+     "menu": "header",
+     "position": 4,
+     "parentItem": null
+    }
+   ],
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
@@ -140021,10 +140050,11 @@
   {
    "rowId": "page:page:help",
    "rowType": "page-map",
-   "contentHash": "379a9f81f40c9f7fecafc0927c84c6f0e125d33cf4445910fca1ce8c715d5cc3",
+   "contentHash": "9d8d4fbef168c5e0842ff7372b0b04a41d766840f700eba83f102d1bb0c0f185",
    "mark": "accept",
    "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T14:57:20.709Z"
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:contact",
@@ -140117,34 +140147,38 @@
   {
    "rowId": "page:sgs_mega_menu:mega-menu-sunglasses",
    "rowType": "page-map",
-   "contentHash": "5237e9c163b98740cd6744b102dbae0951f1a11712aa4d735e6ff7e2f0dec84a",
+   "contentHash": "3a5a785130f9132a73de54338bc114bd2304e6d3755ff20845fcc89b85cb556a",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:sgs_mega_menu:mega-menu-brands",
    "rowType": "page-map",
-   "contentHash": "c8ae896dd52d6ec8d960a4d6843831b8ecef5f2471f457a09cf7c1ad94a368fd",
+   "contentHash": "e164e6bbc070e3d1fe6eed8c3f267e6ccbc0d4044fa08ac4131db067f6997a65",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:sgs_mega_menu:mega-menu-lenses",
    "rowType": "page-map",
-   "contentHash": "17dc46120b50a9d1a5b499d6502482a72aa44a9bede06ce17d87cbb583c8c698",
+   "contentHash": "2b059d1284cc1c9abb6ba29bc201b7a3897752164c1cec0bf9233232348cb754",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:sgs_mega_menu:mega-menu-help",
    "rowType": "page-map",
-   "contentHash": "a5e3d8166ab3fce56cf0e5caa80fe3d3f113375fe2d8d26e6da27457db9de577",
+   "contentHash": "004a1069b1d0c7c18f4df6e247b5f9ef34c76da87c5e5623b53b9784143b0f0c",
    "mark": "accept",
-   "markedOn": "2026-10-26",
-   "carriedFrom": "2026-10-26T21:15:22.158Z"
+   "markedOn": "2026-10-27",
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "catalogue:1",
