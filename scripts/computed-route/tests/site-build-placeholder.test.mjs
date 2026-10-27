@@ -23,4 +23,6 @@ test( 'MUST FAIL: the header placeholder is sgs/site-header with its rows and bi
 test( 'a drawer and a page keep their placeholders', () => {
 	assert.equal( placeholderTree( { postType: 'sgs_drawer' }, { drawer: 3 } )[ 0 ].name, 'sgs/nav-drawer' );
 	assert.deepEqual( placeholderTree( { postType: 'page', title: 'About' } ), [ { name: 'sgs/heading', attributes: { content: 'About', level: 'h1' } } ] );
+	assert.deepEqual( placeholderTree( { postType: 'post', title: 'News' } ), [ { name: 'sgs/text', attributes: { text: '' } } ], 'the single copy carries the post title, so a post placeholder is an empty body, never a second h1' );
+	assert.deepEqual( placeholderTree( { postType: 'page', slug: 'my-account', title: 'Sign in' } ), [ { name: 'sgs/account' } ], 'the account page always holds WooCommerce’s account piece' );
 } );

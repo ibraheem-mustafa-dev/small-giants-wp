@@ -143,7 +143,12 @@ export function placeholderTree( row, menuIds = {} ) {
 	if ( isAccountRow( row ) ) {
 		return [ { name: 'sgs/account' } ];
 	}
-	return [ { name: 'sgs/heading', attributes: { content: row.title, level: [ 'page', 'post' ].includes( row.postType ) ? 'h1' : 'h2' } } ];
+	// A post's design, its title included, is the site's own single copy (FR-48-56), so its placeholder is an empty body,
+	// never a second title heading.
+	if ( 'post' === row.postType ) {
+		return [ { name: 'sgs/text', attributes: { text: '' } } ];
+	}
+	return [ { name: 'sgs/heading', attributes: { content: row.title, level: 'page' === row.postType ? 'h1' : 'h2' } } ];
 }
 
 // A row's stage 3 tree (sites/<client>/build/trees/<postType>/<slug>.json) when one exists, else its placeholder.
