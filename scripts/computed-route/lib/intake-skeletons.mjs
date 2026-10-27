@@ -28,6 +28,7 @@ import { readRouting } from './intake-routing.mjs';
 import { stateRouteHash } from './state-route.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
+import { reachCalls } from './intake-reach-calls.mjs';
 import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
 import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
@@ -212,37 +213,8 @@ const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows
 	...contextOf( inventory, proposal, r.key ),
 } ) );
 
-// The `<ident>.setState(<args>)` calls of a surfaces.json state's how_to_reach, in order: [{ ident, args }] (the args'
-// source with its brackets and quotes balanced; a call whose parentheses never close is left out).
-export function reachCalls( text ) {
-	const out = [];
-	const re = /(?<![\w$.])([A-Za-z_$][\w$]*)\s*\.\s*setState\s*\(/g;
-	for ( let m; ( m = re.exec( String( text || '' ) ) ); ) {
-		const src = m.input;
-		const close = { '(': ')', '[': ']', '{': '}' };
-		const stack = [ ')' ];
-		let i = re.lastIndex;
-		for ( ; i < src.length && stack.length; i++ ) {
-			const c = src[ i ];
-			if ( '\'' === c || '"' === c || '`' === c ) {
-				for ( i++; i < src.length && src[ i ] !== c; i++ ) {
-					'\\' === src[ i ] && i++;
-				}
-			} else if ( close[ c ] ) {
-				stack.push( close[ c ] );
-			} else if ( c === stack.at( -1 ) ) {
-				stack.pop();
-			} else if ( /[)\]}]/.test( c ) ) {
-				break;
-			}
-		}
-		if ( ! stack.length ) {
-			out.push( { ident: m[ 1 ], args: src.slice( re.lastIndex, i - 1 ).trim() } );
-			re.lastIndex = i;
-		}
-	}
-	return out;
-}
+// The `<ident>.setState(<args>)` calls of a surfaces.json state's how_to_reach, in order (lib/intake-reach-calls.mjs).
+export { reachCalls };
 
 // State-driven surfaces (a drawer, a mega-menu panel, a modal) render only when their state opens. The ways to open one,
 // in order: each surfaces.json state (a state named "open" first; "closed" and "default" never) by its plain state keys
