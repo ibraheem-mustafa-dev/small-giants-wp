@@ -7,7 +7,10 @@
 //     link to the checkout page; WooCommerce's Cart block draws the lines, the totals and the checkout button;
 //   - checkout: the smallest element holding every payment field (an `autocomplete="cc-…"` field, or the
 //     `inputmode="numeric"` fields) and the order lines; the Checkout block draws the form and the order summary;
-//   - account: the smallest element holding every password field; the account block draws the sign-in and account forms;
+//   - account: the smallest element holding every password field; the account block draws the sign-in and account forms.
+//     An account page that shows no password field (a signed-out view whose sign-in form sits on another draft page,
+//     folded into the account row by the page map) has as its region the shown branch of the condition that holds a link
+//     to that page: the account block draws the sign-in form there for a visitor, and the account itself once signed in;
 //   - shop: the element whose children are the items of the product loop (an `sc-for` of a mounted card that shows a
 //     currency amount); WooCommerce's product collection draws the products, each in the site's own product card.
 // Only shown elements count, so a closed panel (the header's basket drawer) never holds evidence; two candidates for one
@@ -17,13 +20,21 @@ import { templateKey } from './fact-key.mjs';
 import { isAccountRow } from './site-build-map.mjs';
 
 // The commerce role of a surface, by the template it builds (surfaces.json `target.template`) or, for the account page
-// (an ordinary page holding WooCommerce's account piece), the page row its post is; and the checkout page's route (a
-// cart's region links to it).
+// (an ordinary page holding WooCommerce's account piece), the page row its post is; the checkout page's route (a cart's
+// region links to it); and, for the account page, `signIn`: the other draft page files holding the account row's own
+// WooCommerce forms (its `parts` owned by `woocommerce`, each naming `<file>:<line>:<column> <tag>`), where a signed-out
+// view sends its visitor.
 export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout' };
+const draftFile = ( s ) => /^([^:?#]+\.dc\.html)(?=[:?#]|$)/i.exec( String( s ?? '' ) )?.[ 1 ] ?? null;
 export function commerceOf( entry, rows = [] ) {
 	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
 	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
-	return role ? { role, checkout: rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template )?.route ?? null } : null;
+	if ( ! role ) {
+		return null;
+	}
+	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template )?.route ?? null;
+	const signIn = 'account' === role ? [ ...new Set( ( page.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => draftFile( p.draftId ) ).filter( ( f ) => f && f !== draftFile( page.route ) ) ) ] : [];
+	return { role, checkout, ...( signIn.length ? { signIn } : {} ) };
 }
 
 // An attribute as the draft's code writes it: the element's own opening tag (the inventory's `attrs` keeps a few only).
@@ -42,6 +53,9 @@ export function leadsTo( href, route ) {
 	const r = String( route ).replace( /^#?\/?/, '' );
 	return h === r || h === `#/${ r }` || h === `#${ r }` || h.replace( /\/+$/, '' ).endsWith( `/${ r }` );
 }
+
+// A page link without its query string and fragment (`SignIn.dc.html?mode=register` is the SignIn page); a hash link as it is.
+const pagePath = ( href ) => ( null == href ? href : String( href ).trim().startsWith( '#' ) ? href : String( href ).split( /[?#]/ )[ 0 ] );
 
 export function commerceRegion( { m, commerce, rule } ) {
 	if ( ! commerce?.role || ! rule ) {
@@ -89,6 +103,16 @@ export function commerceRegion( { m, commerce, rule } ) {
 		region && found.push( { region, evidence: [ `${ paymentFields.length } payment field(s)`, `${ lines.length } order lines loop(s)` ] } );
 	} else if ( 'account' === commerce.role && passwords.length ) {
 		found.push( { region: common( passwords ), evidence: [ `${ passwords.length } password field(s)` ] } );
+	} else if ( 'account' === commerce.role ) {
+		// The signed-out view: each condition (sc-if / sc-else, per component) holding a shown link to a sign-in page; its
+		// branch is the topmost shown element under that condition.
+		const conditionOf = ( e ) => ( ( c ) => ( c ? `${ e.template }:${ c.tpl }` : null ) )( ( e.membership || [] ).filter( ( x ) => 'sc-if' === x.kind || 'sc-else' === x.kind ).at( -1 ) );
+		const under = ( e, c ) => ( e.membership || [] ).some( ( x ) => ( 'sc-if' === x.kind || 'sc-else' === x.kind ) && `${ e.template }:${ x.tpl }` === c );
+		const toSignIn = els.filter( ( e ) => ( commerce.signIn || [] ).some( ( f ) => leadsTo( pagePath( e.attrs?.href ), f ) ) );
+		for ( const c of new Set( toSignIn.map( conditionOf ).filter( Boolean ) ) ) {
+			const branch = els.filter( ( e ) => under( e, c ) && ! ( m.byKey[ e.parentKey ] && under( m.byKey[ e.parentKey ], c ) ) );
+			1 === branch.length && found.push( { region: branch[ 0 ], evidence: [ `the signed-out view linking to ${ commerce.signIn.join( ', ' ) }` ] } );
+		}
 	} else if ( 'shop' === commerce.role ) {
 		for ( const [ , list ] of moneyLoops ) {
 			// The loop's items are the shown members whose parent is not itself in the loop; their parent is the listing.

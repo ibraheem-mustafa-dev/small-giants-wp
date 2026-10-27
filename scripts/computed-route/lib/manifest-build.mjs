@@ -15,8 +15,9 @@ export const KINDS = { sgs_header: 'header', sgs_footer: 'footer', sgs_drawer: '
 export const POST_TEMPLATE = 'single';
 // The manifest key of a template copy's surface.
 export const templateKey = ( slug ) => `template-${ slug }`;
-// Post type -> the template parts or form a surface provides.
-const PROVIDES = { sgs_header: () => [ 'core/template-part:header' ], sgs_footer: () => [ 'core/template-part:footer' ], sgs_form: ( row ) => [ `sgs/form:${ row.slug }` ] };
+// Post type -> the template parts, form or choice flow a surface provides. A provided linked block (`sgs/form`,
+// `sgs/choice-flow`) is placed on its page as a link to the saved post (lib/skeleton-form-link.mjs::formLinksOf).
+const PROVIDES = { sgs_header: () => [ 'core/template-part:header' ], sgs_footer: () => [ 'core/template-part:footer' ], sgs_form: ( row ) => [ `sgs/form:${ row.slug }` ], sgs_choice_flow: ( row ) => [ `sgs/choice-flow:${ row.slug }` ] };
 
 const words = ( s ) => String( s ).replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( Boolean );
 const norm = ( s ) => String( s ?? '' ).toLowerCase().trim();

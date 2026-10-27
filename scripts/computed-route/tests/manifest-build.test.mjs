@@ -79,6 +79,12 @@ test( 'fixed fields: tree, target, walkers, draft, provides', () => {
 	assert.equal( 'draftRecords' in h, false );
 } );
 
+test( 'MUST FAIL: a choice flow provides its linked block, so its page places it as a link to the saved flow', () => {
+	const { entries } = run( [ row( 'sgs_choice_flow', 'choice-flow-build', 7 ), row( 'sgs_modal', 'size-guide', 8 ) ] );
+	assert.deepEqual( entries[ 'flow-choice-flow-build' ].provides, [ 'sgs/choice-flow:choice-flow-build' ] );
+	assert.equal( 'provides' in entries[ 'modal-size-guide' ], false, 'a modal is opened, never placed by this link' );
+} );
+
 test( 'a row with a null or missing id is skipped and listed', () => {
 	const out = run( [ row( 'page', 'a', null ), { postType: 'page', slug: 'b', title: 'b', route: 'b' }, row( 'page', 'c', 3 ) ] );
 	assert.deepEqual( Object.keys( rowEntries( out ) ), [ 'c' ] );

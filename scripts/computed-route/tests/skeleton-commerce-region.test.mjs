@@ -113,6 +113,57 @@ test( 'MUST FAIL: the account\'s sign-in and register forms (password fields) ar
 	assert.ok( find( skeleton, 'sgs/heading' ) );
 } );
 
+// An account page read signed out: its sign-in form sits on another draft page the page map folded into the account row
+// (the row's WooCommerce parts name SignIn.dc.html), and the page shows a prompt, under a condition, linking there.
+const cond = ( e, tpl, template = 'Root' ) => ( { ...e, membership: [ ...e.membership, { kind: 'sc-if', value: '{{ notSigned }}', tpl: String( tpl ) } ], template } );
+const SIGNED_OUT = [
+	el( 'Root/8#0', null, 'main', '', { depth: 0 } ),
+	el( 'Root/9#0', 'Root/8#0', 'h1', 'My account' ),
+	el( 'Root/17#0', 'Root/8#0', 'div', '', { depth: 1 } ),
+	cond( el( 'Root/19#0', 'Root/17#0', 'div', '', { depth: 2 } ), 18 ),
+	cond( el( 'Root/20#0', 'Root/19#0', 'h2', 'Sign in to see your orders', { depth: 3 } ), 18 ),
+	cond( el( 'Root/22#0', 'Root/19#0', 'div', '', { depth: 3 } ), 18 ),
+	cond( el( 'Root/23#0', 'Root/22#0', 'a', 'Sign in', { depth: 4, attrs: { href: 'SignIn.dc.html' }, keep: true } ), 18 ),
+	cond( el( 'Root/24#0', 'Root/22#0', 'a', 'Create an account', { depth: 4, attrs: { href: 'SignIn.dc.html?mode=register' }, keep: true } ), 18 ),
+	el( 'Root/30#0', 'Root/8#0', 'a', 'Sign in', { attrs: { href: 'SignIn.dc.html' }, keep: true } ),
+];
+const ACCOUNT_ROW = { postType: 'page', slug: 'my-account', template: 'page', route: 'Account.dc.html', id: 13, parts: [
+	{ kind: 'form', label: 'savePw', owner: 'woocommerce', draftId: 'Account.dc.html:217:13 <form>' },
+	{ kind: 'form', label: 'doSignin', owner: 'woocommerce', draftId: 'SignIn.dc.html:49:9 <form>' },
+	{ kind: 'form', label: 'register', owner: 'woocommerce', draftId: 'SignIn.dc.html:80:9 <form>' },
+	{ kind: 'drawer', label: 'Basket', owner: 'block', draftId: 'Basket.dc.html:1:1 <aside>' },
+] };
+
+test( 'MUST FAIL: an account page read signed out makes its sign-in prompt, the condition branch linking to the sign-in page, the account block', () => {
+	const commerce = commerceOf( { target: { postId: 13 } }, [ ACCOUNT_ROW ] );
+	assert.deepEqual( commerce, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] }, 'the sign-in page is the other page holding the row\'s WooCommerce forms; a block-owned part is not' );
+	const { skeleton, proposal, problems } = run( SIGNED_OUT, commerce );
+	assert.deepEqual( problems, [] );
+	assert.deepEqual( proposal.commerceRegion, { key: 'Root/19#0', role: 'account', block: 'sgs/account' } );
+	const account = find( skeleton, 'sgs/account' );
+	assert.ok( account );
+	assert.equal( account.draftRef, undefined, 'WooCommerce draws it: Fill reads nothing into it' );
+	assert.equal( names( skeleton ).filter( ( n ) => 'sgs/account' === n ).length, 1, 'a sign-in link under no condition is no signed-out view' );
+	assert.ok( find( skeleton, 'sgs/heading' ), 'the page heading around the region stays' );
+} );
+
+test( 'no account region without a sign-in page to link to, without a condition, or with two signed-out views', () => {
+	const m = ( els ) => inventoryModel( inv( els ) );
+	const of = ( els, commerce ) => commerceRegion( { m: m( els ), commerce, rule: RULE() } );
+	assert.equal( of( SIGNED_OUT, { role: 'account', checkout: null } ), null, 'a row whose forms all sit on its own page names no sign-in page' );
+	const registerOnly = SIGNED_OUT.filter( ( e ) => ! [ 'Root/23#0', 'Root/30#0' ].includes( e.key ) );
+	assert.equal( of( registerOnly, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).key, 'Root/19#0', 'a link with a query string still leads to the sign-in page' );
+	assert.equal( commerceOf( { target: { postId: 13 } }, [ { ...ACCOUNT_ROW, parts: ACCOUNT_ROW.parts.slice( 0, 1 ) } ] ).signIn, undefined );
+	const plain = SIGNED_OUT.map( ( e ) => ( { ...e, membership: [] } ) );
+	assert.equal( of( plain, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ), null, 'links to sign in under no condition are not a view WooCommerce draws' );
+	const hiddenLinks = SIGNED_OUT.map( ( e ) => ( /^Root\/2[34]#0$/.test( e.key ) ? { ...e, visible: { 375: false, 768: false, 1440: false } } : e ) );
+	assert.equal( of( hiddenLinks, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ), null, 'a link never shown is no evidence' );
+	const second = [ ...SIGNED_OUT, cond( el( 'Root/40#0', 'Root/8#0', 'div', '', { depth: 1 } ), 39 ), cond( el( 'Root/41#0', 'Root/40#0', 'a', 'Sign in', { depth: 2, attrs: { href: 'SignIn.dc.html' }, keep: true } ), 39 ) ];
+	assert.match( of( second, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).note, /2 elements read as the account region/ );
+	const fields = [ ...SIGNED_OUT, el( 'Root/50#0', 'Root/8#0', 'form', '', { depth: 1 } ), el( 'Root/51#0', 'Root/50#0', 'input', '', { depth: 2, attrs: { type: 'password' }, keep: true } ) ];
+	assert.equal( of( fields, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } ).key, 'Root/51#0', 'a shown password field decides first' );
+} );
+
 // A shop: a heading and the grid of mounted product cards, four to a row.
 const card = ( i, y ) => [
 	el( `Root/9#${ i }`, 'Root/8#0', 'div', '', { depth: 3, loop: 9, all: `Box ${ i } £12.00`, box: place( i % 4 * 300, y ) } ),

@@ -190,3 +190,24 @@ test( 'a form surface takes the steps of its own draft component, never another 
 	const other = propose( { inventory: wizard(), surface: 'form-enquiry', surfaceKind: 'form', surfaceName: 'Enquiry', factRecord: withSchema( 'SomeoneElse' ) } );
 	assert.equal( other.skeleton[ 0 ].innerBlocks.some( ( n ) => /^sgs\/form-(step|review)$/.test( n.name ) ), false );
 } );
+
+// A choice flow on a page (Spec 43 FR-43-6, Spec 48 FR-48-57): its manifest entry provides `sgs/choice-flow:<slug>`, so the
+// page holds one linked sgs/choice-flow where the flow's record root is, and the flow's own elements are absorbed.
+const FLOW_REFS = { ...REFS, 'sgs/choice-flow': { kind: 'linked', flag: 'flowIsLinked', key: 'flowId' } };
+
+test( 'MUST FAIL: a choice flow the manifest provides is placed on its page as one linked sgs/choice-flow', async () => {
+	const { buildManifest } = await import( '../lib/manifest-build.mjs' );
+	const flowRow = { postType: 'sgs_choice_flow', slug: 'choice-flow-build', title: 'Build', id: 7 };
+	const { entries } = buildManifest( { client: 'acme', site: 'x-test', rows: [ flowRow ], records: [], target: { envFile: '.claude/secrets/x.env', envKey: 'X' }, entryFile: 'Site.dc.html', vocab: [] } );
+	const surfaces = { 'flow-choice-flow-build': { ...entries[ 'flow-choice-flow-build' ], intakeSurface: 'build-your-flow' } };
+	const links = formLinksOf( { surfaces, intake: { skeletons: { 'build-your-flow': { id: 'S-2' } } }, refs: FLOW_REFS } );
+	assert.deepEqual( links, [ { recordId: 'S-2', slug: 'choice-flow-build', block: 'sgs/choice-flow' } ] );
+	const r = propose( { formLinks: links, refs: FLOW_REFS } );
+	const flows = nodes( r.skeleton ).filter( ( n ) => 'sgs/choice-flow' === n.name );
+	assert.equal( flows.length, 1 );
+	assert.deepEqual( flows[ 0 ].attributes, { flowIsLinked: true, flowId: 'choice-flow-build' } );
+	assert.deepEqual( flows[ 0 ].innerBlocks, [] );
+	assert.equal( flows[ 0 ].draftRef, undefined );
+	assert.equal( nodes( r.skeleton ).filter( ( n ) => /^sgs\/form/.test( n.name ) ).length, 0, 'the flow\'s own elements are absorbed into the link' );
+	assert.deepEqual( r.problems, [] );
+} );
