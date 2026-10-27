@@ -106,7 +106,9 @@ test( 'recordSite records each facet\'s attribute id; an apply that leaves a fac
 	assert.equal( runCatalogue( { repo, client: 'demo', site: 'local', runPhp, apply: true, log: () => {}, error: ( l ) => errors.push( l ) } ), 1 );
 	assert.ok( errors.some( ( l ) => /still plans 1 product or filter step\(s\): create attribute pa_lined/.test( l ) ) );
 	const writes = [];
-	const whole = ( php ) => ( /\$steps =/.test( php ) ? ( writes.push( php ), JSON.stringify( { done: [], issues: [] } ) ) : JSON.stringify( site( done, { facets: allFacets( catalogue ) } ) ) );
+	// The boolean facet's on-off filter is already the theme's toggle (lib/site-build-catalogue-toggle.mjs).
+	const toggle = JSON.stringify( { mods: { sgs_shop_filter_boolean_enabled: true, sgs_shop_filter_boolean_source: 'attribute', sgs_shop_filter_boolean_attribute: 'lined', sgs_shop_filter_boolean_term: 'lined', sgs_shop_filter_boolean_label: 'Lined only' }, termSlug: 'lined' } );
+	const whole = ( php ) => ( /_theme_mod\(/.test( php ) ? toggle : /\$steps =/.test( php ) ? ( writes.push( php ), JSON.stringify( { done: [], issues: [] } ) ) : JSON.stringify( site( done, { facets: allFacets( catalogue ) } ) ) );
 	assert.equal( runCatalogue( { repo, client: 'demo', site: 'local', runPhp: whole, apply: true, log: () => {}, error: () => {} } ), 0 );
 	// The write is handed the catalogue's facets (an empty list encodes as W10=).
 	assert.match( writes[ 0 ], /\$facet_defs = json_decode\( base64_decode\( '(?!W10=)/ );

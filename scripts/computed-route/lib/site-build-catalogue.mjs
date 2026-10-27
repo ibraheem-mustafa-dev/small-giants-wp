@@ -11,7 +11,8 @@
 //     one the link resolver writes (lib/draft-link.mjs);
 //   - each facet (a filter the draft's shop offers) is a global attribute with its terms, and each product's terms a
 //     filter-only product attribute (lib/site-build-catalogue-facets.mjs); a product lacking one is completed, and each
-//     facet's attribute id is recorded in `sites.<site>.attributes`;
+//     facet's attribute id is recorded in `sites.<site>.attributes`; a true-or-false facet is the theme's on-off filter,
+//     whose theme mods it sets (lib/site-build-catalogue-toggle.mjs);
 //   - a product dropped in the intake review is skipped; the page map is never read or written;
 //   - a product that would otherwise have no image (the draft gives none and the product found has none, or the draft's
 //     image cannot be added) gets the "photo to come" image (data/photo-to-come.png, Bean 2026-10-27), so WooCommerce's
@@ -27,6 +28,7 @@ import { catalogueFile, loadCatalogue, productAddress } from './catalogue-read.m
 import { catalogueProblems } from './intake-catalogue-run.mjs';
 import { PHOTO_TO_COME, catalogueApplyPhp, catalogueStatePhp } from './site-build-catalogue-php.mjs';
 import { facetLack, facetSay, planFacets, tallyFacets, writtenFacets } from './site-build-catalogue-facets.mjs';
+import { runToggle } from './site-build-catalogue-toggle.mjs';
 
 export { PHOTO_TO_COME };
 
@@ -218,6 +220,7 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 	const t = tallyCatalogue( plan );
 	const ft = tallyFacets( plan.facets );
 	if ( ! apply ) {
+		runToggle( { catalogue, runPhp, apply, log, error } );
 		log( `${ t.create } to create, ${ t.complete } to complete, ${ t.exists } existing, ${ t.left } left; filter attributes ${ ft.create } to create, ${ ft.complete } to complete, ${ ft.exists } existing (dry run: re-run with --apply)` );
 		return 0;
 	}
@@ -229,11 +232,15 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 	const again = planCatalogue( catalogue, after );
 	const left = [ ...again.facets, ...again.actions ].filter( ( a ) => 'create' === a.action || 'complete' === a.action );
 	const recorded = recordSite( repo, client, site, after, catalogue );
+	const toggleFailed = runToggle( { catalogue, runPhp, apply, log, error } );
 	log( `catalogue.json: ${ recorded } product id(s) recorded for ${ site }` );
 	const placeholders = after.products.filter( ( s ) => s.id && ! s.fixture && s.photoToCome ).map( ( s ) => s.draftId );
 	placeholders.length && log( `${ placeholders.length } product(s) carry the photo-to-come image (a real photo replaces it): ${ placeholders.join( ', ' ) }` );
 	if ( done.issues.length || left.length || again.productBase ) {
 		error( `FAILED: a fresh read still plans ${ left.length } product or filter step(s)${ again.productBase ? ' and the product base' : '' }: ${ left.map( ( a ) => a.say ).join( '; ' ) }` );
+		return 1;
+	}
+	if ( toggleFailed ) {
 		return 1;
 	}
 	log( `${ steps.length } product step(s) run; a fresh read plans 0` );

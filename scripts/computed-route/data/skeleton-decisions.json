@@ -122,6 +122,31 @@
 				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
 			}
 		],
+		"filterRail": {
+			"reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words",
+			"block": "sgs/container",
+			"attributes": { "tagName": "aside", "anchor": "sgs-shop-filters", "className": "sgs-shop-filters" },
+			"filters": {
+				"name": "woocommerce/product-filters",
+				"innerBlocks": [
+					{
+						"name": "woocommerce/product-filter-active",
+						"innerBlocks": [
+							{ "name": "woocommerce/product-filter-removable-chips" },
+							{ "name": "woocommerce/product-filter-clear-button", "innerBlocks": [ { "name": "sgs/button", "attributes": { "label": "Clear all", "className": "wp-block-button__link" } } ] }
+						]
+					}
+				]
+			},
+			"heading": { "block": "sgs/heading", "attributes": { "level": "h3" }, "className": "sgs-shop-filters__group-heading", "openClass": "sgs-filter-open", "swatchClass": "sgs-filter-swatches" },
+			"displayStyles": { "choice": "woocommerce/product-filter-chips", "checkbox": "woocommerce/product-filter-checkbox-list" },
+			"groups": {
+				"facet": { "name": "woocommerce/product-filter-attribute", "attributes": { "queryType": "or", "showCounts": true, "sortOrder": "menu_order-asc" } },
+				"price": { "name": "woocommerce/product-filter-price", "innerBlocks": [ { "name": "woocommerce/product-filter-price-slider", "attributes": { "showInputFields": false } } ] },
+				"brand": { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_brand", "displayStyle": "woocommerce/product-filter-checkbox-list", "showCounts": true }, "innerBlocks": [ { "name": "woocommerce/product-filter-checkbox-list" } ] },
+				"category": { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_cat", "displayStyle": "woocommerce/product-filter-checkbox-list", "showCounts": true }, "innerBlocks": [ { "name": "woocommerce/product-filter-checkbox-list" } ] }
+			}
+		},
 		"commerceRegion": {
 			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
 			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",
