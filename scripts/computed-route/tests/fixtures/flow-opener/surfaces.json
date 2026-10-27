@@ -1,0 +1,15 @@
+{ "schema_version": "1.0", "records": [
+  { "id": "S-01", "kind": "header", "name": "Header", "dc": "Store", "route": "*" },
+  { "id": "S-02", "kind": "drawer", "name": "Bag drawer", "dc": "Store", "route": "*", "states": [
+    { "name": "closed", "state_keys": { "bagOpen": false }, "how_to_reach": "L.setState({bagOpen:false})" },
+    { "name": "open", "state_keys": { "bagOpen": true }, "how_to_reach": "L.setState({bagOpen:true})" }
+  ] },
+  { "id": "S-03", "kind": "modal", "name": "Size guide", "dc": "Store", "route": "*", "states": [
+    { "name": "open", "state_keys": { "modal": "size" }, "how_to_reach": "L.setState({modal:'size'})" }
+  ] },
+  { "id": "S-04", "kind": "modal", "name": "Lens configurator", "dc": "Store", "route": "*", "opened_by": "\"Add my prescription\" on the product page", "states": [
+    { "name": "closed", "state_keys": { "lens": "{open:false}" }, "how_to_reach": "L.setState({lens:{...L.state.lens, open:false}})" },
+    { "name": "open, side-by-side", "state_keys": { "lens": "{open:true}", "w": ">= 768" }, "how_to_reach": "L = dcLogic('Store'); L.setState({lens:{...L.state.lens, open:true, step:0}, w:1400})" },
+    { "name": "open, stacked", "state_keys": { "lens": "{open:true}", "w": "< 768" }, "how_to_reach": "L.setState({lens:{...L.state.lens, open:true}, w:375})" }
+  ] }
+] }

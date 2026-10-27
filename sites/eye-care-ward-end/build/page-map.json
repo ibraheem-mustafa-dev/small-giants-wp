@@ -47,7 +47,8 @@
     "postType": "product",
     "collection": "live",
     "flags": [],
-    "id": null
+    "id": null,
+    "opensFlow": "choice-flow-add-prescription-lenses"
   },
   {
     "route": "lenses",

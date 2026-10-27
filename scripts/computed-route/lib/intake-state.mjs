@@ -8,12 +8,14 @@
 // Every function takes a Playwright page and returns once the call is made; the caller settles the page after it.
 
 // In-page: the logic state of every mounted instance of `comp` (every component when null), through its own setState.
-// op `set` applies `patch`; `reach` runs each { ident, args } of `patch` as `<ident>.setState(<args>)` with the
-// instance's logic bound to `ident` (a call that throws reaches nothing on that instance); `get` lists the value of the key named by `patch` on each instance; `snapshot` keeps each instance's state; `restore` puts back every key changed since; `diff`
+// op `set` applies `patch`; `reach` runs each { ident, args } of `patch.calls` as `<ident>.setState(<args>)` with the
+// instance's logic bound to `ident`, then puts back the keys `patch.keep` names (a state's width bounds: the viewport
+// keeps those) to their values before the calls (a call that throws reaches nothing on that instance); `get` lists the value of the key named by `patch` on each instance; `snapshot` keeps each instance's state; `restore` puts back every key changed since; `diff`
 // counts the instances with a key changed since, changing nothing. `slot` names a separate snapshot (the default one
 // when absent), so a nested forcing step keeps its own. Returns how many instances it reached (`restore`, `diff`: how
 // many changed).
-function logicState( { comp, op, patch, slot } ) {
+// Self-contained, so a generated walker config carries it as source text (lib/fill-open.mjs::openerSource).
+export function logicState( { comp, op, patch, slot } ) {
 	const slots = ( window.__sgsStateSnaps ||= {} );
 	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
 	const values = [];
@@ -36,8 +38,11 @@ function logicState( { comp, op, patch, slot } ) {
 			logic.setState( patch );
 			count++;
 		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
 			try {
-				patch.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
 				count++;
 			} catch {
 				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
@@ -147,8 +152,9 @@ export const fireListeners = ( page, types = LISTENER_TRIGGERS ) => page.evaluat
 export const setDraftState = ( page, { component, keys } ) => page.evaluate( logicState, { comp: component, op: 'set', patch: keys } );
 
 // Runs `calls` ([{ ident, args }], a surfaces.json how_to_reach's setState calls) on every mounted instance of
-// `component` through its own logic.setState; returns how many instances ran them all (0: not mounted or a call threw).
-export const reachDraftState = ( page, { component, calls } ) => page.evaluate( logicState, { comp: component, op: 'reach', patch: calls } );
+// `component` through its own logic.setState, then puts back each key `keep` names to its value before the calls;
+// returns how many instances ran them all (0: not mounted or a call threw).
+export const reachDraftState = ( page, { component, calls, keep = [] } ) => page.evaluate( logicState, { comp: component, op: 'reach', patch: { calls, keep } } );
 
 // The value of state key `key` on each mounted instance of `component` (an empty list: not mounted).
 export const readDraftState = ( page, { component, key } ) => page.evaluate( logicState, { comp: component, op: 'get', patch: key } );

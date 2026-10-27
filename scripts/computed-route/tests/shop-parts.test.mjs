@@ -17,13 +17,16 @@ import { ShopPartsError, buildRecord, loadVocab, locatorsOf, resolveVocab } from
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 const vocabFile = loadVocab();
 // The framework facts a vocabulary needs, derived from the vocabulary itself: each anchored settings pattern names one
-// attribute, each part or template home names the block comment its file holds.
+// attribute, each fixed value an entry writes one more, each part or template home names the block comment its file holds.
 const envFor = ( vocab, fixtures ) => {
 	const attrs = {};
 	const files = {};
 	for ( const e of vocab.entries ) {
 		for ( const p of e.home.settings || [] ) {
 			( attrs[ e.home.block ] ||= new Set() ).add( p.replace( /^\^|\$$/g, '' ) );
+		}
+		for ( const a of Object.keys( e.home.also || {} ) ) {
+			( attrs[ e.home.block ] ||= new Set() ).add( a );
 		}
 		if ( e.home.file ) {
 			files[ e.home.file ] = `${ files[ e.home.file ] || '' }<!-- ${ e.home.contains } /-->`;

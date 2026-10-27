@@ -1,0 +1,13 @@
+[
+	{"file": "lib/manifest-build.mjs", "find": "const woo = ! isTemplate && ! match.record && null == row.route ? wooContentRole( row ) : null;", "replace": "const woo = ! isTemplate && ! match.record ? wooContentRole( row ) : null;", "why": "a drafted WooCommerce page that matches no record is skipped instead of failing"},
+	{"file": "lib/manifest-build.mjs", "find": "const woo = ! isTemplate && ! match.record && null == row.route ? wooContentRole( row ) : null;", "replace": "const woo = ! isTemplate && null == row.route ? wooContentRole( row ) : null;", "why": "a WooCommerce page whose record matches is marked as having no draft page"},
+	{"file": "lib/manifest-build.mjs", "find": "const woo = ! isTemplate && ! match.record && null == row.route ? wooContentRole( row ) : null;", "replace": "const woo = ! isTemplate && ! match.record && null == row.route ? 'page' : null;", "why": "any page with no draft page is skipped as a WooCommerce page"},
+	{"file": "lib/manifest-build.mjs", "find": "const woo = ! isTemplate && ! match.record && null == row.route ? wooContentRole( row ) : null;", "replace": "const woo = null;", "why": "a WooCommerce page with no draft page is unresolved again"},
+	{"file": "lib/manifest-build.mjs", "find": "} else if ( noDraft ) {\n\t\t\tout.noDraft.push( { key, why: noDraft } );\n\t\t} else {", "replace": "} else if ( noDraft ) {\n\t\t\tout.noDraft.push( { key, why: noDraft } );\n\t\t\tmine.unresolved.push( { key, reason: 'states-unresolved', why: noDraft } );\n\t\t} else {", "why": "the skip is still counted as unresolved"},
+	{"file": "lib/manifest-build.mjs", "find": "} else if ( noDraft ) {\n\t\t\tout.noDraft.push( { key, why: noDraft } );\n\t\t} else {", "replace": "} else if ( noDraft ) {\n\t\t} else {", "why": "the skip is not named"},
+	{"file": "lib/manifest-build.mjs", "find": "null === intakeSurface && ! noDraft && ! ( have", "replace": "null === intakeSurface && ! ( have", "why": "the skip is still listed as a missing intake surface"},
+	{"file": "lib/manifest-build.mjs", "find": "\t\t\t...( noDraft ? { noDraft } : {} ),\n\t\t};", "replace": "\t\t};", "why": "the entry does not carry the skip for site-run"},
+	{"file": "lib/manifest-build.mjs", "find": "entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ) };", "replace": "entries[ key ] = { ...entry, ...have };", "why": "an existing entry's stale skip outranks the generated one"},
+	{"file": "lib/manifest-build.mjs", "find": "noDraft || delete entries[ key ].noDraft;", "replace": "", "why": "a stale skip stays once the draft has the page"},
+	{"file": "manifest.mjs", "find": "result.noDraft.forEach( ( u ) => console.log( `no-draft-page ${ u.key }: ${ u.why }` ) );", "replace": "", "why": "the command does not name the skip"}
+]

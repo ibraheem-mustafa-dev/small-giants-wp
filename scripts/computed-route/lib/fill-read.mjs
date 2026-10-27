@@ -155,7 +155,7 @@ async function openPage( browser, devices, { url, open, opener = null, width, or
 	}
 	await settleAnimations( page, { floor: 900 } );
 	// The runtime has mounted its components by now: a state is set on a live instance, never before it exists.
-	const opened = opener?.state ? await openState( page, opener ) : null;
+	const opened = opener?.state ? await openState( page, opener, width ) : null;
 	opened && await settleAnimations( page, { floor: 300 } );
 	return { ctx, page, h, opened };
 }

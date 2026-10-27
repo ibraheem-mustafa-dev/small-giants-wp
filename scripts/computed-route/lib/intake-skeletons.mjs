@@ -28,7 +28,11 @@ import { readRouting } from './intake-routing.mjs';
 import { stateRouteHash } from './state-route.mjs';
 import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
+import { reachCalls } from './intake-reach-calls.mjs';
 import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
+import { widthStateKeys } from './state-reach.mjs';
+import { openers, wayAt, describeOpener } from './intake-openers.mjs';
+import { readBreakpoints } from './intake-breakpoints.mjs';
 import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
@@ -212,82 +216,28 @@ const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows
 	...contextOf( inventory, proposal, r.key ),
 } ) );
 
-// The `<ident>.setState(<args>)` calls of a surfaces.json state's how_to_reach, in order: [{ ident, args }] (the args'
-// source with its brackets and quotes balanced; a call whose parentheses never close is left out).
-export function reachCalls( text ) {
-	const out = [];
-	const re = /(?<![\w$.])([A-Za-z_$][\w$]*)\s*\.\s*setState\s*\(/g;
-	for ( let m; ( m = re.exec( String( text || '' ) ) ); ) {
-		const src = m.input;
-		const close = { '(': ')', '[': ']', '{': '}' };
-		const stack = [ ')' ];
-		let i = re.lastIndex;
-		for ( ; i < src.length && stack.length; i++ ) {
-			const c = src[ i ];
-			if ( '\'' === c || '"' === c || '`' === c ) {
-				for ( i++; i < src.length && src[ i ] !== c; i++ ) {
-					'\\' === src[ i ] && i++;
-				}
-			} else if ( close[ c ] ) {
-				stack.push( close[ c ] );
-			} else if ( c === stack.at( -1 ) ) {
-				stack.pop();
-			} else if ( /[)\]}]/.test( c ) ) {
-				break;
-			}
-		}
-		if ( ! stack.length ) {
-			out.push( { ident: m[ 1 ], args: src.slice( re.lastIndex, i - 1 ).trim() } );
-			re.lastIndex = i;
-		}
-	}
-	return out;
-}
+// The `<ident>.setState(<args>)` calls of a surfaces.json state's how_to_reach, in order (lib/intake-reach-calls.mjs).
+export { reachCalls };
 
-// State-driven surfaces (a drawer, a mega-menu panel, a modal) render only when their state opens. The ways to open one,
-// in order: each surfaces.json state (a state named "open" first; "closed" and "default" never) by its plain state keys
-// (`state`: identifier keys with concrete values) and by the setState calls its how_to_reach gives (`reach`, run on the
-// component's logic as the draft's own code would); a state whose keys are all plain JSON-safe values tries `state`
-// first, one with a key holding a JS literal ("{open:true}", "[]") or a comparison (">= 768", "768–1023") tries `reach`
-// first. Then each template handler of the surface's component whose method `opened_by` names.
-const IDENT = /^[A-Za-z_$][\w$]*$/;
-const NOT_A_VALUE = /^\s*(?:[[{].*[\]}]|[<>]=?\s*-?\d.*|-?\d+(?:\.\d+)?\s*[–-]\s*-?\d.*|<.*>)\s*$/;
-export function openers( s, census = null ) {
-	const shut = ( st ) => /^(closed|default)$/i.test( st.name || '' );
-	const concrete = ( st ) => {
-		const keys = Object.entries( st.state_keys || {} );
-		return keys.length && keys.every( ( [ n, v ] ) => IDENT.test( n ) && ! ( 'string' === typeof v && /^<.*>$/.test( v ) ) );
-	};
-	const plain = ( st ) => Object.values( st.state_keys || {} ).every( ( v ) => ! ( 'string' === typeof v && NOT_A_VALUE.test( v ) ) );
-	const states = ( s.states || [] ).filter( ( st ) => ! shut( st ) ).sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );
-	const out = states.flatMap( ( st ) => {
-		const set = concrete( st ) ? [ { via: 'state', state: st.name, keys: st.state_keys } ] : [];
-		const calls = reachCalls( st.how_to_reach );
-		const reach = calls.length ? [ { via: 'reach', state: st.name, calls } ] : [];
-		return plain( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];
-	} );
-	const named = new Set( String( s.openedBy || '' ).match( /[A-Za-z_$][\w$]*(?=\s*\()|\b[a-z]+[A-Z][\w$]*\b/g ) || [] );
-	for ( const r of census?.rows || [] ) {
-		if ( 'handler' === r.kind && 'template' === r.detail?.wiring && r.component === s.component && r.detail.event && ( named.has( r.detail.method ) || named.has( r.detail.expression ) ) ) {
-			out.push( { via: 'trigger', draftId: r.draftId, event: r.detail.event, method: r.detail.method ?? null } );
-		}
-	}
-	return out;
-}
-export const describeOpener = ( o ) => ( 'state' === o.via ? `state "${ o.state }" ${ JSON.stringify( o.keys ) }` : 'reach' === o.via ? `reach "${ o.state }" ${ o.calls.map( ( c ) => `${ c.ident }.setState(${ c.args })` ).join( '; ' ) }` : `trigger ${ o.event } on ${ o.draftId }${ o.method ? ` (${ o.method })` : '' }` );
+// The ways to open a state-driven surface (lib/intake-openers.mjs).
+export { openers, describeOpener };
 
 // Marks the surface root at the current width. When it does not render and `opener` is given, applies it (a state is
 // set, a reach's setState calls run; a trigger is fired only while the root is absent, so a toggle never closes it) and
-// settles, then marks again.
-async function markAt( page, s, settle, opener = null ) {
+// settles, then marks again. An opener whose state bounds the width (`bounds`, lib/intake-openers.mjs) is applied at every
+// width `width` names, rendered or not, and its bound keys are then set to that width: the page is read at one width after
+// another, so the key holds the viewport's value at each, as a fresh page per width holds it in Fill.
+async function markAt( page, s, settle, opener = null, width = null ) {
 	const args = [ s.component, s.rootTpl, s.slug, ROOT_MARK, 'page' === s.kind ];
 	const m = await page.evaluate( markRoot, args );
-	if ( ! m.error || ! opener ) {
+	const bounded = !! opener?.bounds?.length && null != width;
+	if ( ( ! m.error && ! bounded ) || ! opener ) {
 		return m;
 	}
 	const reached = 'state' === opener.via ? await setDraftState( page, { component: s.component, keys: opener.keys } )
 		: 'reach' === opener.via ? await reachDraftState( page, { component: s.component, calls: opener.calls } )
 			: await fireTrigger( page, { component: s.component, draftId: opener.draftId }, opener.event );
+	bounded && reached && await setDraftState( page, { component: s.component, keys: Object.fromEntries( opener.bounds.map( ( b ) => [ b.key, width ] ) ) } );
 	if ( ! reached ) {
 		return { error: `${ describeOpener( opener ) } reached nothing (component not mounted, trigger not rendered or setState call threw)` };
 	}
@@ -303,25 +253,28 @@ async function closeAgain( page, settle ) {
 	await settle( page );
 }
 
-// Tries each opener: at every inventory width the root is marked, opened when absent, and marked again. The first
-// opener under which the root renders at one width or more wins. Returns { opener, at (widths it renders at), readAt
-// ({ width: the nearest rendering width read in its place }), tried } or { error, tried }. The state stays open on
-// success; the caller closes it.
+// Tries each opener: at every inventory width the root is marked, opened when absent, and marked again; a width the
+// opener's state does not hold at is opened by the way that holds there (lib/intake-openers.mjs::wayAt). The first opener
+// under which the root renders at one width or more wins. Returns { opener, at (widths it renders at), readAt ({ width: the
+// nearest rendering width read in its place }), ways ({ width: the way applied there }), tried } or { error, tried }. The
+// state stays open on success; the caller closes it.
 async function openSurface( page, s, settle, list ) {
 	const tried = [];
 	await snapshotDraftState( page );
 	for ( const o of list ) {
 		const errors = [];
 		const at = [];
+		const ways = {};
 		for ( const w of INVENTORY_WIDTHS ) {
 			await page.setViewportSize( { width: w, height: 900 } );
 			await settle( page );
-			const m = await markAt( page, s, settle, o );
-			m.error ? errors.push( `${ w }px: ${ m.error }` ) : at.push( w );
+			const way = wayAt( list, o, w );
+			const m = way ? await markAt( page, s, settle, way, w ) : { error: `no state of the surface holds at ${ w }px` };
+			m.error ? errors.push( `${ w }px: ${ m.error }` ) : ( at.push( w ), ways[ w ] = way );
 		}
 		if ( at.length ) {
 			const nearest = ( w ) => at.reduce( ( b, x ) => ( Math.abs( x - w ) < Math.abs( b - w ) ? x : b ), at[ 0 ] );
-			return { opener: o, at, readAt: Object.fromEntries( INVENTORY_WIDTHS.filter( ( w ) => ! at.includes( w ) ).map( ( w ) => [ w, nearest( w ) ] ) ), tried };
+			return { opener: o, at, readAt: Object.fromEntries( INVENTORY_WIDTHS.filter( ( w ) => ! at.includes( w ) ).map( ( w ) => [ w, nearest( w ) ] ) ), ways, tried };
 		}
 		tried.push( `${ describeOpener( o ) } (${ errors.join( '; ' ) })` );
 		await closeAgain( page, settle );
@@ -336,7 +289,7 @@ async function readOpened( h, s, settle, open, shotsDir ) {
 	const page = new Proxy( h.page, { get: ( t, k ) => ( 'setViewportSize' === k ? ( v ) => t.setViewportSize( { ...v, width: view( v.width ) } ) : 'function' === typeof t[ k ] ? t[ k ].bind( t ) : t[ k ] ) } );
 	const settleOpen = async ( _p, w ) => {
 		await settle( h.page );
-		const m = await markAt( h.page, s, settle, open.opener );
+		const m = await markAt( h.page, s, settle, open.ways?.[ view( w ) ] ?? open.opener, view( w ) );
 		if ( m.error ) {
 			throw new Error( `${ s.slug } did not stay open at ${ view( w ) }px: ${ m.error }` );
 		}
@@ -401,6 +354,8 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const f = factsFor( { db: theDb, client, repo, facts } );
 	const calKeys = site ? ( s ) => Object.keys( loadCalibration( path.join( HERE, '..', 'cache' ), s, site )?.elements || {} ) : () => [];
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
+	// The state keys each component writes from the viewport width: a state bounding one opens only at the widths inside it.
+	const widthKeys = widthStateKeys( readBreakpoints( { folder } ) );
 	// The saved forms a page may link, the same links `skeleton.mjs propose` passes (lib/skeleton-context.mjs::proposalContext): read once.
 	const refs = detectReferences();
 	let links = null;
@@ -459,7 +414,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 						let open = null;
 						let inventory;
 						if ( m.error && openStates ) {
-							open = await openSurface( h.page, s, settle, openers( s, census ) );
+							open = await openSurface( h.page, s, settle, openers( s, census, widthKeys ) );
 							if ( open.error ) {
 								throw new Error( `${ m.error }; ${ open.error }` );
 							}
@@ -485,7 +440,9 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 							throw new Error( f.error );
 						}
 						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb } );
-						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, tried: open.tried };
+						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
+						const other = open ? Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] ) : [];
+						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, ...( other.length ? { statesAt: Object.fromEntries( other ) } : {} ), tried: open.tried };
 						r.proposal.stripRoots?.forEach( ( k ) => absorbed.set( k, s.slug ) );
 						u.out.push( { surface: s.slug, id: s.id, kind: s.kind, name: s.name, route: s.route, root: { tpl: s.rootTpl, ...m }, ...( opened ? { opened } : {} ), inventory: summaryOf( inventory ), rows: rowsOf( s.slug, r.proposal, inventory ), counts: r.proposal.counts, problems: r.problems } );
 						log( `${ s.slug }: ${ inventory.elements.length } elements, ${ r.proposal.rows.length } rows` );
