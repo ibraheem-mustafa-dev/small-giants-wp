@@ -5,6 +5,12 @@
 				"footer": 7,
 				"header": 5
 			}
+		},
+		"local-indus": {
+			"menus": {
+				"footer": 7,
+				"header": 5
+			}
 		}
 	}
 }

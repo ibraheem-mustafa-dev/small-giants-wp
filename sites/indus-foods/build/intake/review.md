@@ -4,7 +4,7 @@ Taken on 2026-10-23T23:58:47.556Z; manifest 1.0, files hash dd9e9aec7ae9a787.
 
 How to mark: put x in a section's `Accept all: [ ]` box to give every row the section's first mark; to mark one row differently, write its mark in that row's Mark cell (a row's own mark always beats Accept all). Flag rows left blank are accepted as flagged and not-a-defect rows left blank stay not defects; every other row needs Accept all or its own mark. Rows marked **changed** differ from the last export, lost their old mark and come first. Then run `node scripts/computed-route/intake.mjs --apply-review indus-foods`.
 
-Rows: 1189; 636 need reading, 553 are confident proposals that Accept all covers (skeleton block choices 547, missing features 6).
+Rows: 1189; 578 need reading, 611 are confident proposals that Accept all covers (skeleton block choices 577, missing features 34).
 
 Not defects counted, not listed: breakpoint 91, dead-code (constant guard) 5, dead-code (data-gated) 7, prop-variant 1, prototype-only 21, reached-when-forced 144, render-wins 552.
 
@@ -27,35 +27,35 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `page:page:apply` | **changed** apply → Apply for Trade Account (page, static) | apply | header #5, footer #2 | accept |
-| `page:page:blog` | **changed** blog → Blog (page, live) | about/blog | footer #6 | edit:parent= |
-| `page:page:brand-green-leaf` | **changed** brand-green-leaf → Green Leaf (page, static) | brands/brand-green-leaf |  | edit:slug=green-leaf |
-| `page:page:brand-lemon-tree` | **changed** brand-lemon-tree → The Lemon Tree (page, static) | brands/brand-lemon-tree |  | edit:slug=lemon-tree |
-| `page:page:brand-sanam` | **changed** brand-sanam → Sanam (page, static) | brands/brand-sanam |  | edit:slug=sanam |
-| `page:page:brand-shan` | **changed** brand-shan → Shan (page, static) | brands/brand-shan |  | edit:slug=shan |
-| `page:page:brands` | **changed** brands → All Brands (page, static) | brands | header #4, footer #3 | accept |
-| `page:page:careers` | **changed** careers → Careers (page, static) | about/careers |  | accept |
-| `page:page:catalogue` | **changed** catalogue → Request Catalogue (page, static) | catalogue |  | accept |
-| `page:page:certifications` | **changed** certifications → Certifications (page, static) | about/certifications | footer #1 | accept |
-| `page:page:community` | **changed** community → Community & Charity (page, static) | about/community |  | accept |
-| `page:page:delivery` | **changed** delivery → Delivery & Logistics (page, static) | delivery | footer #4 | accept |
-| `page:page:faqs` | **changed** faqs → FAQs (page, static) | faqs |  | accept |
-| `page:page:food-service` | **changed** food-service → Food service supply for kitchens that never stop. (page, static) | food-service | header #3 | edit:title=Food Service |
-| `page:page:manufacturing` | **changed** manufacturing → Bulk ingredients for food manufacturers. (page, static) | manufacturing |  | edit:title=Manufacturing |
-| `page:page:our-story` | **changed** our-story → Our Story (page, static) | about/our-story |  | accept |
-| `page:page:retail` | **changed** retail → Retail-ready ranges your customers look for. (page, static) | retail |  | edit:title=Retail |
-| `page:page:sustainability` | **changed** sustainability → Sustainability (page, static) | about/sustainability |  | accept |
-| `page:page:terms` | **changed** terms → Terms & Conditions (page, static) | terms | footer #5 | accept |
-| `page:page:wholesale` | **changed** wholesale → Pallet volumes for wholesalers and cash & carries. (page, static) | wholesale |  | edit:title=Wholesale |
-| `page:page:about` | about → About Us (page, static) | about | header #2 | accept |
-| `page:page:contact` | contact → Contact Us (page, static) | contact | header #6 | accept |
-| `page:page:home` | home → Home (page, static) | home | header #1 | accept |
-| `page:post:falak-rice-exclusive-uk-distribution` | post-post-2 → Falak rice: exclusive UK distribution (post, live) | falak-rice-exclusive-uk-distribution |  | accept |
-| `page:post:inside-our-birmingham-packing-line` | post-post-3 → Inside our Birmingham packing line (post, live) | inside-our-birmingham-packing-line |  | accept |
-| `page:post:ordering-ahead-for-eid` | post-post-5 → Ordering ahead for Eid (post, live) | ordering-ahead-for-eid |  | accept |
-| `page:post:sixty-years-in-the-balti-triangle` | post-post-4 → Sixty years in the Balti Triangle (post, live) | sixty-years-in-the-balti-triangle |  | accept |
-| `page:post:supporting-the-trade-through-ramadan` | post-post-1 → Supporting the trade through Ramadan (post, live) | supporting-the-trade-through-ramadan |  | accept |
-| `page:post:why-independents-still-matter` | post-post-6 → Why independents still matter (post, live) | why-independents-still-matter |  | accept |
+| `page:page:about` | **changed** about → About Us (page, static, page) | about | header #2 |  |
+| `page:page:apply` | **changed** apply → Apply for Trade Account (page, static, page) | apply | header #5, footer #2 |  |
+| `page:page:blog` | **changed** blog → Blog (page, live, home) | about/blog | footer #6 |  |
+| `page:page:brand-green-leaf` | **changed** brand-green-leaf → Green Leaf (page, static, page) | brands/brand-green-leaf |  |  |
+| `page:page:brand-lemon-tree` | **changed** brand-lemon-tree → The Lemon Tree (page, static, page) | brands/brand-lemon-tree |  |  |
+| `page:page:brand-sanam` | **changed** brand-sanam → Sanam (page, static, page) | brands/brand-sanam |  |  |
+| `page:page:brand-shan` | **changed** brand-shan → Shan (page, static, page) | brands/brand-shan |  |  |
+| `page:page:brands` | **changed** brands → All Brands (page, static, page) | brands | header #4, footer #3 |  |
+| `page:page:careers` | **changed** careers → Careers (page, static, page) | about/careers |  |  |
+| `page:page:catalogue` | **changed** catalogue → Request Catalogue (page, static, page) | catalogue |  |  |
+| `page:page:certifications` | **changed** certifications → Certifications (page, static, page) | about/certifications | footer #1 |  |
+| `page:page:community` | **changed** community → Community & Charity (page, static, page) | about/community |  |  |
+| `page:page:contact` | **changed** contact → Contact Us (page, static, page) | contact | header #6 |  |
+| `page:page:delivery` | **changed** delivery → Delivery & Logistics (page, static, page) | delivery | footer #4 |  |
+| `page:page:faqs` | **changed** faqs → FAQs (page, static, page) | faqs |  |  |
+| `page:page:food-service` | **changed** food-service → Food service supply for kitchens that never stop. (page, static, page) | food-service | header #3 |  |
+| `page:page:home` | **changed** home → Home (page, static, front-page) | home | header #1 |  |
+| `page:page:manufacturing` | **changed** manufacturing → Bulk ingredients for food manufacturers. (page, static, page) | manufacturing |  |  |
+| `page:page:our-story` | **changed** our-story → Our Story (page, static, page) | about/our-story |  |  |
+| `page:page:retail` | **changed** retail → Retail-ready ranges your customers look for. (page, static, page) | retail |  |  |
+| `page:page:sustainability` | **changed** sustainability → Sustainability (page, static, page) | about/sustainability |  |  |
+| `page:page:terms` | **changed** terms → Terms & Conditions (page, static, page) | terms | footer #5 |  |
+| `page:page:wholesale` | **changed** wholesale → Pallet volumes for wholesalers and cash & carries. (page, static, page) | wholesale |  |  |
+| `page:post:falak-rice-exclusive-uk-distribution` | **changed** post-post-2 → Falak rice: exclusive UK distribution (post, live, single) | falak-rice-exclusive-uk-distribution |  |  |
+| `page:post:inside-our-birmingham-packing-line` | **changed** post-post-3 → Inside our Birmingham packing line (post, live, single) | inside-our-birmingham-packing-line |  |  |
+| `page:post:ordering-ahead-for-eid` | **changed** post-post-5 → Ordering ahead for Eid (post, live, single) | ordering-ahead-for-eid |  |  |
+| `page:post:sixty-years-in-the-balti-triangle` | **changed** post-post-4 → Sixty years in the Balti Triangle (post, live, single) | sixty-years-in-the-balti-triangle |  |  |
+| `page:post:supporting-the-trade-through-ramadan` | **changed** post-post-1 → Supporting the trade through Ramadan (post, live, single) | supporting-the-trade-through-ramadan |  |  |
+| `page:post:why-independents-still-matter` | **changed** post-post-6 → Why independents still matter (post, live, single) | why-independents-still-matter |  |  |
 | `page:sgs_drawer:drawer-site-menu` | (no route) → Site menu (sgs_drawer, static) | drawer-site-menu |  | edit:slug=site-menu |
 | `page:sgs_footer:footer` | (no route) → Footer (sgs_footer, static) | footer |  | accept |
 | `page:sgs_form:form-careers` | (no route) → Register your interest (sgs_form, static) | form-careers |  | edit:slug=careers |
@@ -190,34 +190,6 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
-| `missing:coverage:aria-role:dialog` | **changed** aria-role:dialog seen 1 time in the draft: seen but unsupported | difference | aria-role:dialog is excluded from cloning (Bean, 2026-10-21: the drawer block renders its own dialog role; the drawer itself is cloned as its surface) | difference |
-| `missing:coverage:construct:ref` | **changed** construct:ref seen 15 times in the draft: seen but unsupported | difference | construct:ref is excluded from cloning (Bean, 2026-10-21: a DOM handle in the draft's script: wiring only, the effect each one drives is cloned through its target) | difference |
-| `missing:coverage:css-at:media` | **changed** css-at:media seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-at:media has no clone path yet (has nothing; wave modes and values with no CSS property); seen only when the page ran: the file read missed it | gap:modes and values with no CSS property |
-| `missing:coverage:css-function:contrast` | **changed** css-function:contrast seen 1 time in the draft: seen but unsupported | difference | css-function:contrast is excluded from cloning (Bean, 2026-10-21: one use, contrast(1.05) on the footer map, below what the eye can see) | difference |
-| `missing:coverage:css-group:basic-user-interface` | **changed** css-group:basic-user-interface seen 77 times in the draft: partly supported | gap:draft reading | css-group:basic-user-interface: Fill does not read accent-color, appearance, cursor, pointer-events, resize (it reads the group's other 1 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:compositing-and-blending` | **changed** css-group:compositing-and-blending seen 2 times in the draft: seen but unsupported | difference | css-group:compositing-and-blending is excluded from cloning (Bean, 2026-10-21: the drafts use only isolation, the internal plumbing of the highlight stripe, which is built (Spec 02 FR-2-4); no mix-blend-mode in either draft) | difference |
-| `missing:coverage:css-group:generated-content` | **changed** css-group:generated-content seen 1 time in the draft: seen but unsupported | difference | css-group:generated-content is excluded from cloning (Bean, 2026-10-21: the drafts use content only on empty decorative pseudo-elements, whose paint is read already; no generated text) | difference |
-| `missing:coverage:css-group:logical-properties-and-values` | **changed** css-group:logical-properties-and-values seen 11 times in the draft: seen but unsupported | gap:draft reading | css-group:logical-properties-and-values: Fill does not read inset; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:masking` | **changed** css-group:masking seen 19 times in the draft: seen but unsupported | gap:draft reading | css-group:masking: Fill does not read clip-path, clip-rule, mask-image; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:overflow` | **changed** css-group:overflow seen 69 times in the draft: seen but unsupported | gap:draft reading | css-group:overflow: Fill does not read overflow, overflow-clip-margin, overflow-x, overflow-y, scroll-behavior, text-overflow; wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:pointer-events` | **changed** css-group:pointer-events seen 1 time in the draft: seen but unsupported | difference | css-group:pointer-events is excluded from cloning (Bean, 2026-10-21: touch-action appears only in the draft prototype's drag-to-reframe image component, which is not part of the design); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:css-group:transforms` | **changed** css-group:transforms seen 123 times in the draft: partly supported | gap:draft reading | css-group:transforms: Fill does not read perspective, transform-box, transform-origin (it reads the group's other 4 the draft uses); wave draft reading | gap:draft reading |
-| `missing:coverage:css-group:will-change` | **changed** css-group:will-change seen 1 time in the draft: seen but unsupported | difference | css-group:will-change is excluded from cloning (Bean, 2026-10-21: a rendering hint with no visible effect; the motion model sets its own) | difference |
-| `missing:coverage:css-group:writing-modes` | **changed** css-group:writing-modes seen 6 times in the draft: seen but unsupported | difference | css-group:writing-modes is excluded from cloning (Bean, 2026-10-21: false hits: the direction keys are animate() options, not CSS; neither draft sets a writing direction) | difference |
-| `missing:coverage:css-property:-webkit-user-drag` | **changed** css-property:-webkit-user-drag seen 1 time in the draft: seen but unsupported | difference | css-property:-webkit-user-drag is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's drag-to-reframe image component); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:css-pseudo-class:host` | **changed** css-pseudo-class:host seen 1 time in the draft: seen but unsupported | difference | css-pseudo-class:host is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:css-pseudo-class:host-context` | **changed** css-pseudo-class:host-context seen 1 time in the draft: seen but unsupported | difference | css-pseudo-class:host-context is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:css-pseudo-element:after` | **changed** css-pseudo-element:after seen 1 time in the draft: seen but unsupported | gap:content, media and icons | css-pseudo-element:after has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
-| `missing:coverage:html-attr:button.disabled` | **changed** html-attr:button.disabled seen 1 time in the draft: seen but unsupported | difference | html-attr:button.disabled is excluded from cloning (Bean, 2026-10-21: a run-time state, not a resting look: a disabled button's look arrives through css-pseudo-class:disabled, and the form decides when a button is disabled) | difference |
-| `missing:coverage:html-attr:form.novalidate` | **changed** html-attr:form.novalidate seen 1 time in the draft: seen but unsupported | difference | html-attr:form.novalidate is excluded from cloning (Bean, 2026-10-21: sgs/form always renders novalidate and validates in its own script, so there is nothing to write) | difference |
-| `missing:coverage:html-attr:global.class` | **changed** html-attr:global.class seen 1 time in the draft: seen but unsupported | difference | html-attr:global.class is excluded from cloning (Bean, 2026-10-18: class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:html-attr:global.draggable` | **changed** html-attr:global.draggable seen 1 time in the draft: seen but unsupported | difference | html-attr:global.draggable is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's drag-to-reframe image component); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:html-attr:global.part` | **changed** html-attr:global.part seen 1 time in the draft: seen but unsupported | difference | html-attr:global.part is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:html-attr:global.popover` | **changed** html-attr:global.popover seen 1 time in the draft: seen but unsupported | difference | html-attr:global.popover is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's reframe controls); seen only when the page ran: the file read missed it | difference |
-| `missing:coverage:html-attr:global.title` | **changed** html-attr:global.title seen 2 times in the draft: seen but unsupported | difference | html-attr:global.title is excluded from cloning (Bean, 2026-10-21: a hover tooltip, not a look; the clone matches the draft's rendered page without it) | difference |
-| `missing:coverage:html-attr:iframe.loading` | **changed** html-attr:iframe.loading seen 2 times in the draft: seen but unsupported | difference | html-attr:iframe.loading is excluded from cloning (Bean, 2026-10-21: SGS blocks set their own loading attribute on an embed, so the draft's value has nothing to write) | difference |
-| `missing:coverage:html-attr:label.for` | **changed** html-attr:label.for seen 4 times in the draft: seen but unsupported | difference | html-attr:label.for is excluded from cloning (Bean, 2026-10-21: every SGS form-field block renders its own label bound to its own input, so the association exists by construction) | difference |
-| `missing:coverage:svg:metadata` | **changed** svg:metadata seen 3 times in the draft: seen but unsupported | difference | svg:metadata is excluded from cloning (Bean, 2026-10-21: editor metadata inside an SVG paints nothing, and the media upload strips it (FR-48-58)) | difference |
 | `missing:handler@Indus Foods Website v2:571/template:onMouseEnter` | Indus Foods Website v2: an element that animates from code on hover (onMouseEnter → btnEnter) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database | build |
 | `missing:handler@Indus Foods Website v2:571/template:onMouseLeave` | Indus Foods Website v2: an element that animates from code on hover (onMouseLeave → btnLeave) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database | build |
 | `missing:handler@Indus Foods Website v2:js:1179:6/addEventListener:mouseenter` | Indus Foods Website v2: an element that animates from code on hover (mouseenter) | no block proposed | hover-motion: no block capability or fx effect named for it in the framework database | difference |
@@ -227,11 +199,39 @@ Accept all: [ ]
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `missing:coverage:aria-role:dialog` | aria-role:dialog seen 1 time in the draft: seen but unsupported | difference | aria-role:dialog is excluded from cloning (Bean, 2026-10-21: the drawer block renders its own dialog role; the drawer itself is cloned as its surface) | difference |
+| `missing:coverage:construct:ref` | construct:ref seen 15 times in the draft: seen but unsupported | difference | construct:ref is excluded from cloning (Bean, 2026-10-21: a DOM handle in the draft's script: wiring only, the effect each one drives is cloned through its target) | difference |
+| `missing:coverage:css-at:media` | css-at:media seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-at:media has no clone path yet (has nothing; wave modes and values with no CSS property); seen only when the page ran: the file read missed it | gap:modes and values with no CSS property |
+| `missing:coverage:css-function:contrast` | css-function:contrast seen 1 time in the draft: seen but unsupported | difference | css-function:contrast is excluded from cloning (Bean, 2026-10-21: one use, contrast(1.05) on the footer map, below what the eye can see) | difference |
+| `missing:coverage:css-group:basic-user-interface` | css-group:basic-user-interface seen 77 times in the draft: partly supported | gap:draft reading | css-group:basic-user-interface: Fill does not read accent-color, appearance, cursor, pointer-events, resize (it reads the group's other 1 the draft uses); wave draft reading | gap:draft reading |
+| `missing:coverage:css-group:compositing-and-blending` | css-group:compositing-and-blending seen 2 times in the draft: seen but unsupported | difference | css-group:compositing-and-blending is excluded from cloning (Bean, 2026-10-21: the drafts use only isolation, the internal plumbing of the highlight stripe, which is built (Spec 02 FR-2-4); no mix-blend-mode in either draft) | difference |
+| `missing:coverage:css-group:generated-content` | css-group:generated-content seen 1 time in the draft: seen but unsupported | difference | css-group:generated-content is excluded from cloning (Bean, 2026-10-21: the drafts use content only on empty decorative pseudo-elements, whose paint is read already; no generated text) | difference |
+| `missing:coverage:css-group:logical-properties-and-values` | css-group:logical-properties-and-values seen 11 times in the draft: seen but unsupported | gap:draft reading | css-group:logical-properties-and-values: Fill does not read inset; wave draft reading | gap:draft reading |
+| `missing:coverage:css-group:masking` | css-group:masking seen 19 times in the draft: seen but unsupported | gap:draft reading | css-group:masking: Fill does not read clip-path, clip-rule, mask-image; wave draft reading | gap:draft reading |
+| `missing:coverage:css-group:overflow` | css-group:overflow seen 69 times in the draft: seen but unsupported | gap:draft reading | css-group:overflow: Fill does not read overflow, overflow-clip-margin, overflow-x, overflow-y, scroll-behavior, text-overflow; wave draft reading | gap:draft reading |
 | `missing:coverage:css-group:overscroll-behavior` | css-group:overscroll-behavior seen 1 time in the draft: seen but unsupported | gap:draft reading | css-group:overscroll-behavior: Fill does not read overscroll-behavior; wave draft reading | gap:draft reading |
+| `missing:coverage:css-group:pointer-events` | css-group:pointer-events seen 1 time in the draft: seen but unsupported | difference | css-group:pointer-events is excluded from cloning (Bean, 2026-10-21: touch-action appears only in the draft prototype's drag-to-reframe image component, which is not part of the design); seen only when the page ran: the file read missed it | difference |
 | `missing:coverage:css-group:scroll-snap` | css-group:scroll-snap seen 3 times in the draft: seen but unsupported | gap:draft reading | css-group:scroll-snap: Fill does not read scroll-padding-inline, scroll-snap-align, scroll-snap-type; wave draft reading | gap:draft reading |
+| `missing:coverage:css-group:transforms` | css-group:transforms seen 123 times in the draft: partly supported | gap:draft reading | css-group:transforms: Fill does not read perspective, transform-box, transform-origin (it reads the group's other 4 the draft uses); wave draft reading | gap:draft reading |
+| `missing:coverage:css-group:will-change` | css-group:will-change seen 1 time in the draft: seen but unsupported | difference | css-group:will-change is excluded from cloning (Bean, 2026-10-21: a rendering hint with no visible effect; the motion model sets its own) | difference |
+| `missing:coverage:css-group:writing-modes` | css-group:writing-modes seen 6 times in the draft: seen but unsupported | difference | css-group:writing-modes is excluded from cloning (Bean, 2026-10-21: false hits: the direction keys are animate() options, not CSS; neither draft sets a writing direction) | difference |
+| `missing:coverage:css-property:-webkit-user-drag` | css-property:-webkit-user-drag seen 1 time in the draft: seen but unsupported | difference | css-property:-webkit-user-drag is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's drag-to-reframe image component); seen only when the page ran: the file read missed it | difference |
 | `missing:coverage:css-property:unlisted` | css-property:unlisted seen 2 times in the draft: seen but unsupported | difference | css-property:unlisted is excluded from cloning (Bean, 2026-10-18: a CSS property no browser applies (enable-background, an SVG 1.1 editor property, seen in an exported logo); nothing to clone) | difference |
+| `missing:coverage:css-pseudo-class:host` | css-pseudo-class:host seen 1 time in the draft: seen but unsupported | difference | css-pseudo-class:host is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it | difference |
+| `missing:coverage:css-pseudo-class:host-context` | css-pseudo-class:host-context seen 1 time in the draft: seen but unsupported | difference | css-pseudo-class:host-context is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it | difference |
+| `missing:coverage:css-pseudo-element:after` | css-pseudo-element:after seen 1 time in the draft: seen but unsupported | gap:content, media and icons | css-pseudo-element:after has no clone path yet (has nothing; wave content, media and icons) | gap:content, media and icons |
 | `missing:coverage:css-pseudo-element:selection` | css-pseudo-element:selection seen 1 time in the draft: seen but unsupported | gap:modes and values with no CSS property | css-pseudo-element:selection has no clone path yet (has nothing; wave modes and values with no CSS property) | gap:modes and values with no CSS property |
+| `missing:coverage:html-attr:button.disabled` | html-attr:button.disabled seen 1 time in the draft: seen but unsupported | difference | html-attr:button.disabled is excluded from cloning (Bean, 2026-10-21: a run-time state, not a resting look: a disabled button's look arrives through css-pseudo-class:disabled, and the form decides when a button is disabled) | difference |
+| `missing:coverage:html-attr:form.novalidate` | html-attr:form.novalidate seen 1 time in the draft: seen but unsupported | difference | html-attr:form.novalidate is excluded from cloning (Bean, 2026-10-21: sgs/form always renders novalidate and validates in its own script, so there is nothing to write) | difference |
+| `missing:coverage:html-attr:global.class` | html-attr:global.class seen 1 time in the draft: seen but unsupported | difference | html-attr:global.class is excluded from cloning (Bean, 2026-10-18: class names carry no value of their own: their styles reach the clone through the computed values Fill reads, and the behaviour they drive through the census); seen only when the page ran: the file read missed it | difference |
+| `missing:coverage:html-attr:global.draggable` | html-attr:global.draggable seen 1 time in the draft: seen but unsupported | difference | html-attr:global.draggable is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's drag-to-reframe image component); seen only when the page ran: the file read missed it | difference |
+| `missing:coverage:html-attr:global.part` | html-attr:global.part seen 1 time in the draft: seen but unsupported | difference | html-attr:global.part is excluded from cloning (Bean, 2026-10-19: the internals of a draft's own component (shadow DOM), which clones as a whole: the skeleton maps the component to a block); seen only when the page ran: the file read missed it | difference |
+| `missing:coverage:html-attr:global.popover` | html-attr:global.popover seen 1 time in the draft: seen but unsupported | difference | html-attr:global.popover is excluded from cloning (Bean, 2026-10-21: only in the draft prototype's reframe controls); seen only when the page ran: the file read missed it | difference |
+| `missing:coverage:html-attr:global.title` | html-attr:global.title seen 2 times in the draft: seen but unsupported | difference | html-attr:global.title is excluded from cloning (Bean, 2026-10-21: a hover tooltip, not a look; the clone matches the draft's rendered page without it) | difference |
+| `missing:coverage:html-attr:iframe.loading` | html-attr:iframe.loading seen 2 times in the draft: seen but unsupported | difference | html-attr:iframe.loading is excluded from cloning (Bean, 2026-10-21: SGS blocks set their own loading attribute on an embed, so the draft's value has nothing to write) | difference |
+| `missing:coverage:html-attr:label.for` | html-attr:label.for seen 4 times in the draft: seen but unsupported | difference | html-attr:label.for is excluded from cloning (Bean, 2026-10-21: every SGS form-field block renders its own label bound to its own input, so the association exists by construction) | difference |
 | `missing:coverage:html-attr:link.crossorigin` | html-attr:link.crossorigin seen 1 time in the draft: seen but unsupported | difference | html-attr:link.crossorigin is excluded from cloning (Bean, 2026-10-19: document plumbing: a WordPress page supplies its own document (head, body, script loading, resource hints)) | difference |
+| `missing:coverage:svg:metadata` | svg:metadata seen 3 times in the draft: seen but unsupported | difference | svg:metadata is excluded from cloning (Bean, 2026-10-21: editor metadata inside an SVG paints nothing, and the media upload strips it (FR-48-58)) | difference |
 | `missing:coverage:svg:unlisted` | svg:unlisted seen 10 times in the draft: seen but unsupported | difference | svg:unlisted is excluded from cloning (Bean, 2026-10-18: an SVG element no browser renders (meshgradient, meshrow and meshpatch from an SVG editor's draft spec, seen in an exported logo); the SVG file uploads whole, so the clone loses nothing) | difference |
 
 ## Script effects (effect)
@@ -260,49 +260,13 @@ Accept all: [ ]
 
 Accept all: [ ]
 
-### Changed since the last export (31)
-
-| Row | Shows | Proposed | Confidence or reason | Mark |
-|---|---|---|---|---|
-| `skeleton:about-mega-menu:Indus Foods Website v2/68#0` | **changed** about-mega-menu Indus Foods Website v2/68#0 <div> | block:sgs/mega-group | 1: 2 copies of one template element on 2 surfaces; a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/70` | **changed** about-mega-menu Indus Foods Website v2/70 <a> | block:sgs/container | 1: 11 copies of one template element on 2 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/71` | **changed** about-mega-menu Indus Foods Website v2/71 <span> "01" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/72` | **changed** about-mega-menu Indus Foods Website v2/72 <span> | block:sgs/container | 0.75: 11 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/73` | **changed** about-mega-menu Indus Foods Website v2/73 <span> "Our Story" | block:sgs/heading | 1: 11 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/74` | **changed** about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/76#0` | **changed** about-mega-menu Indus Foods Website v2/76#0 <div> | block:sgs/mega-aside | 1: 2 copies of one template element on 2 surfaces; a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/77#0` | **changed** about-mega-menu Indus Foods Website v2/77#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/78#0` | **changed** about-mega-menu Indus Foods Website v2/78#0 <image-slot> | block:sgs/media | 1: 2 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/79#0` | **changed** about-mega-menu Indus Foods Website v2/79#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/80#0` | **changed** about-mega-menu Indus Foods Website v2/80#0 <span> "Since 1962" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | **changed** about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | **changed** about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:about-mega-menu:Indus Foods Website v2/83#0` | **changed** about-mega-menu Indus Foods Website v2/83#0 <a> "Read our story" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/102#0` | **changed** brands-mega-menu Indus Foods Website v2/102#0 <div> | block:sgs/mega-aside | 1: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/103#0` | **changed** brands-mega-menu Indus Foods Website v2/103#0 <span> "Own Brands" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | **changed** brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | block:sgs/text | 0.25 | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/105#0` | **changed** brands-mega-menu Indus Foods Website v2/105#0 <a> "View All Brands" | block:sgs/button | 0.75 | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/96#0` | **changed** brands-mega-menu Indus Foods Website v2/96#0 <div> | block:sgs/container | 1: a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21) | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/97#0` | **changed** brands-mega-menu Indus Foods Website v2/97#0 <div> "Our Brands" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
-| `skeleton:brands-mega-menu:Indus Foods Website v2/98#0` | **changed** brands-mega-menu Indus Foods Website v2/98#0 <div> | block:sgs/gallery | 1: a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items | accept |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/social-icons | 1: a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21) | accept |
-| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | **changed** mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | absorbed | 1: part of the drawer's top-row icon group: sgs/social-icons draws it from Site Info | accept |
-| `skeleton:page-contact:Indus Foods Website v2/536=sgs/business-info` | **changed** page-contact Indus Foods Website v2/536=sgs/business-info <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/business-info | 0.8: 1 copies of one template element | block:sgs/text |
-| `skeleton:page-contact:Indus Foods Website v2/536=sgs/text` | **changed** page-contact Indus Foods Website v2/536=sgs/text <span> "Sales, orders and accounts" | block:sgs/text | 0.25: 2 copies of one template element | accept |
-| `skeleton:page-home:Indus Foods Website v2/215#0` | **changed** page-home Indus Foods Website v2/215#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 | remove |
-| `skeleton:page-home:Indus Foods Website v2/216#0` | **changed** page-home Indus Foods Website v2/216#0 <div> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | remove |
-| `skeleton:page-home:Indus Foods Website v2/287#0` | **changed** page-home Indus Foods Website v2/287#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 | block:sgs/container |
-| `skeleton:page-home:Indus Foods Website v2/288#0` | **changed** page-home Indus Foods Website v2/288#0 <div> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | block:sgs/container |
-| `skeleton:page-home:Indus Foods Website v2/289#0` | **changed** page-home Indus Foods Website v2/289#0 <image-slot> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | block:sgs/media |
-| `skeleton:sectors-mega-menu:Indus Foods Website v2/85#0` | **changed** sectors-mega-menu Indus Foods Website v2/85#0 <div> | block:sgs/container | 1: a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21) | accept |
-
 ### Needs a decision (low): block:sgs/multi-button (1)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:page-about:Indus Foods Website v2/524#0` | page-about Indus Foods Website v2/524#0 <div> | block:sgs/multi-button | 0.51: 23 copies of one template element on 23 surfaces | accept |
 
-### Needs a decision (low): block:sgs/text (7)
+### Needs a decision (low): block:sgs/text (8)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -311,10 +275,11 @@ Accept all: [ ]
 | `skeleton:page-about:Indus Foods Website v2/462=sgs/text` | page-about Indus Foods Website v2/462=sgs/text <div> "1962" | block:sgs/text | 0.25: 8 copies of one template element on 2 surfaces | remove |
 | `skeleton:page-about:Indus Foods Website v2/490=sgs/text` | page-about Indus Foods Website v2/490=sgs/text <div> "Certifications" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
 | `skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0` | page-apply Indus Foods Website v2>TradeApplication@466#0/104#0 <span> "Prefer to apply over the phone?" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
+| `skeleton:page-contact:Indus Foods Website v2/536=sgs/text` | page-contact Indus Foods Website v2/536=sgs/text <span> "Sales, orders and accounts" | block:sgs/text | 0.25: 2 copies of one template element | accept |
 | `skeleton:page-our-story:Indus Foods Website v2/328#0` | page-our-story Indus Foods Website v2/328#0 <span> "Our Story" | block:sgs/text | 0.25: 27 copies of one template element on 27 surfaces | accept |
 | `skeleton:page-terms:Indus Foods Website v2/651=sgs/text` | page-terms Indus Foods Website v2/651=sgs/text <span> "02" | block:sgs/text | 0.25: 6 copies of one template element | accept |
 
-### Settled by built post sgs_drawer 4456: the client already built this surface ([QA] Indus mobile drawer on sandybrown) (31)
+### Settled by built post sgs_drawer 4456: the client already built this surface ([QA] Indus mobile drawer on sandybrown) (33)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -326,6 +291,8 @@ Accept all: [ ]
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/113#0` | mobile-tablet-drawer Indus Foods Website v2/113#0 <a> | unwrap | 1: the link around one or more logos (a mark and a wordmark) goes: the logo block links home itself | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/114#0` | mobile-tablet-drawer Indus Foods Website v2/114#0 <indus-logo> | block:sgs/responsive-logo | 1: a custom element named as a logo (its tag matches logoImage, such as <brand-logo>) is the logo block, which reads the site logo | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/115#0` | mobile-tablet-drawer Indus Foods Website v2/115#0 <div> | block:sgs/container | 1 | accept |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/116#0` | mobile-tablet-drawer Indus Foods Website v2/116#0 <a> | block:sgs/social-icons | 1: a run of icon-only phone, email and social links in a drawer's top row is one social icons group in the drawer's icons top-row slot, each icon linking its Site Info key (Bean's decision 1, 2026-10-21) | accept |
+| `skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0` | mobile-tablet-drawer Indus Foods Website v2/117#0 <a> | absorbed | 1: part of the drawer's top-row icon group: sgs/social-icons draws it from Site Info | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0` | mobile-tablet-drawer Indus Foods Website v2/118#0 <button> | block:sgs/container | 1 | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/119#0` | mobile-tablet-drawer Indus Foods Website v2/119#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
 | `skeleton:mobile-tablet-drawer:Indus Foods Website v2/120#0` | mobile-tablet-drawer Indus Foods Website v2/120#0 <span> | remove | 1: a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in | accept |
@@ -385,24 +352,46 @@ Accept all: [ ]
 | `skeleton:sticky-header:Indus Foods Website v2/62#0` | sticky-header Indus Foods Website v2/62#0 <span> | absorbed | 1: drawn by the element before it: a button whose click handler opens the surface of kind drawer (the handoff surfaces.json names it in the drawer's opened_by words) is the burger the header's navigation block draws itself below its collapse point, so the navigation block takes it | accept |
 | `skeleton:sticky-header:Indus Foods Website v2/9#0` | sticky-header Indus Foods Website v2/9#0 <div> | block:sgs/site-header-row | 1: a strip above the header's main bar is its top row | accept |
 
-### Settled by built post sgs_mega_menu 4426: the client already built this surface ([QA] Indus mega: About on sandybrown) (1)
+### Settled by built post sgs_mega_menu 4426: the client already built this surface ([QA] Indus mega: About on sandybrown) (15)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:about-mega-menu:Indus Foods Website v2/67#0` | about-mega-menu Indus Foods Website v2/67#0 <div> | block:sgs/mega-panel | 1: 2 copies of one template element on 2 surfaces; a menu surface (the panel a navigation item opens) is sgs/mega-panel | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/68#0` | about-mega-menu Indus Foods Website v2/68#0 <div> | block:sgs/mega-group | 1: 2 copies of one template element on 2 surfaces; a growing child of a header's disclosure panel that holds a run of sibling links is a mega group: the panel's column of links (Bean's approved header mega menus, 2026-10-21) | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/70` | about-mega-menu Indus Foods Website v2/70 <a> | block:sgs/container | 1: 11 copies of one template element on 2 surfaces; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/71` | about-mega-menu Indus Foods Website v2/71 <span> "01" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/72` | about-mega-menu Indus Foods Website v2/72 <span> | block:sgs/container | 0.75: 11 copies of one template element on 2 surfaces | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/73` | about-mega-menu Indus Foods Website v2/73 <span> "Our Story" | block:sgs/heading | 1: 11 copies of one template element on 2 surfaces; the first piece of text in a card that is not a bare number, set bold and larger than the text after it, titles the card (sgs/heading), whether or not the card is a link (Bean, 2026-10-19) | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/74` | about-mega-menu Indus Foods Website v2/74 <span> "Six decades of family heritage" | block:sgs/text | 0.25: 11 copies of one template element on 2 surfaces | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/76#0` | about-mega-menu Indus Foods Website v2/76#0 <div> | block:sgs/mega-aside | 1: 2 copies of one template element on 2 surfaces; a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/77#0` | about-mega-menu Indus Foods Website v2/77#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/78#0` | about-mega-menu Indus Foods Website v2/78#0 <image-slot> | block:sgs/media | 1: 2 copies of one template element on 2 surfaces; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/79#0` | about-mega-menu Indus Foods Website v2/79#0 <div> | block:sgs/container | 0.75: 2 copies of one template element on 2 surfaces | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/80#0` | about-mega-menu Indus Foods Website v2/80#0 <span> "Since 1962" | block:sgs/label | 1: 2 copies of one template element on 2 surfaces; a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/81#0` | about-mega-menu Indus Foods Website v2/81#0 <div> "Six decades of heritage" | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/82#0` | about-mega-menu Indus Foods Website v2/82#0 <div> "From a Sparkbrook corner shop to one of the UK’s leading Indian food wholesalers." | block:sgs/text | 0.25: 2 copies of one template element on 2 surfaces | accept |
+| `skeleton:about-mega-menu:Indus Foods Website v2/83#0` | about-mega-menu Indus Foods Website v2/83#0 <a> "Read our story" | block:sgs/button | 0.75: 2 copies of one template element on 2 surfaces | accept |
 
-### Settled by built post sgs_mega_menu 4440: the client already built this surface ([QA] Indus mega: Brands on sandybrown) (3)
+### Settled by built post sgs_mega_menu 4440: the client already built this surface ([QA] Indus mega: Brands on sandybrown) (10)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
 | `skeleton:brands-mega-menu:Indus Foods Website v2/100` | brands-mega-menu Indus Foods Website v2/100 <a> | absorbed | 1: 10 copies of one template element; drawn by sgs/gallery: rule logoGrid | accept |
 | `skeleton:brands-mega-menu:Indus Foods Website v2/101` | brands-mega-menu Indus Foods Website v2/101 <image-slot> | absorbed | 1: 10 copies of one template element; drawn by sgs/gallery: rule logoGrid | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/102#0` | brands-mega-menu Indus Foods Website v2/102#0 <div> | block:sgs/mega-aside | 1: a fixed or ratio-sized painted box beside a header disclosure panel's links, holding no link run, is the panel's aside: its feature or call-to-action card (Bean's approved header mega menus, 2026-10-21) | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/103#0` | brands-mega-menu Indus Foods Website v2/103#0 <span> "Own Brands" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/104#0` | brands-mega-menu Indus Foods Website v2/104#0 <div> "We develop and market our own Sanam range alongside trusted brands like Shan, Green Leaf and The Lemon Tree." | block:sgs/text | 0.25 | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/105#0` | brands-mega-menu Indus Foods Website v2/105#0 <a> "View All Brands" | block:sgs/button | 0.75 | accept |
 | `skeleton:brands-mega-menu:Indus Foods Website v2/95#0` | brands-mega-menu Indus Foods Website v2/95#0 <div> | block:sgs/mega-panel | 1: a menu surface (the panel a navigation item opens) is sgs/mega-panel | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/96#0` | brands-mega-menu Indus Foods Website v2/96#0 <div> | block:sgs/container | 1: a growing child of a header disclosure panel with no run of links of its own is a plain container, not a mega group (Bean approved the brands panel's heading and logo grid as sgs/container, 2026-10-21) | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/97#0` | brands-mega-menu Indus Foods Website v2/97#0 <div> "Our Brands" | block:sgs/label | 1: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number | accept |
+| `skeleton:brands-mega-menu:Indus Foods Website v2/98#0` | brands-mega-menu Indus Foods Website v2/98#0 <div> | block:sgs/gallery | 1: a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items | accept |
 
-### Settled by built post sgs_mega_menu 4443: the client already built this surface ([QA] Indus mega: Sectors on sandybrown) (7)
+### Settled by built post sgs_mega_menu 4443: the client already built this surface ([QA] Indus mega: Sectors on sandybrown) (8)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:sectors-mega-menu:Indus Foods Website v2/85#0` | sectors-mega-menu Indus Foods Website v2/85#0 <div> | block:sgs/container | 1: a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21) | accept |
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/87` | sectors-mega-menu Indus Foods Website v2/87 <a> | block:sgs/container | 1: 4 copies of one template element; a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction) | accept |
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/88` | sectors-mega-menu Indus Foods Website v2/88 <div> | block:sgs/container | 0.75: 4 copies of one template element | accept |
 | `skeleton:sectors-mega-menu:Indus Foods Website v2/89` | sectors-mega-menu Indus Foods Website v2/89 <image-slot> | block:sgs/media | 1: 4 copies of one template element; a custom element the draft uses as an image placeholder (<image-slot>) is sgs/media | accept |
@@ -638,14 +627,19 @@ Accept all: [ ]
 | `skeleton:footer:Indus Foods Website v2/712#0` | footer Indus Foods Website v2/712#0 <iframe> | block:sgs/business-info | 1: an embedded map is sgs/business-info's map display | accept |
 | `skeleton:page-contact:Indus Foods Website v2/538#0` | page-contact Indus Foods Website v2/538#0 <iframe> | block:sgs/business-info | 1: an embedded map is sgs/business-info's map display | accept |
 
-### Settled by rule marquee: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 (4)
+### Settled by rule marquee: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 (9)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
+| `skeleton:page-home:Indus Foods Website v2/215#0` | page-home Indus Foods Website v2/215#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 | remove |
+| `skeleton:page-home:Indus Foods Website v2/216#0` | page-home Indus Foods Website v2/216#0 <div> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | remove |
 | `skeleton:page-home:Indus Foods Website v2/217#0` | page-home Indus Foods Website v2/217#0 <image-slot> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | accept |
 | `skeleton:page-home:Indus Foods Website v2/222#0` | page-home Indus Foods Website v2/222#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 | accept |
 | `skeleton:page-home:Indus Foods Website v2/224` | page-home Indus Foods Website v2/224 <a> | absorbed | 1: 20 copies of one template element; drawn by sgs/brand-strip: rule marquee | accept |
 | `skeleton:page-home:Indus Foods Website v2/225` | page-home Indus Foods Website v2/225 <image-slot> | absorbed | 1: 20 copies of one template element; drawn by sgs/brand-strip: rule marquee | accept |
+| `skeleton:page-home:Indus Foods Website v2/287#0` | page-home Indus Foods Website v2/287#0 <div> | block:sgs/brand-strip | 1: a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7 | block:sgs/container |
+| `skeleton:page-home:Indus Foods Website v2/288#0` | page-home Indus Foods Website v2/288#0 <div> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | block:sgs/container |
+| `skeleton:page-home:Indus Foods Website v2/289#0` | page-home Indus Foods Website v2/289#0 <image-slot> | absorbed | 1: drawn by sgs/brand-strip: rule marquee | block:sgs/media |
 
 ### Settled by rule marqueeFrame: the frame that only clips or fades a marquee track goes: sgs/brand-strip draws its own overflow, and a masked edge fade belongs to its marquee motion (Bean, 2026-10-13) (1)
 
@@ -738,7 +732,7 @@ Accept all: [ ]
 | `skeleton:footer:Indus Foods Website v2/656#0` | footer Indus Foods Website v2/656#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 | `skeleton:footer:Indus Foods Website v2/719#0` | footer Indus Foods Website v2/719#0 <div> | unwrap | 1: a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there | accept |
 
-### Confident proposals (Accept all covers these) (303)
+### Confident proposals (Accept all covers these) (304)
 
 | Row | Shows | Proposed | Confidence or reason | Mark |
 |---|---|---|---|---|
@@ -903,6 +897,7 @@ Accept all: [ ]
 | `skeleton:page-contact:Indus Foods Website v2/529#0` | page-contact Indus Foods Website v2/529#0 <div> | block:sgs/container | 1 | accept |
 | `skeleton:page-contact:Indus Foods Website v2/533` | page-contact Indus Foods Website v2/533 <span> | block:sgs/container | 0.75: 3 copies of one template element | accept |
 | `skeleton:page-contact:Indus Foods Website v2/535` | page-contact Indus Foods Website v2/535 <span> "55–58 Stratford Street North" | block:sgs/business-info | 1: 3 copies of one template element | accept |
+| `skeleton:page-contact:Indus Foods Website v2/536=sgs/business-info` | page-contact Indus Foods Website v2/536=sgs/business-info <span> "Sparkbrook, Birmingham B11 1BU" | block:sgs/business-info | 0.8: 1 copies of one template element | block:sgs/text |
 | `skeleton:page-contact:Indus Foods Website v2/537#0` | page-contact Indus Foods Website v2/537#0 <div> | block:sgs/container | 0.75 | accept |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/10#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/10#0 <span> "Choose all that apply" | remove | 1: 2 copies of one template element on 2 surfaces; Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block | accept |
 | `skeleton:page-contact:Indus Foods Website v2>EnquiryForm@468#0/11#0` | page-contact Indus Foods Website v2>EnquiryForm@468#0/11#0 <div> | block:sgs/form-field-tiles | 1: 2 copies of one template element on 2 surfaces | accept |

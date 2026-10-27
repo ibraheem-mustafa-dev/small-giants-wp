@@ -1,0 +1,2916 @@
+{
+	"generated": "2026-10-27T00:59:38.355Z",
+	"inventory": "2026-10-27T00:59:38.153Z",
+	"source": "http://127.0.0.1:50068/#/apply",
+	"surface": "page-apply",
+	"siteName": null,
+	"surfaceParts": [
+		{
+			"id": "S-52",
+			"kind": "form",
+			"name": "Trade account application",
+			"openedBy": "route /apply (dc-import in the wizard block)",
+			"roots": [
+				"TradeApplication/5"
+			]
+		}
+	],
+	"stripRoots": [],
+	"recordDisagreements": [],
+	"recordUntranslated": [],
+	"confidenceFormula": "min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights",
+	"weights": {
+		"tag": 0.5,
+		"composition": 0.35,
+		"capability": 0.25,
+		"structure": 0.4,
+		"siteInfo": 0.3,
+		"pattern": 0.5,
+		"decision": 1,
+		"logo": 0.5,
+		"rule": 1
+	},
+	"counts": {
+		"inventoryElements": 126,
+		"parts": 13,
+		"rows": 113,
+		"skeletonNodes": 18,
+		"expandedNodes": 18,
+		"low": 2,
+		"removed": 95,
+		"unresolved": 0,
+		"byRule": {
+			"hero": 1,
+			"decorationLayer": 1,
+			"decorativeShape": 1,
+			"heroInner": 3,
+			"label": 2,
+			"formLink": 88,
+			"solitaryIcon": 1,
+			"siteInfoLink": 1
+		}
+	},
+	"widthAlternatives": [],
+	"problems": [],
+	"rows": [
+		{
+			"order": 0,
+			"key": "Root/201#0",
+			"tag": "main",
+			"depth": 0,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_201_0@375.png",
+				"1440": "shots/Root_201_0@1440.png"
+			},
+			"snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+			"attributes": {
+				"tagName": "main"
+			}
+		},
+		{
+			"order": 1,
+			"key": "Root/316#0",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/hero",
+			"action": null,
+			"reason": "the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)",
+			"source": "rule hero",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "hero",
+			"candidates": [
+				{
+					"block": "sgs/hero",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule hero: the first section of a page holding its h1 is sgs/hero (its label, heading, text and buttons are its content; an image inside makes it the split hero)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_316_0@375.png",
+				"1440": "shots/Root_316_0@1440.png"
+			},
+			"snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+			"attributes": {}
+		},
+		{
+			"order": 2,
+			"key": "Root/318#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "remove",
+			"reason": "a layer that holds nothing and only paints a fill, gradient or glow folds into the background of the block it sits in",
+			"source": "rule decorationLayer",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorationLayer",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_318_0@375.png",
+				"1440": "shots/Root_318_0@1440.png"
+			},
+			"snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 3,
+			"key": "Root/319#0",
+			"tag": "span",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/decorative-image",
+			"action": null,
+			"reason": "a floating shape that draws an outline (a ring) is a decorative image",
+			"source": "rule decorativeShape",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "decorativeShape",
+			"candidates": [
+				{
+					"block": "sgs/decorative-image",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule decorativeShape: a floating shape that draws an outline (a ring) is a decorative image"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_319_0@375.png",
+				"1440": "shots/Root_319_0@1440.png"
+			},
+			"snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 4,
+			"key": "Root/322#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_322_0@375.png",
+				"1440": "shots/Root_322_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+			"attributes": {}
+		},
+		{
+			"order": 5,
+			"key": "Root/323#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/breadcrumbs",
+			"action": null,
+			"reason": null,
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/breadcrumbs",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"client decision: Bean marked block:sgs/breadcrumbs in the intake review on 2026-10-19"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_323_0@375.png",
+				"1440": "shots/Root_323_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+			"attributes": {}
+		},
+		{
+			"order": 6,
+			"key": "Root/324#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Home",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-19: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_324_0@1440.png"
+			},
+			"snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+			"attributes": {}
+		},
+		{
+			"order": 7,
+			"key": "Root/325#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "/",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_325_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"325\">/</span>",
+			"attributes": {}
+		},
+		{
+			"order": 8,
+			"key": "Root/326#0",
+			"tag": "a",
+			"depth": 4,
+			"words": "Trade",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": "decision for Root/326#0 was made for \"a|About\" and the element is now \"a|Trade\"",
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: a -> sgs/button (\"Link shape — routes to the same atomic leaf as button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_326_0@1440.png"
+			},
+			"snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+			"attributes": {
+				"label": "Trade",
+				"url": "#/apply"
+			}
+		},
+		{
+			"order": 9,
+			"key": "Root/327#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "/",
+			"block": null,
+			"action": "remove",
+			"reason": "Bean marked remove in the intake review on 2026-10-24: the element is absorbed into its parent block",
+			"source": "client decision",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_327_0@1440.png"
+			},
+			"snippet": "<span data-dc-tpl=\"327\">/</span>",
+			"attributes": {}
+		},
+		{
+			"order": 10,
+			"key": "Root/328#0",
+			"tag": "span",
+			"depth": 4,
+			"words": "Apply for Trade Account",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": "decision for Root/328#0 was made for \"span|About Us\" and the element is now \"span|Apply for Trade Account\"",
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_328_0@1440.png"
+			},
+			"snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+			"attributes": {
+				"text": "Apply for Trade Account"
+			}
+		},
+		{
+			"order": 11,
+			"key": "Root/329#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_329_0@375.png",
+				"1440": "shots/Root_329_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+			"attributes": {}
+		},
+		{
+			"order": 12,
+			"key": "Root/330#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": null,
+			"action": "unwrap",
+			"reason": "inside a hero, its image is the hero's own split media and its layout wrappers go (the hero lays out its content and media columns); a wrapper laying items side by side (a button group, a row of labels) stays",
+			"source": "rule heroInner",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "heroInner",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_330_0@375.png",
+				"1440": "shots/Root_330_0@1440.png"
+			},
+			"snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+			"attributes": {}
+		},
+		{
+			"order": 13,
+			"key": "Root/331#0",
+			"tag": "span",
+			"depth": 5,
+			"words": "Trade · Apply",
+			"block": "sgs/label",
+			"action": null,
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"candidates": [
+				{
+					"block": "sgs/label",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_331_0@1440.png"
+			},
+			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+			"attributes": {}
+		},
+		{
+			"order": 14,
+			"key": "Root/332#0",
+			"tag": "span",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "label",
+			"into": "Root/331#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_332_0@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 15,
+			"key": "Root/333#0",
+			"tag": "h1",
+			"depth": 5,
+			"words": "Apply for a trade account.",
+			"block": "sgs/heading",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/heading",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: h1 -> sgs/heading (\"Heading level 1 — atomic walker fallback\")",
+						"block_composition: sgs/heading is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_333_0@375.png",
+				"1440": "shots/Root_333_0@1440.png"
+			},
+			"snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+			"attributes": {
+				"content": "Apply for a trade account."
+			}
+		},
+		{
+			"order": 16,
+			"key": "Root/334#0",
+			"tag": "p",
+			"depth": 5,
+			"words": "Open an account for wholesale pricing, a named account manager and delivery across the UK and Europe.",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_334_0@375.png",
+				"1440": "shots/Root_334_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+			"attributes": {
+				"text": "Open an account for wholesale pricing, a named account manager and delivery across the UK and Europe."
+			}
+		},
+		{
+			"order": 17,
+			"key": "Root/344#0",
+			"tag": "section",
+			"depth": 1,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_344_0@375.png",
+				"1440": "shots/Root_344_0@1440.png"
+			},
+			"snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+			"attributes": {
+				"tagName": "section"
+			}
+		},
+		{
+			"order": 18,
+			"key": "Root/345#0",
+			"tag": "div",
+			"depth": 2,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_345_0@375.png",
+				"1440": "shots/Root_345_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 19,
+			"key": "Root/466#0",
+			"tag": "div",
+			"depth": 3,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_466_0@375.png",
+				"1440": "shots/Root_466_0@1440.png"
+			},
+			"snippet": "<dc-import hint-size=\"100%,900px\" data-dc-tpl=\"466\"></dc-import>",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 20,
+			"key": "Root>TradeApplication@466#0/4#0",
+			"tag": "div",
+			"depth": 4,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_4_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_4_0@1440.png"
+			},
+			"snippet": "<div style=\"font-family:'Source Sans 3',system-ui,sans-serif;color:#2C3E50;font-size:17px;line-height:1.5;\" data-dc-tpl=\"4\"> <sc-if value=\"{{ notDone }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"5\"> <div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start;\" data-dc-tpl=\"6\"> <div style=\"min-width:0;background:#FFFFFF;border-radius:30px;border:1px solid rgb",
+			"attributes": {
+				"tagName": "div"
+			}
+		},
+		{
+			"order": 21,
+			"key": "Root>TradeApplication@466#0/6#0",
+			"tag": "div",
+			"depth": 5,
+			"words": "",
+			"block": "sgs/form",
+			"action": null,
+			"reason": "a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25)",
+			"source": "rule formLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"candidates": [
+				{
+					"block": "sgs/form",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule formLink: a draft form on a page is the saved form post (Spec 42): the page holds the form block linked to it, with no fields of its own, and the form's fields are cloned once on the form's own surface (Bean, 2026-10-25)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_6_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_6_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start;\" data-dc-tpl=\"6\"> <div style=\"min-width:0;background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);overflow:clip;\" data-dc-tpl=\"7\"> <div style=\"padding:{{ L.pad }};padding-bottom:0;\" data-dc-tpl=\"8\"> <div style=\"display:flex;align-items:cent",
+			"attributes": {
+				"formIsLinked": true,
+				"formId": "trade-application"
+			}
+		},
+		{
+			"order": 22,
+			"key": "Root>TradeApplication@466#0/7#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_7_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_7_0@1440.png"
+			},
+			"snippet": "<div style=\"min-width:0;background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);overflow:clip;\" data-dc-tpl=\"7\"> <div style=\"padding:{{ L.pad }};padding-bottom:0;\" data-dc-tpl=\"8\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;\" data-dc-tpl=\"9\"> <span style=\"font-family:'Montserrat'",
+			"attributes": {}
+		},
+		{
+			"order": 23,
+			"key": "Root>TradeApplication@466#0/8#0",
+			"tag": "div",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_8_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_8_0@1440.png"
+			},
+			"snippet": "<div style=\"padding:{{ L.pad }};padding-bottom:0;\" data-dc-tpl=\"8\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;\" data-dc-tpl=\"9\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">Step {{ stepNum }} of {{ stepTotal }}<sc-if value=\"{{ L.",
+			"attributes": {}
+		},
+		{
+			"order": 24,
+			"key": "Root>TradeApplication@466#0/9#0",
+			"tag": "div",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_9_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_9_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;\" data-dc-tpl=\"9\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">Step {{ stepNum }} of {{ stepTotal }}<sc-if value=\"{{ L.noLabels }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"11\"> · ",
+			"attributes": {}
+		},
+		{
+			"order": 25,
+			"key": "Root>TradeApplication@466#0/10#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "Step 1 of 5",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_10_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_10_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">Step {{ stepNum }} of {{ stepTotal }}<sc-if value=\"{{ L.noLabels }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"11\"> · {{ cur.label }}</sc-if></span>",
+			"attributes": {}
+		},
+		{
+			"order": 26,
+			"key": "Root>TradeApplication@466#0/12#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "Saves as you go",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_12_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_12_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;display:inline-flex;align-items:center;gap:8px;\" data-dc-tpl=\"12\"><span style=\"width:8px;height:8px;border-radius:50%;background:#6EC07A;\" data-dc-tpl=\"13\"></span>{{ savedLabel }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 27,
+			"key": "Root>TradeApplication@466#0/13#0",
+			"tag": "span",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_13_0@1440.png"
+			},
+			"snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:#6EC07A;\" data-dc-tpl=\"13\"></span>",
+			"attributes": {}
+		},
+		{
+			"order": 28,
+			"key": "Root>TradeApplication@466#0/14#0",
+			"tag": "div",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [
+				"Root>TradeApplication@466#0/15#0"
+			],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_14_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_14_0@1440.png"
+			},
+			"snippet": "<div style=\"position:relative;height:6px;border-radius:6px;background:#EEF2F5;margin-top:14px;overflow:hidden;\" data-dc-tpl=\"14\"> <span style=\"position:absolute;left:0;top:0;bottom:0;width:{{ progress }};border-radius:6px;background:linear-gradient(90deg,#D8CA50,#2EADE2);transition:width .6s cubic-bezier(.2,.8,.2,1);\" data-dc-tpl=\"15\"></span> </div>",
+			"attributes": {}
+		},
+		{
+			"order": 29,
+			"key": "Root>TradeApplication@466#0/16#0",
+			"tag": "div",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_16_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_16_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:repeat({{ stepTotal }},minmax(0,1fr));gap:8px;margin-top:16px;\" data-dc-tpl=\"16\"> <sc-for list=\"{{ steps }}\" as=\"st\" hint-placeholder-count=\"5\" data-dc-tpl=\"17\"> <button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0",
+			"attributes": {}
+		},
+		{
+			"order": 30,
+			"key": "Root>TradeApplication@466#0/18#0",
+			"tag": "button",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_18_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_18_0@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {}
+		},
+		{
+			"order": 31,
+			"key": "Root>TradeApplication@466#0/19#0",
+			"tag": "span",
+			"depth": 10,
+			"words": "1",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_19_0@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {}
+		},
+		{
+			"order": 32,
+			"key": "Root>TradeApplication@466#0/21#0",
+			"tag": "span",
+			"depth": 10,
+			"words": "Business",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_21_0@1440.png"
+			},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 33,
+			"key": "Root>TradeApplication@466#0/18#1",
+			"tag": "button",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_18_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_18_1@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {}
+		},
+		{
+			"order": 34,
+			"key": "Root>TradeApplication@466#0/19#1",
+			"tag": "span",
+			"depth": 10,
+			"words": "2",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_19_1@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {}
+		},
+		{
+			"order": 35,
+			"key": "Root>TradeApplication@466#0/21#1",
+			"tag": "span",
+			"depth": 10,
+			"words": "Premises",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_21_1@1440.png"
+			},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 36,
+			"key": "Root>TradeApplication@466#0/18#2",
+			"tag": "button",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_18_2@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_18_2@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {}
+		},
+		{
+			"order": 37,
+			"key": "Root>TradeApplication@466#0/19#2",
+			"tag": "span",
+			"depth": 10,
+			"words": "3",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_19_2@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {}
+		},
+		{
+			"order": 38,
+			"key": "Root>TradeApplication@466#0/21#2",
+			"tag": "span",
+			"depth": 10,
+			"words": "Contact",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_21_2@1440.png"
+			},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 39,
+			"key": "Root>TradeApplication@466#0/18#3",
+			"tag": "button",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_18_3@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_18_3@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {}
+		},
+		{
+			"order": 40,
+			"key": "Root>TradeApplication@466#0/19#3",
+			"tag": "span",
+			"depth": 10,
+			"words": "4",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_19_3@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {}
+		},
+		{
+			"order": 41,
+			"key": "Root>TradeApplication@466#0/21#3",
+			"tag": "span",
+			"depth": 10,
+			"words": "Ordering",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_21_3@1440.png"
+			},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 42,
+			"key": "Root>TradeApplication@466#0/18#4",
+			"tag": "button",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_18_4@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_18_4@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ st.onClick }}\" disabled=\"{{ st.locked }}\" style=\"display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:6px 0;cursor:{{ st.cursor }};text-align:left;color:{{ st.color }};\" data-dc-tpl=\"18\"> <span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-",
+			"attributes": {}
+		},
+		{
+			"order": 43,
+			"key": "Root>TradeApplication@466#0/19#4",
+			"tag": "span",
+			"depth": 10,
+			"words": "5",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_19_4@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
+			"attributes": {}
+		},
+		{
+			"order": 44,
+			"key": "Root>TradeApplication@466#0/21#4",
+			"tag": "span",
+			"depth": 10,
+			"words": "Review",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_21_4@1440.png"
+			},
+			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 45,
+			"key": "Root>TradeApplication@466#0/22#0",
+			"tag": "div",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_22_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_22_0@1440.png"
+			},
+			"snippet": "<div ref=\"{{ setBody }}\" style=\"padding:{{ L.pad }};padding-top:28px;\" data-dc-tpl=\"22\"> <h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3vw,34px);line-height:1.15;letter-spacing:-.015em;color:#2C3E50;margin:0;\" data-dc-tpl=\"23\">{{ cur.title }}</h2> <p style=\"font-size:17px;color:#4A5563;margin:8px 0 0;max-width:620px;\" data-dc-tpl=\"24\">{{ cur.intro }}</p> <sc-i",
+			"attributes": {}
+		},
+		{
+			"order": 46,
+			"key": "Root>TradeApplication@466#0/23#0",
+			"tag": "h2",
+			"depth": 8,
+			"words": "Tell us about your business",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_23_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_23_0@1440.png"
+			},
+			"snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(26px,3vw,34px);line-height:1.15;letter-spacing:-.015em;color:#2C3E50;margin:0;\" data-dc-tpl=\"23\">{{ cur.title }}</h2>",
+			"attributes": {}
+		},
+		{
+			"order": 47,
+			"key": "Root>TradeApplication@466#0/24#0",
+			"tag": "p",
+			"depth": 8,
+			"words": "The basics we need to set up your account and check your details.",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_24_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_24_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:17px;color:#4A5563;margin:8px 0 0;max-width:620px;\" data-dc-tpl=\"24\">{{ cur.intro }}</p>",
+			"attributes": {}
+		},
+		{
+			"order": 48,
+			"key": "Root>TradeApplication@466#0/26#0",
+			"tag": "div",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_26_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_26_0@1440.png"
+			},
+			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.fieldCols }};gap:20px 18px;margin-top:28px;\" data-dc-tpl=\"26\"> <sc-for list=\"{{ fields }}\" as=\"f\" hint-placeholder-count=\"6\" data-dc-tpl=\"27\"> <div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div st",
+			"attributes": {}
+		},
+		{
+			"order": 49,
+			"key": "Root>TradeApplication@466#0/28#0",
+			"tag": "div",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_28_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_28_0@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {}
+		},
+		{
+			"order": 50,
+			"key": "Root>TradeApplication@466#0/33#0",
+			"tag": "label",
+			"depth": 10,
+			"words": "What kind of business are you?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_33_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_33_0@1440.png"
+			},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 51,
+			"key": "Root>TradeApplication@466#0/35#0",
+			"tag": "span",
+			"depth": 11,
+			"words": "*",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_35_0@1440.png"
+			},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {}
+		},
+		{
+			"order": 52,
+			"key": "Root>TradeApplication@466#0/47#0",
+			"tag": "div",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_47_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_47_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px;\" data-dc-tpl=\"47\"> <sc-for list=\"{{ f.chips }}\" as=\"c\" hint-placeholder-count=\"5\" data-dc-tpl=\"48\"> <button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};fon",
+			"attributes": {}
+		},
+		{
+			"order": 53,
+			"key": "Root>TradeApplication@466#0/49#0",
+			"tag": "button",
+			"depth": 11,
+			"words": "Restaurant or takeaway",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_49_0@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 54,
+			"key": "Root>TradeApplication@466#0/49#1",
+			"tag": "button",
+			"depth": 11,
+			"words": "Caterer or events",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_49_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_49_1@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 55,
+			"key": "Root>TradeApplication@466#0/49#2",
+			"tag": "button",
+			"depth": 11,
+			"words": "Retailer or convenience",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_49_2@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_49_2@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 56,
+			"key": "Root>TradeApplication@466#0/49#3",
+			"tag": "button",
+			"depth": 11,
+			"words": "Wholesaler or cash & carry",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_49_3@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_49_3@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 57,
+			"key": "Root>TradeApplication@466#0/49#4",
+			"tag": "button",
+			"depth": 11,
+			"words": "Food manufacturer",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_49_4@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_49_4@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 58,
+			"key": "Root>TradeApplication@466#0/49#5",
+			"tag": "button",
+			"depth": 11,
+			"words": "Other",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_49_5@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_49_5@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 59,
+			"key": "Root>TradeApplication@466#0/28#1",
+			"tag": "div",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_28_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_28_1@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {}
+		},
+		{
+			"order": 60,
+			"key": "Root>TradeApplication@466#0/33#1",
+			"tag": "label",
+			"depth": 10,
+			"words": "Trading name",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_33_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_33_1@1440.png"
+			},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 61,
+			"key": "Root>TradeApplication@466#0/35#1",
+			"tag": "span",
+			"depth": 11,
+			"words": "*",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_35_1@1440.png"
+			},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {}
+		},
+		{
+			"order": 62,
+			"key": "Root>TradeApplication@466#0/39#0",
+			"tag": "input",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_39_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_39_0@1440.png"
+			},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;\" st",
+			"attributes": {}
+		},
+		{
+			"order": 63,
+			"key": "Root>TradeApplication@466#0/28#2",
+			"tag": "div",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_28_2@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_28_2@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {}
+		},
+		{
+			"order": 64,
+			"key": "Root>TradeApplication@466#0/33#2",
+			"tag": "label",
+			"depth": 10,
+			"words": "Registered business name",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_33_2@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_33_2@1440.png"
+			},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 65,
+			"key": "Root>TradeApplication@466#0/39#1",
+			"tag": "input",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_39_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_39_1@1440.png"
+			},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;\" st",
+			"attributes": {}
+		},
+		{
+			"order": 66,
+			"key": "Root>TradeApplication@466#0/28#3",
+			"tag": "div",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_28_3@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_28_3@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {}
+		},
+		{
+			"order": 67,
+			"key": "Root>TradeApplication@466#0/33#3",
+			"tag": "label",
+			"depth": 10,
+			"words": "Business structure",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_33_3@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_33_3@1440.png"
+			},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 68,
+			"key": "Root>TradeApplication@466#0/35#2",
+			"tag": "span",
+			"depth": 11,
+			"words": "*",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_35_2@1440.png"
+			},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {}
+		},
+		{
+			"order": 69,
+			"key": "Root>TradeApplication@466#0/41#0",
+			"tag": "select",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [
+				"Root>TradeApplication@466#0/43#0",
+				"Root>TradeApplication@466#0/43#1",
+				"Root>TradeApplication@466#0/43#2",
+				"Root>TradeApplication@466#0/43#3",
+				"Root>TradeApplication@466#0/43#4",
+				"Root>TradeApplication@466#0/43#5"
+			],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_41_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_41_0@1440.png"
+			},
+			"snippet": "<sc-raw-select id=\"{{ f.id }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;cursor:pointer;\" style-focus=\"border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)\" data-dc-tpl=\"41\"> <sc-for list=\"{{",
+			"attributes": {}
+		},
+		{
+			"order": 70,
+			"key": "Root>TradeApplication@466#0/28#4",
+			"tag": "div",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_28_4@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_28_4@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {}
+		},
+		{
+			"order": 71,
+			"key": "Root>TradeApplication@466#0/33#4",
+			"tag": "label",
+			"depth": 10,
+			"words": "VAT number",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_33_4@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_33_4@1440.png"
+			},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 72,
+			"key": "Root>TradeApplication@466#0/39#2",
+			"tag": "input",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_39_2@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_39_2@1440.png"
+			},
+			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;\" st",
+			"attributes": {}
+		},
+		{
+			"order": 73,
+			"key": "Root>TradeApplication@466#0/64#0",
+			"tag": "span",
+			"depth": 10,
+			"words": "Leave blank if you are not VAT registered.",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_64_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_64_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"64\">{{ f.hint }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 74,
+			"key": "Root>TradeApplication@466#0/28#5",
+			"tag": "div",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_28_5@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_28_5@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {}
+		},
+		{
+			"order": 75,
+			"key": "Root>TradeApplication@466#0/33#5",
+			"tag": "label",
+			"depth": 10,
+			"words": "Time trading",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_33_5@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_33_5@1440.png"
+			},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 76,
+			"key": "Root>TradeApplication@466#0/35#3",
+			"tag": "span",
+			"depth": 11,
+			"words": "*",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_35_3@1440.png"
+			},
+			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
+			"attributes": {}
+		},
+		{
+			"order": 77,
+			"key": "Root>TradeApplication@466#0/41#1",
+			"tag": "select",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [
+				"Root>TradeApplication@466#0/43#6",
+				"Root>TradeApplication@466#0/43#7",
+				"Root>TradeApplication@466#0/43#8",
+				"Root>TradeApplication@466#0/43#9",
+				"Root>TradeApplication@466#0/43#10",
+				"Root>TradeApplication@466#0/43#11"
+			],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_41_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_41_1@1440.png"
+			},
+			"snippet": "<sc-raw-select id=\"{{ f.id }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;cursor:pointer;\" style-focus=\"border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)\" data-dc-tpl=\"41\"> <sc-for list=\"{{",
+			"attributes": {}
+		},
+		{
+			"order": 78,
+			"key": "Root>TradeApplication@466#0/28#6",
+			"tag": "div",
+			"depth": 9,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_28_6@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_28_6@1440.png"
+			},
+			"snippet": "<div style=\"grid-column:{{ f.span }};min-width:0;display:flex;flex-direction:column;gap:8px;\" data-dc-tpl=\"28\"> <sc-if value=\"{{ f.isHeading }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"29\"> <div style=\"display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px solid #EEF2F5;margin-top:4px;\" data-dc-tpl=\"30\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font",
+			"attributes": {}
+		},
+		{
+			"order": 79,
+			"key": "Root>TradeApplication@466#0/33#6",
+			"tag": "label",
+			"depth": 10,
+			"words": "Food hygiene rating",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_33_6@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_33_6@1440.png"
+			},
+			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
+			"attributes": {}
+		},
+		{
+			"order": 80,
+			"key": "Root>TradeApplication@466#0/47#1",
+			"tag": "div",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_47_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_47_1@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px;\" data-dc-tpl=\"47\"> <sc-for list=\"{{ f.chips }}\" as=\"c\" hint-placeholder-count=\"5\" data-dc-tpl=\"48\"> <button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};fon",
+			"attributes": {}
+		},
+		{
+			"order": 81,
+			"key": "Root>TradeApplication@466#0/49#6",
+			"tag": "button",
+			"depth": 11,
+			"words": "5",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_49_6@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 82,
+			"key": "Root>TradeApplication@466#0/49#7",
+			"tag": "button",
+			"depth": 11,
+			"words": "4",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_49_7@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 83,
+			"key": "Root>TradeApplication@466#0/49#8",
+			"tag": "button",
+			"depth": 11,
+			"words": "3",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_49_8@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 84,
+			"key": "Root>TradeApplication@466#0/49#9",
+			"tag": "button",
+			"depth": 11,
+			"words": "Awaiting inspection",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_49_9@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_49_9@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 85,
+			"key": "Root>TradeApplication@466#0/49#10",
+			"tag": "button",
+			"depth": 11,
+			"words": "Not applicable",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_49_10@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_49_10@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};font-weight:700;font-size:16px;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .3s cubic-bezier(.34,1.56,.64,1);\" style-hov",
+			"attributes": {}
+		},
+		{
+			"order": 86,
+			"key": "Root>TradeApplication@466#0/64#1",
+			"tag": "span",
+			"depth": 10,
+			"words": "From your local authority (Food Standards Agency scheme).",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_64_1@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_64_1@1440.png"
+			},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"64\">{{ f.hint }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 87,
+			"key": "Root>TradeApplication@466#0/79#0",
+			"tag": "div",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_79_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_79_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:{{ L.navWrap }};align-items:center;justify-content:space-between;gap:12px;margin-top:34px;padding:{{ L.navPad }};border-top:1px solid #EEF2F5;position:{{ L.navPos }};bottom:0;z-index:5;background:#FFFFFF;margin-left:{{ L.navM }};margin-right:{{ L.navM }};box-shadow:{{ L.navShadow }};\" data-dc-tpl=\"79\"> <sc-if value=\"{{ canBack }}\" hint-placeholder-val=\"{{ false }",
+			"attributes": {}
+		},
+		{
+			"order": 88,
+			"key": "Root>TradeApplication@466#0/84#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "Takes about 5 minutes · Your progress saves automatically",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_84_0@1440.png"
+			},
+			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"84\">Takes about 5 minutes · Your progress saves automatically</span>",
+			"attributes": {}
+		},
+		{
+			"order": 89,
+			"key": "Root>TradeApplication@466#0/85#0",
+			"tag": "button",
+			"depth": 9,
+			"words": "Continue",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_85_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_85_0@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ next }}\" style=\"flex:{{ L.nextFlex }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:{{ nextBg }};color:{{ nextFg }};border:2px solid {{ nextBg }};border-radius:999px;padding:15px 28px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2",
+			"attributes": {}
+		},
+		{
+			"order": 90,
+			"key": "Root>TradeApplication@466#0/86#0",
+			"tag": "aside",
+			"depth": 6,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_86_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_86_0@1440.png"
+			},
+			"snippet": "<aside style=\"min-width:0;display:flex;flex-direction:column;gap:16px;position:{{ L.asidePos }};top:110px;order:{{ L.asideOrder }};\" data-dc-tpl=\"86\"> <div style=\"background:#2C3E50;color:#FFFFFF;border-radius:26px;padding:{{ L.ckPad }};\" data-dc-tpl=\"87\"> <button type=\"button\" sc-camel-on-click=\"{{ toggleCk }}\" aria-expanded=\"{{ ckOpen }}\" style=\"width:100%;display:flex;align-items:center;justify",
+			"attributes": {}
+		},
+		{
+			"order": 91,
+			"key": "Root>TradeApplication@466#0/87#0",
+			"tag": "div",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_87_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_87_0@1440.png"
+			},
+			"snippet": "<div style=\"background:#2C3E50;color:#FFFFFF;border-radius:26px;padding:{{ L.ckPad }};\" data-dc-tpl=\"87\"> <button type=\"button\" sc-camel-on-click=\"{{ toggleCk }}\" aria-expanded=\"{{ ckOpen }}\" style=\"width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;padding:0;color:#D8CA50;cursor:{{ L.ckCursor }};text-align:left;\" data-dc-tpl=\"88\"><spa",
+			"attributes": {}
+		},
+		{
+			"order": 92,
+			"key": "Root>TradeApplication@466#0/88#0",
+			"tag": "button",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_88_0@375.png",
+				"1440": "shots/Root_TradeApplication_466_0_88_0@1440.png"
+			},
+			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ toggleCk }}\" aria-expanded=\"{{ ckOpen }}\" style=\"width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:transparent;border:0;padding:0;color:#D8CA50;cursor:{{ L.ckCursor }};text-align:left;\" data-dc-tpl=\"88\"><span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-tran",
+			"attributes": {}
+		},
+		{
+			"order": 93,
+			"key": "Root>TradeApplication@466#0/89#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "Have these ready",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_89_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;\" data-dc-tpl=\"89\">Have these ready</span>",
+			"attributes": {}
+		},
+		{
+			"order": 94,
+			"key": "Root>TradeApplication@466#0/91#0",
+			"tag": "span",
+			"depth": 9,
+			"words": "",
+			"block": "sgs/icon",
+			"action": null,
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"source": "rule solitaryIcon",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "solitaryIcon",
+			"candidates": [
+				{
+					"block": "sgs/icon",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule solitaryIcon: a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_91_0@375.png"
+			},
+			"snippet": "<span style=\"display:flex;transform:rotate({{ ckRot }}deg);transition:transform .3s;\" data-dc-tpl=\"91\">{{ chev }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 95,
+			"key": "Root>TradeApplication@466#0/93#0",
+			"tag": "div",
+			"depth": 8,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_93_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-direction:column;gap:2px;margin-top:14px;\" data-dc-tpl=\"93\"> <sc-for list=\"{{ checklist }}\" as=\"ck\" hint-placeholder-count=\"5\" data-dc-tpl=\"94\"> <div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;heigh",
+			"attributes": {}
+		},
+		{
+			"order": 96,
+			"key": "Root>TradeApplication@466#0/95#0",
+			"tag": "div",
+			"depth": 9,
+			"words": "Your trading and registered business name",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_95_0@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {}
+		},
+		{
+			"order": 97,
+			"key": "Root>TradeApplication@466#0/96#0",
+			"tag": "span",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_96_0@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 98,
+			"key": "Root>TradeApplication@466#0/95#1",
+			"tag": "div",
+			"depth": 9,
+			"words": "Companies House and VAT numbers (if you have them)",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_95_1@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {}
+		},
+		{
+			"order": 99,
+			"key": "Root>TradeApplication@466#0/96#1",
+			"tag": "span",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_96_1@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 100,
+			"key": "Root>TradeApplication@466#0/95#2",
+			"tag": "div",
+			"depth": 9,
+			"words": "Business and delivery address",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_95_2@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {}
+		},
+		{
+			"order": 101,
+			"key": "Root>TradeApplication@466#0/96#2",
+			"tag": "span",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_96_2@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 102,
+			"key": "Root>TradeApplication@466#0/95#3",
+			"tag": "div",
+			"depth": 9,
+			"words": "Owner or director details",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_95_3@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {}
+		},
+		{
+			"order": 103,
+			"key": "Root>TradeApplication@466#0/96#3",
+			"tag": "span",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_96_3@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 104,
+			"key": "Root>TradeApplication@466#0/95#4",
+			"tag": "div",
+			"depth": 9,
+			"words": "Two trade references for a credit account",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_95_4@1440.png"
+			},
+			"snippet": "<div style=\"display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px;line-height:1.45;color:#E6ECF1;\" data-dc-tpl=\"95\"><span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span",
+			"attributes": {}
+		},
+		{
+			"order": 105,
+			"key": "Root>TradeApplication@466#0/96#4",
+			"tag": "span",
+			"depth": 10,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_96_4@1440.png"
+			},
+			"snippet": "<span style=\"flex-shrink:0;width:22px;height:22px;border-radius:50%;background:rgba(216,202,80,.2);color:#D8CA50;display:flex;align-items:center;justify-content:center;margin-top:1px;\" data-dc-tpl=\"96\">{{ tick }}</span>",
+			"attributes": {}
+		},
+		{
+			"order": 106,
+			"key": "Root>TradeApplication@466#0/98#0",
+			"tag": "div",
+			"depth": 7,
+			"words": "",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_98_0@1440.png"
+			},
+			"snippet": "<div style=\"background:linear-gradient(135deg,#EBDD78 0%,#D8CA50 100%);border-radius:26px;padding:26px;color:#2C3E50;\" data-dc-tpl=\"98\"> <span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;\" data-dc-tpl=\"99\">Need a hand?</span> <p style=\"font-size:16px;margin:8px 0 14px;\" data-dc-tpl=\"100\">Our trade team can complete the application with you over the phone.</p> <a href=",
+			"attributes": {}
+		},
+		{
+			"order": 107,
+			"key": "Root>TradeApplication@466#0/99#0",
+			"tag": "span",
+			"depth": 8,
+			"words": "Need a hand?",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_99_0@1440.png"
+			},
+			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;\" data-dc-tpl=\"99\">Need a hand?</span>",
+			"attributes": {}
+		},
+		{
+			"order": 108,
+			"key": "Root>TradeApplication@466#0/100#0",
+			"tag": "p",
+			"depth": 8,
+			"words": "Our trade team can complete the application with you over the phone.",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_100_0@1440.png"
+			},
+			"snippet": "<p style=\"font-size:16px;margin:8px 0 14px;\" data-dc-tpl=\"100\">Our trade team can complete the application with you over the phone.</p>",
+			"attributes": {}
+		},
+		{
+			"order": 109,
+			"key": "Root>TradeApplication@466#0/101#0",
+			"tag": "a",
+			"depth": 8,
+			"words": "0121 771 4330",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: rule formLink",
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "formLink",
+			"into": "Root>TradeApplication@466#0/6#0",
+			"candidates": [],
+			"parts": [],
+			"screenshots": {
+				"1440": "shots/Root_TradeApplication_466_0_101_0@1440.png"
+			},
+			"snippet": "<a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap:10px;background:#000000;color:#D8CA50;font-weight:700;font-size:16px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#E7D768\" ",
+			"attributes": {}
+		},
+		{
+			"order": 110,
+			"key": "Root>TradeApplication@466#0/103#0",
+			"tag": "div",
+			"depth": 6,
+			"words": "",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 2 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_103_0@375.png"
+			},
+			"snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;background:linear-gradient(135deg,#EBDD78 0%,#D8CA50 100%);border-radius:26px;padding:22px;color:#2C3E50;\" data-dc-tpl=\"103\"><span style=\"font-size:16px;font-weight:600;\" data-dc-tpl=\"104\">Prefer to apply over the phone?</span><a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap",
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
+		},
+		{
+			"order": 111,
+			"key": "Root>TradeApplication@466#0/104#0",
+			"tag": "span",
+			"depth": 7,
+			"words": "Prefer to apply over the phone?",
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.25,
+			"low": true,
+			"stale": null,
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.25,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_104_0@375.png"
+			},
+			"snippet": "<span style=\"font-size:16px;font-weight:600;\" data-dc-tpl=\"104\">Prefer to apply over the phone?</span>",
+			"attributes": {
+				"text": "Prefer to apply over the phone?"
+			}
+		},
+		{
+			"order": 112,
+			"key": "Root>TradeApplication@466#0/105#0",
+			"tag": "a",
+			"depth": 7,
+			"words": "Call 0121 771 4330",
+			"block": "sgs/button",
+			"action": null,
+			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
+			"source": "rule siteInfoLink",
+			"confidence": 1,
+			"low": false,
+			"stale": null,
+			"rule": "siteInfoLink",
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule siteInfoLink: a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself"
+					]
+				}
+			],
+			"parts": [],
+			"screenshots": {
+				"375": "shots/Root_TradeApplication_466_0_105_0@375.png"
+			},
+			"snippet": "<a href=\"tel:01217714330\" style=\"display:inline-flex;align-items:center;gap:10px;background:#000000;color:#D8CA50;font-weight:700;font-size:16px;padding:12px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#E7D768\" ",
+			"attributes": {
+				"label": "Call 0121 771 4330",
+				"url": "tel:01217714330",
+				"linkSource": "phone"
+			}
+		}
+	]
+}

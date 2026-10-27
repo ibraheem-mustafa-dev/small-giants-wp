@@ -9,11 +9,11 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"67\"]:not(.sc-host .sc-host *)","live":".cr-ref-mega-trade-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"67\"]:not(.sc-host .sc-host *)","live":".cr-ref-mega-trade-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:60747/", open: async ( h ) => {
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:50068/", open: async ( h ) => {
 		await h.page.evaluate( function setStateInPage( { component, keys } ) { for ( const host of document.querySelectorAll( '.sc-host' ) ) { const name = host.dataset.scName; if ( name !== component ) { continue; } const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) ); let f = key ? host[ key ] : null; while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) { f = f.return; } f && f.stateNode.logic.setState( keys ); } }, {"component":"Root","keys":{"active":4}} );
 		await h.page.waitForTimeout( 900 );
 	} },
-	live: { url: "https://lavender-dinosaur-183533.hostingersite.com/" },
+	live: { url: "http://localhost:8083/" },
 	states: [ { name: "open", fullPage: true } ],
 	pairs: [],
 };

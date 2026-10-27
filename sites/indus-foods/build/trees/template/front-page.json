@@ -1,0 +1,33 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "className": "cr-ref-home-0",
+      "textColour": "custom-ink",
+      "minHeight": {
+        "desktop": "0px"
+      },
+      "textColourHover": "custom-ink"
+    },
+    "innerBlocks": [
+      {
+        "name": "core/post-content"
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

@@ -1,0 +1,6889 @@
+{
+  "generated": "2026-10-27T01:17:32.977Z",
+  "source": "http://127.0.0.1:50068/#/post-post-1",
+  "root": "main",
+  "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
+  "checks": {
+    "rootName": "Root",
+    "rootKey": "Root/201#0",
+    "unstamped": [
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Blog"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Article"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Blog · Seasonal"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Supporting the trade through Ramadan"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "How we plan stock across rice, flour, oils and spices for on"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Seasonal"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Feb 2026"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "2 min read"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Ramadan is one of the busiest periods of the year for our cu"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Planning starts months ahead"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "We begin building stock of rice, flour, oils, dates and spic"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Account managers review last year’s volumes with each custom"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "The aim is simple: nobody should run short in the busiest we"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Ordering early"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "If you’d like to plan your Ramadan orders, speak to your acc"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Keep reading"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "More from the blog."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "All articles"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Products"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Jan 2026"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Falak rice: exclusive UK distribution"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Why the popular Pakistani rice brand chose Indus Foods as it"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Company news"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Dec 2025"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Inside our Birmingham packing line"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "The processing and packaging line we set up in the 1970s sti"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Company news"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Nov 2025"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Sixty years in the Balti Triangle"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "From a halal butcher on Ladypool Road to a national wholesal"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Trade accounts"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Open a trade account today."
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Wholesale pricing, a named account manager and delivery acro"
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Become a Trade Customer"
+      },
+      {
+        "tag": "svg",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "line",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "polyline",
+        "cls": "",
+        "text": ""
+      },
+      {
+        "tag": "span",
+        "cls": "sc-interp",
+        "text": "Call 0121 771 4330"
+      }
+    ],
+    "duplicateKeys": 0,
+    "perWidthCounts": {
+      "375": 96,
+      "768": 96,
+      "1440": 96
+    },
+    "tagAgree": 96,
+    "tagDisagree": [],
+    "keysMissingAt": {
+      "375": [],
+      "768": [],
+      "1440": []
+    },
+    "screenshotSkips": []
+  },
+  "elements": [
+    {
+      "key": "Root/201#0",
+      "parentKey": "Root/8#0",
+      "depth": 0,
+      "tag": "main",
+      "template": "Root",
+      "tpl": 201,
+      "attrs": {
+        "style": "position: relative; z-index: 1;"
+      },
+      "words": "",
+      "allText": "Home/Blog/Article Blog · Seasonal Supporting the trade through Ramadan How we plan stock across rice, flour, oils and sp",
+      "srcLine": 269,
+      "membership": [],
+      "srcTag": "main",
+      "srcOwnText": "",
+      "snippet": "<main ref=\"{{ setMainEl }}\" style=\"position:relative;z-index:1;\" data-dc-tpl=\"201\"> <sc-if value=\"{{ isHome }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"202\"> <section data-screen-label=\"Home hero\" style=\"position:relative;overflow:hidden;background:linear-gradient(135deg,#EBDD78 0%,#E3D35F 50%,#D8CA50 100%);padding:{{ R.heroPadT }} {{ R.px }} {{ R.heroPadB }};\" data-dc-tpl=\"203\"> <div style",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 4182.7
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 3630.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 2947.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_201_0@375.png",
+        "1440": "shots/Root_201_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/316#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 316,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; background: linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%); color: rgb(44, 62, 80); padding: 44px 40px 88px; min-height: auto; box-sizing: border-box;"
+      },
+      "words": "",
+      "allText": "Home/Blog/Article Blog · Seasonal Supporting the trade through Ramadan How we plan stock across rice, flour, oils and sp",
+      "srcLine": 435,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-screen-label=\"{{ hero.crumb }}\" style=\"position:relative;overflow:hidden;background:{{ hero.bg }};color:{{ hero.fg }};padding:{{ R.ihPadT }} {{ R.px }} {{ R.ihPadB }};min-height:{{ hero.minH }};box-sizing:border-box;\" data-dc-tpl=\"316\"> <sc-if value=\"{{ hero.isGrad }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"317\"> <span style=\"position:absolute;inset:0;background:radial-gradi",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 690
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 961.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 611.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_316_0@375.png",
+        "1440": "shots/Root_316_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/318#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 318,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(90% 90% at 100% 0%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0) 55%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 437,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(90% 90% at 100% 0%,rgba(255,255,255,.26),rgba(255,255,255,0) 55%);pointer-events:none;\" data-dc-tpl=\"318\"></span>",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 121,
+          "w": 375,
+          "h": 690
+        },
+        "768": {
+          "x": 0,
+          "y": 121,
+          "w": 768,
+          "h": 961.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 133,
+          "w": 1440,
+          "h": 611.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_318_0@375.png",
+        "1440": "shots/Root_318_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/319#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 319,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -120px; bottom: -160px; width: 460px; height: 460px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.22); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 438,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.isGrad }}",
+          "tpl": "317"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
+      "box": {
+        "375": {
+          "x": 18.5,
+          "y": 487.7,
+          "w": 501.9,
+          "h": 501.9
+        },
+        "768": {
+          "x": 404.8,
+          "y": 770.8,
+          "w": 497.9,
+          "h": 497.9
+        },
+        "1440": {
+          "x": 1084.7,
+          "y": 436.5,
+          "w": 494.5,
+          "h": 494.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_319_0@375.png",
+        "1440": "shots/Root_319_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/322#0",
+      "parentKey": "Root/316#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 322,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Home/Blog/Article Blog · Seasonal Supporting the trade through Ramadan How we plan stock across rice, flour, oils and sp",
+      "srcLine": 444,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"322\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" ",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 606
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 845.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 479.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_322_0@375.png",
+        "1440": "shots/Root_322_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/323#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 323,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: rgb(44, 62, 80);"
+      },
+      "words": "",
+      "allText": "Home/Blog/Article",
+      "srcLine": 445,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ hero.sub }};\" data-dc-tpl=\"323\"> <a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a><span data-dc-tpl=\"325\">/</span><a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.se",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 335,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 704,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 1240,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_323_0@375.png",
+        "1440": "shots/Root_323_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/324#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 324,
+      "attrs": {
+        "href": "#/",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Home",
+      "allText": "Home",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Home",
+      "snippet": "<a href=\"#/\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"324\">Home</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 153,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "768": {
+          "x": 32,
+          "y": 165,
+          "w": 38.4,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 177,
+          "w": 38.4,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_324_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/325#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 325,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"325\">/</span>",
+      "box": {
+        "375": {
+          "x": 66.4,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 78.4,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 146.4,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_325_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/326#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 326,
+      "attrs": {
+        "href": "#/blog",
+        "class": "scps",
+        "style": "color: rgb(44, 62, 80);"
+      },
+      "words": "Blog",
+      "allText": "Blog",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ hero.section }}",
+      "snippet": "<a href=\"{{ hero.sectionHref }}\" style=\"color:{{ hero.sub }};\" style-hover=\"color:{{ hero.fg }}\" data-dc-tpl=\"326\">{{ hero.section }}</a>",
+      "box": {
+        "375": {
+          "x": 79.6,
+          "y": 153,
+          "w": 29.1,
+          "h": 23.3
+        },
+        "768": {
+          "x": 91.6,
+          "y": 165,
+          "w": 29.1,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 159.6,
+          "y": 177,
+          "w": 29.1,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_326_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/327#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 327,
+      "attrs": {},
+      "words": "/",
+      "allText": "/",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "/",
+      "snippet": "<span data-dc-tpl=\"327\">/</span>",
+      "box": {
+        "375": {
+          "x": 116.7,
+          "y": 153,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 128.7,
+          "y": 165,
+          "w": 5.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 196.7,
+          "y": 177,
+          "w": 5.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_327_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/328#0",
+      "parentKey": "Root/323#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 328,
+      "attrs": {
+        "style": "color: rgb(44, 62, 80); font-weight: 500;"
+      },
+      "words": "Article",
+      "allText": "Article",
+      "srcLine": 446,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.crumb }}",
+      "snippet": "<span style=\"color:{{ hero.fg }};font-weight:500;\" data-dc-tpl=\"328\">{{ hero.crumb }}</span>",
+      "box": {
+        "375": {
+          "x": 129.8,
+          "y": 153,
+          "w": 41.1,
+          "h": 23.3
+        },
+        "768": {
+          "x": 141.8,
+          "y": 165,
+          "w": 41.1,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 209.8,
+          "y": 177,
+          "w": 41.1,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_328_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/329#0",
+      "parentKey": "Root/322#0",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 329,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: minmax(0px, 1.05fr) minmax(0px, 0.95fr); gap: 72px; align-items: center; margin-top: 40px;"
+      },
+      "words": "",
+      "allText": "Blog · Seasonal Supporting the trade through Ramadan How we plan stock across rice, flour, oils and spices for one of th",
+      "srcLine": 448,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:{{ hero.cols }};gap:{{ R.splitGap }};align-items:center;margin-top:{{ R.crumbGap }};\" data-dc-tpl=\"329\"> <div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};back",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 554.7
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 782.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 240.3,
+          "w": 1240,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_329_0@375.png",
+        "1440": "shots/Root_329_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/330#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 330,
+      "attrs": {
+        "style": "min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Blog · Seasonal Supporting the trade through Ramadan How we plan stock across rice, flour, oils and spices for one of th",
+      "srcLine": 449,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"min-width:0;\" data-dc-tpl=\"330\"> <span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ h",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 335,
+          "h": 267.5
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 704,
+          "h": 210.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 281.6,
+          "w": 613.2,
+          "h": 333.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_330_0@375.png",
+        "1440": "shots/Root_330_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/331#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 331,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 10px; font-family: Montserrat, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgb(10, 110, 147); background: rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 999px;"
+      },
+      "words": "Blog · Seasonal",
+      "allText": "Blog · Seasonal",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ hero.eyebrowText }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:10px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:{{ hero.eyebrow }};background:rgba(255,255,255,.5);padding:8px 16px;border-radius:999px;\" data-dc-tpl=\"331\"><span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>{{ her",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 204.3,
+          "w": 197.9,
+          "h": 36.1
+        },
+        "768": {
+          "x": 32,
+          "y": 228.3,
+          "w": 197.9,
+          "h": 36.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 281.6,
+          "w": 197.9,
+          "h": 36.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "inline-flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_331_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/332#0",
+      "parentKey": "Root/331#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 332,
+      "attrs": {
+        "style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(10, 126, 168);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 450,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:8px;height:8px;border-radius:50%;background:{{ hero.line }};\" data-dc-tpl=\"332\"></span>",
+      "box": {
+        "375": {
+          "x": 36,
+          "y": 218.3,
+          "w": 8,
+          "h": 8
+        },
+        "768": {
+          "x": 48,
+          "y": 242.3,
+          "w": 8,
+          "h": 8
+        },
+        "1440": {
+          "x": 116,
+          "y": 295.7,
+          "w": 8,
+          "h": 8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_332_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/333#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "h1",
+      "template": "Root",
+      "tpl": 333,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(34px, 4.8vw, 60px); line-height: 1.08; letter-spacing: -0.02em; margin: 20px 0px 0px; text-wrap: balance; max-width: 880px;"
+      },
+      "words": "Supporting the trade through Ramadan",
+      "allText": "Supporting the trade through Ramadan",
+      "srcLine": 451,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "h1",
+      "srcOwnText": "{{ hero.title }}",
+      "snippet": "<h1 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(34px,4.8vw,60px);line-height:1.08;letter-spacing:-.02em;margin:20px 0 0;text-wrap:balance;max-width:880px;\" data-dc-tpl=\"333\">{{ hero.title }}</h1>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 260.4,
+          "w": 335,
+          "h": 110.2
+        },
+        "768": {
+          "x": 32,
+          "y": 284.4,
+          "w": 704,
+          "h": 79.6
+        },
+        "1440": {
+          "x": 100,
+          "y": 337.8,
+          "w": 613.2,
+          "h": 194.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_333_0@375.png",
+        "1440": "shots/Root_333_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/334#0",
+      "parentKey": "Root/330#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 334,
+      "attrs": {
+        "style": "font-size: clamp(16.5px, 1.4vw, 19px); color: rgb(44, 62, 80); line-height: 1.6; max-width: 620px; margin: 22px 0px 0px; text-wrap: pretty; text-shadow: rgba(255, 255, 255, 0.796) 0px 4px 12px;"
+      },
+      "words": "How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year.",
+      "allText": "How we plan stock across rice, flour, oils and spices for one of the busiest times of the trading year.",
+      "srcLine": 452,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ hero.intro }}",
+      "snippet": "<p style=\"font-size: clamp(16.5px,1.4vw,19px); color: {{ hero.sub }}; line-height: 1.6; max-width: 620px; margin: 22px 0 0; text-wrap: pretty; text-shadow: 0px 4px 12px #FFFFFFCB\" data-dc-tpl=\"334\">{{ hero.intro }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 392.5,
+          "w": 335,
+          "h": 79.2
+        },
+        "768": {
+          "x": 32,
+          "y": 386,
+          "w": 620,
+          "h": 52.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 554.2,
+          "w": 613.2,
+          "h": 60.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_334_0@375.png",
+        "1440": "shots/Root_334_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/340#0",
+      "parentKey": "Root/329#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 340,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 462,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"340\"> <div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </di",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 507.7,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 482.8,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 240.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_340_0@375.png",
+        "1440": "shots/Root_340_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/341#0",
+      "parentKey": "Root/340#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 341,
+      "attrs": {
+        "style": "position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: rgba(255, 255, 255, 0.3); border: 5px solid rgb(255, 255, 255); box-shadow: rgba(44, 62, 80, 0.7) 0px 34px 60px -30px; translate: 0px -8px;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 463,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div data-hero-img=\"\" style=\"position:relative;aspect-ratio:4 / 3;border-radius:22px;overflow:hidden;background:{{ hero.imgBg }};border:5px solid #FFFFFF;box-shadow:0 34px 60px -30px rgba(44,62,80,.7);\" data-dc-tpl=\"341\"> <image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 500.7,
+          "w": 335,
+          "h": 251.3
+        },
+        "768": {
+          "x": 32,
+          "y": 475.8,
+          "w": 704,
+          "h": 528
+        },
+        "1440": {
+          "x": 785.2,
+          "y": 232.3,
+          "w": 554.8,
+          "h": 416.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_341_0@375.png",
+        "1440": "shots/Root_341_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/342#0",
+      "parentKey": "Root/341#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 342,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 464,
+      "membership": [
+        {
+          "kind": "sc-if",
+          "value": "{{ isInner }}",
+          "tpl": "315"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ hero.hasImg }}",
+          "tpl": "339"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ hero.img }}\" shape=\"rect\" placeholder=\"{{ hero.imgLabel }}\" data-dc-tpl=\"342\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 25,
+          "y": 505.7,
+          "w": 325,
+          "h": 241.3
+        },
+        "768": {
+          "x": 37,
+          "y": 480.8,
+          "w": 694,
+          "h": 518
+        },
+        "1440": {
+          "x": 790.2,
+          "y": 237.3,
+          "w": 544.8,
+          "h": 406.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_342_0@375.png",
+        "1440": "shots/Root_342_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#0",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 64px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Seasonal Feb 2026 2 min read By the Indus Foods team Ramadan is one of the busiest periods of the year for our customers",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 811,
+          "w": 375,
+          "h": 1300.8
+        },
+        "768": {
+          "x": 0,
+          "y": 1082.8,
+          "w": 768,
+          "h": 984.2
+        },
+        "1440": {
+          "x": 0,
+          "y": 744.3,
+          "w": 1440,
+          "h": 1048.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_0@375.png",
+        "1440": "shots/Root_344_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#0",
+      "parentKey": "Root/344#0",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Seasonal Feb 2026 2 min read By the Indus Foods team Ramadan is one of the busiest periods of the year for our customers",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 851,
+          "w": 335,
+          "h": 1220.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1134.8,
+          "w": 704,
+          "h": 880.2
+        },
+        "1440": {
+          "x": 100,
+          "y": 808.3,
+          "w": 1240,
+          "h": 920.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_0@375.png",
+        "1440": "shots/Root_345_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/617#0",
+      "parentKey": "Root/345#0",
+      "depth": 3,
+      "tag": "article",
+      "template": "Root",
+      "tpl": 617,
+      "attrs": {
+        "style": "max-width: 740px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Seasonal Feb 2026 2 min read By the Indus Foods team Ramadan is one of the busiest periods of the year for our customers",
+      "srcLine": 893,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "article",
+      "srcOwnText": "",
+      "snippet": "<article style=\"max-width:740px;margin:0 auto;\" data-dc-tpl=\"617\"> <div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-bottom:22px;border-bottom:1px solid rgba(30,42,60,.12);font-size:15px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"618\"> <span style=\"font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#0A7EA8;color:#FFFFFF;padding:",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 851,
+          "w": 335,
+          "h": 1220.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1134.8,
+          "w": 704,
+          "h": 880.2
+        },
+        "1440": {
+          "x": 350,
+          "y": 808.3,
+          "w": 740,
+          "h": 920.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_617_0@375.png",
+        "1440": "shots/Root_617_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/618#0",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 618,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-bottom: 22px; border-bottom: 1px solid rgba(30, 42, 60, 0.12); font-size: 15px; color: rgb(74, 85, 99); font-weight: 600;"
+      },
+      "words": "",
+      "allText": "Seasonal Feb 2026 2 min read By the Indus Foods team",
+      "srcLine": 894,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-bottom:22px;border-bottom:1px solid rgba(30,42,60,.12);font-size:15px;color:#4A5563;font-weight:600;\" data-dc-tpl=\"618\"> <span style=\"font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#0A7EA8;color:#FFFFFF;padding:5px 10px;border-radius:3px;\" data-dc-tpl=\"619\">{{ b.cat }}</span> <",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 851,
+          "w": 335,
+          "h": 84.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1134.8,
+          "w": 704,
+          "h": 51.6
+        },
+        "1440": {
+          "x": 350,
+          "y": 808.3,
+          "w": 740,
+          "h": 51.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_618_0@375.png",
+        "1440": "shots/Root_618_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/619#0",
+      "parentKey": "Root/618#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 619,
+      "attrs": {
+        "style": "font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: rgb(10, 126, 168); color: rgb(255, 255, 255); padding: 5px 10px; border-radius: 3px;"
+      },
+      "words": "Seasonal",
+      "allText": "Seasonal",
+      "srcLine": 895,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ b.cat }}",
+      "snippet": "<span style=\"font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#0A7EA8;color:#FFFFFF;padding:5px 10px;border-radius:3px;\" data-dc-tpl=\"619\">{{ b.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 851,
+          "w": 80.9,
+          "h": 28.6
+        },
+        "768": {
+          "x": 32,
+          "y": 1134.8,
+          "w": 80.9,
+          "h": 28.6
+        },
+        "1440": {
+          "x": 350,
+          "y": 808.3,
+          "w": 80.9,
+          "h": 28.6
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_619_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/620#0",
+      "parentKey": "Root/618#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 620,
+      "attrs": {},
+      "words": "Feb 2026",
+      "allText": "Feb 2026",
+      "srcLine": 896,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ b.date }}",
+      "snippet": "<span data-dc-tpl=\"620\">{{ b.date }}</span>",
+      "box": {
+        "375": {
+          "x": 118.9,
+          "y": 853.6,
+          "w": 57.3,
+          "h": 23.3
+        },
+        "768": {
+          "x": 130.9,
+          "y": 1137.4,
+          "w": 57.3,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 448.9,
+          "y": 811,
+          "w": 57.3,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_620_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/621#0",
+      "parentKey": "Root/618#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 621,
+      "attrs": {
+        "style": "width: 4px; height: 4px; border-radius: 50%; background: rgb(163, 173, 183);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 897,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:4px;height:4px;border-radius:50%;background:#A3ADB7;\" data-dc-tpl=\"621\"></span>",
+      "box": {
+        "375": {
+          "x": 194.1,
+          "y": 863.3,
+          "w": 4,
+          "h": 4
+        },
+        "768": {
+          "x": 206.1,
+          "y": 1147.1,
+          "w": 4,
+          "h": 4
+        },
+        "1440": {
+          "x": 524.1,
+          "y": 820.6,
+          "w": 4,
+          "h": 4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_621_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/622#0",
+      "parentKey": "Root/618#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 622,
+      "attrs": {},
+      "words": "2 min read",
+      "allText": "2 min read",
+      "srcLine": 898,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ b.readTime }}",
+      "snippet": "<span data-dc-tpl=\"622\">{{ b.readTime }}</span>",
+      "box": {
+        "375": {
+          "x": 216.1,
+          "y": 853.6,
+          "w": 67.7,
+          "h": 23.3
+        },
+        "768": {
+          "x": 228.1,
+          "y": 1137.4,
+          "w": 67.7,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 546.1,
+          "y": 811,
+          "w": 67.7,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_622_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/623#0",
+      "parentKey": "Root/618#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 623,
+      "attrs": {
+        "style": "width: 4px; height: 4px; border-radius: 50%; background: rgb(163, 173, 183);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 899,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:4px;height:4px;border-radius:50%;background:#A3ADB7;\" data-dc-tpl=\"623\"></span>",
+      "box": {
+        "375": {
+          "x": 301.9,
+          "y": 863.3,
+          "w": 4,
+          "h": 4
+        },
+        "768": {
+          "x": 313.9,
+          "y": 1147.1,
+          "w": 4,
+          "h": 4
+        },
+        "1440": {
+          "x": 631.9,
+          "y": 820.6,
+          "w": 4,
+          "h": 4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_623_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/624#0",
+      "parentKey": "Root/618#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 624,
+      "attrs": {},
+      "words": "By the Indus Foods team",
+      "allText": "By the Indus Foods team",
+      "srcLine": 900,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "By the Indus Foods team",
+      "snippet": "<span data-dc-tpl=\"624\">By the Indus Foods team</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 889.6,
+          "w": 157.2,
+          "h": 23.3
+        },
+        "768": {
+          "x": 335.9,
+          "y": 1137.4,
+          "w": 157.2,
+          "h": 23.3
+        },
+        "1440": {
+          "x": 653.9,
+          "y": 811,
+          "w": 157.2,
+          "h": 23.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_624_0@375.png",
+        "1440": "shots/Root_624_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/627#0",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 627,
+      "attrs": {
+        "style": "font-size: clamp(20px, 1.9vw, 23px); line-height: 1.55; color: rgb(44, 62, 80); font-weight: 500; margin: 32px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Ramadan is one of the busiest periods of the year for our customers. Restaurants extend their hours, caterers take on community iftars and retailers see demand for staples rise sharply.",
+      "allText": "Ramadan is one of the busiest periods of the year for our customers. Restaurants extend their hours, caterers take on co",
+      "srcLine": 903,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isLead }}",
+          "tpl": "626"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ c.text }}",
+      "snippet": "<p style=\"font-size:clamp(20px,1.9vw,23px);line-height:1.55;color:#2C3E50;font-weight:500;margin:32px 0 0;text-wrap:pretty;\" data-dc-tpl=\"627\">{{ c.text }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 967.8,
+          "w": 335,
+          "h": 186
+        },
+        "768": {
+          "x": 32,
+          "y": 1218.4,
+          "w": 704,
+          "h": 93
+        },
+        "1440": {
+          "x": 350,
+          "y": 891.9,
+          "w": 740,
+          "h": 106.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_627_0@375.png",
+        "1440": "shots/Root_627_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/631#0",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 631,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(22px, 2.2vw, 27px); line-height: 1.25; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 44px 0px 0px; text-wrap: balance;"
+      },
+      "words": "Planning starts months ahead",
+      "allText": "Planning starts months ahead",
+      "srcLine": 905,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isH }}",
+          "tpl": "630"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ c.text }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,27px);line-height:1.25;letter-spacing:-.01em;color:#2C3E50;margin:44px 0 0;text-wrap:balance;\" data-dc-tpl=\"631\">{{ c.text }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1197.8,
+          "w": 335,
+          "h": 55
+        },
+        "768": {
+          "x": 32,
+          "y": 1355.4,
+          "w": 704,
+          "h": 27.5
+        },
+        "1440": {
+          "x": 350,
+          "y": 1042.9,
+          "w": 740,
+          "h": 33.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_631_0@375.png",
+        "1440": "shots/Root_631_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/629#0",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 629,
+      "attrs": {
+        "style": "font-size: 18px; line-height: 1.75; color: rgb(58, 69, 83); margin: 22px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "We begin building stock of rice, flour, oils, dates and spices well before the month begins, so customers can order at normal lead times when demand peaks.",
+      "allText": "We begin building stock of rice, flour, oils, dates and spices well before the month begins, so customers can order at n",
+      "srcLine": 904,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isP }}",
+          "tpl": "628"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ c.text }}",
+      "snippet": "<p style=\"font-size:18px;line-height:1.75;color:#3A4553;margin:22px 0 0;text-wrap:pretty;\" data-dc-tpl=\"629\">{{ c.text }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1274.8,
+          "w": 335,
+          "h": 126
+        },
+        "768": {
+          "x": 32,
+          "y": 1404.9,
+          "w": 704,
+          "h": 63
+        },
+        "1440": {
+          "x": 350,
+          "y": 1098.6,
+          "w": 740,
+          "h": 63
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_629_0@375.png",
+        "1440": "shots/Root_629_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/629#1",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 629,
+      "attrs": {
+        "style": "font-size: 18px; line-height: 1.75; color: rgb(58, 69, 83); margin: 22px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "Account managers review last year’s volumes with each customer and agree a plan for the weeks leading up to Ramadan and Eid.",
+      "allText": "Account managers review last year’s volumes with each customer and agree a plan for the weeks leading up to Ramadan and ",
+      "srcLine": 904,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isP }}",
+          "tpl": "628"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ c.text }}",
+      "snippet": "<p style=\"font-size:18px;line-height:1.75;color:#3A4553;margin:22px 0 0;text-wrap:pretty;\" data-dc-tpl=\"629\">{{ c.text }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1422.8,
+          "w": 335,
+          "h": 126
+        },
+        "768": {
+          "x": 32,
+          "y": 1489.9,
+          "w": 704,
+          "h": 63
+        },
+        "1440": {
+          "x": 350,
+          "y": 1183.6,
+          "w": 740,
+          "h": 63
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_629_1@375.png",
+        "1440": "shots/Root_629_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/633#0",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "blockquote",
+      "template": "Root",
+      "tpl": 633,
+      "attrs": {
+        "style": "margin: 40px 0px 0px; padding: 28px 0px; border-top: 2px solid rgb(216, 202, 80); border-bottom: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "“The aim is simple: nobody should run short in the busiest weeks of their year.",
+      "srcLine": 906,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isQ }}",
+          "tpl": "632"
+        }
+      ],
+      "srcTag": "blockquote",
+      "srcOwnText": "",
+      "snippet": "<blockquote style=\"margin:40px 0 0;padding:28px 0;border-top:2px solid #D8CA50;border-bottom:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"633\"><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:800;font-size:56px;line-height:.6;height:24px;color:#0A7EA8;\" data-dc-tpl=\"634\">“</span><span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1588.8,
+          "w": 335,
+          "h": 171.2
+        },
+        "768": {
+          "x": 32,
+          "y": 1592.9,
+          "w": 704,
+          "h": 141.8
+        },
+        "1440": {
+          "x": 350,
+          "y": 1286.6,
+          "w": 740,
+          "h": 155.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_633_0@375.png",
+        "1440": "shots/Root_633_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/634#0",
+      "parentKey": "Root/633#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 634,
+      "attrs": {
+        "style": "display: block; font-family: Montserrat, sans-serif; font-weight: 800; font-size: 56px; line-height: 0.6; height: 24px; color: rgb(10, 126, 168);"
+      },
+      "words": "“",
+      "allText": "“",
+      "srcLine": 906,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isQ }}",
+          "tpl": "632"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "“",
+      "snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:800;font-size:56px;line-height:.6;height:24px;color:#0A7EA8;\" data-dc-tpl=\"634\">“</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1618.8,
+          "w": 335,
+          "h": 24
+        },
+        "768": {
+          "x": 32,
+          "y": 1622.9,
+          "w": 704,
+          "h": 24
+        },
+        "1440": {
+          "x": 350,
+          "y": 1316.6,
+          "w": 740,
+          "h": 24
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_634_0@375.png",
+        "1440": "shots/Root_634_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/635#0",
+      "parentKey": "Root/633#0",
+      "depth": 5,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 635,
+      "attrs": {
+        "style": "display: block; font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(21px, 2.1vw, 26px); line-height: 1.4; color: rgb(44, 62, 80); text-wrap: pretty;"
+      },
+      "words": "The aim is simple: nobody should run short in the busiest weeks of their year.",
+      "allText": "The aim is simple: nobody should run short in the busiest weeks of their year.",
+      "srcLine": 906,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isQ }}",
+          "tpl": "632"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ c.text }}",
+      "snippet": "<span style=\"display:block;font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(21px,2.1vw,26px);line-height:1.4;color:#2C3E50;text-wrap:pretty;\" data-dc-tpl=\"635\">{{ c.text }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1642.8,
+          "w": 335,
+          "h": 88.2
+        },
+        "768": {
+          "x": 32,
+          "y": 1646.9,
+          "w": 704,
+          "h": 58.8
+        },
+        "1440": {
+          "x": 350,
+          "y": 1340.6,
+          "w": 740,
+          "h": 72.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_635_0@375.png",
+        "1440": "shots/Root_635_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/631#1",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 631,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(22px, 2.2vw, 27px); line-height: 1.25; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 44px 0px 0px; text-wrap: balance;"
+      },
+      "words": "Ordering early",
+      "allText": "Ordering early",
+      "srcLine": 905,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isH }}",
+          "tpl": "630"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ c.text }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(22px,2.2vw,27px);line-height:1.25;letter-spacing:-.01em;color:#2C3E50;margin:44px 0 0;text-wrap:balance;\" data-dc-tpl=\"631\">{{ c.text }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1804,
+          "w": 335,
+          "h": 27.5
+        },
+        "768": {
+          "x": 32,
+          "y": 1778.6,
+          "w": 704,
+          "h": 27.5
+        },
+        "1440": {
+          "x": 350,
+          "y": 1486.4,
+          "w": 740,
+          "h": 33.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_631_1@375.png",
+        "1440": "shots/Root_631_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/629#2",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 629,
+      "attrs": {
+        "style": "font-size: 18px; line-height: 1.75; color: rgb(58, 69, 83); margin: 22px 0px 0px; text-wrap: pretty;"
+      },
+      "words": "If you’d like to plan your Ramadan orders, speak to your account manager or call our sales team on 0121 771 4330.",
+      "allText": "If you’d like to plan your Ramadan orders, speak to your account manager or call our sales team on 0121 771 4330.",
+      "srcLine": 904,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.content }}",
+          "as": "c",
+          "tpl": "625"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ c.isP }}",
+          "tpl": "628"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ c.text }}",
+      "snippet": "<p style=\"font-size:18px;line-height:1.75;color:#3A4553;margin:22px 0 0;text-wrap:pretty;\" data-dc-tpl=\"629\">{{ c.text }}</p>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1853.5,
+          "w": 335,
+          "h": 94.5
+        },
+        "768": {
+          "x": 32,
+          "y": 1828.1,
+          "w": 704,
+          "h": 63
+        },
+        "1440": {
+          "x": 350,
+          "y": 1542.1,
+          "w": 740,
+          "h": 63
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_629_2@375.png",
+        "1440": "shots/Root_629_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/636#0",
+      "parentKey": "Root/617#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 636,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(30, 42, 60, 0.12);"
+      },
+      "words": "",
+      "allText": "All articles Ask our team",
+      "srcLine": 908,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;margin-top:48px;padding-top:24px;border-top:1px solid rgba(30,42,60,.12);\" data-dc-tpl=\"636\"> <a href=\"#/blog\" style=\"display:inline-flex;align-items:center;gap:10px;color:#1E2A3C;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:4px;transition:color .2s,gap .2s;\" style-hov",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 1996,
+          "w": 335,
+          "h": 75.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1939.1,
+          "w": 704,
+          "h": 75.8
+        },
+        "1440": {
+          "x": 350,
+          "y": 1653.1,
+          "w": 740,
+          "h": 75.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_636_0@375.png",
+        "1440": "shots/Root_636_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/637#0",
+      "parentKey": "Root/636#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 637,
+      "attrs": {
+        "href": "#/blog",
+        "class": "scp1c",
+        "style": "display: inline-flex; align-items: center; gap: 10px; color: rgb(30, 42, 60); font-weight: 700; font-size: 16px; border-bottom: 2px solid rgb(216, 202, 80); padding-bottom: 4px; transition: color 0.2s, gap 0.2s;"
+      },
+      "words": "All articles",
+      "allText": "All articles",
+      "srcLine": 909,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "All articles",
+      "snippet": "<a href=\"#/blog\" style=\"display:inline-flex;align-items:center;gap:10px;color:#1E2A3C;font-weight:700;font-size:16px;border-bottom:2px solid #D8CA50;padding-bottom:4px;transition:color .2s,gap .2s;\" style-hover=\"color:#0A7EA8;gap:14px\" data-dc-tpl=\"637\"><span style=\"display:flex;transform:rotate(180deg);\" data-dc-tpl=\"638\">{{ arrowIcon }}</span> All articles</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2031,
+          "w": 99.3,
+          "h": 30.8
+        },
+        "768": {
+          "x": 32,
+          "y": 1974.1,
+          "w": 99.3,
+          "h": 30.8
+        },
+        "1440": {
+          "x": 350,
+          "y": 1688.1,
+          "w": 99.3,
+          "h": 30.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_637_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/638#0",
+      "parentKey": "Root/637#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 638,
+      "attrs": {
+        "style": "display: flex; transform: rotate(180deg);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 909,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ arrowIcon }}",
+      "snippet": "<span style=\"display:flex;transform:rotate(180deg);\" data-dc-tpl=\"638\">{{ arrowIcon }}</span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2035.9,
+          "w": 15,
+          "h": 15
+        },
+        "768": {
+          "x": 32,
+          "y": 1979,
+          "w": 15,
+          "h": 15
+        },
+        "1440": {
+          "x": 350,
+          "y": 1693,
+          "w": 15,
+          "h": 15
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_638_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/639#0",
+      "parentKey": "Root/636#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 639,
+      "attrs": {
+        "href": "#/contact",
+        "class": "scp1d",
+        "style": "display: inline-flex; align-items: center; gap: 10px; background: rgb(10, 126, 168); color: rgb(255, 255, 255); font-weight: 700; font-size: 16px; padding: 13px 22px; border-radius: 999px; box-shadow: rgba(10, 126, 168, 0.65) 0px 8px 18px -8px; transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;"
+      },
+      "words": "Ask our team",
+      "allText": "Ask our team",
+      "srcLine": 910,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isArticle }}",
+          "tpl": "616"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "Ask our team {{ arrowIcon }}",
+      "snippet": "<a href=\"#/contact\" style=\"display:inline-flex;align-items:center;gap:10px;background:#0A7EA8;color:#FFFFFF;font-weight:700;font-size:16px;padding:13px 22px;border-radius:999px;box-shadow:0 8px 18px -8px rgba(10,126,168,.65);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.25);color:#FFFFFF\" d",
+      "box": {
+        "375": {
+          "x": 193.9,
+          "y": 2021,
+          "w": 161.1,
+          "h": 50.8
+        },
+        "768": {
+          "x": 574.9,
+          "y": 1964.1,
+          "w": 161.1,
+          "h": 50.8
+        },
+        "1440": {
+          "x": 928.9,
+          "y": 1678.1,
+          "w": 161.1,
+          "h": 50.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_639_0@375.png",
+        "1440": "shots/Root_639_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#1",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 108px 40px; background: linear-gradient(rgb(243, 234, 176) 0%, rgb(234, 221, 126) 100%); --acc: #0A7EA8; --accFg: #FFFFFF; --accLine: rgba(10,126,168,.28);"
+      },
+      "words": "",
+      "allText": "Keep reading More from the blog. All articles Products Jan 2026 Falak rice: exclusive UK distribution Why the popular Pa",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 2111.8,
+          "w": 375,
+          "h": 1703.8
+        },
+        "768": {
+          "x": 0,
+          "y": 2066.9,
+          "w": 768,
+          "h": 1251.8
+        },
+        "1440": {
+          "x": 0,
+          "y": 1792.9,
+          "w": 1440,
+          "h": 814.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_1@375.png",
+        "1440": "shots/Root_344_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#1",
+      "parentKey": "Root/344#1",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Keep reading More from the blog. All articles Products Jan 2026 Falak rice: exclusive UK distribution Why the popular Pa",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2175.8,
+          "w": 335,
+          "h": 1575.8
+        },
+        "768": {
+          "x": 32,
+          "y": 2154.9,
+          "w": 704,
+          "h": 1075.8
+        },
+        "1440": {
+          "x": 100,
+          "y": 1900.9,
+          "w": 1240,
+          "h": 598.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_1@375.png",
+        "1440": "shots/Root_345_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/347#0",
+      "parentKey": "Root/345#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 347,
+      "attrs": {
+        "style": "display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 48px;"
+      },
+      "words": "",
+      "allText": "Keep reading More from the blog. All articles",
+      "srcLine": 479,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-si",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2175.8,
+          "w": 335,
+          "h": 117.6
+        },
+        "768": {
+          "x": 32,
+          "y": 2154.9,
+          "w": 704,
+          "h": 68.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 1900.9,
+          "w": 1240,
+          "h": 82.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_347_0@375.png",
+        "1440": "shots/Root_347_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/348#0",
+      "parentKey": "Root/347#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 348,
+      "attrs": {
+        "style": "max-width: 720px; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Keep reading More from the blog.",
+      "srcLine": 480,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if value=\"{{ b.hasEyebrow }}\" hint-placeholder-val=\"{{ true }}\" data-dc-tpl=\"349\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2p",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2175.8,
+          "w": 285.7,
+          "h": 68.3
+        },
+        "768": {
+          "x": 32,
+          "y": 2154.9,
+          "w": 285.7,
+          "h": 68.3
+        },
+        "1440": {
+          "x": 100,
+          "y": 1900.9,
+          "w": 408.2,
+          "h": 82.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_348_0@375.png",
+        "1440": "shots/Root_348_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/350#0",
+      "parentKey": "Root/348#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 350,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(10, 126, 168); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Keep reading",
+      "allText": "Keep reading",
+      "srcLine": 482,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "349"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrow }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#0A7EA8;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"350\"><span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>{{ b.eyebrow }}</div>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2175.8,
+          "w": 285.7,
+          "h": 20.1
+        },
+        "768": {
+          "x": 32,
+          "y": 2154.9,
+          "w": 285.7,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 1900.9,
+          "w": 408.2,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_350_0@375.png",
+        "1440": "shots/Root_350_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/351#0",
+      "parentKey": "Root/350#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 351,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: var(--acc,#D8CA50); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 482,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasEyebrow }}",
+          "tpl": "349"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:var(--acc,#D8CA50);display:inline-block;\" data-dc-tpl=\"351\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2184.8,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 32,
+          "y": 2164,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 100,
+          "y": 1910,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_351_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/352#0",
+      "parentKey": "Root/348#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 352,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; letter-spacing: -0.01em; color: rgb(44, 62, 80); margin: 0px; text-wrap: balance;"
+      },
+      "words": "More from the blog.",
+      "allText": "More from the blog.",
+      "srcLine": 484,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,3.4vw,40px);line-height:1.15;letter-spacing:-.01em;color:#2C3E50;margin:0;text-wrap:balance;\" data-dc-tpl=\"352\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2211.9,
+          "w": 285.7,
+          "h": 32.2
+        },
+        "768": {
+          "x": 32,
+          "y": 2191.1,
+          "w": 285.7,
+          "h": 32.2
+        },
+        "1440": {
+          "x": 100,
+          "y": 1937.1,
+          "w": 408.2,
+          "h": 46
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_352_0@375.png",
+        "1440": "shots/Root_352_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/356#0",
+      "parentKey": "Root/347#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 356,
+      "attrs": {
+        "href": "#/blog",
+        "class": "scpu",
+        "style": "display: inline-flex; align-items: center; gap: 8px; color: rgb(30, 42, 60); font-weight: 700; font-size: 15px; border-bottom: 2px solid var(--acc,#D8CA50); padding-bottom: 4px; transition: color 0.2s, gap 0.2s;"
+      },
+      "words": "All articles",
+      "allText": "All articles",
+      "srcLine": 490,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHead }}",
+          "tpl": "346"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.hasHeadLink }}",
+          "tpl": "355"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.headLink.label }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ b.headLink.href }}\" style=\"display:inline-flex;align-items:center;gap:8px;color:#1E2A3C;font-weight:700;font-size:15px;border-bottom:2px solid var(--acc,#D8CA50);padding-bottom:4px;transition:color .2s,gap .2s;\" style-hover=\"color:#0A7EA8;gap:12px\" data-dc-tpl=\"356\">{{ b.headLink.label }} {{ arrowIcon }}</a>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2264.1,
+          "w": 92.7,
+          "h": 29.3
+        },
+        "768": {
+          "x": 643.3,
+          "y": 2194,
+          "w": 92.7,
+          "h": 29.3
+        },
+        "1440": {
+          "x": 1247.3,
+          "y": 1953.8,
+          "w": 92.7,
+          "h": 29.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_356_0@375.png",
+        "1440": "shots/Root_356_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/604#0",
+      "parentKey": "Root/345#1",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 604,
+      "attrs": {
+        "style": "display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px;"
+      },
+      "words": "",
+      "allText": "Products Jan 2026 Falak rice: exclusive UK distribution Why the popular Pakistani rice brand chose Indus Foods as its UK",
+      "srcLine": 872,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;\" data-dc-tpl=\"604\"> <sc-for list=\"{{ b.posts }}\" as=\"p\" hint-placeholder-count=\"6\" data-dc-tpl=\"605\"> <a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezi",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2325.4,
+          "w": 335,
+          "h": 1426.2
+        },
+        "768": {
+          "x": 32,
+          "y": 2271.3,
+          "w": 704,
+          "h": 959.5
+        },
+        "1440": {
+          "x": 100,
+          "y": 2031.1,
+          "w": 1240,
+          "h": 468.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_604_0@375.png",
+        "1440": "shots/Root_604_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/606#0",
+      "parentKey": "Root/604#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 606,
+      "attrs": {
+        "href": "#/post-post-2",
+        "class": "scp1b",
+        "style": "display: flex; flex-direction: column; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "Products Jan 2026 Falak rice: exclusive UK distribution Why the popular Pakistani rice brand chose Indus Foods as its UK",
+      "srcLine": 874,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);color:#1E2A3C\" data-dc-tpl=\"606\"> <div style=\"height:210px;background:#EA",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2325.4,
+          "w": 335,
+          "h": 444.7
+        },
+        "768": {
+          "x": 32,
+          "y": 2271.3,
+          "w": 341,
+          "h": 468.7
+        },
+        "1440": {
+          "x": 100,
+          "y": 2031.1,
+          "w": 293.5,
+          "h": 468.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_606_0@375.png",
+        "1440": "shots/Root_606_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/607#0",
+      "parentKey": "Root/606#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 607,
+      "attrs": {
+        "style": "height: 210px; background: rgb(234, 244, 247);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 875,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:210px;background:#EAF4F7;\" data-dc-tpl=\"607\"> <image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2326.4,
+          "w": 333,
+          "h": 210
+        },
+        "768": {
+          "x": 33,
+          "y": 2272.3,
+          "w": 339,
+          "h": 210
+        },
+        "1440": {
+          "x": 101,
+          "y": 2032.1,
+          "w": 291.5,
+          "h": 210
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_607_0@375.png",
+        "1440": "shots/Root_607_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/608#0",
+      "parentKey": "Root/607#0",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 608,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 876,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2326.4,
+          "w": 333,
+          "h": 210
+        },
+        "768": {
+          "x": 33,
+          "y": 2272.3,
+          "w": 339,
+          "h": 210
+        },
+        "1440": {
+          "x": 101,
+          "y": 2032.1,
+          "w": 291.5,
+          "h": 210
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_608_0@375.png",
+        "1440": "shots/Root_608_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/609#0",
+      "parentKey": "Root/606#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 609,
+      "attrs": {
+        "style": "padding: 22px 22px 24px; display: flex; flex-direction: column; flex: 1 1 0%;"
+      },
+      "words": "",
+      "allText": "Products Jan 2026 Falak rice: exclusive UK distribution Why the popular Pakistani rice brand chose Indus Foods as its UK",
+      "srcLine": 878,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;\" data-dc-tpl=\"609\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> ",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2536.4,
+          "w": 333,
+          "h": 232.7
+        },
+        "768": {
+          "x": 33,
+          "y": 2482.3,
+          "w": 339,
+          "h": 256.7
+        },
+        "1440": {
+          "x": 101,
+          "y": 2242.1,
+          "w": 291.5,
+          "h": 256.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_609_0@375.png",
+        "1440": "shots/Root_609_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/610#0",
+      "parentKey": "Root/609#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 610,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "Products Jan 2026",
+      "srcLine": 879,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> <span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 2558.4,
+          "w": 289,
+          "h": 24.3
+        },
+        "768": {
+          "x": 55,
+          "y": 2504.3,
+          "w": 295,
+          "h": 24.3
+        },
+        "1440": {
+          "x": 123,
+          "y": 2264.1,
+          "w": 247.5,
+          "h": 24.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_610_0@375.png",
+        "1440": "shots/Root_610_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/611#0",
+      "parentKey": "Root/610#0",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 611,
+      "attrs": {
+        "style": "font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: rgb(216, 202, 80); color: rgb(30, 42, 60); padding: 4px 9px; border-radius: 3px;"
+      },
+      "words": "Products",
+      "allText": "Products",
+      "srcLine": 880,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ p.cat }}",
+      "snippet": "<span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 2558.4,
+          "w": 73.1,
+          "h": 24.3
+        },
+        "768": {
+          "x": 55,
+          "y": 2504.3,
+          "w": 73.1,
+          "h": 24.3
+        },
+        "1440": {
+          "x": 123,
+          "y": 2264.1,
+          "w": 73.1,
+          "h": 24.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_611_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/612#0",
+      "parentKey": "Root/610#0",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 612,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-size: 13px; color: rgb(94, 104, 115); letter-spacing: 0.06em; font-weight: 700;"
+      },
+      "words": "Jan 2026",
+      "allText": "Jan 2026",
+      "srcLine": 881,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ p.date }}",
+      "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em;font-weight:700;\" data-dc-tpl=\"612\">{{ p.date }}</span>",
+      "box": {
+        "375": {
+          "x": 265.6,
+          "y": 2560.4,
+          "w": 66.4,
+          "h": 20.1
+        },
+        "768": {
+          "x": 283.6,
+          "y": 2506.3,
+          "w": 66.4,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 304.1,
+          "y": 2266.1,
+          "w": 66.4,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_612_0@375.png",
+        "1440": "shots/Root_612_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/613#0",
+      "parentKey": "Root/609#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 613,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; color: inherit; letter-spacing: -0.02em; line-height: 1.25; margin-top: 16px;"
+      },
+      "words": "Falak rice: exclusive UK distribution",
+      "allText": "Falak rice: exclusive UK distribution",
+      "srcLine": 883,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ p.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;color:inherit;letter-spacing:-.02em;line-height:1.25;margin-top:16px;\" data-dc-tpl=\"613\">{{ p.title }}</div>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 2598.6,
+          "w": 289,
+          "h": 50
+        },
+        "768": {
+          "x": 55,
+          "y": 2544.5,
+          "w": 295,
+          "h": 50
+        },
+        "1440": {
+          "x": 123,
+          "y": 2304.3,
+          "w": 247.5,
+          "h": 50
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_613_0@375.png",
+        "1440": "shots/Root_613_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/614#0",
+      "parentKey": "Root/609#0",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 614,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; margin-top: 8px; flex: 1 1 0%;"
+      },
+      "words": "Why the popular Pakistani rice brand chose Indus Foods as its UK distribution partner.",
+      "allText": "Why the popular Pakistani rice brand chose Indus Foods as its UK distribution partner.",
+      "srcLine": 884,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ p.excerpt }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;margin-top:8px;flex:1;\" data-dc-tpl=\"614\">{{ p.excerpt }}</div>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 2656.6,
+          "w": 289,
+          "h": 48
+        },
+        "768": {
+          "x": 55,
+          "y": 2602.5,
+          "w": 295,
+          "h": 72
+        },
+        "1440": {
+          "x": 123,
+          "y": 2362.3,
+          "w": 247.5,
+          "h": 72
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_614_0@375.png",
+        "1440": "shots/Root_614_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/615#0",
+      "parentKey": "Root/609#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 615,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-weight: 700; font-size: 14.5px; color: rgb(10, 126, 168);"
+      },
+      "words": "Read article",
+      "allText": "Read article",
+      "srcLine": 885,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Read article {{ arrowIcon }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:14.5px;color:#0A7EA8;\" data-dc-tpl=\"615\">Read article {{ arrowIcon }}</span>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 2722.6,
+          "w": 289,
+          "h": 22.5
+        },
+        "768": {
+          "x": 55,
+          "y": 2692.5,
+          "w": 295,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 123,
+          "y": 2452.3,
+          "w": 247.5,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_615_0@375.png",
+        "1440": "shots/Root_615_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/606#1",
+      "parentKey": "Root/604#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 606,
+      "attrs": {
+        "href": "#/post-post-3",
+        "class": "scp1b",
+        "style": "display: flex; flex-direction: column; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "Company news Dec 2025 Inside our Birmingham packing line The processing and packaging line we set up in the 1970s still ",
+      "srcLine": 874,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);color:#1E2A3C\" data-dc-tpl=\"606\"> <div style=\"height:210px;background:#EA",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 2792.1,
+          "w": 335,
+          "h": 468.7
+        },
+        "768": {
+          "x": 395,
+          "y": 2271.3,
+          "w": 341,
+          "h": 468.7
+        },
+        "1440": {
+          "x": 415.5,
+          "y": 2031.1,
+          "w": 293.5,
+          "h": 468.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_606_1@375.png",
+        "1440": "shots/Root_606_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/607#1",
+      "parentKey": "Root/606#1",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 607,
+      "attrs": {
+        "style": "height: 210px; background: rgb(234, 244, 247);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 875,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:210px;background:#EAF4F7;\" data-dc-tpl=\"607\"> <image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2793.1,
+          "w": 333,
+          "h": 210
+        },
+        "768": {
+          "x": 396,
+          "y": 2272.3,
+          "w": 339,
+          "h": 210
+        },
+        "1440": {
+          "x": 416.5,
+          "y": 2032.1,
+          "w": 291.5,
+          "h": 210
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_607_1@375.png",
+        "1440": "shots/Root_607_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/608#1",
+      "parentKey": "Root/607#1",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 608,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 876,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 2793.1,
+          "w": 333,
+          "h": 210
+        },
+        "768": {
+          "x": 396,
+          "y": 2272.3,
+          "w": 339,
+          "h": 210
+        },
+        "1440": {
+          "x": 416.5,
+          "y": 2032.1,
+          "w": 291.5,
+          "h": 210
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_608_1@375.png",
+        "1440": "shots/Root_608_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/609#1",
+      "parentKey": "Root/606#1",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 609,
+      "attrs": {
+        "style": "padding: 22px 22px 24px; display: flex; flex-direction: column; flex: 1 1 0%;"
+      },
+      "words": "",
+      "allText": "Company news Dec 2025 Inside our Birmingham packing line The processing and packaging line we set up in the 1970s still ",
+      "srcLine": 878,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;\" data-dc-tpl=\"609\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> ",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 3003.1,
+          "w": 333,
+          "h": 256.7
+        },
+        "768": {
+          "x": 396,
+          "y": 2482.3,
+          "w": 339,
+          "h": 256.7
+        },
+        "1440": {
+          "x": 416.5,
+          "y": 2242.1,
+          "w": 291.5,
+          "h": 256.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_609_1@375.png",
+        "1440": "shots/Root_609_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/610#1",
+      "parentKey": "Root/609#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 610,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "Company news Dec 2025",
+      "srcLine": 879,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> <span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3025.1,
+          "w": 289,
+          "h": 24.3
+        },
+        "768": {
+          "x": 418,
+          "y": 2504.3,
+          "w": 295,
+          "h": 24.3
+        },
+        "1440": {
+          "x": 438.5,
+          "y": 2264.1,
+          "w": 247.5,
+          "h": 24.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_610_1@375.png",
+        "1440": "shots/Root_610_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/611#1",
+      "parentKey": "Root/610#1",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 611,
+      "attrs": {
+        "style": "font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: rgb(216, 202, 80); color: rgb(30, 42, 60); padding: 4px 9px; border-radius: 3px;"
+      },
+      "words": "Company news",
+      "allText": "Company news",
+      "srcLine": 880,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ p.cat }}",
+      "snippet": "<span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3025.1,
+          "w": 98.7,
+          "h": 24.3
+        },
+        "768": {
+          "x": 418,
+          "y": 2504.3,
+          "w": 98.7,
+          "h": 24.3
+        },
+        "1440": {
+          "x": 438.5,
+          "y": 2264.1,
+          "w": 98.7,
+          "h": 24.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_611_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/612#1",
+      "parentKey": "Root/610#1",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 612,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-size: 13px; color: rgb(94, 104, 115); letter-spacing: 0.06em; font-weight: 700;"
+      },
+      "words": "Dec 2025",
+      "allText": "Dec 2025",
+      "srcLine": 881,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ p.date }}",
+      "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em;font-weight:700;\" data-dc-tpl=\"612\">{{ p.date }}</span>",
+      "box": {
+        "375": {
+          "x": 263.6,
+          "y": 3027.2,
+          "w": 68.4,
+          "h": 20.1
+        },
+        "768": {
+          "x": 644.6,
+          "y": 2506.3,
+          "w": 68.4,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 617.6,
+          "y": 2266.1,
+          "w": 68.4,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_612_1@375.png",
+        "1440": "shots/Root_612_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/613#1",
+      "parentKey": "Root/609#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 613,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; color: inherit; letter-spacing: -0.02em; line-height: 1.25; margin-top: 16px;"
+      },
+      "words": "Inside our Birmingham packing line",
+      "allText": "Inside our Birmingham packing line",
+      "srcLine": 883,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ p.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;color:inherit;letter-spacing:-.02em;line-height:1.25;margin-top:16px;\" data-dc-tpl=\"613\">{{ p.title }}</div>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3065.4,
+          "w": 289,
+          "h": 50
+        },
+        "768": {
+          "x": 418,
+          "y": 2544.5,
+          "w": 295,
+          "h": 50
+        },
+        "1440": {
+          "x": 438.5,
+          "y": 2304.3,
+          "w": 247.5,
+          "h": 50
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_613_1@375.png",
+        "1440": "shots/Root_613_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/614#1",
+      "parentKey": "Root/609#1",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 614,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; margin-top: 8px; flex: 1 1 0%;"
+      },
+      "words": "The processing and packaging line we set up in the 1970s still packs our own-brand ranges today.",
+      "allText": "The processing and packaging line we set up in the 1970s still packs our own-brand ranges today.",
+      "srcLine": 884,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ p.excerpt }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;margin-top:8px;flex:1;\" data-dc-tpl=\"614\">{{ p.excerpt }}</div>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3123.4,
+          "w": 289,
+          "h": 72
+        },
+        "768": {
+          "x": 418,
+          "y": 2602.5,
+          "w": 295,
+          "h": 72
+        },
+        "1440": {
+          "x": 438.5,
+          "y": 2362.3,
+          "w": 247.5,
+          "h": 72
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_614_1@375.png",
+        "1440": "shots/Root_614_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/615#1",
+      "parentKey": "Root/609#1",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 615,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-weight: 700; font-size: 14.5px; color: rgb(10, 126, 168);"
+      },
+      "words": "Read article",
+      "allText": "Read article",
+      "srcLine": 885,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Read article {{ arrowIcon }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:14.5px;color:#0A7EA8;\" data-dc-tpl=\"615\">Read article {{ arrowIcon }}</span>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3213.4,
+          "w": 289,
+          "h": 22.5
+        },
+        "768": {
+          "x": 418,
+          "y": 2692.5,
+          "w": 295,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 438.5,
+          "y": 2452.3,
+          "w": 247.5,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_615_1@375.png",
+        "1440": "shots/Root_615_1@1440.png"
+      }
+    },
+    {
+      "key": "Root/606#2",
+      "parentKey": "Root/604#0",
+      "depth": 4,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 606,
+      "attrs": {
+        "href": "#/post-post-4",
+        "class": "scp1b",
+        "style": "display: flex; flex-direction: column; color: rgb(30, 42, 60); background: rgb(255, 255, 255); border: 1px solid rgba(30, 42, 60, 0.11); border-radius: 22px; overflow: hidden; transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.32, 1), box-shadow 0.35s;"
+      },
+      "words": "",
+      "allText": "Company news Nov 2025 Sixty years in the Balti Triangle From a halal butcher on Ladypool Road to a national wholesaler: ",
+      "srcLine": 874,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "",
+      "snippet": "<a href=\"{{ p.href }}\" style=\"display:flex;flex-direction:column;color:#1E2A3C;background:#FFFFFF;border:1px solid rgba(30,42,60,.11);border-radius:22px;overflow:hidden;transition:transform .35s cubic-bezier(.16,.84,.32,1),box-shadow .35s;\" style-hover=\"transform:translateY(-6px);box-shadow:0 26px 46px -28px rgba(7,60,80,.5);color:#1E2A3C\" data-dc-tpl=\"606\"> <div style=\"height:210px;background:#EA",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3282.8,
+          "w": 335,
+          "h": 468.7
+        },
+        "768": {
+          "x": 32,
+          "y": 2762,
+          "w": 341,
+          "h": 468.7
+        },
+        "1440": {
+          "x": 731,
+          "y": 2031.1,
+          "w": 293.5,
+          "h": 468.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_606_2@375.png",
+        "1440": "shots/Root_606_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/607#2",
+      "parentKey": "Root/606#2",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 607,
+      "attrs": {
+        "style": "height: 210px; background: rgb(234, 244, 247);"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 875,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"height:210px;background:#EAF4F7;\" data-dc-tpl=\"607\"> <image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot> </div>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 3283.8,
+          "w": 333,
+          "h": 210
+        },
+        "768": {
+          "x": 33,
+          "y": 2763,
+          "w": 339,
+          "h": 210
+        },
+        "1440": {
+          "x": 732,
+          "y": 2032.1,
+          "w": 291.5,
+          "h": 210
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_607_2@375.png",
+        "1440": "shots/Root_607_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/608#2",
+      "parentKey": "Root/607#2",
+      "depth": 6,
+      "tag": "image-slot",
+      "template": "Root",
+      "tpl": 608,
+      "attrs": {},
+      "words": "",
+      "allText": "",
+      "srcLine": 876,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "image-slot",
+      "srcOwnText": "",
+      "snippet": "<image-slot id=\"{{ p.img }}\" shape=\"rect\" placeholder=\"{{ p.title }}\" data-dc-tpl=\"608\"></image-slot>",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 3283.8,
+          "w": 333,
+          "h": 210
+        },
+        "768": {
+          "x": 33,
+          "y": 2763,
+          "w": 339,
+          "h": 210
+        },
+        "1440": {
+          "x": 732,
+          "y": 2032.1,
+          "w": 291.5,
+          "h": 210
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_608_2@375.png",
+        "1440": "shots/Root_608_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/609#2",
+      "parentKey": "Root/606#2",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 609,
+      "attrs": {
+        "style": "padding: 22px 22px 24px; display: flex; flex-direction: column; flex: 1 1 0%;"
+      },
+      "words": "",
+      "allText": "Company news Nov 2025 Sixty years in the Balti Triangle From a halal butcher on Ladypool Road to a national wholesaler: ",
+      "srcLine": 878,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"padding:22px 22px 24px;display:flex;flex-direction:column;flex:1;\" data-dc-tpl=\"609\"> <div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> ",
+      "box": {
+        "375": {
+          "x": 21,
+          "y": 3493.8,
+          "w": 333,
+          "h": 256.7
+        },
+        "768": {
+          "x": 33,
+          "y": 2973,
+          "w": 339,
+          "h": 256.7
+        },
+        "1440": {
+          "x": 732,
+          "y": 2242.1,
+          "w": 291.5,
+          "h": 256.7
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "column",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_609_2@375.png",
+        "1440": "shots/Root_609_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/610#2",
+      "parentKey": "Root/609#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 610,
+      "attrs": {
+        "style": "display: flex; align-items: center; justify-content: space-between; gap: 10px;"
+      },
+      "words": "",
+      "allText": "Company news Nov 2025",
+      "srcLine": 879,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"display:flex;align-items:center;justify-content:space-between;gap:10px;\" data-dc-tpl=\"610\"> <span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span> <span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3515.8,
+          "w": 289,
+          "h": 24.3
+        },
+        "768": {
+          "x": 55,
+          "y": 2995,
+          "w": 295,
+          "h": 24.3
+        },
+        "1440": {
+          "x": 754,
+          "y": 2264.1,
+          "w": 247.5,
+          "h": 24.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_610_2@375.png",
+        "1440": "shots/Root_610_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/611#2",
+      "parentKey": "Root/610#2",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 611,
+      "attrs": {
+        "style": "font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: rgb(216, 202, 80); color: rgb(30, 42, 60); padding: 4px 9px; border-radius: 3px;"
+      },
+      "words": "Company news",
+      "allText": "Company news",
+      "srcLine": 880,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ p.cat }}",
+      "snippet": "<span style=\"font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#D8CA50;color:#1E2A3C;padding:4px 9px;border-radius:3px;\" data-dc-tpl=\"611\">{{ p.cat }}</span>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3515.8,
+          "w": 98.7,
+          "h": 24.3
+        },
+        "768": {
+          "x": 55,
+          "y": 2995,
+          "w": 98.7,
+          "h": 24.3
+        },
+        "1440": {
+          "x": 754,
+          "y": 2264.1,
+          "w": 98.7,
+          "h": 24.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_611_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/612#2",
+      "parentKey": "Root/610#2",
+      "depth": 7,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 612,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-size: 13px; color: rgb(94, 104, 115); letter-spacing: 0.06em; font-weight: 700;"
+      },
+      "words": "Nov 2025",
+      "allText": "Nov 2025",
+      "srcLine": 881,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "{{ p.date }}",
+      "snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-size:13px;color:#5E6873;letter-spacing:.06em;font-weight:700;\" data-dc-tpl=\"612\">{{ p.date }}</span>",
+      "box": {
+        "375": {
+          "x": 263.6,
+          "y": 3517.9,
+          "w": 68.4,
+          "h": 20.1
+        },
+        "768": {
+          "x": 281.6,
+          "y": 2997.1,
+          "w": 68.4,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 933.1,
+          "y": 2266.1,
+          "w": 68.4,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_612_2@375.png",
+        "1440": "shots/Root_612_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/613#2",
+      "parentKey": "Root/609#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 613,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 700; font-size: 20px; color: inherit; letter-spacing: -0.02em; line-height: 1.25; margin-top: 16px;"
+      },
+      "words": "Sixty years in the Balti Triangle",
+      "allText": "Sixty years in the Balti Triangle",
+      "srcLine": 883,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ p.title }}",
+      "snippet": "<div style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:20px;color:inherit;letter-spacing:-.02em;line-height:1.25;margin-top:16px;\" data-dc-tpl=\"613\">{{ p.title }}</div>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3556.1,
+          "w": 289,
+          "h": 50
+        },
+        "768": {
+          "x": 55,
+          "y": 3035.3,
+          "w": 295,
+          "h": 50
+        },
+        "1440": {
+          "x": 754,
+          "y": 2304.3,
+          "w": 247.5,
+          "h": 50
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_613_2@375.png",
+        "1440": "shots/Root_613_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/614#2",
+      "parentKey": "Root/609#2",
+      "depth": 6,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 614,
+      "attrs": {
+        "style": "font-size: 15px; color: rgb(74, 85, 99); line-height: 1.6; margin-top: 8px; flex: 1 1 0%;"
+      },
+      "words": "From a halal butcher on Ladypool Road to a national wholesaler: a short history of Indus Foods.",
+      "allText": "From a halal butcher on Ladypool Road to a national wholesaler: a short history of Indus Foods.",
+      "srcLine": 884,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ p.excerpt }}",
+      "snippet": "<div style=\"font-size:15px;color:#4A5563;line-height:1.6;margin-top:8px;flex:1;\" data-dc-tpl=\"614\">{{ p.excerpt }}</div>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3614.1,
+          "w": 289,
+          "h": 72
+        },
+        "768": {
+          "x": 55,
+          "y": 3093.3,
+          "w": 295,
+          "h": 72
+        },
+        "1440": {
+          "x": 754,
+          "y": 2362.3,
+          "w": 247.5,
+          "h": 72
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_614_2@375.png",
+        "1440": "shots/Root_614_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/615#2",
+      "parentKey": "Root/609#2",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 615,
+      "attrs": {
+        "style": "display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-weight: 700; font-size: 14.5px; color: rgb(10, 126, 168);"
+      },
+      "words": "Read article",
+      "allText": "Read article",
+      "srcLine": 885,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isPosts }}",
+          "tpl": "599"
+        },
+        {
+          "kind": "sc-for",
+          "list": "{{ b.posts }}",
+          "as": "p",
+          "tpl": "605"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "Read article {{ arrowIcon }}",
+      "snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;margin-top:18px;font-weight:700;font-size:14.5px;color:#0A7EA8;\" data-dc-tpl=\"615\">Read article {{ arrowIcon }}</span>",
+      "box": {
+        "375": {
+          "x": 43,
+          "y": 3704.1,
+          "w": 289,
+          "h": 22.5
+        },
+        "768": {
+          "x": 55,
+          "y": 3183.3,
+          "w": 295,
+          "h": 22.5
+        },
+        "1440": {
+          "x": 754,
+          "y": 2452.3,
+          "w": 247.5,
+          "h": 22.5
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_615_2@375.png",
+        "1440": "shots/Root_615_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/344#2",
+      "parentKey": "Root/201#0",
+      "depth": 1,
+      "tag": "section",
+      "template": "Root",
+      "tpl": 344,
+      "attrs": {
+        "style": "position: relative; overflow: clip; padding: 64px 40px; background: transparent; --acc: #D8CA50; --accFg: #1E2A3C; --accLine: rgba(30,42,60,.12);"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 474,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "section",
+      "srcOwnText": "",
+      "snippet": "<section data-reveal=\"\" style=\"position:relative;overflow:clip;padding:{{ b.padT }} {{ R.px }} {{ b.padB }};background:{{ b.bg }};--acc:{{ b.acc }};--accFg:{{ b.accFg }};--accLine:{{ b.accLine }};\" data-dc-tpl=\"344\"> <div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div s",
+      "box": {
+        "375": {
+          "x": 0,
+          "y": 3815.6,
+          "w": 375,
+          "h": 488.1
+        },
+        "768": {
+          "x": 0,
+          "y": 3318.7,
+          "w": 768,
+          "h": 433.1
+        },
+        "1440": {
+          "x": 0,
+          "y": 2607.8,
+          "w": 1440,
+          "h": 472.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_344_2@375.png",
+        "1440": "shots/Root_344_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/345#2",
+      "parentKey": "Root/344#2",
+      "depth": 2,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 345,
+      "attrs": {
+        "style": "position: relative; z-index: 1; max-width: 1240px; margin: 0px auto;"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 476,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;z-index:1;max-width:1240px;margin:0 auto;\" data-dc-tpl=\"345\"> <sc-if value=\"{{ b.hasHead }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"346\"> <div style=\"display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 40px;margin-bottom:{{ R.headGap }};\" data-dc-tpl=\"347\"> <div style=\"max-width:720px;min-width:0;\" data-dc-tpl=\"348\"> <sc-if",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3855.6,
+          "w": 335,
+          "h": 408.1
+        },
+        "768": {
+          "x": 32,
+          "y": 3370.7,
+          "w": 704,
+          "h": 329.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 2671.8,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_345_2@375.png",
+        "1440": "shots/Root_345_2@1440.png"
+      }
+    },
+    {
+      "key": "Root/515#0",
+      "parentKey": "Root/345#2",
+      "depth": 3,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 515,
+      "attrs": {
+        "style": "position: relative; overflow: hidden; border-radius: 26px; background: linear-gradient(135deg, rgb(14, 139, 184) 0%, rgb(10, 126, 168) 45%, rgb(7, 94, 128) 100%); color: rgb(255, 255, 255); padding: 68px 64px; display: grid; grid-template-columns: minmax(0px, 1.4fr) minmax(0px, 1fr); gap: 30px; align-items: center;"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 741,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;overflow:hidden;border-radius:26px;background:linear-gradient(135deg,#0E8BB8 0%,#0A7EA8 45%,#075E80 100%);color:#FFFFFF;padding:{{ R.ctaPad }};display:grid;grid-template-columns:{{ R.ctaCols }};gap:30px;align-items:center;\" data-dc-tpl=\"515\"> <span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3855.6,
+          "w": 335,
+          "h": 408.1
+        },
+        "768": {
+          "x": 32,
+          "y": 3370.7,
+          "w": 704,
+          "h": 329.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 2671.8,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "grid",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_515_0@375.png",
+        "1440": "shots/Root_515_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/516#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 516,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: -90px; top: -110px; width: 340px; height: 340px; border-radius: 50%; border: 2px solid rgba(216, 202, 80, 0.55); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 742,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
+      "box": {
+        "375": {
+          "x": 110,
+          "y": 3726.8,
+          "w": 360.1,
+          "h": 360.1
+        },
+        "768": {
+          "x": 488.9,
+          "y": 3250.5,
+          "w": 358.1,
+          "h": 358.1
+        },
+        "1440": {
+          "x": 1081.9,
+          "y": 2546.2,
+          "w": 355.9,
+          "h": 355.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_516_0@375.png",
+        "1440": "shots/Root_516_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/517#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 517,
+      "attrs": {
+        "aria-hidden": "true",
+        "style": "position: absolute; right: 40px; top: -40px; width: 150px; height: 150px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.2); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 743,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
+      "box": {
+        "375": {
+          "x": 176,
+          "y": 3794.5,
+          "w": 161.1,
+          "h": 161.1
+        },
+        "768": {
+          "x": 556.3,
+          "y": 3334.7,
+          "w": 157.1,
+          "h": 157.1
+        },
+        "1440": {
+          "x": 1149.6,
+          "y": 2619,
+          "w": 156.9,
+          "h": 156.9
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_517_0@375.png",
+        "1440": "shots/Root_517_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/518#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 518,
+      "attrs": {
+        "style": "position: absolute; inset: 0px; background: radial-gradient(70% 90% at 0% 100%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 60%); pointer-events: none;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 744,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"position:absolute;inset:0;background:radial-gradient(70% 90% at 0% 100%,rgba(255,255,255,.12),rgba(255,255,255,0) 60%);pointer-events:none;\" data-dc-tpl=\"518\"></span>",
+      "box": {
+        "375": {
+          "x": 20,
+          "y": 3855.6,
+          "w": 335,
+          "h": 408.1
+        },
+        "768": {
+          "x": 32,
+          "y": 3370.7,
+          "w": 704,
+          "h": 329.1
+        },
+        "1440": {
+          "x": 100,
+          "y": 2671.8,
+          "w": 1240,
+          "h": 344.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "absolute",
+        "768": "absolute",
+        "1440": "absolute"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_518_0@375.png",
+        "1440": "shots/Root_518_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/519#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 519,
+      "attrs": {
+        "style": "position: relative; min-width: 0px;"
+      },
+      "words": "",
+      "allText": "Trade accounts Open a trade account today. Wholesale pricing, a named account manager and delivery across the UK and Eur",
+      "srcLine": 745,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;min-width:0;\" data-dc-tpl=\"519\"> <div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3895.6,
+          "w": 287,
+          "h": 197.3
+        },
+        "768": {
+          "x": 76,
+          "y": 3422.7,
+          "w": 616,
+          "h": 138.3
+        },
+        "1440": {
+          "x": 164,
+          "y": 2739.8,
+          "w": 631.2,
+          "h": 208.3
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_519_0@375.png",
+        "1440": "shots/Root_519_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/520#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 520,
+      "attrs": {
+        "style": "display: flex; align-items: center; gap: 12px; font-family: Montserrat, sans-serif; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255, 255, 255); margin-bottom: 16px; font-weight: 700;"
+      },
+      "words": "Trade accounts",
+      "allText": "Trade accounts",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "{{ b.eyebrowText }}",
+      "snippet": "<div style=\"display:flex;align-items:center;gap:12px;font-family:'Montserrat',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FFFFFF;margin-bottom:16px;font-weight:700;\" data-dc-tpl=\"520\"><span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>{{ b.eyebrowText }}</div>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3895.6,
+          "w": 287,
+          "h": 20.1
+        },
+        "768": {
+          "x": 76,
+          "y": 3422.7,
+          "w": 616,
+          "h": 20.1
+        },
+        "1440": {
+          "x": 164,
+          "y": 2739.8,
+          "w": 631.2,
+          "h": 20.1
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_520_0@375.png",
+        "1440": "shots/Root_520_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/521#0",
+      "parentKey": "Root/520#0",
+      "depth": 6,
+      "tag": "span",
+      "template": "Root",
+      "tpl": 521,
+      "attrs": {
+        "style": "width: 28px; height: 2px; background: rgb(216, 202, 80); display: inline-block;"
+      },
+      "words": "",
+      "allText": "",
+      "srcLine": 746,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "span",
+      "srcOwnText": "",
+      "snippet": "<span style=\"width:28px;height:2px;background:#D8CA50;display:inline-block;\" data-dc-tpl=\"521\"></span>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3904.6,
+          "w": 28,
+          "h": 2
+        },
+        "768": {
+          "x": 76,
+          "y": 3431.8,
+          "w": 28,
+          "h": 2
+        },
+        "1440": {
+          "x": 164,
+          "y": 2748.9,
+          "w": 28,
+          "h": 2
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": false,
+      "screenshots": {
+        "1440": "shots/Root_521_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/522#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "h2",
+      "template": "Root",
+      "tpl": 522,
+      "attrs": {
+        "style": "font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(30px, 3.8vw, 48px); line-height: 1.06; letter-spacing: -0.015em; margin: 0px; text-wrap: balance;"
+      },
+      "words": "Open a trade account today.",
+      "allText": "Open a trade account today.",
+      "srcLine": 747,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "h2",
+      "srcOwnText": "{{ b.title }}",
+      "snippet": "<h2 style=\"font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,48px);line-height:1.06;letter-spacing:-.015em;margin:0;text-wrap:balance;\" data-dc-tpl=\"522\">{{ b.title }}</h2>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 3931.7,
+          "w": 287,
+          "h": 63.6
+        },
+        "768": {
+          "x": 76,
+          "y": 3458.9,
+          "w": 616,
+          "h": 31.8
+        },
+        "1440": {
+          "x": 164,
+          "y": 2776,
+          "w": 631.2,
+          "h": 101.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_522_0@375.png",
+        "1440": "shots/Root_522_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/523#0",
+      "parentKey": "Root/519#0",
+      "depth": 5,
+      "tag": "p",
+      "template": "Root",
+      "tpl": 523,
+      "attrs": {
+        "style": "font-size: 17px; color: rgb(227, 239, 244); line-height: 1.6; margin: 16px 0px 0px; max-width: 560px; text-wrap: pretty;"
+      },
+      "words": "Wholesale pricing, a named account manager and delivery across the UK and Europe.",
+      "allText": "Wholesale pricing, a named account manager and delivery across the UK and Europe.",
+      "srcLine": 748,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "p",
+      "srcOwnText": "{{ b.body }}",
+      "snippet": "<p style=\"font-size:17px;color:#E3EFF4;line-height:1.6;margin:16px 0 0;max-width:560px;text-wrap:pretty;\" data-dc-tpl=\"523\">{{ b.body }}</p>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 4011.3,
+          "w": 287,
+          "h": 81.6
+        },
+        "768": {
+          "x": 76,
+          "y": 3506.7,
+          "w": 560,
+          "h": 54.4
+        },
+        "1440": {
+          "x": 164,
+          "y": 2893.7,
+          "w": 560,
+          "h": 54.4
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_523_0@375.png",
+        "1440": "shots/Root_523_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/524#0",
+      "parentKey": "Root/515#0",
+      "depth": 4,
+      "tag": "div",
+      "template": "Root",
+      "tpl": 524,
+      "attrs": {
+        "style": "position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; justify-content: flex-end;"
+      },
+      "words": "",
+      "allText": "Become a Trade Customer Call 0121 771 4330",
+      "srcLine": 750,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "div",
+      "srcOwnText": "",
+      "snippet": "<div style=\"position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;justify-content:{{ R.ctaJustify }};\" data-dc-tpl=\"524\"> <a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transiti",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 4122.9,
+          "w": 287,
+          "h": 100.8
+        },
+        "768": {
+          "x": 76,
+          "y": 3591,
+          "w": 616,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 825.2,
+          "y": 2815.5,
+          "w": 450.8,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "relative",
+        "768": "relative",
+        "1440": "relative"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_524_0@375.png",
+        "1440": "shots/Root_524_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/525#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 525,
+      "attrs": {
+        "href": "#/apply",
+        "class": "scp14",
+        "style": "background: rgb(216, 202, 80); color: rgb(30, 42, 60); font-weight: 700; font-size: 16px; padding: 16px 24px; border-radius: 999px; display: inline-flex; align-items: center; gap: 10px; box-shadow: rgba(0, 0, 0, 0.45) 0px 10px 24px -12px; transition: transform 0.2s, background 0.2s, box-shadow 0.3s;"
+      },
+      "words": "Become a Trade Customer",
+      "allText": "Become a Trade Customer",
+      "srcLine": 751,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.primary.label }} {{ arrowIcon }}",
+      "snippet": "<a href=\"{{ b.primary.href }}\" data-mag=\"\" style=\"background:#D8CA50;color:#1E2A3C;font-weight:700;font-size:16px;padding:16px 24px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 24px -12px rgba(0,0,0,.45);transition:transform .2s,background .2s,box-shadow .3s;\" style-hover=\"transform:translateY(-2px);background:#E6DA70;color:#1E2A3C;box-shadow:0 16px 30px -1",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 4122.9,
+          "w": 255.1,
+          "h": 56.8
+        },
+        "768": {
+          "x": 76,
+          "y": 3591,
+          "w": 255.1,
+          "h": 56.8
+        },
+        "1440": {
+          "x": 873.5,
+          "y": 2815.5,
+          "w": 255.1,
+          "h": 56.8
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "flex",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_525_0@375.png",
+        "1440": "shots/Root_525_0@1440.png"
+      }
+    },
+    {
+      "key": "Root/526#0",
+      "parentKey": "Root/524#0",
+      "depth": 5,
+      "tag": "a",
+      "template": "Root",
+      "tpl": 526,
+      "attrs": {
+        "href": "tel:01217714330",
+        "class": "scp5",
+        "style": "white-space: nowrap; color: rgb(255, 255, 255); font-weight: 700; font-size: 15.5px; border-bottom: 2px solid rgb(216, 202, 80); padding-bottom: 4px;"
+      },
+      "words": "Call 0121 771 4330",
+      "allText": "Call 0121 771 4330",
+      "srcLine": 752,
+      "membership": [
+        {
+          "kind": "sc-for",
+          "list": "{{ blocks }}",
+          "as": "b",
+          "tpl": "343"
+        },
+        {
+          "kind": "sc-if",
+          "value": "{{ b.isCta }}",
+          "tpl": "514"
+        }
+      ],
+      "srcTag": "a",
+      "srcOwnText": "{{ b.secondary.label }}",
+      "snippet": "<a href=\"{{ b.secondary.href }}\" style=\"white-space:nowrap;color:#FFFFFF;font-weight:700;font-size:15.5px;border-bottom:2px solid #D8CA50;padding-bottom:4px;\" style-hover=\"color:#D8CA50\" data-dc-tpl=\"526\">{{ b.secondary.label }}</a>",
+      "box": {
+        "375": {
+          "x": 44,
+          "y": 4193.7,
+          "w": 125.4,
+          "h": 30
+        },
+        "768": {
+          "x": 353.1,
+          "y": 3604.4,
+          "w": 125.4,
+          "h": 30
+        },
+        "1440": {
+          "x": 1150.6,
+          "y": 2828.9,
+          "w": 125.4,
+          "h": 30
+        }
+      },
+      "visible": {
+        "375": true,
+        "768": true,
+        "1440": true
+      },
+      "display": "block",
+      "position": {
+        "375": "static",
+        "768": "static",
+        "1440": "static"
+      },
+      "flexDirection": "row",
+      "layoutChanged375": true,
+      "screenshots": {
+        "375": "shots/Root_526_0@375.png",
+        "1440": "shots/Root_526_0@1440.png"
+      }
+    }
+  ]
+}

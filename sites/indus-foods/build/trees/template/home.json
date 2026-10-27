@@ -1,0 +1,234 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "className": "cr-ref-blog-0",
+      "textColour": "custom-ink",
+      "minHeight": {
+        "desktop": "0px"
+      },
+      "textColourHover": "custom-ink"
+    },
+    "innerBlocks": [
+      {
+        "name": "core/template-part",
+        "attributes": {
+          "slug": "sgs-archive-toolbar"
+        }
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "backgroundColour": "surface-alt",
+          "contentWidth": {
+            "desktop": "normal"
+          },
+          "padding": {
+            "top": "var:preset|spacing|60",
+            "bottom": "var:preset|spacing|40"
+          },
+          "flexWrap": "wrap",
+          "layout": "stack"
+        },
+        "innerBlocks": [
+          {
+            "name": "sgs/heading",
+            "attributes": {
+              "content": "Blogs",
+              "level": "h1",
+              "textColour": "text"
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "contentWidth": {
+            "desktop": "normal"
+          },
+          "padding": {
+            "top": "var:preset|spacing|50",
+            "bottom": "var:preset|spacing|60"
+          },
+          "flexWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "core/query",
+            "attributes": {
+              "queryId": 1,
+              "query": {
+                "perPage": 12,
+                "pages": 0,
+                "offset": 0,
+                "postType": "post",
+                "order": "desc",
+                "orderBy": "date",
+                "inherit": true
+              },
+              "layout": {
+                "type": "default"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "core/query-total",
+                "attributes": {
+                  "style": {
+                    "spacing": {
+                      "margin": {
+                        "bottom": "var:preset|spacing|30"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "name": "core/post-template",
+                "attributes": {
+                  "layout": {
+                    "type": "grid",
+                    "columnCount": 3
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "tagName": "article",
+                      "backgroundColour": "surface-alt",
+                      "className": "has-shadow-sm",
+                      "padding": {
+                        "top": "0",
+                        "bottom": "var:preset|spacing|40",
+                        "left": "0",
+                        "right": "0"
+                      },
+                      "flexWrap": "wrap",
+                      "borderRadius": {
+                        "desktop": "8px"
+                      }
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "core/post-featured-image",
+                        "attributes": {
+                          "isLink": true,
+                          "className": "sgs-u-media-16x9",
+                          "style": {
+                            "border": {
+                              "radius": {
+                                "topLeft": "8px",
+                                "topRight": "8px"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "sgs/container",
+                        "attributes": {
+                          "tagName": "div",
+                          "padding": {
+                            "left": "var:preset|spacing|30",
+                            "right": "var:preset|spacing|30",
+                            "top": "var:preset|spacing|30"
+                          },
+                          "flexWrap": "wrap"
+                        },
+                        "innerBlocks": [
+                          {
+                            "name": "core/post-title",
+                            "attributes": {
+                              "level": 2,
+                              "isLink": true,
+                              "fontSize": "x-large",
+                              "className": "sgs-u-tap-44 sgs-u-clamp-2"
+                            }
+                          },
+                          {
+                            "name": "core/post-date",
+                            "attributes": {
+                              "fontSize": "small",
+                              "textColor": "text-muted",
+                              "className": "sgs-u-meta-label"
+                            }
+                          },
+                          {
+                            "name": "core/post-excerpt",
+                            "attributes": {
+                              "excerptLength": 20,
+                              "className": "sgs-u-clamp-3"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "core/query-pagination",
+                "attributes": {
+                  "layout": {
+                    "type": "flex",
+                    "justifyContent": "center"
+                  },
+                  "style": {
+                    "spacing": {
+                      "margin": {
+                        "top": "var:preset|spacing|50"
+                      }
+                    }
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "core/query-pagination-previous"
+                  },
+                  {
+                    "name": "core/query-pagination-numbers"
+                  },
+                  {
+                    "name": "core/query-pagination-next"
+                  }
+                ]
+              },
+              {
+                "name": "core/query-no-results",
+                "innerBlocks": [
+                  {
+                    "name": "sgs/text",
+                    "attributes": {
+                      "text": "No posts published yet.",
+                      "textAlign": "center",
+                      "textColour": "text-muted"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]

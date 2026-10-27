@@ -62401,7 +62401,7 @@
    "slug": "home",
    "title": "Home",
    "parent": null,
-   "template": null,
+   "template": "front-page",
    "menus": [
     {
      "menu": "header",
@@ -62419,7 +62419,7 @@
    "slug": "about",
    "title": "About Us",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "header",
@@ -62437,7 +62437,7 @@
    "slug": "our-story",
    "title": "Our Story",
    "parent": "about",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62449,7 +62449,7 @@
    "slug": "certifications",
    "title": "Certifications",
    "parent": "about",
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "footer",
@@ -62467,7 +62467,7 @@
    "slug": "community",
    "title": "Community & Charity",
    "parent": "about",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62479,7 +62479,7 @@
    "slug": "sustainability",
    "title": "Sustainability",
    "parent": "about",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62491,7 +62491,7 @@
    "slug": "careers",
    "title": "Careers",
    "parent": "about",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62503,7 +62503,7 @@
    "slug": "food-service",
    "title": "Food service supply for kitchens that never stop.",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "header",
@@ -62521,7 +62521,7 @@
    "slug": "manufacturing",
    "title": "Bulk ingredients for food manufacturers.",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62533,7 +62533,7 @@
    "slug": "retail",
    "title": "Retail-ready ranges your customers look for.",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62545,7 +62545,7 @@
    "slug": "wholesale",
    "title": "Pallet volumes for wholesalers and cash & carries.",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62557,7 +62557,7 @@
    "slug": "brands",
    "title": "All Brands",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "header",
@@ -62580,7 +62580,7 @@
    "slug": "brand-sanam",
    "title": "Sanam",
    "parent": "brands",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62592,7 +62592,7 @@
    "slug": "brand-shan",
    "title": "Shan",
    "parent": "brands",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62604,7 +62604,7 @@
    "slug": "brand-green-leaf",
    "title": "Green Leaf",
    "parent": "brands",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62616,7 +62616,7 @@
    "slug": "brand-lemon-tree",
    "title": "The Lemon Tree",
    "parent": "brands",
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62628,7 +62628,7 @@
    "slug": "apply",
    "title": "Apply for Trade Account",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "header",
@@ -62651,7 +62651,7 @@
    "slug": "catalogue",
    "title": "Request Catalogue",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62663,7 +62663,7 @@
    "slug": "delivery",
    "title": "Delivery & Logistics",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "footer",
@@ -62681,7 +62681,7 @@
    "slug": "terms",
    "title": "Terms & Conditions",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "footer",
@@ -62699,7 +62699,7 @@
    "slug": "blog",
    "title": "Blog",
    "parent": "about",
-   "template": null,
+   "template": "home",
    "menus": [
     {
      "menu": "footer",
@@ -62717,7 +62717,7 @@
    "slug": "contact",
    "title": "Contact Us",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [
     {
      "menu": "header",
@@ -62735,7 +62735,7 @@
    "slug": "faqs",
    "title": "FAQs",
    "parent": null,
-   "template": null,
+   "template": "page",
    "menus": [],
    "postType": "page",
    "collection": "static",
@@ -62747,7 +62747,7 @@
    "slug": "supporting-the-trade-through-ramadan",
    "title": "Supporting the trade through Ramadan",
    "parent": null,
-   "template": null,
+   "template": "single",
    "menus": [],
    "postType": "post",
    "collection": "live",
@@ -62759,7 +62759,7 @@
    "slug": "falak-rice-exclusive-uk-distribution",
    "title": "Falak rice: exclusive UK distribution",
    "parent": null,
-   "template": null,
+   "template": "single",
    "menus": [],
    "postType": "post",
    "collection": "live",
@@ -62771,7 +62771,7 @@
    "slug": "inside-our-birmingham-packing-line",
    "title": "Inside our Birmingham packing line",
    "parent": null,
-   "template": null,
+   "template": "single",
    "menus": [],
    "postType": "post",
    "collection": "live",
@@ -62783,7 +62783,7 @@
    "slug": "sixty-years-in-the-balti-triangle",
    "title": "Sixty years in the Balti Triangle",
    "parent": null,
-   "template": null,
+   "template": "single",
    "menus": [],
    "postType": "post",
    "collection": "live",
@@ -62795,7 +62795,7 @@
    "slug": "ordering-ahead-for-eid",
    "title": "Ordering ahead for Eid",
    "parent": null,
-   "template": null,
+   "template": "single",
    "menus": [],
    "postType": "post",
    "collection": "live",
@@ -62807,7 +62807,7 @@
    "slug": "why-independents-still-matter",
    "title": "Why independents still matter",
    "parent": null,
-   "template": null,
+   "template": "single",
    "menus": [],
    "postType": "post",
    "collection": "live",
@@ -62823,7 +62823,8 @@
    "postType": "sgs_form",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-59"
   },
   {
    "slug": "form-careers",
@@ -62834,7 +62835,8 @@
    "postType": "sgs_form",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-48"
   },
   {
    "slug": "form-catalogue",
@@ -62845,7 +62847,8 @@
    "postType": "sgs_form",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-50"
   },
   {
    "slug": "header",
@@ -62856,7 +62859,8 @@
    "postType": "sgs_header",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-03"
   },
   {
    "slug": "drawer-site-menu",
@@ -62867,7 +62871,8 @@
    "postType": "sgs_drawer",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-09"
   },
   {
    "slug": "footer",
@@ -62878,7 +62883,8 @@
    "postType": "sgs_footer",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-14"
   },
   {
    "slug": "mega-menu-about",
@@ -62895,7 +62901,8 @@
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-04"
   },
   {
    "slug": "mega-menu-sectors",
@@ -62912,7 +62919,8 @@
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-05"
   },
   {
    "slug": "mega-menu-brands",
@@ -62929,7 +62937,8 @@
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-06"
   },
   {
    "slug": "mega-menu-trade",
@@ -62946,7 +62955,8 @@
    "postType": "sgs_mega_menu",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-07"
   },
   {
    "slug": "form-trade-application",
@@ -62957,7 +62967,8 @@
    "postType": "sgs_form",
    "collection": "static",
    "flags": [],
-   "id": null
+   "id": null,
+   "draftId": "surfaces.json S-52"
   }
  ],
  "palette": {
@@ -134170,254 +134181,263 @@
   {
    "rowId": "page:page:home",
    "rowType": "page-map",
-   "contentHash": "c045085601c2658c7eee1493c08572af21d775d20591c46f98e7744276fae311",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "d2b617edc3e30dba1643888e629e2eb4528edadb70d43e6aed2ce489c2fefc0b",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:about",
    "rowType": "page-map",
-   "contentHash": "cef4e44b181a9dffcdde049ea0e608f8e734da25b9ec6b22764ce33b20499d13",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "5092c35fa601afdcb092088eb25a88a8c0fd5bdafc755ddaa9ba850d1ca54729",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:our-story",
    "rowType": "page-map",
-   "contentHash": "89552bd28233f94735f968974caa7f74bc19bb9d2c7d4f1f660e1608a6343280",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "3c69873a51ada1bb805fc3e390ed52e09af782c1aae9d4adadad908c633b6126",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:certifications",
    "rowType": "page-map",
-   "contentHash": "42d27bd33a4f65dcf267059d14c5c7cfd0208d0b098764ed3923d0298c269b30",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "ac5ab2883e307a69ff7fb6c05fc33df02b54ac55edd7dc167539e050735afd5b",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:community",
    "rowType": "page-map",
-   "contentHash": "9b285bf0c95800d9ca5ad3813afa7158722c2afa96fef6a9e042c484a4fe6074",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "ea79623ee7c2efafe22616a08e14ecee8b5b0c4875b035eb144bce64e6b45801",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:sustainability",
    "rowType": "page-map",
-   "contentHash": "07fa0c56067d8f374be786a08822f3121361c395486e0315cc449c544d208326",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "19d020dcf0788cc13ff2c1c6146e61817d42ca2fe9603167195d81d18619f609",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:careers",
    "rowType": "page-map",
-   "contentHash": "1b919c77cfb708e44e0a5046443404c8784fbe8dfe932ec30903c467f8b22a72",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "6a5993da4c4da8d1fc0ca24a998a27bc3d5cc934bf9dd0002ba525545152753d",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:food-service",
    "rowType": "page-map",
-   "contentHash": "abcfe93644ad976eaff6a88980c4315cf19168162c68ceafbd2e3d9cfed7c5df",
-   "mark": "edit:title=Food Service",
-   "markedOn": "2026-10-24",
+   "contentHash": "7ce69ed92ca7c3b09784f00a590dbfe9b6f6166166fa351469d771a2186749fe",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:manufacturing",
    "rowType": "page-map",
-   "contentHash": "4e8c37982cc391f723caab48d711a7cdf54e2bcf0f0693e2902bad9df3900769",
-   "mark": "edit:title=Manufacturing",
-   "markedOn": "2026-10-24",
+   "contentHash": "893af30d1c58fa72c897fb9357078726b363b10e29022e962e9416b9952c48b7",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:retail",
    "rowType": "page-map",
-   "contentHash": "521f3eb75dd5ce3bc30871a57ad5f3e5f6f5f8a1b6515b16eb2082352c97b746",
-   "mark": "edit:title=Retail",
-   "markedOn": "2026-10-24",
+   "contentHash": "bb907ddb5fa93ddea28356882cc1ef8d8b540422930012b6d92457139b312fd5",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:wholesale",
    "rowType": "page-map",
-   "contentHash": "f56a014fc2065d592e3125d5ea762f7b514ba0d5f53c8e917eb75af932a3a8c0",
-   "mark": "edit:title=Wholesale",
-   "markedOn": "2026-10-24",
+   "contentHash": "40235af8cb002026c44c89cbba7ecf589a45b00aad635b923281208dfebbe112",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:brands",
    "rowType": "page-map",
-   "contentHash": "b1f346d3da4118f72532211fbf127cf371faae619f421d0f81e947cfecb3287a",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "d87dd6f30973c2d398aebe882d538ad9ec27dc6568c81eea24a523d27a79340d",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:brand-sanam",
    "rowType": "page-map",
-   "contentHash": "4b29d29feb2091c2f6daf1a6c7314462962a09dd9850eaac801581f280ac985b",
-   "mark": "edit:slug=sanam",
-   "markedOn": "2026-10-24",
+   "contentHash": "6741e3bf5d894e9dd99cb17f18fa49254b0c9acc3c58cd9076652a7878b916eb",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:brand-shan",
    "rowType": "page-map",
-   "contentHash": "3da1e714930ee8bd95ef5794d1147dea0b2bbf2e80cac1e9894fb7eb544881c8",
-   "mark": "edit:slug=shan",
-   "markedOn": "2026-10-24",
+   "contentHash": "20bc58754daf9e0ef0ba1eb989837d54a6a4970794767f7e4e357011ffdf4f09",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:brand-green-leaf",
    "rowType": "page-map",
-   "contentHash": "c6e6e8ce931cff40c1d98c788cd7cdccaa6bcb0163f03e3892ba3a5ad6c31b49",
-   "mark": "edit:slug=green-leaf",
-   "markedOn": "2026-10-24",
+   "contentHash": "ac172830a2800dd01c5df9890e5e5360042139831cb0839c209d509d4911cfc9",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:brand-lemon-tree",
    "rowType": "page-map",
-   "contentHash": "9e058aaf00086ce40bc37fc06eb313f5e80900f84669395ad5609b07cbbce08d",
-   "mark": "edit:slug=lemon-tree",
-   "markedOn": "2026-10-24",
+   "contentHash": "24a95909a5bbef36a0d3b9bc81f477923c37368390e2da94b8c1eb559e1bac11",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:apply",
    "rowType": "page-map",
-   "contentHash": "f1933f33192afb08bd3333b6b4a5e5b858e7351a5f79238c02a145b90b59df00",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "dec7a757dda1905360b0da78407e7f3e318d6307b3fc39a53e0a169b76c38473",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:catalogue",
    "rowType": "page-map",
-   "contentHash": "015e6d36fd4f2a8de12e52248668c173f22bc11fd6510c897c5bccbfb120b720",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "d2caad164b60a33b15c6680328a708eccb2e99b303b7d43a4ea4c7de23fd8852",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:delivery",
    "rowType": "page-map",
-   "contentHash": "017c9455476c6aaa803b312fb6f42d74ac227c12766075f7948c8e906434ba95",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "2d9ffcae3eaaeac945b919a3a9f905a64811cb1ad1f3ef937eb989864e9e6b7f",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:terms",
    "rowType": "page-map",
-   "contentHash": "37f057dfb0e89257997c2dd3fe258abee82a653de019fa84aac400f5665428ec",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "654c2b18a7dce167aa2e78440943f4f073fed31499250b252ea6f5bac7737c70",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:blog",
    "rowType": "page-map",
-   "contentHash": "8de18572fb7f65655ab42533233a43fa0088b56a0795199ba0a5fe7df7ee21ef",
-   "mark": "edit:parent=",
-   "markedOn": "2026-10-24",
+   "contentHash": "20fac43f86db0e91b05b77e0dd6bdb665eebc1167558bfdf6394ddeb3666c603",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:page:contact",
    "rowType": "page-map",
-   "contentHash": "f555b8ca52da3e066258ddfd75e80ca0f5d2f782534cd518b75794bce4e70af0",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "89e58cbe17dffa0a9e8fa8e1e66d6c6ae4acec40114cb3ed61b730efecf850de",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:page:faqs",
    "rowType": "page-map",
-   "contentHash": "49807e075477e5d711c43406391190764ad66dda87037b4c506eff2c527f30a8",
-   "mark": "accept",
-   "markedOn": "2026-10-24",
+   "contentHash": "2d501f9d1ac9c3fe169522b9cfbe68320da5f984060e49443d8fee4602bc285c",
+   "mark": null,
+   "markedOn": null,
    "carriedFrom": null,
    "changed": true
   },
   {
    "rowId": "page:post:supporting-the-trade-through-ramadan",
    "rowType": "page-map",
-   "contentHash": "78e4b187f7ce83ccbb3df7b0ff683cc064aaba072cbf7ad17071e8529e2301e5",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "f7304df549b9af56041fdad2ba7ea0014f2db6f4742e60bd347b92bfba874cf1",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:post:falak-rice-exclusive-uk-distribution",
    "rowType": "page-map",
-   "contentHash": "2fbcbcebf26cc82ab6112aea15769f72fa5492ca136d1a6c30ff389d9c265090",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "d641540e4f64830f9a6daff12ca37524b234d83ab9c664b44bdfda69cc50f57c",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:post:inside-our-birmingham-packing-line",
    "rowType": "page-map",
-   "contentHash": "4087ed0f45c0368806fa5e39a53233f9ae3b4242a6ee91f2e7de4ad43a02aa2a",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "9881336e8a3cb1f938108ac4289b4eedd39a2febf49f7c4dd6149c5669deb9aa",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:post:sixty-years-in-the-balti-triangle",
    "rowType": "page-map",
-   "contentHash": "b4fa28ce4d981fdd7b4dd6047413fd043218c5e2cca44e0e39901ae0da6cfef8",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "191face5943b9d96aa085258af61ebfa3df119c6af1e6c357e53c76d2fc71089",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:post:ordering-ahead-for-eid",
    "rowType": "page-map",
-   "contentHash": "af99728602d2f574e9c5384ee3a478a816f371e7b24854ec531f95c69422b5f8",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "e6189153eb66958103ecd6c2386bafe8e8af0d1bff20af84ab7a76aa392faf40",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:post:why-independents-still-matter",
    "rowType": "page-map",
-   "contentHash": "bb85af59c7bdf7eb8669f63e388aeb960bdba6bdc8945fa4fb8964a12cfd6e87",
-   "mark": "accept",
-   "markedOn": "2026-10-19",
-   "carriedFrom": "2026-10-19T02:13:36.160Z"
+   "contentHash": "5549e10582ccba9a87aded49759ffa452e9c153f5789d3f4b932cbe1d2731d18",
+   "mark": null,
+   "markedOn": null,
+   "carriedFrom": null,
+   "changed": true
   },
   {
    "rowId": "page:sgs_form:form-enquiry-form",
@@ -135193,8 +135213,7 @@
    "contentHash": "00d678e528d0b8a0d068da85f56e1e036eec681c38063fc99c40d7edc6a3ce71",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:link.crossorigin",
@@ -135218,8 +135237,7 @@
    "contentHash": "e0012837d6e5d8de47fb8c7d020ad90b2b78acc6e733712a08cd09826f957eb0",
    "mark": "gap:draft reading",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:transforms",
@@ -135227,8 +135245,7 @@
    "contentHash": "36cbad2a6e59c10a9f9e722c009c86c1a5809ba5bf67a4c8a64e961633d9dc7c",
    "mark": "gap:draft reading",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:basic-user-interface",
@@ -135236,8 +135253,7 @@
    "contentHash": "9f92b6931127381c4fbf72d1ec69b2f89a7c5af2ea8e195df062860fc9a9d3a7",
    "mark": "gap:draft reading",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:logical-properties-and-values",
@@ -135245,8 +135261,7 @@
    "contentHash": "82d3e0c46343ba5bbd9a341b5185b376bb8682bf07cb337ba9536218dc6770ad",
    "mark": "gap:draft reading",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:aria-role:dialog",
@@ -135254,8 +135269,7 @@
    "contentHash": "44419b2ee60615f66843d714ea93c470933c3c1c9a639632057bbd22827a915c",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:overscroll-behavior",
@@ -135271,8 +135285,7 @@
    "contentHash": "72dcfaac713a7a68cc478f72cacef8093c141b21d55498f854cf8ae633fa726a",
    "mark": "gap:draft reading",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:will-change",
@@ -135280,8 +135293,7 @@
    "contentHash": "0a2ef6e9faa2fed07ce73d37ac8666b64659bbc322c81c1cac1369962e0ff09b",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:scroll-snap",
@@ -135297,8 +135309,7 @@
    "contentHash": "f2678c3c1fc4285aeeee16b219728464c104f88e113ee29610f489b13d71388c",
    "mark": "gap:content, media and icons",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:generated-content",
@@ -135306,8 +135317,7 @@
    "contentHash": "31ae2729e957ddccc49ffa5f6d37c3033089a0eb0c665eb3f4838e577171d67c",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:global.title",
@@ -135315,8 +135325,7 @@
    "contentHash": "3dbcc6712e1d41a15efdd2bf4540e41c002adde54c1b89f748d0bb856e87d751",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:iframe.loading",
@@ -135324,8 +135333,7 @@
    "contentHash": "f2681f7a44fa8b89f6f35083f6f51cfd6ce3ee32b1ce8a7b0b2947a8fb689a1f",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:writing-modes",
@@ -135333,8 +135341,7 @@
    "contentHash": "b258a04957d91740365c33d6117252cc9f8ff71f661530c499c57a6abe9ef169",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-function:contrast",
@@ -135342,8 +135349,7 @@
    "contentHash": "a2fb044315a2fa7e8590253c9a18f66888823bf75e8732aaf58283e394106826",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:compositing-and-blending",
@@ -135351,8 +135357,7 @@
    "contentHash": "fd682d05729bb401a1e0a922847ea6d5ad1698c84d6d68266f723ed72f22fa78",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:button.disabled",
@@ -135360,8 +135365,7 @@
    "contentHash": "5d6b9fd3d5b7c5dcae845197921b7ab954b5cdb2b1f08eb05a83be5c7b0cc03f",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:label.for",
@@ -135369,8 +135373,7 @@
    "contentHash": "30487b5ab6ecf72c84cc51143cddc69d08bde32667fafb4c47a67089eb57a3c9",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:form.novalidate",
@@ -135378,8 +135381,7 @@
    "contentHash": "086109376a429a752a29d6e9572ff3d5ef8f06931fcec08dee20d10aab0c8e0a",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:svg:metadata",
@@ -135387,8 +135389,7 @@
    "contentHash": "0411dd2ab6ede6c58e25087657b8fcc2b2a039dd67af25e4d913f8f1f48a4672",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:svg:unlisted",
@@ -135412,8 +135413,7 @@
    "contentHash": "d40df6ba1dccaa57eea9ffc3032708a93e605ec7d0f8b4c611626910fdb68d80",
    "mark": "gap:modes and values with no CSS property",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-group:pointer-events",
@@ -135421,8 +135421,7 @@
    "contentHash": "76eb21cea3e76e92c20c2c1a2e33dd954d2aaf43e877cc32d747e119062422ef",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-property:-webkit-user-drag",
@@ -135430,8 +135429,7 @@
    "contentHash": "7a5588a931132623888a2cccbbe6c982cf2c2076bad8689e2943654747e79c21",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-pseudo-class:host",
@@ -135439,8 +135437,7 @@
    "contentHash": "871577e2d690f4b8444611b383c858cbedbfa7cc2ba3ccfa3e41535d5a82143e",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:css-pseudo-class:host-context",
@@ -135448,8 +135445,7 @@
    "contentHash": "6831bd5b0c2f087d56b19ddcb3c9a39d14c80d42778e7e46cd396a58cb52fa77",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:global.class",
@@ -135457,8 +135453,7 @@
    "contentHash": "0dc0bc29c940a44362ab34e22180f7cbd9c45b271432bf8f6c4674c9ec25d049",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:global.draggable",
@@ -135466,8 +135461,7 @@
    "contentHash": "a77191da49283ad4259e5cb6a15d8993c019636dd3f8e57f20dbc86c260c2613",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:global.part",
@@ -135475,8 +135469,7 @@
    "contentHash": "91e0c50c4cc5f36b7ef54f837dfc31daec76fb0cf08116ffecc8f624032ef726",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "missing:coverage:html-attr:global.popover",
@@ -135484,8 +135477,7 @@
    "contentHash": "92eb2a89639b341c137f1551ce6fbe112193db4b6aed7b127575a40004d3b804",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:A-24",
@@ -135493,7 +135485,7 @@
    "contentHash": "6536b0daf00a0fb3575b9fc3a110386ced14e7cde9b29cfebba863bd27d213a1",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:A-30",
@@ -135501,7 +135493,7 @@
    "contentHash": "04f37b012c8adee32b02af0d1c5a4c948c83030a5c0880df5114995cfd1c2287",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:A-31",
@@ -135509,7 +135501,7 @@
    "contentHash": "6bffe9989fedffcfe8be94f1c9ab6eef60020a729233d347a35f91462d04d8c8",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:A-32",
@@ -135517,7 +135509,7 @@
    "contentHash": "bcd26af30b8c03545c1af8afcbba1559120fe1310b4094da711e13f5daed04dd",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-05",
@@ -135525,7 +135517,7 @@
    "contentHash": "d5b159e102725a6b3653d1544478c46e15d721b93bdfd0c467d2e2a80b924cf9",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-09",
@@ -135533,7 +135525,7 @@
    "contentHash": "ea4ce0663e43befc11a368d9dcf4deba5a77cf40b365ac098ec7ea1200dd607d",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-11",
@@ -135541,7 +135533,7 @@
    "contentHash": "fdcba05e8feca16fc7e97f4337378d9eb38c3e13d6b87a96e8ed125372f08120",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-12",
@@ -135549,7 +135541,7 @@
    "contentHash": "04fe3fb852480eb421d3490219da1da5d1c9c397a6e0cd00f5be8432ef746d3e",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-13",
@@ -135557,7 +135549,7 @@
    "contentHash": "d09c8d732f0f7d70034753b9d6f500d8b3b216f8f337ef721163cd069d09c58d",
    "mark": "difference",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-14",
@@ -135565,7 +135557,7 @@
    "contentHash": "31f3599f9c116dbc3145f5cccbb1983dd57fdfbb1e67fc8421493014a5138ccb",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-43",
@@ -135573,7 +135565,7 @@
    "contentHash": "3b46ece6450f8b862302de47dc69d0df254fb862d8aa24727b262ad7172bb176",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-44",
@@ -135581,7 +135573,7 @@
    "contentHash": "776f63c7be8988b8ebe628ccb7d93b6b90c59ebea4193aace1bca10572c23d1e",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-45",
@@ -135589,7 +135581,7 @@
    "contentHash": "d50369d987ec1415bae6a2759ed8e15d11ee0910e2c11876a622d2346fec2e9c",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-50",
@@ -135597,7 +135589,7 @@
    "contentHash": "e5299d3c09137a3d42b072b101e186ae663ca74aed22c7ae298dd7a12f06021c",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "effect:J-66",
@@ -135605,7 +135597,7 @@
    "contentHash": "fa39dbdb37d1d7ebeb09ed5b5ec98032fdb3afc5a4b5ab568fbac46afc731745",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:scroll-progress-bar:Indus Foods Website v2/38#0",
@@ -135630,7 +135622,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/9#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/9#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/10#0",
@@ -135639,7 +135633,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/10#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/10#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/11#0",
@@ -135648,7 +135644,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/11#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/11#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/13#0",
@@ -135656,7 +135654,7 @@
    "contentHash": "dacffd31bb2b2e7ea75531c8b5e5e65f2b370b82d4eca41b83631e1fb248c750",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/14#0",
@@ -135665,7 +135663,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/14#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/14#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/16#0",
@@ -135674,7 +135674,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/16#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/16#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/18#0",
@@ -135682,7 +135684,7 @@
    "contentHash": "96b7f5edd795bca194dcfaedb460f3f5aaca5a8129c691576e0d252dd50967fe",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/20#0",
@@ -135691,7 +135693,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/20#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/20#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/22#0",
@@ -135700,7 +135704,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/22#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/22#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/23#0",
@@ -135709,7 +135715,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/23#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/23#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/26#0",
@@ -135718,7 +135726,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/26#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/26#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/29#0",
@@ -135727,7 +135737,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/29#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/29#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/35#0",
@@ -135736,7 +135748,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:top-bar:Indus Foods Website v2/35#0"
+   "realignedFrom": [
+    "skeleton:top-bar:Indus Foods Website v2/35#0"
+   ]
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/40#0",
@@ -135776,7 +135790,7 @@
    "contentHash": "a098eca7e25c99709507a5a98c43de3b3ed6efdd7aa7a75378df6b03e95e09ae",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/58#0",
@@ -135784,7 +135798,7 @@
    "contentHash": "eae1fd0783316a25a13190fb5676221c743f22a4560de8a9ec65159258b5156f",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/59#0",
@@ -135792,7 +135806,7 @@
    "contentHash": "18eaa97a216667281197e2f672725332191a36a884c875cd1394b77784efceea",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/60#0",
@@ -135800,7 +135814,7 @@
    "contentHash": "bbf5a5a5382e41a55067779cdc846c61b2309612743f779729fc9b1f17fa9c37",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/61#0",
@@ -135808,7 +135822,7 @@
    "contentHash": "f57fe699e01a2a1b47bcb010bdcff39510084f50952f543457685f7c5ca66946",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/62#0",
@@ -135816,7 +135830,7 @@
    "contentHash": "09595cf28ac301eea0777b5c157c4e8cd98e5a788585fa0f76e90ca287111758",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sticky-header:Indus Foods Website v2/45#0",
@@ -135880,8 +135894,7 @@
    "contentHash": "e18a6662c034e71b8285880fd2544ee82d5f2bbcd5cd2b6897ed8c2cc89ca857",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/70",
@@ -135889,8 +135902,7 @@
    "contentHash": "f45478ecb0e19f119673d91240168d5fa80a436c3a3b098db58602df529976e4",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/71",
@@ -135898,8 +135910,7 @@
    "contentHash": "e5dd61d16ca3b11d16ba3f298a5150b276bb77f9d69470410dd8182892ddd54c",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/72",
@@ -135907,8 +135918,7 @@
    "contentHash": "99953fc4a7e075d06a8abe5c99c233b071a2883164e76eec57b2541edbbf3f4a",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/73",
@@ -135916,8 +135926,7 @@
    "contentHash": "d97a7f9383e8e48abe1d8f983687aa5d21a74cb64749f3d942f485139d5efd95",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/74",
@@ -135925,8 +135934,7 @@
    "contentHash": "e510ee21b88c22d906576bfba00c53aed57f65cdf1ebc15eef1a8a8d02c4bf1a",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/76#0",
@@ -135934,8 +135942,7 @@
    "contentHash": "627b430aae1523dd84a0cf6620806f46b38f8e05e4e5030b03a7cab86d2f8850",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/77#0",
@@ -135943,8 +135950,7 @@
    "contentHash": "82b3a98e70ea2946e246c64f320ad17ae97c7914527867f5420ad98789c88a78",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/78#0",
@@ -135952,8 +135958,7 @@
    "contentHash": "7e76d0ecfe3cdcde04541a3e0fd460e98ce0121deb0c7ef5d5a2c4a0d94ee072",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/79#0",
@@ -135961,8 +135966,7 @@
    "contentHash": "5d40f9c28ec8189744e34497bbae459d7c0b36b4b45451322652c6c6b1eb46df",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/80#0",
@@ -135970,8 +135974,7 @@
    "contentHash": "ba302b699353c1dc35f5cef9e1e27250809c2aef558bc874c2ddfc2e678e2e0b",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/81#0",
@@ -135979,8 +135982,7 @@
    "contentHash": "e868ad166a8a52312522597b1a07a9bbf2a59ec23b843a52d573c444e2e97a22",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/82#0",
@@ -135988,8 +135990,7 @@
    "contentHash": "b1eadddce43b3943b3923b1bae23b800d2fdd8a24fcfadd083284f226ab23ebb",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:about-mega-menu:Indus Foods Website v2/83#0",
@@ -135997,8 +135998,7 @@
    "contentHash": "952f7a94fc8f0a4b38b93eee626f33966c6ab2b3fbbe9cb827fada6625f65d52",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/85#0",
@@ -136006,8 +136006,7 @@
    "contentHash": "7a49e9849f7c60bc3743b77f3ec26707ff679adfcc539807fd7d1e77e85231d6",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:sectors-mega-menu:Indus Foods Website v2/87",
@@ -136079,8 +136078,7 @@
    "contentHash": "168a1acdf8f62582a984a4ba6aa2418839a9f3792c930fb9335d102d2945b9a4",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/97#0",
@@ -136088,8 +136086,7 @@
    "contentHash": "514bc9f33bbcf6ef12576a9c71d98f87c0cb7d82e4788fbae586d301850c9b3d",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/98#0",
@@ -136097,8 +136094,7 @@
    "contentHash": "b11310855666e7c763cb203e877561e37a220875a85d006b2e5ac19b916bbe78",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/100",
@@ -136122,8 +136118,7 @@
    "contentHash": "7bbad21fac75f193fd4e060f8d37454b646591d4b80cedb80c924696acbaf4f9",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/103#0",
@@ -136131,8 +136126,7 @@
    "contentHash": "ff163ff4032e0a7a37561279231301c7ce8de81100b1792fc38b48038d7933ef",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/104#0",
@@ -136140,8 +136134,7 @@
    "contentHash": "af91ec1edeab477238c218b52f91da3d2d700fd91c16081c9b521f35de8e397f",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:brands-mega-menu:Indus Foods Website v2/105#0",
@@ -136149,8 +136142,7 @@
    "contentHash": "3642ef0aac98dd95d2a5129aaa34dd8616f9c9e2c5bd0202b95354308250e4ef",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/108#0",
@@ -136222,8 +136214,7 @@
    "contentHash": "5c98acb7cced700a36308c62ede74731d23b775e53fc395e94a7ae5cdf5740fc",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/117#0",
@@ -136231,8 +136222,7 @@
    "contentHash": "bf7423320773b7852f2a6f4a767423ac0689e117e915ec2f5159b1212c65c704",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:mobile-tablet-drawer:Indus Foods Website v2/118#0",
@@ -136905,7 +136895,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:whatsapp-button:Indus Foods Website v2/728#0"
+   "realignedFrom": [
+    "skeleton:whatsapp-button:Indus Foods Website v2/728#0"
+   ]
   },
   {
    "rowId": "skeleton:footer:Indus Foods Website v2/729#0",
@@ -136914,7 +136906,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:whatsapp-button:Indus Foods Website v2/729#0"
+   "realignedFrom": [
+    "skeleton:whatsapp-button:Indus Foods Website v2/729#0"
+   ]
   },
   {
    "rowId": "skeleton:footer:Indus Foods Website v2/731#0",
@@ -136923,7 +136917,9 @@
    "mark": "accept",
    "markedOn": "2026-10-19",
    "carriedFrom": "2026-10-19T02:13:36.160Z",
-   "realignedFrom": "skeleton:whatsapp-button:Indus Foods Website v2/731#0"
+   "realignedFrom": [
+    "skeleton:whatsapp-button:Indus Foods Website v2/731#0"
+   ]
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/201#0",
@@ -137027,8 +137023,7 @@
    "contentHash": "6528e4d6b5bc5c2ec91a199ce08dbf79603a6a36bd97936b22c9b5d643e9c358",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/216#0",
@@ -137036,8 +137031,7 @@
    "contentHash": "561de3ef61a1383e01917bf814c99e966e9f911b28adae83ff0b1fd98928670d",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/217#0",
@@ -137557,8 +137551,7 @@
    "contentHash": "bb01145f2efc8d4c0301d4d1c1c27aaff88decae42bbadaa9b68e0c6e7e0b0ea",
    "mark": "block:sgs/container",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/288#0",
@@ -137566,8 +137559,7 @@
    "contentHash": "c4b6ee895f646c235fe8835c77a4601ac3c56fff15850725d33e1105902bb815",
    "mark": "block:sgs/container",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/289#0",
@@ -137575,8 +137567,7 @@
    "contentHash": "b25beb44d80d1c0239b5d976653c9850ce52b628a2300bbccbb8831dfc6e9103",
    "mark": "block:sgs/media",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-home:Indus Foods Website v2/290#0",
@@ -138016,7 +138007,7 @@
    "contentHash": "f7bd3355b8c2b4b3306e35b26cea81b91d6ef3b82019e1800505113f0078cf99",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/455#0",
@@ -138024,7 +138015,7 @@
    "contentHash": "ba5321ca2c6e31a022a5805acee8761777cc9bd181527cc98f584371b4e91e8f",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/456#0",
@@ -138032,7 +138023,7 @@
    "contentHash": "a0c15054c7f4651220796cd7d672c26caf4d8fc7fb0b6068e938b6dc586b07fe",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/458",
@@ -138040,7 +138031,7 @@
    "contentHash": "2223ce266e8044121ba720cb07eb250ab5c63c5d09fda99a5b697d78171c2cf2",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/459",
@@ -138048,7 +138039,7 @@
    "contentHash": "e2c783bdbbee1b594c42549ebbffb86856494128d3196eab43b39847ee2383d7",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/460",
@@ -138056,7 +138047,7 @@
    "contentHash": "9ce205f361a2e3b8562f42665981ee2beef5015da8bd8af7126029aa41a0f590",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/461",
@@ -138064,7 +138055,7 @@
    "contentHash": "83f48ad573e6347ef74769f99a59e203a8c2f8a94b2c84e7cb63b9c0c4010da2",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/462=sgs/text",
@@ -138072,7 +138063,7 @@
    "contentHash": "b10ef939bda48e141d7e7aeedb7f071d0975d53ef5751a56642a3cdb65c54f1e",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/462=sgs/heading",
@@ -138080,7 +138071,7 @@
    "contentHash": "1ac8e12dc698c09867353e2b40acdc0fc3664b31f4130690a21da093268bbff1",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/463",
@@ -138088,7 +138079,7 @@
    "contentHash": "5af68bbebbd9f4efc703161fc0494e86eeb5852f0dbc92b48330813061c95fdd",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/464",
@@ -138096,7 +138087,7 @@
    "contentHash": "fc3b1cde512ad141bf5183a97da42fda9a5246aa87075860bb729c32df83e51d",
    "mark": "remove",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-about:Indus Foods Website v2/437#0",
@@ -139488,7 +139479,7 @@
    "contentHash": "3a6dd21319943d2205414b5cb0d948a5b805e48178ab6fd8c48b2ee84e146b39",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/93#0",
@@ -139552,7 +139543,7 @@
    "contentHash": "cf7691dcd2735087cce8ff754423f12e806eeada7f47836f166452b5d4bc07dc",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/104#0",
@@ -139560,7 +139551,7 @@
    "contentHash": "a49dbbda913cb705d0cb2a3804d638f55281df6ae9d5642cf99898f3da3c80ca",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-apply:Indus Foods Website v2>TradeApplication@466#0/105#0",
@@ -139568,7 +139559,7 @@
    "contentHash": "6a5eb8f6fa2c087576829ed6bcc721aaad97b0de236193a1f6f5f6ae3e93730e",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-delivery:Indus Foods Website v2/586#0",
@@ -139904,8 +139895,7 @@
    "contentHash": "f228837d78932610d7c5d468c00c6014bee32085a60bb7e81b334ae0909f6e2b",
    "mark": "block:sgs/text",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2/536=sgs/text",
@@ -139913,8 +139903,7 @@
    "contentHash": "c8905dee2271b11cd143573d7913628e5c089575c31aedf8941c8f4835faa9d6",
    "mark": "accept",
    "markedOn": "2026-10-24",
-   "carriedFrom": null,
-   "changed": true
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "skeleton:page-contact:Indus Foods Website v2/537#0",
@@ -143762,7 +143751,7 @@
    "contentHash": "f1c7989249edb667721b4b2f3c895a247f662a3b506795861bd356122e6515ff",
    "mark": "noted",
    "markedOn": "2026-10-24",
-   "carriedFrom": null
+   "carriedFrom": "2026-10-23T23:58:47.556Z"
   },
   {
    "rowId": "notice:host:maps.google.com",

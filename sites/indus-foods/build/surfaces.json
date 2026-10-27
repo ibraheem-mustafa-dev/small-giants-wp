@@ -2,9 +2,9 @@
   "header": {
     "tree": "trees/sgs_header/header.json",
     "intakeSurface": "sticky-header",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 201
     },
@@ -29,9 +29,9 @@
   "drawer-site-menu": {
     "tree": "trees/sgs_drawer/site-menu.json",
     "intakeSurface": "mobile-tablet-drawer",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 203
     },
@@ -47,9 +47,9 @@
   "footer": {
     "tree": "trees/sgs_footer/footer.json",
     "intakeSurface": "footer",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 205
     },
@@ -70,9 +70,9 @@
   "mega-about": {
     "tree": "trees/sgs_mega_menu/about.json",
     "intakeSurface": "about-mega-menu",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 155
     },
@@ -88,9 +88,9 @@
   "mega-sectors": {
     "tree": "trees/sgs_mega_menu/sectors.json",
     "intakeSurface": "sectors-mega-menu",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 157
     },
@@ -106,9 +106,9 @@
   "mega-brands": {
     "tree": "trees/sgs_mega_menu/brands.json",
     "intakeSurface": "brands-mega-menu",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 159
     },
@@ -124,9 +124,9 @@
   "mega-trade": {
     "tree": "trees/sgs_mega_menu/trade.json",
     "intakeSurface": "trade-mega-menu",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 161
     },
@@ -142,12 +142,13 @@
   "home": {
     "tree": "trees/page/home.json",
     "intakeSurface": "page-home",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 90
     },
+    "shell": "front-page",
     "walker": "qa/parity/home.fill-base.mjs",
     "walkerFull": "qa/parity/home.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -165,12 +166,13 @@
   "about": {
     "tree": "trees/page/about.json",
     "intakeSurface": "page-about",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 92
     },
+    "shell": "page",
     "walker": "qa/parity/about.fill-base.mjs",
     "walkerFull": "qa/parity/about.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -184,12 +186,13 @@
   "our-story": {
     "tree": "trees/page/our-story.json",
     "intakeSurface": "page-our-story",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 95
     },
+    "shell": "page",
     "walker": "qa/parity/our-story.fill-base.mjs",
     "walkerFull": "qa/parity/our-story.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -203,12 +206,13 @@
   "certifications": {
     "tree": "trees/page/certifications.json",
     "intakeSurface": "page-certifications",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 97
     },
+    "shell": "page",
     "walker": "qa/parity/certifications.fill-base.mjs",
     "walkerFull": "qa/parity/certifications.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -220,12 +224,13 @@
   "community": {
     "tree": "trees/page/community.json",
     "intakeSurface": "page-community",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 99
     },
+    "shell": "page",
     "walker": "qa/parity/community.fill-base.mjs",
     "walkerFull": "qa/parity/community.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -237,12 +242,13 @@
   "sustainability": {
     "tree": "trees/page/sustainability.json",
     "intakeSurface": "page-sustainability",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 101
     },
+    "shell": "page",
     "walker": "qa/parity/sustainability.fill-base.mjs",
     "walkerFull": "qa/parity/sustainability.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -254,12 +260,13 @@
   "careers": {
     "tree": "trees/page/careers.json",
     "intakeSurface": "page-careers",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 103
     },
+    "shell": "page",
     "walker": "qa/parity/careers.fill-base.mjs",
     "walkerFull": "qa/parity/careers.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -271,12 +278,13 @@
   "food-service": {
     "tree": "trees/page/food-service.json",
     "intakeSurface": "page-food-service",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 105
     },
+    "shell": "page",
     "walker": "qa/parity/food-service.fill-base.mjs",
     "walkerFull": "qa/parity/food-service.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -288,12 +296,13 @@
   "manufacturing": {
     "tree": "trees/page/manufacturing.json",
     "intakeSurface": "page-manufacturing",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 107
     },
+    "shell": "page",
     "walker": "qa/parity/manufacturing.fill-base.mjs",
     "walkerFull": "qa/parity/manufacturing.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -305,12 +314,13 @@
   "retail": {
     "tree": "trees/page/retail.json",
     "intakeSurface": "page-retail",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 109
     },
+    "shell": "page",
     "walker": "qa/parity/retail.fill-base.mjs",
     "walkerFull": "qa/parity/retail.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -322,12 +332,13 @@
   "wholesale": {
     "tree": "trees/page/wholesale.json",
     "intakeSurface": "page-wholesale",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 111
     },
+    "shell": "page",
     "walker": "qa/parity/wholesale.fill-base.mjs",
     "walkerFull": "qa/parity/wholesale.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -339,12 +350,13 @@
   "brands": {
     "tree": "trees/page/brands.json",
     "intakeSurface": "page-brands",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 113
     },
+    "shell": "page",
     "walker": "qa/parity/brands.fill-base.mjs",
     "walkerFull": "qa/parity/brands.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -356,12 +368,13 @@
   "sanam": {
     "tree": "trees/page/sanam.json",
     "intakeSurface": "page-brand-sanam",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 115
     },
+    "shell": "page",
     "walker": "qa/parity/sanam.fill-base.mjs",
     "walkerFull": "qa/parity/sanam.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -373,12 +386,13 @@
   "shan": {
     "tree": "trees/page/shan.json",
     "intakeSurface": "page-brand-shan",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 117
     },
+    "shell": "page",
     "walker": "qa/parity/shan.fill-base.mjs",
     "walkerFull": "qa/parity/shan.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -390,12 +404,13 @@
   "green-leaf": {
     "tree": "trees/page/green-leaf.json",
     "intakeSurface": "page-brand-green-leaf",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 119
     },
+    "shell": "page",
     "walker": "qa/parity/green-leaf.fill-base.mjs",
     "walkerFull": "qa/parity/green-leaf.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -407,12 +422,13 @@
   "lemon-tree": {
     "tree": "trees/page/lemon-tree.json",
     "intakeSurface": "page-brand-lemon-tree",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 121
     },
+    "shell": "page",
     "walker": "qa/parity/lemon-tree.fill-base.mjs",
     "walkerFull": "qa/parity/lemon-tree.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -424,12 +440,13 @@
   "apply": {
     "tree": "trees/page/apply.json",
     "intakeSurface": "page-apply",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 123
     },
+    "shell": "page",
     "walker": "qa/parity/apply.fill-base.mjs",
     "walkerFull": "qa/parity/apply.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -441,12 +458,13 @@
   "catalogue": {
     "tree": "trees/page/catalogue.json",
     "intakeSurface": "page-catalogue",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 125
     },
+    "shell": "page",
     "walker": "qa/parity/catalogue.fill-base.mjs",
     "walkerFull": "qa/parity/catalogue.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -458,12 +476,13 @@
   "delivery": {
     "tree": "trees/page/delivery.json",
     "intakeSurface": "page-delivery",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 127
     },
+    "shell": "page",
     "walker": "qa/parity/delivery.fill-base.mjs",
     "walkerFull": "qa/parity/delivery.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -475,12 +494,13 @@
   "terms": {
     "tree": "trees/page/terms.json",
     "intakeSurface": "page-terms",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 129
     },
+    "shell": "page",
     "walker": "qa/parity/terms.fill-base.mjs",
     "walkerFull": "qa/parity/terms.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -492,12 +512,13 @@
   "blog": {
     "tree": "trees/page/blog.json",
     "intakeSurface": "page-blog",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 131
     },
+    "shell": "home",
     "walker": "qa/parity/blog.fill-base.mjs",
     "walkerFull": "qa/parity/blog.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -509,12 +530,13 @@
   "contact": {
     "tree": "trees/page/contact.json",
     "intakeSurface": "page-contact",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 133
     },
+    "shell": "page",
     "walker": "qa/parity/contact.fill-base.mjs",
     "walkerFull": "qa/parity/contact.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -526,12 +548,13 @@
   "faqs": {
     "tree": "trees/page/faqs.json",
     "intakeSurface": "page-faqs",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 135
     },
+    "shell": "page",
     "walker": "qa/parity/faqs.fill-base.mjs",
     "walkerFull": "qa/parity/faqs.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
@@ -543,9 +566,9 @@
   "supporting-the-trade-through-ramadan": {
     "tree": "trees/post/supporting-the-trade-through-ramadan.json",
     "intakeSurface": "page-post-post-1",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 137
     },
@@ -563,9 +586,9 @@
   "falak-rice-exclusive-uk-distribution": {
     "tree": "trees/post/falak-rice-exclusive-uk-distribution.json",
     "intakeSurface": "page-post-post-2",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 139
     },
@@ -583,9 +606,9 @@
   "inside-our-birmingham-packing-line": {
     "tree": "trees/post/inside-our-birmingham-packing-line.json",
     "intakeSurface": "page-post-post-3",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 141
     },
@@ -603,9 +626,9 @@
   "sixty-years-in-the-balti-triangle": {
     "tree": "trees/post/sixty-years-in-the-balti-triangle.json",
     "intakeSurface": "page-post-post-4",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 143
     },
@@ -623,9 +646,9 @@
   "ordering-ahead-for-eid": {
     "tree": "trees/post/ordering-ahead-for-eid.json",
     "intakeSurface": "page-post-post-5",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 145
     },
@@ -643,9 +666,9 @@
   "why-independents-still-matter": {
     "tree": "trees/post/why-independents-still-matter.json",
     "intakeSurface": "page-post-post-6",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 147
     },
@@ -663,9 +686,9 @@
   "form-enquiry": {
     "tree": "trees/sgs_form/enquiry.json",
     "intakeSurface": "contact-enquiry",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 149
     },
@@ -685,9 +708,9 @@
   "form-careers": {
     "tree": "trees/sgs_form/careers.json",
     "intakeSurface": "inline-form-careers",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 151
     },
@@ -707,9 +730,9 @@
   "form-catalogue": {
     "tree": "trees/sgs_form/catalogue.json",
     "intakeSurface": "inline-form-catalogue",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 153
     },
@@ -729,9 +752,9 @@
   "form-trade-application": {
     "tree": "trees/sgs_form/trade-application.json",
     "intakeSurface": "trade-account-application",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "postId": 163
     },
@@ -748,18 +771,147 @@
       "sgs/form:trade-application"
     ]
   },
-  "single": {
-    "tree": "trees/post/supporting-the-trade-through-ramadan.json",
+  "template-front-page": {
+    "tree": "trees/template/front-page.json",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "template": "front-page"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "home"
+      ]
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-home": {
+    "tree": "trees/template/home.json",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "template": "home"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "blog"
+      ]
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-page": {
+    "tree": "trees/template/page.json",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "template": "page"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "pages",
+      "surfaces": [
+        "about",
+        "our-story",
+        "certifications",
+        "community",
+        "sustainability",
+        "careers",
+        "food-service",
+        "manufacturing",
+        "retail",
+        "wholesale",
+        "brands",
+        "sanam",
+        "shan",
+        "green-leaf",
+        "lemon-tree",
+        "apply",
+        "catalogue",
+        "delivery",
+        "terms",
+        "contact",
+        "faqs"
+      ]
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-archive": {
+    "tree": "trees/template/archive.json",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "template": "archive"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-search": {
+    "tree": "trees/template/search.json",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "template": "search"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-404": {
+    "tree": "trees/template/404.json",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
+    "target": {
+      "template": "404"
+    },
+    "canvas": true,
+    "copy": {
+      "from": "page"
+    },
+    "states": {
+      "resting": null
+    }
+  },
+  "template-single": {
+    "tree": "trees/template/single.json",
     "intakeSurface": "page-post-post-1",
-    "envFile": ".claude/secrets/indus-test.env",
-    "envKey": "INDUSTEST",
-    "site": "indus-test",
+    "envFile": ".claude/secrets/local-indus.env",
+    "envKey": "LOCALINDUS",
+    "site": "local-indus",
     "target": {
       "template": "single"
     },
     "canvas": true,
-    "walker": "qa/parity/single.fill-base.mjs",
-    "walkerFull": "qa/parity/single.fill.mjs",
+    "copy": {
+      "from": "fill",
+      "row": "post:supporting-the-trade-through-ramadan"
+    },
+    "walker": "qa/parity/template-single.fill-base.mjs",
+    "walkerFull": "qa/parity/template-single.fill.mjs",
     "draftDir": "sites/indus-foods/handoff",
     "draftIndex": "Indus Foods Website v2.dc.html",
     "draftRoute": "/post-post-1",

@@ -1,0 +1,17 @@
+{
+  "chain": [
+    {
+      "name": "sgs/container",
+      "attributes": {
+        "tagName": "main",
+        "className": "cr-ref-template-single-0",
+        "textColour": "custom-ink",
+        "minHeight": {
+          "desktop": "0px"
+        },
+        "textColourHover": "custom-ink"
+      }
+    }
+  ],
+  "from": "template-single"
+}

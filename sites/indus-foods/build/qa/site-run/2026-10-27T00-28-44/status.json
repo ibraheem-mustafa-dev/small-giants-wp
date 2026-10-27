@@ -1,0 +1,1061 @@
+{
+  "drawer-site-menu": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "225 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "15 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 321,
+      "detail": "fill drawer-site-menu: 202 settings written, 109 UNMAPPED, 9 handover, 0 fluid, 38 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\drawer-site-menu\\2026-10-27T00-28-45\\fill-report.md (state \"open\" open at 375, 768px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 45,
+      "detail": "{\"ok\":true,\"id\":203,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 300,
+      "detail": "report written (exit 1: drawer-site-menu: 212 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\drawer-site-menu\\report.)"
+    }
+  },
+  "header": {
+    "inventory": {
+      "ok": true,
+      "seconds": 31,
+      "detail": "54 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "15 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 407,
+      "detail": "fill header: 307 settings written, 103 UNMAPPED, 5 handover, 0 fluid, 50 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\header\\2026-10-27T00-29-16\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":201,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 476,
+      "detail": "report written (exit 1: header: 188 open, 28 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\header\\report.md, contact sheet: )"
+    }
+  },
+  "footer": {
+    "inventory": {
+      "ok": true,
+      "seconds": 51,
+      "detail": "96 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "47 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 273,
+      "detail": "fill footer: 403 settings written, 211 UNMAPPED, 11 handover, 2 fluid, 58 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\footer\\2026-10-27T00-29-36\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 57,
+      "detail": "{\"ok\":true,\"id\":205,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 813,
+      "detail": "report written (exit 1: footer: 2313 open, 40 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\footer\\report.md, contact sheet:)"
+    }
+  },
+  "mega-about": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "40 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "40 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 128,
+      "detail": "fill mega-about: 290 settings written, 179 UNMAPPED, 0 handover, 0 fluid, 40 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\mega-about\\2026-10-27T00-34-06\\fill-report.md (state \"open\" open at 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":155,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 303,
+      "detail": "report written (exit 1: mega-about: 753 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\mega-about\\report.md, contact )"
+    }
+  },
+  "mega-sectors": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "29 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "29 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 119,
+      "detail": "fill mega-sectors: 263 settings written, 136 UNMAPPED, 0 handover, 0 fluid, 29 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\mega-sectors\\2026-10-27T00-34-09\\fill-report.md (state \"open\" open at 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 22,
+      "detail": "{\"ok\":true,\"id\":157,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 287,
+      "detail": "report written (exit 1: mega-sectors: 696 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\mega-sectors\\report.md, cont)"
+    }
+  },
+  "mega-brands": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "28 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "8 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 87,
+      "detail": "fill mega-brands: 80 settings written, 54 UNMAPPED, 0 handover, 0 fluid, 8 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\mega-brands\\2026-10-27T00-36-03\\fill-report.md (state \"open\" open at 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 36,
+      "detail": "{\"ok\":true,\"id\":159,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 236,
+      "detail": "report written (exit 1: mega-brands: 599 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\mega-brands\\report.md, contac)"
+    }
+  },
+  "mega-trade": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "35 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "35 nodes, 12 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 106,
+      "detail": "fill mega-trade: 256 settings written, 169 UNMAPPED, 0 handover, 0 fluid, 35 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\mega-trade\\2026-10-27T00-36-08\\fill-report.md (state \"open\" open at 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 29,
+      "detail": "{\"ok\":true,\"id\":161,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 263,
+      "detail": "report written (exit 1: mega-trade: 767 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\mega-trade\\report.md, contact )"
+    }
+  },
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 70,
+      "detail": "210 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "97 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 308,
+      "detail": "fill home: 798 settings written, 405 UNMAPPED, 2 handover, 10 fluid, 150 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\home\\2026-10-27T00-37-24\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "{\"ok\":true,\"id\":90,\"link\":\"http://localhost:8083/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-90-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1246,
+      "detail": "report written (exit 1: home: 4224 open, 112 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\home\\report.md, contact sheet: C:)"
+    }
+  },
+  "about": {
+    "inventory": {
+      "ok": true,
+      "seconds": 56,
+      "detail": "212 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "117 nodes, 28 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 270,
+      "detail": "fill about: 914 settings written, 276 UNMAPPED, 0 handover, 9 fluid, 208 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\about\\2026-10-27T00-38-26\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 22,
+      "detail": "{\"ok\":true,\"id\":92,\"link\":\"http://localhost:8083/about/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 972,
+      "detail": "report written (exit 1: about: 2159 open, 35 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\about\\report.md, contact sheet: C)"
+    }
+  },
+  "our-story": {
+    "inventory": {
+      "ok": true,
+      "seconds": 59,
+      "detail": "174 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "73 nodes, 10 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 186,
+      "detail": "fill our-story: 466 settings written, 230 UNMAPPED, 1 handover, 11 fluid, 137 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\our-story\\2026-10-27T00-38-54\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 18,
+      "detail": "{\"ok\":true,\"id\":95,\"link\":\"http://localhost:8083/about/our-story/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 406,
+      "detail": "report written (exit 1: our-story: 1650 open, 36 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\our-story\\report.md, contact )"
+    }
+  },
+  "certifications": {
+    "inventory": {
+      "ok": true,
+      "seconds": 52,
+      "detail": "111 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "95 nodes, 20 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 199,
+      "detail": "fill certifications: 637 settings written, 322 UNMAPPED, 1 handover, 6 fluid, 184 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\certifications\\2026-10-27T00-42-52\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 18,
+      "detail": "{\"ok\":true,\"id\":97,\"link\":\"http://localhost:8083/about/certifications/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 682,
+      "detail": "report written (exit 1: certifications: 1443 open, 56 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\certifications\\report.md)"
+    }
+  },
+  "community": {
+    "inventory": {
+      "ok": true,
+      "seconds": 45,
+      "detail": "85 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "69 nodes, 10 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 168,
+      "detail": "fill community: 474 settings written, 257 UNMAPPED, 1 handover, 6 fluid, 168 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\community\\2026-10-27T00-43-17\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":99,\"link\":\"http://localhost:8083/about/community/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 482,
+      "detail": "report written (exit 1: community: 1056 open, 56 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\community\\report.md, contact )"
+    }
+  },
+  "sustainability": {
+    "inventory": {
+      "ok": true,
+      "seconds": 44,
+      "detail": "84 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "65 nodes, 10 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 142,
+      "detail": "fill sustainability: 426 settings written, 217 UNMAPPED, 1 handover, 6 fluid, 111 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\sustainability\\2026-10-27T00-43-41\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 23,
+      "detail": "{\"ok\":true,\"id\":101,\"link\":\"http://localhost:8083/about/sustainability/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 423,
+      "detail": "report written (exit 1: sustainability: 1328 open, 16 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\sustainability\\report.md)"
+    }
+  },
+  "careers": {
+    "inventory": {
+      "ok": true,
+      "seconds": 71,
+      "detail": "191 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "129 nodes, 17 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 245,
+      "detail": "fill careers: 970 settings written, 391 UNMAPPED, 1 handover, 9 fluid, 197 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\careers\\2026-10-27T00-47-15\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 20,
+      "detail": "{\"ok\":true,\"id\":103,\"link\":\"http://localhost:8083/about/careers/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1053,
+      "detail": "report written (exit 1: careers: 3139 open, 86 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\careers\\report.md, contact shee)"
+    }
+  },
+  "food-service": {
+    "inventory": {
+      "ok": true,
+      "seconds": 72,
+      "detail": "168 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "141 nodes, 24 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 260,
+      "detail": "fill food-service: 1009 settings written, 440 UNMAPPED, 1 handover, 8 fluid, 288 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\food-service\\2026-10-27T00-47-18\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":105,\"link\":\"http://localhost:8083/food-service/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1017,
+      "detail": "report written (exit 1: food-service: 2572 open, 56 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\food-service\\report.md, co)"
+    }
+  },
+  "manufacturing": {
+    "inventory": {
+      "ok": true,
+      "seconds": 67,
+      "detail": "162 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "135 nodes, 24 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 256,
+      "detail": "fill manufacturing: 963 settings written, 432 UNMAPPED, 1 handover, 8 fluid, 279 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\manufacturing\\2026-10-27T00-47-19\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 21,
+      "detail": "{\"ok\":true,\"id\":107,\"link\":\"http://localhost:8083/manufacturing/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 982,
+      "detail": "report written (exit 1: manufacturing: 2510 open, 56 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\manufacturing\\report.md, )"
+    }
+  },
+  "retail": {
+    "inventory": {
+      "ok": true,
+      "seconds": 56,
+      "detail": "136 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "109 nodes, 14 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 206,
+      "detail": "fill retail: 779 settings written, 430 UNMAPPED, 1 handover, 8 fluid, 171 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\retail\\2026-10-27T00-52-16\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 18,
+      "detail": "{\"ok\":true,\"id\":109,\"link\":\"http://localhost:8083/retail/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 758,
+      "detail": "report written (exit 1: retail: 2216 open, 36 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\retail\\report.md, contact sheet:)"
+    }
+  },
+  "brands": {
+    "inventory": {
+      "ok": true,
+      "seconds": 47,
+      "detail": "121 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "95 nodes, 11 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 195,
+      "detail": "fill brands: 765 settings written, 442 UNMAPPED, 0 handover, 6 fluid, 446 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\brands\\2026-10-27T00-52-25\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":113,\"link\":\"http://localhost:8083/brands/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 681,
+      "detail": "report written (exit 1: brands: 2070 open, 152 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\brands\\report.md, contact sheet)"
+    }
+  },
+  "wholesale": {
+    "inventory": {
+      "ok": true,
+      "seconds": 54,
+      "detail": "125 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "99 nodes, 14 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 190,
+      "detail": "fill wholesale: 713 settings written, 371 UNMAPPED, 1 handover, 7 fluid, 149 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\wholesale\\2026-10-27T00-52-29\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 18,
+      "detail": "{\"ok\":true,\"id\":111,\"link\":\"http://localhost:8083/wholesale/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 705,
+      "detail": "report written (exit 1: wholesale: 2082 open, 28 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\wholesale\\report.md, contact )"
+    }
+  },
+  "shan": {
+    "inventory": {
+      "ok": true,
+      "seconds": 47,
+      "detail": "92 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "70 nodes, 8 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 150,
+      "detail": "fill shan: 509 settings written, 276 UNMAPPED, 1 handover, 6 fluid, 138 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\shan\\2026-10-27T00-56-28\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 18,
+      "detail": "{\"ok\":true,\"id\":117,\"link\":\"http://localhost:8083/brands/shan/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 505,
+      "detail": "report written (exit 1: shan: 1379 open, 60 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\shan\\report.md, contact sheet: C:\\)"
+    }
+  },
+  "sanam": {
+    "inventory": {
+      "ok": true,
+      "seconds": 49,
+      "detail": "111 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "87 nodes, 12 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 173,
+      "detail": "fill sanam: 622 settings written, 353 UNMAPPED, 1 handover, 6 fluid, 217 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\sanam\\2026-10-27T00-56-28\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":115,\"link\":\"http://localhost:8083/brands/sanam/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 625,
+      "detail": "report written (exit 1: sanam: 1571 open, 60 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\sanam\\report.md, contact sheet: C)"
+    }
+  },
+  "green-leaf": {
+    "inventory": {
+      "ok": true,
+      "seconds": 46,
+      "detail": "92 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "70 nodes, 8 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 149,
+      "detail": "fill green-leaf: 509 settings written, 276 UNMAPPED, 1 handover, 6 fluid, 128 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\green-leaf\\2026-10-27T00-56-29\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 17,
+      "detail": "{\"ok\":true,\"id\":119,\"link\":\"http://localhost:8083/brands/green-leaf/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 501,
+      "detail": "report written (exit 1: green-leaf: 1378 open, 60 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\green-leaf\\report.md, contac)"
+    }
+  },
+  "lemon-tree": {
+    "inventory": {
+      "ok": true,
+      "seconds": 38,
+      "detail": "92 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "70 nodes, 8 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 156,
+      "detail": "fill lemon-tree: 509 settings written, 276 UNMAPPED, 1 handover, 6 fluid, 121 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\lemon-tree\\2026-10-27T00-59-36\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 19,
+      "detail": "{\"ok\":true,\"id\":121,\"link\":\"http://localhost:8083/brands/lemon-tree/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 501,
+      "detail": "report written (exit 1: lemon-tree: 1403 open, 58 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\lemon-tree\\report.md, contac)"
+    }
+  },
+  "apply": {
+    "inventory": {
+      "ok": true,
+      "seconds": 40,
+      "detail": "126 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "18 nodes, 2 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 84,
+      "detail": "fill apply: 121 settings written, 60 UNMAPPED, 0 handover, 3 fluid, 29 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\apply\\2026-10-27T00-59-38\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 21,
+      "detail": "{\"ok\":true,\"id\":123,\"link\":\"http://localhost:8083/apply/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 284,
+      "detail": "report written (exit 1: apply: 509 open, 8 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\apply\\report.md, contact sheet: C:\\)"
+    }
+  },
+  "catalogue": {
+    "inventory": {
+      "ok": true,
+      "seconds": 46,
+      "detail": "145 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "90 nodes, 21 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 182,
+      "detail": "fill catalogue: 650 settings written, 167 UNMAPPED, 0 handover, 4 fluid, 282 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\catalogue\\2026-10-27T01-00-07\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 18,
+      "detail": "{\"ok\":true,\"id\":125,\"link\":\"http://localhost:8083/catalogue/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 749,
+      "detail": "report written (exit 1: catalogue: 1611 open, 86 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\catalogue\\report.md, contact )"
+    }
+  },
+  "delivery": {
+    "inventory": {
+      "ok": true,
+      "seconds": 47,
+      "detail": "108 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "88 nodes, 10 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 144,
+      "detail": "fill delivery: 579 settings written, 292 UNMAPPED, 1 handover, 8 fluid, 132 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\delivery\\2026-10-27T01-01-49\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 18,
+      "detail": "{\"ok\":true,\"id\":127,\"link\":\"http://localhost:8083/delivery/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 495,
+      "detail": "report written (exit 1: delivery: 1848 open, 20 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\delivery\\report.md, contact sh)"
+    }
+  },
+  "terms": {
+    "inventory": {
+      "ok": true,
+      "seconds": 34,
+      "detail": "65 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "55 nodes, 13 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 95,
+      "detail": "fill terms: 304 settings written, 104 UNMAPPED, 0 handover, 3 fluid, 61 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\terms\\2026-10-27T01-02-46\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 16,
+      "detail": "{\"ok\":true,\"id\":129,\"link\":\"http://localhost:8083/terms/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 262,
+      "detail": "report written (exit 1: terms: 1415 open, 12 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\terms\\report.md, contact sheet: C)"
+    }
+  },
+  "blog": {
+    "inventory": {
+      "ok": true,
+      "seconds": 40,
+      "detail": "100 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "23 nodes, 2 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 83,
+      "detail": "fill blog: 168 settings written, 83 UNMAPPED, 0 handover, 4 fluid, 61 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\blog\\2026-10-27T01-03-49\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 16,
+      "detail": "{\"ok\":true,\"id\":131,\"link\":\"http://localhost:8083/blog/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 251,
+      "detail": "report written (exit 1: blog: 474 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\blog\\report.md, contact sheet: C:\\Us)"
+    }
+  },
+  "faqs": {
+    "inventory": {
+      "ok": true,
+      "seconds": 35,
+      "detail": "76 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "66 nodes, 4 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 132,
+      "detail": "fill faqs: 481 settings written, 241 UNMAPPED, 0 handover, 7 fluid, 91 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\faqs\\2026-10-27T01-04-56\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 23,
+      "detail": "{\"ok\":true,\"id\":135,\"link\":\"http://localhost:8083/faqs/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 403,
+      "detail": "report written (exit 1: faqs: 1673 open, 30 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\faqs\\report.md, contact sheet: C:\\)"
+    }
+  },
+  "contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 44,
+      "detail": "104 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "44 nodes, 2 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 123,
+      "detail": "fill contact: 298 settings written, 116 UNMAPPED, 3 handover, 4 fluid, 57 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\contact\\2026-10-27T01-04-57\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 17,
+      "detail": "{\"ok\":true,\"id\":133,\"link\":\"http://localhost:8083/contact/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 497,
+      "detail": "report written (exit 1: contact: 1332 open, 18 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\contact\\report.md, contact shee)"
+    }
+  },
+  "supporting-the-trade-through-ramadan": {
+    "skipped": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "content-only post surface: pass --with-content to read its post content"
+    }
+  },
+  "falak-rice-exclusive-uk-distribution": {
+    "skipped": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "content-only post surface: pass --with-content to read its post content"
+    }
+  },
+  "inside-our-birmingham-packing-line": {
+    "skipped": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "content-only post surface: pass --with-content to read its post content"
+    }
+  },
+  "sixty-years-in-the-balti-triangle": {
+    "skipped": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "content-only post surface: pass --with-content to read its post content"
+    }
+  },
+  "ordering-ahead-for-eid": {
+    "skipped": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "content-only post surface: pass --with-content to read its post content"
+    }
+  },
+  "why-independents-still-matter": {
+    "skipped": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "content-only post surface: pass --with-content to read its post content"
+    }
+  },
+  "form-enquiry": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "52 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "28 nodes, 5 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 574,
+      "detail": "fill form-enquiry: 162 settings written, 214 UNMAPPED, 0 handover, 2 fluid, 17 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\form-enquiry\\2026-10-27T01-05-13\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 17,
+      "detail": "{\"ok\":true,\"id\":149,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 322,
+      "detail": "report written (exit 1: form-enquiry: 927 open, 3 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\form-enquiry\\report.md, cont)"
+    }
+  },
+  "form-careers": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "42 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "13 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 596,
+      "detail": "fill form-careers: 57 settings written, 192 UNMAPPED, 0 handover, 1 fluid, 27 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\form-careers\\2026-10-27T01-07-00\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 16,
+      "detail": "{\"ok\":true,\"id\":151,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 210,
+      "detail": "report written (exit 1: form-careers: 432 open, 10 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\form-careers\\report.md, con)"
+    }
+  },
+  "form-catalogue": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "42 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "13 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 661,
+      "detail": "fill form-catalogue: 57 settings written, 192 UNMAPPED, 0 handover, 1 fluid, 32 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\form-catalogue\\2026-10-27T01-07-09\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 17,
+      "detail": "{\"ok\":true,\"id\":153,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 207,
+      "detail": "report written (exit 1: form-catalogue: 473 open, 10 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\form-catalogue\\report.md,)"
+    }
+  },
+  "form-trade-application": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "105 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "68 nodes, 15 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 453,
+      "detail": "fill form-trade-application: 517 settings written, 421 UNMAPPED, 0 handover, 1 fluid, 89 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\form-trade-application\\2026-10-27T01-14-48\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 16,
+      "detail": "{\"ok\":true,\"id\":163,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 319,
+      "detail": "report written (exit 1: form-trade-application: 550 open, 7 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\form-trade-applica)"
+    }
+  },
+  "template-single": {
+    "inventory": {
+      "ok": true,
+      "seconds": 37,
+      "detail": "96 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "49 nodes, 2 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 100,
+      "detail": "fill template-single: 359 settings written, 164 UNMAPPED, 1 handover, 9 fluid, 61 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\fill\\template-single\\2026-10-27T01-17-33\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 40,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//single\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 250,
+      "detail": "report written (exit 1: template-single: 626 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\indus-foods\\build\\qa\\parity\\out\\template-single\\report.md)"
+    }
+  },
+  "template-front-page": {
+    "build": {
+      "ok": true,
+      "seconds": 15,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//front-page\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (home)"
+    }
+  },
+  "template-home": {
+    "build": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//home\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (blog)"
+    }
+  },
+  "template-page": {
+    "build": {
+      "ok": true,
+      "seconds": 39,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//page\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (about, our-story, certifications, community, sustainability, careers, food-service, manufacturing, retail, wholesale, brands, sanam, shan, green-leaf, lemon-tree, apply, catalogue, delivery, terms, contact, faqs)"
+    }
+  },
+  "template-archive": {
+    "build": {
+      "ok": true,
+      "seconds": 37,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//archive\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-search": {
+    "build": {
+      "ok": true,
+      "seconds": 38,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//search\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-404": {
+    "build": {
+      "ok": true,
+      "seconds": 40,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//404\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  }
+}

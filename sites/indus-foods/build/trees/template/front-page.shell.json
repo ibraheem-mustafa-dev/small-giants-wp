@@ -1,0 +1,32 @@
+{
+  "chain": [
+    {
+      "name": "sgs/container",
+      "attributes": {
+        "tagName": "main",
+        "className": "cr-ref-home-0",
+        "textColour": "custom-ink",
+        "minHeight": {
+          "desktop": "0px"
+        },
+        "textColourHover": "custom-ink"
+      }
+    }
+  ],
+  "surfaces": {
+    "home": [
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "main",
+          "className": "cr-ref-home-0",
+          "textColour": "custom-ink",
+          "minHeight": {
+            "desktop": "0px"
+          },
+          "textColourHover": "custom-ink"
+        }
+      }
+    ]
+  }
+}

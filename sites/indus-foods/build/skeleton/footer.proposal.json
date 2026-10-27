@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-26T08:10:59.278Z",
-	"inventory": "2026-10-26T08:10:58.816Z",
-	"source": "http://127.0.0.1:50362/",
+	"generated": "2026-10-27T00:29:36.201Z",
+	"inventory": "2026-10-27T00:29:35.581Z",
+	"source": "http://127.0.0.1:50068/",
 	"surface": "footer",
 	"siteName": null,
 	"surfaceParts": [],
@@ -2782,8 +2782,8 @@
 			"stale": null,
 			"rule": "readingProgress",
 			"handover": {
-				"owner": "site-setting",
-				"kind": "floating-ui",
+				"owner": "behaviour",
+				"kind": "behaviour",
 				"detail": "Floating UI reading progress bar: its height and its colour or gradient (shared gradient picker) are site settings"
 			},
 			"candidates": [],

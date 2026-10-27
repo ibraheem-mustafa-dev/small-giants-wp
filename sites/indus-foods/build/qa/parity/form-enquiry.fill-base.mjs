@@ -9,8 +9,8 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"EnquiryForm\"][data-dc-tpl=\"468\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-form-enquiry-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"EnquiryForm\"][data-dc-tpl=\"468\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-form-enquiry-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:60747/#/contact" },
-	live: { url: "https://lavender-dinosaur-183533.hostingersite.com/contact/" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:50068/#/contact" },
+	live: { url: "http://localhost:8083/contact/" },
 	states: [ { name: "resting", fullPage: true } ],
 	pairs: [],
 };

@@ -1,0 +1,292 @@
+[
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "header",
+      "tagName": "header"
+    }
+  },
+  {
+    "name": "sgs/container",
+    "attributes": {
+      "tagName": "main",
+      "className": "cr-ref-template-single-0",
+      "textColour": "custom-ink",
+      "minHeight": {
+        "desktop": "0px"
+      },
+      "textColourHover": "custom-ink"
+    },
+    "innerBlocks": [
+      {
+        "name": "sgs/breadcrumbs"
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "contentWidth": {
+            "desktop": "normal"
+          },
+          "padding": {
+            "top": "var:preset|spacing|60",
+            "bottom": "var:preset|spacing|40"
+          },
+          "flexWrap": "wrap"
+        },
+        "innerBlocks": [
+          {
+            "name": "core/post-title",
+            "attributes": {
+              "level": 1
+            }
+          },
+          {
+            "name": "sgs/container",
+            "attributes": {
+              "tagName": "div",
+              "className": "sgs-byline",
+              "layout": "flex",
+              "flexWrap": "wrap",
+              "fontSize": {
+                "desktop": "small"
+              },
+              "textColour": "text-muted"
+            },
+            "innerBlocks": [
+              {
+                "name": "core/post-date"
+              },
+              {
+                "name": "core/post-author",
+                "attributes": {
+                  "showAvatar": false,
+                  "showBio": false,
+                  "byline": "By"
+                }
+              },
+              {
+                "name": "core/post-terms",
+                "attributes": {
+                  "term": "category"
+                }
+              },
+              {
+                "name": "core/post-time-to-read"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "core/post-featured-image",
+        "attributes": {
+          "align": "wide",
+          "style": {
+            "border": {
+              "radius": "8px"
+            },
+            "spacing": {
+              "margin": {
+                "bottom": "var:preset|spacing|50"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "core/post-content"
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "layout": "flex",
+          "justifyContent": "space-between",
+          "flexWrap": "wrap",
+          "fontSize": {
+            "desktop": "small"
+          },
+          "padding": {
+            "top": "var:preset|spacing|40",
+            "bottom": "var:preset|spacing|40"
+          },
+          "borderWidth": {
+            "top": "1px"
+          },
+          "borderColour": "var:preset|color|surface-alt",
+          "borderStyle": "solid"
+        },
+        "innerBlocks": [
+          {
+            "name": "core/post-terms",
+            "attributes": {
+              "term": "post_tag",
+              "prefix": "Tags: "
+            }
+          }
+        ]
+      },
+      {
+        "name": "sgs/container",
+        "attributes": {
+          "tagName": "div",
+          "layout": "grid",
+          "gridTemplateColumns": {
+            "desktop": "1fr 1fr",
+            "mobile": "1fr"
+          },
+          "gap": {
+            "desktop": "var:preset|spacing|40"
+          },
+          "padding": {
+            "top": "var:preset|spacing|40",
+            "bottom": "var:preset|spacing|40"
+          }
+        },
+        "innerBlocks": [
+          {
+            "name": "core/post-navigation-link",
+            "attributes": {
+              "type": "previous",
+              "label": "Previous",
+              "showTitle": true,
+              "arrow": "arrow"
+            }
+          },
+          {
+            "name": "core/post-navigation-link",
+            "attributes": {
+              "label": "Next",
+              "showTitle": true,
+              "arrow": "arrow"
+            }
+          }
+        ]
+      },
+      {
+        "name": "core/spacer",
+        "attributes": {
+          "height": "var:preset|spacing|50"
+        }
+      },
+      {
+        "name": "sgs/heading",
+        "attributes": {
+          "content": "Comments",
+          "level": "h2",
+          "fontSize": {
+            "desktop": "x-large"
+          },
+          "margin": {
+            "bottom": "var:preset|spacing|30"
+          }
+        }
+      },
+      {
+        "name": "core/comments",
+        "innerBlocks": [
+          {
+            "name": "core/comments-title",
+            "attributes": {
+              "level": 2
+            }
+          },
+          {
+            "name": "core/comment-template",
+            "innerBlocks": [
+              {
+                "name": "sgs/container",
+                "attributes": {
+                  "layout": "grid",
+                  "gridTemplateColumns": {
+                    "desktop": "40px 1fr",
+                    "mobile": "1fr"
+                  },
+                  "gap": {
+                    "desktop": "var:preset|spacing|30"
+                  }
+                },
+                "innerBlocks": [
+                  {
+                    "name": "sgs/container",
+                    "innerBlocks": [
+                      {
+                        "name": "core/avatar",
+                        "attributes": {
+                          "size": 40
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "sgs/container",
+                    "attributes": {
+                      "flexWrap": "wrap"
+                    },
+                    "innerBlocks": [
+                      {
+                        "name": "core/comment-author-name"
+                      },
+                      {
+                        "name": "core/comment-date",
+                        "attributes": {
+                          "fontSize": "small"
+                        }
+                      },
+                      {
+                        "name": "core/comment-content"
+                      },
+                      {
+                        "name": "core/comment-reply-link",
+                        "attributes": {
+                          "fontSize": "small"
+                        }
+                      },
+                      {
+                        "name": "core/comment-edit-link",
+                        "attributes": {
+                          "fontSize": "small"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "core/comments-pagination",
+            "attributes": {
+              "layout": {
+                "type": "flex",
+                "justifyContent": "center"
+              }
+            },
+            "innerBlocks": [
+              {
+                "name": "core/comments-pagination-previous"
+              },
+              {
+                "name": "core/comments-pagination-numbers"
+              },
+              {
+                "name": "core/comments-pagination-next"
+              }
+            ]
+          },
+          {
+            "name": "core/post-comments-form"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "core/template-part",
+    "attributes": {
+      "slug": "footer",
+      "tagName": "footer"
+    }
+  }
+]
