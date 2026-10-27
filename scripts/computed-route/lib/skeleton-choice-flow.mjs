@@ -99,17 +99,12 @@ export function choiceFlowModel( { view, rootKey, R, formControl = null, brands 
 		const skip = new Set( [ ...mine, ...top.flatMap( ( k ) => [ k, ...t.desc( k ) ] ) ] );
 		let texts = t.desc( box ).filter( ( k ) => ! skip.has( k ) && real( k ) && literal( k ) );
 		const lead = [];
-		// No words in the container: the text just before it among its siblings (a label above a row of chips).
+		// No words in the container: the sibling just before it, when it holds text and no control (a label above a row of chips).
 		if ( ! texts.length ) {
 			const sibs = t.kids( t.parent( box ) );
-			for ( let i = sibs.indexOf( box ) - 1; i >= 0; i-- ) {
-				const s = sibs[ i ];
-				if ( ! literal( s ) && ! t.desc( s ).some( literal ) || [ s, ...t.desc( s ) ].some( ( d ) => control( d ) || loops.some( ( o ) => o.k === d ) ) ) {
-					break;
-				}
-				lead.unshift( s );
-			}
-			texts = lead.flatMap( ( s ) => [ s, ...t.desc( s ) ] ).filter( literal );
+			const s = sibs[ sibs.indexOf( box ) - 1 ];
+			s && ( literal( s ) || t.desc( s ).some( literal ) ) && ! [ s, ...t.desc( s ) ].some( ( d ) => control( d ) || loops.some( ( o ) => o.k === d ) ) && lead.push( s );
+			texts = lead.flatMap( ( x ) => [ x, ...t.desc( x ) ] ).filter( literal );
 		}
 		const bound = t.desc( box ).filter( ( k ) => ! skip.has( k ) && BOUND.test( rec( k ).words || '' ) );
 		return { loop, box, mine, panels: top, texts, lead, bound };
