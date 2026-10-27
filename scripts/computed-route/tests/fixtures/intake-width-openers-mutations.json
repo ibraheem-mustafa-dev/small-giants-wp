@@ -1,86 +1,15 @@
 [
- {
-  "file": "lib/intake-openers.mjs",
-  "find": "\t\tconst bounds = widthBounds( st, own );",
-  "replace": "\t\tconst bounds = [];",
-  "why": "intake reads no width bound (the gap as found)"
- },
- {
-  "file": "lib/intake-openers.mjs",
-  "find": "\t\tconst bounds = widthBounds( st, own );",
-  "replace": "\t\tconst bounds = widthBounds( st );",
-  "why": "a range over any key is a width bound"
- },
- {
-  "file": "lib/intake-openers.mjs",
-  "find": ".filter( ( [ k ] ) => ! held.has( k ) );",
-  "replace": ";",
-  "why": "the bound key is set to its comparison text"
- },
- {
-  "file": "lib/intake-openers.mjs",
-  "find": "export const wayAt = ( list, first, width ) => ( fitsWidth( first.bounds, width ) ? first : waysHeldAt( list, width )[ 0 ] ?? null );",
-  "replace": "export const wayAt = ( list, first ) => first;",
-  "why": "the first state opens every width"
- },
- {
-  "file": "lib/intake-openers.mjs",
-  "find": "waysHeldAt( list, width )[ 0 ] ?? null );",
-  "replace": "list[ 0 ] ?? null );",
-  "why": "a width no state holds at takes the first state anyway"
- },
- {
-  "file": "lib/state-reach.mjs",
-  "find": "\t\tif ( widthKeys && ! widthKeys.has( key ) ) {",
-  "replace": "\t\tif ( false ) {",
-  "why": "widthKeys keeps every key"
- },
- {
-  "file": "lib/state-reach.mjs",
-  "find": ".matchAll( /\\bstate\\.([A-Za-z_$][\\w$]*)/g )",
-  "replace": ".matchAll( /^state\\.([A-Za-z_$][\\w$]*)$/g )",
-  "why": "a wrapped state key (effW (state.w)) is missed"
- },
- {
-  "file": "lib/state-reach.mjs",
-  "find": "export const waysHeldAt = ( ways, width ) => ( ways || [] ).filter( ( w ) => fitsWidth( w.bounds, width ) );",
-  "replace": "export const waysHeldAt = ( ways ) => ways || [];",
-  "why": "every way is held at every width"
- },
- {
-  "file": "lib/intake-skeletons.mjs",
-  "find": "\tconst bounded = !! opener?.bounds?.length && null != width;",
-  "replace": "\tconst bounded = false;",
-  "why": "a bounded state is applied only while the root is absent"
- },
- {
-  "file": "lib/intake-skeletons.mjs",
-  "find": "\tbounded && reached && await setDraftState( page, { component: s.component, keys: Object.fromEntries( opener.bounds.map( ( b ) => [ b.key, width ] ) ) } );",
-  "replace": "",
-  "why": "the call's width value is left in place of the viewport's"
- },
- {
-  "file": "lib/intake-skeletons.mjs",
-  "find": "\t\tconst m = await markAt( h.page, s, settle, open.ways?.[ view( w ) ] ?? open.opener, view( w ) );",
-  "replace": "\t\tconst m = await markAt( h.page, s, settle, open.opener, view( w ) );",
-  "why": "the read re-opens every width with the first state"
- },
- {
-  "file": "lib/intake-skeletons.mjs",
-  "find": "\t\t\tconst m = way ? await markAt( page, s, settle, way, w ) : { error: `no state of the surface holds at ${ w }px` };",
-  "replace": "\t\t\tconst m = way ? await markAt( page, s, settle, way ) : { error: `no state of the surface holds at ${ w }px` };",
-  "why": "the opening pass applies a bounded state only while the root is absent"
- },
- {
-  "file": "lib/intake-skeletons.mjs",
-  "find": "\tconst widthKeys = widthStateKeys( readBreakpoints( { folder } ) );",
-  "replace": "\tconst widthKeys = new Map();",
-  "why": "intake knows no width key"
- },
- {
-  "file": "lib/intake-skeletons.mjs",
-  "find": ".filter( ( [ , x ] ) => x !== open.opener )",
-  "replace": ".filter( () => false )",
-  "why": "the widths another state opened are not recorded"
- }
+ {"file":"lib/state-openers.mjs","find":"\tconst bounds = widthBounds( st, own );","replace":"\tconst bounds = [];","why":"intake reads no width bound (the gap as found)"},
+ {"file":"lib/intake-openers.mjs","find":"const own = widthKeys?.get( s.component ) ?? new Set();","replace":"const own = new Set( ( s.states || [] ).flatMap( ( st ) => Object.keys( st.state_keys || {} ) ) );","why":"a range over any key is a width bound"},
+ {"file":"lib/intake-openers.mjs","find":"export const wayAt = ( list, first, width ) => ( fitsWidth( first.bounds, width ) ? first : waysHeldAt( list, width )[ 0 ] ?? null );","replace":"export const wayAt = ( list, first ) => first;","why":"the first state opens every width"},
+ {"file":"lib/intake-openers.mjs","find":"waysHeldAt( list, width )[ 0 ] ?? null );","replace":"list[ 0 ] ?? null );","why":"a width no state holds at takes the first state anyway"},
+ {"file":"lib/state-reach.mjs","find":"\t\tif ( ! widthKeys?.has( key ) ) {","replace":"\t\tif ( false ) {","why":"widthKeys keeps every key"},
+ {"file":"lib/state-reach.mjs","find":".matchAll( /\\bstate\\.([A-Za-z_$][\\w$]*)/g )","replace":".matchAll( /^state\\.([A-Za-z_$][\\w$]*)$/g )","why":"a wrapped state key (effW (state.w)) is missed"},
+ {"file":"lib/state-reach.mjs","find":"export const waysHeldAt = ( ways, width ) => ( ways || [] ).filter( ( w ) => fitsWidth( w.bounds, width ) );","replace":"export const waysHeldAt = ( ways ) => ways || [];","why":"every way is held at every width"},
+ {"file":"lib/intake-skeletons.mjs","find":"\tconst bounded = !! opener?.bounds?.length && null != width;","replace":"\tconst bounded = false;","why":"a bounded state is applied only while the root is absent"},
+ {"file":"lib/intake-skeletons.mjs","find":"\tbounded && reached && await setDraftState( page, { component: s.component, keys: Object.fromEntries( opener.bounds.map( ( b ) => [ b.key, width ] ) ) } );","replace":"","why":"the call's width value is left in place of the viewport's"},
+ {"file":"lib/intake-skeletons.mjs","find":"\t\tconst m = await markAt( h.page, s, settle, open.ways?.[ view( w ) ] ?? open.opener, view( w ) );","replace":"\t\tconst m = await markAt( h.page, s, settle, open.opener, view( w ) );","why":"the read re-opens every width with the first state"},
+ {"file":"lib/intake-skeletons.mjs","find":"\t\t\tconst m = way ? await markAt( page, s, settle, way, w ) : { error: `no state of the surface holds at ${ w }px` };","replace":"\t\t\tconst m = way ? await markAt( page, s, settle, way ) : { error: `no state of the surface holds at ${ w }px` };","why":"the opening pass applies a bounded state only while the root is absent"},
+ {"file":"lib/intake-skeletons.mjs","find":"\tconst widthKeys = widthStateKeys( readBreakpoints( { folder } ) );","replace":"\tconst widthKeys = new Map();","why":"intake knows no width key"},
+ {"file":"lib/intake-skeletons.mjs","find":".filter( ( [ , x ] ) => x !== open.opener )","replace":".filter( () => false )","why":"the widths another state opened are not recorded"}
 ]

@@ -1,9 +1,9 @@
 // The reach opener (lib/intake-skeletons.mjs::openers, `via: 'reach'`) on the fixture export tests/fixtures/intake-reach/:
 // a modal that renders only under `sc-if value="{{ lens.open }}"`, with `state = { lens: { open: false, step: 0 } }`,
 // and a surfaces.json record whose open state's state_keys are a description ({"lens":"{open:true}"}) and whose
-// how_to_reach carries the setState call. The plain-keys opener would set lens to the string "{open:true}"; the reach
-// opener runs the draft's own setState on the component's logic inside the harness page. The replay HAR is recorded
-// once into the OS temp folder (the first run needs the network).
+// how_to_reach carries the setState call. The plain-keys way never sets lens to the string "{open:true}" (a description,
+// lib/state-openers.mjs::isDescription); the reach opener runs the draft's own setState on the component's logic inside
+// the harness page. The replay HAR is recorded once into the OS temp folder (the first run needs the network).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -14,7 +14,7 @@ import { recheckManifest } from '../lib/intake-sandbox.mjs';
 import { recordExport } from '../lib/intake-record.mjs';
 import { staticCensus } from '../lib/intake-census.mjs';
 import { openHarness, settleRest } from '../lib/intake-harness.mjs';
-import { surfaceRoots, proposeSkeletons, openers, reachCalls, describeOpener } from '../lib/intake-skeletons.mjs';
+import { surfaceRoots, proposeSkeletons, openers, reachCalls, describeWay } from '../lib/intake-skeletons.mjs';
 import { reachDraftState, readDraftState, snapshotDraftState, restoreDraftState } from '../lib/intake-state.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -49,15 +49,15 @@ test( 'reachCalls takes every <ident>.setState(...) call with its arguments bala
 	assert.deepEqual( reachCalls( 'L.setState({open:true' ), [] );
 } );
 
-test( 'a state with a non-value key tries reach first; a plain-keys state tries state first; no setState call adds no reach opener', () => {
+test( 'a state with a described key tries reach alone; a plain-keys state tries state first; no setState call adds no reach opener', () => {
 	const [ s ] = surfaceOf( [ RECORD ] );
-	assert.deepEqual( openers( s ).map( ( o ) => [ o.via, o.state ] ), [ [ 'reach', 'open' ], [ 'state', 'open' ] ] );
-	assert.equal( describeOpener( openers( s )[ 0 ] ), 'reach "open" L.setState({lens:{...L.state.lens, open:true}})' );
+	assert.deepEqual( openers( s ).map( ( o ) => [ o.via, o.state ] ), [ [ 'reach', 'open' ] ], 'the described key is never set, so the call is the only way' );
+	assert.equal( describeWay( openers( s )[ 0 ] ), 'reach "open" L.setState({lens:{...L.state.lens, open:true}})' );
 	const plain = { ...s, states: [ { name: 'open', state_keys: { menuOpen: true }, how_to_reach: 'L.setState({menuOpen:true})' } ] };
 	assert.deepEqual( openers( plain ).map( ( o ) => o.via ), [ 'state', 'reach' ] );
-	// Negative control: a how_to_reach with no setState call gives only the plain-keys opener.
+	// Negative control: a how_to_reach with no setState call, and a key holding only a description, gives no way at all.
 	const [ n ] = surfaceOf( [ NO_CALL ] );
-	assert.deepEqual( openers( n ).map( ( o ) => o.via ), [ 'state' ] );
+	assert.deepEqual( openers( n ).map( ( o ) => o.via ), [] );
 } );
 
 test( 'MUST FAIL: the reach opener renders and marks a modal its state_keys cannot set; without a setState call it stays unrendered', async () => {
@@ -68,7 +68,7 @@ test( 'MUST FAIL: the reach opener renders and marks a modal its state_keys cann
 	assert.equal( m.root.tag, 'div' );
 	assert.ok( m.rows.some( ( x ) => 'Choose your lenses' === x.words ), 'the modal\'s heading is read' );
 	const n = await proposeSkeletons( { folder: FIXTURE, harPath, surfaces: surfaceOf( [ NO_CALL ] ), client: CLIENT, census } );
-	assert.match( n.skeletons[ 0 ].gap, /not rendered.*still not rendered after state "open"/ );
+	assert.match( n.skeletons[ 0 ].gap, /not rendered.*no opener: no surfaces\.json state gives a settable state key or a setState call/ );
 } );
 
 test( 'restoreDraftState puts back a key the reach opener\'s setState changed', async () => {

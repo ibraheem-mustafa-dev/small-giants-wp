@@ -15,7 +15,8 @@ import { recordExport } from '../lib/intake-record.mjs';
 import { openHarness, settleRest } from '../lib/intake-harness.mjs';
 import { readDraftState } from '../lib/intake-state.mjs';
 import { stateOpener, openState, openerSource, waysAt, openedAt, usableKeys } from '../lib/fill-open.mjs';
-import { widthBounds, fitsWidth, plainState } from '../lib/state-reach.mjs';
+import { widthBounds, fitsWidth } from '../lib/state-reach.mjs';
+import { plainState } from '../lib/state-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIXTURE = path.join( HERE, 'fixtures', 'intake-reach' );
@@ -29,7 +30,10 @@ const NO_CALL = { ...RECORD, states: RECORD.states.map( ( s ) => ( { ...s, how_t
 const ENTRY = { states: { 'open, side-by-side': null } };
 const SKELETON = { id: 'S-01', root: { viaState: true } };
 const FACTS = { state: { Home: { keys: [ 'lens', 'w' ], widthKeys: [] } } };
-const opener = ( record = RECORD ) => stateOpener( { entry: ENTRY, skeleton: SKELETON, record, facts: FACTS, rootComponent: null } );
+// The width keys the export's breakpoints give (lib/state-reach.mjs::widthStateKeys): Home writes w from the width.
+const WK = new Set( [ 'w' ] );
+const W = new Map( [ [ 'Home', WK ] ] );
+const opener = ( record = RECORD ) => stateOpener( { entry: ENTRY, skeleton: SKELETON, record, facts: FACTS, rootComponent: null, widthKeys: W } );
 
 let harPath;
 test.before( async () => {
@@ -49,16 +53,16 @@ async function pageAt( width ) {
 const dialogText = ( page ) => page.evaluate( () => document.querySelector( '[role=dialog]' )?.textContent.replace( /\s+/g, ' ' ).trim() ?? null );
 
 test( 'widthBounds reads a comparison or range as whole-pixel bounds; plainState is false for a described value', () => {
-	assert.deepEqual( widthBounds( SIDE ), [ { key: 'w', min: 768, max: null } ] );
-	assert.deepEqual( widthBounds( STACKED ), [ { key: 'w', min: null, max: 767 } ] );
-	assert.deepEqual( widthBounds( { state_keys: { w: '> 1059', bp: '768–1023', x: '<= 500px', menuOpen: true, lens: '{open:true}' } } ), [ { key: 'w', min: 1060, max: null }, { key: 'bp', min: 768, max: 1023 }, { key: 'x', min: null, max: 500 } ] );
-	assert.equal( fitsWidth( widthBounds( SIDE ), 768 ), true );
-	assert.equal( fitsWidth( widthBounds( SIDE ), 767 ), false );
-	assert.equal( fitsWidth( widthBounds( STACKED ), 767 ), true );
-	assert.equal( fitsWidth( widthBounds( STACKED ), null ), true, 'an unknown width fits any state' );
+	assert.deepEqual( widthBounds( SIDE, WK ), [ { key: 'w', min: 768, max: null } ] );
+	assert.deepEqual( widthBounds( STACKED, WK ), [ { key: 'w', min: null, max: 767 } ] );
+	assert.deepEqual( widthBounds( { state_keys: { w: '> 1059', bp: '768–1023', x: '<= 500px', menuOpen: true, lens: '{open:true}' } }, new Set( [ 'w', 'bp', 'x', 'lens' ] ) ), [ { key: 'w', min: 1060, max: null }, { key: 'bp', min: 768, max: 1023 }, { key: 'x', min: null, max: 500 } ] );
+	assert.equal( fitsWidth( widthBounds( SIDE, WK ), 768 ), true );
+	assert.equal( fitsWidth( widthBounds( SIDE, WK ), 767 ), false );
+	assert.equal( fitsWidth( widthBounds( STACKED, WK ), 767 ), true );
+	assert.equal( fitsWidth( widthBounds( STACKED, WK ), null ), true, 'an unknown width fits any state' );
 	assert.equal( plainState( SIDE ), false );
 	assert.equal( plainState( { state_keys: { menuOpen: true } } ), true );
-	assert.deepEqual( usableKeys( { w: '768–1023' }, null ).dropped, [ { key: 'w', why: 'a width bound the viewport holds, not a value' } ] );
+	assert.deepEqual( usableKeys( { w: '768–1023' }, null, WK ).dropped, [ { key: 'w', why: 'a width bound the viewport holds, not a value' } ] );
 } );
 
 test( 'MUST FAIL: a state whose keys are all descriptions opens through its setState call, each state at the widths its bound holds', () => {
@@ -73,9 +77,9 @@ test( 'MUST FAIL: a state whose keys are all descriptions opens through its setS
 	const other = { ...STACKED, state_keys: { lens: '{open:true, step:2}', w: '< 768' } };
 	assert.deepEqual( opener( { ...RECORD, states: [ SIDE, other ] } ).ways.map( ( w ) => w.state ), [ 'open, side-by-side' ] );
 	// Precedence: a state of plain keys tries them before its call; a described state tries the call first.
-	const plain = stateOpener( { entry: { states: { open: null } }, skeleton: SKELETON, record: { ...RECORD, states: [ { name: 'open', state_keys: { lens: { open: true, step: 3 } }, how_to_reach: 'L.setState({lens:{open:true, step:4}})' } ] }, facts: FACTS, rootComponent: null } );
+	const plain = stateOpener( { entry: { states: { open: null } }, skeleton: SKELETON, record: { ...RECORD, states: [ { name: 'open', state_keys: { lens: { open: true, step: 3 } }, how_to_reach: 'L.setState({lens:{open:true, step:4}})' } ] }, facts: FACTS, rootComponent: null, widthKeys: W } );
 	assert.deepEqual( plain.ways.map( ( w ) => w.via ), [ 'state', 'reach' ] );
-	const mixed = stateOpener( { entry: { states: { open: null } }, skeleton: SKELETON, record: { ...RECORD, states: [ { name: 'open', state_keys: { lens: { open: true, step: 3 }, w: '>= 768' }, how_to_reach: 'L.setState({lens:{open:true, step:4}, w:1400})' } ] }, facts: FACTS, rootComponent: null } );
+	const mixed = stateOpener( { entry: { states: { open: null } }, skeleton: SKELETON, record: { ...RECORD, states: [ { name: 'open', state_keys: { lens: { open: true, step: 3 }, w: '>= 768' }, how_to_reach: 'L.setState({lens:{open:true, step:4}, w:1400})' } ] }, facts: FACTS, rootComponent: null, widthKeys: W } );
 	assert.deepEqual( mixed.ways.map( ( w ) => w.via ), [ 'reach', 'state' ], 'a state holding a width bound tries its call first' );
 	// Negative control: with no setState call the described state is refused as before.
 	const none = opener( NO_CALL );
@@ -109,14 +113,14 @@ test( 'MUST FAIL: openState renders the modal at each width through the state th
 test( 'a width no state holds is refused naming the bounds; a call the logic throws on is refused naming the call', async () => {
 	const h = await pageAt( 1440 );
 	try {
-		const only = stateOpener( { entry: { states: { 'open, stacked (mobile)': null } }, skeleton: SKELETON, record: { ...RECORD, states: [ STACKED ] }, facts: FACTS, rootComponent: null } );
+		const only = stateOpener( { entry: { states: { 'open, stacked (mobile)': null } }, skeleton: SKELETON, record: { ...RECORD, states: [ STACKED ] }, facts: FACTS, rootComponent: null, widthKeys: W } );
 		const v = await openState( h.page, only, 1440 );
 		assert.equal( v.ok, false );
 		assert.match( v.reason, /no state of S-01 holds at 1440px \("open, stacked \(mobile\)": w <= 767\)/ );
-		const bad = stateOpener( { entry: ENTRY, skeleton: SKELETON, record: { ...RECORD, states: [ { ...SIDE, how_to_reach: 'L.setState(L.nope.x)' } ] }, facts: FACTS, rootComponent: null } );
+		const bad = stateOpener( { entry: ENTRY, skeleton: SKELETON, record: { ...RECORD, states: [ { ...SIDE, how_to_reach: 'L.setState(L.nope.x)' } ] }, facts: FACTS, rootComponent: null, widthKeys: W } );
 		const t = await openState( h.page, bad, 1440 );
 		assert.equal( t.ok, false );
-		assert.match( t.reason, /L\.setState\(L\.nope\.x\) reached no live Home on the entry page/ );
+		assert.match( t.reason, /L\.setState\(L\.nope\.x\) at w >= 768 reached no live Home on the entry page/ );
 	} finally {
 		await h.close();
 	}

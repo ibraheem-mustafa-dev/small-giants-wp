@@ -1,110 +1,20 @@
 [
- {
-  "file": "lib/fill-open.mjs",
-  "find": "name.startsWith( '_' ) ? 'an underscore key the component sets itself'",
-  "replace": "false ? 'an underscore key the component sets itself'",
-  "why": "an underscore key is offered to the draft"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "live && ( live.widthKeys || [] ).includes( name ) ? 'derived from the viewport width'",
-  "replace": "false ? 'derived from the viewport width'",
-  "why": "a width-derived key is offered"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "live && ! ( live.keys || [] ).includes( name ) ? 'not a state key of the component (facts.json state keys)'",
-  "replace": "false ? 'not a state key of the component (facts.json state keys)'",
-  "why": "a key the live instance does not hold is offered"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "! IDENT.test( name ) ? 'a render value or selector, not a state key name'",
-  "replace": "false ? 'a render value or selector, not a state key name'",
-  "why": "a dotted render value is offered"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "isPlaceholder( value ) ? 'a placeholder or description, not a value' : null",
-  "replace": "null",
-  "why": "a placeholder value is set"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "|| /\\S+\\s+\\S+\\s+\\S+/.test( v.trim() );",
-  "replace": ";",
-  "why": "prose counts as a value"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "return v.some( isPlaceholder );",
-  "replace": "return false;",
-  "why": "an array of placeholders passes"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "return Object.entries( v ).some( ( [ k, x ] ) => isPlaceholder( k ) || isPlaceholder( x ) );",
-  "replace": "return Object.entries( v ).some( ( [ , x ] ) => isPlaceholder( x ) );",
-  "why": "a placeholder key of an object passes"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "? `${ String( url ).split( '#' )[ 0 ] }${ hash }` : url;",
-  "replace": "? url : url;",
-  "why": "a route-mounted component is read on the entry page"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "null == route || [ '*', '/', '' ].includes( route ) ? null",
-  "replace": "null == route ? null",
-  "why": "the entry route is loaded as a hash route"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "record && record.dc === rootComponent ? ROOT_HOST : record?.dc ?? null",
-  "replace": "record?.dc ?? null",
-  "why": "the entry draft's component is set under a host name the runtime does not use"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "if ( ! skeleton?.root || ! ( skeleton.root.viaState || shut ) ) {\n\t\treturn null;\n\t}",
-  "replace": "",
-  "why": "a surface that is not state-driven gets an opener"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "const pool = ( record.states || [] ).filter( ( s ) => ! CLOSED.test( s.name || '' ) );",
-  "replace": "const pool = ( record.states || [] );",
-  "why": "a closed state is an opener"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "const set = Object.keys( keys ).length ? [ { via: 'state', ...common, keys } ] : [];",
-  "replace": "const set = [ { via: 'state', ...common, keys } ];",
-  "why": "a state with no usable key is opened anyway"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "property: STATE_REFUSED, value: r.state ?? '', state: null, reason: `state-refused:",
-  "replace": "property: STATE_REFUSED, value: '', state: null, reason: `refused:",
-  "why": "the gap row does not name the state"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "candidates.sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) );",
-  "replace": "",
-  "why": "a state named open does not come first"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "const ok = ! expected || rendered > 0;",
-  "replace": "const ok = true;",
-  "why": "a state whose surface never rendered is read"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "if ( ! reached ) {\n\t\treturn { ...head, reached: 0,",
-  "replace": "if ( false ) {\n\t\treturn { ...head, reached: 0,",
-  "why": "a missing instance is not refused"
- }
+ {"file":"lib/state-openers.mjs","find":"name.startsWith( '_' ) ? 'an underscore key the component sets itself'","replace":"false ? 'an underscore key the component sets itself'","why":"an underscore key is offered to the draft"},
+ {"file":"lib/state-openers.mjs","find":"live && ( live.widthKeys || [] ).includes( name ) ? 'derived from the viewport width'","replace":"false ? 'derived from the viewport width'","why":"a width-derived key is offered"},
+ {"file":"lib/state-openers.mjs","find":"live && ! ( live.keys || [] ).includes( name ) ? 'not a state key of the component (facts.json state keys)'","replace":"false ? 'not a state key of the component (facts.json state keys)'","why":"a key the live instance does not hold is offered"},
+ {"file":"lib/state-openers.mjs","find":"! IDENT.test( name ) ? 'a render value or selector, not a state key name'","replace":"false ? 'a render value or selector, not a state key name'","why":"a dotted render value is offered"},
+ {"file":"lib/state-openers.mjs","find":"isDescription( value ) ? 'a placeholder or description, not a value' : null","replace":"null","why":"a placeholder value is set"},
+ {"file":"lib/state-openers.mjs","find":"|| /\\S+\\s+\\S+\\s+\\S+/.test( v.trim() );","replace":";","why":"prose counts as a value"},
+ {"file":"lib/state-openers.mjs","find":"return v.some( ( x ) => isDescription( x, false ) );","replace":"return false;","why":"an array of placeholders passes"},
+ {"file":"lib/state-openers.mjs","find":"return Object.entries( v ).some( ( [ k, x ] ) => isDescription( k, false ) || isDescription( x, false ) );","replace":"return Object.entries( v ).some( ( [ , x ] ) => isDescription( x, false ) );","why":"a placeholder key of an object passes"},
+ {"file":"lib/fill-open.mjs","find":"? `${ String( url ).split( '#' )[ 0 ] }${ hash }` : url;","replace":"? url : url;","why":"a route-mounted component is read on the entry page"},
+ {"file":"lib/fill-open.mjs","find":"null == route || [ '*', '/', '' ].includes( route ) ? null","replace":"null == route ? null","why":"the entry route is loaded as a hash route"},
+ {"file":"lib/fill-open.mjs","find":"record && record.dc === rootComponent ? ROOT_HOST : record?.dc ?? null","replace":"record?.dc ?? null","why":"the entry draft's component is set under a host name the runtime does not use"},
+ {"file":"lib/fill-open.mjs","find":"if ( ! skeleton?.root || ! ( skeleton.root.viaState || shut ) ) {\n\t\treturn null;\n\t}","replace":"","why":"a surface that is not state-driven gets an opener"},
+ {"file":"lib/state-openers.mjs","find":"( states || [] ).filter( ( s ) => ! CLOSED.test( s.name || '' ) )","replace":"( states || [] )","why":"a closed state is an opener"},
+ {"file":"lib/state-openers.mjs","find":"const set = Object.keys( keys ).length ? [ { via: 'state', ...common, keys } ] : [];","replace":"const set = [ { via: 'state', ...common, keys } ];","why":"a state with no usable key is opened anyway"},
+ {"file":"lib/fill-open.mjs","find":"property: STATE_REFUSED, value: r.state ?? '', state: null, reason: `state-refused:","replace":"property: STATE_REFUSED, value: '', state: null, reason: `refused:","why":"the gap row does not name the state"},
+ {"file":"lib/state-openers.mjs","find":".sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) )","replace":"","why":"a state named open does not come first"},
+ {"file":"lib/fill-open.mjs","find":"const ok = ! expected || rendered > 0;","replace":"const ok = true;","why":"a state whose surface never rendered is read"},
+ {"file":"lib/fill-open.mjs","find":"if ( ! reached ) {\n\t\treturn { ...head, reached: 0,","replace":"if ( false ) {\n\t\treturn { ...head, reached: 0,","why":"a missing instance is not refused"}
 ]

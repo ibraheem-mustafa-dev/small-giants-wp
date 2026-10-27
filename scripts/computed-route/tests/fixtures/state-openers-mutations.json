@@ -1,0 +1,17 @@
+[
+ { "file": "lib/fill-open.mjs", "find": "const own = widthKeys?.get( record.dc ) ?? new Set();", "replace": "const own = new Set( ( record.states || [] ).flatMap( ( s ) => Object.keys( s.state_keys || {} ) ) );", "why": "Fill takes a range over any key as a width bound (the drift as found)" },
+ { "file": "lib/fill-open.mjs", "find": "const built = stateWays( candidates, { own,", "replace": "const built = stateWays( candidates, { own: new Set(),", "why": "Fill builds its ways without the width keys" },
+ { "file": "lib/intake-openers.mjs", "find": "const own = widthKeys?.get( s.component ) ?? new Set();", "replace": "const own = new Set();", "why": "intake knows no width key of the component" },
+ { "file": "lib/state-openers.mjs", "find": " || /\\S+\\s+\\S+\\s+\\S+/.test( v.trim() );", "replace": ";", "why": "prose counts as a value" },
+ { "file": "lib/state-openers.mjs", "find": "( top && RANGE.test( v ) )", "replace": "RANGE.test( v )", "why": "an id key such as 0-1 inside an object is a description" },
+ { "file": "lib/state-openers.mjs", "find": "( top && RANGE.test( v ) )", "replace": "false", "why": "a top-level range (an accordion row 0–3) is a value" },
+ { "file": "lib/state-openers.mjs", "find": "|| SKETCH.test( v ) ", "replace": "", "why": "a JS literal sketch ([] or {open:true}) is set as its text" },
+ { "file": "lib/state-openers.mjs", "find": "|| COMPARISON.test( v ) ", "replace": "", "why": "a comparison (> 0) is set as its text" },
+ { "file": "lib/state-openers.mjs", "find": "return /<[^>]*>|…|â€¦|#{3,}/.test( v ) || ", "replace": "return ", "why": "a hole, an ellipsis or a run of # is a value" },
+ { "file": "lib/state-openers.mjs", "find": "(?:\\s.*)?$/;", "replace": "$/;", "why": "a range followed by a note (0–3 (default 0)) is a value" },
+ { "file": "lib/state-openers.mjs", "find": "export const plainState = ( st ) => Object.values( st?.state_keys || {} ).every( ( v ) => ! isDescription( v ) );", "replace": "export const plainState = () => true;", "why": "a described state sets its plain keys before its call" },
+ { "file": "lib/state-openers.mjs", "find": ".sort( ( a, b ) => Number( ! /open/i.test( a.name ) ) - Number( ! /open/i.test( b.name ) ) )", "replace": "", "why": "a state named open is not tried first" },
+ { "file": "lib/state-openers.mjs", "find": "( states || [] ).filter( ( s ) => ! CLOSED.test( s.name || '' ) )", "replace": "( states || [] )", "why": "a closed or default state can open the surface" },
+ { "file": "lib/state-openers.mjs", "find": "${ w.bounds?.length ? ` at ${ boundsText( w.bounds ) }` : '' }", "replace": "", "why": "a way held only at some widths is written without them" },
+ { "file": "lib/state-openers.mjs", "find": ": `trigger ${ w.event } on ${ w.draftId }", "replace": ": `trigger ${ w.event } at ${ w.draftId }", "why": "a trigger way is misdescribed" }
+]
