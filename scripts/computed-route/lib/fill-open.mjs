@@ -15,7 +15,7 @@
 // closed surface.
 import { setDraftState, reachDraftState, logicState } from './intake-state.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
-import { plainState, widthBounds, fitsWidth } from './state-reach.mjs';
+import { plainState, widthBounds, fitsWidth, waysHeldAt } from './state-reach.mjs';
 import { ROOT_HOST, isStatePage, stateRouteHash } from './state-route.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
 
@@ -133,7 +133,7 @@ export function stateOpener( { entry, skeleton, record, facts, rootComponent = n
 
 // The ways of an opener offered at a width (every way when the width is unknown), in order; an opener built without
 // `ways` is its own one `state` way.
-export const waysAt = ( opener, width ) => ( opener.ways || [ { via: 'state', state: opener.state, keys: opener.keys, expect: opener.expect || [], bounds: [] } ] ).filter( ( w ) => fitsWidth( w.bounds, width ) );
+export const waysAt = ( opener, width ) => waysHeldAt( opener.ways || [ { via: 'state', state: opener.state, keys: opener.keys, expect: opener.expect || [], bounds: [] } ], width );
 
 // The way each read width opened with: { [width]: index into `opener.ways` } from openState's verdicts ({ [width]:
 // verdict }), for the walker config to open the same way (openerSource).

@@ -15,8 +15,8 @@
   <sc-if value="{{ lens.open }}">
     <div role="dialog" aria-label="Lens configurator" style="position:fixed;inset:10%;padding:24px;background:#fff;border:1px solid #222">
       <h2 style="margin:0 0 8px;font-size:24px">Choose your lenses</h2>
-      <p style="margin:0">Step {{ lens.step }}</p>
-      <p style="margin:0">Layout {{ layout }}</p>
+      <p style="margin:0;width:{{ stepWidth }}">Step {{ lens.step }}</p>
+      <p style="margin:0;width:{{ layoutWidth }}">Layout {{ layout }}</p>
     </div>
   </sc-if>
 </div>
@@ -25,7 +25,7 @@
 class Component extends DCLogic {
   state = { lens: { open: false, step: 0 }, w: window.innerWidth };
   renderVals() {
-    return { lens: this.state.lens, layout: this.state.w >= 768 ? 'side' : 'stacked' };
+    return { lens: this.state.lens, layout: this.state.w >= 768 ? 'side' : 'stacked', layoutWidth: this.state.w >= 1024 ? '300px' : this.state.w >= 768 ? '200px' : '120px', stepWidth: ( 100 + 40 * this.state.lens.step ) + 'px' };
   }
 }
 </script>
