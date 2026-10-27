@@ -43,3 +43,18 @@ export function surfaceRole( { pageMap = [], id = null, kind = null, m = null, v
 	}
 	return null;
 }
+
+// The fact record's surfaces of `kind` that the page map hands to another row's block, seen from any surface (a header
+// holding the control that opens one): each surface's elements are the record entries at or under its roots, matched to
+// the part's draftId as surfaceRole matches a surface's own inventory. o: { pageMap, surfaces (the record's surfaces by
+// id), elements (the record's elements by key), kind }. Returns [ { surface, row, part } ].
+export function blockPartSurfaces( { pageMap = [], surfaces = {}, elements = {}, kind = 'drawer' } ) {
+	const all = Object.values( elements );
+	return Object.values( surfaces ).filter( ( s ) => s.kind === kind ).flatMap( ( s ) => {
+		const roots = new Set( s.roots || [] );
+		const els = all.filter( ( x ) => roots.has( x.template.key ) || ( x.template.parentChain || [] ).some( ( k ) => roots.has( k ) ) )
+			.map( ( x ) => ( { tag: x.template.realTag ?? x.template.tag, template: x.template.component, attrs: x.template.attrs || {} } ) );
+		const role = surfaceRole( { pageMap, id: s.id, kind: s.kind, m: { els } } );
+		return 'blockPart' === role?.role ? [ { surface: s, row: role.row, part: role.part } ] : [];
+	} );
+}

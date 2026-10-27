@@ -120,7 +120,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const siteLink = siteLinkResolver( draftLinks );
 	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );

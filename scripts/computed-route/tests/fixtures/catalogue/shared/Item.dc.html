@@ -1,0 +1,52 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><script src="data.js"></script></head><body>
+<x-dc>
+<main>
+  <h1>{{ p.name }}</h1>
+  <p>{{ p.blurb }}</p>
+  <sc-for list="{{ packs }}" as="o"><button onClick="{{ o.pick }}">{{ o.n }} {{ o.priceTxt }}</button></sc-for>
+  <sc-for list="{{ grains }}" as="o"><button onClick="{{ o.pick }}">{{ o.name }}</button></sc-for>
+  <sc-for list="{{ tops }}" as="o"><button onClick="{{ o.pick }}">{{ o.name }}</button></sc-for>
+  <button onClick="{{ giftOn }}">As a gift</button><button onClick="{{ giftOff }}">For me</button>
+  <sc-for list="{{ everys }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <sc-for list="{{ amounts }}" as="o"><button onClick="{{ o.pick }}">{{ o.label }}</button></sc-for>
+  <button onClick="{{ inc }}">+</button>
+  <button onClick="{{ add }}">Add · {{ priceTxt }}</button>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { pack: 6, grain: 'fine', tops: ['nuts'], gift: false, every: 2, amount: 20, qty: 1 };
+  renderVals() {
+    const S = this.state, D = window.SHOPDATA;
+    const id = new URLSearchParams(location.search).get('id') || 'jar';
+    const p = D ? D.item(id) : { name: '', kind: 'build' };
+    const isBuild = p.kind === 'build', isAmount = p.kind === 'amount';
+    const money = n => '£' + n.toFixed(2);
+    const pk = (D ? D.packs : []).find(x => x.n === S.pack) || { price: 4 };
+    const meta = { packs: D.packs };
+    const pickOne = (list, key) => list.map(o => ({ ...o, pick: () => this.setState({ [key]: o.id }) }));
+    const togTop = t => { let a = S.tops.slice(); if (a.includes(t)) a = a.filter(x => x !== t); else a.push(t); this.setState({ tops: a }); };
+    const unit = isBuild ? (S.gift ? pk.price * 0.8 : pk.price) : isAmount ? S.amount : p.from;
+    return {
+      p,
+      packs: (D ? D.packs : []).map(o => ({ ...o, priceTxt: money(o.price), pick: () => this.setState({ pack: o.n }) })),
+      grains: pickOne(D ? D.grains : [], 'grain'),
+      tops: (D ? D.toppings : []).map(o => ({ ...o, pick: () => togTop(o.id) })),
+      giftOn: () => this.setState({ gift: true }), giftOff: () => this.setState({ gift: false }),
+      everys: [1, 2].map(w => ({ label: 'Every ' + w + ' weeks', pick: () => this.setState({ every: w }) })),
+      amounts: [10, 20].map(a => ({ label: '£' + a, pick: () => this.setState({ amount: a }) })),
+      inc: () => this.setState({ qty: S.qty + 1 }),
+      priceTxt: money(unit),
+      add: () => {
+        if (!D) return;
+        const it = isBuild ? { key: ['jar', S.pack, S.grain, S.tops.join('+'), S.gift ? 'g' + S.every : ''].join('-'), id: 'jar', price: unit }
+          : isAmount ? { key: 'voucher-' + S.amount, id: 'voucher', price: S.amount }
+          : { key: p.id, id: p.id, price: p.from, qty: S.qty };
+        D.basket.add(it);
+      }
+    };
+  }
+}
+</script>
+</body></html>

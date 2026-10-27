@@ -19,7 +19,7 @@
     "flags",
     "draftDefects",
     "notDefects",
-    "missingFeatures",
+    "missingFeatures", "catalogue",
     "skeletons",
     "notices",
     "gaps",
@@ -332,6 +332,25 @@
         }
       }
     },
+    "catalogue": {
+      "type": "object",
+      "description": "The draft catalogue (Spec 48 FR-48-92, lib/intake-catalogue-run.mjs): each product's summary and every gap row; sites/<client>/build/catalogue.json holds the full reading.",
+      "required": [
+        "products",
+        "gaps"
+      ],
+      "properties": {
+        "products": {
+          "type": "array"
+        },
+        "gaps": {
+          "type": "array"
+        },
+        "notes": {
+          "type": "array"
+        }
+      }
+    },
     "siteInfo": {
       "type": "object",
       "required": [
@@ -535,6 +554,7 @@
           "rowType": {
             "enum": [
               "page-map",
+              "catalogue",
               "palette-role",
               "site-info",
               "flag",

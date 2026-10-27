@@ -48,13 +48,24 @@ function build( draft ) {
 		}
 		return up === method;
 	};
-	const returned = subtree( idx, method ).filter( ( n ) => 'ReturnStatement' === n.type && own( n ) && 'ObjectExpression' === n.argument?.type );
+	// The object literals a returned value is made of: the literal itself, or each argument of `Object.assign(…)` that is a
+	// literal or a name renderVals declares as one (`return Object.assign( accountVals, { … } )`).
+	const literalOf = ( n ) => {
+		if ( 'ObjectExpression' === n?.type ) {
+			return n;
+		}
+		const decl = 'Identifier' === n?.type ? subtree( idx, method ).find( ( x ) => 'VariableDeclarator' === x.type && 'Identifier' === x.id.type && n.name === x.id.name && own( x ) ) : null;
+		return 'ObjectExpression' === decl?.init?.type ? decl.init : null;
+	};
+	const assigned = ( n ) => 'CallExpression' === n?.type && 'MemberExpression' === n.callee.type && ! n.callee.computed && 'Object' === n.callee.object.name && 'assign' === n.callee.property.name;
+	const objects = ( n ) => ( 'ObjectExpression' === n?.type ? [ n ] : assigned( n ) ? n.arguments.map( literalOf ).filter( Boolean ) : [] );
+	const returned = subtree( idx, method ).filter( ( n ) => 'ReturnStatement' === n.type && own( n ) ).flatMap( ( n ) => objects( n.argument ) );
 	if ( ! returned.length ) {
 		return null;
 	}
 	const values = new Map();
 	for ( const r of returned ) {
-		for ( const p of r.argument.properties ) {
+		for ( const p of r.properties ) {
 			if ( ( 'ObjectProperty' === p.type || 'ObjectMethod' === p.type ) && ! p.computed && keyName( p ) ) {
 				values.set( keyName( p ), 'ObjectMethod' === p.type ? p : p.value );
 			}
@@ -127,11 +138,19 @@ function filteredBy( d, expr, depth = 0, seen = new Set() ) {
 	return out;
 }
 
+// A component's draft logic as the fact record hashed it: { idx, method (renderVals), values (Map renderVals key → value
+// node) }, or null when the record names no such file or its renderVals returns no object literal. `folder` is the draft
+// folder, `record` the fact record (its `sources.files` hashes name the draft files). A changed or missing file throws
+// (lib/freshness.mjs::StaleRecordError).
+export function draftLogicOf( { folder, record, component } ) {
+	const file = `${ component }.dc.html`;
+	return folder && record?.sources?.files?.[ file ] ? readDraft( folder, file, record.sources.files[ file ] ) : null;
+}
+
 // The renderVals keys (other than `listKey`) whose lists the chips looped from `listKey` narrow, for a component of a fact
 // record. `folder` is the draft folder, `record` the fact record (its `sources.files` hashes name the draft files).
 export function narrowedLists( { folder, record, component, listKey } ) {
-	const file = `${ component }.dc.html`;
-	const d = folder && record?.sources?.files?.[ file ] ? readDraft( folder, file, record.sources.files[ file ] ) : null;
+	const d = draftLogicOf( { folder, record, component } );
 	const value = d?.values.get( listKey );
 	if ( ! value ) {
 		return [];

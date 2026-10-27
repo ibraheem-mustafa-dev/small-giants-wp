@@ -3,6 +3,7 @@
 //   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--templates-only] [--only <row key,...>] [--repo <root>]
 //   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
 //   node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
 // each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
@@ -12,7 +13,10 @@
 // Fill run (lib/site-build-options.mjs). --flow-links runs only the product flow links (lib/site-build-flow-links.mjs):
 // each published product covered by a page-map product row with `opensFlow` gets that flow's slug as `_sgs_choice_flow`
 // (a dry run without --apply), reading the page map and writing nothing else, the map included; a whole build (neither
-// --templates-only nor --only) runs the same step after its four phases.
+// --templates-only nor --only) runs the same step after its four phases. --catalogue runs only the draft catalogue
+// (lib/site-build-catalogue.mjs, FR-48-92): every product of sites/<client>/build/catalogue.json planned by SKU (create,
+// complete, exists, or left when it is a fixture), made or completed with --apply, read back, and its product id and
+// permalink recorded in catalogue.json's `sites.<site>`; the page map is neither read nor written.
 // Exit 0 done, 1 failure or a stopped run, 2 usage.
 import fs from 'fs';
 import path from 'path';
@@ -26,6 +30,7 @@ import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mj
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
+import { runCatalogue } from './lib/site-build-catalogue.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -36,6 +41,7 @@ if ( ! client || ( ! site && ! promote ) ) {
 	console.error( 'usage: node site-build.mjs <client> --site <site> [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --promote-options <Fill run folder or file> [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]' );
 	process.exit( 2 );
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -55,6 +61,14 @@ const apply = args.includes( '--apply' );
 // of over SSH; a site with no target entry runs over SSH.
 const targetsFile = path.join( repo, 'scripts', 'computed-route', 'calibration-targets.json' );
 const target = ( fs.existsSync( targetsFile ) ? JSON.parse( fs.readFileSync( targetsFile, 'utf8' ) )[ site ] : null ) || {};
+if ( args.includes( '--catalogue' ) ) {
+	try {
+		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
 if ( args.includes( '--flow-links' ) ) {
 	try {
 		process.exit( runFlowLinks( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
