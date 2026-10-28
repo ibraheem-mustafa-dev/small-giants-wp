@@ -23,7 +23,7 @@ before( async () => {
 } );
 after( () => browser?.close() );
 
-test( 'statePairs follows every pair that has both finders, and stateGroups reads each in its walker states', () => {
+test( 'MUST FAIL: statePairs follows every pair that has both finders, and stateGroups reads each in its walker states (an unscoped pair in every one)', () => {
 	const open = async () => {};
 	const cfg = {
 		states: [ { name: 'closed', draft: open, live: open }, { name: 'drawer-open', draft: open, live: open }, { name: 'half', draft: open } ],
@@ -40,7 +40,7 @@ test( 'statePairs follows every pair that has both finders, and stateGroups read
 	assert.deepEqual( pairs.map( ( p ) => p.name ), [ 'title', 'go', 'run', 'grp', 'open' ], 'a state the config cannot open on both sides, and a pair without a live finder, are not followed' );
 	assert.notEqual( pairs[ 0 ].draft, pairs[ 0 ].live, 'each side has its own job id' );
 	const groups = stateGroups( cfg );
-	assert.deepEqual( groups.map( ( g ) => [ g.name, g.pairs.map( ( p ) => p.name ) ] ), [ [ null, [ 'title', 'go', 'run', 'grp' ] ], [ 'drawer-open', [ 'grp', 'open' ] ] ] );
+	assert.deepEqual( groups.map( ( g ) => [ g.name, g.pairs.map( ( p ) => p.name ) ] ), [ [ null, [ 'title', 'go', 'run', 'grp' ] ], [ 'drawer-open', [ 'title', 'go', 'run', 'grp', 'open' ] ] ], 'a pair with no states is read in every state the config opens on both sides, as the walker walks it; never in a state it cannot open' );
 	assert.deepEqual( groups[ 0 ].pairs[ 2 ].draftFinder, { textRun: { within: 'main' } }, 'a text run keeps its finder; the in-page resolver reads its `within`' );
 } );
 

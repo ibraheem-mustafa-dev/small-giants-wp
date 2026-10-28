@@ -135,19 +135,20 @@ export function conflictKey( key ) {
 	return { ref: p[ 0 ], path: p.slice( 1, -2 ).join( '|' ), kind: p.at( -2 ), prop: p.at( -1 ) };
 }
 
-// A reasons file's rows for one surface, against the generated map: { missing, stale }. `missing` are the map's gap rows
+// A reasons file's rows for one client's surface, against the generated map: { missing, stale }. `missing` are the map's gap rows
 // the reasons do not state (`stateless` holds a row id, or { surface, id }); `stale` are the conflict entries whose group
 // the map no longer has: a walker state the surface dropped, or one that now maps to another setting state than the
-// entry's `mappedTo` ("<walker state>-><setting state>", rest written `rest`).
-export function diffReasons( map, reasons ) {
+// entry's `mappedTo` ("<walker state>-><setting state>", rest written `rest`). Only the entries naming `client` (the
+// folder under sites/ the map was generated for) are judged: another client's surface of the same name is not this one.
+export function diffReasons( map, reasons, client ) {
 	const stated = ( reasons?.stateless || [] ).filter( ( x ) => 'string' === typeof x || x.surface === map.surface ).map( ( x ) => ( 'string' === typeof x ? x : x.id ) );
 	const missing = map.gaps.filter( ( g ) => ! stated.includes( g.id ) ).map( ( g ) => ( { id: g.id, reason: g.reason } ) );
 	const now = new Map( map.walkerStates.map( ( w ) => [ w.walkerState, w.settingState ?? 'rest' ] ) );
 	const stale = [];
-	for ( const e of ( reasons?.stateConflicts?.entries || [] ).filter( ( x ) => x.surface === map.surface ) ) {
+	for ( const e of ( reasons?.stateConflicts?.entries || [] ).filter( ( x ) => x.client === client && x.surface === map.surface ) ) {
 		const off = [ ...( e.walkerStates || [] ).filter( ( ws ) => ! now.has( ws ) ).map( ( ws ) => `${ ws } is no longer a walker state of the surface` ),
 			...( e.mappedTo || [] ).map( ( m ) => m.split( '->' ) ).filter( ( [ ws, st ] ) => now.has( ws ) && now.get( ws ) !== st ).map( ( [ ws, st ] ) => `${ ws } maps to ${ now.get( ws ) }, not ${ st }` ) ];
-		off.length && stale.push( { surface: e.surface, key: e.key, why: off } );
+		off.length && stale.push( { client: e.client, surface: e.surface, key: e.key, why: off } );
 	}
 	return { missing, stale };
 }

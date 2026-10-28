@@ -13,6 +13,17 @@ const TEXT_ATTRS = [ 'text', 'content', 'label' ];
 const wordsOf = ( n ) => squash( TEXT_ATTRS.map( ( a ) => n?.attributes?.[ a ] ).find( ( v ) => 'string' === typeof v && v.trim() ) );
 const matcher = ( spec ) => ( spec?.patterns?.length ? ( s ) => spec.patterns.some( ( p ) => new RegExp( p, spec.flags || '' ).test( s ) ) : () => false );
 
+// Whether a button is the form's Next or Back: 'next' or 'back' when its words or a click handler name moving to the next
+// or previous step (rules.formSteps `next` / `back`), else null. Fill reads the same test for the buttons' words
+// (lib/fill-form-buttons.mjs).
+export function navRole( words, handlers = [], rules = null ) {
+	const R = rules || {};
+	if ( matcher( R.next?.words )( words ) || handlers.some( matcher( R.next?.handlers ) ) ) {
+		return 'next';
+	}
+	return matcher( R.back?.words )( words ) || handlers.some( matcher( R.back?.handlers ) ) ? 'back' : null;
+}
+
 // The draft's own step navigation inside the form. steps: the schema's steps; rules: rules.formSteps; draftOf( node ): the
 // node's draft facts ({ handlers }). Returns { is( node ), reasonOf( node ) }:
 //   indicator  the lowest node whose texts hold every step's label in schema order (a list of the steps);
@@ -38,10 +49,6 @@ export function stepChrome( { steps, rules = null, draftOf = () => null } ) {
 	const anyField = ( n ) => isField( n ) || ( n.innerBlocks || [] ).some( anyField );
 	const count = matcher( R.countLabel );
 	const total = ( w ) => Number( ( w.match( /\d+/g ) || [] ).pop() );
-	const next = matcher( R.next?.words );
-	const back = matcher( R.back?.words );
-	const nextHandler = matcher( R.next?.handlers );
-	const backHandler = matcher( R.back?.handlers );
 	const role = ( n ) => {
 		if ( ! R.reasons || anyField( n ) ) {
 			return null;
@@ -56,11 +63,7 @@ export function stepChrome( { steps, rules = null, draftOf = () => null } ) {
 		if ( R.navBlock !== n.name ) {
 			return null;
 		}
-		const handlers = draftOf( n )?.handlers || [];
-		if ( next( w ) || handlers.some( nextHandler ) ) {
-			return 'next';
-		}
-		return back( w ) || handlers.some( backHandler ) ? 'back' : null;
+		return navRole( w, draftOf( n )?.handlers || [], R );
 	};
 	return { is: ( n ) => null !== role( n ), roleOf: role, reasonOf: ( n ) => R.reasons?.[ role( n ) ] ?? null };
 }

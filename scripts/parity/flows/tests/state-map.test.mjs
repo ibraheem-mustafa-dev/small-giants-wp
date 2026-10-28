@@ -10,7 +10,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { REPO_ROOT } from '../lib/browser.mjs';
 import { stateMap, diffReasons } from '../../../computed-route/lib/state-map.mjs';
-import { loadClient, loadReasons } from '../../../computed-route/lib/state-map-io.mjs';
+import { loadClient, loadReasons, reasonsProblems } from '../../../computed-route/lib/state-map-io.mjs';
 
 const FIXTURE = path.join( import.meta.dirname, 'fixtures', 'state-map' );
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
@@ -142,6 +142,8 @@ test( 'a surface that narrows its walk walks every state it maps, so the form st
 test( 'the state conflicts name real verdicts, precisely', () => {
 	assert.equal( reasons.stateConflicts.entries.length, 3 );
 	assert.deepEqual( conflictProblems( reasons.stateConflicts.entries, triage, surfaces ), [] );
+	assert.deepEqual( reasonsProblems( reasons ), [], 'every entry names its client' );
+	assert.equal( reasonsProblems( { stateConflicts: { entries: [ { ...reasons.stateConflicts.entries[ 0 ], client: undefined } ] } } ).length, 1, 'an entry without its client is refused' );
 	const [ home, width, slider ] = reasons.stateConflicts.entries;
 	const bad = [
 		{ ...home, pair: 'hero-link' },
@@ -174,12 +176,15 @@ test( 'the committed client data agrees with state-map-reasons.json: no stale co
 	for ( const surface of names ) {
 		const map = stateMap( { surfaces: live.surfaces, surface, intake: live.intake } );
 		map.gaps.forEach( ( g ) => gapIds.add( `${ surface } ${ g.id }` ) );
-		const diff = diffReasons( map, liveReasons );
+		const diff = diffReasons( map, liveReasons, CLIENT );
 		diff.missing.forEach( ( m ) => problems.push( `${ surface }: gap row ${ m.id } not stated (${ m.reason })` ) );
 		diff.stale.forEach( ( s ) => problems.push( `${ surface }: conflict ${ s.key } is stale: ${ s.why.join( '; ' ) }` ) );
 	}
+	// Every entry names a client (loadReasons refuses one that does not) whose surfaces.json maps the entry's surface.
 	for ( const e of liveReasons.stateConflicts?.entries || [] ) {
-		names.includes( e.surface ) || problems.push( `conflict ${ e.key } names surface ${ e.surface }, which has no state map` );
+		const file = path.join( REPO_ROOT, 'sites', e.client, 'build', 'surfaces.json' );
+		const theirs = e.client === CLIENT ? live.surfaces : fs.existsSync( file ) ? readJson( file ) : {};
+		theirs[ e.surface ]?.states || problems.push( `conflict ${ e.key } names surface ${ e.surface } of client ${ e.client }, which has no state map` );
 	}
 	for ( const x of liveReasons.stateless || [] ) {
 		const has = 'string' === typeof x ? [ ...gapIds ].some( ( g ) => g.endsWith( ` ${ x }` ) ) : gapIds.has( `${ x.surface } ${ x.id }` );

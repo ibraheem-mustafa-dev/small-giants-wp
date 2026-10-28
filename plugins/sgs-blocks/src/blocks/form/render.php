@@ -784,7 +784,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 				data-wp-on--click="actions.prevStep"
 				data-wp-bind--hidden="state.isFirstStep"
 			>
-				<?php echo esc_html__( 'Previous', 'sgs-blocks' ); ?>
+				<?php echo esc_html( is_string( $attributes['prevLabel'] ?? null ) && '' !== trim( $attributes['prevLabel'] ) ? $attributes['prevLabel'] : __( 'Previous', 'sgs-blocks' ) ); ?>
 			</button>
 
 			<button
@@ -793,7 +793,7 @@ $sgs_form_label_attr = '' !== $sgs_form_label
 				data-wp-on--click="actions.nextStep"
 				data-wp-bind--hidden="state.isLastStep"
 			>
-				<?php echo esc_html__( 'Next', 'sgs-blocks' ); ?>
+				<?php echo esc_html( is_string( $attributes['nextLabel'] ?? null ) && '' !== trim( $attributes['nextLabel'] ) ? $attributes['nextLabel'] : __( 'Next', 'sgs-blocks' ) ); ?>
 			</button>
 		<?php endif; ?>
 

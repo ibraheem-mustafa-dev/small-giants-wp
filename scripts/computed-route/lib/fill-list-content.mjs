@@ -6,12 +6,14 @@
 //   - inner blocks: a block whose `block_composition.accepts_allowed_blocks` names one block, each item one such child
 //     whose content settings (roles text-content, content and image-object, no css_property) take the item's fields.
 // A draft field goes to the item key with the same name, else to the key of the same role, read from the words of both
-// names (ITEM_ROLES); a tie goes to the key sharing a word with the field. A picture goes through the media map
+// names (data/item-roles.json, read as ITEM_ROLES); a tie goes to the key sharing a word with the field. A picture goes through the media map
 // (lib/fill-media.mjs: a draft file or a stock preview the map holds); a picture the draft chooses at run time, a field no
 // key takes and a value the key's type cannot hold are named handover rows. A setting that already holds a value (the
 // skeleton wrote the items) is kept, and skeleton children are filled only where they are the list's items, one per item.
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { loadAjv, schemaProblems } from './handoff.mjs';
 import { setAttr } from './tree.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { draftPath, mapEntries, stockEntries } from './fill-media.mjs';
@@ -26,27 +28,31 @@ export const COVERAGE_WRITES = [
 	'block-setting:content:array',
 ];
 
-// The roles an item key or draft field can play, read from the words of its name (camelCase split), in priority order:
-// a key takes the first role any of its words names; a field may take each role its words name, in this order.
-export const ITEM_ROLES = [
-	[ 'image', /^(?:image|img|photo|picture|avatar|logo|thumbnail|thumb|media|portrait)$/ ],
-	[ 'icon', /^(?:icon|glyph|emoji)$/ ],
-	[ 'organisation', /^(?:org|organisation|organization|company|business|employer|brand)$/ ],
-	[ 'role', /^(?:role|position|job|occupation)$/ ],
-	[ 'date', /^(?:date|year|when|period|era)$/ ],
-	[ 'quote', /^(?:quote|testimonial|review|text)$/ ],
-	[ 'number', /^(?:number|num|n|no|step|index|count)$/ ],
-	[ 'author', /^(?:name|author|reviewer|person|who|customer)$/ ],
-	[ 'title', /^(?:title|heading|headline|label|name)$/ ],
-	[ 'description', /^(?:description|desc|body|text|summary|copy|content|detail|details|blurb|excerpt)$/ ],
-	[ 'link', /^(?:href|url|link)$/ ],
-];
+// The roles an item key or draft field can play (data/item-roles.json, shape data/item-roles.schema.json): [[ role, words ]]
+// in priority order. Throws on a file that breaks the schema or names one role twice.
+export const ITEM_ROLES_FILE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'item-roles.json' );
+export function loadItemRoles( file = ITEM_ROLES_FILE ) {
+	const data = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	const problems = schemaProblems( loadAjv(), file.replace( /\.json$/, '.schema.json' ), data );
+	const names = data.roles?.map( ( r ) => r.role ) ?? [];
+	names.filter( ( r, i ) => names.indexOf( r ) !== i ).forEach( ( r ) => problems.push( `/roles names "${ r }" twice` ) );
+	if ( problems.length ) {
+		throw new Error( `${ file } does not match item-roles.schema.json:\n${ problems.join( '\n' ) }` );
+	}
+	return data.roles.map( ( r ) => [ r.role, new Set( r.words ) ] );
+}
+export const ITEM_ROLES = loadItemRoles();
 
 export const wordsOf = ( name ) => String( name ).split( '.' ).pop().replace( /([a-z0-9])([A-Z])/g, '$1 $2' ).split( /[\s_-]+/ ).map( ( w ) => w.toLowerCase() ).filter( Boolean );
-export const keyRole = ( name ) => ITEM_ROLES.find( ( [ , re ] ) => wordsOf( name ).some( ( w ) => re.test( w ) ) )?.[ 0 ] ?? null;
-export const fieldRoles = ( name ) => ITEM_ROLES.filter( ( [ , re ] ) => wordsOf( name ).some( ( w ) => re.test( w ) ) ).map( ( [ r ] ) => r );
+// Every role a name's words name, in priority order: a field may take each; a key's first is its primary role.
+export const fieldRoles = ( name ) => ITEM_ROLES.filter( ( [ , words ] ) => wordsOf( name ).some( ( w ) => words.has( w ) ) ).map( ( [ r ] ) => r );
+export const keyRole = ( name ) => fieldRoles( name )[ 0 ] ?? null;
 
 // Each draft field's item key: { map: { field: key }, unmatched: [field] }. fields: [{ name, image }]; keys: [{ key }].
+// A field takes the key of its own name first. Otherwise, for each role the field plays in order, it takes an open key whose
+// primary role that is; only when the block's item has no such key does a key that names the role as a later one take it
+// (a team member's `name`, primary role author, takes a draft `title` when the item has no title key). Within either
+// tier a tie goes to the key sharing a word with the field.
 export function matchFields( fields, keys ) {
 	const map = {};
 	const used = new Set();
@@ -58,11 +64,14 @@ export function matchFields( fields, keys ) {
 		const k = keys.find( ( x ) => x.key === f.name && ! used.has( x.key ) );
 		k && take( f, k );
 	}
+	const pick = ( f, open ) => open.find( ( k ) => wordsOf( k.key ).some( ( w ) => wordsOf( f.name ).includes( w ) ) ) ?? open[ 0 ];
 	for ( const f of fields.filter( ( x ) => ! ( x.name in map ) ) ) {
 		for ( const role of f.image ? [ 'image' ] : fieldRoles( f.name ) ) {
-			const open = keys.filter( ( k ) => ! used.has( k.key ) && keyRole( k.key ) === role );
+			const free = keys.filter( ( k ) => ! used.has( k.key ) );
+			const primary = free.filter( ( k ) => keyRole( k.key ) === role );
+			const open = primary.length ? primary : free.filter( ( k ) => fieldRoles( k.key ).includes( role ) );
 			if ( open.length ) {
-				take( f, open.find( ( k ) => wordsOf( k.key ).some( ( w ) => wordsOf( f.name ).includes( w ) ) ) ?? open[ 0 ] );
+				take( f, pick( f, open ) );
 				break;
 			}
 		}

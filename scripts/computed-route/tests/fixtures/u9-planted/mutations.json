@@ -20,15 +20,15 @@
 	{ "file": "lib/fill-form.mjs", "find": "const linked = [ ...params ].find( ( p ) => names.some( ( n ) => n === p || n.endsWith( `-${ p }` ) ) );", "replace": "const linked = [ ...params ][ 0 ];", "why": "every field would take the first parameter" },
 	{ "file": "lib/fill-form.mjs", "find": "put( 'conditionalValue', condition.value, 'conditional field' );", "replace": "void 0;", "why": "the condition's value would be lost" },
 	{ "file": "lib/fill-form.mjs", "find": "if ( condition?.reason ) {", "replace": "if ( false ) {", "why": "an either-or test would be written as if it were one value" },
-	{ "file": "lib/fill-form.mjs", "find": "} else if ( 'sgs/form' === rec.name && schema && savesProgress( flags, schema.component ) ) {", "replace": "} else if ( 'sgs/form' === rec.name && schema ) {", "why": "saved progress would be set without a storage write in the draft" },
+	{ "file": "lib/fill-form.mjs", "find": "savesProgress( flags, schema.component ) && apply(", "replace": "apply(", "why": "saved progress would be set without a storage write in the draft" },
 	{ "file": "lib/fill-form.mjs", "find": "apply( out, node, ref, rec, { attr: 'label', value: steps[ stepNo++ ].label, merge: 'replace' } );", "replace": "stepNo++;", "why": "step labels would not be written" },
 	{ "file": "lib/fill-form.mjs", "find": "apply( out, node, ref, rec, { attr: 'intro', value: review.intro, merge: 'replace' } );", "replace": "void review;", "why": "the review intro would not be written" },
 	{ "file": "lib/fill-form.mjs", "find": "edit && edit.template.words !== 'Edit' && apply(", "replace": "void edit && void (", "why": "the Edit label would not be written" },
 	{ "file": "lib/fill-form.mjs", "find": "'submit' === el.type && attrDef( db, 'sgs/button', 'isSubmit' ) ) {", "replace": "'button' === el.type && attrDef( db, 'sgs/button', 'isSubmit' ) ) {", "why": "a non-submit button would be a submit" },
-	{ "file": "lib/fill-form.mjs", "find": "if ( ! same( value, def.default ) && ! same( value, attributes[ attr ] ) ) {", "replace": "if ( false ) {", "why": "nothing would be written" },
+	{ "file": "lib/fill-form.mjs", "find": "if ( ! same( value, undefined === attributes[ attr ] ? def.default : attributes[ attr ] ) ) {", "replace": "if ( false ) {", "why": "nothing would be written" },
 	{ "file": "lib/fill-form.mjs", "find": "if ( ! def ) {\n\t\t\tgap( property, value, why || `the draft's ${ property }` );", "replace": "if ( ! def ) {\n\t\t\tvoid why;", "why": "a setting the block does not hold would be dropped silently" },
 	{ "file": "lib/fill-form-schema.mjs", "find": "for ( const m of String( href || '' ).matchAll( /[?&]([A-Za-z][\\w-]*)=/g ) ) {", "replace": "for ( const m of [] ) {", "why": "link parameters would not be found" },
 	{ "file": "lib/fill-form-schema.mjs", "find": "1 === values.length ? { field: t[ 2 ], op: 'equals', value: values[ 0 ] } :", "replace": "values.length ? { field: t[ 2 ], op: 'equals', value: values[ 0 ] } :", "why": "an either-or list would take its first value" },
-	{ "file": "lib/fill-read.mjs", "find": "f.counterMax = m ? Number( m[ 1 ] ) : null;", "replace": "f.counterMax = null;", "why": "the page read would not see the counter" },
-	{ "file": "lib/fill-read.mjs", "find": "f.checked = 'true' === el.getAttribute( 'aria-checked' );", "replace": "f.checked = false;", "why": "the page read would not see a role=checkbox button ticked" }
+	{ "file": "lib/fill-read-collect.mjs", "find": "f.counterMax = m ? Number( m[ 1 ] ) : null;", "replace": "f.counterMax = null;", "why": "the page read would not see the counter" },
+	{ "file": "lib/fill-read-collect.mjs", "find": "f.checked = 'true' === el.getAttribute( 'aria-checked' );", "replace": "f.checked = false;", "why": "the page read would not see a role=checkbox button ticked" }
 ]

@@ -10,7 +10,10 @@
  *     Form_Rest_Submission::validate_fields() enforces, so the endpoint never refuses the whole submission;
  *   - fieldName wins when set, otherwise the label's slug, otherwise a numbered "field-N";
  *   - the file field's attachment-ID carrier has no name (it was submitted as a stray "_id" column).
- * Then loads the real field-render-helpers.php in this process to check that two derived names never collide.
+ * Then loads the real field-render-helpers.php in this process to check that two derived names never collide, that a
+ * composite address field leaves room for its longest suffix (a 60-character fieldName still submits valid keys), and
+ * that names are unique per form render: an explicit fieldName wins over an earlier derived name, and the same form
+ * rendered twice in one request gives identical names.
  *
  * Plain PHP, no PHPUnit. Exits non-zero on any failure.
  *   php plugins/sgs-blocks/tests/php/run-form-field-names-standalone.php
@@ -181,6 +184,23 @@ names_check( 'address: sub-fields are <name>-<part>', array( 'site-line1', 'site
 $addr = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'fieldName' => 'site', 'enableLookup' => true ) ) ) );
 names_check( 'address: the lookup box submits the postcode', in_array( 'site-postcode', $addr, true ) );
 
+// 5a. A long address name (MUST FAIL before the suffix reserve): a 60-character fieldName gave "<60 chars>-postcode",
+// which the endpoint refused, so every submission of the form failed with 400.
+$long_name = str_repeat( 'a', 60 );
+$all_parts = array( 'line1', 'line2', 'city', 'county', 'postcode', 'country' );
+foreach ( array( false, true ) as $lookup ) {
+	$addr  = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'fieldName' => $long_name, 'fields' => $all_parts, 'enableLookup' => $lookup ) ) ) );
+	$label = $lookup ? 'with the lookup box' : 'without the lookup box';
+	names_check( "address: a 60-character fieldName renders every part ($label)", 6 === count( $addr ) );
+	$bad = array_filter( $addr, static fn( string $n ): bool => 1 !== preg_match( NAMES_SERVER_KEY, $n ) );
+	names_check( "address: a 60-character fieldName submits keys the endpoint accepts ($label): " . implode( ',', $bad ), array() === $bad );
+	names_check( "address: a 60-character fieldName keeps its parts distinct ($label)", count( array_unique( $addr ) ) === count( $addr ) );
+	names_check( "address: a 60-character fieldName keeps as much of the name as fits ($label)", in_array( substr( $long_name, 0, 55 ) . '-postcode', $addr, true ) );
+}
+$addr = names_all( names_render( $harness, 'sgs/form-field-address', array_merge( $shared, array( 'label' => str_repeat( 'Where should we send it ', 5 ), 'fields' => $all_parts ) ) ) );
+$bad  = array_filter( $addr, static fn( string $n ): bool => 1 !== preg_match( NAMES_SERVER_KEY, $n ) );
+names_check( 'address: a long label submits keys the endpoint accepts', 6 === count( $addr ) && array() === $bad );
+
 // 6. A conditional field watches the cleaned name the watched field submits under.
 $cond = names_render( $harness, 'sgs/form-field-text', array_merge( $shared, array( 'conditionalField' => 'Business_Type' ) ) );
 names_check( 'conditional field name is cleaned the same way', str_contains( $cond, 'data-conditional-field="business_type"' ) );
@@ -197,11 +217,109 @@ $n3 = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-3', array( 'fieldName'
 $n4 = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-4', array( 'label' => 'Email' ) );
 names_check( 'first derived name is the label slug', 'email' === $n1 );
 names_check( 'second field with the same label gets its own name', 'email-2' === $n2 );
-names_check( 'fieldName is used as written even when a derived name took it', 'email-2' === $n3 );
+names_check( 'outside a form, fieldName is used as written even when a derived name took it', 'email-2' === $n3 );
 names_check( 'a later derived name skips every name already used', 'email-3' === $n4 );
 $n5 = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-9', array( 'label' => '' ) );
 $n6 = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-9', array( 'label' => '' ) );
 names_check( 'numbered names never collide', 'field-9' === $n5 && 'field-9-2' === $n6 );
+
+// 8. In process, inside a form: names are unique per form render (field-name-scope.php), driven through the same
+// filter callbacks WordPress calls as an sgs/form block renders.
+$functions_present = function_exists( '\SGS\Blocks\Forms\field_names_on_render_block_data' ) && function_exists( '\SGS\Blocks\Forms\field_names_on_render_form' );
+names_check( 'the form naming-scope filter callbacks exist', $functions_present );
+
+/**
+ * WordPress's render_block_data call for a block, when the scope callbacks exist (the cases below still run, and
+ * fail, against code without them).
+ *
+ * @param array $block Parsed block.
+ */
+function names_open( array $block ): void {
+	if ( function_exists( '\SGS\Blocks\Forms\field_names_on_render_block_data' ) ) {
+		\SGS\Blocks\Forms\field_names_on_render_block_data( $block );
+	}
+}
+
+/**
+ * WordPress's render_block_sgs/form call, when the scope callbacks exist.
+ */
+function names_close(): void {
+	if ( function_exists( '\SGS\Blocks\Forms\field_names_on_render_form' ) ) {
+		\SGS\Blocks\Forms\field_names_on_render_form( '' );
+	}
+}
+
+/**
+ * Render one form's fields in order through the scope callbacks and return their names.
+ *
+ * @param array $form   Parsed sgs/form block.
+ * @param array $fields Each [ field id, attributes ] in render order.
+ * @return string[] Names in render order.
+ */
+function names_render_form( array $form, array $fields ): array {
+	names_open( $form );
+	$out = array();
+	foreach ( $fields as $field ) {
+		$out[] = \SGS\Blocks\Forms\field_submission_name( $field[0], $field[1] );
+	}
+	names_close();
+	return $out;
+}
+
+// An unnamed "Contact email" field rendered first, then a field whose fieldName is "contact-email" (MUST FAIL before the
+// reservation: both submitted as "contact-email", so one value overwrote the other). The named field sits inside a step,
+// so the reservation reaches nested fields.
+$form   = array(
+	'blockName'   => 'sgs/form',
+	'attrs'       => array(),
+	'innerBlocks' => array(
+		array( 'blockName' => 'sgs/form-field-email', 'attrs' => array( 'label' => 'Contact email' ), 'innerBlocks' => array() ),
+		array(
+			'blockName'   => 'sgs/form-step',
+			'attrs'       => array(),
+			'innerBlocks' => array(
+				array( 'blockName' => 'sgs/form-field-email', 'attrs' => array( 'fieldName' => 'contact-email', 'label' => 'Work email' ), 'innerBlocks' => array() ),
+			),
+		),
+		array( 'blockName' => 'sgs/form-field-text', 'attrs' => array( 'label' => 'Your name' ), 'innerBlocks' => array() ),
+	),
+);
+$fields = array(
+	array( 'sgs-field-a', array( 'label' => 'Contact email' ) ),
+	array( 'sgs-field-contact-email', array( 'fieldName' => 'contact-email', 'label' => 'Work email' ) ),
+	array( 'sgs-field-b', array( 'label' => 'Your name' ) ),
+);
+$first  = names_render_form( $form, $fields );
+names_check( 'in a form: an explicit fieldName wins over an earlier derived name: ' . implode( ',', $first ), array( 'contact-email-2', 'contact-email', 'your-name' ) === $first );
+names_check( 'in a form: no two fields share a name', count( array_unique( $first ) ) === count( $first ) );
+
+// The same form rendered a second time in one request (a pattern preview, a query loop) (MUST FAIL before the
+// per-form scope: the request-wide record renamed every derived field to "-2").
+$second = names_render_form( $form, $fields );
+names_check( 'two renders of one form give identical names: ' . implode( ',', $second ), $first === $second );
+
+// A form rendered inside another form's render (a linked saved form) gets its own scope and hands the outer
+// form's scope back intact.
+names_open( array( 'blockName' => 'sgs/form', 'attrs' => array(), 'innerBlocks' => array() ) );
+$outer_a = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-o1', array( 'label' => 'Phone' ) );
+$inner   = names_render_form( $form, $fields );
+$outer_b = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-o2', array( 'label' => 'Phone' ) );
+names_close();
+names_check( 'a nested form keeps its own names', $first === $inner );
+names_check( 'the outer form keeps its own record after a nested form', 'phone' === $outer_a && 'phone-2' === $outer_b );
+
+// A block that is not sgs/form opens no scope: an unnamed field outside a form still claims from the base scope.
+names_open( array( 'blockName' => 'sgs/container', 'attrs' => array(), 'innerBlocks' => array() ) );
+$base_a = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-x', array( 'label' => 'Base check' ) );
+$base_b = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-y', array( 'label' => 'Base check' ) );
+names_check( 'a non-form block opens no scope', 'base-check' === $base_a && 'base-check-2' === $base_b );
+
+// A long address fieldName is reserved as the address renders it (cut for its suffix), and the derived base of a
+// composite field leaves room for its suffix and the counter.
+$reserve = function_exists( '\SGS\Blocks\Forms\field_name_suffix_reserve' ) ? \SGS\Blocks\Forms\field_name_suffix_reserve( 'sgs/form-field-address' ) : 0;
+names_check( 'the address reserve fits its longest part ("-postcode")', 9 === $reserve );
+$derived = \SGS\Blocks\Forms\field_submission_name( 'sgs-field-z', array( 'label' => str_repeat( 'x', 80 ) ), $reserve );
+names_check( 'a composite derived name plus its suffix fits the key', strlen( $derived . '-postcode' ) <= 64 );
 
 echo "\n$passed passed, $failed failed\n";
 exit( $failed > 0 ? 1 : 0 );

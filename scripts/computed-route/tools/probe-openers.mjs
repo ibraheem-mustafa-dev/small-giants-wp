@@ -16,7 +16,10 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openSandbox, recheckManifest } from '../lib/intake-sandbox.mjs';
 import { runCensus } from '../lib/intake-census.mjs';
-import { surfaceRoots, openers, describeOpener } from '../lib/intake-skeletons.mjs';
+import { surfaceRoots, openers } from '../lib/intake-skeletons.mjs';
+import { judgeKeys, describeWay, CLOSED } from '../lib/state-openers.mjs';
+import { widthStateKeys } from '../lib/state-reach.mjs';
+import { readBreakpoints } from '../lib/intake-breakpoints.mjs';
 import { setDraftState, snapshotDraftState, restoreDraftState } from '../lib/intake-state.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -66,29 +69,27 @@ function readPage( { component, tpls, keys } ) {
 
 const sleep = ( ms ) => new Promise( ( r ) => setTimeout( r, ms ) );
 
-// Why intake's openers() would not offer this state: its own `concrete` test, restated from the record.
-const IDENT = /^[A-Za-z_$][\w$]*$/;
-export function openerVerdict( s, st, census ) {
-	const entries = Object.entries( st.state_keys || {} );
-	if ( ! entries.length ) {
+// Why intake's openers() would not set this state's keys, from the rules it builds its ways by (lib/state-openers.mjs::
+// judgeKeys): a key that is no state key name, a key holding a description, a closed or default state. widthKeys:
+// lib/state-reach.mjs::widthStateKeys (a width key's bound is never set either).
+export function openerVerdict( s, st, census, widthKeys = null ) {
+	if ( ! Object.keys( st.state_keys || {} ).length ) {
 		return 'no state keys';
 	}
-	const bad = entries.filter( ( [ n ] ) => ! IDENT.test( n ) ).map( ( [ n ] ) => n );
-	const holes = entries.filter( ( [ , v ] ) => 'string' === typeof v && /^(<.*>|\{.*\})$/.test( v ) ).map( ( [ n ] ) => n );
-	const nested = entries.filter( ( [ , v ] ) => 'object' === typeof v && null !== v && /"<[^"]*>"/.test( JSON.stringify( v ) ) ).map( ( [ n ] ) => n );
+	const { dropped } = judgeKeys( st, { own: widthKeys?.get( s.component ) ?? new Set() } );
+	const named = ( why ) => dropped.filter( ( d ) => why.test( d.why ) ).map( ( d ) => d.key );
+	const bad = named( /state key name/ );
+	const holes = named( /placeholder|description/ );
 	if ( bad.length ) {
 		return `not a state key name: ${ bad.join( ', ' ) }`;
 	}
 	if ( holes.length ) {
 		return `placeholder or description value for ${ holes.join( ', ' ) }`;
 	}
-	if ( /^(closed|default)$/i.test( st.name || '' ) ) {
+	if ( CLOSED.test( st.name || '' ) ) {
 		return 'closed/default state is not an opener';
 	}
-	if ( nested.length ) {
-		return `placeholder inside the value of ${ nested.join( ', ' ) } (openers() offers it)`;
-	}
-	const offered = openers( s, census ).some( ( o ) => 'state' === o.via && o.state === st.name );
+	const offered = openers( s, census, widthKeys ).some( ( o ) => 'state' === o.via && o.state === st.name );
 	return offered ? 'concrete (offered)' : 'dropped by openers()';
 }
 
@@ -142,6 +143,7 @@ export async function probe( { client, repo, surfaces: wanted, width } ) {
 	const gapIds = fs.existsSync( factsFile ) ? gapSurfaceIds( JSON.parse( fs.readFileSync( factsFile, 'utf8' ) ).gaps || [] ) : [];
 	const census = await runCensus( { folder, entry, harPath } );
 	const { surfaces } = surfaceRoots( { folder, census } );
+	const widthKeys = widthStateKeys( readBreakpoints( { folder } ) );
 	const records = JSON.parse( fs.readFileSync( path.join( folder, 'surfaces.json' ), 'utf8' ) ).records;
 	const byId = new Map( records.map( ( r ) => [ r.id, r ] ) );
 	const ids = wanted ?? [ ...new Set( [ ...records.filter( ( r ) => [ 'drawer', 'menu' ].includes( r.kind ) ).map( ( r ) => r.id ), ...gapIds ] ) ];
@@ -173,7 +175,7 @@ export async function probe( { client, repo, surfaces: wanted, width } ) {
 				for ( const route of routes ) {
 					const page = await pageFor( route );
 					const arg = { component: r.dc, tpls, keys: Object.keys( keys ) };
-					const row = { surface: id, kind: r.kind, state: st.name, component: r.dc, keys, opener: openerVerdict( s, st, census ), page: route ?? 'entry' };
+					const row = { surface: id, kind: r.kind, state: st.name, component: r.dc, keys, opener: openerVerdict( s, st, census, widthKeys ), page: route ?? 'entry' };
 					await snapshotDraftState( page );
 					const before = await page.evaluate( readPage, arg );
 					row.reached = await setDraftState( page, { component: r.dc, keys } );
@@ -191,7 +193,7 @@ export async function probe( { client, repo, surfaces: wanted, width } ) {
 	} finally {
 		await sb.close();
 	}
-	return { entry, ids, rows, openersFor: Object.fromEntries( surfaces.filter( ( s ) => ids.includes( s.id ) ).map( ( s ) => [ s.id, openers( s, census ).map( describeOpener ) ] ) ) };
+	return { entry, ids, rows, openersFor: Object.fromEntries( surfaces.filter( ( s ) => ids.includes( s.id ) ).map( ( s ) => [ s.id, openers( s, census, widthKeys ).map( describeWay ) ] ) ) };
 }
 
 function print( out ) {

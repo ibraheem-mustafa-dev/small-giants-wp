@@ -37,6 +37,7 @@ import { FORM_CPT } from './SavedFormPicker';
 import EmailSettingsPanel from './EmailSettingsPanel';
 import SubmitMotionControls from './SubmitMotionControls';
 import SavedProgressPanel from './SavedProgressPanel';
+import ButtonLabelControls from './ButtonLabelControls';
 import { submitShadowPreviewStyle, submitLiftPreviewRule } from './submit-motion-preview';
 
 const SUBMIT_ALIGN_OPTIONS = [
@@ -830,15 +831,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 					title={ __( 'Submit Button', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<TextControl
-						label={ __( 'Button Label', 'sgs-blocks' ) }
-						value={ submitLabel }
-						onChange={ ( value ) =>
-							setAttributes( { submitLabel: value } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					<ButtonLabelControls attributes={ attributes } setAttributes={ setAttributes } />
 					<SelectControl
 						label={ __( 'Button Style', 'sgs-blocks' ) }
 						value={ submitStyle }
@@ -1386,7 +1379,7 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 						className="sgs-form__button sgs-form__button--prev"
 						style={ prevButtonStyle }
 					>
-						{ __( 'Previous', 'sgs-blocks' ) }
+						{ attributes.prevLabel || __( 'Previous', 'sgs-blocks' ) }
 					</button>
 					{ ! ownSubmit && (
 						<button
