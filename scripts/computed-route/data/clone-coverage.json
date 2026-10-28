@@ -3169,6 +3169,14 @@
 			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
 			"owner": "Track S"
 		},
+		"content-setting:sgs/star-rating.schemaReviewCount": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track S"
+		},
 		"content-setting:sgs/team-member.photo": {
 			"recognise": null,
 			"write": null,

@@ -2173,9 +2173,8 @@
 			"slug": "sgs/star-rating",
 			"attr": "schemaReviewCount",
 			"fields": {
-				"role": "technical"
-			},
-			"_reason": "2026-10-28 (content coverage check): The review count in the block's JSON-LD (star-rating/render.php::$schema_review_count); structured data, not a number drawn on the page."
+				"role": "content"
+			}
 		},
 		{
 			"slug": "sgs/team-member",
