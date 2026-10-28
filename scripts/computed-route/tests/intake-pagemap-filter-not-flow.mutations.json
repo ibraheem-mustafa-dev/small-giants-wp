@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/intake-pagemap-surfaces.mjs", "find": "pickLists( node ).filter( ( l ) => ! isFilter( l ) ).length >= 2", "replace": "pickLists( node ).length >= 2", "why": "filter lists count as pick lists of a flow" },
+	{ "file": "lib/intake-pagemap-surfaces.mjs", "find": "return !! key && narrowsRenderedList( narrowedListsOfDraft( d, key ),", "replace": "return false && narrowsRenderedList( narrowedListsOfDraft( d, key ),", "why": "no pick list is ever a filter" },
+	{ "file": "lib/intake-pagemap-surfaces.mjs", "find": "return !! key && narrowsRenderedList( narrowedListsOfDraft( d, key ),", "replace": "return !! key && ! narrowsRenderedList( narrowedListsOfDraft( d, key ),", "why": "a list that narrows nothing is the filter and a real filter is a flow" },
+	{ "file": "lib/skeleton-narrowing.mjs", "find": "return narrowed.some( ( name ) => shown.has( `{{${ name }}}` ) );", "replace": "return narrowed.length > 0;", "why": "a narrowed list nothing renders still makes a filter" },
+	{ "file": "lib/skeleton-narrowing.mjs", "find": "return narrowed.some( ( name ) => shown.has( `{{${ name }}}` ) );", "replace": "return false;", "why": "a filter is never recognised" },
+	{ "file": "lib/skeleton-narrowing.mjs", "find": "[ ...filteredBy( d, d.values.get( k ) ) ].some( ( s ) => written.has( s ) ) );\n}\n\nconst logics", "replace": "[ ...filteredBy( d, d.values.get( k ) ) ].length > 0 );\n}\n\nconst logics", "why": "any list filtered by any state narrows, not only by a key the chips write" }
+]

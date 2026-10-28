@@ -9,6 +9,7 @@ import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, returnsOf 
 import { megaPanelTitle } from './page-map-names.mjs';
 import { megaSlots } from './intake-pagemap-mega-slots.mjs';
 import { logicOf, moneyBinding } from './shop-parts-logic.mjs';
+import { narrowedListsOfDraft, narrowsRenderedList } from './skeleton-narrowing.mjs';
 
 const VOID = new Set( [ 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr' ] );
 
@@ -298,7 +299,10 @@ export function showsOrderLines( text, L, node ) {
 		&& [ ...text.slice( x.end, x.close ?? x.end ).matchAll( /\{\{\s*([\w$.]+)\s*\}\}/g ) ].some( ( m ) => moneyBinding( L, m[ 1 ] ) ) );
 }
 
-export const isChoiceFlow = ( node ) => 'form' !== node.name && pickLists( node ).length >= 2 && ! descendants( node ).some( ( x ) => 'form' === x.name );
+// A choice flow builds a selection; a group of chips that only narrows another list the page renders is a filter, not a flow
+// (the standing rule, lib/skeleton-narrowing.mjs::narrowsRenderedList, the one the skeleton stage uses). `isFilter(list)`
+// says whether a pick list (an `sc-for` node) is such a filter; a filter list is no pick list of the flow.
+export const isChoiceFlow = ( node, isFilter = () => false ) => 'form' !== node.name && pickLists( node ).filter( ( l ) => ! isFilter( l ) ).length >= 2 && ! descendants( node ).some( ( x ) => 'form' === x.name );
 
 // The functions the logic gives a name: object or class properties holding a function, and methods of that name.
 const fnsNamed = ( d, name ) => d.idx.all.filter( ( n ) => ( ( 'ObjectProperty' === n.type || 'ClassProperty' === n.type ) && keyName( n ) === name && isFn( n.value ) ) || ( /ClassMethod|ObjectMethod/.test( n.type ) && keyName( n ) === name ) )
@@ -408,7 +412,12 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 		const component = exp.mounted.has( d.file );
 		const roots = d.idx ? rootRefs( d ) : [];
 		const L = logicOf( d.text );
-		const chrome = tree.nodes.some( ( t ) => /^(nav|header|footer)$/.test( t.name ) );
+		// Whether a pick list of this draft is a filter: its chips narrow a list another `sc-for` of the draft renders.
+		const isFilter = ( list ) => {
+			const key = /^\{\{\s*([\w$]+)\s*\}\}$/.exec( attrOf( list, 'list' ) || '' )?.[ 1 ];
+			return !! key && narrowsRenderedList( narrowedListsOfDraft( d, key ), tree.nodes.filter( ( x ) => 'sc-for' === x.name ).map( ( x ) => attrOf( x, 'list' ) || '' ) );
+		};
+		const chrome =tree.nodes.some( ( t ) => /^(nav|header|footer)$/.test( t.name ) );
 		const page = ( node ) => ( [ node, ...ancestors( node ) ].some( ( u ) => siteWide.has( u ) ) ? null : pageOf( d, node, routeKeys ) );
 		tree.nodes.forEach( ( t ) => pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) ) );
 		tree.nodes.filter( ( t ) => 'input' === t.name && 'password' === attrOf( t, 'type' ) ).forEach( ( t ) => accountPages.add( page( t ) ) );
@@ -419,8 +428,8 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 			surfaces.push( ...inlineForms( d, tree, roots, routeOf, exp.pages.length > 1 && exp.pages.includes( d.file ) ? d.file : null ).map( ( f ) => ( { ...f, page: page( f.node ) } ) ) );
 		}
 		const found = regions( tree, isNav ).filter( ( r ) => ! dropped.has( r.node ) );
-		const flows = tree.nodes.filter( ( t ) => 'section' === t.name && isChoiceFlow( t ) && ! [ t, ...ancestors( t ) ].some( ( u ) => found.some( ( r ) => r.node === u ) )
-			&& ! ancestors( t ).some( ( u ) => 'section' === u.name && isChoiceFlow( u ) ) );
+		const flows = tree.nodes.filter( ( t ) => 'section' === t.name && isChoiceFlow( t, isFilter ) && ! [ t, ...ancestors( t ) ].some( ( u ) => found.some( ( r ) => r.node === u ) )
+			&& ! ancestors( t ).some( ( u ) => 'section' === u.name && isChoiceFlow( u, isFilter ) ) );
 		for ( const t of flows ) {
 			const label = attrOf( t, 'aria-label' ) || innerText( d.text, descendants( t ).find( ( x ) => /^h[1-6]$/.test( x.name ) ) || t ).slice( 0, 60 );
 			surfaces.push( { kind: 'choice-flow', label, title: label, route: null, page: page( t ), dc: stem( d.file ), draftId: tagId( d, t ), node: t } );
@@ -428,7 +437,7 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 		const named = ( kind ) => found.filter( ( r ) => r.kind === kind );
 		for ( const r of found ) {
 			const label = attrOf( r.node, 'aria-label' ) || `${ r.kind[ 0 ].toUpperCase() }${ r.kind.slice( 1 ) }`;
-			const kind = 'modal' === r.kind && isChoiceFlow( r.node ) ? 'choice-flow' : r.kind;
+			const kind = 'modal' === r.kind && isChoiceFlow( r.node, isFilter ) ? 'choice-flow' : r.kind;
 			const reaches = [ ...new Set( links.filter( ( l ) => l.route && [ nodeAt.get( tagKey( l.from ) ), ...ancestors( nodeAt.get( tagKey( l.from ) ) || { parent: null } ) ].includes( r.node ) ).map( ( l ) => l.route ) ) ];
 			surfaces.push( { kind, label, title: label, route: null, page: page( r.node ), nav: isNav( r.node ), orderLines: showsOrderLines( d.text, L, r.node ), reaches, dc: stem( d.file ), draftId: tagId( d, r.node ), node: r.node } );
 			if ( 'modal' === r.kind || ! d.idx && ! descendants( r.node ).some( ( x ) => 'a' === x.name ) ) {

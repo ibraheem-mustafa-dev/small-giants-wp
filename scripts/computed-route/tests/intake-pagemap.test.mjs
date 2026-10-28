@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { proposePageMap, pageMapProblems, classifyRoute, drawerRepeatsHeader } from '../lib/intake-pagemap.mjs';
+import { crossCheck } from '../lib/intake-pagemap-hints.mjs';
 import { readRouting } from '../lib/intake-routing.mjs';
 import { loadDraft, evalStr, keyName } from '../lib/intake-ast.mjs';
 import { evalDeep } from '../lib/intake-ast-eval.mjs';
@@ -210,9 +211,21 @@ test( 'real exports: Indus, Eye Care and Mama\'s page maps', { skip: ! fs.exists
 	assert.deepEqual( [ 'home', 'signin', 'done', 'checkout' ].map( ( r ) => tpl( c, r ) ), [ 'front-page', 'page', 'order-confirmation', 'checkout' ], 'FR-48-56: Eye Care\'s rows' );
 	assert.ok( menuNames( m ).includes( 'drawer-menu-links' ), 'Mama\'s drawer menu stays' );
 	const recordOf = ( slug ) => m.rows.find( ( r ) => r.slug === slug )?.draftId;
-	assert.deepEqual( [ 'drawer-menu', 'choice-flow-build-your-zookie', 'choice-flow-gifts-she-ll-actually-eat', 'form-send' ].map( recordOf ), [ 'surfaces.json S-02', 'surfaces.json S-08', 'surfaces.json S-20', 'surfaces.json S-34' ], 'MUST FAIL: a surface row paired with a surfaces.json record names it' );
+	assert.deepEqual( [ 'drawer-menu', 'choice-flow-build-your-zookie', 'form-send' ].map( recordOf ), [ 'surfaces.json S-02', 'surfaces.json S-08', 'surfaces.json S-34' ], 'MUST FAIL: a surface row paired with a surfaces.json record names it' );
+	assert.equal( recordOf( 'choice-flow-gifts-she-ll-actually-eat' ), undefined, 'MUST FAIL: the Gifts hero chips only filter the results list, so they make no choice flow row' );
 	assert.deepEqual( pageMapProblems( m.rows, ajv ), [] );
 	assert.deepEqual( linkProblems( m ), [] );
+} );
+
+test( 'MUST FAIL: a surfaces.json record pairs with the code surface on its own page when two records share the draft', () => {
+	const code = [ { kind: 'choice-flow', label: 'Zookie builder', page: 'Home.dc.html', route: null, dc: 'Home', draftId: 'Home.dc.html:1:1 <section>' } ];
+	const record = ( id, route ) => ( { id, kind: 'choice flow', name: 'Unrelated', route, dc: 'Home' } );
+	const { surfaces } = crossCheck( code, { records: [ record( 'S-20', 'Gifts.dc.html' ), record( 'S-08', 'Home.dc.html' ) ] } );
+	assert.equal( surfaces.find( ( x ) => x.draftId === code[ 0 ].draftId ).hint, 'S-08', 'the record whose route is the surface\'s page pairs with it' );
+} );
+
+test( 'MUST FAIL: two pick lists that build one selection are a choice flow', () => {
+	assert.ok( proposePageMap( { folder: path.join( HERE, 'fixtures', 'choice-flow-filter' ) } ).rows.some( ( r ) => 'choice-flow-build-your-box' === r.slug ), 'two non-filter pick lists make a flow' );
 } );
 
 test( 'MUST FAIL: only a drawer whose every top-level item is a header mega item repeats the header', () => {

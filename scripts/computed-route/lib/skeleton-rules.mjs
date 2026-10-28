@@ -8,7 +8,7 @@
 // Precedence (lib/skeleton-classify.mjs::makeClassifier): a client decision, then these rules, then a finaliser pick or a
 // standing element decision, then the database scoring.
 import path from 'path';
-import { narrowedLists } from './skeleton-narrowing.mjs';
+import { narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
@@ -574,7 +574,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return false;
 		}
 		const lists = narrowedLists( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: t.component, listKey: own } );
-		return lists.some( ( name ) => Object.values( view.elements ).some( ( x ) => x.template.component === t.component && x.template.membership.scFor.some( ( f ) => f.list.replace( /\s+/g, '' ) === `{{${ name }}}` ) ) );
+		return narrowsRenderedList( lists, Object.values( view.elements ).filter( ( x ) => x.template.component === t.component ).flatMap( ( x ) => x.template.membership.scFor.map( ( f ) => f.list ) ) );
 	};
 
 	// The blocks already proposed for the element's ancestors, nearest first (an unwrapped ancestor has none).
