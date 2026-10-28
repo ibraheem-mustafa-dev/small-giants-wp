@@ -71,6 +71,13 @@ const WRITERS = [
 	[ 'the block does not declare supports.anchor, so no setting holds its id', 'id-no-setting', 'F-setting', true ],
 	[ 'an id on the nested element ".sgs-x__y" has no setting (anchor belongs to the block\'s root)', 'id-no-setting', 'F-setting', true ],
 	[ 'the draft shows ".sgs-x__badge" and no setting of the block shows it (calibration found it in no default render and in no presence list)', 'presence-no-setting', 'F-setting', true ],
+	[ 'walker-state-refused: walker state "open" of S-17 is not walked: "open": no usable state key (R.pin: a render value or selector, not a state key name) and no setState call in its how_to_reach', 'walker-state-refused', 'W-walker', false ],
+	[ 'walker-state-refused: walker state "phone" of S-33 is not walked: it holds at none of the walk widths (375, 768, 1024, 1440px)', 'walker-state-refused', 'W-walker', false ],
+	[ 'sgs/gallery holds its items in mediaItems; the draft element draws no loop or current-item list, so the block keeps its default items', 'list-items-unread', 'W-route', false ],
+	[ 'sgs/option-picker holds its items in optionItems; the draft element draws no loop or current-item list (no skeleton inventory beside the skeleton), so the block keeps its default items', 'list-items-unread', 'W-route', false ],
+	[ "the draft's logic is not read (no draft folder), so the items behind its current-item display are unknown", 'list-items-unread', 'W-route', false ],
+	[ "sgs/gallery holds a list and there is no fact record (run intake), so the draft's items are not read", 'list-items-unread', 'W-route', false ],
+	[ 'the element shows 2 current-item displays (a, b), so which list the block holds is not decided', 'list-items-unread', 'W-route', false ],
 	[ 'the draft image "https://cdn.example/a.jpg" is not a file of the draft, so it has no uploaded copy; add it to sites/<client>/assets and run media-upload', 'media-unwritten', 'W-route', false ],
 ];
 
@@ -91,4 +98,8 @@ test( 'negative control: the writer rules keep the earlier classes and refuse ne
 	assert.equal( u( 'focus-different: something else' ), null );
 	assert.equal( u( 'status active: the draft runs it' ), null );
 	assert.equal( u( 'J-11 maps onto nothing' ), null );
+	assert.equal( u( 'state-refused: state "open" of S-09 was not opened: it opened at 375 only' )?.class, 'state-refused', 'the opener refusal keeps its own class' );
+	assert.equal( u( 'walker state "open" is not walked' ), null, 'a walker-state text without the writer prefix stays unclassified' );
+	assert.equal( u( 'sgs/gallery holds its items in mediaItems' ), null, "the list rule needs the writer's whole sentence" );
+	assert.equal( u( 'current-item: the nav shows the current page' )?.class, 'current-item', 'a current-item row keeps its class' );
 } );

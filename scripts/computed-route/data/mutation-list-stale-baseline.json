@@ -2,9 +2,6 @@
 	"tests/calibrate-basket.mutations.json": [
 		"const shows = ( r ) => ! r.hoverMissed.includes( n ) && markerShows( r, n, d );"
 	],
-	"tests/census-classes.mutations.json": [
-		"\"frClass\": \"held\" },\n\t\t{ \"class\": \"timing-no-home\""
-	],
 	"tests/fill-entrance-opener.mutations.json": [
 		"opener?.state && await openWith( page, opener );",
 		"opener?.state && await openWith( page, opener );"
