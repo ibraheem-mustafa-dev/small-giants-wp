@@ -1,0 +1,21 @@
+[
+ {"file": "lib/skeleton-field-groups.mjs", "find": "return memberOf.get( k.key ) || k;", "replace": "return k;", "why": "each control of a radio or checkbox group counts as a field of its own"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "const chips = tilesField( e );", "replace": "const chips = null;", "why": "a tiles field's chip group counts as no field"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "if ( members.length < 2 ) {", "replace": "if ( members.length < 1 ) {", "why": "a lone radio makes a group"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": " || desc( el ).filter( visibleControl ).some( ( k ) => ! members.includes( k ) )", "replace": "", "why": "a common element holding another control is still a group"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "if ( ! el || isFormHost( el ) || ! parentOf( el ) ||", "replace": "if ( ! el || ! parentOf( el ) ||", "why": "the form element is a group's element"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "if ( ! el || isFormHost( el ) || ! parentOf( el ) ||", "replace": "if ( ! el || isFormHost( el ) ||", "why": "a form surface's root is a group's element"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "const el = label || own || c;", "replace": "const el = c;", "why": "an option's words are not read from its label"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "const value = c.attrs?.value && ! bound( c.attrs.value ) && 'on' !== c.attrs.value ? String( c.attrs.value ) : words;", "replace": "const value = words;", "why": "an option's value is not the control's own value"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "const name = c.attrs?.name && ! bound( c.attrs.name ) ? `name:${ c.attrs.name }` : `in:", "replace": "const name = false ? `name:${ c.attrs.name }` : `in:", "why": "radios of one name in two rows are two groups"},
+ {"file": "lib/skeleton-field-groups.mjs", "find": "|| !! groupAt( p ) );\n", "replace": ");\n", "why": "a group's own element is never its wrapper"},
+ {"file": "lib/skeleton-rules.mjs", "find": "const skip = new Set( group ? group.options.map( ( o ) => o.el ) : [ e ] );", "replace": "const skip = new Set( [ e ] );", "why": "a group's options are not skipped (the group itself is)"},
+ {"file": "lib/skeleton-rules.mjs", "find": "( k !== scope || 'label' === k.tag || k === e ) && m.words( k )", "replace": "( k !== scope || 'label' === k.tag ) && m.words( k )", "why": "the words of a group element that is its own wrapper are lost"},
+ {"file": "lib/skeleton-rules.mjs", "find": "const marked = texts.some( ( t ) => /\\*$/.test( t.raw ) );", "replace": "const marked = false;", "why": "the required marker does not make the field required"},
+ {"file": "lib/skeleton-rules.mjs", "find": "( group ? group.members : [ e ] ).some( required )", "replace": "required( e )", "why": "a group's required control does not make it required"},
+ {"file": "lib/skeleton-rules.mjs", "find": "if ( group?.block && has( 'options' ) ) {", "replace": "if ( false ) {", "why": "a radio or checkbox group's options are not written"},
+ {"file": "lib/skeleton-rules.mjs", "find": "if ( 'choice' === group?.kind ) {", "replace": "if ( false ) {", "why": "a radio or checkbox group is no field"},
+ {"file": "lib/skeleton-rules.mjs", "find": "m.blockKids( e ).some( ( k ) => controlBlock( k ) || groups.groupAt( k ) )", "replace": "m.blockKids( e ).some( ( k ) => controlBlock( k ) )", "why": "a label wrapped round a chip group stays"},
+ {"file": "lib/skeleton-rules.mjs", "find": "attributes: fieldContent( e, R.optionSetForm.block ), absorb: true", "replace": "attributes: {}, absorb: true", "why": "the tiles field takes no label, marker or hint"},
+ {"file": "lib/skeleton-rules.mjs", "find": "\t\t\tif ( 'form' === view.realTag( p ) ) {\n\t\t\t\treturn true;", "replace": "\t\t\tif ( false ) {\n\t\t\t\treturn true;", "why": "a form element among the rendered parents is not read"}
+]

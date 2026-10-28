@@ -1,0 +1,16 @@
+{
+	"_comment": "The roles a list item's key or a draft item field can play, read from the words of its name (camelCase split, lower case), in priority order: a key's primary role is the first role any of its words names, a field may take each role its words name, in this order. A word may sit under several roles (`name` is an author or a title, `text` a quote or a description): lib/fill-list-content.mjs::matchFields gives a field a key whose primary role it plays first, and only when the block's item has none does a key that names the role later in this list take it (a team member's `name` takes a draft `title` when the item has no title key). Read by lib/fill-list-content.mjs; data/item-roles.schema.json is its shape.",
+	"roles": [
+		{ "role": "image", "words": [ "image", "img", "photo", "picture", "avatar", "logo", "thumbnail", "thumb", "media", "portrait" ] },
+		{ "role": "icon", "words": [ "icon", "glyph", "emoji" ] },
+		{ "role": "organisation", "words": [ "org", "organisation", "organization", "company", "business", "employer", "brand" ] },
+		{ "role": "role", "words": [ "role", "position", "job", "occupation" ] },
+		{ "role": "date", "words": [ "date", "year", "when", "period", "era" ] },
+		{ "role": "quote", "words": [ "quote", "testimonial", "review", "text" ] },
+		{ "role": "number", "words": [ "number", "num", "n", "no", "step", "index", "count" ] },
+		{ "role": "author", "words": [ "name", "author", "reviewer", "person", "who", "customer" ] },
+		{ "role": "title", "words": [ "title", "heading", "headline", "label", "name" ] },
+		{ "role": "description", "words": [ "description", "desc", "body", "text", "summary", "copy", "content", "detail", "details", "blurb", "excerpt", "bio", "biography" ] },
+		{ "role": "link", "words": [ "href", "url", "link" ] }
+	]
+}

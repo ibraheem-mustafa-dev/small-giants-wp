@@ -72,6 +72,17 @@ test( 'MUST FAIL: a handler calling a class method whose updater returns from a 
 	assert.equal( product( proposePageMap( { folder: dir } ) ).opensFlow, 'choice-flow-add-lenses' );
 } );
 
+test( 'MUST FAIL: a handler reaching the opening method through `this.x = this.y.bind(this)` names the flow (lib/intake-census-map.mjs::fnsNamed)', () => {
+	const dir = variant( '<button onClick="{{ openLens }}">', '<button onClick="{{ openFlowNow }}">' );
+	const file = path.join( dir, 'Store.dc.html' );
+	fs.writeFileSync( file, fs.readFileSync( file, 'utf8' ).replace( '  go(p) {', '  constructor(props) { super(props); this.openBound = this.openFlow.bind(this); }\n  openFlow() { this.setState(s => ({ lens: { ...s.lens, open: true } })); }\n  go(p) {' )
+		.replace( '      openLens: () =>', '      openFlowNow: () => this.openBound(),\n      openLens: () =>' ) );
+	assert.equal( product( proposePageMap( { folder: dir } ) ).opensFlow, 'choice-flow-add-lenses' );
+	// Negative control: the field bound to a method that only steps the flow opens nothing.
+	fs.writeFileSync( file, fs.readFileSync( file, 'utf8' ).replace( 'this.openFlow.bind(this)', 'this.go.bind(this)' ) );
+	assert.equal( product( proposePageMap( { folder: dir } ) ).opensFlow, undefined );
+} );
+
 test( 'MUST FAIL: a product page opening two flows records neither and leaves a gap row', () => {
 	const exp = loadExport( FIX );
 	const route = readRouting( { folder: FIX } );

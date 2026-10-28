@@ -26,9 +26,12 @@ const RECORD = { id: 'S-9', kind: 'header', dc: 'Demo Site', states: [
 	{ name: 'rail moved', state_keys: {}, how_to_reach: 'Click the arrows' },
 ] };
 const FACTS = { state: { 'Demo Site': { keys: [ 'scrolled', 'w', 'user' ], widthKeys: [] } } };
+// The keys the component writes from the width (lib/state-reach.mjs::widthStateKeys over the export's breakpoints), as Fill
+// passes them: only these make a comparison a width bound.
+const WIDTH_KEYS = new Map( [ [ 'Demo Site', new Set( [ 'w' ] ) ] ] );
 const VOCAB = [ { state: 'scrolled', reach: 'scroll' }, { state: 'current', reach: 'set-attribute' } ];
 const ROOTS = { draft: '[data-dc-tpl="13"]', live: '.cr-ref-header-0' };
-const walk = ( states, more = {} ) => walkerStates( { entry: { states }, record: RECORD, facts: FACTS, rootComponent: 'Demo Site', vocab: VOCAB, widths: WALK_WIDTHS, ...more } );
+const walk = ( states, more = {} ) => walkerStates( { entry: { states }, record: RECORD, facts: FACTS, rootComponent: 'Demo Site', vocab: VOCAB, widthKeys: WIDTH_KEYS, widths: WALK_WIDTHS, ...more } );
 
 let dir;
 let browser;
@@ -77,7 +80,7 @@ test( 'MUST FAIL: a width-bound state is walked only at the widths it holds at',
 	const cfg = await config( w );
 	assert.deepEqual( cfg.states.map( ( s ) => s.widths ?? null ), [ null, [ 1440, 1920 ], [ 375, 768 ] ] );
 	// A bound no walk width falls inside is refused with its reason, never walked at every width.
-	const narrow = walkerStates( { entry: { states: { top: null, tiny: null } }, record: { ...RECORD, states: [ RECORD.states[ 0 ], { name: 'tiny', state_keys: { w: '< 300' }, how_to_reach: 'L.setState({w:200})' } ] }, facts: FACTS, rootComponent: 'Demo Site', widths: WALK_WIDTHS } );
+	const narrow = walkerStates( { entry: { states: { top: null, tiny: null } }, record: { ...RECORD, states: [ RECORD.states[ 0 ], { name: 'tiny', state_keys: { w: '< 300' }, how_to_reach: 'L.setState({w:200})' } ] }, facts: FACTS, rootComponent: 'Demo Site', widthKeys: WIDTH_KEYS, widths: WALK_WIDTHS } );
 	assert.deepEqual( narrow.states.map( ( s ) => s.name ), [ 'top' ] );
 	assert.match( narrow.refused[ 0 ].reason, /holds at none of the walk widths/ );
 } );
@@ -153,8 +156,12 @@ test( 'MUST FAIL: the state check reads a width-scoped state only at its widths,
 	assert.deepEqual( groups.map( ( g ) => [ g.name, groupWidths( g, [ 375, 768, 1440 ] ) ] ), [ [ null, [ 375, 768, 1440 ] ], [ 'full-nav', [ 1440 ] ], [ 'compact-nav', [ 375, 768 ] ] ] );
 	// A width-only state (a bound, no way to set it) is walked at its widths, with actions so the state check follows it.
 	const tabletRecord = { ...RECORD, states: [ RECORD.states[ 0 ], { name: 'tablet', state_keys: { w: '768–1023' } } ] };
-	const tablet = walkerStates( { entry: { states: { top: null, tablet: null } }, record: tabletRecord, facts: FACTS, rootComponent: 'Demo Site', widths: WALK_WIDTHS } );
+	const tablet = walkerStates( { entry: { states: { top: null, tablet: null } }, record: tabletRecord, facts: FACTS, rootComponent: 'Demo Site', widthKeys: WIDTH_KEYS, widths: WALK_WIDTHS } );
 	assert.deepEqual( tablet.states.map( ( s ) => [ s.name, s.ways.length, s.widths ] ), [ [ 'top', 2, null ], [ 'tablet', 0, [ 768 ] ] ] );
+	// Negative control: a range over a key the component does not write from the width (an accordion index) is no bound,
+	// as in Fill's opener (lib/state-openers.mjs), so a state with no way and no bound is refused, never walked.
+	const noWidthKeys = walkerStates( { entry: { states: { top: null, tablet: null } }, record: tabletRecord, facts: FACTS, rootComponent: 'Demo Site', widthKeys: new Map(), widths: WALK_WIDTHS } );
+	assert.deepEqual( [ noWidthKeys.states.map( ( s ) => s.name ), noWidthKeys.refused.map( ( r ) => r.state ) ], [ [ 'top' ], [ 'tablet' ] ] );
 	const tabletCfg = await config( tablet );
 	assert.deepEqual( stateGroups( { ...tabletCfg, pairs: [ { name: 'p', draft: '.a', live: '.b' } ] } ).map( ( g ) => g.name ), [ null, 'tablet' ] );
 	// A state the config cannot open on both sides (a hand config's draft-only state) is never read by the state check.

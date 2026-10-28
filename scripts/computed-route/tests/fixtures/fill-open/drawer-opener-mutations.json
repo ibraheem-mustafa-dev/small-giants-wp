@@ -1,10 +1,10 @@
 [
- {"file": "lib/fill-open.mjs", "find": "skeleton.root.viaState || shut", "replace": "skeleton.root.viaState", "why": "a root that renders closed is state-driven when its record is an open-able surface"},
- {"file": "lib/fill-open.mjs", "find": " || named.has( walkerKey( s.name || '' ) )", "replace": "", "why": "a state is named by its walker key (the surfaces.json key)"},
- {"file": "lib/fill-open.mjs", "find": "const shut = OPENABLE.includes( record?.kind ) && ", "replace": "const shut = ", "why": "only an open-able kind of surface renders closed"},
- {"file": "lib/fill-open.mjs", "find": "! CLOSED.test( s.name || '' ) && names( s )", "replace": "names( s )", "why": "naming only the closed or default state opens nothing"},
- {"file": "lib/fill-open.mjs", "find": "( record?.states || [] ).some( ( s ) => ! CLOSED.test( s.name || '' ) && names( s ) )", "replace": "true", "why": "the surface must name one of the record's states"},
- {"file": "lib/manifest-build.mjs", "find": "export const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion' ];", "replace": "export const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion', 'footer' ];", "why": "a footer is shown at rest"},
- {"file": "lib/manifest-build.mjs", "find": "export const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion' ];", "replace": "export const OPENABLE = [ 'drawer' ];", "why": "every open-able kind is covered, not only drawers"},
- {"file": "lib/fill-open.mjs", "find": "if ( ! skeleton?.root || ! ( skeleton.root.viaState || shut ) ) {", "replace": "if ( ! ( skeleton.root.viaState || shut ) ) {", "why": "no skeleton, no opener"}
+ {"file":"lib/fill-open.mjs","find":"skeleton.root.viaState || shut","replace":"skeleton.root.viaState","why":"a root that renders closed is state-driven when its record is an open-able surface"},
+ {"file":"lib/fill-open.mjs","find":" || named.has( walkerKey( s.name || '' ) )","replace":"","why":"a state is named by its walker key (the surfaces.json key)"},
+ {"file":"lib/fill-open.mjs","find":"const shut = OPENABLE.includes( record?.kind ) && ","replace":"const shut = ","why":"only an open-able kind of surface renders closed"},
+ {"file":"lib/fill-open.mjs","find":"openStates( record?.states ).some( names )","replace":"( record?.states || [] ).some( names )","why":"naming only the closed or default state opens nothing"},
+ {"file":"lib/fill-open.mjs","find":"openStates( record?.states ).some( names )","replace":"true","why":"the surface must name one of the record's states"},
+ {"file":"lib/manifest-build.mjs","find":"export const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion' ];","replace":"export const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion', 'footer' ];","why":"a footer is shown at rest"},
+ {"file":"lib/manifest-build.mjs","find":"export const OPENABLE = [ 'menu', 'drawer', 'modal', 'accordion' ];","replace":"export const OPENABLE = [ 'drawer' ];","why":"every open-able kind is covered, not only drawers"},
+ {"file":"lib/fill-open.mjs","find":"if ( ! skeleton?.root || ! ( skeleton.root.viaState || shut ) ) {","replace":"if ( ! ( skeleton.root.viaState || shut ) ) {","why":"no skeleton, no opener"}
 ]

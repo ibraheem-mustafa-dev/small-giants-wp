@@ -14,6 +14,7 @@ import { readTree } from './lib/tree.mjs';
 import { skeletonNodes, expandSiteInfoRows, finderKind } from './lib/fill-skeleton.mjs';
 import { loadChromium } from './lib/fill-read.mjs';
 import { stateOpener, readUrlOf, openState } from './lib/fill-open.mjs';
+import { widthStateKeys } from './lib/state-reach.mjs';
 import { serveDraft, assertDraftPage } from './lib/draft.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 
@@ -123,7 +124,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const drafts = intake?.inventory?.animations?.drafts || [];
 		const rootComponent = ( drafts.find( ( d ) => index && d.file === path.basename( index ) ) || drafts[ 0 ] )?.dc ?? null;
 		const facts = fs.existsSync( factsFile( REPO, client ) ) ? loadFacts( client, { repo: REPO } ) : null;
-		const opener = stateOpener( { entry, skeleton: skel, record, facts, rootComponent } );
+		const opener = stateOpener( { entry, skeleton: skel, record, facts, rootComponent, widthKeys: widthStateKeys( intake?.breakpoints ) } );
 		let result;
 		try {
 			result = await checkRefs( { skeleton: readTree( flag( '--skeleton' ) || path.join( build, 'skeleton', `${ surface }.skeleton.json` ) ), draftUrl: readUrlOf( { url, opener, record: skel, routing: intake?.routing } ), opener } );

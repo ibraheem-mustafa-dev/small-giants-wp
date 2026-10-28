@@ -47,23 +47,23 @@ test( 'MUST FAIL: a state bounding a width key opens only at the widths inside i
 	const list = openers( s, null, W );
 	assert.deepEqual( list.map( ( o ) => [ o.via, o.state, o.bounds ] ), [
 		[ 'reach', 'open, side-by-side', [ { key: 'w', min: 768, max: null } ] ],
-		[ 'state', 'open, side-by-side', [ { key: 'w', min: 768, max: null } ] ],
 		[ 'reach', 'open, stacked (mobile)', [ { key: 'w', min: null, max: 767 } ] ],
-		[ 'state', 'open, stacked (mobile)', [ { key: 'w', min: null, max: 767 } ] ],
 	] );
-	assert.deepEqual( list[ 1 ].keys, { lens: '{open:true}' }, 'the bound key is the viewport\'s, never a value to set' );
+	const keyed = openers( { ...s, states: [ { ...SIDE, state_keys: { lensOpen: true, w: '>= 768' } } ] }, null, W );
+	assert.deepEqual( keyed.find( ( o ) => 'state' === o.via ).keys, { lensOpen: true }, 'the bound key is the viewport\'s, never a value to set' );
 	assert.equal( wayAt( list, list[ 0 ], 1440 ), list[ 0 ] );
-	assert.equal( wayAt( list, list[ 0 ], 375 ), list[ 2 ], 'at 375 the stacked state opens the surface' );
+	assert.equal( wayAt( list, list[ 0 ], 375 ), list[ 1 ], 'at 375 the stacked state opens the surface' );
 	assert.equal( wayAt( [ list[ 0 ] ], list[ 0 ], 375 ), null, 'no state holds at 375' );
 	// Negative controls: a state with no bound is offered at every width with its keys as written; a range over a key the
-	// draft does not write from the width (an accordion row) is no bound; without width keys every comparison counts.
+	// draft does not write from the width (an accordion row) is no bound; only a width key's comparison is one.
 	const plain = openers( { ...s, states: [ { name: 'open', state_keys: { menuOpen: true }, how_to_reach: 'L.setState({menuOpen:true})' } ] }, null, W );
 	assert.deepEqual( plain.map( ( o ) => [ o.via, o.keys ?? null, 'bounds' in o ] ), [ [ 'state', { menuOpen: true }, false ], [ 'reach', null, false ] ] );
 	assert.equal( wayAt( plain, plain[ 0 ], 375 ), plain[ 0 ] );
 	const row = { name: 'row i open', state_keys: { acc: '0–3' }, how_to_reach: 'L.setState({ acc: 1 })' };
 	assert.equal( openers( { ...s, states: [ row ] }, null, W ).some( ( o ) => o.bounds ), false );
 	assert.deepEqual( widthBounds( row, W.get( 'Home' ) ), [] );
-	assert.deepEqual( widthBounds( row ), [ { key: 'acc', min: 0, max: 3 } ] );
+	assert.deepEqual( widthBounds( row ), [], 'with no width keys no key is a bound' );
+	assert.deepEqual( widthBounds( row, new Set( [ 'acc' ] ) ), [ { key: 'acc', min: 0, max: 3 } ] );
 } );
 
 test( 'widthStateKeys reads the state keys each draft compares from its breakpoints, none for a window width', () => {

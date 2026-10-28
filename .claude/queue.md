@@ -20,3 +20,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-27 S site-run-start mamas-munches-redesign (targeted: header, both flows, home, product, shop, gifts on 1b494e5d3)
 - 2026-10-27 S site-run-end mamas-munches-redesign (targeted: 14 surfaces, 0 failed)
 - 2026-10-27 S site-run-end eye-care-ward-end (targeted: header, lens flow, home, product built; stopped during the home walk at 21:58, superseded by the next session's full re-clone)
+- 2026-10-27 F deploy-start sandybrown,indus-test,mamas-test,eye-care-clone-test (form own submit, form grid, field submission names; main 8ce26dc9b)
+- 2026-10-27 F deployed sandybrown,indus-test,mamas-test,eye-care-clone-test (13/13 gates, form own submit, grid, field names)

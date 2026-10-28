@@ -6,12 +6,16 @@
 #   e.g. bash scripts/local-wp/push-to-remote.sh local-eye-care eye-care-clone-test --dry-run
 # <local-site> and <remote-target> name secrets files: .claude/secrets/<name>.env, each holding WP_URL_<KEY> (the key is
 # the name upper-cased with the hyphens removed). SECRETS_DIR overrides the secrets folder (a worktree has none).
-# --dry-run performs every read and check and prints each step, but writes nothing on the server and imports nothing.
+# --dry-run performs every read and check and prints each step, but writes nothing on the server and imports nothing;
+# it also has the server syntax-check the uploads copy script it would run.
 # The remote database is backed up on the server before anything is written; a failed run prints the restore command.
+#
+# This is the one sanctioned mirror-to-test-site copy (root CLAUDE.md, Build and deploy). The sites it may write to,
+# their server paths and the SSH endpoint come from plugins/sgs-blocks/scripts/deploy_common.py::TARGETS through
+# push_target.py: only a site of kind "test" is accepted, so the canary and a reference site (eye-care-test) are
+# refused. Uploads are additive: the archive is unpacked into a temporary folder on the server, checked, then copied
+# into wp-content/uploads; nothing already there is deleted.
 set -euo pipefail
-
-# The only sites this may overwrite. A production site can never be a target: add a name here only for a test site.
-ALLOWED_REMOTE_TARGETS=( eye-care-test eye-care-clone-test indus-test mamas-test )
 
 REPO="$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )"
 SECRETS_DIR="${SECRETS_DIR:-$REPO/.claude/secrets}"
@@ -27,10 +31,11 @@ for arg in "$@"; do
 done
 [ -n "$LOCAL" ] && [ -n "$REMOTE" ] || { echo "Usage: $0 <local-site> <remote-target> [--dry-run]" >&2; exit 2; }
 
-# 1. Guard and URLs.
-allowed=0
-for name in "${ALLOWED_REMOTE_TARGETS[@]}"; do [ "$name" = "$REMOTE" ] && allowed=1; done
-[ "$allowed" = 1 ] || { echo "Refusing: '$REMOTE' is not an allowed push target (${ALLOWED_REMOTE_TARGETS[*]})" >&2; exit 1; }
+# 1. Guard and URLs. push_target.py refuses anything that is not a test site in the deploy roster.
+TARGET_VARS="$( python "$REPO/scripts/local-wp/push_target.py" "$REMOTE" )" || exit 1
+TARGET_HOST="" TARGET_DOCROOT="" SSH_USER_HOST="" SSH_PORT="" SSH_KEY=""
+eval "$TARGET_VARS"
+[ -n "$TARGET_HOST" ] && [ -n "$TARGET_DOCROOT" ] && [ -n "$SSH_USER_HOST" ] || { echo "push_target.py returned no settings for $REMOTE" >&2; exit 1; }
 
 url_of() {
   local name="$1" key
@@ -41,9 +46,10 @@ REMOTE_URL="$( url_of "$REMOTE" )"
 LOCAL_URL="$( url_of "$LOCAL" )"
 [ -n "$REMOTE_URL" ] && [ -n "$LOCAL_URL" ] || { echo "No WP_URL_ in the secrets files for $REMOTE / $LOCAL" >&2; exit 1; }
 HOST="${REMOTE_URL#*://}"
-RROOT="~/domains/$HOST/public_html"
+[ "$HOST" = "$TARGET_HOST" ] || { echo "Refusing: the secrets file's URL host '$HOST' is not the roster's host '$TARGET_HOST' for $REMOTE" >&2; exit 1; }
+RROOT="~/$TARGET_DOCROOT"
 DOCROOT="/var/www/$LOCAL"
-SSH=( ssh -i "$HOME/.ssh/id_ed25519" -p 65002 -o ConnectTimeout=30 u945238940@141.136.39.73 )
+SSH=( ssh -i "$SSH_KEY" -p "$SSH_PORT" -o ConnectTimeout=30 "$SSH_USER_HOST" )
 
 # Credentials are read on the server inside the remote shell and never stored or printed here.
 RDB_ENV='MYSQL_PWD="$(wp config get DB_PASSWORD)"'
@@ -54,7 +60,7 @@ BACKUP=""
 IMPORT_STARTED=0
 restore_hint() {
   echo "Restore the remote database with:" >&2
-  echo "  ssh -i ~/.ssh/id_ed25519 -p 65002 u945238940@141.136.39.73 'cd $RROOT && $RDB_ENV mysql $RDB_ARGS < $BACKUP'" >&2
+  echo "  ssh -i $SSH_KEY -p $SSH_PORT $SSH_USER_HOST 'cd $RROOT && $RDB_ENV mysql $RDB_ARGS < $BACKUP'" >&2
 }
 on_exit() {
   local code=$?
@@ -125,7 +131,9 @@ fi
 
 # The test site keeps its own logins: the mirror's passwords are set by reset-login.mjs from the mirror's secrets file,
 # so each remote user's password hash and application passwords are saved on the server (never fetched here) and put
-# back by login name after the import.
+# back by login name after the import. A user only the mirror has gets a random password nobody knows and no
+# application passwords, and every user's login sessions are cleared, so no credential or session made on the mirror
+# works on the internet-facing test site. Only logins are printed, never a hash or a password.
 LOGINS="~/backups/push-to-remote/${HOST}-logins.json"
 SAVE_LOGINS_PHP='<?php
 $out = array();
@@ -140,16 +148,32 @@ RESTORE_LOGINS_PHP='<?php
 global $wpdb;
 $rows = json_decode( (string) file_get_contents( $args[0] ), true );
 if ( ! is_array( $rows ) ) { fwrite( STDERR, "No saved logins\n" ); exit( 1 ); }
-$n = 0;
+$saved = array();
 foreach ( $rows as $r ) {
-	$u = get_user_by( "login", $r["login"] );
-	if ( ! $u ) { continue; }
-	$wpdb->update( $wpdb->users, array( "user_pass" => $r["pass"] ), array( "ID" => $u->ID ) );
-	if ( $r["app"] ) { update_user_meta( $u->ID, "_application_passwords", $r["app"] ); } else { delete_user_meta( $u->ID, "_application_passwords" ); }
-	clean_user_cache( $u->ID );
-	$n++;
+	$saved[ (string) $r["login"] ] = $r;
 }
-echo "$n login(s) restored\n";'
+$restored = array();
+$locked   = array();
+foreach ( get_users( array( "fields" => "all" ) ) as $u ) {
+	if ( isset( $saved[ $u->user_login ] ) ) {
+		$r = $saved[ $u->user_login ];
+		$wpdb->update( $wpdb->users, array( "user_pass" => $r["pass"] ), array( "ID" => $u->ID ) );
+		if ( $r["app"] ) { update_user_meta( $u->ID, "_application_passwords", $r["app"] ); } else { delete_user_meta( $u->ID, "_application_passwords" ); }
+		$restored[] = $u->user_login;
+	} else {
+		// The plain password is never kept, so the stored hash matches nothing anyone can type.
+		$wpdb->update( $wpdb->users, array( "user_pass" => wp_hash_password( wp_generate_password( 64, true, true ) ) ), array( "ID" => $u->ID ) );
+		delete_user_meta( $u->ID, "_application_passwords" );
+		$locked[] = $u->user_login;
+	}
+	clean_user_cache( $u->ID );
+}
+WP_Session_Tokens::destroy_all_for_all_users();
+$left = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->usermeta} WHERE meta_key = %s", "session_tokens" ) );
+echo count( $restored ) . " login(s) restored: " . implode( ", ", $restored ) . "\n";
+echo count( $locked ) . " mirror-only login(s) given a random unusable password and no application passwords: " . ( $locked ? implode( ", ", $locked ) : "none" ) . "\n";
+echo "login sessions cleared for every user (" . $left . " session_tokens rows left)\n";
+if ( 0 !== $left ) { fwrite( STDERR, "session_tokens rows remain\n" ); exit( 1 ); }'
 step "save the test site's logins"
 if [ "$DRY" = 1 ]; then
   would "save each remote user's password hash and application passwords to $LOGINS on the server (mode 600)"
@@ -157,15 +181,45 @@ else
   printf '%s' "$SAVE_LOGINS_PHP" | "${SSH[@]}" "cd $RROOT && wp eval-file - $LOGINS" | tr -d '\r'
 fi
 
-# 4. Uploads: additive, nothing on the server is deleted.
+# 4. Uploads: additive, nothing on the server is deleted. The archive goes to a fresh temporary folder on the server
+# (outside public_html), is checked (size, every entry under uploads/, no "..", no absolute path, no link, file count),
+# unpacked there, and only then copied into wp-content/uploads. The temporary folder is removed afterwards.
+# Arguments: <temp folder> <site docroot> <archive bytes> <file count>.
+UPLOADS_REMOTE_SH='set -euo pipefail
+T="$1"; ROOT="$2"; WANT_BYTES="$3"; WANT_FILES="$4"
+case "$T" in "$HOME"/backups/push-to-remote/uploads-*) ;; *) echo "Refusing: unexpected temporary folder $T" >&2; exit 1 ;; esac
+trap "rm -rf -- \"$T\"" EXIT
+DEST="$ROOT/wp-content/uploads"
+[ -d "$ROOT/wp-content" ] || { echo "No wp-content under $ROOT" >&2; exit 1; }
+A="$T/uploads.tgz"
+GOT_BYTES="$( wc -c < "$A" )"
+[ "$GOT_BYTES" = "$WANT_BYTES" ] || { echo "Archive is $GOT_BYTES bytes on the server, $WANT_BYTES sent" >&2; exit 1; }
+tar tzf "$A" > "$T/list.txt"
+if grep -vqE "^uploads(/|$)" "$T/list.txt"; then echo "Refusing: an archive entry lies outside uploads/" >&2; exit 1; fi
+if grep -qE "(^|/)\.\.(/|$)" "$T/list.txt"; then echo "Refusing: an archive entry contains .." >&2; exit 1; fi
+if tar tvzf "$A" | grep -qE "^[lh]"; then echo "Refusing: the archive holds a link" >&2; exit 1; fi
+mkdir "$T/x"
+tar xzf "$A" -C "$T/x" --no-same-owner --no-same-permissions
+GOT_FILES="$( find "$T/x/uploads" -type f | wc -l )"
+[ "$GOT_FILES" = "$WANT_FILES" ] || { echo "Unpacked $GOT_FILES files, the mirror has $WANT_FILES" >&2; exit 1; }
+mkdir -p "$DEST"
+cp -R "$T/x/uploads/." "$DEST/"
+echo "uploads: $GOT_FILES file(s) copied into $DEST (additive; nothing deleted)"'
 step "uploads"
+UPLOAD_FILES="$( lsh "find '$DOCROOT/wp-content/uploads' -type f | wc -l" )"
 if [ "$DRY" = 1 ]; then
-  would "tar czf the mirror's wp-content/uploads and extract it over $RROOT/wp-content/uploads (additive)"
+  printf '%s' "$UPLOADS_REMOTE_SH" | "${SSH[@]}" "bash -n" || { echo "The uploads copy script does not parse on the server" >&2; exit 1; }
+  echo "   uploads copy script parses on the server (bash -n)"
+  "${SSH[@]}" "command -v tar mktemp find cp >/dev/null && [ -d $RROOT/wp-content/uploads ] && echo '   server has tar, mktemp, find, cp and $RROOT/wp-content/uploads'" | tr -d '\r'
+  would "tar czf the mirror's wp-content/uploads ($UPLOAD_FILES files), send it to a new ~/backups/push-to-remote/uploads-XXXXXX on the server, check it, unpack it there and copy it into $RROOT/wp-content/uploads (additive)"
 else
   lsh "tar czf '$WSL_WORK/uploads.tgz' -C '$DOCROOT/wp-content' uploads"
   [ -s "$WORK/uploads.tgz" ] || { echo "Empty uploads archive" >&2; exit 1; }
-  "${SSH[@]}" "cd $RROOT/wp-content && tar xzf -" < "$WORK/uploads.tgz"
-  echo "uploads extracted over the remote uploads"
+  UPLOAD_BYTES="$( wc -c < "$WORK/uploads.tgz" | tr -d ' ' )"
+  UPLOAD_TMP="$( rsh 'mkdir -p ~/backups/push-to-remote && mktemp -d ~/backups/push-to-remote/uploads-XXXXXX' | tail -1 )"
+  [ -n "$UPLOAD_TMP" ] || { echo "Could not make a temporary folder on the server" >&2; exit 1; }
+  "${SSH[@]}" "cat > '$UPLOAD_TMP/uploads.tgz'" < "$WORK/uploads.tgz"
+  printf '%s' "$UPLOADS_REMOTE_SH" | "${SSH[@]}" "bash -s -- '$UPLOAD_TMP' $RROOT '$UPLOAD_BYTES' '$UPLOAD_FILES'" | tr -d '\r'
 fi
 
 # 5. Import the dump.
@@ -190,7 +244,7 @@ fi
 
 step "restore the test site's logins"
 if [ "$DRY" = 1 ]; then
-  would "put back each saved login's password hash and application passwords, by login name"
+  would "put back each saved login's password hash and application passwords, by login name; give each mirror-only user a random unusable password and no application passwords; clear every user's login sessions"
 else
   printf '%s' "$RESTORE_LOGINS_PHP" | "${SSH[@]}" "cd $RROOT && wp eval-file - $LOGINS" | tr -d '\r'
 fi

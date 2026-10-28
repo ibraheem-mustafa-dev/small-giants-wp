@@ -31,7 +31,8 @@ import { openDb } from './db.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
 import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
 import { widthStateKeys } from './state-reach.mjs';
-import { openers, wayAt, describeOpener } from './intake-openers.mjs';
+import { openers, wayAt } from './intake-openers.mjs';
+import { describeWay } from './state-openers.mjs';
 import { readBreakpoints } from './intake-breakpoints.mjs';
 import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
@@ -239,7 +240,7 @@ const rowsWith = ( surface, proposal, inventory, fingerprints ) => proposal.rows
 export { reachCalls };
 
 // The ways to open a state-driven surface (lib/intake-openers.mjs).
-export { openers, describeOpener };
+export { openers, describeWay };
 
 // Marks the surface root at the current width. When it does not render and `opener` is given, applies it (a state is
 // set, a reach's setState calls run; a trigger is fired only while the root is absent, so a toggle never closes it) and
@@ -258,7 +259,7 @@ async function markAt( page, s, settle, opener = null, width = null ) {
 			: await fireTrigger( page, { component: s.component, draftId: opener.draftId }, opener.event );
 	bounded && reached && await setDraftState( page, { component: s.component, keys: Object.fromEntries( opener.bounds.map( ( b ) => [ b.key, width ] ) ) } );
 	if ( ! reached ) {
-		return { error: `${ describeOpener( opener ) } reached nothing (component not mounted, trigger not rendered or setState call threw)` };
+		return { error: `${ describeWay( opener ) } reached nothing (component not mounted, trigger not rendered or setState call threw)` };
 	}
 	await settle( page );
 	return page.evaluate( markRoot, args );
@@ -295,10 +296,10 @@ async function openSurface( page, s, settle, list ) {
 			const nearest = ( w ) => at.reduce( ( b, x ) => ( Math.abs( x - w ) < Math.abs( b - w ) ? x : b ), at[ 0 ] );
 			return { opener: o, at, readAt: Object.fromEntries( INVENTORY_WIDTHS.filter( ( w ) => ! at.includes( w ) ).map( ( w ) => [ w, nearest( w ) ] ) ), ways, tried };
 		}
-		tried.push( `${ describeOpener( o ) } (${ errors.join( '; ' ) })` );
+		tried.push( `${ describeWay( o ) } (${ errors.join( '; ' ) })` );
 		await closeAgain( page, settle );
 	}
-	return { error: list.length ? `still not rendered after ${ tried.join( '; then ' ) }` : 'no opener: surfaces.json gives no concrete state keys and opened_by names no template handler of the component', tried };
+	return { error: list.length ? `still not rendered after ${ tried.join( '; then ' ) }` : 'no opener: no surfaces.json state gives a settable state key or a setState call, and opened_by names no template handler of the component', tried };
 }
 
 // The inventory of an opened surface: a width the surface never renders at is read at the nearest width it does

@@ -503,7 +503,7 @@ test( 'a hand-set draftUrl wins: draftDir and draftIndex are not added beside it
 	assert.equal( run( [ row( 'page', 'a', 1 ) ], [], { existing: { a: {} } } ).entries.a.draftDir, 'sites/acme/handoff' );
 } );
 
-test( 'intakeSurface is the slug of the intake skeleton with the matched record id, never by position; a hand-set value naming a skeleton intake holds is kept', () => {
+test( 'intakeSurface is the slug of the intake skeleton with the matched record id, never by position; a hand-set value naming a skeleton intake holds is kept, one it no longer holds is replaced', () => {
 	const records = [ rec( 'S-3', 'header', 'Sticky header' ) ];
 	const intake = { skeletons: { 'top-bar': { id: 'S-1' }, 'sticky-header': { id: 'S-3' }, footer: { id: 'S-14' } } };
 	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake } ).entries.header.intakeSurface, 'sticky-header' );
@@ -512,6 +512,9 @@ test( 'intakeSurface is the slug of the intake skeleton with the matched record 
 	const kept = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake, existing: { header: { intakeSurface: 'top-bar' } } } );
 	assert.equal( kept.entries.header.intakeSurface, 'top-bar' );
 	assert.equal( kept.noIntake.length, 0 );
+	const gone = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake, existing: { header: { intakeSurface: 'old-header' } } } );
+	assert.equal( gone.entries.header.intakeSurface, 'sticky-header', 'a hand-set value naming a skeleton intake no longer holds gives way to the generated one' );
+	assert.equal( gone.noIntake.length, 0 );
 } );
 
 test( 'an entry whose record has no intake skeleton gets no intakeSurface and is listed', () => {

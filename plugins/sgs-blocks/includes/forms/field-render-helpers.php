@@ -12,6 +12,8 @@ namespace SGS\Blocks\Forms;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/field-name-scope.php';
+
 /**
  * Open a form field wrapper div.
  *
@@ -219,47 +221,54 @@ function field_id( string $field_name ): string {
 }
 
 /**
- * The name a field submits under (Spec 04, Field Blocks — Common Attributes): the one naming rule every
- * form-field-* render.php uses.
+ * A field's explicit submission name: fieldName cleaned by sanitize_key(), cut so that the name plus any suffix a
+ * composite field appends stays within the key length Form_Rest_Submission::validate_fields() accepts.
  *
- * 1. fieldName, cleaned by sanitize_key(), used as written.
+ * @param array $attributes     Block attributes (fieldName).
+ * @param int   $suffix_reserve Characters the field appends to the name (field_name_suffix_reserve()).
+ * @return string The explicit name, or '' when fieldName is empty.
+ */
+function field_explicit_name( array $attributes, int $suffix_reserve = 0 ): string {
+	return substr( sanitize_key( (string) ( $attributes['fieldName'] ?? '' ) ), 0, FIELD_NAME_MAX - max( 0, $suffix_reserve ) );
+}
+
+/**
+ * The name a field submits under (Spec 04, Submission name): the one naming rule every form-field-* render.php uses.
+ *
+ * 1. fieldName, cleaned by sanitize_key(), used as written (field_explicit_name()).
  * 2. Otherwise the label's slug ("Enquiry type" becomes "enquiry-type"), cut to 48 characters.
  * 3. Otherwise "field-" plus the field's unique id number (field_id()).
  *
- * A derived name (2 or 3) never repeats one already used on the page: a second "Email" becomes "email-2", so two
- * unnamed radio groups never merge into one. Every result passes the key pattern
- * Form_Rest_Submission::validate_fields() accepts; a control holding a list appends "[]", which the form runtime
- * strips before it submits.
+ * A derived name (2 or 3) never repeats a name already used in the same form, nor an explicit fieldName any field of
+ * that form holds: a second "Email" becomes "email-2", so two unnamed radio groups never merge, and an unnamed
+ * "Email" field never takes the "email" another field asked for. Uniqueness is per form render
+ * (field-name-scope.php), so the same form rendered twice in one request gives the same names. A composite field
+ * passes the length of the suffix it appends ($suffix_reserve), so every name it emits, suffix included, passes the
+ * key pattern Form_Rest_Submission::validate_fields() accepts; a control holding a list appends "[]", which the form
+ * runtime strips before it submits.
  *
- * @param string $field_id   Field ID (from field_id()).
- * @param array  $attributes Block attributes (fieldName, label).
+ * @param string $field_id       Field ID (from field_id()).
+ * @param array  $attributes     Block attributes (fieldName, label).
+ * @param int    $suffix_reserve Characters the field appends to the name (field_name_suffix_reserve()).
  * @return string Submission name, never empty.
  */
-function field_submission_name( string $field_id, array $attributes ): string {
-	static $taken = array();
-
-	$explicit = substr( sanitize_key( (string) ( $attributes['fieldName'] ?? '' ) ), 0, 64 );
+function field_submission_name( string $field_id, array $attributes, int $suffix_reserve = 0 ): string {
+	$explicit = field_explicit_name( $attributes, $suffix_reserve );
 	if ( '' !== $explicit ) {
-		$taken[ $explicit ] = true;
-		return $explicit;
+		return field_names_claim( $explicit, true );
 	}
+
+	// Room for the field's own suffix and a "-NNN" uniqueness counter.
+	$max = min( 48, FIELD_NAME_MAX - max( 0, $suffix_reserve ) - 4 );
 
 	// A label that only slugs to percent-encoded bytes (a non-Latin script) names nothing readable.
 	$slug = sanitize_title( (string) ( $attributes['label'] ?? '' ) );
-	$base = false === strpos( $slug, '%' ) ? trim( substr( sanitize_key( $slug ), 0, 48 ), '-_' ) : '';
+	$base = false === strpos( $slug, '%' ) ? trim( substr( sanitize_key( $slug ), 0, $max ), '-_' ) : '';
 	if ( '' === $base ) {
-		$base = 'field-' . preg_replace( '/^sgs-field-/', '', sanitize_key( $field_id ) );
+		$base = substr( 'field-' . preg_replace( '/^sgs-field-/', '', sanitize_key( $field_id ) ), 0, $max );
 	}
 
-	$name = $base;
-	$n    = 2;
-	while ( isset( $taken[ $name ] ) ) {
-		$name = $base . '-' . $n;
-		++$n;
-	}
-	$taken[ $name ] = true;
-
-	return $name;
+	return field_names_claim( $base, false );
 }
 
 /**

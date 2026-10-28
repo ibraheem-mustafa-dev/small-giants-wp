@@ -1,6 +1,7 @@
 // The walker states a generated walker config walks (Spec 48 §3.6, FR-48-13): every state the surface's `surfaces.json`
-// entry maps, in its order, each opened by the record state it names (lib/fill-open.mjs::stateWays, the ways Fill's state
-// opener uses) and walked only at the widths that state holds at (lib/state-reach.mjs::waysHeldAt).
+// entry maps, in its order, each opened by the record state it names (lib/state-openers.mjs::stateWays, the one builder Fill's
+// state opener and intake use, over the same width keys) and walked only at the widths that state holds at
+// (lib/state-reach.mjs::waysHeldAt).
 // - The first state is the page as the config's own `open` leaves it (the walker's rest): its record state's way is
 //   applied when it has one, and it is never refused.
 // - Every later state loads the page afresh (`from: 'rest'`): a logic state (a signed-in user, a sent form) leaves no mark
@@ -12,7 +13,8 @@
 //   live through the config's own live `open` (the surface's control, lib/fill-open.mjs::openOwner); any other mapped
 //   setting state opens the surface's live root through the control that names it in aria-controls, and says so when
 //   nothing does. A state mapped to rest has no live action: the live page at rest is that state.
-import { stateWays, ROOT_HOST, openOwner, STATE_REFUSED } from './fill-open.mjs';
+import { ROOT_HOST, openOwner, STATE_REFUSED } from './fill-open.mjs';
+import { stateWays, noWayReason } from './state-openers.mjs';
 import { fitsWidth, widthBounds } from './state-reach.mjs';
 import { walkerKey } from './manifest-build.mjs';
 import { logicState } from './intake-state.mjs';
@@ -50,24 +52,27 @@ function openedState( opener, width ) {
 // refused: [{ state, reason }] }. entry: the `surfaces.json` entry; record: the handoff record its intake skeleton names
 // (null when none); facts: the fact record or null; rootComponent: the served entry draft's component; vocab: the state
 // vocabulary rows (lib/db.mjs::statesVocabulary); opener: the surface's state opener (with `openedAt`) or null;
-// widths: the config's walk widths. `skipAt` lists the widths where the config's own `open` already opened the same
+// widthKeys: the state keys each component writes from the width (lib/state-reach.mjs::widthStateKeys over intake.json
+// `breakpoints`, the map Fill's opener reads), the only keys a state's comparison bounds; widths: the config's walk widths. `skipAt` lists the widths where the config's own `open` already opened the same
 // record state, so the state's action does not apply it twice (a toggling setState call would close it again).
-export function walkerStates( { entry, record = null, facts = null, rootComponent = null, vocab = [], opener = null, widths } ) {
+export function walkerStates( { entry, record = null, facts = null, rootComponent = null, vocab = [], opener = null, widthKeys = null, widths } ) {
 	const names = Object.keys( entry?.states || {} );
 	const live = facts?.state?.[ record?.dc ] ?? null;
+	const own = widthKeys?.get( record?.dc ) ?? new Set();
+	const expect = ( s ) => ( { expect: ( s.sc_if_tpl_ids || [] ).map( String ) } );
 	const out = { states: [], refused: [] };
 	names.forEach( ( name, i ) => {
 		const settingState = entry.states[ name ];
 		const recordStates = namedBy( name, record );
-		const built = recordStates.map( ( s ) => stateWays( s, live ) );
+		const built = recordStates.map( ( s ) => stateWays( [ s ], { own, live, extra: expect } ) );
 		const ways = built.flatMap( ( b ) => b.ways );
-		const bounds = recordStates.map( ( s ) => widthBounds( s ) );
+		const bounds = recordStates.map( ( s ) => widthBounds( s, own ) );
 		if ( i > 0 && ! recordStates.length ) {
 			out.refused.push( { state: name, reason: record ? `no state of record ${ record.id } is named "${ name }"` : 'the surface names no handoff record, so no state is known' } );
 			return;
 		}
 		if ( i > 0 && ! ways.length && ! bounds.some( ( b ) => b.length ) ) {
-			out.refused.push( { state: name, reason: built.map( ( b, j ) => `"${ recordStates[ j ].name }": ${ b.reason }` ).join( '; ' ) } );
+			out.refused.push( { state: name, reason: built.map( ( b, j ) => `"${ recordStates[ j ].name }": ${ noWayReason( b.refused[ 0 ]?.dropped ) }` ).join( '; ' ) } );
 			return;
 		}
 		const held = bounds.length ? widths.filter( ( w ) => bounds.some( ( b ) => fitsWidth( b, w ) ) ) : widths;

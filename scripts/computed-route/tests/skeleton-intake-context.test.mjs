@@ -18,10 +18,15 @@ const footer = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', CLIENT, 'b
 const ROOT = 'Eye Care Site';
 // A re-export renumbers the draft's elements, so the key under test is found by a stable property: the first root-host
 // paragraph that carries words, never a literal number.
-const SIG = footer.elements.find( ( e ) => /^Root\/\d+#0$/.test( e.key ) && e.words.trim() && 'p' === e.tag );
-const KEY = SIG.key;
+// When the inventory has no such paragraph the first test below fails by name; the file still loads.
+const SIG = footer.elements.find( ( e ) => /^Root\/\d+#0$/.test( e.key ) && ( e.words || '' ).trim() && 'p' === e.tag ) ?? null;
+const KEY = SIG?.key ?? '';
 const KEY_PATH = KEY.replace( /^Root/, '' );
 const db = openDb();
+
+test( 'the committed footer inventory holds a root-host paragraph with words (the key the tests below read)', () => {
+	assert.ok( SIG, `sites/${ CLIENT }/build/skeleton/footer.inventory.json has no element keyed Root/<n>#0 that is a <p> with words; the tests that read KEY have no subject` );
+} );
 
 // A temp repo holding one surface: the manifest entry, intake.json, the inventory and the saved files.
 function fixture( { entry = { site: 'x', intakeSurface: 'site-footer' }, decisions = { surfaces: {} }, built = null } = {} ) {

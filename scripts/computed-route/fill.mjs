@@ -24,6 +24,7 @@ import { skeletonNodes, skeletonProblems, cleanTree, expandSiteInfoRows, originM
 import { draftHashOf, stampOrigin } from './lib/origin-file.mjs';
 import { readDraft } from './lib/fill-read.mjs';
 import { stateOpener, readUrlOf, refusalRows, openedAt, describeWays } from './lib/fill-open.mjs';
+import { widthStateKeys } from './lib/state-reach.mjs';
 import { openerRefusals } from './lib/fill-opener-refusals.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
@@ -181,7 +182,9 @@ export async function fillSurface( o ) {
 		const skeletonRecord = intakeData?.skeletons?.[ entry.intakeSurface ] ?? null;
 		const handoffFile = path.join( repo, 'sites', o.client, 'handoff', 'surfaces.json' );
 		const handoffRecord = skeletonRecord && fs.existsSync( handoffFile ) ? ( JSON.parse( fs.readFileSync( handoffFile, 'utf8' ) ).records || [] ).find( ( r ) => r.id === skeletonRecord.id ) : null;
-		const opener = stateOpener( { entry, skeleton: skeletonRecord, record: handoffRecord, facts, rootComponent: intakeParts.rootComponent } );
+		// The state keys each component writes from the width: the only keys a state's comparison bounds, for the opener and the walker alike.
+		const widthKeys = widthStateKeys( intakeData?.breakpoints );
+		const opener = stateOpener( { entry, skeleton: skeletonRecord, record: handoffRecord, facts, rootComponent: intakeParts.rootComponent, widthKeys } );
 		// A page surface or a state-driven surface is read at its route; a state-page draft opens it by state (lib/state-route.mjs).
 		const readUrl = readUrlOf( { url, opener, record: skeletonRecord, routing: intakeData?.routing } );
 		opener && log( opener.state ? `state opener: ${ describeWays( opener ) } on ${ opener.component }${ opener.route && '*' !== opener.route ? ` at ${ opener.route }` : '' }${ opener.dropped.length ? ` (not offered: ${ opener.dropped.map( ( d ) => d.key ).join( ', ' ) })` : '' }` : `state opener refused: ${ opener.refused.map( ( r ) => r.reason ).join( '; ' ) }` );
@@ -225,7 +228,7 @@ export async function fillSurface( o ) {
 		// Spec 48 §3.6: the walker walks every state the surface maps, each at the widths it holds at; a state it cannot open
 		// is a gap row naming it, never a state silently left unwalked.
 		const walkOpener = opener?.state ? { ...opener, openedAt: openedAt( opener, reads.opener?.widths ) } : null;
-		const walk = walkerStates( { entry, record: handoffRecord, facts, rootComponent: intakeParts.rootComponent, vocab: vocab.rows, opener: walkOpener, widths: WALK_WIDTHS } );
+		const walk = walkerStates( { entry, record: handoffRecord, facts, rootComponent: intakeParts.rootComponent, vocab: vocab.rows, opener: walkOpener, widthKeys, widths: WALK_WIDTHS } );
 		result.unmapped.push( ...walkRefusalRows( { walk, id: skeletonRecord?.id ?? null, nodes, flat, refOf } ) );
 		log( `walker states: ${ walk.states.map( ( st ) => `${ st.name }${ st.widths ? ` at ${ st.widths.join( ',' ) }` : '' }` ).join( ', ' ) }${ walk.refused.length ? `; not walked: ${ walk.refused.map( ( r ) => `${ r.state } (${ r.reason })` ).join( '; ' ) }` : '' }` );
 		// A logo whose width changes with the screen is written as its per-device size (lib/fill-logo-size.mjs).

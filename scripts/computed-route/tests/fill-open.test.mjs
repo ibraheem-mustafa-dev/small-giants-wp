@@ -2,7 +2,8 @@
 // refusal, and a component a route mounts is read on its route. Records are the shapes handoff `surfaces.json` holds.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { openState, stateOpener, usableKeys, isPlaceholder, withRoute, routeHash, refusalRows, STATE_REFUSED, ROOT_HOST, openerSource } from '../lib/fill-open.mjs';
+import { openState, stateOpener, usableKeys, withRoute, routeHash, refusalRows, STATE_REFUSED, ROOT_HOST, openerSource } from '../lib/fill-open.mjs';
+import { isDescription } from '../lib/state-openers.mjs';
 
 const FACTS = { state: {
 	Site: { keys: [ 'page', 'w', 'active', 'mobileOpen', 'acc', 'faqOpen' ], widthKeys: [ 'w' ] },
@@ -35,10 +36,10 @@ test( 'MUST FAIL (cause 2): a render value, a width-derived key and an underscor
 
 test( 'MUST FAIL (cause 3): a placeholder or prose value is never set, and a state with only those is refused', () => {
 	for ( const v of [ { '<page>-<bi>-<gi>-<qi>': true }, { '<field>': '<message>' }, '{â€¦}', 'IND-######', '<category>', '> 0', 'Continue with missing fields', [ '<label>' ] ] ) {
-		assert.ok( isPlaceholder( v ), `${ JSON.stringify( v ) } is a description` );
+		assert.ok( isDescription( v ), `${ JSON.stringify( v ) } is a description` );
 	}
 	for ( const v of [ true, 0, 'All', 'about', {}, { 'about-1': true }, [ 'a', 'b' ] ] ) {
-		assert.ok( ! isPlaceholder( v ), `${ JSON.stringify( v ) } is a value` );
+		assert.ok( ! isDescription( v ), `${ JSON.stringify( v ) } is a value` );
 	}
 	const o = stateOpener( { entry, skeleton: skeleton(), record: record( 'Site', [ open( { faqOpen: { '<page>-<bi>-<gi>-<qi>': true } } ) ] ), facts: FACTS } );
 	assert.equal( o.state, null );
@@ -153,7 +154,7 @@ const OPENER = { component: ROOT_HOST, state: 'open', keys: { active: 1 }, expec
 test( 'MUST FAIL: a state whose sc-if ids did not render is refused with the reason, not read as a closed surface', async () => {
 	const none = await openState( stubPage( { reached: 1, rendered: 0 } ), OPENER );
 	assert.equal( none.ok, false );
-	assert.match( none.reason, /none of the 3 sc-if ids of state "open" \(63, 66, 75\) rendered after setting \{"active":1\}/ );
+	assert.match( none.reason, /none of the 3 sc-if ids of state "open" \(63, 66, 75\) rendered after state "open" \{"active":1\}/ );
 	assert.equal( ( await openState( stubPage( { reached: 1, rendered: 2 } ), OPENER ) ).ok, true );
 	assert.equal( ( await openState( stubPage( { reached: 1, rendered: null } ), { ...OPENER, expect: [] } ) ).ok, true, 'a record that lists no sc-if id is judged by the instance reached' );
 } );
