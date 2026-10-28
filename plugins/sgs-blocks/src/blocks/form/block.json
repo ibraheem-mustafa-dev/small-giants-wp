@@ -907,6 +907,16 @@
 			"type": "string",
 			"default": "Submit"
 		},
+		"nextLabel": {
+			"type": "string",
+			"default": "Next",
+			"description": "Words on a multi-step form's Next button. Empty = Next."
+		},
+		"prevLabel": {
+			"type": "string",
+			"default": "Previous",
+			"description": "Words on a multi-step form's Previous button. Empty = Previous."
+		},
 		"submitStyle": {
 			"type": "string",
 			"default": "primary"

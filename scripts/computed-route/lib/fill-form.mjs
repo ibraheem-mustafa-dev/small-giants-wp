@@ -14,7 +14,9 @@
 // A field node the skeleton built from the schema (a step the page never rendered, lib/skeleton-form-steps.mjs) has no draft
 // control; its `fieldName` names the schema field, and the same settings come from that field (schemaControl).
 // A form, its steps and its review step get theirs on the nodes the skeleton names as those blocks: `savedProgress`, each
-// step's `label` and the review's `intro` and Edit label, from the schema of the surface's own component. A button is
+// step's `label` and the review's `intro` and Edit label, from the schema of the surface's own component, and a multi-step
+// form's `nextLabel`, `submitLabel` and `prevLabel` from the words of the draft's Next and Back buttons the skeleton absorbed
+// into it (lib/fill-form-buttons.mjs). A button is
 // `isSubmit` when the draft's is `type="submit"`. A linked reference block (a page's `sgs/form` with `formIsLinked`) renders the
 // saved post's blocks and ignores its own settings, so nothing on it or inside it is written.
 import fs from 'node:fs';
@@ -24,6 +26,7 @@ import { formSchemaOf, schemaFieldOf, schemaFieldByName, schemaChipsOf, conditio
 import { parseTplKey } from './fill-skeleton.mjs';
 import { detectReferences, referenceOf } from './references.mjs';
 import { walk } from './tree.mjs';
+import { stepButtonLabels, stepButtonWrites, stepRules } from './fill-form-buttons.mjs';
 
 export const COVERAGE_WRITES = [
 	'aria-role:checkbox',
@@ -227,10 +230,11 @@ export function componentOf( target, candidates ) {
 // Fill's form pass. nodes/flat/refOf: the skeleton nodes, their tree nodes and the ref function; reads: readDraft's result;
 // facts: the fact record (or null); flags: intake's flags; db: the framework DB; source: { component: script text } for the
 // draft's conditions ({ component: script text }, see formSources); component: the surface's own component (its handoff
-// record's `dc`), whose schema is used (none named reads the first schema the record holds); refs: lib/references.mjs::detectReferences.
+// record's `dc`), whose schema is used (none named reads the first schema the record holds); refs: lib/references.mjs::detectReferences;
+// idxFor( component ): the parsed logic of a draft component (lib/fill-list-content.mjs::logicReader); buttonRules: rules.formSteps.
 // Returns { writes, unmapped, notes, settled }: `settled` is one row (reason `row-held`) for each node on or inside a linked
 // reference block that the draft read, naming the linked form that holds its settings, so no read there ends silent.
-export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences() } ) {
+export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, sources = {}, readback = formReadback, component = null, refs = detectReferences(), idxFor = () => null, buttonRules = null } ) {
 	const out = { writes: [], unmapped: [], notes: [], settled: [] };
 	// The nodes of every linked reference block and the blocks inside it, each with the form its reference names.
 	const linked = new Map();
@@ -275,8 +279,12 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 			out.unmapped.push( ...readback( { writes: made.writes, el: control, field: hit, copy } ).map( ( reason ) => ( { node: ref, block: rec.name, property: 'form read-back', value: '', slot: '', reason } ) ) );
 		} else if ( 'sgs/button' === rec.name && el && 'button' === el.tag && 'submit' === el.type && attrDef( db, 'sgs/button', 'isSubmit' ) ) {
 			apply( out, node, ref, rec, { attr: 'isSubmit', value: true, merge: 'replace' } );
-		} else if ( 'sgs/form' === rec.name && schema && savesProgress( flags, schema.component ) ) {
-			apply( out, node, ref, rec, { attr: 'savedProgress', value: true, merge: 'replace' } );
+		} else if ( 'sgs/form' === rec.name && schema ) {
+			savesProgress( flags, schema.component ) && apply( out, node, ref, rec, { attr: 'savedProgress', value: true, merge: 'replace' } );
+			if ( ( node.innerBlocks || [] ).some( ( k ) => 'sgs/form-step' === k.name ) ) {
+				const read = stepButtonLabels( { facts, component: schema.component, idx: idxFor( schema.component ), rules: buttonRules || stepRules() } );
+				take( stepButtonWrites( { ...read, attributes: node.attributes || {}, def: ( attr ) => attrDef( db, rec.name, attr ) } ) );
+			}
 		} else if ( 'sgs/form-step' === rec.name && steps[ stepNo ] ) {
 			apply( out, node, ref, rec, { attr: 'label', value: steps[ stepNo++ ].label, merge: 'replace' } );
 		} else if ( 'sgs/form-review' === rec.name && review?.intro ) {

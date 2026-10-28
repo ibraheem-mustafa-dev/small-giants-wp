@@ -212,11 +212,6 @@
 		"ground = getComputedStyle( a ).backgroundColor;",
 		"snap.scrollbar = { color: sc.scrollbarColor, width: sc.scrollbarWidth,"
 	],
-	"tests/fixtures/u9-planted/mutations.json": [
-		"if ( ! same( value, def.default ) && ! same( value, attributes[ attr ] ) ) {",
-		"f.counterMax = m ? Number( m[ 1 ] ) : null;",
-		"f.checked = 'true' === el.getAttribute( 'aria-checked' );"
-	],
 	"tests/site-build-single.mutations.json": [
 		"...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] )",
 		"...( templateSource( rows ) ? [ [ POST_TEMPLATE, templateSource( rows ) ] ] : [] )"
