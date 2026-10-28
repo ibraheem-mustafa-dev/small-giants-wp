@@ -41,7 +41,8 @@ export function skeletonSettings( facts, block ) {
 	} else {
 		out.text = facts.firstAttrByRole( block, 'text-content' );
 		out.link = facts.firstAttrByRole( block, 'link-href' );
-		facts.enumOf( block, 'displayType' ) && out.others.push( 'displayType', ...( has( 'copyrightPrefix' ) ? [ 'copyrightPrefix' ] : [] ) );
+		const kinds = ( facts.enumOf( block, 'displayType' ) || [] ).filter( ( k ) => facts.displayTypes.includes( k ) );
+		kinds.length && out.others.push( 'displayType', ...( kinds.includes( 'copyright' ) && has( 'copyrightPrefix' ) ? [ 'copyrightPrefix' ] : [] ) );
 		has( 'linkTarget' ) && out.others.push( 'linkTarget' );
 	}
 	has( 'ref' ) && out.others.push( 'ref' );

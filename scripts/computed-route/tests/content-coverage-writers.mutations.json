@@ -1,0 +1,188 @@
+[
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "put( 'rows', num( el.rows ), 'rows' );",
+		"replace": "void 0;",
+		"why": "rows is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "put( 'showCounter', true, 'counter', 'a live character counter' );",
+		"replace": "void 0;",
+		"why": "showCounter is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "if ( el.checked ) {\n\t\tput( 'defaultChecked', true, 'checked', 'a ticked start' );",
+		"replace": "if ( el.checked ) {\n\t\tvoid 0;",
+		"why": "a ticked draft box does not write defaultChecked"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "put( 'allowedTypes', ",
+		"replace": "void ( ",
+		"why": "allowedTypes is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "optional( 'multiSelect', true );",
+		"replace": "void 0;",
+		"why": "multiSelect is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "put( 'tiles', ",
+		"replace": "void ( ",
+		"why": "tiles is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "set( copy.tooLong ) && put( 'msgTooLong', copy.tooLong, 'too-long message' );",
+		"replace": "void 0;",
+		"why": "msgTooLong is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "put( 'valueFromParam', linked,",
+		"replace": "void ( linked,",
+		"why": "valueFromParam is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "put( 'conditionalValue', condition.value, 'conditional field' );",
+		"replace": "void 0;",
+		"why": "conditionalValue is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "apply( out, node, ref, rec, { attr: 'isSubmit', value: true, merge: 'replace' } );",
+		"replace": "void 0;",
+		"why": "isSubmit is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "savesProgress( flags, schema.component ) && apply( out, node, ref, rec, { attr: 'savedProgress', value: true, merge: 'replace' } );",
+		"replace": "void 0;",
+		"why": "savedProgress is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "apply( out, node, ref, rec, { attr: 'label', value: steps[ stepNo++ ].label, merge: 'replace' } );",
+		"replace": "stepNo++;",
+		"why": "a step's label is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "apply( out, node, ref, rec, { attr: 'intro', value: review.intro, merge: 'replace' } );",
+		"replace": "void 0;",
+		"why": "the review intro is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "edit && edit.template.words !== 'Edit' && apply(",
+		"replace": "edit && false && apply(",
+		"why": "the review edit label is never written"
+	},
+	{
+		"file": "lib/fill-form-buttons.mjs",
+		"find": "out.labels.prevLabel = back.plain;",
+		"replace": "void back.plain;",
+		"why": "prevLabel is never read"
+	},
+	{
+		"file": "lib/fill-form-buttons.mjs",
+		"find": "next.last && ( out.labels.submitLabel = next.last );",
+		"replace": "void next.last;",
+		"why": "submitLabel is never read"
+	},
+	{
+		"file": "lib/fill-form-buttons.mjs",
+		"find": "out.labels.nextLabel = next.plain ?? next.rest;",
+		"replace": "void ( next.plain ?? next.rest );",
+		"why": "nextLabel is never read"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "'filled' === kind && 'iconFill' in schema && put( 'iconFill', true );",
+		"replace": "void kind;",
+		"why": "iconFill is never written"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "put( 'iconName', lucide );",
+		"replace": "void lucide;",
+		"why": "iconName is never written"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "put( 'brandName', brand );",
+		"replace": "void brand;",
+		"why": "brandName is never written"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "put( 'iconSvg', render( kept ) );",
+		"replace": "void kept;",
+		"why": "iconSvg is never written"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "out.writes.push( { attr: 'iconPosition', value: svg.position, merge: 'replace' } );",
+		"replace": "void svg.position;",
+		"why": "iconPosition is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "a.tagName = ( enumOf( block, 'tagName' ) || [] ).includes( e.tag ) ? e.tag : 'div';",
+		"replace": "void enumOf;",
+		"why": "a wrapper shell's tagName is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "return { a: { ...a, ...layoutOf( block, e ) }, handover };",
+		"replace": "return { a, handover };",
+		"why": "a wrapper shell's layout is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "a.displayType = top.siteInfoKind;",
+		"replace": "void top;",
+		"why": "displayType is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "a.copyrightPrefix = prefix;",
+		"replace": "void prefix;",
+		"why": "copyrightPrefix is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "( a.linkTarget = e.attrs.target );\n\t\t}\n\t\treturn { a: {",
+		"replace": "void e;\n\t\t}\n\t\treturn { a: {",
+		"why": "linkTarget is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "Object.assign( out.attrs, { logoId: hit.id } )",
+		"replace": "Object.assign( out.attrs, {} )",
+		"why": "logoId is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "Object.assign( out.attrs, { ref: id } )",
+		"replace": "Object.assign( out.attrs, {} )",
+		"why": "a menu ref is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "textAttr && t && ( a[ textAttr ] =",
+		"replace": "textAttr && false && ( a[ textAttr ] =",
+		"why": "the first text setting is never written"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "if ( linkAttr && href ) {",
+		"replace": "if ( false ) {",
+		"why": "the first link setting is never written"
+	}
+]
