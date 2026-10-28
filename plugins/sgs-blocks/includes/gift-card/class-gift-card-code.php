@@ -147,6 +147,7 @@ final class Gift_Card_Code {
 	 * overwrite a key another request has just stored; the stored value is read back and returned.
 	 *
 	 * @return string
+	 * @throws \RuntimeException When the key cannot be stored.
 	 */
 	public static function create_key(): string {
 		$candidate = \bin2hex( \random_bytes( 32 ) );
