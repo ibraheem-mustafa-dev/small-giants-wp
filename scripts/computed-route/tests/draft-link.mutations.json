@@ -15,7 +15,7 @@
 	{ "file": "lib/draft-link.mjs", "find": "if ( slash || ( 'hash' === ctx?.adapter && ctx.routeRow.has( key ) ) ) {", "replace": "if ( slash ) {", "why": "a hash key with no slash is read as an in-page anchor" },
 	{ "file": "lib/draft-link.mjs", "find": "\t\treturn { kind: 'anchor', value: h };", "replace": "\t\treturn toRow( key, ctx );", "why": "an in-page anchor is read as a route" },
 	{ "file": "lib/draft-link.mjs", "find": "if ( /\\.dc\\.html$/i.test( p ) ) {", "replace": "if ( false ) {", "why": "a page file no row holds is written as it stands" },
-	{ "file": "lib/draft-link.mjs", "find": "const dropped = [ ...query.keys() ].length ? `?${ query.toString() }` : null;", "replace": "const dropped = null;", "why": "a dropped draft query is not reported" },
+	{ "file": "lib/draft-link.mjs", "find": "const dropped = [ ...left.keys() ].length ? `?${ left.toString() }` : null;", "replace": "const dropped = null;", "why": "a dropped draft query is not reported" },
 	{ "file": "lib/draft-link.mjs", "find": "const route = ctx?.routeRow.has( p ) ? p : resolveRef( p, file );", "replace": "const route = p;", "why": "a page file is not resolved from the linking draft's folder" },
 	{ "file": "lib/draft-link.mjs", "find": "export const elementFile = ( e ) => ( e?.template ? `${ e.template }.dc.html` : '' );", "replace": "export const elementFile = ( e ) => '';", "why": "an element's click handler is matched in no draft file" },
 	{ "file": "lib/draft-link.mjs", "find": "if ( EXTERNAL.test( h ) ) {", "replace": "if ( false ) {", "why": "an external link is read as a relative path" },
