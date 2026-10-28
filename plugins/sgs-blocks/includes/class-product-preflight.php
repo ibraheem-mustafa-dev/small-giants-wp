@@ -310,6 +310,14 @@ final class Product_Preflight {
 
 		$product = \wc_get_product( $product_id );
 
+		// A gift card is its own product type with amounts instead of variations, so
+		// the variation checks (variesBy, per-variation image and price) do not apply.
+		// Exempted by name so the exemption survives any future change to what counts
+		// as a variable product (Spec 27 FR-27-GC1).
+		if ( $product && Gift_Card\Gift_Card_Product_Type::is_gift_card( $product ) ) {
+			return self::result( array(), array( 'gift_card_exempt' ) );
+		}
+
 		// Only evaluate variable products — return ready=true for all other types so
 		// simple products, pages, etc. are never blocked.
 		if ( ! $product || ! $product->is_type( 'variable' ) ) {

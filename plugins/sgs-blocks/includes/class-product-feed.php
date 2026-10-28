@@ -163,11 +163,13 @@ final class Product_Feed {
 			)
 		);
 
-		if ( empty( $product_ids ) ) {
-			return '';
-		}
+		// Gift cards are their own product type (one feed item per fixed amount, no
+		// item_group_id), so they come from their own collector. FR-27-GC12.
+		$items_xml = Gift_Card\Gift_Card_Feed::collect_items_xml();
 
-		$items_xml = '';
+		if ( empty( $product_ids ) ) {
+			return '' === $items_xml ? '' : Product_Feed_Channel::wrap_channel( $items_xml );
+		}
 
 		foreach ( $product_ids as $pid ) {
 			$product_id = (int) $pid;
