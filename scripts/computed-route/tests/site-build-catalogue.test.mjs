@@ -7,7 +7,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { readCatalogue } from '../lib/catalogue-read.mjs';
 import { PHOTO_TO_COME, catalogueImages, planCatalogue, recordSite, runCatalogue, tallyCatalogue } from '../lib/site-build-catalogue.mjs';
-import { catalogueApplyPhp, catalogueStatePhp } from '../lib/site-build-catalogue-php.mjs';
+import { catalogueApplyPhp, catalogueStatePhp, productBaseFlushPhp } from '../lib/site-build-catalogue-php.mjs';
 import { linkContext, resolveDraftLink, linkWrite } from '../lib/draft-link.mjs';
 import { repoWith } from './fixtures/catalogue/repo.mjs';
 
@@ -293,4 +293,60 @@ test( 'address images: a stock photo is found by the media upload\'s file name a
 	assert.match( write, /media_handle_sideload\( array\( 'name' => sanitize_file_name\( \( '' !== \$stem \? \$stem : 'draft-image' \) \. '\.' \. \$ext \), 'tmp_name' => \$tmp \), 0 \)/ );
 	assert.match( write, /if \( ! \$id && ! empty\( \$img\['stem'\] \) \) \{\n\t\t\t\$stem = \$wpdb->esc_like\( \$img\['stem'\] \) \. '\.%';/ );
 	assert.match( catalogueStatePhp( [], images ), /meta_value LIKE %s OR meta_value LIKE %s \) ORDER BY post_id ASC LIMIT 1", \$stem, '%\/' \. \$stem \)/ );
+} );
+
+// A new product base is saved by the write and flushed in a request of its own: the product post type registers at
+// `init` with the base the option held then, so a flush in the saving request rebuilds the old rules (a product at the
+// new base answered 404 while ?product=<slug> answered 200). The step proves the base took before it reports done.
+const baseRun = ( { repo, catalogue, want, flush } ) => {
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'catalogue.json' ), `${ JSON.stringify( { ...catalogue, productBase: want }, null, 2 ) }\n` );
+	const calls = [];
+	const errors = [];
+	let base = 'product';
+	const runPhp = ( php ) => {
+		calls.push( /flush_rewrite_rules/.test( php ) ? 'flush' : /\$steps =/.test( php ) ? 'write' : 'read' );
+		if ( /flush_rewrite_rules/.test( php ) ) {
+			return JSON.stringify( flush );
+		}
+		if ( /\$steps =/.test( php ) ) {
+			base = want;
+			return JSON.stringify( { done: [], issues: [] } );
+		}
+		const facets = Object.fromEntries( catalogue.facets.map( ( f, i ) => [ f.slug, { id: 10 + i, label: f.label, reserved: false, terms: Object.fromEntries( f.terms.map( ( t ) => [ t.name, t.swatch || '' ] ) ) } ] ) );
+		return JSON.stringify( site( catalogue.products.map( ( p ) => found( p ) ), { productBase: base, facets } ) );
+	};
+	const code = runCatalogue( { repo, client: 'demo', site: 's', runPhp, apply: true, log: () => {}, error: ( l ) => errors.push( l ) } );
+	return { code, calls, errors };
+};
+const BASE_OK = { base: 'goods', rules: 25, permalink: 'https://x.test/goods/honey-jar/', http: 200, error: '' };
+
+test( 'product base: the write saves the option and never flushes; the flush is a later request that proves a product answers', () => {
+	const { repo, catalogue } = setup();
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'catalogue.json' ), `${ JSON.stringify( { ...catalogue, productBase: 'goods' }, null, 2 ) }\n` );
+	const write = writeOf( repo, catalogue );
+	assert.match( write, /update_option\( 'woocommerce_permalinks'/ );
+	assert.doesNotMatch( write, /flush_rewrite_rules/, 'a flush in the saving request rebuilds the old rules' );
+	const flush = productBaseFlushPhp( 'goods', [ 'jar' ] );
+	assert.ok( flush.indexOf( 'flush_rewrite_rules' ) < flush.indexOf( 'get_permalink' ) && flush.indexOf( 'get_permalink' ) < flush.indexOf( 'wp_remote_get' ) );
+	assert.doesNotMatch( flush, /update_option/, 'the flush request saves nothing' );
+	const run = baseRun( { repo, catalogue, want: 'goods', flush: BASE_OK } );
+	assert.deepEqual( run.calls, [ 'read', 'write', 'flush', 'read' ] );
+	assert.equal( run.code, 0, run.errors.join( ' / ' ) );
+} );
+
+test( 'product base: a flush that leaves no rule for the base, a product that does not answer 200 or an address off the base fails the step', () => {
+	const { repo, catalogue } = setup();
+	for ( const [ flush, why ] of [ [ { ...BASE_OK, rules: 0 }, /no \/goods\/ rule/ ], [ { ...BASE_OK, http: 404 }, /answers 404, not 200/ ], [ { ...BASE_OK, permalink: 'https://x.test/product/honey-jar/' }, /not under \/goods\// ], [ { ...BASE_OK, permalink: '' }, /no published catalogue product/ ] ] ) {
+		const run = baseRun( { repo, catalogue, want: 'goods', flush } );
+		assert.equal( run.code, 1, why.source );
+		assert.ok( run.errors.some( ( e ) => why.test( e ) && /issue: product base/.test( e ) ), why.source );
+	}
+} );
+
+test( 'product base: a site that cannot call itself passes on the stored rules and the address; a base already set flushes nothing', () => {
+	const { repo, catalogue } = setup();
+	assert.equal( baseRun( { repo, catalogue, want: 'goods', flush: { ...BASE_OK, http: null, error: 'cURL error 7' } } ).code, 0 );
+	const same = baseRun( { repo, catalogue, want: 'product', flush: { ...BASE_OK, rules: 0 } } );
+	assert.deepEqual( same.calls, [ 'read', 'write', 'read' ] );
+	assert.equal( same.code, 0 );
 } );

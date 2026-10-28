@@ -62,5 +62,14 @@
 	{"file": "lib/site-build-catalogue-php.mjs", "find": "\tif ( ! empty( $s['hold'] ) ) {", "replace": "\tif ( false ) {", "why": "a held product is published and the preflight issue fails the run"},
 	{"file": "lib/site-build-catalogue-php.mjs", "find": "foreach ( wc_get_product_terms( $id, $tax, array( 'fields' => 'ids' ) ) as $tid ) { $vb[ $tax ][] = $sgs_variesby( get_term_meta( $tid, '_sgs_variesby_value', true ) ); }", "replace": "", "why": "the read never reports the terms' values"},
 	{"file": "lib/site-build-catalogue-php.mjs", "find": "'attributes' => $attrs, 'variesBy' => (object) $vb,", "replace": "'attributes' => $attrs,", "why": "the read drops the variesBy state"},
-	{"file": "lib/site-build-catalogue-php.mjs", "find": "return class_exists( '\\\\SGS\\\\Blocks\\\\Configurator_Meta' ) ? \\\\SGS\\\\Blocks\\\\Configurator_Meta::sanitize_variesby( $value ) : (string) $value;", "replace": "return (string) $value;", "why": "an invalid stored value counts as mapped though the preflight rejects it"}
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "return class_exists( '\\\\SGS\\\\Blocks\\\\Configurator_Meta' ) ? \\\\SGS\\\\Blocks\\\\Configurator_Meta::sanitize_variesby( $value ) : (string) $value;", "replace": "return (string) $value;", "why": "an invalid stored value counts as mapped though the preflight rejects it"},
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "update_option( 'woocommerce_permalinks', $perm );", "replace": "update_option( 'woocommerce_permalinks', $perm );\n\t\tflush_rewrite_rules( false );", "why": "the saving request flushes again, rebuilding the old product rules"},
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "flush_rewrite_rules( false );\n$rules = 0;", "replace": "$rules = 0;", "why": "the fresh request never flushes"},
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "wp_remote_get( $permalink,", "replace": "wp_remote_head( $permalink,", "why": "the flush request no longer asks the product's address"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "if ( plan.productBase ) {", "replace": "if ( false ) {", "why": "a changed product base is never flushed or proven"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "if ( ! r.permalink ) {", "replace": "if ( false ) {", "why": "a base with no product to prove it passes"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "if ( ! r.rules ) {", "replace": "if ( false ) {", "why": "a flush that leaves no rule for the base passes"},
+	{"file": "lib/site-build-catalogue.mjs", "find": ".pathname.startsWith( `/${ base }/` )", "replace": ".pathname.startsWith( '/' )", "why": "a product address off the new base passes"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "if ( null !== r.http && 200 !== r.http ) {", "replace": "if ( false ) {", "why": "a product that answers 404 passes"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "done.issues.push( `product base: ${ why }` )", "replace": "0", "why": "a failed proof is only a note, not an error"}
 ]
