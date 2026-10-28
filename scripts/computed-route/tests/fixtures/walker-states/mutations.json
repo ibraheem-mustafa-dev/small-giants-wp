@@ -1,39 +1,230 @@
 [
- {"file": "lib/fill-config.mjs", "find": "...( walk?.refused?.length ? [", "replace": "...( false ? [", "why": "the config lists the mapped states it cannot walk"},
- {"file": "lib/fill-config.mjs", "find": "walk?.states?.length ? walk :", "replace": "false ? walk :", "why": "the config walks every state the surface maps, not only the first"},
- {"file": "lib/fill-config.mjs", "find": "...( i > 0 ? [ 'from: \\'rest\\'', 'allPairs: true' ] : [] ),", "replace": "...( i > 0 ? [ 'allPairs: true' ] : [] ),", "why": "every later state starts from a fresh load"},
- {"file": "lib/fill-config.mjs", "find": "const acts = i > 0 || st.ways.length || live;", "replace": "const acts = st.ways.length || live;", "why": "every later state carries a draft and a live action, so the state check follows it"},
- {"file": "lib/fill-config.mjs", "find": "...( st.widths ? [ `widths: ${ JSON.stringify( st.widths ) }` ] : [] ),", "replace": "", "why": "a width-bound state is walked only at its widths"},
- {"file": "lib/fill-config.mjs", "find": "`live: ${ live || 'async () => {}' }`", "replace": "`live: ${ live || 'undefined' }`", "why": "a rest state still has a live action, so the state check follows it"},
- {"file": "lib/walker-states.mjs", "find": "if ( i > 0 && ! recordStates.length ) {", "replace": "if ( false ) {", "why": "a state no record state names is refused"},
- {"file": "lib/walker-states.mjs", "find": "if ( i > 0 && ! ways.length && ! bounds.some( ( b ) => b.length ) ) {", "replace": "if ( false ) {", "why": "a state with no way and no width bound is refused"},
- {"file": "lib/walker-states.mjs", "find": "if ( i > 0 && ! ways.length && ! bounds.some( ( b ) => b.length ) ) {", "replace": "if ( i > 0 && ! ways.length ) {", "why": "a width-only state is walked at its widths"},
- {"file": "lib/walker-states.mjs", "find": "if ( i > 0 && ! recordStates.length ) {", "replace": "if ( ! recordStates.length ) {", "why": "the first state is never refused"},
- {"file": "lib/walker-states.mjs", "find": "const held = bounds.length ? widths.filter( ( w ) => bounds.some( ( b ) => fitsWidth( b, w ) ) ) : widths;", "replace": "const held = widths;", "why": "a state holds only at the widths inside its bounds"},
- {"file": "lib/walker-states.mjs", "find": "if ( ! held.length ) {", "replace": "if ( false ) {", "why": "a state holding at no walk width is refused"},
- {"file": "lib/walker-states.mjs", "find": "widths: held.length === widths.length ? null : held", "replace": "widths: held", "why": "a state held at every width carries no widths"},
- {"file": "lib/walker-states.mjs", "find": "const skipAt = held.filter( ( w ) => recordStates.some( ( s ) => s.name === openedState( opener, w ) ) );", "replace": "const skipAt = [];", "why": "the config's own open is not applied twice"},
- {"file": "lib/walker-states.mjs", "find": "const way = ways[ opener.openedAt?.[ width ] ] || ways.find", "replace": "const way = ways.find", "why": "the way Fill opened with at a width decides"},
- {"file": "lib/walker-states.mjs", "find": "lower( s.name ) === lower( key ) || ", "replace": "", "why": "a key equal to the record state's name names it"},
- {"file": "lib/walker-states.mjs", "find": " || walkerKey( s.name || '' ) === key", "replace": "", "why": "a walker key names its record state"},
- {"file": "lib/walker-states.mjs", "find": "if ( null == settingState ) {\n\t\treturn null;\n\t}", "replace": "", "why": "a rest state needs no live action"},
- {"file": "lib/walker-states.mjs", "find": "r.state === settingState && 'scroll' === r.reach", "replace": "'scroll' === r.reach", "why": "only a scroll-reached setting state scrolls"},
- {"file": "lib/walker-states.mjs", "find": "return opener?.state ? null : 'owner';", "replace": "return 'owner';", "why": "a state-driven surface's live open already opened it"},
- {"file": "lib/walker-states.mjs", "find": "${ 'scroll' === state.reach ? `await h.page.evaluate", "replace": "${ false ? `await h.page.evaluate", "why": "the draft scrolls too for a scroll state"},
- {"file": "lib/walker-states.mjs", "find": "${ JSON.stringify( state.skipAt ) }.includes( width ) ? null : ", "replace": "", "why": "a skipped width applies no draft way"},
- {"file": "lib/walker-states.mjs", "find": "hit: reached > 0 }", "replace": "hit: true }", "why": "a way reaching no instance is a miss"},
- {"file": "lib/walker-states.mjs", "find": "\tif ( 'scroll' === state.reach ) {\n\t\treturn `async", "replace": "\tif ( false ) {\n\t\treturn `async", "why": "the live side scrolls for a scroll state"},
- {"file": "lib/walker-states.mjs", "find": "if ( 'owner' !== state.reach ) {\n\t\treturn null;\n\t}", "replace": "", "why": "only an owner state opens the live root's control"},
- {"file": "lib/walker-states.mjs", "find": "hit: r.clicked || / is open already$/.test( r.why || '' ) }", "replace": "hit: r.clicked }", "why": "a root open already is a hit"},
- {"file": "lib/walker-states.mjs", "find": "hit: r.clicked || / is open already$/.test( r.why || '' ) }", "replace": "hit: true }", "why": "nothing controlling the root is a miss"},
- {"file": "lib/walker-states.mjs", "find": "out.component = record ? ( record.dc === rootComponent ? ROOT_HOST : record.dc ) : null;", "replace": "out.component = record ? record.dc : null;", "why": "the served entry draft's component is hosted as Root"},
- {"file": "lib/walker-states.mjs", "find": "value: r.state, state: null", "replace": "value: '', state: null", "why": "a refusal row names its state"},
- {"file": "lib/state-live.mjs", "find": "for ( const n of p.states?.length ? p.states : every ) {", "replace": "for ( const n of p.states?.length ? p.states : [ null ] ) {", "why": "an unscoped pair is read in every state the config opens"},
- {"file": "lib/state-live.mjs", "find": "if ( name && ! ( 'function' === typeof state?.draft && 'function' === typeof state?.live ) ) {", "replace": "if ( false ) {", "why": "a state the config cannot open on both sides is not read"},
- {"file": "lib/state-live.mjs", "find": "widths.filter( ( w ) => ! group.state?.widths || group.state.widths.includes( w ) )", "replace": "widths", "why": "a width-scoped state is read at its widths only"},
- {"file": "../parity/lib/lint.mjs", "find": "const everyBlock = st.allPairs && cfg.refPrefix && ", "replace": "const everyBlock = st.allPairs && ", "why": "a hand config still needs a scoped pair per state"},
- {"file": "../parity/lib/lint.mjs", "find": "const everyBlock = st.allPairs && cfg.refPrefix && ", "replace": "const everyBlock = cfg.refPrefix && ", "why": "a hand state in a ref-traced config still needs its own pair"},
- {"file": "lib/fill-config.mjs", "find": "'from: \\'rest\\'', 'allPairs: true'", "replace": "'from: \\'rest\\''", "why": "Fill marks its generated states as looked at by every pair"},
- {"file": "../parity/lib/lint.mjs", "find": "i > 0 && ! everyBlock && ", "replace": "i > 0 && ", "why": "a ref-traced config's unscoped pairs look at every state"},
- {"file": "../parity/lib/lint.mjs", "find": "( cfg.pairs || [] ).some( ( p ) => ! p.states );", "replace": "( cfg.pairs || [] ).length > 0;", "why": "only an unscoped pair covers every state"}
+  {
+    "file": "lib/fill-config.mjs",
+    "find": "...( walk?.refused?.length ? [",
+    "replace": "...( false ? [",
+    "why": "the config lists the mapped states it cannot walk"
+  },
+  {
+    "file": "lib/fill-config.mjs",
+    "find": "walk?.states?.length ? walk :",
+    "replace": "false ? walk :",
+    "why": "the config walks every state the surface maps, not only the first"
+  },
+  {
+    "file": "lib/fill-config.mjs",
+    "find": "...( i > 0 ? [ 'from: \\'rest\\'', 'allPairs: true' ] : [] ),",
+    "replace": "...( i > 0 ? [ 'allPairs: true' ] : [] ),",
+    "why": "every later state starts from a fresh load"
+  },
+  {
+    "file": "lib/fill-config.mjs",
+    "find": "const acts = i > 0 || st.ways.length || live;",
+    "replace": "const acts = st.ways.length || live;",
+    "why": "every later state carries a draft and a live action, so the state check follows it"
+  },
+  {
+    "file": "lib/fill-config.mjs",
+    "find": "...( st.widths ? [ `widths: ${ JSON.stringify( st.widths ) }` ] : [] ),",
+    "replace": "",
+    "why": "a width-bound state is walked only at its widths"
+  },
+  {
+    "file": "lib/fill-config.mjs",
+    "find": "`live: ${ live || 'async () => {}' }`",
+    "replace": "`live: ${ live || 'undefined' }`",
+    "why": "a rest state still has a live action, so the state check follows it"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "if ( i > 0 && ! recordStates.length ) {",
+    "replace": "if ( false ) {",
+    "why": "a state no record state names is refused"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "if ( i > 0 && ! ways.length && ! bounds.some( ( b ) => b.length ) ) {",
+    "replace": "if ( false ) {",
+    "why": "a state with no way and no width bound is refused"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "if ( i > 0 && ! ways.length && ! bounds.some( ( b ) => b.length ) ) {",
+    "replace": "if ( i > 0 && ! ways.length ) {",
+    "why": "a width-only state is walked at its widths"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "if ( i > 0 && ! recordStates.length ) {",
+    "replace": "if ( ! recordStates.length ) {",
+    "why": "the first state is never refused"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "const held = bounds.length ? widths.filter( ( w ) => bounds.some( ( b ) => fitsWidth( b, w ) ) ) : widths;",
+    "replace": "const held = widths;",
+    "why": "a state holds only at the widths inside its bounds"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "if ( ! held.length ) {",
+    "replace": "if ( false ) {",
+    "why": "a state holding at no walk width is refused"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "widths: held.length === widths.length ? null : held",
+    "replace": "widths: held",
+    "why": "a state held at every width carries no widths"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "const skipAt = held.filter( ( w ) => recordStates.some( ( s ) => s.name === openedState( opener, w ) ) );",
+    "replace": "const skipAt = [];",
+    "why": "the config's own open is not applied twice"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "const way = ways[ opener.openedAt?.[ width ] ] || ways.find",
+    "replace": "const way = ways.find",
+    "why": "the way Fill opened with at a width decides"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "lower( s.name ) === lower( key ) || ",
+    "replace": "",
+    "why": "a key equal to the record state's name names it"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": " || walkerKey( s.name || '' ) === key",
+    "replace": "",
+    "why": "a walker key names its record state"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "if ( null == settingState ) {\n\t\treturn null;\n\t}",
+    "replace": "",
+    "why": "a rest state needs no live action"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "r.state === settingState && 'scroll' === r.reach",
+    "replace": "'scroll' === r.reach",
+    "why": "only a scroll-reached setting state scrolls"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "return opener?.state ? null : 'owner';",
+    "replace": "return 'owner';",
+    "why": "a state-driven surface's live open already opened it"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "${ 'scroll' === state.reach ? `await h.page.evaluate",
+    "replace": "${ false ? `await h.page.evaluate",
+    "why": "the draft scrolls too for a scroll state"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "${ JSON.stringify( state.skipAt ) }.includes( width ) ? null : ",
+    "replace": "",
+    "why": "a skipped width applies no draft way"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "hit: reached > 0 }",
+    "replace": "hit: true }",
+    "why": "a way reaching no instance is a miss"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "\tif ( 'scroll' === state.reach ) {\n\t\treturn `async",
+    "replace": "\tif ( false ) {\n\t\treturn `async",
+    "why": "the live side scrolls for a scroll state"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "if ( 'owner' !== state.reach ) {\n\t\treturn null;\n\t}",
+    "replace": "",
+    "why": "only an owner state opens the live root's control"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "hit: r.clicked || / is open already$/.test( r.why || '' ) }",
+    "replace": "hit: r.clicked }",
+    "why": "a root open already is a hit"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "hit: r.clicked || / is open already$/.test( r.why || '' ) }",
+    "replace": "hit: true }",
+    "why": "nothing controlling the root is a miss"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "out.component = record ? ( record.dc === rootComponent ? ROOT_HOST : record.dc ) : null;",
+    "replace": "out.component = record ? record.dc : null;",
+    "why": "the served entry draft's component is hosted as Root"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "value: r.state, state: null",
+    "replace": "value: '', state: null",
+    "why": "a refusal row names its state"
+  },
+  {
+    "file": "lib/state-live.mjs",
+    "find": "for ( const n of p.states?.length ? p.states : every ) {",
+    "replace": "for ( const n of p.states?.length ? p.states : [ null ] ) {",
+    "why": "an unscoped pair is read in every state the config opens"
+  },
+  {
+    "file": "lib/state-live.mjs",
+    "find": "if ( name && ! ( 'function' === typeof state?.draft && 'function' === typeof state?.live ) ) {",
+    "replace": "if ( false ) {",
+    "why": "a state the config cannot open on both sides is not read"
+  },
+  {
+    "file": "lib/state-live.mjs",
+    "find": "widths.filter( ( w ) => ! group.state?.widths || group.state.widths.includes( w ) )",
+    "replace": "widths",
+    "why": "a width-scoped state is read at its widths only"
+  },
+  {
+    "file": "../parity/lib/lint.mjs",
+    "find": "const everyBlock = st.allPairs && cfg.refPrefix && ",
+    "replace": "const everyBlock = st.allPairs && ",
+    "why": "a hand config still needs a scoped pair per state"
+  },
+  {
+    "file": "../parity/lib/lint.mjs",
+    "find": "const everyBlock = st.allPairs && cfg.refPrefix && ",
+    "replace": "const everyBlock = cfg.refPrefix && ",
+    "why": "a hand state in a ref-traced config still needs its own pair"
+  },
+  {
+    "file": "lib/fill-config.mjs",
+    "find": "'from: \\'rest\\'', 'allPairs: true'",
+    "replace": "'from: \\'rest\\''",
+    "why": "Fill marks its generated states as looked at by every pair"
+  },
+  {
+    "file": "../parity/lib/lint.mjs",
+    "find": "i > 0 && ! everyBlock && ",
+    "replace": "i > 0 && ",
+    "why": "a ref-traced config's unscoped pairs look at every state"
+  },
+  {
+    "file": "../parity/lib/lint.mjs",
+    "find": "( cfg.pairs || [] ).some( ( p ) => ! p.states );",
+    "replace": "( cfg.pairs || [] ).length > 0;",
+    "why": "only an unscoped pair covers every state"
+  },
+  {
+    "file": "lib/walker-states.mjs",
+    "find": "r.why && console.log( 'live state ' + ${ JSON.stringify( state.name ) } + ': ' + r.why );",
+    "replace": "r.why && console.log( \\`live state ${ state.name }: \\${ r.why }\\` );",
+    "why": "a draft state name interpolated raw into the generated live action runs as code"
+  }
 ]

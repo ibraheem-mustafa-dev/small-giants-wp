@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 9444,
+    "row_count": 9446,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -3565,12 +3565,14 @@
     "sgs/form::navButtonTextTransform": "typography",
     "sgs/form::navButtonTextWrap": "typography",
     "sgs/form::navButtonWritingMode": "select-from-enum",
+    "sgs/form::nextLabel": "text-content",
     "sgs/form::notifyEmail": "text-content",
     "sgs/form::padding": "layout",
     "sgs/form::prevColourBackground": "color",
     "sgs/form::prevColourBackgroundGradient": "colour-gradient",
     "sgs/form::prevColourBackgroundHover": "color",
     "sgs/form::prevColourBackgroundHoverGradient": "colour-gradient",
+    "sgs/form::prevLabel": "text-content",
     "sgs/form::progressBarColour": "color",
     "sgs/form::progressBarColourGradient": "colour-gradient",
     "sgs/form::progressBarColourHover": "color",

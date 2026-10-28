@@ -128,7 +128,7 @@ export function stateLiveSource( state, root ) {
 	return `async ( h ) => {
 		const r = ${ root ? `await h.page.evaluate( ${ openOwner.toString() }, ${ JSON.stringify( root ) } )` : `{ clicked: false, why: 'the surface has no live root to open' }` };
 		h.log.push( { type: 'click', target: ${ JSON.stringify( `the control of ${ root || 'the surface' } for state "${ state.name }"` ) }, hit: r.clicked || / is open already$/.test( r.why || '' ) } );
-		r.why && console.log( \`live state ${ state.name }: \${ r.why }\` );
+		r.why && console.log( 'live state ' + ${ JSON.stringify( state.name ) } + ': ' + r.why );
 		await h.page.waitForTimeout( 900 );
 	}`;
 }

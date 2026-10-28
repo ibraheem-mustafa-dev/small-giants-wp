@@ -202,3 +202,20 @@ test( 'MUST FAIL: an owner state opens the live root through its control, a skip
 	assert.deepEqual( ( await runAction( cfg.states[ 1 ].draft, 1440 ) ).log, [], 'at a skipped width the draft way is not applied' );
 	assert.deepEqual( ( await runAction( cfg.states[ 1 ].draft, 375 ) ).log.map( ( e ) => e.target ), [ 'state "more" on Root' ], 'elsewhere it is' );
 } );
+
+test( 'MUST FAIL: a state name from the draft is text in the generated live action, never code', async () => {
+	// A surfaces.json state name is draft data: a backtick or `${ … }` in it must print as written and run nothing.
+	const name = 'odd`${ globalThis.__walkerStateInjected = 1 }';
+	const src = stateLiveSource( { name, reach: 'owner' }, '.cr-ref-header-0' );
+	const action = new Function( `return ( ${ src } );` )();
+	const logged = [];
+	const realLog = console.log;
+	console.log = ( ...a ) => logged.push( a.join( ' ' ) );
+	try {
+		await action( { page: { evaluate: async () => ( { clicked: false, why: 'nothing controls it' } ), waitForTimeout: async () => {} }, log: [] } );
+	} finally {
+		console.log = realLog;
+	}
+	assert.equal( globalThis.__walkerStateInjected, undefined, 'the name was run as code' );
+	assert.deepEqual( logged, [ `live state ${ name }: nothing controls it` ] );
+} );
