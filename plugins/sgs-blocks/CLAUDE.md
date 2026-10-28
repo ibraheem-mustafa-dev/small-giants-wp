@@ -32,6 +32,7 @@ sgs-blocks/
     ├── render-helpers.php        # Autoloads shared colour/font-size/box helper files
     ├── addon-price-list/         # Site-wide priced add-ons: settings page, cart pricing, CLI seed (Spec 43 FR-43-17 to 20)
     ├── flow-fields/              # Choice-flow answers and fields on the cart line, session-stamped upload (FR-43-21)
+    ├── gift-card/                # Emailed gift cards: ledger tables, redemption fee on the block Cart and Checkout, admin, feed and schema (Spec 27 Part 4, FR-27-GC1 to GC12); loaded by gift-card/load.php
     └── forms/                    # Form processing engine (REST API, DB, submissions, private uploads)
 ```
 

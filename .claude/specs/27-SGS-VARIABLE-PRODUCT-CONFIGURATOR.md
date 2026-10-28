@@ -1,13 +1,13 @@
 ---
 doc_type: spec
 spec_id: 27
-spec_version: 7
+spec_version: 8
 status: active
 title: "SGS Product & WooCommerce Layer"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
 created: 2026-06-03
-last_verified: 2026-10-09
+last_verified: 2026-10-28
 absorbs: [24, 25, 28, 30]
 absorbed_by: null
 related:
@@ -25,13 +25,14 @@ related:
 
 # Spec 27 - SGS Product & WooCommerce Layer
 
-This is the single authoritative spec for the SGS product and WooCommerce layer, in three Parts:
+This is the single authoritative spec for the SGS product and WooCommerce layer, in four Parts:
 
 - **Part 1 - Cards, binding and the variable-product configurator.** The dual-mode `sgs/product-card` (FR-24-2 to FR-24-3), the `sgs-product/field` Block Bindings source, the `sgs/option-picker` atomic block (FR-24-15) and variation sets (FR-24-11 to FR-24-14), the collection mode of `sgs/card-grid` and its 7 selection rules (FR-24-4 to FR-24-6), the `sgs/cart` mini-cart badge, and the variable-product configurator: live WC read-through, accessible pill swaps, secure add-to-cart, SEO schema, authoring and the AI-builder roadmap (FR-27-A1 onwards).
 - **Part 2 - Smart bulk pricing.** The auto-pricing engine and the comparative value ladder (FR-28-n).
 - **Part 3 - WooCommerce page types.** Single-product, shop archive, cart, checkout, the customer account area, schema per page type and the go-live gate (FR-30-n).
+- **Part 4 - Gift cards.** An emailed gift card with a ledger-backed balance, redeemed as a payment line on the Cart and Checkout blocks (FR-27-GC1 to FR-27-GC12).
 
-**FR-24-x IDs** are the card-system requirements. **FR-27-x IDs** are the configurator requirements. **FR-28-x IDs** are the bulk-pricing requirements. **FR-30-x IDs** are the page-type requirements. All four sets are stable: cross-references elsewhere in the codebase remain valid.
+**FR-24-x IDs** are the card-system requirements. **FR-27-x IDs** are the configurator requirements. **FR-28-x IDs** are the bulk-pricing requirements. **FR-30-x IDs** are the page-type requirements. All four sets are stable (the gift-card requirements are FR-27-GCn, inside the FR-27 set): cross-references elsewhere in the codebase remain valid.
 
 ---
 
@@ -840,3 +841,46 @@ Bean, 2026-10-26: WooCommerce's cart, checkout and account pages keep WooCommerc
 
 1. **B2B price display**: Indus Foods is B2B (trade buyers): ex-VAT display vs the consumer inc-VAT default. Needs a per-client display-context decision before Indus's shop build.
 2. **Subscriptions / reorder**: repeat purchase is THE food-DTC metric; WC Subscriptions is compose-not-build territory. Parked pending a scope decision and the extension licence. Sibling parked items: build-a-box bundles (a small FR-30-7 extension), A/B price-display hooks, GA4 funnel events on the configurator.
+
+---
+
+## Part 4 - Gift cards
+
+An emailed gift card with a ledger-backed balance, redeemed as a payment line on the WooCommerce Cart and Checkout blocks. FR IDs in this part are `FR-27-GC<n>`. Plan: `.claude/plans/2026-10-28-gift-cards.md`; research behind it: `.claude/reports/2026-10-28-gift-card-requirements.md`. All code is in `plugins/sgs-blocks/includes/gift-card/` (namespace `SGS\Blocks\Gift_Card`, loaded by `load.php`); the panel script is `plugins/sgs-blocks/assets/js/gift-card-checkout.js`.
+
+### Decisions (Bean, 2026-10-28)
+
+Each is a per-site setting (`sgs_gift_card_settings`, edited at WooCommerce > Gift cards > Settings) whose default is Bean's answer, so any client can differ.
+
+1. **Delivery:** emailed only. No printed card and no fulfilment step; every card row carries a `delivery_method` column so a printed card can be added later.
+2. **Partial use:** allowed; the balance stays on the card. Switching it off forfeits the remainder on first use.
+3. **Expiry:** 24 months from purchase (`expiry_months`; 0 means never), shown on the product page, at checkout, in the emails and on the card's admin screen.
+4. **Refunds:** only the purchaser, only a completely unused card, within 28 days of purchase (`refund_days`, never below the 14-day legal minimum of the Consumer Contracts Regulations 2013 reg 30). A lost code is reissued once to the purchaser and the old code stops working.
+5. **VAT:** default multi-purpose voucher (VAT is due when the card is spent, so redemption is a payment and the VAT base is untouched); single-purpose is the other value (VAT was due at sale, so redemption reduces the VAT base). The client's accountant confirms per client before real payments.
+6. **Amounts:** a list of fixed amounts per gift-card product (Mama's: 15, 25, 40 pounds) plus an optional custom amount between a minimum and a maximum, off by default.
+7. **Combining:** allowed with coupon codes and on delivery charges (`allow_with_coupons`, `allow_on_delivery`); a gift card cannot buy another gift card.
+8. **Google:** each fixed amount is its own feed product; the page's structured data is `Product` with one `Offer` per amount, never `ProductGroup`.
+
+**FR-27-GC1 -- Gift-card product type, server-priced amounts, preflight exemption.** Status: built (`includes/gift-card/class-gift-card-product-type.php`, `class-gift-card-product.php`, `class-gift-card-amounts.php`, `class-gift-card-purchase.php`, `class-gift-card-form-view.php`; the exemption is `Product_Preflight::evaluate` in `includes/class-product-preflight.php`). Proved by `tests/php/GiftCardPurchaseTest.php` (only a configured amount resolves; a posted price is ignored; custom amount off by default and range-checked) and `tests/php/GiftCardPreflightTest.php` (a gift card is ready and is not reverted; the same product shaped as a variable product with no variesBy mapping still fails and reverts; with the exemption call removed the gift card would be blocked). The type `sgs_gift_card` extends `WC_Product_Simple`, is virtual and sold individually, and its price is set from the chosen amount in `woocommerce_before_calculate_totals`. Not yet run on a live site: the product-editor panel and the front-end form (go-live steps in the plan).
+
+**FR-27-GC2 -- Two ledger tables, integer pence, row lock.** Status: built (`class-gift-card-tables.php`, `class-gift-card-wpdb-store.php`, `interface-gift-card-store.php`, `class-gift-card-ledger.php`, `trait-gift-card-ledger-operations.php`). `{prefix}sgs_gift_cards` and the append-only `{prefix}sgs_gift_card_ledger` are created with `dbDelta()` from the activation hook and re-checked on `init` against `sgs_gift_card_db_version`, because a file-overwrite update never fires activation. Every mutation runs `START TRANSACTION`, reads the card `FOR UPDATE`, checks the rule on the locked row, writes a ledger row and the cached totals, then commits. Proved by `tests/php/GiftCardLedgerTest.php` (ledger maths, partial redemption, stale-availability double spend refused, a failed hold leaves no trace, every mutation locks before its first write, and a naive unlocked implementation turns the same checker red) and `tests/php/GiftCardWpdbStoreTest.php` (the production store issues START TRANSACTION, the card read FOR UPDATE, the ledger insert, the card update and COMMIT in that order against a recording `$wpdb`; ROLLBACK on a refusal; the ledger table has no update or delete). Not yet run against MySQL.
+
+**FR-27-GC3 -- Codes: at least 80 bits, HMAC-hashed, last four stored.** Status: built (`class-gift-card-code.php`). Sixteen Crockford base32 symbols from `random_bytes( 10 )` (exactly 80 bits), shown as XXXX-XXXX-XXXX-XXXX; stored as `hash_hmac( 'sha256', code, key )` plus the last four symbols, the key derived from `wp_salt( 'secure_auth' )`. The code is generated at delivery time, so it exists only in the recipient's email (and a reissue email). Proved by `tests/php/GiftCardCodeTest.php` (every one of the 80 input bits changes the code, a generator given 8 bytes is refused, 2000 codes are unique and use all 32 symbols, the store never holds the plain code and the scanner turns red when a card keeps it) and `tests/php/GiftCardLifecycleTest.php` (the code appears in the recipient email only, not in the purchaser confirmation or the database).
+
+**FR-27-GC4 -- Purchase fields.** Status: built (`class-gift-card-purchase-fields.php`, `class-gift-card-form-view.php`, `class-gift-card-purchase.php`). Recipient name and email, optional message (default limit 300 characters), sender name and an optional send date (today up to 365 days ahead), validated server-side with a nonce, stripped of markup and control characters, copied from the cart line to the order line item. The form is server-rendered by replacing WooCommerce's add-to-cart blocks (`render_block`) and by the classic `woocommerce_sgs_gift_card_add_to_cart` action. Proved by `tests/php/GiftCardPurchaseTest.php`.
+
+**FR-27-GC5 -- Redemption as a payment line after tax, on the Cart and Checkout blocks.** Status: built, not yet verified on a live block checkout (`class-gift-card-redemption.php`, `class-gift-card-store-api.php`, `class-gift-card-checkout-assets.php`, `assets/js/gift-card-checkout.js`). Each applied card is a negative cart fee `sgs_gift_card_<id>` added at priority 999 of `woocommerce_cart_calculate_fees`, after `WC_Cart_Totals` has set the item and shipping totals; it is non-taxable in multi-purpose mode (the VAT base is untouched) and a taxable fee sized to the net amount in single-purpose mode. The amount is capped at the payable total (goods, tax and, when allowed, delivery). The block UI is a plain script filling WooCommerce's `ExperimentalDiscountsMeta` slot and posting apply and remove through `extensionCartUpdate()` to the `sgs_gift_card` Store API namespace (extension data on the cart and checkout endpoints and one update callback; the namespace is not `sgs` because a second registration on the same endpoint and namespace silently replaces the first). The fee line appears on the order and in WooCommerce's emails as "Gift card ending ____". Verified against WooCommerce trunk source (`ExtendSchema.php`, `class-wc-cart-totals.php`, `CartExtensionsSchema.php`, the blocks-checkout `ExperimentalDiscountsMeta` and `extensionCartUpdate`); proved by `tests/php/GiftCardRedemptionTest.php` (fee amounts, cap, two cards, delivery and coupon rules, single-purpose sizing, a gift card in the cart gets no fee and cannot be applied). Open: the live block-checkout purchase and redemption check on `mamas-test` at 375, 768 and 1440 (plan step 3).
+
+**FR-27-GC6 -- Reserve at order creation, consume on payment, release on cancel or failure, restore on refund.** Status: built (`class-gift-card-order.php`, `class-gift-card-ledger.php`). `woocommerce_store_api_checkout_order_processed` and `woocommerce_checkout_order_processed` make the order's holds equal its gift-card fee lines (idempotent, so a retried draft order is resized, not doubled); processing or completed consumes; cancelled, failed or refunded releases and restores; a purchase order that is cancelled or refunded disables the cards it bought. Proved by `tests/php/GiftCardLifecycleTest.php` and `tests/php/GiftCardLedgerTest.php`.
+
+**FR-27-GC7 -- Refund rule and one reissue.** Status: built (`class-gift-card-refund-policy.php`, `trait-gift-card-ledger-operations.php::refund_unused`/`reissue`, `class-gift-card-issuer.php::reissue`). Purchaser only (matching account or purchaser email; the recipient is never refunded), completely unused (no reservation, spend, forfeit or staff adjustment ever, even if the balance was restored), within the window, evaluated under the card's row lock. A refunded card is disabled with a ledger row and the order line is refunded through `wc_create_refund()`. A lost code is replaced once, the old hash is overwritten so the old code stops working, and the new code goes to the purchaser. Proved by `tests/php/GiftCardRefundTest.php` (each refusal has a control that succeeds).
+
+**FR-27-GC8 -- Admin.** Status: built (`class-gift-card-admin.php`, `class-gift-card-admin-actions.php`, `class-gift-card-admin-views.php`, `class-gift-card-csv.php`). WooCommerce > Gift cards: searchable list, liability total (live, held, expired, disabled), one card's detail with its full ledger and a ledger-versus-balance check, manual issue, balance adjustment with a mandatory reason, disable or enable, change expiry, lost-code reissue, purchaser refund and CSV export. Every screen needs `manage_woocommerce`; every action posts to `admin-post.php` with a nonce naming the action and card; the CSV never contains a code or hash and neutralises formula cells. Proved by `tests/php/GiftCardFeedSchemaTest.php` (CSV) and `tests/php/GiftCardLedgerTest.php` (adjustment rules); the screens themselves have not been opened in a browser.
+
+**FR-27-GC9 -- Emails and scheduled delivery.** Status: built (`class-gift-card-emails.php`, `class-gift-card-issuer.php`). Through `SGS\Blocks\Mail\Sgs_Mailer`: purchaser confirmation, recipient delivery on the send date (an hourly WP-Cron sweep `sgs_gift_card_deliver_due`; a failed send undoes the code claim so the next sweep retries), reissue to the purchaser, and the balance after use. Proved by `tests/php/GiftCardLifecycleTest.php`.
+
+**FR-27-GC10 -- Rate-limited code entry and balance lookup, one uniform error.** Status: built (`class-gift-card-lookup.php`, `class-gift-card-rate-limiter.php`, `class-gift-card-balance-form.php`). Every failure (malformed, unknown, disabled, expired, not yet issued, empty, rate limited) returns the same message; the stored hash is compared with `hash_equals()` and the comparison runs even for an unknown code; five wrong codes per visitor per 15 minutes (both settings) block further attempts. The `[sgs_gift_card_balance]` shortcode is a no-JavaScript POST form behind a nonce. Proved by `tests/php/GiftCardLookupTest.php`.
+
+**FR-27-GC11 -- Settings, expiry display, VAT mode, accessibility.** Status: built (`class-gift-card-settings.php`, `class-gift-card-settings-page.php`, `assets/css/gift-card.css`). Every decision above has a field on the settings screen, clamped by `Gift_Card_Settings::sanitise()`. No rendered element carries an inline `style` attribute; controls are at least 44px, labelled, and use the theme's focus system and button style. Proved by `tests/php/GiftCardPurchaseTest.php` (defaults and clamping) and `node plugins/sgs-blocks/scripts/audit-inline-styling.js --check`.
+
+**FR-27-GC12 -- Google feed item per amount, `Product` with one `Offer` per amount.** Status: built (`class-gift-card-feed.php`, `class-gift-card-schema.php`, `class-gift-card-catalogue.php`; hooked into `Product_Feed::build_feed` in `includes/class-product-feed.php` and the `woocommerce_structured_data_product` filter). One `<item>` per fixed amount with its own `g:id` (`<sku>-<pence>`), no `item_group_id`, no `variant_option`, the expiry in the description, and `g:identifier_exists` false. Proved by `tests/php/GiftCardFeedSchemaTest.php`. Open: a Rich Results Test pass and the first Merchant Center review on a live page.
