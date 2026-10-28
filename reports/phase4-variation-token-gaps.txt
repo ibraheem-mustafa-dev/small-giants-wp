@@ -1,8 +1,8 @@
-# Stage 3 Style Variation Sync — 2026-10-28 00:47:01 UTC
+# Stage 3 Style Variation Sync — 2026-10-28 05:57:30 UTC
 
 Phase 5a shipped. DB writes active.
 
-Snapshots found: 9 | Missing: 4 | Inserted: 0 | Skipped: 307 | Conflicts: 240
+Snapshots found: 9 | Missing: 4 | Inserted: 1 | Skipped: 309 | Conflicts: 238
 
 ## Per-client results
 
@@ -71,10 +71,9 @@ Inserted: 0 | Skipped: 19 | Conflicts: 23
 
 ### indus-foods
 
-Inserted: 0 | Skipped: 29 | Conflicts: 32
+Inserted: 1 | Skipped: 31 | Conflicts: 30
 
 - CONFLICT: color-primary (framework='#0D1B2A', client='#0A7EA8') → inserted as indus-foods-color-primary
-- CONFLICT: color-primary-text (framework='#FFFFFF', client='#E3EFF4') → inserted as indus-foods-color-primary-text
 - CONFLICT: color-primary-dark (framework='#060D14', client='#075E80') → inserted as indus-foods-color-primary-dark
 - CONFLICT: color-accent (framework='#C9A84C', client='#D8CA50') → inserted as indus-foods-color-accent
 - CONFLICT: color-accent-text (framework='#7A6B00', client='#2C3E50') → inserted as indus-foods-color-accent-text
@@ -83,7 +82,6 @@ Inserted: 0 | Skipped: 29 | Conflicts: 32
 - CONFLICT: color-surface-alt (framework='#F5F5F0', client='#F2F5F7') → inserted as indus-foods-color-surface-alt
 - CONFLICT: color-text (framework='#1a1a1a', client='#4A5563') → inserted as indus-foods-color-text
 - CONFLICT: color-text-muted (framework='#6B6B6B', client='#68727C') → inserted as indus-foods-color-text-muted
-- CONFLICT: color-text-inverse (framework='#FFFFFF', client='#F1F5F9') → inserted as indus-foods-color-text-inverse
 - CONFLICT: color-border (framework='#C9A84C', client='#D4DBE5') → inserted as indus-foods-color-border
 - CONFLICT: color-footer-bg (framework='#0D1B2A', client='#2C3E50') → inserted as indus-foods-color-footer-bg
 - CONFLICT: color-heading (framework='#141414', client='#2C3E50') → inserted as indus-foods-color-heading

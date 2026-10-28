@@ -27,3 +27,4 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-28 S calibrate-start local-eye-care (stage0 for the 12 stale slot maps shared by the three clients, before the second full re-clone; main c8518f427)
 - 2026-10-28 S calibrate-end local-eye-care (12 slot maps current; Eye Care baseline written)
 - 2026-10-28 S reseed-start (main fe36a6a9f: the content coverage gate's 16 classification overrides)
+- 2026-10-28 S reseed-end (16 content-coverage classification overrides live; emit_shape 399 to 383 as expected)
