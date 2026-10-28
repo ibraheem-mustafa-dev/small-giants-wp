@@ -50,6 +50,13 @@ export function isUnwalkedWooPage( target, row ) {
 	return ! target?.template && keepsWooContent( row );
 }
 
+// Whether a surface is a content-only post surface (`contentOnly`): the site run skips it unless `--with-content` is passed
+// (site-run.mjs::surfaceReach), so its walker files exist only after such a run. site-run.mjs and the walker check
+// (lib/walker-check.mjs) both decide through this one function.
+export function isContentOnlySurface( entry ) {
+	return !! entry?.contentOnly;
+}
+
 // The WooCommerce page options (part 6) and the page-map row each takes: the shop row by its type, the others by
 // wooContentRole. Each entry is [ option, role, candidate rows ].
 function wooRoles( rows ) {

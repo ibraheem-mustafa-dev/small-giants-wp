@@ -1,7 +1,7 @@
 [
  {"file": "lib/walker-check.mjs", "find": "missing.forEach( ( f ) => faults.push(", "replace": "missing.forEach( ( f ) => unwalked.push(", "why": "a missing walker file is a fault"},
  {"file": "lib/walker-check.mjs", "find": "if ( walked.has( state ) ) {", "replace": "if ( true ) {", "why": "a mapped state the config does not walk is a fault"},
- {"file": "lib/walker-check.mjs", "find": "listed.has( state ) ? unwalked.push", "replace": "false ? unwalked.push", "why": "a state the config lists as unwalked is reported apart"},
+ {"file": "lib/walker-check.mjs", "find": "reasons.has( state ) ? unwalked.push", "replace": "false ? unwalked.push", "why": "a state the config lists as unwalked is reported apart"},
  {"file": "lib/walker-check.mjs", "find": "const file = [ entry.walkerFull, entry.walker ].find", "replace": "const file = [ entry.walker, entry.walkerFull ].find", "why": "the full config, the one Solve runs, is the one read"},
  {"file": "lib/walker-check.mjs", "find": "if ( ! entry || 'object' !== typeof entry || ! ( entry.walker || entry.walkerFull ) ) {", "replace": "if ( ! entry || 'object' !== typeof entry ) {", "why": "a surface with no walker is not checked"}
 ]

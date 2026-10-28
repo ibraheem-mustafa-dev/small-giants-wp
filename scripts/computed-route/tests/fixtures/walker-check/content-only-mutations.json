@@ -1,0 +1,10 @@
+[
+	{"file": "lib/walker-check.mjs", "find": "if ( isContentOnlySurface( entry ) && missing.length === files.length ) {", "replace": "if ( false ) {", "why": "an absent content-only walker is a fault again"},
+	{"file": "lib/walker-check.mjs", "find": "if ( isContentOnlySurface( entry ) && missing.length === files.length ) {", "replace": "if ( missing.length === files.length ) {", "why": "any entry with absent walker files is listed, not faulted"},
+	{"file": "lib/walker-check.mjs", "find": "if ( isContentOnlySurface( entry ) && missing.length === files.length ) {", "replace": "if ( isContentOnlySurface( entry ) && missing.length ) {", "why": "a content-only entry with one file present and one absent is listed, not faulted"},
+	{"file": "lib/walker-check.mjs", "find": "if ( isContentOnlySurface( entry ) && missing.length === files.length ) {", "replace": "if ( isContentOnlySurface( entry ) ) {", "why": "a content-only entry whose files exist skips its state check"},
+	{"file": "lib/walker-check.mjs", "find": "listed.push( `${ name }: content-only: walked only with --with-content` );", "replace": "", "why": "the content-only line is not listed"},
+	{"file": "lib/site-build-plan.mjs", "find": "return !! entry?.contentOnly;", "replace": "return false;", "why": "no entry is content-only"},
+	{"file": "lib/site-build-plan.mjs", "find": "return !! entry?.contentOnly;", "replace": "return true;", "why": "every entry is content-only"},
+	{"file": "site-run.mjs", "find": "isContentOnlySurface( entry ) && ! withContent", "replace": "entry.contentOnly && ! withContent", "why": "site-run decides on its own test again"}
+]

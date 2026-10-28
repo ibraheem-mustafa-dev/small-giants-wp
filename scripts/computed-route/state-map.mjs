@@ -26,6 +26,7 @@ if ( walkersOf ) {
 	console.log( `# Walker check: ${ walkersOf } (${ r.checked } surfaces with a walker)\n` );
 	r.faults.forEach( ( f ) => console.log( `- FAULT ${ f }` ) );
 	r.unwalked.forEach( ( u ) => console.log( `- listed ${ u }` ) );
+	r.listed.forEach( ( u ) => console.log( `- listed ${ u }` ) );
 	console.log( r.faults.length ? `\nwalker check failed: ${ r.faults.length } fault(s)` : '\nwalker check passed' );
 	process.exit( r.faults.length ? 1 : 0 );
 }
