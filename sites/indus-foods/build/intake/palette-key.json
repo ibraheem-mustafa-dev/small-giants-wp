@@ -58,7 +58,9 @@
 		],
 		"--surface-warm": [],
 		"--surface-white": [
-			"surface"
+			"surface",
+			"primary-text",
+			"text-inverse"
 		],
 		"--text-body": [
 			"text"
@@ -78,7 +80,7 @@
 			"text-muted"
 		],
 		"--tint-on-blue": [
-			"primary-text"
+			"custom-tint-on-blue"
 		],
 		"--whatsapp-green": [
 			"whatsapp"

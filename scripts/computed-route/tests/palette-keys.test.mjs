@@ -48,10 +48,7 @@ export function compareClient( client ) {
 // rendered or code fact reproduces: the key takes a value no draft token holds, names a token the draft never uses,
 // or gives a slug a meaning another key contradicts. `check` says what decides it.
 export const REVIEW = {
-	'indus-foods': {
-		'primary-text': { key: '#E3EFF4', proposal: '#FFFFFF', class: 'key-meaning-conflict', check: 'the key takes the pale tint the draft sets for paragraphs on blue bands; white is the text of the blue buttons and most elements on blue. The Eye Care key takes the primary button\'s text (#FAF8F5) instead, so one meaning of primary-text must be ruled for every client' },
-		'text-inverse': { key: null, proposal: '#FFFFFF', class: 'key-value-not-a-token', check: 'the key keeps the framework default (#F1F5F9), a value no draft token holds; the draft sets white on its dark (footer) ground' },
-	},
+	'indus-foods': {},
 	'eye-care-ward-end': {
 		section: { key: '#FFFFFF', proposal: '#F3F0EB', class: 'ruled-override', check: 'Bean\'s ruling (2026-10-24): section is the band colour, and Eye Care keeps its white card ground as a recorded override mark (--white and --surface-card role:surface-alt,section); the proposer reads the band rule, the mark carries the override' },
 	},
@@ -69,7 +66,7 @@ export const NAME_ONLY = {
 // The key's own slugs that are not in theme.json's palette: the proposer offers each token as a custom colour, and the
 // slug name is the key's choice. slug → the token it names.
 export const KEY_ONLY = {
-	'indus-foods': { 'custom-brand-blue-light': [ '--brand-blue-light' ], 'custom-ink': [ '--ink', '--selection-fg' ] },
+	'indus-foods': { 'custom-brand-blue-light': [ '--brand-blue-light' ], 'custom-ink': [ '--ink', '--selection-fg' ], 'custom-tint-on-blue': [ '--tint-on-blue' ] },
 	'eye-care-ward-end': { 'primary-hover': [ '--ink-hover' ], 'surface-stage': [ '--surface-alt' ], 'border-strong': [ '--border-strong' ], 'text-soft': [ '--text-strong' ],
 		'text-subtle': [ '--text-muted' ], 'text-label': [ '--text-3' ], 'whatsapp-hover': [ '--wa-hover' ], 'whatsapp-soft': [ '--wa-soft' ], 'whatsapp-line': [ '--wa-border' ] },
 	'mamas-munches-redesign': { 'custom-body-copy': [ '--mm-body', '--mm-text-body' ] },
