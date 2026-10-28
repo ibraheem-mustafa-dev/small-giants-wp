@@ -554,6 +554,11 @@ Product_Templates::register();
 // export, and import templates directly from the WooCommerce product editor.
 require_once SGS_BLOCKS_PATH . 'includes/product-template-fields.php';
 
+// SGS gift cards (Spec 27 FR-27-GC1 to FR-27-GC12): an emailed gift card with a ledger-backed balance,
+// redeemed as a payment line on the Cart and Checkout blocks. Loaded BEFORE the preflight and feed
+// below because both consult Gift_Card\Gift_Card_Product_Type / Gift_Card_Feed.
+require_once SGS_BLOCKS_PATH . 'includes/gift-card/load.php';
+
 // SGS Product Preflight — hard go-live gate + cart £0 guard + weekly health cron
 // (FR-27-PREFLIGHT / SEC-5). Blocks a variable product from publishing if it has
 // zero-priced variations, missing images, an over-cap manifest, no variesBy mapping,
@@ -579,6 +584,7 @@ register_deactivation_hook(
 		if ( $timestamp ) {
 			\wp_unschedule_event( $timestamp, \SGS\Blocks\Product_Preflight::CRON_HOOK );
 		}
+		\wp_clear_scheduled_hook( \SGS\Blocks\Gift_Card\Gift_Card_Issuer::CRON_HOOK );
 	}
 );
 
@@ -628,6 +634,7 @@ Forms\Form_Privacy::register();
 
 // Activation hook for database setup.
 register_activation_hook( __FILE__, array( Forms\Form_Activator::class, 'activate' ) );
+register_activation_hook( __FILE__, array( Gift_Card\Gift_Card_Tables::class, 'install' ) );
 
 // Register mega menu template part area.
 add_filter(
