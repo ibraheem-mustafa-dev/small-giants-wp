@@ -22,6 +22,7 @@ namespace {
 	$GLOBALS['t_cart']      = null;
 
 	function get_option( $k, $d = false ) { return $GLOBALS['t_options'][ $k ] ?? $d; }
+	function add_option( $k, $v, $dep = '', $auto = true ) { if ( array_key_exists( $k, $GLOBALS['t_options'] ) ) { return false; } $GLOBALS['t_options'][ $k ] = $v; return true; }
 	function get_transient( $k ) { return $GLOBALS['t_transient'][ $k ] ?? false; }
 	function set_transient( $k, $v, $ttl = 0 ) { $GLOBALS['t_transient'][ $k ] = $v; return true; }
 	function wp_salt( $s = '' ) { return 'harness-salt-' . $s; }

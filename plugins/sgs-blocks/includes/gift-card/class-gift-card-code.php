@@ -25,6 +25,9 @@ final class Gift_Card_Code {
 	/** Symbols in a code. */
 	const LENGTH = 16;
 
+	/** Option holding the code-hashing key (autoload off). */
+	const KEY_OPTION = 'sgs_gift_card_code_key';
+
 	/** Bits of randomness in a code (LENGTH x 5). */
 	const ENTROPY_BITS = 80;
 
@@ -113,11 +116,42 @@ final class Gift_Card_Code {
 	}
 
 	/**
-	 * The site's hashing key, derived from WordPress' own secret salts.
+	 * The site's code-hashing key.
+	 *
+	 * A dedicated random key, NOT derived from the WordPress salts: salts live in wp-config.php, so a
+	 * rotation (a security plugin, "log everyone out") or a database copied to a site with different
+	 * salts would make every issued card unfindable. Resolution order:
+	 *
+	 * 1. the `SGS_GIFT_CARD_CODE_KEY` constant, when defined in wp-config.php (for sites that want the
+	 *    key off the database); it wins over the option;
+	 * 2. the `sgs_gift_card_code_key` option (64 hex characters, autoload off);
+	 * 3. otherwise one is created now ({@see self::create_key()}). An existing key is never replaced.
 	 *
 	 * @return string
 	 */
 	public static function default_key(): string {
-		return \hash_hmac( 'sha256', 'sgs-gift-card-code-v1', \wp_salt( 'secure_auth' ) );
+		if ( \defined( 'SGS_GIFT_CARD_CODE_KEY' ) && \is_string( \constant( 'SGS_GIFT_CARD_CODE_KEY' ) ) && '' !== \constant( 'SGS_GIFT_CARD_CODE_KEY' ) ) {
+			return (string) \constant( 'SGS_GIFT_CARD_CODE_KEY' );
+		}
+		$stored = \get_option( self::KEY_OPTION, '' );
+		if ( \is_string( $stored ) && '' !== $stored ) {
+			return $stored;
+		}
+		return self::create_key();
+	}
+
+	/**
+	 * Create the key if none exists, and return the key that is stored.
+	 *
+	 * `add_option()` only inserts when the option is absent, so a concurrent first request can never
+	 * overwrite a key another request has just stored; the stored value is read back and returned.
+	 *
+	 * @return string
+	 */
+	public static function create_key(): string {
+		$candidate = \bin2hex( \random_bytes( 32 ) );
+		\add_option( self::KEY_OPTION, $candidate, '', false );
+		$stored = \get_option( self::KEY_OPTION, '' );
+		return ( \is_string( $stored ) && '' !== $stored ) ? $stored : $candidate;
 	}
 }

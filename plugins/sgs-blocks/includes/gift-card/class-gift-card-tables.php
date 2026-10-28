@@ -113,5 +113,8 @@ final class Gift_Card_Tables {
 		);
 
 		\update_option( self::VERSION_OPTION, self::VERSION );
+
+		// The code-hashing key is created with the tables so it exists before the first card is issued.
+		Gift_Card_Code::default_key();
 	}
 }

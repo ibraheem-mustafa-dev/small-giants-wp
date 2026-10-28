@@ -32,6 +32,7 @@ namespace {
 	$GLOBALS['t_today']   = '2026-10-28';
 
 	function get_option( $k, $d = false ) { return $GLOBALS['t_options'][ $k ] ?? $d; }
+	function add_option( $k, $v, $dep = '', $auto = true ) { if ( array_key_exists( $k, $GLOBALS['t_options'] ) ) { return false; } $GLOBALS['t_options'][ $k ] = $v; return true; }
 	function wp_salt( $s = '' ) { return 'harness-salt-' . $s; }
 	function __( $s ) { return $s; }
 	function _n( $a, $b, $n ) { return 1 === $n ? $a : $b; }
