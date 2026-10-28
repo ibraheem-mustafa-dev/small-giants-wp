@@ -6,7 +6,10 @@
 //   - cart: the smallest element holding a loop of order lines (an `sc-for` whose items show a currency amount) and a
 //     link to the checkout page; WooCommerce's Cart block draws the lines, the totals and the checkout button;
 //   - checkout: the smallest element holding every payment field (an `autocomplete="cc-…"` field, or the
-//     `inputmode="numeric"` fields) and the order lines; the Checkout block draws the form and the order summary;
+//     `inputmode="numeric"` fields) and the order lines; or, where the draft shows no order lines loop (an empty basket) or
+//     no card fields (wallet buttons only), the smallest element holding the checkout's entry fields (rules.commerceRegion.
+//     checkoutEntry: enough shown fields, one of them an email, phone, name, address or card field) together with the
+//     money-showing block beside it (the order summary); the Checkout block draws the form and the order summary;
 //   - account: the smallest element holding every password field; the account block draws the sign-in and account forms.
 //     An account page that shows no password field (a signed-out view whose sign-in form sits on another draft page,
 //     folded into the account row by the page map) has as its region the shown branch of the condition that holds a link
@@ -42,8 +45,11 @@ export function commerceOf( entry, rows = [], catalogue = null ) {
 	return { role, checkout, ...( signIn.length ? { signIn } : {} ), ...( 'shop' === role && catalogue ? { filters: filtersOf( catalogue ) } : {} ) };
 }
 
-// An attribute as the draft's code writes it: the element's own opening tag (the inventory's `attrs` keeps a few only).
-const attr = ( e, name ) => String( e.attrs?.[ name ] ?? new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ] ?? '' );
+// An attribute as the draft's code writes it: the element's own opening tag (the inventory's `attrs` keeps a few only). The
+// draft runtime writes a camel-cased DOM property as `sc-camel-<kebab>` (`autoComplete` is `sc-camel-auto-complete`).
+const CAMEL = { autocomplete: 'auto-complete', inputmode: 'input-mode' };
+const tagAttr = ( e, name ) => new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ];
+const attr = ( e, name ) => String( e.attrs?.[ name ] ?? tagAttr( e, name ) ?? ( CAMEL[ name ] ? tagAttr( e, `sc-camel-${ CAMEL[ name ] }` ) : undefined ) ?? '' );
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
 // The loop an element is an item of: its innermost sc-for, keyed by component (a tpl id is numbered per component).
 const loopOf = ( e ) => ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).map( ( x ) => templateKey( { dc: e.template, tpl: x.tpl } ) ).at( -1 ) ?? null;
@@ -94,6 +100,36 @@ export function commerceRegion( { m, commerce, rule } ) {
 	const paymentFields = payment.length ? payment : numeric.length >= 2 ? numeric : [];
 	const passwords = els.filter( ( e ) => 'input' === e.tag && 'password' === attr( e, 'type' ).toLowerCase() );
 	const checkoutLinks = els.filter( ( e ) => leadsTo( e.attrs?.href, commerce.checkout ) );
+	// A region inside an overlay (an element fixed at every width it shows, the header's basket drawer) is that panel's,
+	// never the page's.
+	const overlay = ( e ) => ancestors( e ).some( ( a ) => shown( a ) && Object.entries( a.visible || {} ).filter( ( [ , v ] ) => v ).every( ( [ w ] ) => 'fixed' === a.position?.[ w ] ) );
+	// The checkout from its entry fields (rules.commerceRegion.checkoutEntry): the lowest element holding every shown field the
+	// visitor types into outside an overlay, when there are enough and one is an identity or card field; then, while the parent
+	// holds a block beside it that shows a currency amount (the order summary; it holds no field, the region holds them all),
+	// the parent, never the page's root.
+	const checkoutEntryRegion = () => {
+		const spec = rule.checkoutEntry;
+		if ( ! spec ) {
+			return null;
+		}
+		const tokens = new RegExp( spec.autocomplete, 'i' );
+		const fields = els.filter( ( e ) => isEntry( e ) && 'password' !== attr( e, 'type' ).toLowerCase() && ! overlay( e ) );
+		const identity = fields.some( ( e ) => spec.types.includes( attr( e, 'type' ).toLowerCase() ) || tokens.test( attr( e, 'autocomplete' ) ) ) || numeric.length >= 2;
+		let region = fields.length >= spec.minFields && identity ? common( fields ) : null;
+		if ( ! region ) {
+			return null;
+		}
+		let summary = false;
+		for ( let parent = m.byKey[ region.parentKey ]; parent && parent !== m.root; parent = m.byKey[ region.parentKey ] ) {
+			const beside = els.filter( ( e ) => e.parentKey === parent.key && e !== region && money.test( text( e ) ) );
+			if ( ! beside.length ) {
+				break;
+			}
+			region = parent;
+			summary = true;
+		}
+		return { region, evidence: [ `${ fields.length } entry field(s)`, summary ? 'the order summary beside them' : 'no order summary beside them' ] };
+	};
 	const found = [];
 	if ( 'cart' === commerce.role ) {
 		for ( const [ , list ] of moneyLoops ) {
@@ -102,10 +138,15 @@ export function commerceRegion( { m, commerce, rule } ) {
 			const near = pairs.sort( ( x, y ) => ancestors( y.at ).length - ancestors( x.at ).length )[ 0 ];
 			near && found.push( { region: near.at, evidence: [ `the order lines loop (${ list.length } elements)`, `the checkout link ${ near.l.key }` ] } );
 		}
-	} else if ( 'checkout' === commerce.role && paymentFields.length ) {
-		const lines = moneyLoops.map( ( [ , list ] ) => list ).filter( ( list ) => common( [ ...list, ...paymentFields ] ) );
+	} else if ( 'checkout' === commerce.role ) {
+		const lines = paymentFields.length ? moneyLoops.map( ( [ , list ] ) => list ).filter( ( list ) => common( [ ...list, ...paymentFields ] ) ) : [];
 		const region = lines.length ? common( [ ...paymentFields, ...lines.flat() ] ) : null;
-		region && found.push( { region, evidence: [ `${ paymentFields.length } payment field(s)`, `${ lines.length } order lines loop(s)` ] } );
+		if ( region ) {
+			found.push( { region, evidence: [ `${ paymentFields.length } payment field(s)`, `${ lines.length } order lines loop(s)` ] } );
+		} else {
+			const entry = checkoutEntryRegion();
+			entry && found.push( entry );
+		}
 	} else if ( 'account' === commerce.role && passwords.length ) {
 		found.push( { region: common( passwords ), evidence: [ `${ passwords.length } password field(s)` ] } );
 	} else if ( 'account' === commerce.role ) {
@@ -128,9 +169,7 @@ export function commerceRegion( { m, commerce, rule } ) {
 			1 === holders.length && mounted && found.push( { region: m.byKey[ holders[ 0 ] ], item: items[ 0 ], evidence: [ `a loop of ${ items.length } mounted cards showing a price` ] } );
 		}
 	}
-	// A region inside an overlay (an element fixed at every width it shows, the header's basket drawer) is that panel's,
-	// never the page's; of the rest, the page's own markup comes before an imported component's.
-	const overlay = ( e ) => ancestors( e ).some( ( a ) => shown( a ) && Object.entries( a.visible || {} ).filter( ( [ , v ] ) => v ).every( ( [ w ] ) => 'fixed' === a.position?.[ w ] ) );
+	// Of the regions outside an overlay, the page's own markup comes before an imported component's.
 	const inPage = found.filter( ( f ) => f.region && f.region !== m.root && ! overlay( f.region ) );
 	const own = inPage.filter( ( f ) => f.region.template === m.root.template );
 	const regions = own.length ? own : inPage;
