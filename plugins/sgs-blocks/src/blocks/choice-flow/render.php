@@ -236,6 +236,12 @@ if ( '' !== $flow_title ) {
 	$wrapper_args['aria-label'] = $flow_title;
 }
 
+// FR-43-6: a flow drawn from a saved sgs_choice_flow post names it by slug, so a check (or a script) can tell which saved
+// flow a placement shows even when the flow has no title to label it. get_block_wrapper_attributes() esc_attr()s the value.
+if ( '' !== $flow_ref_slug ) {
+	$wrapper_args['data-flow-slug'] = $flow_ref_slug;
+}
+
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 $scoped_css = array_filter( $scoped_css );

@@ -21,7 +21,7 @@ import { fileURLToPath } from 'url';
 import { CHECKS, parseOnly, checkRecord, skippedRecord, exitCodeOf, renderMarkdown } from './lib/site-check-report.mjs';
 import { targetOf, siteBase, candidateRoots, pageTargets, readRows, flowsClient } from './lib/site-check-site.mjs';
 import { MARK, readHeaderLinksInPage, readDraftLinksInPage, menuItems, megaItems, markMegaInPage, drawerItem, pathKey } from './lib/site-check-nav.mjs';
-import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine } from './lib/site-check-parts.mjs';
+import { readPartsInPage, modalItem, flowItem, formItem, wooItem, addOneLine, missingFlowRows } from './lib/site-check-parts.mjs';
 import { COMING_SOON_ROOT, comingSoonChecks, comingSoonInPage } from './lib/site-check-coming-soon.mjs';
 import { isAccountRow } from './lib/site-build-map.mjs';
 import { wpCommand } from './lib/calibration-refs.mjs';
@@ -250,13 +250,13 @@ async function main() {
 					items.push( { ...await modalItem( page, m, { url: p.finalUrl, shoot } ), subject: `modal "${ m.label || m.id }" on ${ p.key }` } );
 				}
 				for ( const f of parts.flows ) {
-					seenFlows.push( f.label.toLowerCase() );
+					seenFlows.push( f );
 					items.push( { ...await flowItem( page, f, { url: p.finalUrl, shoot } ), subject: `choice flow "${ f.label || f.flowId }" on ${ p.key }` } );
 				}
 				await context.close();
 			}
-			for ( const r of rows.filter( ( x ) => 'sgs_choice_flow' === x.postType ) ) {
-				! seenFlows.includes( String( r.title ).toLowerCase() ) && items.push( { status: 'fail', subject: `page-map choice flow ${ r.slug } ("${ r.title }")`, error: `no checked page renders a choice flow labelled "${ r.title }" (${ loaded.length } pages checked)` } );
+			for ( const r of missingFlowRows( rows, seenFlows ) ) {
+				items.push( { status: 'fail', subject: `page-map choice flow ${ r.slug } ("${ r.title }")`, error: `no checked page renders the choice flow ${ r.slug } (data-flow-slug) or one labelled "${ r.title }" (${ loaded.length } pages checked)` } );
 			}
 			return checkRecord( 'modals', items, 'no checked page renders a modal or a choice flow, and the page map names no choice flow' );
 		} );

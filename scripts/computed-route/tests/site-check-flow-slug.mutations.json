@@ -1,0 +1,8 @@
+[
+	{ "file": "lib/site-check-parts.mjs", "find": "flowSlug: f.dataset.flowSlug || '', ", "replace": "flowSlug: '', ", "why": "the flow root's data-flow-slug is not read" },
+	{ "file": "lib/site-check-parts.mjs", "find": "( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() )", "replace": "( String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() )", "why": "rows are matched by label only" },
+	{ "file": "lib/site-check-parts.mjs", "find": "( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() )", "replace": "( f.flowSlug === r.slug )", "why": "the label fallback is gone" },
+	{ "file": "lib/site-check-parts.mjs", "find": "( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() )", "replace": "( f.flowSlug === r.slug || String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() )", "why": "a flow that names its slug also claims the row its label matches" },
+	{ "file": "lib/site-check-parts.mjs", "find": "( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() )", "replace": "( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ) === String( r.title ) )", "why": "the label fallback becomes case sensitive" },
+	{ "file": "lib/site-check-parts.mjs", "find": "return rows.filter( ( r ) => 'sgs_choice_flow' === r.postType ).filter(", "replace": "return rows.filter( ( r ) => true ).filter(", "why": "non-flow rows are reported as missing flows" }
+]
