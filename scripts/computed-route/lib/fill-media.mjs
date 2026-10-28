@@ -47,6 +47,17 @@ export function schemaImageSlots( schema ) {
 		.filter( ( base ) => 'integer' === typeOf( `${ base }Id` ) && 'string' === typeOf( `${ base }Alt` ) ).sort().map( ( base ) => ( { alt: `${ base }Alt`, url: `${ base }Url` } ) );
 }
 
+// The settings mediaDecisions writes for a block, from its image slots (imageSlots) and block.json: [] unless the block has
+// exactly one image slot (with several, Fill cannot choose between them and names a gap instead). The slot's address, its
+// attachment id (idSetting), its alt and, when the block.json holds a string `caption`, the caption.
+export function mediaSettings( slots, schema ) {
+	if ( 1 !== slots.length ) {
+		return [];
+	}
+	const [ slot ] = slots;
+	return [ slot.url, idSetting( schema, slot.url ), slot.alt, 'string' === [].concat( schema?.caption?.type || [] )[ 0 ] ? 'caption' : null ].filter( Boolean );
+}
+
 // A draft image address as a path inside the draft: the query and fragment removed, the draft's own origin removed,
 // leading `/`, `./` and `../` removed. null for an address that is not a file of the draft (data:, blob:, another origin, empty).
 export function draftPath( src, origin = '' ) {
@@ -189,7 +200,7 @@ export function mediaDecisions( { slots, schema, attributes = {}, img, media = {
 	// The live check's input: the attachment Fill wrote (or the setting already held) and the image's stated ratio.
 	out.checks.push( { slot: img.slot ?? '', attr: slot.url, idAttr, id: hit.id, url: hit.url, asset: hit.asset, ratio: fact?.ratio ?? null, alt: alt ?? null } );
 	if ( img.caption ) {
-		if ( schema && 'string' === [].concat( schema.caption?.type || [] )[ 0 ] ) {
+		if ( mediaSettings( slots, schema ).includes( 'caption' ) ) {
 			put( 'caption', escapeText( img.caption ) );
 		} else {
 			out.unmapped.push( { property: 'image', value: img.caption, slot: '', reason: 'the draft figure has a figcaption and the block has no caption setting' } );

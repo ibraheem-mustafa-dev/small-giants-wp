@@ -829,9 +829,11 @@
 			"attr": "text",
 			"fields": {
 				"derived_selector": ".sgs-notice-banner__text",
-				"canonical_slot": "disclaimer"
+				"canonical_slot": "disclaimer",
+				"role": "behaviour"
 			},
-			"_why": "canonical_slot merged in 2026-09-06 (Check#12 roleguess fix): this attr previously carried canonical_slot='text' (a self-referential default from the attribute's own name), but the incoming slot literal for this block's registered purpose is 'disclaimer' (slots.json: 'Disclaimer/legal callout text... -> sgs/notice-banner'), which had no exact match anywhere, so it fell to guessing among {iconName, iconSource, text}. Safe to re-point: attr_name_for_slot_or_alias's pass-2 attr-name fallback still resolves a literal '__text' token to this same attribute even after the change, so nothing regresses."
+			"_why": "canonical_slot merged in 2026-09-06 (Check#12 roleguess fix): this attr previously carried canonical_slot='text' (a self-referential default from the attribute's own name), but the incoming slot literal for this block's registered purpose is 'disclaimer' (slots.json: 'Disclaimer/legal callout text... -> sgs/notice-banner'), which had no exact match anywhere, so it fell to guessing among {iconName, iconSource, text}. Safe to re-point: attr_name_for_slot_or_alias's pass-2 attr-name fallback still resolves a literal '__text' token to this same attribute even after the change, so nothing regresses.",
+			"_reason": "2026-10-28 (content coverage check): notice-banner/render.php no longer renders it (FR-22-6: the text content slot is now an inner block), so the setting prints nothing."
 		},
 		{
 			"slug": "sgs/responsive-logo",
@@ -2083,9 +2085,10 @@
 			"slug": "sgs/testimonial",
 			"attr": "ratingType",
 			"fields": {
-				"role": "css-modifier"
+				"role": "enum-mode"
 			},
-			"_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit) -- found while fixing ratingScale, not itself in the original 4-field root-cause list, but necessary for the ratingScale fix to have any visible effect: render.php:679 gates the numeric-score render branch on `'scale' === $rating_type`, and ratingType defaults to 'stars' (render.php:98) with no prior mechanism to ever set it to 'scale' from draft content. role was 'select-from-enum' (excluded by the same gate as ratingScale, for the same reason -- there is no enum PICKER here, the value is read off the draft, not chosen). The correct shape is 'css-modifier': render.php:685 emits the modifier class `sgs-testimonial__rating--scale` on the SAME element ratingScale's derived_selector's ancestor `.sgs-testimonial__rating` matches, so the value is recoverable as a BEM --modifier suffix. 'css-modifier' already existed as a role in field_extractors.py (used by array_content's per-item extraction) but had never been wired into lift_scalar_content's gate -- zero pre-existing block_attributes rows carried it, so widening the gate is a genuinely new, zero-blast-radius capability, not a change to existing behaviour. derived_selector is UNCHANGED ('.sgs-testimonial__rating', already correct) -- for classic-card's star container this element carries no `--` modifier, so extraction correctly returns None (no key emitted) and the attr's own 'stars' default applies exactly as before."
+			"_why": "2026-09-05 Task 4 (testimonial rating-led content-loss audit) -- found while fixing ratingScale, not itself in the original 4-field root-cause list, but necessary for the ratingScale fix to have any visible effect: render.php:679 gates the numeric-score render branch on `'scale' === $rating_type`, and ratingType defaults to 'stars' (render.php:98) with no prior mechanism to ever set it to 'scale' from draft content. role was 'select-from-enum' (excluded by the same gate as ratingScale, for the same reason -- there is no enum PICKER here, the value is read off the draft, not chosen). The correct shape is 'css-modifier': render.php:685 emits the modifier class `sgs-testimonial__rating--scale` on the SAME element ratingScale's derived_selector's ancestor `.sgs-testimonial__rating` matches, so the value is recoverable as a BEM --modifier suffix. 'css-modifier' already existed as a role in field_extractors.py (used by array_content's per-item extraction) but had never been wired into lift_scalar_content's gate -- zero pre-existing block_attributes rows carried it, so widening the gate is a genuinely new, zero-blast-radius capability, not a change to existing behaviour. derived_selector is UNCHANGED ('.sgs-testimonial__rating', already correct) -- for classic-card's star container this element carries no `--` modifier, so extraction correctly returns None (no key emitted) and the attr's own 'stars' default applies exactly as before.",
+			"_reason": "2026-10-28 (content coverage check): A stars or scale display enum (testimonial/render.php::$rating_type); a mode key that picks how the rating is drawn."
 		},
 		{
 			"slug": "sgs/testimonial",
@@ -3422,9 +3425,10 @@
 			"slug": "sgs/nav-drawer-menu",
 			"attr": "itemOrnamentFrames",
 			"fields": {
-				"role": "identity",
+				"role": "motion",
 				"_reason": "2026-09-29 (ornament frame sequence). An ordered list of custom SVG glyph frames the row ornament flashes through on hover/focus -- content items (which glyphs), not a paintable CSS value. 'identity', matching the same block's itemTrailingIcons list of per-row custom glyphs."
-			}
+			},
+			"_reason": "2026-10-28 (content coverage check): The glyph frame sequence the row ornament flashes through on hover and focus (block.json::attributes.itemOrnamentFrames description, css_property animation): an animation frame list, not content the draft states."
 		},
 		{
 			"slug": "sgs/nav-drawer-menu",
@@ -6242,19 +6246,21 @@
 			"slug": "sgs/google-reviews",
 			"attr": "logoPosition",
 			"fields": {
-				"role": "css-modifier",
+				"role": "enum-mode",
 				"derived_selector": ".sgs-google-reviews__google-logo",
 				"_reason": "2026-09-21 (google-reviews redesign T1). A css-modifier enum: it selects a BEM modifier class on the block, not a CSS property, so no css_property."
-			}
+			},
+			"_reason": "2026-10-28 (content coverage check): A leading/trailing layout enum declared in block.json::attributes.logoPosition.enum; it places the logo and prints no words of its own."
 		},
 		{
 			"slug": "sgs/google-reviews",
 			"attr": "navPosition",
 			"fields": {
-				"role": "css-modifier",
+				"role": "enum-mode",
 				"derived_selector": ".sgs-google-reviews__arrow",
 				"_reason": "2026-09-21 (google-reviews redesign T1). A css-modifier enum: it selects a BEM modifier class on the block, not a CSS property, so no css_property."
-			}
+			},
+			"_reason": "2026-10-28 (content coverage check): A slider-arrow placement enum (google-reviews/render.php::sgs_slider_nav_normalise over includes/helpers-slider-nav.php); a mode key, not draft content."
 		},
 		{
 			"slug": "sgs/google-reviews",
@@ -7505,6 +7511,94 @@
 				"css_element": null
 			},
 			"_why": "2026-10-21: the mobile-tier logo attachment ID. src/blocks/responsive-logo/render.php reads it as `$mobile_logo_id = absint( $attributes['logoIdMobile'] )` and resolves the mobile image from it; it carries no length, so the max-width the classifier derived is an emission side effect (the logo's width comes from the separate `width` attribute through --logo-width). Same as logoId. Spec 48 5.4 Res 7."
+		},
+		{
+			"slug": "sgs/business-info",
+			"attr": "separators",
+			"fields": {
+				"role": "visual"
+			},
+			"_reason": "2026-10-28 (content coverage check): The line style between the opening-hours rows (the shared Separators setting): a style object, not words a draft prints (business-info/render.php::$attributes['separators'] feeds includes/helpers-separators.php)."
+		},
+		{
+			"slug": "sgs/cart",
+			"attr": "separators",
+			"fields": {
+				"role": "visual"
+			},
+			"_reason": "2026-10-28 (content coverage check): The line style between the mini-cart item rows (the shared Separators setting): a style object, not draft content (includes/helpers-separators.php)."
+		},
+		{
+			"slug": "sgs/pricing-table",
+			"attr": "featureSeparators",
+			"fields": {
+				"role": "visual"
+			},
+			"_reason": "2026-10-28 (content coverage check): The line style between a plan's features (the shared Separators setting): a style object, not draft content (pricing-table/render.php::$attributes['featureSeparators'] feeds includes/helpers-separators.php)."
+		},
+		{
+			"slug": "sgs/button",
+			"attr": "contentAlign",
+			"fields": {
+				"role": "layout"
+			},
+			"_reason": "2026-10-28 (content coverage check): Per-device justify-content of the label and icon (block.json::attributes.contentAlign description); it carries css_property justify-content and prints no words."
+		},
+		{
+			"slug": "sgs/icon",
+			"attr": "iconRotate",
+			"fields": {
+				"role": "visual"
+			},
+			"_reason": "2026-10-28 (content coverage check): Degrees of paint-time rotate() (icon/render.php::$icon_rotate, css_property transform); a paint value, not the icon the draft shows."
+		},
+		{
+			"slug": "sgs/label",
+			"attr": "endDepth",
+			"fields": {
+				"role": "visual"
+			},
+			"_reason": "2026-10-28 (content coverage check): How far an end shape reaches into the label as a percentage (label/render.php::sgs_end_shape_depth); a shape measure, not words."
+		},
+		{
+			"slug": "sgs/form",
+			"attr": "notifyEmail",
+			"fields": {
+				"role": "technical"
+			},
+			"_reason": "2026-10-28 (content coverage check): The owner notification recipient (form/render.php::$attributes['notifyEmail'], Sgs_Mailer::owner_recipient); it is never printed on the page, so a draft cannot show it."
+		},
+		{
+			"slug": "sgs/buybox",
+			"attr": "rrpMetaKey",
+			"fields": {
+				"role": "technical"
+			},
+			"_reason": "2026-10-28 (content coverage check): The post-meta key that holds the recommended retail price (buybox/render.php::$attributes['rrpMetaKey']); a data key, not printed words."
+		},
+		{
+			"slug": "sgs/product-card",
+			"attr": "rrpMetaKey",
+			"fields": {
+				"role": "technical"
+			},
+			"_reason": "2026-10-28 (content coverage check): The post-meta key that holds the recommended retail price (block.json::attributes.rrpMetaKey description); a data key, not printed words."
+		},
+		{
+			"slug": "sgs/choice-flow-question",
+			"attr": "priceGroup",
+			"fields": {
+				"role": "technical"
+			},
+			"_reason": "2026-10-28 (content coverage check): Names a group in the site-wide add-on price list (choice-flow-question/render.php::$price_group); a lookup key, not printed words."
+		},
+		{
+			"slug": "sgs/hero",
+			"attr": "label",
+			"fields": {
+				"role": "behaviour"
+			},
+			"_reason": "2026-10-28 (content coverage check): No reader: hero/render.php never reads label, and its emit_shape is child (the content lives in a child block), so it is a leftover slot name."
 		}
 	]
 }

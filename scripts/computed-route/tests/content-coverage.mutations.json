@@ -1,0 +1,170 @@
+[
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "const PRECEDENCE = [ 'measured', 'list', 'no-element', 'role-writer' ];",
+		"replace": "const PRECEDENCE = [ 'measured', 'list', 'role-writer', 'no-element' ];",
+		"why": "a generic first-text claim hides a script-rendered setting"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "export const NO_ELEMENT_SHAPES = [ 'script-rendered', 'editor-only', 'output-only', 'context' ];",
+		"replace": "export const NO_ELEMENT_SHAPES = [ 'script-rendered', 'editor-only', 'output-only' ];",
+		"why": "a context setting is no longer no-element"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "if ( gap && hit ) {",
+		"replace": "if ( false ) {",
+		"why": "a stale gap row is not reported"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "! g.parsed || ! known.has( k )",
+		"replace": "! g.parsed",
+		"why": "a gap row for a setting the DB lacks is not reported"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "! route && failing.push(",
+		"replace": "false && failing.push(",
+		"why": "a setting with no route is not listed"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "ok: ! failing.length && ! staleGaps.length && ! badGaps.length",
+		"replace": "ok: ! failing.length && ! badGaps.length",
+		"why": "a stale gap row does not fail the check"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "const route = hit?.route ?? ( gap ? 'gap' : null );",
+		"replace": "const route = hit?.route ?? null;",
+		"why": "a gap row does not route its setting"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "classification = 'content-bearing'",
+		"replace": "classification <> 'unclassified'",
+		"why": "styling settings count as content"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "claim( c.block, c.attr, 'list', 'list' )",
+		"replace": "claim( block, c.attr, 'list', 'list' )",
+		"why": "a list host claims its own name for its child's settings"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": " UNION SELECT block_slug FROM block_composition WHERE block_slug LIKE 'sgs/%'",
+		"replace": "",
+		"why": "a list host with no setting of its own is never asked"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "[ 'noMarker', 'dead', 'rejected' ].filter",
+		"replace": "[ 'dead', 'rejected' ].filter",
+		"why": "the noMarker list is not named"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "if ( ! fs.existsSync( slotMapFile( cacheDir, row.block ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an uncalibrated block is not named as such"
+	},
+	{
+		"file": "lib/content-coverage.mjs",
+		"find": "`STALE GAP ${ s.id }:",
+		"replace": "`STALE ${ s.id }:",
+		"why": "the stale gap line loses its label"
+	},
+	{
+		"file": "lib/fill-presence.mjs",
+		"find": "filter( ( [ , d ] ) => 'target' !== d.attr ).map( ( [ attr ] ) => attr )",
+		"replace": "filter( ( [ , d ] ) => true ).map( ( [ attr ] ) => attr )",
+		"why": "a link target entry counts as an address setting"
+	},
+	{
+		"file": "lib/fill-presence.mjs",
+		"find": "k.split( '=' )[ 0 ]",
+		"replace": "k",
+		"why": "a presence variant key names a setting called attr=value"
+	},
+	{
+		"file": "lib/fill-presence.mjs",
+		"find": "export const textSettings = ( calibration ) => Object.keys( calibration?.text || {} );",
+		"replace": "export const textSettings = ( calibration ) => [];",
+		"why": "no text reading is claimed"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "\tif ( 1 !== slots.length ) {\n\t\treturn [];",
+		"replace": "\tif ( 0 === slots.length ) {\n\t\treturn [];",
+		"why": "a block with several image slots is claimed"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "[ slot.url, idSetting( schema, slot.url ), slot.alt,",
+		"replace": "[ slot.url, slot.alt,",
+		"why": "the attachment id is not claimed"
+	},
+	{
+		"file": "lib/fill-media.mjs",
+		"find": "'string' === [].concat( schema?.caption?.type || [] )[ 0 ] ? 'caption' : null ].filter",
+		"replace": "null ].filter",
+		"why": "the caption is not claimed or written"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "schema && 'iconSvg' in schema ? ICON_SETTINGS.filter( ( a ) => a in schema ) : []",
+		"replace": "ICON_SETTINGS.filter( ( a ) => a in ( schema || {} ) )",
+		"why": "a block with no iconSvg is claimed"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "export const isFormFieldBlock = ( slug ) => /^sgs\\/form-field-/.test( slug );",
+		"replace": "export const isFormFieldBlock = ( slug ) => false;",
+		"why": "no block is a form field"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "'sgs/form': [ 'savedProgress', 'nextLabel',",
+		"replace": "'sgs/form': [ 'nextLabel',",
+		"why": "the saved-progress flag is not claimed"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "'attr' === target.kind ? [ { block, attr: target.attr } ]",
+		"replace": "'attr' === target.kind ? []",
+		"why": "the array setting is not claimed"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "out.link = facts.firstAttrByRole( block, 'link-href' );",
+		"replace": "out.link = null;",
+		"why": "the first link setting is not claimed"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "out.text = facts.firstAttrByRole( block, 'text-content' );",
+		"replace": "out.text = null;",
+		"why": "the first text setting is not claimed"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "if ( ! CONTENT_SETTING_OWNERS.includes( e.owner ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a gap row needs no owner"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "if ( e.excluded || e.recognise || e.write || e.check || e.test ) {",
+		"replace": "if ( false ) {",
+		"why": "a gap row may claim a writer"
+	},
+	{
+		"file": "lib/clone-coverage.mjs",
+		"find": "\t\tif ( isContentSettingId( id ) ) {\n\t\t\tproblems.push",
+		"replace": "\t\tif ( false ) {\n\t\t\tproblems.push",
+		"why": "a gap row is held against the inventory"
+	}
+]

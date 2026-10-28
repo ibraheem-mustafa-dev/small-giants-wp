@@ -110,6 +110,16 @@ export function listTarget( db, block, schemaOf ) {
 	return keys.length ? { kind: 'children', child, keys } : null;
 }
 
+// The settings a list target takes the draft's items into, as [{ block, attr }]: the one array setting of the host block, or
+// each content setting of the single child block the host allows. Fill's list pass writes exactly these (listDecisions takes
+// `target.attr` and `target.keys`); lib/content-coverage.mjs asks here which settings a re-clone writes.
+export function listClaims( block, target ) {
+	if ( ! target ) {
+		return [];
+	}
+	return 'attr' === target.kind ? [ { block, attr: target.attr } ] : target.keys.map( ( k ) => ( { block: target.child, attr: k.key } ) );
+}
+
 const escapeText = ( s ) => String( s ).replace( /&/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
 
 // The attachment a picture field's value names in the media map, or null: a draft file path or a stock preview address.
