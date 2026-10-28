@@ -42,6 +42,14 @@ export function keepsWooContent( row ) {
 	return [ 'cart', 'checkout' ].includes( wooContentRole( row ) );
 }
 
+// Whether a surface is one of WooCommerce's own cart or checkout PAGES, which the site run never Fills, builds or walks: the
+// surface's target is not a template and its row keeps WooCommerce's content. The cloned layout of those pages is the
+// template-cart / template-checkout surfaces (target.template), which are walked. site-run.mjs and the manifest builder
+// (lib/manifest-build.mjs) both decide through this one function. `target` is the entry's target ({ postId } or { template }).
+export function isUnwalkedWooPage( target, row ) {
+	return ! target?.template && keepsWooContent( row );
+}
+
 // The WooCommerce page options (part 6) and the page-map row each takes: the shop row by its type, the others by
 // wooContentRole. Each entry is [ option, role, candidate rows ].
 function wooRoles( rows ) {

@@ -4,7 +4,7 @@
 // copy, lib/template-copies.mjs). Pure functions over parsed files; manifest.mjs reads and writes them.
 import { builtTemplate, rowKey } from './site-build-map.mjs';
 import { WHOLE_TREE, copySource, rowsOf, servedTemplates } from './template-copies.mjs';
-import { keepsWooContent, wooContentRole } from './site-build-plan.mjs';
+import { isUnwalkedWooPage, keepsWooContent, wooContentRole } from './site-build-plan.mjs';
 import { megaPanelLabel } from './page-map-names.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
 export const PREFIXES = { sgs_mega_menu: 'mega-', sgs_drawer: 'drawer-', sgs_modal: 'modal-', sgs_form: 'form-', sgs_choice_flow: 'flow-' };
@@ -335,17 +335,19 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		// The entry's link to its intake skeleton, through the handoff record both carry; none when intake has no skeleton for it.
 		const intakeSurface = intakeSurfaceOf( match.record, intake, row );
 		null === intakeSurface && ! noDraft && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
+		const surfaceTarget = isTemplate ? { template: row.templateOf.slug } : builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id };
+		// The site run never walks WooCommerce's own cart and checkout pages (lib/site-build-plan.mjs::isUnwalkedWooPage): no walker is named.
+		const walked = ! isUnwalkedWooPage( surfaceTarget, row );
 		const entry = {
 			tree: isTemplate ? `trees/template/${ row.templateOf.slug }.json` : `trees/${ row.postType }/${ row.slug }.json`,
 			...( intakeSurface ? { intakeSurface } : {} ),
 			envFile: target.envFile,
 			envKey: target.envKey,
 			site,
-			target: isTemplate ? { template: row.templateOf.slug } : builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id },
+			target: surfaceTarget,
 			...( 'page' === row.postType && ! isTemplate ? {} : { canvas: true } ),
 			...( isTemplate ? { copy: row.templateOf.copy } : builtTemplate( row ) ? { copy: { from: 'whole' } } : shellOf.has( key ) ? { shell: shellOf.get( key ) } : {} ),
-			walker: `qa/parity/${ key }.fill-base.mjs`,
-			walkerFull: `qa/parity/${ key }.fill.mjs`,
+			...( walked ? { walker: `qa/parity/${ key }.fill-base.mjs`, walkerFull: `qa/parity/${ key }.fill.mjs` } : {} ),
 			draftDir: `sites/${ client }/handoff`,
 			draftIndex: draftFor( match.record, drafts ),
 			// A form or a post is read on its page's route; the record's `route` is that page.
@@ -372,6 +374,8 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			const stale = intakeSurface && Object.hasOwn( have, 'intakeSurface' ) && ! Object.hasOwn( intake.skeletons, have.intakeSurface );
 			entries[ key ] = { ...entry, ...have, ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
 			noDraft || delete entries[ key ].noDraft;
+			// An existing entry's walker fields do not survive for a page the run never walks: a re-apply drops them.
+			walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );
 		} else {
 			entries[ key ] = entry;
 		}

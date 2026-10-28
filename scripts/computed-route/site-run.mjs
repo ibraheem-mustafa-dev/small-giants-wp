@@ -33,7 +33,7 @@ import { routeHash, withRoute } from './lib/fill-open.mjs';
 import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
-import { keepsWooContent, wooContentRole } from './lib/site-build-plan.mjs';
+import { isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
@@ -241,7 +241,7 @@ export async function main( argv ) {
 		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
 		// WooCommerce's own cart and checkout pages keep WooCommerce's content (lib/site-build-plan.mjs::keepsWooContent): they
 		// are never Filled or built over; a template copy read at one of them is. The account page is Filled like any page.
-		const wooPage = entry.target?.template || ! keepsWooContent( row ) ? null : wooContentRole( row );
+		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
 		const address = liveAddress( row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;

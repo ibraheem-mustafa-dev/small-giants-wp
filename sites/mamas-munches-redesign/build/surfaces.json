@@ -151,8 +151,6 @@
     "target": {
       "postId": 101
     },
-    "walker": "qa/parity/cart.fill-base.mjs",
-    "walkerFull": "qa/parity/cart.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
     "draftIndex": "Basket.dc.html",
     "states": {
@@ -172,8 +170,6 @@
     "target": {
       "postId": 102
     },
-    "walker": "qa/parity/checkout.fill-base.mjs",
-    "walkerFull": "qa/parity/checkout.fill.mjs",
     "draftDir": "sites/mamas-munches-redesign/handoff",
     "draftIndex": "Checkout.dc.html",
     "states": {
