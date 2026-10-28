@@ -8,8 +8,15 @@
 	{ "file": "data/census-classes.json", "find": "\"^script-look\"", "replace": "\"^zzz\"", "why": "a script-look row is unclassified" },
 	{ "file": "data/census-classes.json", "find": "\"^inert$\"", "replace": "\"^zzz$\"", "why": "a held inert row is unclassified" },
 	{ "file": "data/census-classes.json", "find": "\"frClass\": \"W-walker\" },\n\t\t{ \"class\": \"script-look\"", "replace": "\"frClass\": \"W-route\" },\n\t\t{ \"class\": \"script-look\"", "why": "used-value is no longer a walker artefact" },
-	{ "file": "data/census-classes.json", "find": "\"frClass\": \"held\" },\n\t\t{ \"class\": \"timing-no-home\"", "replace": "\"frClass\": \"W-route\" },\n\t\t{ \"class\": \"timing-no-home\"", "why": "reduced motion is counted as route debt" },
+	{ "file": "data/census-classes.json", "find": "\"frClass\": \"held\" },\n\t\t{ \"class\": \"reduced-motion\", \"pattern\": \"; the record is also skipped", "replace": "\"frClass\": \"W-route\" },\n\t\t{ \"class\": \"reduced-motion\", \"pattern\": \"; the record is also skipped", "why": "reduced motion is counted as route debt" },
 	{ "file": "data/census-classes.json", "find": "\"frClass\": \"F-setting\", \"candidate\": true },\n\t\t{ \"class\": \"timing-conflict\"", "replace": "\"frClass\": \"F-setting\" },\n\t\t{ \"class\": \"timing-conflict\"", "why": "timing-no-home loses its candidacy" },
 	{ "file": "data/census-classes.json", "find": "\"frClass\": \"F-setting\", \"candidate\": true },\n\t\t{ \"class\": \"default-state\"", "replace": "\"frClass\": \"F-hardcode\", \"candidate\": true },\n\t\t{ \"class\": \"default-state\"", "why": "timing-conflict changes FR-48-65 class" },
-	{ "file": "data/census-classes.json", "find": "\"^default-state: .*", "replace": "\"default-state: .*", "why": "default-state loses its anchor" }
+	{ "file": "data/census-classes.json", "find": "\"^default-state: .*", "replace": "\"default-state: .*", "why": "default-state loses its anchor" },
+	{ "file": "data/census-classes.json", "find": "\"^walker-state-refused: \"", "replace": "\"^zzz\"", "why": "a walker state the walker could not open is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"frClass\": \"W-walker\" },\n\t\t{ \"class\": \"list-items-unread\"", "replace": "\"frClass\": \"W-route\" },\n\t\t{ \"class\": \"list-items-unread\"", "why": "a walker state refusal is counted as route debt" },
+	{ "file": "data/census-classes.json", "find": "holds its items in \\\\w+; the draft element draws no loop or current-item list|", "replace": "zzz|", "why": "a list attribute whose items the draft draws no loop for is unclassified" },
+	{ "file": "data/census-classes.json", "find": "|holds a list and there is no fact record", "replace": "", "why": "a list block with no fact record is unclassified" },
+	{ "file": "data/census-classes.json", "find": "|^the element shows \\\\d+ current-item displays", "replace": "", "why": "several current-item displays are unclassified" },
+	{ "file": "data/census-classes.json", "find": "|^the draft's logic is not read \\\\(no draft folder\\\\)\"", "replace": "\"", "why": "an unread draft logic is unclassified" },
+	{ "file": "data/census-classes.json", "find": "\"frClass\": \"W-route\" },\n\t\t{ \"class\": \"no-hover-channel\"", "replace": "\"frClass\": \"F-setting\" },\n\t\t{ \"class\": \"no-hover-channel\"", "why": "an unread list is counted as a framework setting gap" }
 ]
