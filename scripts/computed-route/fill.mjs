@@ -184,6 +184,7 @@ export async function fillSurface( o ) {
 		const handoffRecord = skeletonRecord && fs.existsSync( handoffFile ) ? ( JSON.parse( fs.readFileSync( handoffFile, 'utf8' ) ).records || [] ).find( ( r ) => r.id === skeletonRecord.id ) : null;
 		// The state keys each component writes from the width: the only keys a state's comparison bounds, for the opener and the walker alike.
 		const widthKeys = widthStateKeys( intakeData?.breakpoints );
+		intakeData && ! intakeData.breakpoints?.length && log( 'note: intake.json holds no breakpoints, so no state key bounds a width (re-run intake if the draft has breakpoints)' );
 		const opener = stateOpener( { entry, skeleton: skeletonRecord, record: handoffRecord, facts, rootComponent: intakeParts.rootComponent, widthKeys } );
 		// A page surface or a state-driven surface is read at its route; a state-page draft opens it by state (lib/state-route.mjs).
 		const readUrl = readUrlOf( { url, opener, record: skeletonRecord, routing: intakeData?.routing } );

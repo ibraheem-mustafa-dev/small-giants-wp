@@ -39,6 +39,15 @@ test( 'MUST FAIL: a find matching nothing, two places or a missing file is a pro
 	r.done();
 } );
 
+test( 'MUST FAIL: a list with one malformed entry stays in the guard, and that entry is a named problem', () => {
+	const r = routeWith( { 'mixed.mutations.json': [ m( 'const a = 1;' ), { file: 'lib/target.mjs', find: 'return b;' }, { file: 'lib/target.mjs', find: 'a + a', replace: 7 } ] } );
+	const { lists, problems } = checkMutationLists( r.dir );
+	assert.deepEqual( lists, [ 'tests/mixed.mutations.json' ], 'one broken entry does not hide its list' );
+	assert.deepEqual( problems.map( ( x ) => [ x.index, x.malformed ] ), [ [ 1, true ], [ 2, true ] ] );
+	assert.match( problemLine( { list: 'tests/mixed.mutations.json', ...problems[ 0 ] } ), /not a mutation \(it needs string file, find and replace\)/ );
+	r.done();
+} );
+
 test( 'a JSON file that is not a mutation list is not read as one', () => {
 	const r = routeWith( { 'plain.json': { file: 'lib/target.mjs', find: 'nowhere' }, 'rows.json': [ { file: 'lib/target.mjs', find: 'nowhere' } ], 'empty.json': [], 'broken.json': '[ {' } );
 	assert.deepEqual( checkMutationLists( r.dir ), { lists: [], problems: [] } );

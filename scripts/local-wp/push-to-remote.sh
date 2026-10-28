@@ -59,6 +59,7 @@ WORK="$( mktemp -d )"
 BACKUP=""
 IMPORT_STARTED=0
 restore_hint() {
+  echo "The test site may now hold the mirror's users and password hashes (the login restore did not finish): restore it now." >&2
   echo "Restore the remote database with:" >&2
   echo "  ssh -i $SSH_KEY -p $SSH_PORT $SSH_USER_HOST 'cd $RROOT && $RDB_ENV mysql $RDB_ARGS < $BACKUP'" >&2
 }
@@ -138,7 +139,7 @@ LOGINS="~/backups/push-to-remote/${HOST}-logins.json"
 SAVE_LOGINS_PHP='<?php
 $out = array();
 foreach ( get_users( array( "fields" => "all" ) ) as $u ) {
-	$out[] = array( "login" => $u->user_login, "pass" => $u->user_pass, "app" => get_user_meta( $u->ID, "_application_passwords", true ) );
+	$out[] = array( "login" => $u->user_login, "email" => strtolower( (string) $u->user_email ), "pass" => $u->user_pass, "app" => get_user_meta( $u->ID, "_application_passwords", true ) );
 }
 $f = $args[0];
 file_put_contents( $f, wp_json_encode( $out ) );
@@ -155,8 +156,10 @@ foreach ( $rows as $r ) {
 $restored = array();
 $locked   = array();
 foreach ( get_users( array( "fields" => "all" ) ) as $u ) {
-	if ( isset( $saved[ $u->user_login ] ) ) {
-		$r = $saved[ $u->user_login ];
+	// A test-site login comes back only to the same person: the same login and the same email. A mirror account that
+	// shares a login with a different test-site account is locked like a mirror-only one, so no password moves between people.
+	$r = $saved[ $u->user_login ] ?? null;
+	if ( $r && isset( $r["email"] ) && strtolower( (string) $u->user_email ) === $r["email"] ) {
 		$wpdb->update( $wpdb->users, array( "user_pass" => $r["pass"] ), array( "ID" => $u->ID ) );
 		if ( $r["app"] ) { update_user_meta( $u->ID, "_application_passwords", $r["app"] ); } else { delete_user_meta( $u->ID, "_application_passwords" ); }
 		$restored[] = $u->user_login;
@@ -171,7 +174,7 @@ foreach ( get_users( array( "fields" => "all" ) ) as $u ) {
 WP_Session_Tokens::destroy_all_for_all_users();
 $left = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->usermeta} WHERE meta_key = %s", "session_tokens" ) );
 echo count( $restored ) . " login(s) restored: " . implode( ", ", $restored ) . "\n";
-echo count( $locked ) . " mirror-only login(s) given a random unusable password and no application passwords: " . ( $locked ? implode( ", ", $locked ) : "none" ) . "\n";
+echo count( $locked ) . " mirror-only or unmatched login(s) given a random unusable password and no application passwords: " . ( $locked ? implode( ", ", $locked ) : "none" ) . "\n";
 echo "login sessions cleared for every user (" . $left . " session_tokens rows left)\n";
 if ( 0 !== $left ) { fwrite( STDERR, "session_tokens rows remain\n" ); exit( 1 ); }'
 step "save the test site's logins"

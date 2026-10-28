@@ -19,8 +19,13 @@ export function jsonFiles( dir ) {
 	return out.sort();
 }
 
-// Whether parsed JSON is a mutation list: a non-empty array of { file, find, replace } strings.
-export const isMutationList = ( data ) => Array.isArray( data ) && data.length > 0 && data.every( ( m ) => m && 'string' === typeof m.file && 'string' === typeof m.find && 'string' === typeof m.replace );
+// Whether one entry is a whole mutation: string `file`, `find` and `replace`.
+export const isMutation = ( m ) => Boolean( m ) && 'string' === typeof m.file && 'string' === typeof m.find && 'string' === typeof m.replace;
+
+// Whether parsed JSON is a mutation list: an array holding at least one whole mutation. A list with one malformed entry
+// is still a list (listProblems names that entry), so a broken entry never takes its whole list out of the guard; an array
+// with no whole mutation (a fixture's own rows) is not one.
+export const isMutationList = ( data ) => Array.isArray( data ) && data.some( isMutation );
 
 // How many times needle occurs in hay (non-overlapping, as String.prototype.split counts them).
 const occurrences = ( hay, needle ) => ( needle ? hay.split( needle ).length - 1 : 0 );
@@ -31,6 +36,10 @@ export function listProblems( list, routeDir, read = ( f ) => readFileSync( join
 	const problems = [];
 	const cache = new Map();
 	list.forEach( ( m, index ) => {
+		if ( ! isMutation( m ) ) {
+			problems.push( { index, file: String( m?.file ?? '' ), find: String( m?.find ?? '' ), why: m?.why ?? '', count: null, malformed: true } );
+			return;
+		}
 		if ( ! cache.has( m.file ) ) {
 			let text = null;
 			try {
@@ -120,4 +129,4 @@ export function baselineOf( problems ) {
 }
 
 // One problem as a line a person can act on.
-export const problemLine = ( x ) => `${ x.list } entry ${ x.index } (${ x.file }): ${ null === x.count ? 'the target file does not exist' : `its find matches ${ x.count } places, not 1` }${ x.why ? ` - "${ x.why }"` : '' }`;
+export const problemLine = ( x ) => `${ x.list } entry ${ x.index } (${ x.file }): ${ x.malformed ? 'not a mutation (it needs string file, find and replace)' : null === x.count ? 'the target file does not exist' : `its find matches ${ x.count } places, not 1` }${ x.why ? ` - "${ x.why }"` : '' }`;
