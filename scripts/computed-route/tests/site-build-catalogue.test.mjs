@@ -241,7 +241,8 @@ test( 'variesBy: a found product whose axis terms lack the mapping is completed 
 	const { catalogue } = setup();
 	const jar = catalogue.products[ 0 ];
 	const lacking = planCatalogue( catalogue, site( [ found( jar, { attributes: [ 'pa_pack-size', 'pa_grain' ], variesBy: { 'pa_pack-size': [ 'size', '' ], 'pa_grain': [ '', '' ] } } ) ] ) );
-	assert.match( lacking.actions[ 0 ].say, /lacks variesBy size on pa_pack-size(,| *$)/ );
+	// The whole line, so a demand on the unmapped pa_grain (or any other extra) turns this red.
+	assert.equal( lacking.actions[ 0 ].say, 'complete jar: product 40 (found by sku) lacks variesBy size on pa_pack-size, filter Origin hills' );
 	const mapped = planCatalogue( catalogue, site( [ found( jar, { attributes: [ 'pa_pack-size', 'pa_grain' ], variesBy: { 'pa_pack-size': [ 'size', 'size' ], 'pa_grain': [ '', '' ] } } ) ] ) );
 	assert.doesNotMatch( mapped.actions[ 0 ].say || '', /variesBy/, 'a mapped axis is never demanded (the product may still lack its filter terms)' );
 } );

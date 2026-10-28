@@ -576,10 +576,11 @@ test( 'formControl carries the field text into the block and stays inside real f
 	const r = run( section( [ news, hid ] ) );
 	assert.notEqual( byWords( r, 'Subscribe' ).action, 'remove' );
 	assert.notEqual( byWords( r, 'We reply within a day' ).action, 'remove' );
-	// A required checkbox among others is a checkbox, not the consent field; a password is a text field; a submit is not a field.
+	// A required checkbox among others is in a checkbox group (one checkbox field holding both), not the consent field; a
+	// password is a text field; a submit is not a field.
 	const group = E( 'fieldset', {}, [ E( 'label', {}, [ E( 'input', { attrs: { type: 'checkbox', required: '' } } ), E( 'span', { words: 'Rice' } ) ] ), E( 'label', { y: 30 }, [ E( 'input', { attrs: { type: 'checkbox' } } ), E( 'span', { words: 'Flour' } ) ] ) ] );
-	const g = run( section( [ E( 'form', {}, [ group ] ) ] ) );
-	assert.deepEqual( g.proposal.rows.filter( ( x ) => 'input' === x.tag ).map( ( x ) => x.block ), [ 'sgs/form-field-checkbox', 'sgs/form-field-checkbox' ] );
+	const g = run( section( [ E( 'form', {}, [ group, E( 'input', { attrs: { type: 'email' }, y: 80 } ) ] ) ] ) );
+	assert.deepEqual( [ byTag( g, 'fieldset' ).block, byTag( g, 'fieldset' ).attributes.required, byTag( g, 'fieldset' ).attributes.options.map( ( o ) => o.label ) ], [ 'sgs/form-field-checkbox', true, [ 'Rice', 'Flour' ] ] );
 	const misc = run( section( [ E( 'form', {}, [ E( 'input', { attrs: { type: 'password' } } ), E( 'input', { attrs: { type: 'submit', value: 'Send' }, y: 40 } ) ] ) ] ) );
 	const inputs = misc.proposal.rows.filter( ( x ) => 'input' === x.tag );
 	assert.equal( inputs[ 0 ].block, 'sgs/form-field-text' );
@@ -620,6 +621,99 @@ test( 'formControl reads each field\'s text in its own wrapper, never in an elem
 	// The wrapper's own words stay its own (the wrapper is not removed), so they are never the field's hint as well.
 	const worded = run( section( [ E( 'form', {}, [ E( 'div', { words: 'Step one' }, [ E( 'label', { words: 'Trading name' } ), E( 'input', { attrs: { type: 'text' } } ) ] ), E( 'input', { attrs: { type: 'email' }, y: 80 } ) ] ) ] ) );
 	assert.deepEqual( said( at( worded, 'input', 0 ) ), [ 'Trading name', undefined ] );
+} );
+
+// A field group (a tiles field, a radio or checkbox group) is one field of several controls (lib/skeleton-field-groups.mjs).
+const said3 = ( x ) => ( { label: x?.attributes?.label, required: x?.attributes?.required, helpText: x?.attributes?.helpText } );
+const chip = ( words ) => E( 'button', { words, attrs: { 'aria-pressed': 'false' } } );
+const starred = ( words, y = 0 ) => E( 'label', { words, y }, [ E( 'span', { words: '*' } ) ] );
+
+test( 'MUST FAIL: a tiles field\'s label, required marker and hint are the field\'s own, and the container round them goes with them', () => {
+	// A wizard drawn in a <div> (a form surface): the chip group is the tiles field (rule optionSetForm).
+	const tiles = E( 'div', { y: 40 }, [ chip( 'Shop' ), chip( 'Cafe' ) ] );
+	const r = run( E( 'div', {}, [ E( 'div', {}, [ starred( 'What kind of business are you?' ), tiles, E( 'span', { words: 'Pick the closest.', y: 80 } ) ] ), E( 'div', { y: 120 }, [ E( 'label', { words: 'Trading name' } ), E( 'input', { attrs: { type: 'text' }, y: 140 } ) ] ) ] ), { kind: 'form' } );
+	const field = row( r, ( x ) => 'optionSetForm' === x.rule );
+	assert.equal( field?.block, 'sgs/form-field-tiles' );
+	assert.deepEqual( said3( field ), { label: 'What kind of business are you?', required: true, helpText: 'Pick the closest.' } );
+	for ( const w of [ 'What kind of business are you?', '*', 'Pick the closest.' ] ) {
+		assert.equal( byWords( r, w ).action, 'remove', `"${ w }" is the field's own text` );
+	}
+	assert.deepEqual( said3( byTag( r, 'input' ) ), { label: 'Trading name', required: undefined, helpText: undefined }, 'the field beside it keeps its own label' );
+	// Fill reads every attribute the skeleton writes on the node: no inline style or unknown attribute reaches it.
+	assert.deepEqual( skeletonProblems( r.skeleton ), [] );
+	// A <label> wrapped round the chip group names it and goes, as one wrapped round a control does.
+	const wrapped = run( E( 'div', {}, [ E( 'label', {}, [ E( 'span', { words: 'Delivery window' } ), E( 'div', { y: 20 }, [ chip( 'AM' ), chip( 'PM' ) ] ) ] ), E( 'input', { attrs: { type: 'text' }, y: 80 } ) ] ), { kind: 'form' } );
+	assert.equal( said3( row( wrapped, ( x ) => 'optionSetForm' === x.rule ) ).label, 'Delivery window' );
+	assert.equal( byTag( wrapped, 'label' ).action, 'unwrap' );
+} );
+
+test( 'MUST FAIL: a radio group and a checkbox group in a form are each one field, their legend or label its label', () => {
+	const radio = ( w, y ) => E( 'label', { y }, [ E( 'input', { attrs: { type: 'radio', name: 'size', value: w.toLowerCase() } } ), E( 'span', { words: w } ) ] );
+	const r = run( section( [ E( 'form', {}, [ E( 'fieldset', {}, [ E( 'legend', { words: 'Business size' }, [ E( 'span', { words: '*' } ) ] ), radio( 'Small', 20 ), radio( 'Large', 40 ), E( 'span', { words: 'Pick one', y: 60 } ) ] ), E( 'input', { attrs: { type: 'email' }, y: 100 } ) ] ) ] ) );
+	const set = byTag( r, 'fieldset' );
+	assert.deepEqual( [ set.block, set.rule ], [ 'sgs/form-field-radio', 'formControl' ] );
+	assert.deepEqual( said3( set ), { label: 'Business size', required: true, helpText: 'Pick one' } );
+	assert.deepEqual( set.attributes.options, [ { value: 'small', label: 'Small' }, { value: 'large', label: 'Large' } ] );
+	assert.deepEqual( r.proposal.rows.filter( ( x ) => 'input' === x.tag ).map( ( x ) => x.action || x.block ), [ 'absorbed', 'absorbed', 'sgs/form-field-email' ], 'no radio is a field of its own' );
+	assert.deepEqual( said3( row( r, ( x ) => 'input' === x.tag && 'sgs/form-field-email' === x.block ) ), { label: undefined, required: undefined, helpText: undefined }, 'the email beside the group takes none of its words' );
+	// Ticks with no name, under a wrapper whose label names the group.
+	const tick = ( w, y ) => E( 'label', { y }, [ E( 'input', { attrs: { type: 'checkbox' } } ), E( 'span', { words: w } ) ] );
+	const c = run( section( [ E( 'form', {}, [ E( 'div', {}, [ E( 'label', { words: 'Dietary needs' } ), E( 'div', { y: 20 }, [ tick( 'Halal', 20 ), tick( 'Vegan', 40 ) ] ) ] ), E( 'input', { attrs: { type: 'email' }, y: 100 } ) ] ) ] ) );
+	const ticks = row( c, ( x ) => 'sgs/form-field-checkbox' === x.block );
+	assert.deepEqual( [ ticks.tag, said3( ticks ).label, ticks.attributes.options ], [ 'div', 'Dietary needs', [ { value: 'Halal', label: 'Halal' }, { value: 'Vegan', label: 'Vegan' } ] ] );
+	assert.equal( byWords( c, 'Dietary needs' ).action, 'remove' );
+	// Radios of one name split over two rows are one group, held by the element round both rows; the words of the group's
+	// own element are its label.
+	const split = run( section( [ E( 'form', {}, [ E( 'div', { words: 'Delivery day' }, [ E( 'div', {}, [ radio( 'Monday', 20 ) ] ), E( 'div', { y: 40 }, [ radio( 'Friday', 40 ) ] ) ] ), E( 'input', { attrs: { type: 'email' }, y: 100 } ) ] ) ] ) );
+	const day = row( split, ( x ) => 'sgs/form-field-radio' === x.block );
+	assert.deepEqual( [ day.words, day.attributes.label, day.attributes.options.map( ( o ) => o.label ) ], [ 'Delivery day', 'Delivery day', [ 'Monday', 'Friday' ] ] );
+} );
+
+test( 'MUST FAIL: a wrapper holding two different fields gives neither its text, a field group counted as one field', () => {
+	const tiles = E( 'div', { y: 40 }, [ chip( 'Shop' ), chip( 'Cafe' ) ] );
+	// The form's own row holding a tiles field and a text input: its text is neither field's, and it stays.
+	const two = run( E( 'div', {}, [ E( 'div', {}, [ E( 'label', { words: 'Contact' } ), tiles, E( 'input', { attrs: { type: 'text' }, y: 80 } ) ] ) ] ), { kind: 'form' } );
+	assert.deepEqual( said3( row( two, ( x ) => 'optionSetForm' === x.rule ) ), { label: undefined, required: undefined, helpText: undefined } );
+	assert.deepEqual( said3( byTag( two, 'input' ) ), { label: undefined, required: undefined, helpText: undefined } );
+	assert.notEqual( byWords( two, 'Contact' ).action, 'remove' );
+	// A tiles field's wrapper beside an input straight under the form: the form holds two fields, so the input takes none of the
+	// tiles field's words (it took "Kind" and the chips' words when the chip group counted as no field).
+	const apart = run( E( 'div', {}, [ E( 'div', {}, [ E( 'label', { words: 'Kind' } ), E( 'div', { y: 20 }, [ chip( 'Shop' ), chip( 'Cafe' ) ] ) ] ), E( 'input', { attrs: { type: 'email' }, y: 100 } ) ] ), { kind: 'form' } );
+	assert.deepEqual( said3( byTag( apart, 'input' ) ), { label: undefined, required: undefined, helpText: undefined } );
+	assert.equal( said3( row( apart, ( x ) => 'optionSetForm' === x.rule ) ).label, 'Kind' );
+	// Two radio groups in one fieldset: the fieldset holds two fields, so it is neither group and gives neither its legend.
+	const radio = ( n, w, y ) => E( 'label', { y }, [ E( 'input', { attrs: { type: 'radio', name: n } } ), E( 'span', { words: w } ) ] );
+	const pair = run( section( [ E( 'form', {}, [ E( 'fieldset', {}, [ E( 'legend', { words: 'Preferences' } ), E( 'div', { y: 20 }, [ radio( 'a', 'Yes', 20 ), radio( 'a', 'No', 30 ) ] ), E( 'div', { y: 60 }, [ radio( 'b', 'Day', 60 ), radio( 'b', 'Night', 70 ) ] ) ] ), E( 'input', { attrs: { type: 'email' }, y: 100 } ) ] ) ] ) );
+	assert.notEqual( byTag( pair, 'fieldset' ).block, 'sgs/form-field-radio' );
+	assert.deepEqual( pair.proposal.rows.filter( ( x ) => 'sgs/form-field-radio' === x.block ).map( ( x ) => [ x.tag, x.attributes?.label ] ), [ [ 'div', undefined ], [ 'div', undefined ] ] );
+	assert.notEqual( byWords( pair, 'Preferences' ).action, 'remove' );
+	// Radios of one name whose lowest common element also holds a text input are no group: each stays a field of its own.
+	const other = run( section( [ E( 'form', {}, [ E( 'div', {}, [ radio( 'c', 'Phone', 0 ), E( 'input', { attrs: { type: 'text' }, y: 20 } ), radio( 'c', 'Email', 40 ) ] ), E( 'input', { attrs: { type: 'email' }, y: 100 } ) ] ) ] ) );
+	assert.deepEqual( other.proposal.rows.filter( ( x ) => 'sgs/form-field-radio' === x.block ).map( ( x ) => [ x.tag, x.attributes?.label ] ), [ [ 'input', 'Phone' ], [ 'input', 'Email' ] ] );
+} );
+
+test( 'NEGATIVE: a chip group or radios outside a form, and a lone radio, are no field group; a field without a marker is not required', () => {
+	// On a page with no form the chip group is the option picker and the text beside it stays.
+	const page = run( section( [ E( 'div', {}, [ E( 'label', { words: 'Size' } ), E( 'div', { y: 20 }, [ chip( 'S' ), chip( 'M' ) ] ) ] ) ] ) );
+	assert.equal( row( page, ( x ) => 'optionSet' === x.rule )?.block, 'sgs/option-picker' );
+	assert.notEqual( byWords( page, 'Size' ).action, 'remove' );
+	// Radios outside a form stay one field each, named by their own words.
+	const radio = ( w, y ) => E( 'label', { y }, [ E( 'input', { attrs: { type: 'radio', name: 'v' } } ), E( 'span', { words: w } ) ] );
+	const loose = run( section( [ E( 'div', {}, [ radio( 'Grid', 0 ), radio( 'List', 20 ) ] ) ] ) );
+	assert.deepEqual( loose.proposal.rows.filter( ( x ) => 'sgs/form-field-radio' === x.block ).map( ( x ) => [ x.tag, x.attributes?.label ] ), [ [ 'input', 'Grid' ], [ 'input', 'List' ] ] );
+	// A lone radio in a form is its own field.
+	const lone = run( section( [ E( 'form', {}, [ E( 'div', {}, [ radio( 'Only', 0 ) ] ), E( 'input', { attrs: { type: 'email' }, y: 40 } ) ] ) ] ) );
+	assert.deepEqual( lone.proposal.rows.filter( ( x ) => 'sgs/form-field-radio' === x.block ).map( ( x ) => [ x.tag, x.attributes?.label ] ), [ [ 'input', 'Only' ] ] );
+	// Radios straight under the form, or under a form surface's root, have the form as their common element: no group, each
+	// radio its own field named by its own label.
+	const bare = run( section( [ E( 'form', {}, [ radio( 'Yes', 0 ), radio( 'No', 20 ) ] ) ] ) );
+	const root = run( E( 'div', {}, [ radio( 'Yes', 0 ), radio( 'No', 20 ) ] ), { kind: 'form' } );
+	for ( const r of [ bare, root ] ) {
+		assert.deepEqual( r.proposal.rows.filter( ( x ) => 'sgs/form-field-radio' === x.block ).map( ( x ) => [ x.tag, x.attributes?.label ] ), [ [ 'input', 'Yes' ], [ 'input', 'No' ] ] );
+	}
+	// A field whose label carries the required marker is required; one without it (and no required attribute) is not.
+	const marked = run( section( [ E( 'form', {}, [ E( 'div', {}, [ starred( 'Trading name' ), E( 'input', { attrs: { type: 'text' }, y: 20 } ) ] ), E( 'div', { y: 60 }, [ E( 'label', { words: 'VAT number' } ), E( 'input', { attrs: { type: 'text' }, y: 80 } ) ] ) ] ) ] ) );
+	assert.deepEqual( [ 0, 1 ].map( ( i ) => said3( marked.proposal.rows.filter( ( x ) => 'input' === x.tag )[ i ] ) ), [ { label: 'Trading name', required: true, helpText: undefined }, { label: 'VAT number', required: undefined, helpText: undefined } ] );
 } );
 
 test( 'dotMarker never takes a control and needs text beside it; cardHeading reads rem and keyword weights (QC council 2026-10-19); MUST FAIL without each guard', () => {

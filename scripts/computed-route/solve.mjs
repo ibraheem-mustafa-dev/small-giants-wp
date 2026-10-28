@@ -504,7 +504,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );
-	const refused = refusalsFor( loadReasons(), surface );
+	const refused = refusalsFor( loadReasons(), client, surface );
 	const blocked = new Map();
 	const trials = new Map();
 	// Try before write (R6): each write round's settings are tried in the open live page before the rebuild, and a

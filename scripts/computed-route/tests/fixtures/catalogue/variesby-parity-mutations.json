@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/catalogue-read.mjs", "find": "sex: 'suggestedGender' };", "replace": "sex: 'suggestedGender', shade: 'color' };", "why": "a word the PHP map lacks is predicted as an axis" },
+	{ "file": "lib/catalogue-read.mjs", "find": "age: 'suggestedAge',", "replace": "age: 'ageGroup',", "why": "a word maps to a value outside Google's enum" },
+	{ "file": "lib/catalogue-read.mjs", "find": "material: 'material', pattern: 'pattern',", "replace": "material: 'material',", "why": "a word the PHP maps is missing" },
+	{ "file": "lib/catalogue-read.mjs", "find": "export const VARIESBY_VALUES = [ 'color', 'size', 'material', 'pattern', 'suggestedAge', 'suggestedGender' ];", "replace": "export const VARIESBY_VALUES = [ 'color', 'size', 'material', 'pattern', 'suggestedAge' ];", "why": "an enum value is missing" }
+]

@@ -32,7 +32,7 @@ import { fileURLToPath } from 'url';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { readIdsSite, readPageMap, rowsForSite, writeIdsSite, writeMenuMap, writePageMap } from './lib/site-build-map.mjs';
 import { readState } from './lib/site-build-state.mjs';
-import { readLinkTextReport } from './lib/site-build-labels.mjs';
+import { readLinkTextReport, readSurfaces } from './lib/site-build-labels.mjs';
 import { PHASES, planBuild, tally } from './lib/site-build-plan.mjs';
 import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mjs';
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
@@ -41,7 +41,6 @@ import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
-import { readSurfaces } from './lib/site-build-labels.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );

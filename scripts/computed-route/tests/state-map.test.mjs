@@ -75,12 +75,12 @@ test( 'namesState and vocabStateFor read key words, never a bare boolean false',
 
 test( 'diffReasons lists gap rows the reasons lack and conflict entries whose group the map no longer has', () => {
 	const map = build();
-	const entry = ( over ) => ( { surface: 'header', key: 'cr-ref-h-1||style|color', walkerStates: [ 'closed', 'scrolled' ], mappedTo: [ 'closed->rest', 'scrolled->scrolled' ], ...over } );
-	const clean = diffReasons( map, { stateless: [ `${ H }:63`, { surface: 'header', id: `${ H }:66` } ], stateConflicts: { entries: [ entry() ] } } );
+	const entry = ( over ) => ( { client: 'demo', surface: 'header', key: 'cr-ref-h-1||style|color', walkerStates: [ 'closed', 'scrolled' ], mappedTo: [ 'closed->rest', 'scrolled->scrolled' ], ...over } );
+	const clean = diffReasons( map, { stateless: [ `${ H }:63`, { surface: 'header', id: `${ H }:66` } ], stateConflicts: { entries: [ entry() ] } }, 'demo' );
 	assert.deepEqual( clean, { missing: [], stale: [] } );
-	const open = diffReasons( map, { stateless: [], stateConflicts: { entries: [ entry( { walkerStates: [ 'closed', 'gone' ], mappedTo: [ 'closed->open' ] } ), entry( { surface: 'other', walkerStates: [ 'gone' ] } ) ] } } );
+	const open = diffReasons( map, { stateless: [], stateConflicts: { entries: [ entry( { walkerStates: [ 'closed', 'gone' ], mappedTo: [ 'closed->open' ] } ), entry( { surface: 'other', walkerStates: [ 'gone' ] } ), entry( { client: 'other-client', walkerStates: [ 'gone' ] } ) ] } }, 'demo' );
 	assert.deepEqual( open.missing.map( ( m ) => m.id ), [ `${ H }:63`, `${ H }:66` ] );
-	assert.equal( open.stale.length, 1, 'only this surface\'s entries are judged' );
+	assert.equal( open.stale.length, 1, 'only this client\'s entries for this surface are judged' );
 	assert.deepEqual( open.stale[ 0 ].why, [ 'gone is no longer a walker state of the surface', 'closed maps to rest, not open' ] );
 } );
 
@@ -92,7 +92,7 @@ const tree = () => [ { name: 'sgs/heading', attributes: { className: 'cr-ref-h-1
 const run = ( state, rows ) => ( { state, width: 1440, pairs: { head: { draft: { styles: { 'font-size': '15px' } }, diffs: rows } } } );
 const report = () => ( { runs: [ run( 'opening', [] ), run( 'scrolled', [ { kind: 'style', key: 'font-size', draft: '15px', live: '18px', ref: 'cr-ref-h-1', path: '' } ] ) ] } );
 const rest = { opening: null, scrolled: null };
-const named = [ { surface: 'home', key: 'cr-ref-h-1||style|font-size', pair: 'head', reason: 'two walker states map to rest' } ];
+const named = [ { client: 'demo', surface: 'home', key: 'cr-ref-h-1||style|font-size', pair: 'head', reason: 'two walker states map to rest' } ];
 
 test( 'MUST FAIL: a group state-map-reasons.json names is refused by Solve, and the same group writes when unnamed', () => {
 	const open = writeRound( report(), tree(), { db, snapshot, round: 1, log: [], stateMap: rest, calFor } );

@@ -5,6 +5,7 @@
 // whose basis cannot be determined, a threshold reached through a value that is not a static number, and a
 // matchMedia width query are gap rows { construct, draftId, error } (R-48-3).
 import { loadExport } from './intake-routing.mjs';
+import { stateObjects } from './intake-state-objects.mjs';
 import {
 	attrOf, readBinding, bindingKey, resolveName, fnBinding, callsOf, isThisMember, propName, keyName, snippet, subtree,
 } from './intake-ast.mjs';
@@ -94,10 +95,7 @@ export function widthReader( d, gaps ) {
 
 	// State keys written from a width read: key → [ { sources, writer } ].
 	const keys = new Map();
-	const writers = idx.all.filter( ( n ) => 'ClassProperty' === n.type && 'state' === keyName( n ) ).map( ( n ) => n.value )
-		.concat( idx.all.filter( ( n ) => 'CallExpression' === n.type && 'setState' === propName( n.callee ) ).map( ( n ) => n.arguments[ 0 ] ) )
-		.map( ( v ) => ( /Function/.test( v?.type || '' ) ? v.body : v ) ).filter( ( v ) => 'ObjectExpression' === v?.type );
-	for ( const p of writers.flatMap( ( o ) => o.properties ).filter( ( p ) => 'ObjectProperty' === p.type && keyName( p ) ) ) {
+	for ( const p of stateObjects( idx ).flatMap( ( o ) => o.properties ).filter( ( p ) => 'ObjectProperty' === p.type && keyName( p ) ) ) {
 		const s = sources( p.value );
 		if ( s.length ) {
 			keys.set( keyName( p ), [ ...( keys.get( keyName( p ) ) || [] ), { sources: s, writer: snippet( idx, p, 100 ) } ] );

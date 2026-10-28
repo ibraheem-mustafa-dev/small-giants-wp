@@ -1,158 +1,29 @@
 [
-	{
-		"file": "lib/intake-pagemap.mjs",
-		"find": "\tgaps.push( ...flowOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );\n",
-		"replace": "",
-		"why": "the proposer never asks which flow a product page opens (the code before this rule)"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "return String( n.value );",
-		"replace": "return 'x';",
-		"why": "booleans and numbers lose their value"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "return JSON.stringify( n.value );",
-		"replace": "return n.value;",
-		"why": "a string value is not quoted, so it reads like a number"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "return 'null';",
-		"replace": "return null;",
-		"why": "a null write is dropped"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "return String( -n.argument.value );",
-		"replace": "return String( n.argument.value );",
-		"why": "a negative number loses its sign"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "\t\t\t\tadd( keyName( n ), n.value );",
-		"replace": "",
-		"why": "object and class properties holding a function are not found by name"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "\t\t\t\tadd( keyName( n ), n );\n\t\t\t} else if",
-		"replace": "\t\t\t\tvoid 0;\n\t\t\t} else if",
-		"why": "class methods are not found by name"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "\t\t\t\tvalueWrites( ctx, p.argument, at, out, depth + 1 );",
-		"replace": "",
-		"why": "an object spread is not followed"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "[ ...at, keyName( p ) ]",
-		"replace": "[ keyName( p ) ]",
-		"why": "nested paths lose their parent key"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "\t\tnode.arguments.forEach( ( a ) => valueWrites( ctx, a, at, out, depth + 1 ) );",
-		"replace": "",
-		"why": "Object.assign's objects are not read"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "\t\t\treturn valueWrites( { ...ctx, env: bound.env }, bound.node, at, out, depth + 1 );",
-		"replace": "\t\t\treturn out;",
-		"why": "a parameter is not followed to the call's argument"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "fn.body.body.filter( ( s ) => 'ReturnStatement' === s.type ).map( ( s ) => s.argument )",
-		"replace": "[]",
-		"why": "an updater with a block body is not read"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "return [ decl.init ];",
-		"replace": "return [];",
-		"why": "a local const helper is not followed"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "const name = propName( call.callee );\n\treturn name ? fnsNamed( idx, name ) : [];",
-		"replace": "const name = propName( call.callee );\n\treturn [];",
-		"why": "a method call (this.go) is not followed"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "( isFn( arg ) ? returned( arg ) : [ arg ] )",
-		"replace": "[ arg ]",
-		"why": "an updater function is not read"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "! /^(closed|default)$/i.test( st.name || '' )",
-		"replace": "true",
-		"why": "the closed state counts as an open state"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "! skip.has( w.split( /[.=]/ )[ 0 ] )",
-		"replace": "true",
-		"why": "a width condition key must be written by the handler"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "per.every( ( s ) => s.has( w ) )",
-		"replace": "true",
-		"why": "a value only one open state sets counts as an opening write"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "\t\t.filter( ( f ) => f.writes.length );",
-		"replace": "\t\t.filter( () => true );",
-		"why": "a flow with no opening writes matches every handler"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) )",
-		"replace": "sets.some( ( s ) => x.writes.some( ( w ) => s.has( w ) ) || s.size > 0 )",
-		"why": "any handler that writes state opens the flow"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "'product' === r.postType && r.route && opened.has( r.route )",
-		"replace": "r.route && opened.has( r.route )",
-		"why": "a non-product row could name a flow"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "if ( 1 === slugs.length ) {",
-		"replace": "if ( slugs.length ) {",
-		"why": "two flows on one product page record the first"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "'sgs_choice_flow' === r.postType && r.draftId",
-		"replace": "r.draftId",
-		"why": "a modal row counts as a flow"
-	},
-	{
-		"file": "lib/intake-pagemap-regen.mjs",
-		"find": "'draftId', 'opensFlow', 'id'",
-		"replace": "'draftId', 'id'",
-		"why": "a page-map regeneration hides an opensFlow change"
-	},
-	{
-		"file": "data/page-map.schema.json",
-		"find": "\"opensFlow\": {\n        \"type\": \"string\",\n        \"pattern\": \"^[a-z0-9-]+$\"\n      },",
-		"replace": "\"opensFlow\": {\n        \"type\": \"string\"\n      },",
-		"why": "the schema takes any string as a flow slug"
-	},
-	{
-		"file": "lib/intake-pagemap-flow-openers.mjs",
-		"find": "if ( 'var' === decl?.kind && ! decl.key ) {",
-		"replace": "if ( false ) {",
-		"why": "a const object a handler passes is not followed to its declaration"
-	}
+ {"file":"lib/intake-pagemap.mjs","find":"\tgaps.push( ...flowOpeners( { exp, rows, hint, pageOfTag: code.pageOfTag } ) );\n","replace":"","why":"the proposer never asks which flow a product page opens (the code before this rule)"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return String( n.value );","replace":"return 'x';","why":"booleans and numbers lose their value"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return JSON.stringify( n.value );","replace":"return n.value;","why":"a string value is not quoted, so it reads like a number"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return 'null';","replace":"return null;","why":"a null write is dropped"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return String( -n.argument.value );","replace":"return String( n.argument.value );","why":"a negative number loses its sign"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"\t\t\t\tvalueWrites( ctx, p.argument, at, out, depth + 1 );","replace":"","why":"an object spread is not followed"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"[ ...at, keyName( p ) ]","replace":"[ keyName( p ) ]","why":"nested paths lose their parent key"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"\t\tnode.arguments.forEach( ( a ) => valueWrites( ctx, a, at, out, depth + 1 ) );","replace":"","why":"Object.assign's objects are not read"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"\t\t\treturn valueWrites( { ...ctx, env: bound.env }, bound.node, at, out, depth + 1 );","replace":"\t\t\treturn out;","why":"a parameter is not followed to the call's argument"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"fn.body.body.filter( ( s ) => 'ReturnStatement' === s.type ).map( ( s ) => s.argument )","replace":"[]","why":"an updater with a block body is not read"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"return [ decl.init ];","replace":"return [];","why":"a local const helper is not followed"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"const name = propName( call.callee );\n\treturn name ? fnsOf( idx, name ) : [];","replace":"const name = propName( call.callee );\n\treturn [];","why":"a method call (this.go) is not followed"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"( isFn( arg ) ? returned( arg ) : [ arg ] )","replace":"[ arg ]","why":"an updater function is not read"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"! /^(closed|default)$/i.test( st.name || '' )","replace":"true","why":"the closed state counts as an open state"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"! skip.has( w.split( /[.=]/ )[ 0 ] )","replace":"true","why":"a width condition key must be written by the handler"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"per.every( ( s ) => s.has( w ) )","replace":"true","why":"a value only one open state sets counts as an opening write"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"\t\t.filter( ( f ) => f.writes.length );","replace":"\t\t.filter( () => true );","why":"a flow with no opening writes matches every handler"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"sets.some( ( s ) => x.writes.every( ( w ) => s.has( w ) ) )","replace":"sets.some( ( s ) => x.writes.some( ( w ) => s.has( w ) ) || s.size > 0 )","why":"any handler that writes state opens the flow"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"'product' === r.postType && r.route && opened.has( r.route )","replace":"r.route && opened.has( r.route )","why":"a non-product row could name a flow"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( 1 === slugs.length ) {","replace":"if ( slugs.length ) {","why":"two flows on one product page record the first"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"'sgs_choice_flow' === r.postType && r.draftId","replace":"r.draftId","why":"a modal row counts as a flow"},
+ {"file":"lib/intake-pagemap-regen.mjs","find":"'draftId', 'opensFlow', 'id'","replace":"'draftId', 'id'","why":"a page-map regeneration hides an opensFlow change"},
+ {"file":"data/page-map.schema.json","find":"\"opensFlow\": {\n        \"type\": \"string\",\n        \"pattern\": \"^[a-z0-9-]+$\"\n      },","replace":"\"opensFlow\": {\n        \"type\": \"string\"\n      },","why":"the schema takes any string as a flow slug"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"if ( 'var' === decl?.kind && ! decl.key ) {","replace":"if ( false ) {","why":"a const object a handler passes is not followed to its declaration"},
+ {"file":"lib/intake-pagemap-flow-openers.mjs","find":"[ 'member', 'local', 'key' ]","replace":"[ 'local' ]","why":"class members and object keys holding a function are not found by name"},
+ {"file":"lib/intake-census-map.mjs","find":"} else if ( 'AssignmentExpression' === x.type && thisName( x.left ) === name ) {","replace":"} else if ( false ) {","why":"a member assigned in the constructor (this.x = …) is not found"},
+ {"file":"lib/intake-census-map.mjs","find":"'bind' === keyOf( v.callee.property ) ? v.callee.object : v","replace":"v","why":"this.y.bind(this) is not followed to y"}
 ]
