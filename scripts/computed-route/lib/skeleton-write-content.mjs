@@ -23,6 +23,31 @@ export function copyrightPrefixParts( text, siteName = null ) {
 }
 export const copyrightPrefixOf = ( text, siteName = null ) => copyrightPrefixParts( text, siteName ).prefix;
 
+// The settings the skeleton writer can give one block, from the facts alone (lib/skeleton-facts.mjs::loadFacts):
+// { text, link, others }. `text` and `link` are the block's first text-content and link-href settings (firstAttrByRole), the
+// ones a draft element's words and address go to; `others` are the identity and structure settings it writes by name: a
+// wrapper shell's tag and layout, a section root's layout, the Site Info display type with its copyright prefix, a link's
+// target, and the ids the build carries (a logo block's `logoId`, any block's menu `ref`). contentAttrs and carriedAttrs
+// write through this; lib/content-coverage.mjs asks it which settings a re-clone writes.
+export function skeletonSettings( facts, block ) {
+	const has = ( name ) => !! facts.attr( block, name );
+	const out = { text: null, link: null, others: [] };
+	if ( facts.wrapperShells.includes( block ) ) {
+		out.others.push( 'tagName', ...( has( 'layout' ) ? [ 'layout' ] : [] ) );
+	} else if ( 'section-root' === facts.composition[ block ]?.composition_role ) {
+		out.others.push( ...( has( 'layout' ) ? [ 'layout' ] : [] ) );
+	} else if ( facts.logoBlocks.includes( block ) ) {
+		out.others.push( ...( has( 'logoId' ) ? [ 'logoId' ] : [] ) );
+	} else {
+		out.text = facts.firstAttrByRole( block, 'text-content' );
+		out.link = facts.firstAttrByRole( block, 'link-href' );
+		facts.enumOf( block, 'displayType' ) && out.others.push( 'displayType', ...( has( 'copyrightPrefix' ) ? [ 'copyrightPrefix' ] : [] ) );
+		has( 'linkTarget' ) && out.others.push( 'linkTarget' );
+	}
+	has( 'ref' ) && out.others.push( 'ref' );
+	return out;
+}
+
 export function makeContent( ctx ) {
 	const { m, facts, view, carried, surfaceKind, siteLink } = ctx;
 	const { composition, enumOf } = facts;
@@ -64,8 +89,7 @@ export function makeContent( ctx ) {
 			handover.push( LOGO_HANDOVER );
 			return { a, handover };
 		}
-		const textAttr = facts.firstAttrByRole( block, 'text-content' );
-		const linkAttr = facts.firstAttrByRole( block, 'link-href' );
+		const { text: textAttr, link: linkAttr } = skeletonSettings( facts, block );
 		textAttr && t && ( a[ textAttr ] = m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : t );
 		top.linkSource && ( a.linkSource = top.linkSource );
 		const href = e.attrs?.href;

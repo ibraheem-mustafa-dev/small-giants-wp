@@ -1,5 +1,5 @@
 [
-	{ "file": "lib/fill-form.mjs", "find": "const built = /^sgs\\/form-field-/.test( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;", "replace": "const built = null;", "why": "a built field is read from its schema field" },
+	{ "file": "lib/fill-form.mjs", "find": "const built = isFormFieldBlock( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;", "replace": "const built = null;", "why": "a built field is read from its schema field" },
 	{ "file": "lib/fill-form.mjs", "find": "const control = el || ( built ? schemaControl( db, rec.name, built.field ) : null );", "replace": "const control = el || ( built ? {} : null );", "why": "a built field's control comes from the schema" },
 	{ "file": "lib/fill-form.mjs", "find": "const hit = built || ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );", "replace": "const hit = el ? ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) ) : null;", "why": "a built field is its schema field" },
 	{ "file": "lib/fill-form.mjs", "find": "\tset( f.ac ) && ( el.autocomplete = String( f.ac ) );", "replace": "", "why": "the autocomplete token is the schema's" },

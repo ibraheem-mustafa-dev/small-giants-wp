@@ -57,6 +57,14 @@ export const COVERAGE_WRITES = [
 	'input-type:text',
 ];
 
+// The settings Fill's form pass writes, by block: every field block (`sgs/form-field-*`) takes the draft control's settings
+// (formFieldWrites), the form its button words and saved-progress flag, a step its label, the review its intro and edit
+// label, and a submit button its flag. lib/content-coverage.mjs asks formSettings which settings a re-clone writes.
+export const isFormFieldBlock = ( slug ) => /^sgs\/form-field-/.test( slug );
+export const FORM_FIELD_SETTINGS = [ 'placeholder', 'autocomplete', 'inputmode', 'rows', 'min', 'max', 'step', 'maxLength', 'showCounter', 'options', 'defaultValue', 'defaultChecked', 'allowedTypes', 'tiles', 'multiSelect', 'floatingLabel', 'floatingLabelPosition', 'msgInvalid', 'msgRequired', 'msgTooLong', 'valueFromParam', 'conditionalField', 'conditionalOperator', 'conditionalValue' ];
+export const FORM_BLOCK_SETTINGS = { 'sgs/button': [ 'isSubmit' ], 'sgs/form': [ 'savedProgress', 'nextLabel', 'submitLabel', 'prevLabel' ], 'sgs/form-step': [ 'label' ], 'sgs/form-review': [ 'intro', 'editLabel' ] };
+export const formSettings = ( block ) => ( isFormFieldBlock( block ) ? FORM_FIELD_SETTINGS : FORM_BLOCK_SETTINGS[ block ] || [] );
+
 // The attribute definition of a block by framework-DB query: { default } or null when the block holds no such attribute.
 export function attrDef( db, block, attr ) {
 	const row = db.prepare( 'SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
@@ -268,9 +276,9 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		};
 		// A field the page never rendered (a later step's, built from the schema by lib/skeleton-form-steps.mjs) is the schema
 		// field its `fieldName` names, and the control it stands for is read from that field (schemaControl).
-		const built = /^sgs\/form-field-/.test( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
+		const built = isFormFieldBlock( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
 		const control = el || ( built ? schemaControl( db, rec.name, built.field ) : null );
-		if ( /^sgs\/form-field-/.test( rec.name ) && control ) {
+		if ( isFormFieldBlock( rec.name ) && control ) {
 			const hit = built || ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
 			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ control.name, control.id, hit?.field?.name ], hit?.field || null );
 			const made = formFieldWrites( { db, block: rec.name, attributes: node.attributes || {}, el: control, field: hit, params, condition: hit ? conditions[ hit.field.name ] || null : null, copy } );

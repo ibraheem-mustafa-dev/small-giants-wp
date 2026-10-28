@@ -239,11 +239,17 @@ function markIsBrand( slug, tree, href, ariaLabel = '' ) {
 	return [ tree.attrs[ 'aria-label' ], ariaLabel, ...titles ].filter( Boolean ).some( ( t ) => names.includes( String( t ).trim().toLowerCase() ) );
 }
 
+// The settings iconDecisions can write: the icon's source, its brand, its Lucide name, its own markup, whether the markup is
+// filled and which side of the label it sits. The decisions write nothing for a block that declares no `iconSvg`, and only
+// the settings the block declares; lib/content-coverage.mjs asks here which settings a re-clone writes.
+export const ICON_SETTINGS = [ 'iconSource', 'brandName', 'iconName', 'iconSvg', 'iconFill', 'iconPosition' ];
+export const iconSettings = ( schema ) => ( schema && 'iconSvg' in schema ? ICON_SETTINGS.filter( ( a ) => a in schema ) : [] );
+
 // svg: the element's read ({ markup, position }) or null. schema: the block's settings. attributes: what the node already holds.
 // href: the address the mark links to in the draft (or ''), the evidence a Site Info brand row is that brand.
 export function iconDecisions( { svg, schema, attributes = {}, allowed = null, href = '' } ) {
 	const out = { writes: [], unmapped: [], notes: [] };
-	if ( ! svg?.markup || ! schema || ! ( 'iconSvg' in schema ) ) {
+	if ( ! svg?.markup || ! iconSettings( schema ).length ) {
 		return out;
 	}
 	const tree = parseTree( svg.markup );

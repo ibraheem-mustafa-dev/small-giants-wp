@@ -2089,6 +2089,998 @@
 			"check": "scripts/computed-route/lib/motion-check.mjs#entranceCheck",
 			"note": "Web Animations calls: entrances, hovers and loops written as sgsMotion; entrances checked against the render at 375/768/1440, loops by lib/motion-loops.mjs::loopCheck"
 		},
+		"content-setting:sgs/before-after.afterImageAlt": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.afterImageUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.afterImageUrlMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.afterImageUrlTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.afterSvgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "inline SVG markup held in a block setting: the icon writer sanitises SVG only for blocks with iconSvg, so this block's SVG is never written",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.afterVideoUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.beforeImageAlt": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.beforeImageUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.beforeImageUrlMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.beforeImageUrlTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.beforeSvgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "inline SVG markup held in a block setting: the icon writer sanitises SVG only for blocks with iconSvg, so this block's SVG is never written",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.beforeVideoUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/before-after.handleIconName": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/buybox.gallerySavingBadgeFormat": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a wording template with tokens ({amount}, %s) or a derived price line: the draft shows the rendered value, which no writer inverts",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/buybox.perUnitDenomination": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a wording template with tokens ({amount}, %s) or a derived price line: the draft shows the rendered value, which no writer inverts",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/buybox.pickerLabelLinkUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/cart.iconName": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/choice-flow.stageNoteLink": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/container.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/container.backgroundImageMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/container.backgroundImageTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/container.bgSvgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/container.bgVideo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/container.bgVideoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/container.bgVideoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/counter.number": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/decorative-image.imageUrlMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/decorative-image.imageUrlTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/filter-search.placeholder": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "form and search control copy outside the form writer's attribute list (date limits, placeholders of non-field blocks, the file button, the saved-progress label)",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/form-field-date.maxDate": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "form and search control copy outside the form writer's attribute list (date limits, placeholders of non-field blocks, the file button, the saved-progress label)",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/form-field-date.minDate": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "form and search control copy outside the form writer's attribute list (date limits, placeholders of non-field blocks, the file button, the saved-progress label)",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/form-field-file.buttonLabel": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "form and search control copy outside the form writer's attribute list (date limits, placeholders of non-field blocks, the file button, the saved-progress label)",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/form.savedProgressSavedLabel": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "form and search control copy outside the form writer's attribute list (date limits, placeholders of non-field blocks, the file button, the saved-progress label)",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/google-rating-badge.listingUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/google-reviews.averageRating": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/google-reviews.reviewCount": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.backgroundImageMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.backgroundImageTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.bgSvgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.bgVideo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.bgVideoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.bgVideoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.splitMediaImageUrlMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.splitMediaImageUrlTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.splitMediaVideoUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.splitMediaVideoUrlMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/hero.splitMediaVideoUrlTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/icon.dashiconName": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/icon.emojiChar": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/icon.wpIconName": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/image-sequence.desktopFramesUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/image-sequence.mobileFramesUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/image-sequence.tabletFramesUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/image-sequence.thumbnailMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/image-sequence.thumbnailTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/media.svgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "inline SVG markup held in a block setting: the icon writer sanitises SVG only for blocks with iconSvg, so this block's SVG is never written",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/media.svgContentMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "inline SVG markup held in a block setting: the icon writer sanitises SVG only for blocks with iconSvg, so this block's SVG is never written",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/media.svgContentTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "inline SVG markup held in a block setting: the icon writer sanitises SVG only for blocks with iconSvg, so this block's SVG is never written",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/multi-button.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/multi-button.backgroundImageMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/multi-button.backgroundImageTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/multi-button.bgSvgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/multi-button.bgVideo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/multi-button.bgVideoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/multi-button.bgVideoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/nav-drawer-menu.itemTrailingIcons": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/nav-drawer.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/nav-drawer.chromeLogoUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/nav-drawer.chromeLogoUrlMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/nav-drawer.chromeLogoUrlTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/nav-drawer.chromeSlotUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/notice-banner.iconName": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/notice-banner.iconSource": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/physics-canvas.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/physics-canvas.backgroundImageMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/physics-canvas.backgroundImageTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/physics-canvas.bgSvgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/physics-canvas.bgVideo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/physics-canvas.bgVideoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/physics-canvas.bgVideoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/product-card.cta2Url": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/product-card.ratingValue": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/product-card.reviewCount": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/responsive-logo.logoIdMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/responsive-logo.logoIdTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/responsive-logo.logoUrlMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/responsive-logo.logoUrlTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/separator.contentIconDashicon": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/separator.contentIconEmoji": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/separator.contentIconName": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/separator.contentIconWpIcon": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-footer.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-footer.backgroundImageMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-footer.backgroundImageTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-footer.bgVideo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-footer.bgVideoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-footer.bgVideoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-header.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-header.backgroundImageMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-header.backgroundImageTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-header.bgVideo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-header.bgVideoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/site-header.bgVideoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/star-rating.rating": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/team-member.photo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/team-member.photoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/team-member.photoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block with several image settings (per-device, before/after, frames): the media writer fills only a block with exactly one image slot",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/testimonial.ratingScale": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/testimonial.ratingScaleMax": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/testimonial.ratingStars": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trust-bar.backgroundImage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trust-bar.backgroundImageMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trust-bar.backgroundImageTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trust-bar.bgSvgContent": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trust-bar.bgVideo": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trust-bar.bgVideoMobile": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trust-bar.bgVideoTablet": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block background picture, video or SVG: no writer maps the draft background to an uploaded attachment (the style resolver writes only a bare draft url for backgroundImage), and none writes video or SVG backgrounds",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trustpilot-reviews.businessUnitUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trustpilot-reviews.reviewsAverage": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/trustpilot-reviews.trustScore": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/wishlist-link.iconName": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/wishlist-link.iconSource": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "an icon chosen by name, emoji, dashicon or per item: the icon writer picks Lucide or brand names only for blocks with iconSvg",
+			"owner": "Track F"
+		},
+		"content-setting:sgs/wishlist-panel.viewAllUrl": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"reason": "a block's second or later link address: calibration reads one link per element and the skeleton takes the first link-href setting only",
+			"owner": "Track F"
+		},
 		"css-at:charset": {
 			"excluded": {
 				"reason": "document plumbing",

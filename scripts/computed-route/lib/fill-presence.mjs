@@ -25,6 +25,14 @@ const empty = () => ( { writes: [], unmapped: [], notes: [] } );
 const unset = ( v ) => undefined === v || null === v || '' === String( v ).trim();
 const isBool = ( def ) => [].concat( def?.type || [] ).includes( 'boolean' );
 
+// The settings these three decisions can write for a block, from its calibration alone: { text, link, presence } (setting
+// names). The decisions below take their settings from these functions, and lib/content-coverage.mjs asks them which
+// settings a re-clone writes, so the check and the writer can never disagree. A link entry whose attr is `target` is the
+// link's target, not an address, so it is no link setting; a presence key `<attr>=<value>` names the setting `<attr>`.
+export const textSettings = ( calibration ) => Object.keys( calibration?.text || {} );
+export const linkSettings = ( calibration ) => Object.entries( calibration?.link || {} ).filter( ( [ , d ] ) => 'target' !== d.attr ).map( ( [ attr ] ) => attr );
+export const presenceSettings = ( calibration ) => [ ...new Set( Object.keys( calibration?.presence || {} ).map( ( k ) => k.split( '=' )[ 0 ] ) ) ];
+
 // Text as a visitor reads it: markup removed, entities decoded, whitespace collapsed.
 export const plainText = ( s ) => String( s ?? '' ).replace( /<[^>]*>/g, ' ' ).replace( /&amp;/g, '&' ).replace( /&lt;/g, '<' ).replace( /&gt;/g, '>' ).replace( /&quot;/g, '"' ).replace( /&#0?39;/g, "'" ).replace( /&nbsp;/g, ' ' ).replace( /\s+/g, ' ' ).trim();
 
@@ -123,7 +131,8 @@ export function textDecisions( { calibration, attributes = {}, slots = {}, leaf 
 	}
 	const draft = Object.entries( slots ).filter( ( [ p, t ] ) => ( leaf || '' !== p ) && ! unset( plainText( t ) ) ).map( ( [ p, t ] ) => [ p, plainText( t ) ] );
 	const claimed = new Set();
-	for ( const [ attr, def ] of Object.entries( text ) ) {
+	for ( const attr of textSettings( calibration ) ) {
+		const def = text[ attr ];
 		const hit = draft.find( ( [ p ] ) => same( p, def.path ) );
 		if ( ! hit ) {
 			continue;
@@ -187,7 +196,8 @@ export function linkDecisions( { calibration, attributes = {}, slots = {}, origi
 	// A block with one link element (one distinct path) takes the address the draft's root element carries when no slot
 	// names that element: the draft's own anchor IS the element the node copies, while the block nests its anchor.
 	const onlyOnePath = new Set( Object.values( link ).filter( ( d ) => 'target' !== d.attr ).map( ( d ) => d.path ) ).size === 1;
-	for ( const [ attr, def ] of Object.entries( link ).filter( ( [ , d ] ) => 'target' !== d.attr ) ) {
+	for ( const attr of linkSettings( calibration ) ) {
+		const def = link[ attr ];
 		const hit = draft.find( ( [ p ] ) => same( p, def.path ) ) || ( onlyOnePath ? draft.find( ( [ p ] ) => '' === p ) : undefined );
 		if ( ! hit ) {
 			continue;
