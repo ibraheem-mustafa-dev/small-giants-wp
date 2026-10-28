@@ -1,0 +1,12 @@
+[
+	{"file": "lib/manifest-build.mjs", "find": "const walked = ! isUnwalkedWooPage( surfaceTarget, row );", "replace": "const walked = true;", "why": "the cart and checkout pages name walkers again"},
+	{"file": "lib/manifest-build.mjs", "find": "const walked = ! isUnwalkedWooPage( surfaceTarget, row );", "replace": "const walked = ! keepsWooContent( row );", "why": "the cart and checkout template copies lose their walkers"},
+	{"file": "lib/manifest-build.mjs", "find": "const walked = ! isUnwalkedWooPage( surfaceTarget, row );", "replace": "const walked = ! wooContentRole( row );", "why": "the account page loses its walkers"},
+	{"file": "lib/manifest-build.mjs", "find": "walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );", "replace": "", "why": "a re-apply keeps stale walker fields on the cart and checkout pages"},
+	{"file": "lib/manifest-build.mjs", "find": "walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );", "replace": "delete entries[ key ].walker, delete entries[ key ].walkerFull;", "why": "a re-apply drops the walker fields of every page"},
+	{"file": "lib/manifest-build.mjs", "find": "walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );", "replace": "walked || delete entries[ key ].walker;", "why": "a re-apply keeps a stale walkerFull"},
+	{"file": "lib/site-build-plan.mjs", "find": "return ! target?.template && keepsWooContent( row );", "replace": "return keepsWooContent( row );", "why": "a template copy read at the cart is skipped by the site run"},
+	{"file": "lib/site-build-plan.mjs", "find": "return ! target?.template && keepsWooContent( row );", "replace": "return ! target?.template && null !== wooContentRole( row );", "why": "the account page is skipped by the site run"},
+	{"file": "lib/site-build-plan.mjs", "find": "return ! target?.template && keepsWooContent( row );", "replace": "return false;", "why": "no page is skipped by the site run"},
+	{"file": "site-run.mjs", "find": "isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null", "replace": "isUnwalkedWooPage( entry.target, row ) ? null : wooContentRole( row )", "why": "site-run inverts the shared predicate"}
+]

@@ -1,6 +1,6 @@
 [
-	{ "file": "site-run.mjs", "find": "( entry.contentOnly && ! withContent ?", "replace": "( false && entry.contentOnly && ! withContent ?", "why": "a content-only post surface is no longer skipped without --with-content" },
-	{ "file": "site-run.mjs", "find": "( entry.contentOnly && ! withContent ?", "replace": "( entry.contentOnly ?", "why": "--with-content no longer lets a post surface through" },
+	{ "file": "site-run.mjs", "find": "( isContentOnlySurface( entry ) && ! withContent ?", "replace": "( false && isContentOnlySurface( entry ) && ! withContent ?", "why": "a content-only post surface is no longer skipped without --with-content" },
+	{ "file": "site-run.mjs", "find": "( isContentOnlySurface( entry ) && ! withContent ?", "replace": "( isContentOnlySurface( entry ) ?", "why": "--with-content no longer lets a post surface through" },
 	{ "file": "site-run.mjs", "find": "const hash = entry.draftRoute ? at( entry.draftRoute ) :", "replace": "const hash = false ? at( entry.draftRoute ) :", "why": "the entry's draftRoute is ignored for the route" },
 	{ "file": "site-run.mjs", "find": "const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );", "replace": "const postSlug = entry.contentOnly ? key : null;", "why": "the single template is not read at the post it is shaped from" },
 	{ "file": "site-run.mjs", "find": "const postSlug = entry.fromPost ?? ( entry.contentOnly ? key : null );", "replace": "const postSlug = entry.fromPost ?? null;", "why": "a content-only post is not read at its own row" },

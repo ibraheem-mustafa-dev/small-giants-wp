@@ -33,7 +33,7 @@ import { routeHash, withRoute } from './lib/fill-open.mjs';
 import { isStatePage, stateRouteHash } from './lib/state-route.mjs';
 import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
-import { keepsWooContent, wooContentRole } from './lib/site-build-plan.mjs';
+import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
@@ -91,7 +91,7 @@ export function surfaceReach( { key, entry, skel, rows, withContent = false, rou
 	const named = entry.draftRoute && ! postSlug ? rows.find( ( r ) => 'page' === r.postType && r.route === routeName( entry.draftRoute ) ) : null;
 	const row = own ?? named ?? null;
 	// A surface the manifest marks `noDraft` (one of WooCommerce's own pages the draft has no page for) has nothing to read.
-	const skip = entry.noDraft ?? ( entry.contentOnly && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null );
+	const skip = entry.noDraft ?? ( isContentOnlySurface( entry ) && ! withContent ? 'content-only post surface: pass --with-content to read its post content' : null );
 	// A state-page draft ignores a route hash: its route is the state fragment Fill, the inventory read and the walker set on the loaded draft.
 	const at = ( r ) => ( 'files' === routing?.adapter ? '' : isStatePage( routing ) ? ( stateRouteHash( r ) ? `#${ stateRouteHash( r ) }` : '' ) : routeHash( r ) ?? '' );
 	const hash = entry.draftRoute ? at( entry.draftRoute ) : own && [ 'page', 'template' ].includes( own.postType ) ? ( 'home' !== own.route ? at( own.route ) : '' ) : at( skel?.route );
@@ -241,7 +241,7 @@ export async function main( argv ) {
 		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
 		// WooCommerce's own cart and checkout pages keep WooCommerce's content (lib/site-build-plan.mjs::keepsWooContent): they
 		// are never Filled or built over; a template copy read at one of them is. The account page is Filled like any page.
-		const wooPage = entry.target?.template || ! keepsWooContent( row ) ? null : wooContentRole( row );
+		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
 		const base = liveOverride ? liveOverride.replace( /\/+$/, '' ) : liveBase( entry.envFile, entry.envKey );
 		const address = liveAddress( row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;

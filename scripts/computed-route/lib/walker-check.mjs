@@ -1,16 +1,20 @@
 // The walker check (Spec 48 §3.6, FR-48-13): every surface whose `surfaces.json` entry names a walker config has that
 // file, and the config walks every state the entry maps, so Solve measures each one. A state the generated config lists
 // under `unwalked` (lib/fill-config.mjs: a state Fill could not open, with its reason) is reported apart, never as a
-// fault: its gap row is in Fill's report. Run by `state-map.mjs --check-walkers <client>`.
+// fault: its gap row is in Fill's report. A content-only post surface (lib/site-build-plan.mjs::isContentOnlySurface) whose
+// walker files are absent is listed, never a fault: the site run walks it only with `--with-content`; one whose files exist
+// is checked like any other. Run by `state-map.mjs --check-walkers <client>`.
 import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
+import { isContentOnlySurface } from './site-build-plan.mjs';
 
-// { faults: [string], unwalked: [string], checked } for one client's surfaces. surfaces: the parsed surfaces.json;
+// { faults: [string], unwalked: [string], listed: [string], checked } for one client's surfaces. surfaces: the parsed surfaces.json;
 // buildDir: sites/<client>/build (a walker path in an entry is relative to it).
 export async function checkWalkers( surfaces, buildDir ) {
 	const faults = [];
 	const unwalked = [];
+	const listed = [];
 	let checked = 0;
 	for ( const [ name, entry ] of Object.entries( surfaces || {} ) ) {
 		if ( ! entry || 'object' !== typeof entry || ! ( entry.walker || entry.walkerFull ) ) {
@@ -19,6 +23,10 @@ export async function checkWalkers( surfaces, buildDir ) {
 		checked++;
 		const files = [ entry.walker, entry.walkerFull ].filter( Boolean );
 		const missing = files.filter( ( f ) => ! fs.existsSync( path.join( buildDir, f ) ) );
+		if ( isContentOnlySurface( entry ) && missing.length === files.length ) {
+			listed.push( `${ name }: content-only: walked only with --with-content` );
+			continue;
+		}
 		missing.forEach( ( f ) => faults.push( `${ name }: walker file ${ f } does not exist` ) );
 		const file = [ entry.walkerFull, entry.walker ].find( ( f ) => f && ! missing.includes( f ) );
 		if ( ! file ) {
@@ -32,13 +40,13 @@ export async function checkWalkers( surfaces, buildDir ) {
 			continue;
 		}
 		const walked = new Set( ( cfg?.states || [] ).map( ( s ) => s.name ) );
-		const listed = new Map( ( cfg?.unwalked || [] ).map( ( u ) => [ u.state, u.reason ] ) );
+		const reasons = new Map( ( cfg?.unwalked || [] ).map( ( u ) => [ u.state, u.reason ] ) );
 		for ( const state of Object.keys( entry.states || {} ) ) {
 			if ( walked.has( state ) ) {
 				continue;
 			}
-			listed.has( state ) ? unwalked.push( `${ name }: ${ state } is not walked: ${ listed.get( state ) }` ) : faults.push( `${ name }: ${ state } is mapped but ${ file } does not walk it` );
+			reasons.has( state ) ? unwalked.push( `${ name }: ${ state } is not walked: ${ reasons.get( state ) }` ) : faults.push( `${ name }: ${ state } is mapped but ${ file } does not walk it` );
 		}
 	}
-	return { faults, unwalked, checked };
+	return { faults, unwalked, listed, checked };
 }

@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { buildManifest, matchRecord, statesOf, surfaceKey, walkerKey } from '../lib/manifest-build.mjs';
+import { isUnwalkedWooPage } from '../lib/site-build-plan.mjs';
 
 const vocab = [ { state: 'open', kind: 'class', token: '--open' }, { state: 'current', kind: 'class', token: '--current' }, { state: 'active', kind: 'class', token: '--active' }, { state: 'scrolled', kind: 'class', token: '--scrolled' }, { state: 'shrunk', kind: 'class', token: '--shrunk' }, { state: 'hover', kind: 'pseudo-class', token: ':hover' } ];
 const target = { envFile: '.claude/secrets/x.env', envKey: 'X' };
@@ -719,4 +720,48 @@ test( 'MUST FAIL: the command exits 0 on a WooCommerce page with no draft page a
 	const g = fixture( { rows: [ row( 'page', 'home', 4 ), woo( 'cart', 'cart', { route: 'Basket.dc.html' } ) ] } );
 	assert.equal( g.go().status, 1, 'negative control: a drafted WooCommerce page that matches nothing still exits 1' );
 	g.done();
+} );
+
+// The site run never Fills, builds or walks WooCommerce's own cart and checkout pages (site-run.mjs), so the manifest names
+// no walker for them: their walker files are never regenerated, and a named walker file goes stale and fails --check-walkers.
+const wooRows = () => [ row( 'page', 'home', 4 ), woo( 'cart', 'cart', { route: 'cart' } ), woo( 'checkout', 'checkout', { id: 8, route: 'checkout' } ), woo( 'my-account', 'page', { id: 9, route: 'my-account' } ), row( 'page', 'about', 10 ) ];
+const wooRecords = () => [ rec( 'S-1', 'page', 'Home', undefined, { page_key: 'home' } ), rec( 'S-2', 'page', 'Cart', undefined, { page_key: 'cart' } ), rec( 'S-3', 'page', 'Checkout', undefined, { page_key: 'checkout' } ), rec( 'S-4', 'page', 'Account', undefined, { page_key: 'my-account' } ), rec( 'S-5', 'page', 'About', undefined, { page_key: 'about' } ) ];
+const walkerFields = ( e ) => [ e.walker, e.walkerFull ];
+
+test( 'MUST FAIL: the cart and checkout page entries name no walker; every other page and the template copies keep theirs', () => {
+	const out = run( wooRows(), wooRecords() );
+	for ( const key of [ 'cart', 'checkout' ] ) {
+		assert.ok( out.entries[ key ], `${ key } entry exists` );
+		assert.equal( Object.hasOwn( out.entries[ key ], 'walker' ), false, `${ key } has no walker` );
+		assert.equal( Object.hasOwn( out.entries[ key ], 'walkerFull' ), false, `${ key } has no walkerFull` );
+	}
+	// Negative control: ordinary pages, the account page and the cart and checkout template copies are walked.
+	for ( const key of [ 'home', 'about', 'my-account', 'template-cart', 'template-checkout' ] ) {
+		assert.ok( out.entries[ key ], `${ key } entry exists` );
+		assert.deepEqual( walkerFields( out.entries[ key ] ), [ `qa/parity/${ key }.fill-base.mjs`, `qa/parity/${ key }.fill.mjs` ], `${ key } keeps its walkers` );
+	}
+} );
+
+test( 'MUST FAIL: a re-apply over entries carrying walker fields drops them for the cart and checkout pages and keeps them for the rest', () => {
+	const stale = { walker: 'old.fill-base.mjs', walkerFull: 'old.fill.mjs', tree: 'hand.json' };
+	const existing = Object.fromEntries( [ 'home', 'cart', 'checkout', 'my-account', 'template-cart' ].map( ( k ) => [ k, { ...stale } ] ) );
+	const out = run( wooRows(), wooRecords(), { existing } );
+	for ( const key of [ 'cart', 'checkout' ] ) {
+		assert.deepEqual( walkerFields( out.entries[ key ] ), [ undefined, undefined ], `${ key } loses the stale walker fields` );
+		assert.equal( out.entries[ key ].tree, 'hand.json', `${ key } keeps its other hand-set fields` );
+	}
+	for ( const key of [ 'home', 'my-account', 'template-cart' ] ) {
+		assert.deepEqual( walkerFields( out.entries[ key ] ), [ 'old.fill-base.mjs', 'old.fill.mjs' ], `${ key } keeps its existing walker fields` );
+	}
+} );
+
+test( 'MUST FAIL: isUnwalkedWooPage is true only for a cart or checkout page that is not a template target, and site-run decides through it', () => {
+	assert.equal( isUnwalkedWooPage( { postId: 7 }, woo( 'cart', 'cart' ) ), true );
+	assert.equal( isUnwalkedWooPage( { postId: 8 }, woo( 'checkout', 'checkout' ) ), true );
+	assert.equal( isUnwalkedWooPage( { template: 'cart' }, woo( 'cart', 'cart' ) ), false, 'the template-cart surface is walked' );
+	assert.equal( isUnwalkedWooPage( { postId: 9 }, woo( 'my-account', 'page' ) ), false, 'the account page is Filled like any page' );
+	assert.equal( isUnwalkedWooPage( { postId: 4 }, row( 'page', 'home', 4 ) ), false );
+	assert.equal( isUnwalkedWooPage( undefined, woo( 'cart', 'cart' ) ), true );
+	const src = fs.readFileSync( fileURLToPath( new URL( '../site-run.mjs', import.meta.url ) ), 'utf8' );
+	assert.match( src, /isUnwalkedWooPage\( entry\.target, row \) \? wooContentRole\( row \) : null/, 'site-run takes the wooPage skip from the shared predicate' );
 } );
