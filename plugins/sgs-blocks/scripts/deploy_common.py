@@ -37,12 +37,18 @@ sys.stdout.reconfigure(encoding="utf-8")
 # theme.json (None = the framework theme.json). A theme deploy ships the snapshot as
 # the theme's theme.json, so a deploy can never revert a client site to the framework
 # default — see resolve_theme_json_payload(). Keyed on this data, never on a site name.
+#
+# "kind" says what the site is for: "canary" (the framework's own live site), "test" (a per-client test site) or
+# "reference" (a hand-built site kept as a read-only reference). scripts/local-wp/push-to-remote.sh, which overwrites
+# a site's database and adds to its uploads from a local mirror, copies only into a "test" site (it reads this dict
+# through scripts/local-wp/push_target.py), so it can never touch the canary or a reference site.
 TARGETS = {
     "sandybrown": {
         "host": "sandybrown-nightingale-600381.hostingersite.com",
         "wp_content": "domains/sandybrown-nightingale-600381.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": False,
         "client": "mamas-munches",
+        "kind": "canary",
     },
     # Dedicated Indus Foods test site — separate from sandybrown because
     # sandybrown has a single global active-header/footer/theme-snapshot pointer,
@@ -52,16 +58,19 @@ TARGETS = {
         "wp_content": "domains/lavender-dinosaur-183533.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
         "client": "indus-foods",
+        "kind": "test",
     },
     # Dedicated Eye Care Birmingham test site — sgs-theme + sgs-blocks +
     # WooCommerce, so deploy-and-verify clone runs of the Eye Care draft are checked on a
     # real rendered page without touching sandybrown's global active-header/footer/
     # theme-snapshot pointers. Credentials: .claude/secrets/eye-care-test.env (gitignored).
+    # A reference site: Bean ruled it read-only (2026-10-27), so nothing copies a mirror over it.
     "eye-care-test": {
         "host": "darkcyan-grouse-898606.hostingersite.com",
         "wp_content": "domains/darkcyan-grouse-898606.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
         "client": "eye-care-ward-end",
+        "kind": "reference",
     },
     # Second Eye Care test site: the fresh WordPress for the full re-clone of the Eye Care draft;
     # eye-care-test is left untouched. Credentials: .claude/secrets/eye-care-clone-test.env (gitignored).
@@ -70,6 +79,7 @@ TARGETS = {
         "wp_content": "domains/mintcream-lyrebird-224487.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
         "client": "eye-care-ward-end",
+        "kind": "test",
     },
     # Dedicated Mama's Munches redesign test site: a fresh WordPress for the redesign draft
     # (sites/mamas-munches-redesign/), independent of sandybrown, which keeps the live catalogue.
@@ -79,6 +89,7 @@ TARGETS = {
         "wp_content": "domains/lightsalmon-tarsier-683012.hostingersite.com/public_html/wp-content",
         "explicit_opt_in_required": True,
         "client": "mamas-munches-redesign",
+        "kind": "test",
     },
 }
 
