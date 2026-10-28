@@ -259,6 +259,9 @@ The first pass's figures, for reference:
 
 **Done when** every class is fixed with its proof, or is a gaps-log row Bean has seen.
 
+### The spec audit register (2026-10-28): the next fix pass works from it
+After the second full re-clone (all three clients built, walked and pushed; check-walkers passes on all three; census `--check` exits 0), Bean stopped gap-by-gap patching and ran an adversarial council over the tooling against its specs. Its verified register is `.claude/plans/2026-10-28-clone-spec-audit-register.md` (evidence in `.claude/reports/2026-10-28-clone-spec-audit/`): working pieces (openers, product pages, draft links, words and lists, drawers), content, look, measurement, and 14 spec gaps and contradictions for Bean to rule on. The next fix pass follows its suggested order; the loop 2 rows below that the register covers are fixed through it, and the rest stay here.
+
 ### Phase 3 loop 2 (the named list, from loop 1's findings)
 - The Floating layer's size rows on Indus about (the rings of `cr-ref-about-107`) are the draft's animated scale, which `ambient-float` does not hold: a Spec 38 motion gap. Owner Track F.
 - Indus about at 1440: the rings' card `cr-ref-about-107` is 1080px live against the draft's 1240px and has no gradient (walk `sites/indus-foods/build/qa/parity/out/about/report.md`); a clone gap for the cause table. Owner: Track S.
