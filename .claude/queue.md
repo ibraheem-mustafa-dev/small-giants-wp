@@ -35,3 +35,9 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-28 S hostinger-start eye-care-ward-end (site-build diagnosis and retry)
 - 2026-10-28 S hostinger-end indus-foods (site-build; finished before the rule arrived, no start line was written)
 - 2026-10-28 S calibrate-end local-sandybrown (4 slot maps current; content-coverage no route 5 to 1)
+- 2026-10-28 S hostinger-end eye-care-ward-end
+- 2026-10-28 S hostinger-start mamas-munches-redesign (site-build)
+- 2026-10-28 S hostinger-end mamas-munches-redesign (site-build stopped: edge 403 mid-apply after post 103 and the front-page template built; waiting on main thread)
+- 2026-10-28 S hostinger-start mamas-munches-redesign (push)
+- 2026-10-28 S hostinger-end mamas-munches-redesign (push, exit 0)
+- 2026-10-28 S site-run-end mamas-munches-redesign (24 surfaces, 0 failed; status sites/mamas-munches-redesign/build/qa/site-run/2026-10-28T06-34-34/status.json; pushed to mamas-test)

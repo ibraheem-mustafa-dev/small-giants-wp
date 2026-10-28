@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T19:33:28.484Z",
-	"inventory": "2026-10-27T19:33:28.273Z",
-	"source": "http://127.0.0.1:53023/",
+	"generated": "2026-10-28T06:39:08.383Z",
+	"inventory": "2026-10-28T06:39:08.185Z",
+	"source": "http://127.0.0.1:61089/",
 	"surface": "page-shop-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -306,7 +306,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -351,7 +351,7 @@
 			"words": "",
 			"block": "sgs/form-field-select",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -363,7 +363,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -377,8 +377,7 @@
 			},
 			"snippet": "<sc-raw-select value=\"{{ sort }}\" sc-camel-on-change=\"{{ onSort }}\" style=\"height:50px;border-radius:999px;border:2px solid #3A2A22;background:#FFFAF0;padding:0 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 #3A2A22\" data-dc-tpl=\"17\"> <option value=\"featured\" data-dc-tpl=\"18\">Featured</option> <option value=\"low\" data-dc-tpl=\"19\">Price: low to high</option> <option value=\"",
 			"attributes": {
-				"label": "Sort",
-				"helpText": "fresh from Zainab’s kitchen The shop Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35."
+				"label": "Sort"
 			},
 			"slots": {
 				".sgs-form-field__input": {

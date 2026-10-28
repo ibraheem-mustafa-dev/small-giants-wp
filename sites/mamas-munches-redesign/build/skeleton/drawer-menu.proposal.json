@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T16:08:25.467Z",
-	"inventory": "2026-10-27T16:08:25.224Z",
-	"source": "http://127.0.0.1:63057/",
+	"generated": "2026-10-28T06:48:30.709Z",
+	"inventory": "2026-10-28T06:48:30.437Z",
+	"source": "http://127.0.0.1:55059/",
 	"surface": "nav-drawer-left",
 	"siteName": null,
 	"surfaceParts": [],
@@ -776,7 +776,8 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Zookies"
+				"text": "Zookies",
+				"url": "/product/zookies/"
 			}
 		},
 		{
@@ -838,7 +839,8 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Taster Trio"
+				"text": "Taster Trio",
+				"url": "/product/taster-trio/"
 			}
 		},
 		{
@@ -963,7 +965,8 @@
 			"attributes": {},
 			"unit": "list",
 			"item": {
-				"text": "Subscribe & save"
+				"text": "Subscribe & save",
+				"url": "/product/zookies/"
 			}
 		},
 		{

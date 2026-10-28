@@ -40,21 +40,6 @@
     "draft": "4cd995654ff1103b"
   },
   "cr-ref-form-send-3": {
-    "tpl": "Root/47#0",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "7035c876",
-      "parentTags": [
-        "form",
-        "div"
-      ],
-      "textHash": "df5d6caa",
-      "line": 49
-    },
-    "draft": "4cd995654ff1103b"
-  },
-  "cr-ref-form-send-4": {
     "tpl": "Root/48#0",
     "fingerprint": {
       "tag": "div",
@@ -69,7 +54,7 @@
     },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-form-send-5": {
+  "cr-ref-form-send-4": {
     "tpl": "Root/51#0",
     "fingerprint": {
       "tag": "div",
@@ -83,7 +68,7 @@
     },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-form-send-6": {
+  "cr-ref-form-send-5": {
     "tpl": "Root/53#0",
     "fingerprint": {
       "tag": "input",
@@ -102,7 +87,7 @@
     },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-form-send-7": {
+  "cr-ref-form-send-6": {
     "tpl": "Root/55#0",
     "fingerprint": {
       "tag": "input",
@@ -121,7 +106,7 @@
     },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-form-send-8": {
+  "cr-ref-form-send-7": {
     "tpl": "Root/58#0",
     "fingerprint": {
       "tag": "input",
@@ -139,7 +124,7 @@
     },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-form-send-9": {
+  "cr-ref-form-send-8": {
     "tpl": "Root/66#0",
     "fingerprint": {
       "tag": "textarea",
@@ -157,7 +142,7 @@
     },
     "draft": "4cd995654ff1103b"
   },
-  "cr-ref-form-send-10": {
+  "cr-ref-form-send-9": {
     "tpl": "Root/67#0",
     "fingerprint": {
       "tag": "button",

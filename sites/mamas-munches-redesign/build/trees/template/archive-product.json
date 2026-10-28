@@ -14,6 +14,9 @@
       "minHeight": {
         "desktop": "0px"
       },
+      "contentWidth": {
+        "desktop": "full"
+      },
       "textColourHover": "primary-text"
     },
     "innerBlocks": [
@@ -22,6 +25,7 @@
         "attributes": {
           "className": "cr-ref-shop-1",
           "backgroundColour": "custom-mm-pink-band",
+          "backgroundColourGradient": "none",
           "borderWidth": {
             "top": "0px",
             "right": "0px",
@@ -135,7 +139,6 @@
                 "name": "sgs/form-field-select",
                 "attributes": {
                   "label": "Sort",
-                  "helpText": "fresh from Zainab’s kitchen The shop Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35.",
                   "className": "cr-ref-shop-6",
                   "options": [
                     {

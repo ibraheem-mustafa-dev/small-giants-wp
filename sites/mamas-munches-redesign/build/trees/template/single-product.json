@@ -15,6 +15,9 @@
         "desktop": "0px"
       },
       "textDecoration": "underline",
+      "contentWidth": {
+        "desktop": "full"
+      },
       "textColourHover": "primary-text",
       "padding": {
         "desktop": "40px",
@@ -163,6 +166,7 @@
               "layout": "grid",
               "className": "cr-ref-product-6",
               "variant": "split",
+              "backgroundColourGradient": "none",
               "gridTemplateColumns": {
                 "mobile": "repeat(1, minmax(0, 1fr))",
                 "tablet": "repeat(2, minmax(0, 1fr))",
@@ -282,6 +286,7 @@
                       "className": "cr-ref-product-10",
                       "ariaLabel": "Photo 1",
                       "colourBackground": "custom-mm-image-bg",
+                      "colourBackgroundGradient": "url(\"http://127.0.0.1:61088/assets/photo-pair-love.jpg\")",
                       "borderRadius": {
                         "desktop": {
                           "topLeft": "16px",
@@ -344,6 +349,7 @@
                       "className": "cr-ref-product-11",
                       "ariaLabel": "Photo 2",
                       "colourBackground": "custom-mm-image-bg",
+                      "colourBackgroundGradient": "url(\"http://127.0.0.1:61088/assets/photo-bags-pink.jpg\")",
                       "borderRadius": {
                         "desktop": {
                           "topLeft": "16px",
@@ -406,6 +412,7 @@
                       "className": "cr-ref-product-12",
                       "ariaLabel": "Photo 3",
                       "colourBackground": "custom-mm-image-bg",
+                      "colourBackgroundGradient": "url(\"http://127.0.0.1:61088/assets/photo-hero-mug.jpg\")",
                       "borderRadius": {
                         "desktop": {
                           "topLeft": "16px",
@@ -468,6 +475,7 @@
                       "className": "cr-ref-product-13",
                       "ariaLabel": "Photo 4",
                       "colourBackground": "custom-mm-image-bg",
+                      "colourBackgroundGradient": "url(\"http://127.0.0.1:61088/assets/photo-tray-love.jpg\")",
                       "borderRadius": {
                         "desktop": {
                           "topLeft": "16px",
@@ -2368,6 +2376,7 @@
                                     "desktop": 12
                                   },
                                   "colourBackground": "custom-mm-image-bg",
+                                  "colourBackgroundGradient": "url(\"http://127.0.0.1:61088/assets/photo-bun-case.jpg\")",
                                   "borderWidth": {
                                     "right": "0px",
                                     "bottom": "2px",
@@ -2671,6 +2680,7 @@
                                     "desktop": 12
                                   },
                                   "colourBackground": "custom-mm-image-bg",
+                                  "colourBackgroundGradient": "url(\"http://127.0.0.1:61088/assets/photo-gift-heart.jpg\")",
                                   "borderWidth": {
                                     "right": "0px",
                                     "bottom": "2px",
@@ -2974,6 +2984,7 @@
                                     "desktop": 12
                                   },
                                   "colourBackground": "custom-mm-image-bg",
+                                  "colourBackgroundGradient": "url(\"http://127.0.0.1:61088/assets/photo-hero-mug.jpg\")",
                                   "borderWidth": {
                                     "right": "0px",
                                     "bottom": "2px",
@@ -3016,6 +3027,10 @@
                                   },
                                   "sgsChildSizing": {
                                     "desktop": "fill"
+                                  },
+                                  "contentWidth": {
+                                    "desktop": "393.03px",
+                                    "tablet": "219.39px"
                                   },
                                   "textColourHover": "primary-text",
                                   "padding": {

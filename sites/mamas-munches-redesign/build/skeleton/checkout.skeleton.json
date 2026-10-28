@@ -396,8 +396,7 @@
 						"name": "sgs/form-field-email",
 						"attributes": {
 							"label": "Email",
-							"required": true,
-							"helpText": "1 · Your details Checking out as a guest. Have an account? Sign in Mobile, for delivery updates (optional) Create an account (optional) See your bake dates and manage subscriptions online."
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/53#0"
@@ -426,8 +425,7 @@
 					{
 						"name": "sgs/form-field-phone",
 						"attributes": {
-							"label": "Email",
-							"helpText": "1 · Your details Checking out as a guest. Have an account? Sign in Mobile, for delivery updates (optional) Create an account (optional) See your bake dates and manage subscriptions online."
+							"label": "Mobile, for delivery updates (optional)"
 						},
 						"draftRef": {
 							"tpl": "Root/55#0"
@@ -532,31 +530,10 @@
 						"innerBlocks": []
 					},
 					{
-						"name": "sgs/text",
-						"attributes": {
-							"text": "2 · Who’s it for?"
-						},
-						"draftRef": {
-							"tpl": "Root/72#0"
-						},
-						"draftFingerprint": {
-							"tag": "legend",
-							"cls": "",
-							"styleHash": "481bef00",
-							"parentTags": [
-								"main",
-								"div",
-								"form",
-								"fieldset"
-							],
-							"textHash": "996ffa23",
-							"line": 68
-						},
-						"innerBlocks": []
-					},
-					{
 						"name": "sgs/form-field-tiles",
-						"attributes": {},
+						"attributes": {
+							"label": "2 · Who’s it for?"
+						},
 						"draftRef": {
 							"tpl": "Root/73#0"
 						},
@@ -624,8 +601,7 @@
 							{
 								"name": "sgs/form-field-text",
 								"attributes": {
-									"label": "Postcode",
-									"helpText": "Find address"
+									"label": "Postcode"
 								},
 								"draftRef": {
 									"tpl": "Root/89#0"
@@ -681,8 +657,7 @@
 					{
 						"name": "sgs/form-field-text",
 						"attributes": {
-							"label": "Postcode",
-							"helpText": "3 · Delivery Find address Address line 1 Address line 2 (optional) Town or city Royal Mail Tracked 48 Arrives 2–3 days after the bake £3.95 Royal Mail Tracked 24 Arrives the day after the bake £5.45"
+							"label": "Address line 1"
 						},
 						"draftRef": {
 							"tpl": "Root/92#0"
@@ -734,8 +709,7 @@
 							{
 								"name": "sgs/form-field-text",
 								"attributes": {
-									"label": "Address line 2 (optional)",
-									"helpText": "Town or city"
+									"label": "Address line 2 (optional)"
 								},
 								"draftRef": {
 									"tpl": "Root/95#0"
@@ -765,8 +739,7 @@
 							{
 								"name": "sgs/form-field-text",
 								"attributes": {
-									"label": "Address line 2 (optional)",
-									"helpText": "Town or city"
+									"label": "Town or city"
 								},
 								"draftRef": {
 									"tpl": "Root/97#0"
@@ -842,8 +815,7 @@
 					{
 						"name": "sgs/form-field-text",
 						"attributes": {
-							"label": "Card number",
-							"helpText": "4 · Payment Expiry Security code"
+							"label": "Card number"
 						},
 						"draftRef": {
 							"tpl": "Root/109#0"
@@ -895,8 +867,7 @@
 							{
 								"name": "sgs/form-field-text",
 								"attributes": {
-									"label": "Expiry",
-									"helpText": "Security code"
+									"label": "Expiry"
 								},
 								"draftRef": {
 									"tpl": "Root/112#0"
@@ -926,8 +897,7 @@
 							{
 								"name": "sgs/form-field-text",
 								"attributes": {
-									"label": "Expiry",
-									"helpText": "Security code"
+									"label": "Security code"
 								},
 								"draftRef": {
 									"tpl": "Root/114#0"

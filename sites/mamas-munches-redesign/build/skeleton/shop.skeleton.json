@@ -126,8 +126,7 @@
 							{
 								"name": "sgs/form-field-select",
 								"attributes": {
-									"label": "Sort",
-									"helpText": "fresh from Zainab’s kitchen The shop Every Zookie is baked fresh when you order and with you in 3–5 days. Free UK delivery over £35."
+									"label": "Sort"
 								},
 								"draftRef": {
 									"tpl": "Root/17#0"

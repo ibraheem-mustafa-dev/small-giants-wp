@@ -9,8 +9,11 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"8\"]:not(.sc-host .sc-host *)","live":".cr-ref-home-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"8\"]:not(.sc-host .sc-host *)","live":".cr-ref-home-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:65274/" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:55059/" },
 	live: { url: "http://localhost:8084/" },
-	states: [ { name: "mobile", fullPage: true } ],
+	states: [
+		{ name: "mobile", fullPage: true },
+	],
+	unwalked: [{"state":"tablet","reason":"\"tablet (768–1023px)\": no usable state key (bp: derived from the viewport width) and no setState call in its how_to_reach"},{"state":"desktop","reason":"\"desktop (≥1024px)\": no usable state key (bp: derived from the viewport width) and no setState call in its how_to_reach"},{"state":"greeting-variant","reason":"\"greeting variant\": no usable state key (hour: not a state key of the component (facts.json state keys)) and no setState call in its how_to_reach"}],
 	pairs: [],
 };

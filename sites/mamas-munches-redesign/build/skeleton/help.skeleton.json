@@ -105,10 +105,7 @@
 					},
 					{
 						"name": "sgs/form-field-text",
-						"attributes": {
-							"label": "ask us anything",
-							"helpText": "Help & FAQs"
-						},
+						"attributes": {},
 						"draftRef": {
 							"tpl": "Root/18#0"
 						},

@@ -14,6 +14,9 @@
       "minHeight": {
         "desktop": "0px"
       },
+      "contentWidth": {
+        "desktop": "full"
+      },
       "textColourHover": "primary-text",
       "padding": {
         "desktop": "40px",
@@ -26,6 +29,7 @@
         "name": "sgs/hero",
         "attributes": {
           "className": "cr-ref-template-cart-1",
+          "backgroundColourGradient": "none",
           "minHeight": {
             "mobile": "0px"
           },

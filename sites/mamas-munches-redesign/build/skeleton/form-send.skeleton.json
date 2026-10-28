@@ -56,29 +56,10 @@
 				},
 				"innerBlocks": [
 					{
-						"name": "sgs/text",
-						"attributes": {
-							"text": "What’s it about?"
-						},
-						"draftRef": {
-							"tpl": "Root/47#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "7035c876",
-							"parentTags": [
-								"form",
-								"div"
-							],
-							"textHash": "df5d6caa",
-							"line": 49
-						},
-						"innerBlocks": []
-					},
-					{
 						"name": "sgs/form-field-tiles",
-						"attributes": {},
+						"attributes": {
+							"label": "What’s it about?"
+						},
 						"draftRef": {
 							"tpl": "Root/48#0"
 						},
@@ -121,8 +102,7 @@
 						"name": "sgs/form-field-text",
 						"attributes": {
 							"label": "Your name",
-							"required": true,
-							"helpText": "Email"
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/53#0"
@@ -149,9 +129,8 @@
 					{
 						"name": "sgs/form-field-email",
 						"attributes": {
-							"label": "Your name",
-							"required": true,
-							"helpText": "Email"
+							"label": "Email",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/55#0"
@@ -180,8 +159,7 @@
 			{
 				"name": "sgs/form-field-text",
 				"attributes": {
-					"label": "Your name",
-					"helpText": "Send a message What’s it about? My order A gift Allergens Baby shower or event Something else Email Order number (if you have it) Message Send message →"
+					"label": "Order number (if you have it)"
 				},
 				"draftRef": {
 					"tpl": "Root/58#0"
@@ -207,9 +185,8 @@
 			{
 				"name": "sgs/form-field-textarea",
 				"attributes": {
-					"label": "Your name",
-					"required": true,
-					"helpText": "Send a message What’s it about? My order A gift Allergens Baby shower or event Something else Email Order number (if you have it) Message Send message →"
+					"label": "Message",
+					"required": true
 				},
 				"draftRef": {
 					"tpl": "Root/66#0"

@@ -10,6 +10,9 @@
           "minHeight": {
             "desktop": "0px"
           },
+          "contentWidth": {
+            "desktop": "full"
+          },
           "textColourHover": "primary-text"
         }
       }
@@ -22,6 +25,9 @@
           "className": "cr-ref-contact-0",
           "minHeight": {
             "desktop": "0px"
+          },
+          "contentWidth": {
+            "desktop": "full"
           },
           "textColourHover": "primary-text"
         }
@@ -36,6 +42,9 @@
           "minHeight": {
             "desktop": "0px"
           },
+          "contentWidth": {
+            "desktop": "full"
+          },
           "textColourHover": "primary-text"
         }
       }
@@ -48,6 +57,9 @@
           "className": "cr-ref-help-0",
           "minHeight": {
             "desktop": "0px"
+          },
+          "contentWidth": {
+            "desktop": "full"
           },
           "textColourHover": "primary-text"
         }

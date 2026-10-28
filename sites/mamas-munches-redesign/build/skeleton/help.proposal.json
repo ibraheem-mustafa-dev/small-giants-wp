@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T15:55:02.384Z",
-	"inventory": "2026-10-27T15:55:02.107Z",
-	"source": "http://127.0.0.1:55106/",
+	"generated": "2026-10-28T06:36:21.953Z",
+	"inventory": "2026-10-28T06:36:21.557Z",
+	"source": "http://127.0.0.1:50585/",
 	"surface": "page-help-dc-html",
 	"siteName": null,
 	"surfaceParts": [
@@ -247,7 +247,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -308,7 +308,7 @@
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -320,7 +320,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -330,10 +330,7 @@
 				"1440": "shots/Root_18_0@1440.png"
 			},
 			"snippet": "<input value=\"{{ q }}\" sc-camel-on-change=\"{{ onQ }}\" placeholder=\"Search, e.g. fenugreek, delivery, gift\" aria-label=\"Search FAQs\" style=\"width:100%;height:62px;border:2px solid #3A2A22;border-radius:999px;padding:0 20px 0 52px;font-size:17px;background:#FFFAF0;box-shadow:4px 4px 0 #3A2A22\" data-dc-tpl=\"18\">",
-			"attributes": {
-				"label": "ask us anything",
-				"helpText": "Help & FAQs"
-			},
+			"attributes": {},
 			"slots": {
 				".sgs-form-field__input": {
 					"tpl": "Root/18#0"

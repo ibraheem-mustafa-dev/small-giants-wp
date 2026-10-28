@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T19:30:48.399Z",
-  "source": "http://127.0.0.1:65274/",
+  "generated": "2026-10-28T06:38:16.803Z",
+  "source": "http://127.0.0.1:55059/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -10,7 +10,7 @@
       {
         "tag": "span",
         "cls": "sc-interp",
-        "text": "good evening, mama"
+        "text": "good morning, mama"
       },
       {
         "tag": "div",
@@ -576,7 +576,7 @@
       "tpl": 8,
       "attrs": {},
       "words": "",
-      "allText": "✦good evening, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
+      "allText": "✦good morning, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
       "srcLine": 11,
       "membership": [],
       "srcTag": "main",
@@ -631,7 +631,7 @@
         "style": "background: rgb(245, 194, 200); overflow: hidden;"
       },
       "words": "",
-      "allText": "✦good evening, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
+      "allText": "✦good morning, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
       "srcLine": 13,
       "membership": [],
       "srcTag": "section",
@@ -686,7 +686,7 @@
         "style": "max-width: 1240px; margin: 0px auto; padding: 64px 40px 72px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 64px; align-items: center;"
       },
       "words": "",
-      "allText": "✦good evening, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
+      "allText": "✦good morning, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
       "srcLine": 14,
       "membership": [],
       "srcTag": "div",
@@ -741,7 +741,7 @@
         "style": "display: flex; flex-direction: column; gap: 22px; min-width: 0px;"
       },
       "words": "",
-      "allText": "✦good evening, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
+      "allText": "✦good morning, mama Made for the mum who needs it most Giant, filling lactation cookies with oats, brewer’s yeast, flaxs",
       "srcLine": 15,
       "membership": [],
       "srcTag": "div",
@@ -795,8 +795,8 @@
       "attrs": {
         "style": "font-family: Caveat, cursive; font-size: 32px; line-height: 1; color: rgb(142, 52, 68); transform: rotate(-2deg); transform-origin: left center; display: flex; align-items: center; gap: 8px;"
       },
-      "words": "good evening, mama",
-      "allText": "✦good evening, mama",
+      "words": "good morning, mama",
+      "allText": "✦good morning, mama",
       "srcLine": 16,
       "membership": [],
       "srcTag": "div",
@@ -859,22 +859,22 @@
       "snippet": "<span data-twinkle=\"\" style=\"color:#F9CF6E;font-family:Karla;-webkit-text-stroke:1px #3A2A22\" data-dc-tpl=\"13\">✦</span>",
       "box": {
         "375": {
-          "x": 12.7,
-          "y": 122.8,
-          "w": 35.8,
-          "h": 29.7
+          "x": 10.4,
+          "y": 119.3,
+          "w": 40.5,
+          "h": 36.7
         },
         "768": {
-          "x": 22.5,
-          "y": 136.2,
-          "w": 41.9,
-          "h": 36.9
+          "x": 22.1,
+          "y": 133.3,
+          "w": 42.5,
+          "h": 42.5
         },
         "1440": {
-          "x": 127.8,
-          "y": 173.1,
-          "w": 50.5,
-          "h": 47
+          "x": 131,
+          "y": 173.4,
+          "w": 44,
+          "h": 46.2
         }
       },
       "visible": {
@@ -2249,19 +2249,19 @@
       "box": {
         "375": {
           "x": 234.6,
-          "y": 940.1,
+          "y": 939.5,
           "w": 123.4,
           "h": 123.4
         },
         "768": {
           "x": 602.7,
-          "y": 509.4,
+          "y": 507.4,
           "w": 137.6,
           "h": 137.6
         },
         "1440": {
           "x": 1145.3,
-          "y": 524.4,
+          "y": 522.6,
           "w": 156.6,
           "h": 156.6
         }
@@ -2304,19 +2304,19 @@
       "box": {
         "375": {
           "x": 276.8,
-          "y": 978.8,
+          "y": 978.2,
           "w": 44,
           "h": 22.4
         },
         "768": {
           "x": 652.2,
-          "y": 554.2,
+          "y": 552.2,
           "w": 44,
           "h": 22.4
         },
         "1440": {
           "x": 1204.6,
-          "y": 577.1,
+          "y": 575.2,
           "w": 44,
           "h": 22.4
         }
@@ -2359,19 +2359,19 @@
       "box": {
         "375": {
           "x": 253.8,
-          "y": 990.6,
+          "y": 990,
           "w": 81.8,
           "h": 37.9
         },
         "768": {
           "x": 624.9,
-          "y": 565.1,
+          "y": 563.2,
           "w": 89.9,
           "h": 41.7
         },
         "1440": {
           "x": 1170.8,
-          "y": 586.8,
+          "y": 585,
           "w": 102.2,
           "h": 47.4
         }
@@ -17305,19 +17305,19 @@
       "snippet": "<article style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"224\"> <div style=\"display:fle",
       "box": {
         "375": {
-          "x": -290.4,
+          "x": 4.6,
           "y": 7607.5,
           "w": 294.8,
           "h": 391.5
         },
         "768": {
-          "x": -330.9,
+          "x": 29.1,
           "y": 6939.5,
           "w": 346.8,
           "h": 340.4
         },
         "1440": {
-          "x": -215.7,
+          "x": 97.3,
           "y": 5397.3,
           "w": 403.7,
           "h": 315.9
@@ -17367,19 +17367,19 @@
       "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"225\"><span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span><span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span></div>",
       "box": {
         "375": {
-          "x": -261.9,
+          "x": 33.1,
           "y": 7635.9,
           "w": 232.6,
           "h": 32.8
         },
         "768": {
-          "x": -302.4,
+          "x": 57.6,
           "y": 6968,
           "w": 285.5,
           "h": 33.8
         },
         "1440": {
-          "x": -187.2,
+          "x": 125.8,
           "y": 5425.8,
           "w": 342.8,
           "h": 34.8
@@ -17429,19 +17429,19 @@
       "snippet": "<span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span>",
       "box": {
         "375": {
-          "x": -261.8,
+          "x": 33.2,
           "y": 7640.9,
           "w": 85.4,
           "h": 25.5
         },
         "768": {
-          "x": -302.4,
+          "x": 57.6,
           "y": 6973.9,
           "w": 85.4,
           "h": 25.5
         },
         "1440": {
-          "x": -187.1,
+          "x": 125.9,
           "y": 5432.7,
           "w": 85.4,
           "h": 25.5
@@ -17491,19 +17491,19 @@
       "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span>",
       "box": {
         "375": {
-          "x": -55.7,
+          "x": 239.3,
           "y": 7635.9,
           "w": 26.4,
           "h": 29.2
         },
         "768": {
-          "x": -43.3,
+          "x": 316.7,
           "y": 6968,
           "w": 26.4,
           "h": 29.2
         },
         "1440": {
-          "x": 129.2,
+          "x": 442.2,
           "y": 5425.8,
           "w": 26.4,
           "h": 29.2
@@ -17553,19 +17553,19 @@
       "snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:22px;line-height:1.2\" data-dc-tpl=\"228\">{{ r.title }}</h3>",
       "box": {
         "375": {
-          "x": -261.2,
+          "x": 33.8,
           "y": 7676.7,
           "w": 233,
           "h": 56.8
         },
         "768": {
-          "x": -301.7,
+          "x": 58.3,
           "y": 7008.8,
           "w": 285.4,
           "h": 31.4
         },
         "1440": {
-          "x": -186.5,
+          "x": 126.5,
           "y": 5466.6,
           "w": 342.7,
           "h": 32.4
@@ -17615,19 +17615,19 @@
       "snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6;color:#3A2A22\" data-dc-tpl=\"229\">{{ r.text }}</p>",
       "box": {
         "375": {
-          "x": -260,
+          "x": 35,
           "y": 7741.5,
           "w": 235.2,
           "h": 183.2
         },
         "768": {
-          "x": -301,
+          "x": 59,
           "y": 7047.2,
           "w": 287.6,
           "h": 158.5
         },
         "1440": {
-          "x": -185.8,
+          "x": 127.2,
           "y": 5505,
           "w": 344.5,
           "h": 133.9
@@ -17677,19 +17677,19 @@
       "snippet": "<div style=\"margin-top:auto;padding-top:14px;border-top:2px dashed rgba(58,42,34,.3);display:flex;justify-content:space-between;gap:8px;font-size:14px\" data-dc-tpl=\"230\"><b data-dc-tpl=\"231\">{{ r.name }}</b><span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span></div>",
       "box": {
         "375": {
-          "x": -256.7,
+          "x": 38.3,
           "y": 7933.4,
           "w": 232.6,
           "h": 37
         },
         "768": {
-          "x": -298.1,
+          "x": 61.9,
           "y": 7213.5,
           "w": 285.5,
           "h": 38
         },
         "1440": {
-          "x": -183.3,
+          "x": 129.7,
           "y": 5645.7,
           "w": 342.9,
           "h": 39
@@ -17737,19 +17737,19 @@
       "snippet": "<b data-dc-tpl=\"231\">{{ r.name }}</b>",
       "box": {
         "375": {
-          "x": -256.4,
+          "x": 38.6,
           "y": 7953.2,
           "w": 18.2,
           "h": 17.3
         },
         "768": {
-          "x": -297.8,
+          "x": 62.2,
           "y": 7234.2,
           "w": 18.2,
           "h": 17.3
         },
         "1440": {
-          "x": -183.1,
+          "x": 129.9,
           "y": 5667.4,
           "w": 18.2,
           "h": 17.3
@@ -17797,19 +17797,19 @@
       "snippet": "<span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span>",
       "box": {
         "375": {
-          "x": -160.4,
+          "x": 134.6,
           "y": 7949.4,
           "w": 136.4,
           "h": 19.4
         },
         "768": {
-          "x": -149,
+          "x": 211,
           "y": 7229.5,
           "w": 136.4,
           "h": 19.4
         },
         "1440": {
-          "x": 23.1,
+          "x": 336.1,
           "y": 5661.7,
           "w": 136.4,
           "h": 19.4
@@ -17860,19 +17860,19 @@
       "snippet": "<article style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"224\"> <div style=\"display:fle",
       "box": {
         "375": {
-          "x": 19.7,
+          "x": 314.7,
           "y": 7607.5,
           "w": 294.8,
           "h": 391.5
         },
         "768": {
-          "x": 32.1,
+          "x": 392.1,
           "y": 6939.5,
           "w": 346.8,
           "h": 340.4
         },
         "1440": {
-          "x": 204.7,
+          "x": 517.7,
           "y": 5397.3,
           "w": 403.7,
           "h": 315.9
@@ -17922,19 +17922,19 @@
       "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"225\"><span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span><span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span></div>",
       "box": {
         "375": {
-          "x": 53.5,
+          "x": 348.5,
           "y": 7635.9,
           "w": 232.6,
           "h": 32.8
         },
         "768": {
-          "x": 64.9,
+          "x": 424.9,
           "y": 6968,
           "w": 285.5,
           "h": 33.8
         },
         "1440": {
-          "x": 237.1,
+          "x": 550.1,
           "y": 5425.8,
           "w": 342.8,
           "h": 34.8
@@ -17984,19 +17984,19 @@
       "snippet": "<span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span>",
       "box": {
         "375": {
-          "x": 53.5,
+          "x": 348.5,
           "y": 7638.3,
           "w": 85.4,
           "h": 25.5
         },
         "768": {
-          "x": 65,
+          "x": 425,
           "y": 6970.4,
           "w": 85.4,
           "h": 25.5
         },
         "1440": {
-          "x": 237.1,
+          "x": 550.1,
           "y": 5428.2,
           "w": 85.4,
           "h": 25.5
@@ -18045,19 +18045,19 @@
       "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span>",
       "box": {
         "375": {
-          "x": 259.7,
+          "x": 554.7,
           "y": 7639.5,
           "w": 26.4,
           "h": 29.2
         },
         "768": {
-          "x": 324,
+          "x": 684,
           "y": 6972.6,
           "w": 26.4,
           "h": 29.2
         },
         "1440": {
-          "x": 553.5,
+          "x": 866.5,
           "y": 5431.4,
           "w": 26.4,
           "h": 29.2
@@ -18107,19 +18107,19 @@
       "snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:22px;line-height:1.2\" data-dc-tpl=\"228\">{{ r.title }}</h3>",
       "box": {
         "375": {
-          "x": 52.8,
+          "x": 347.8,
           "y": 7676.7,
           "w": 232.5,
           "h": 30.4
         },
         "768": {
-          "x": 64.3,
+          "x": 424.3,
           "y": 7008.8,
           "w": 285.4,
           "h": 31.4
         },
         "1440": {
-          "x": 236.4,
+          "x": 549.4,
           "y": 5466.6,
           "w": 342.7,
           "h": 32.4
@@ -18169,19 +18169,19 @@
       "snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6;color:#3A2A22\" data-dc-tpl=\"229\">{{ r.text }}</p>",
       "box": {
         "375": {
-          "x": 49.5,
+          "x": 344.5,
           "y": 7715.1,
           "w": 235.2,
           "h": 183.2
         },
         "768": {
-          "x": 61.4,
+          "x": 421.4,
           "y": 7047.2,
           "w": 287.6,
           "h": 158.5
         },
         "1440": {
-          "x": 233.9,
+          "x": 546.9,
           "y": 5505,
           "w": 344.5,
           "h": 133.9
@@ -18231,19 +18231,19 @@
       "snippet": "<div style=\"margin-top:auto;padding-top:14px;border-top:2px dashed rgba(58,42,34,.3);display:flex;justify-content:space-between;gap:8px;font-size:14px\" data-dc-tpl=\"230\"><b data-dc-tpl=\"231\">{{ r.name }}</b><span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span></div>",
       "box": {
         "375": {
-          "x": 48.2,
+          "x": 343.2,
           "y": 7916.4,
           "w": 232.9,
           "h": 54
         },
         "768": {
-          "x": 60.6,
+          "x": 420.6,
           "y": 7213.5,
           "w": 285.5,
           "h": 38
         },
         "1440": {
-          "x": 233.1,
+          "x": 546.1,
           "y": 5645.7,
           "w": 342.9,
           "h": 39
@@ -18291,19 +18291,19 @@
       "snippet": "<b data-dc-tpl=\"231\">{{ r.name }}</b>",
       "box": {
         "375": {
-          "x": 48.2,
+          "x": 343.2,
           "y": 7932.4,
           "w": 82.1,
           "h": 35.4
         },
         "768": {
-          "x": 60.6,
+          "x": 420.6,
           "y": 7229.5,
           "w": 81.8,
           "h": 18.4
         },
         "1440": {
-          "x": 233.1,
+          "x": 546.1,
           "y": 5661.7,
           "w": 81.8,
           "h": 18.4
@@ -18351,19 +18351,19 @@
       "snippet": "<span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span>",
       "box": {
         "375": {
-          "x": 137.7,
+          "x": 432.7,
           "y": 7934,
           "w": 143.1,
           "h": 36.5
         },
         "768": {
-          "x": 189.6,
+          "x": 549.6,
           "y": 7231.8,
           "w": 156.2,
           "h": 19.7
         },
         "1440": {
-          "x": 419.5,
+          "x": 732.5,
           "y": 5665,
           "w": 156.2,
           "h": 19.7
@@ -18414,19 +18414,19 @@
       "snippet": "<article style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"224\"> <div style=\"display:fle",
       "box": {
         "375": {
-          "x": 331.5,
+          "x": 626.5,
           "y": 7608.7,
           "w": 291.5,
           "h": 389
         },
         "768": {
-          "x": 396.5,
+          "x": 756.5,
           "y": 6941,
           "w": 343.9,
           "h": 337.5
         },
         "1440": {
-          "x": 626.3,
+          "x": 939.3,
           "y": 5399.1,
           "w": 401,
           "h": 312.4
@@ -18476,19 +18476,19 @@
       "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"225\"><span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span><span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span></div>",
       "box": {
         "375": {
-          "x": 359.7,
+          "x": 654.7,
           "y": 7636.9,
           "w": 232.3,
           "h": 30.8
         },
         "768": {
-          "x": 424.8,
+          "x": 784.8,
           "y": 6969.3,
           "w": 285.2,
           "h": 31.3
         },
         "1440": {
-          "x": 654.6,
+          "x": 967.6,
           "y": 5427.3,
           "w": 342.6,
           "h": 31.8
@@ -18538,19 +18538,19 @@
       "snippet": "<span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span>",
       "box": {
         "375": {
-          "x": 359.8,
+          "x": 654.8,
           "y": 7640.6,
           "w": 85.2,
           "h": 24.7
         },
         "768": {
-          "x": 424.8,
+          "x": 784.8,
           "y": 6973.4,
           "w": 85.2,
           "h": 24.7
         },
         "1440": {
-          "x": 654.6,
+          "x": 967.6,
           "y": 5431.9,
           "w": 85.2,
           "h": 24.7
@@ -18599,19 +18599,19 @@
       "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span>",
       "box": {
         "375": {
-          "x": 566,
+          "x": 861,
           "y": 7636.9,
           "w": 26.1,
           "h": 29
         },
         "768": {
-          "x": 683.9,
+          "x": 1043.9,
           "y": 6969.3,
           "w": 26.1,
           "h": 29
         },
         "1440": {
-          "x": 971,
+          "x": 1284,
           "y": 5427.3,
           "w": 26.1,
           "h": 29
@@ -18661,19 +18661,19 @@
       "snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:22px;line-height:1.2\" data-dc-tpl=\"228\">{{ r.title }}</h3>",
       "box": {
         "375": {
-          "x": 360.1,
+          "x": 655.1,
           "y": 7677.7,
           "w": 232.3,
           "h": 28.4
         },
         "768": {
-          "x": 425.1,
+          "x": 785.1,
           "y": 7010.1,
           "w": 285.2,
           "h": 28.9
         },
         "1440": {
-          "x": 654.9,
+          "x": 967.9,
           "y": 5468.1,
           "w": 342.5,
           "h": 29.4
@@ -18723,19 +18723,19 @@
       "snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6;color:#3A2A22\" data-dc-tpl=\"229\">{{ r.text }}</p>",
       "box": {
         "375": {
-          "x": 360.4,
+          "x": 655.4,
           "y": 7716.1,
           "w": 233.6,
           "h": 181.2
         },
         "768": {
-          "x": 425.5,
+          "x": 785.5,
           "y": 7048.4,
           "w": 286.1,
           "h": 130.5
         },
         "1440": {
-          "x": 655.3,
+          "x": 968.3,
           "y": 5506.5,
           "w": 343.2,
           "h": 105.4
@@ -18785,19 +18785,19 @@
       "snippet": "<div style=\"margin-top:auto;padding-top:14px;border-top:2px dashed rgba(58,42,34,.3);display:flex;justify-content:space-between;gap:8px;font-size:14px\" data-dc-tpl=\"230\"><b data-dc-tpl=\"231\">{{ r.name }}</b><span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span></div>",
       "box": {
         "375": {
-          "x": 362.3,
+          "x": 657.3,
           "y": 7934.5,
           "w": 232.4,
           "h": 35
         },
         "768": {
-          "x": 426.9,
+          "x": 786.9,
           "y": 7214.8,
           "w": 285.3,
           "h": 35.5
         },
         "1440": {
-          "x": 656.5,
+          "x": 969.5,
           "y": 5647.3,
           "w": 342.6,
           "h": 36
@@ -18845,19 +18845,19 @@
       "snippet": "<b data-dc-tpl=\"231\">{{ r.name }}</b>",
       "box": {
         "375": {
-          "x": 362.5,
+          "x": 657.5,
           "y": 7952,
           "w": 57.6,
           "h": 17.5
         },
         "768": {
-          "x": 427.1,
+          "x": 787.1,
           "y": 7232.8,
           "w": 57.6,
           "h": 17.5
         },
         "1440": {
-          "x": 656.6,
+          "x": 969.6,
           "y": 5665.7,
           "w": 57.6,
           "h": 17.5
@@ -18904,19 +18904,19 @@
       "snippet": "<span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span>",
       "box": {
         "375": {
-          "x": 438.6,
+          "x": 733.6,
           "y": 7950.5,
           "w": 156.1,
           "h": 18.4
         },
         "768": {
-          "x": 556.1,
+          "x": 916.1,
           "y": 7230.8,
           "w": 156.1,
           "h": 18.4
         },
         "1440": {
-          "x": 843,
+          "x": 1156,
           "y": 5663.3,
           "w": 156.1,
           "h": 18.4
@@ -18967,19 +18967,19 @@
       "snippet": "<article style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"224\"> <div style=\"display:fle",
       "box": {
         "375": {
-          "x": 639.3,
+          "x": 934.3,
           "y": 7607,
           "w": 296.1,
           "h": 392.5
         },
         "768": {
-          "x": 757.5,
+          "x": 1117.5,
           "y": 6939,
           "w": 347.9,
           "h": 341.6
         },
         "1440": {
-          "x": 1044.8,
+          "x": 1357.8,
           "y": 5396.7,
           "w": 404.7,
           "h": 317.2
@@ -19029,19 +19029,19 @@
       "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"225\"><span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span><span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span></div>",
       "box": {
         "375": {
-          "x": 674.2,
+          "x": 969.2,
           "y": 7635.5,
           "w": 232.6,
           "h": 33.7
         },
         "768": {
-          "x": 791.3,
+          "x": 1151.3,
           "y": 6967.5,
           "w": 285.5,
           "h": 34.8
         },
         "1440": {
-          "x": 1078.1,
+          "x": 1391.1,
           "y": 5425.2,
           "w": 342.9,
           "h": 36
@@ -19091,19 +19091,19 @@
       "snippet": "<span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span>",
       "box": {
         "375": {
-          "x": 674.2,
+          "x": 969.2,
           "y": 7637.9,
           "w": 85.5,
           "h": 25.8
         },
         "768": {
-          "x": 791.4,
+          "x": 1151.4,
           "y": 6969.9,
           "w": 85.5,
           "h": 25.8
         },
         "1440": {
-          "x": 1078.1,
+          "x": 1391.1,
           "y": 5427.6,
           "w": 85.5,
           "h": 25.8
@@ -19152,19 +19152,19 @@
       "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span>",
       "box": {
         "375": {
-          "x": 880.3,
+          "x": 1175.3,
           "y": 7639.9,
           "w": 26.5,
           "h": 29.3
         },
         "768": {
-          "x": 1050.4,
+          "x": 1410.4,
           "y": 6973,
           "w": 26.5,
           "h": 29.3
         },
         "1440": {
-          "x": 1394.5,
+          "x": 1707.5,
           "y": 5431.9,
           "w": 26.5,
           "h": 29.3
@@ -19214,19 +19214,19 @@
       "snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:22px;line-height:1.2\" data-dc-tpl=\"228\">{{ r.title }}</h3>",
       "box": {
         "375": {
-          "x": 672.3,
+          "x": 967.3,
           "y": 7676.3,
           "w": 233.7,
           "h": 84
         },
         "768": {
-          "x": 790,
+          "x": 1150,
           "y": 7008.3,
           "w": 286,
           "h": 58.7
         },
         "1440": {
-          "x": 1076.7,
+          "x": 1389.7,
           "y": 5466,
           "w": 343.4,
           "h": 59.9
@@ -19276,19 +19276,19 @@
       "snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6;color:#3A2A22\" data-dc-tpl=\"229\">{{ r.text }}</p>",
       "box": {
         "375": {
-          "x": 668.8,
+          "x": 963.8,
           "y": 7767.5,
           "w": 235.3,
           "h": 158.4
         },
         "768": {
-          "x": 787.1,
+          "x": 1147.1,
           "y": 7073.1,
           "w": 287.6,
           "h": 133.9
         },
         "1440": {
-          "x": 1074.3,
+          "x": 1387.3,
           "y": 5530.8,
           "w": 344.4,
           "h": 109.5
@@ -19338,19 +19338,19 @@
       "snippet": "<div style=\"margin-top:auto;padding-top:14px;border-top:2px dashed rgba(58,42,34,.3);display:flex;justify-content:space-between;gap:8px;font-size:14px\" data-dc-tpl=\"230\"><b data-dc-tpl=\"231\">{{ r.name }}</b><span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span></div>",
       "box": {
         "375": {
-          "x": 667.8,
+          "x": 962.8,
           "y": 7933,
           "w": 232.7,
           "h": 37.9
         },
         "768": {
-          "x": 786.1,
+          "x": 1146.1,
           "y": 7213,
           "w": 285.6,
           "h": 39
         },
         "1440": {
-          "x": 1073.4,
+          "x": 1386.4,
           "y": 5645.1,
           "w": 342.9,
           "h": 40.2
@@ -19398,19 +19398,19 @@
       "snippet": "<b data-dc-tpl=\"231\">{{ r.name }}</b>",
       "box": {
         "375": {
-          "x": 667.8,
+          "x": 962.8,
           "y": 7949,
           "w": 61.8,
           "h": 18.3
         },
         "768": {
-          "x": 786.1,
+          "x": 1146.1,
           "y": 7229,
           "w": 61.8,
           "h": 18.3
         },
         "1440": {
-          "x": 1073.4,
+          "x": 1386.4,
           "y": 5661.1,
           "w": 61.8,
           "h": 18.3
@@ -19457,19 +19457,19 @@
       "snippet": "<span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span>",
       "box": {
         "375": {
-          "x": 769,
+          "x": 1064,
           "y": 7951.1,
           "w": 131.3,
           "h": 19.7
         },
         "768": {
-          "x": 940.1,
+          "x": 1300.1,
           "y": 7232.3,
           "w": 131.3,
           "h": 19.7
         },
         "1440": {
-          "x": 1284.7,
+          "x": 1597.7,
           "y": 5665.6,
           "w": 131.3,
           "h": 19.7
@@ -19520,19 +19520,19 @@
       "snippet": "<article style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"224\"> <div style=\"display:fle",
       "box": {
         "375": {
-          "x": 949.4,
+          "x": 1244.4,
           "y": 7607,
           "w": 296.1,
           "h": 392.5
         },
         "768": {
-          "x": 1120.5,
+          "x": 1480.5,
           "y": 6939,
           "w": 347.9,
           "h": 341.6
         },
         "1440": {
-          "x": 1465.1,
+          "x": 1778.1,
           "y": 5396.7,
           "w": 404.7,
           "h": 317.2
@@ -19582,19 +19582,19 @@
       "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"225\"><span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span><span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span></div>",
       "box": {
         "375": {
-          "x": 977.9,
+          "x": 1272.9,
           "y": 7635.5,
           "w": 232.6,
           "h": 33.7
         },
         "768": {
-          "x": 1149.1,
+          "x": 1509.1,
           "y": 6967.5,
           "w": 285.5,
           "h": 34.8
         },
         "1440": {
-          "x": 1493.7,
+          "x": 1806.7,
           "y": 5425.2,
           "w": 342.9,
           "h": 36
@@ -19644,19 +19644,19 @@
       "snippet": "<span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span>",
       "box": {
         "375": {
-          "x": 978,
+          "x": 1273,
           "y": 7641,
           "w": 85.5,
           "h": 25.8
         },
         "768": {
-          "x": 1149.2,
+          "x": 1509.2,
           "y": 6974.1,
           "w": 85.5,
           "h": 25.8
         },
         "1440": {
-          "x": 1493.8,
+          "x": 1806.8,
           "y": 5433,
           "w": 85.5,
           "h": 25.8
@@ -19706,19 +19706,19 @@
       "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span>",
       "box": {
         "375": {
-          "x": 1184.1,
+          "x": 1479.1,
           "y": 7635.5,
           "w": 26.5,
           "h": 29.3
         },
         "768": {
-          "x": 1408.2,
+          "x": 1768.2,
           "y": 6967.5,
           "w": 26.5,
           "h": 29.3
         },
         "1440": {
-          "x": 1810.1,
+          "x": 2123.1,
           "y": 5425.2,
           "w": 26.5,
           "h": 29.3
@@ -19768,19 +19768,19 @@
       "snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:22px;line-height:1.2\" data-dc-tpl=\"228\">{{ r.title }}</h3>",
       "box": {
         "375": {
-          "x": 978.8,
+          "x": 1273.8,
           "y": 7676.3,
           "w": 233.1,
           "h": 57.6
         },
         "768": {
-          "x": 1150,
+          "x": 1510,
           "y": 7008.3,
           "w": 286,
           "h": 58.7
         },
         "1440": {
-          "x": 1494.6,
+          "x": 1807.6,
           "y": 5466,
           "w": 343.4,
           "h": 59.9
@@ -19830,19 +19830,19 @@
       "snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6;color:#3A2A22\" data-dc-tpl=\"229\">{{ r.text }}</p>",
       "box": {
         "375": {
-          "x": 980.2,
+          "x": 1275.2,
           "y": 7741.1,
           "w": 234.7,
           "h": 132.8
         },
         "768": {
-          "x": 1151.3,
+          "x": 1511.3,
           "y": 7073.1,
           "w": 287.1,
           "h": 108.3
         },
         "1440": {
-          "x": 1495.9,
+          "x": 1808.9,
           "y": 5530.8,
           "w": 343.9,
           "h": 83.9
@@ -19892,19 +19892,19 @@
       "snippet": "<div style=\"margin-top:auto;padding-top:14px;border-top:2px dashed rgba(58,42,34,.3);display:flex;justify-content:space-between;gap:8px;font-size:14px\" data-dc-tpl=\"230\"><b data-dc-tpl=\"231\">{{ r.name }}</b><span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span></div>",
       "box": {
         "375": {
-          "x": 983.8,
+          "x": 1278.8,
           "y": 7916,
           "w": 233.1,
           "h": 54.8
         },
         "768": {
-          "x": 1154.3,
+          "x": 1514.3,
           "y": 7213,
           "w": 285.6,
           "h": 39
         },
         "1440": {
-          "x": 1498.3,
+          "x": 1811.3,
           "y": 5645.1,
           "w": 342.9,
           "h": 40.2
@@ -19952,19 +19952,19 @@
       "snippet": "<b data-dc-tpl=\"231\">{{ r.name }}</b>",
       "box": {
         "375": {
-          "x": 984.1,
+          "x": 1279.1,
           "y": 7934.8,
           "w": 100.7,
           "h": 36.1
         },
         "768": {
-          "x": 1154.6,
+          "x": 1514.6,
           "y": 7232.8,
           "w": 105.8,
           "h": 19.2
         },
         "1440": {
-          "x": 1498.6,
+          "x": 1811.6,
           "y": 5666.1,
           "w": 105.8,
           "h": 19.2
@@ -20012,19 +20012,19 @@
       "snippet": "<span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span>",
       "box": {
         "375": {
-          "x": 1092.1,
+          "x": 1387.1,
           "y": 7932,
           "w": 124.8,
           "h": 36.6
         },
         "768": {
-          "x": 1308.6,
+          "x": 1668.6,
           "y": 7229,
           "w": 131.3,
           "h": 19.7
         },
         "1440": {
-          "x": 1710,
+          "x": 2023,
           "y": 5661.1,
           "w": 131.3,
           "h": 19.7
@@ -20075,19 +20075,19 @@
       "snippet": "<article style=\"scroll-snap-align:start;background:{{ r.bg }};border:2px solid #3A2A22;border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:12px;min-width:0;transform:rotate({{ r.rot }});transition:transform .35s cubic-bezier(.3,1.4,.5,1), box-shadow .35s\" style-hover=\"transform:rotate(0deg) translateY(-4px);box-shadow:6px 6px 0 #3A2A22\" data-dc-tpl=\"224\"> <div style=\"display:fle",
       "box": {
         "375": {
-          "x": 1261.5,
+          "x": 1556.5,
           "y": 7608.4,
           "w": 292.1,
           "h": 389.5
         },
         "768": {
-          "x": 1485.3,
+          "x": 1845.3,
           "y": 6940.7,
           "w": 344.5,
           "h": 338.1
         },
         "1440": {
-          "x": 1887,
+          "x": 2200,
           "y": 5398.7,
           "w": 401.5,
           "h": 313.1
@@ -20137,19 +20137,19 @@
       "snippet": "<div style=\"display:flex;justify-content:space-between;align-items:center\" data-dc-tpl=\"225\"><span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span><span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span></div>",
       "box": {
         "375": {
-          "x": 1292.9,
+          "x": 1587.9,
           "y": 7636.7,
           "w": 232.4,
           "h": 31.2
         },
         "768": {
-          "x": 1516.2,
+          "x": 1876.2,
           "y": 6969,
           "w": 285.3,
           "h": 31.8
         },
         "1440": {
-          "x": 1917.7,
+          "x": 2230.7,
           "y": 5427,
           "w": 342.6,
           "h": 32.4
@@ -20199,19 +20199,19 @@
       "snippet": "<span style=\"letter-spacing:2px;font-size:18px\" data-dc-tpl=\"226\">★★★★★</span>",
       "box": {
         "375": {
-          "x": 1292.9,
+          "x": 1587.9,
           "y": 7639.1,
           "w": 85.2,
           "h": 24.9
         },
         "768": {
-          "x": 1516.2,
+          "x": 1876.2,
           "y": 6971.4,
           "w": 85.2,
           "h": 24.9
         },
         "1440": {
-          "x": 1917.7,
+          "x": 2230.7,
           "y": 5429.4,
           "w": 85.2,
           "h": 24.9
@@ -20260,19 +20260,19 @@
       "snippet": "<span style=\"font-family:'Young Serif',serif;font-size:48px;line-height:.6;color:#E86A75\" data-dc-tpl=\"227\">“</span>",
       "box": {
         "375": {
-          "x": 1499.1,
+          "x": 1794.1,
           "y": 7638.9,
           "w": 26.2,
           "h": 29.1
         },
         "768": {
-          "x": 1775.3,
+          "x": 2135.3,
           "y": 6971.7,
           "w": 26.2,
           "h": 29.1
         },
         "1440": {
-          "x": 2234.1,
+          "x": 2547.1,
           "y": 5430.3,
           "w": 26.2,
           "h": 29.1
@@ -20322,19 +20322,19 @@
       "snippet": "<h3 style=\"margin:0;font-family:'Young Serif',serif;font-weight:400;font-size:22px;line-height:1.2\" data-dc-tpl=\"228\">{{ r.title }}</h3>",
       "box": {
         "375": {
-          "x": 1292.2,
+          "x": 1587.2,
           "y": 7677.5,
           "w": 232.6,
           "h": 55.2
         },
         "768": {
-          "x": 1515.8,
+          "x": 1875.8,
           "y": 7009.8,
           "w": 285.3,
           "h": 29.4
         },
         "1440": {
-          "x": 1917.3,
+          "x": 2230.3,
           "y": 5467.8,
           "w": 342.6,
           "h": 30
@@ -20384,19 +20384,19 @@
       "snippet": "<p style=\"margin:0;font-size:16px;line-height:1.6;color:#3A2A22\" data-dc-tpl=\"229\">{{ r.text }}</p>",
       "box": {
         "375": {
-          "x": 1291,
+          "x": 1586,
           "y": 7742.3,
           "w": 233.2,
           "h": 104.8
         },
         "768": {
-          "x": 1514.6,
+          "x": 1874.6,
           "y": 7048.2,
           "w": 286.1,
           "h": 105.4
         },
         "1440": {
-          "x": 1916.3,
+          "x": 2229.3,
           "y": 5506.2,
           "w": 343.1,
           "h": 80.4
@@ -20446,19 +20446,19 @@
       "snippet": "<div style=\"margin-top:auto;padding-top:14px;border-top:2px dashed rgba(58,42,34,.3);display:flex;justify-content:space-between;gap:8px;font-size:14px\" data-dc-tpl=\"230\"><b data-dc-tpl=\"231\">{{ r.name }}</b><span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span></div>",
       "box": {
         "375": {
-          "x": 1289.7,
+          "x": 1584.7,
           "y": 7934.2,
           "w": 232.4,
           "h": 35.4
         },
         "768": {
-          "x": 1513.5,
+          "x": 1873.5,
           "y": 7214.5,
           "w": 285.3,
           "h": 36
         },
         "1440": {
-          "x": 1915.3,
+          "x": 2228.3,
           "y": 5647,
           "w": 342.7,
           "h": 36.6
@@ -20506,19 +20506,19 @@
       "snippet": "<b data-dc-tpl=\"231\">{{ r.name }}</b>",
       "box": {
         "375": {
-          "x": 1289.7,
+          "x": 1584.7,
           "y": 7950.2,
           "w": 21.8,
           "h": 17.2
         },
         "768": {
-          "x": 1513.5,
+          "x": 1873.5,
           "y": 7230.5,
           "w": 21.8,
           "h": 17.2
         },
         "1440": {
-          "x": 1915.3,
+          "x": 2228.3,
           "y": 5663,
           "w": 21.8,
           "h": 17.2
@@ -20565,19 +20565,19 @@
       "snippet": "<span data-dc-tpl=\"232\">{{ r.date }} · Trustpilot</span>",
       "box": {
         "375": {
-          "x": 1360.2,
+          "x": 1655.2,
           "y": 7951,
           "w": 161.8,
           "h": 18.7
         },
         "768": {
-          "x": 1636.9,
+          "x": 1996.9,
           "y": 7231.8,
           "w": 161.8,
           "h": 18.7
         },
         "1440": {
-          "x": 2096,
+          "x": 2409,
           "y": 5664.8,
           "w": 161.8,
           "h": 18.7
@@ -20665,7 +20665,7 @@
       "tpl": 235,
       "attrs": {
         "aria-label": "Go to review 1",
-        "style": "width: 12px; height: 12px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: transparent; padding: 0px; cursor: pointer; transition: width 0.3s, background 0.3s;"
+        "style": "width: 34px; height: 12px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(58, 42, 34); padding: 0px; cursor: pointer; transition: width 0.3s, background 0.3s;"
       },
       "words": "",
       "allText": "",
@@ -20685,19 +20685,19 @@
         "375": {
           "x": 120.5,
           "y": 8020.5,
-          "w": 12.4,
+          "w": 34,
           "h": 12
         },
         "768": {
           "x": 327,
           "y": 7301,
-          "w": 12,
+          "w": 34,
           "h": 12
         },
         "1440": {
           "x": 673,
           "y": 5733.8,
-          "w": 33.1,
+          "w": 34,
           "h": 12
         }
       },
@@ -20728,7 +20728,7 @@
       "tpl": 235,
       "attrs": {
         "aria-label": "Go to review 2",
-        "style": "width: 34px; height: 12px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: rgb(58, 42, 34); padding: 0px; cursor: pointer; transition: width 0.3s, background 0.3s;"
+        "style": "width: 12px; height: 12px; border-radius: 999px; border: 2px solid rgb(58, 42, 34); background: transparent; padding: 0px; cursor: pointer; transition: width 0.3s, background 0.3s;"
       },
       "words": "",
       "allText": "",
@@ -20746,21 +20746,21 @@
       "snippet": "<button sc-camel-on-click=\"{{ d.go }}\" aria-label=\"{{ d.label }}\" style=\"width:{{ d.w }};height:12px;border-radius:999px;border:2px solid #3A2A22;background:{{ d.bg }};padding:0;cursor:pointer;transition:width .3s, background .3s\" data-dc-tpl=\"235\"></button>",
       "box": {
         "375": {
-          "x": 140.9,
+          "x": 162.5,
           "y": 8020.5,
-          "w": 33.6,
+          "w": 12,
           "h": 12
         },
         "768": {
-          "x": 347,
+          "x": 369,
           "y": 7301,
-          "w": 34,
+          "w": 12,
           "h": 12
         },
         "1440": {
-          "x": 714.1,
+          "x": 715,
           "y": 5733.8,
-          "w": 12.8,
+          "w": 12,
           "h": 12
         }
       },
