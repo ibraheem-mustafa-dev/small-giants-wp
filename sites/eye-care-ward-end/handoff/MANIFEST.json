@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated": "2026-10-11",
+  "generated": "2026-10-28",
   "project": "Ward End Eye Care",
   "entry_drafts": [
     "Eye Care Birmingham.dc.html"
@@ -9,8 +9,8 @@
   "files": [
     {
       "path": "Eye Care Birmingham.dc.html",
-      "bytes": 287429,
-      "sha256": "2f2096a8c7a8c9ff8d40824b14d32f0374f84eda07a3c51c64d9a43a9315da3a"
+      "bytes": 287072,
+      "sha256": "d9bc2c1bbf8adbb5757e09a83bb1c3cf52b09b6589757b4c82fbfb032474da09"
     },
     {
       "path": "Frame Card.dc.html",
@@ -29,8 +29,8 @@
     },
     {
       "path": "animations.json",
-      "bytes": 370537,
-      "sha256": "25ac5fbc1097f2a95773452d363dcc2073906719d99d83e03ac90053097df2b0"
+      "bytes": 368811,
+      "sha256": "35cc795051fdd4b46aee2cde28baf1f3f6eae8f831c73c14231c2756b072cbe2"
     },
     {
       "path": "assets/ec-logo.png",
@@ -104,8 +104,8 @@
     },
     {
       "path": "surfaces.json",
-      "bytes": 77567,
-      "sha256": "e0ddf5410ad40408f885d07ad1e34fc22fd30fa5c8b256639a6ab3092d5447b2"
+      "bytes": 77546,
+      "sha256": "933d139f6f4036d3b5cee8c123c10d86934c1e7bb0387b806297d530bcb3c388"
     },
     {
       "path": "tokens/colors.css",

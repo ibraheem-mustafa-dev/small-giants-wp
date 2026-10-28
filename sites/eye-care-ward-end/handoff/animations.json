@@ -7,7 +7,7 @@
     {
       "dc": "Eye Care Birmingham",
       "file": "Eye Care Birmingham.dc.html",
-      "sha256": "2f2096a8c7a8c9ff8d40824b14d32f0374f84eda07a3c51c64d9a43a9315da3a"
+      "sha256": "d9bc2c1bbf8adbb5757e09a83bb1c3cf52b09b6589757b4c82fbfb032474da09"
     },
     {
       "dc": "Frame Card",
@@ -73,7 +73,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "35",
+        "template_tpl_id": "32",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"{phone}\" in sgs-header"
       },
@@ -122,7 +122,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "38",
+        "template_tpl_id": "35",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"About Eye Care\" in sgs-header"
       },
@@ -171,7 +171,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "84",
+        "template_tpl_id": "81",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"{b.name}\" in sgs-mega-menu (repeated by sc-for; copies share the id)"
       },
@@ -220,7 +220,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "127",
+        "template_tpl_id": "124",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{b.name}\" in sgs-brand-marquee"
       },
@@ -270,7 +270,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "310",
+        "template_tpl_id": "307",
         "selector": "template element (no runtime lookup)",
         "description": "<label> \"{b.name} {b.count}\" in sgs-shop-layout (repeated by sc-for; copies share the id)"
       },
@@ -319,7 +319,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "599",
+        "template_tpl_id": "596",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Choose a frame\" in sgs-page-lenses"
       },
@@ -368,7 +368,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "613",
+        "template_tpl_id": "610",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Shop the range\" in sgs-page-about"
       },
@@ -417,7 +417,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "659",
+        "template_tpl_id": "656",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Contact me\" in sgs-page-help"
       },
@@ -466,7 +466,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "660",
+        "template_tpl_id": "657",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Call\" in sgs-page-help"
       },
@@ -520,7 +520,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "734",
+        "template_tpl_id": "731",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"GoogleReviews & hours\" in sgs-page-contact"
       },
@@ -574,7 +574,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "736",
+        "template_tpl_id": "733",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Instagram@eyecare.birmingham\" in sgs-page-contact"
       },
@@ -628,7 +628,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "800",
+        "template_tpl_id": "797",
         "selector": "template element (no runtime lookup)",
         "description": "<label> \"Drop a photo of your prescriptionOr tap \" in sgs-checkout-prescription"
       },
@@ -795,7 +795,7 @@
       "mechanism": "css-pseudo",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "191",
+        "template_tpl_id": "188",
         "selector": ".rev-rail::-webkit-scrollbar-thumb:hover",
         "description": "Google reviews rail scrollbar"
       },
@@ -889,7 +889,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "51",
+        "template_tpl_id": "48",
         "selector": "template element (no runtime lookup)",
         "description": "<span> \"{bagCount}\" in sgs-header"
       },
@@ -978,7 +978,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "53",
+        "template_tpl_id": "50",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"By style {s.name} Shop by {s.name} Presc\" in sgs-mega-menu"
       },
@@ -1030,7 +1030,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "116",
+        "template_tpl_id": "113",
         "selector": "template element (no runtime lookup)",
         "description": "<img> in sgs-hero"
       },
@@ -1083,7 +1083,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "120",
+        "template_tpl_id": "117",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"40 designer brands · Birmingham\" in sgs-hero"
       },
@@ -1140,7 +1140,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "121",
+        "template_tpl_id": "118",
         "selector": "template element (no runtime lookup)",
         "description": "<h1> \"The same designer shades. A good deal le\" in sgs-hero"
       },
@@ -1197,7 +1197,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "122",
+        "template_tpl_id": "119",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"I'm an optician in Birmingham, buying fr\" in sgs-hero"
       },
@@ -1254,7 +1254,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "123",
+        "template_tpl_id": "120",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Shop sunglasses Add your prescription\" in sgs-hero"
       },
@@ -1311,7 +1311,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "127",
+        "template_tpl_id": "124",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{b.name}\" in sgs-brand-marquee"
       },
@@ -1364,7 +1364,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "249",
+        "template_tpl_id": "246",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{shopKicker} {shopTitle} {resultCount} F\" in sgs-page-shop"
       },
@@ -1421,7 +1421,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "266",
+        "template_tpl_id": "263",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{c.label} ×\" in sgs-page-shop (repeated by sc-for; copies share the id)"
       },
@@ -1510,7 +1510,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "271",
+        "template_tpl_id": "268",
         "selector": "template element (no runtime lookup)",
         "description": "<aside> \"Filter × {g.label} {g.count} {i.name} {i\" in sgs-shop-layout"
       },
@@ -1563,7 +1563,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "286",
+        "template_tpl_id": "283",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{i.name} {i.name} {g.note} £59£339 {b.na\" in sgs-shop-layout (repeated by sc-for; copies share the id)"
       },
@@ -1616,7 +1616,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "346",
+        "template_tpl_id": "343",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-product-main"
       },
@@ -1673,7 +1673,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "360",
+        "template_tpl_id": "357",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{cur.brand} {cur.name} {cur.code} ★★★★★ \" in sgs-product-main"
       },
@@ -1730,7 +1730,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "422",
+        "template_tpl_id": "419",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{cur.blurb} {cur.shape} shape in {cur.ma\" in sgs-product-tabs"
       },
@@ -1782,7 +1782,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "430",
+        "template_tpl_id": "427",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{s.k} {s.v}\" in sgs-product-tabs"
       },
@@ -1834,7 +1834,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "436",
+        "template_tpl_id": "433",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"This pair, measured Which size am I? Fro\" in sgs-product-tabs"
       },
@@ -1886,7 +1886,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "500",
+        "template_tpl_id": "497",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{a.body}\" in sgs-product-tabs (repeated by sc-for; copies share the id)"
       },
@@ -1938,7 +1938,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "553",
+        "template_tpl_id": "550",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"Prescription lenses\" in sgs-page-lenses"
       },
@@ -1995,7 +1995,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "554",
+        "template_tpl_id": "551",
         "selector": "template element (no runtime lookup)",
         "description": "<h1> \"Three questions, then leave the rest to \" in sgs-page-lenses"
       },
@@ -2052,7 +2052,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "555",
+        "template_tpl_id": "552",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"Any frame on this site can be glazed to \" in sgs-page-lenses"
       },
@@ -2109,7 +2109,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "604",
+        "template_tpl_id": "601",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"About Eye Care\" in sgs-page-about"
       },
@@ -2166,7 +2166,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "605",
+        "template_tpl_id": "602",
         "selector": "template element (no runtime lookup)",
         "description": "<h1> \"Fatima Nawaz\" in sgs-page-about"
       },
@@ -2223,7 +2223,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "606",
+        "template_tpl_id": "603",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"BSc (Hons) Optometry · MCOptom · DipTp(I\" in sgs-page-about"
       },
@@ -2280,7 +2280,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "607",
+        "template_tpl_id": "604",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"Eye Care Birmingham is an independent cl\" in sgs-page-about"
       },
@@ -2337,7 +2337,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "608",
+        "template_tpl_id": "605",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"Day to day I test eyes, treat eye condit\" in sgs-page-about"
       },
@@ -2394,7 +2394,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "609",
+        "template_tpl_id": "606",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"Every prescription order is checked by m\" in sgs-page-about"
       },
@@ -2451,7 +2451,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "610",
+        "template_tpl_id": "607",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Message me Shop the range\" in sgs-page-about"
       },
@@ -2508,7 +2508,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "614",
+        "template_tpl_id": "611",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"BSc (Hons)An honours degree in optometry\" in sgs-page-about"
       },
@@ -2565,7 +2565,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "653",
+        "template_tpl_id": "650",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"{q.a}\" in sgs-page-help (repeated by sc-for; copies share the id)"
       },
@@ -2617,7 +2617,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "700",
+        "template_tpl_id": "697",
         "selector": "template element (no runtime lookup)",
         "description": "<span> \"Thanks — I'll come back to you shortly.\" in sgs-page-contact"
       },
@@ -2669,7 +2669,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "743",
+        "template_tpl_id": "740",
         "selector": "template element (no runtime lookup)",
         "description": "<section> \"Apple Pay G Pay PayPal Klarna. or pay by\" in sgs-checkout-express"
       },
@@ -2726,7 +2726,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "752",
+        "template_tpl_id": "749",
         "selector": "template element (no runtime lookup)",
         "description": "<section> \"1Contact\" in sgs-checkout-contact"
       },
@@ -2783,7 +2783,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "770",
+        "template_tpl_id": "767",
         "selector": "template element (no runtime lookup)",
         "description": "<section> \"2Delivery Post it to me{shippingLabel} R\" in sgs-checkout-delivery"
       },
@@ -2840,7 +2840,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "785",
+        "template_tpl_id": "782",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-checkout-delivery"
       },
@@ -2892,7 +2892,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "792",
+        "template_tpl_id": "789",
         "selector": "template element (no runtime lookup)",
         "description": "<section> \"3Prescription {coRxNote} {m.title} Drop \" in sgs-checkout-prescription"
       },
@@ -2949,7 +2949,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "805",
+        "template_tpl_id": "802",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"No problem — I'll WhatsApp you a link af\" in sgs-checkout-prescription"
       },
@@ -3002,7 +3002,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "806",
+        "template_tpl_id": "803",
         "selector": "template element (no runtime lookup)",
         "description": "<section> \"{payStepNo}Payment Pay now{totalLabel} S\" in sgs-checkout-payment"
       },
@@ -3059,7 +3059,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "817",
+        "template_tpl_id": "814",
         "selector": "template element (no runtime lookup)",
         "description": "<aside> \"Your bagEdit {it.brand} {it.brand}{it.na\" in sgs-page-checkout"
       },
@@ -3111,7 +3111,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "846",
+        "template_tpl_id": "843",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"✓\" in sgs-page-order-confirmed"
       },
@@ -3200,7 +3200,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "847",
+        "template_tpl_id": "844",
         "selector": "template element (no runtime lookup)",
         "description": "<h1> \"Thank you — order EC-10482.\" in sgs-page-order-confirmed"
       },
@@ -3257,7 +3257,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "848",
+        "template_tpl_id": "845",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"{doneNote}\" in sgs-page-order-confirmed"
       },
@@ -3314,7 +3314,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "852",
+        "template_tpl_id": "849",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Back to the shop\" in sgs-page-order-confirmed"
       },
@@ -3371,7 +3371,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1165",
+        "template_tpl_id": "1162",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"EYE CARE × Sunglasses Brands Prescriptio\" in sgs-mobile-menu"
       },
@@ -3423,7 +3423,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1170",
+        "template_tpl_id": "1167",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Sunglasses\" in sgs-mobile-menu"
       },
@@ -3480,7 +3480,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1171",
+        "template_tpl_id": "1168",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Brands\" in sgs-mobile-menu"
       },
@@ -3537,7 +3537,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1172",
+        "template_tpl_id": "1169",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Prescription lenses\" in sgs-mobile-menu"
       },
@@ -3594,7 +3594,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1173",
+        "template_tpl_id": "1170",
         "selector": "template element (no runtime lookup)",
         "description": "<span> \"Glasses SOON\" in sgs-mobile-menu"
       },
@@ -3651,7 +3651,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1175",
+        "template_tpl_id": "1172",
         "selector": "template element (no runtime lookup)",
         "description": "<nav> \"About Eye Care Delivery, returns & FAQs \" in sgs-mobile-menu"
       },
@@ -3708,7 +3708,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1180",
+        "template_tpl_id": "1177",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{phone}\" in sgs-mobile-menu"
       },
@@ -3765,7 +3765,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1197",
+        "template_tpl_id": "1194",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-bag-drawer"
       },
@@ -3817,7 +3817,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1198",
+        "template_tpl_id": "1195",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Bag ({bagCount}) × Nothing in here yet.S\" in sgs-bag-drawer"
       },
@@ -3869,7 +3869,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1209",
+        "template_tpl_id": "1206",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{it.brand} {it.brand}{it.lineLabel} {it.\" in sgs-bag-drawer (repeated by sc-for; copies share the id)"
       },
@@ -3926,7 +3926,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1236",
+        "template_tpl_id": "1233",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-size-guide"
       },
@@ -3978,7 +3978,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1237",
+        "template_tpl_id": "1234",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Which size am I? × The quickest way: pic\" in sgs-size-guide"
       },
@@ -4035,7 +4035,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1278",
+        "template_tpl_id": "1275",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"✓ {toast} View bag\" in sgs-toast"
       },
@@ -4133,7 +4133,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1283",
+        "template_tpl_id": "1280",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{lensStepLabel} Close × {cur.brand} {len\" in sgs-lens-configurator"
       },
@@ -4185,7 +4185,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1313",
+        "template_tpl_id": "1310",
         "selector": "template element (no runtime lookup)",
         "description": "<span> \"{lensTotalLabel}\" in sgs-lens-configurator"
       },
@@ -4274,7 +4274,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1322",
+        "template_tpl_id": "1319",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Question 1 of 3 What will you use them f\" in sgs-lens-configurator"
       },
@@ -4331,7 +4331,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1343",
+        "template_tpl_id": "1340",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{o.helpText}\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -4383,7 +4383,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1345",
+        "template_tpl_id": "1342",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Question 2 of 3 How thin would you like \" in sgs-lens-configurator"
       },
@@ -4440,7 +4440,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1367",
+        "template_tpl_id": "1364",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{o.helpText}\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -4492,7 +4492,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1369",
+        "template_tpl_id": "1366",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Question 3 of 3 What finish? All of them\" in sgs-lens-configurator"
       },
@@ -4549,7 +4549,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1387",
+        "template_tpl_id": "1384",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{o.helpText}\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -4601,7 +4601,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1389",
+        "template_tpl_id": "1386",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Last bit — and it can wait Your prescrip\" in sgs-lens-configurator"
       },
@@ -4658,7 +4658,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1402",
+        "template_tpl_id": "1399",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Perfect — order now and I'll WhatsApp yo\" in sgs-lens-configurator"
       },
@@ -4710,7 +4710,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1406",
+        "template_tpl_id": "1403",
         "selector": "template element (no runtime lookup)",
         "description": "<label> \"Drop a photo or screenshot here A phone \" in sgs-lens-configurator"
       },
@@ -4762,7 +4762,7 @@
       "mechanism": "css-animation",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1412",
+        "template_tpl_id": "1409",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"SPHCYLAXIS R L Copy the numbers exactly,\" in sgs-lens-configurator"
       },
@@ -4810,7 +4810,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "765",
+        "template_tpl_id": "762",
         "selector": "template element (no runtime lookup)",
         "description": "<input> in sgs-checkout-contact"
       },
@@ -4860,7 +4860,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "850",
+        "template_tpl_id": "847",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"{doneAccountNote}\" in sgs-page-order-confirmed"
       },
@@ -4915,7 +4915,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "854",
+        "template_tpl_id": "851",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"View my orders\" in sgs-page-order-confirmed"
       },
@@ -4970,7 +4970,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "858",
+        "template_tpl_id": "855",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Your account Sign in or create an accoun\" in sgs-page-signin"
       },
@@ -5025,7 +5025,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "863",
+        "template_tpl_id": "860",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{authNote}\" in sgs-page-signin"
       },
@@ -5075,7 +5075,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "864",
+        "template_tpl_id": "861",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Sign in Email Password Keep me signed in\" in sgs-page-signin"
       },
@@ -5130,7 +5130,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "887",
+        "template_tpl_id": "884",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Forgotten password Reset your password E\" in sgs-page-signin"
       },
@@ -5185,7 +5185,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "897",
+        "template_tpl_id": "894",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Forgotten password Check your email If t\" in sgs-page-signin"
       },
@@ -5240,7 +5240,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "906",
+        "template_tpl_id": "903",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Forgotten password Choose a new password\" in sgs-page-signin"
       },
@@ -5295,7 +5295,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "916",
+        "template_tpl_id": "913",
         "selector": "template element (no runtime lookup)",
         "description": "<p> \"Those two don't match. Try again.\" in sgs-page-signin"
       },
@@ -5345,7 +5345,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "920",
+        "template_tpl_id": "917",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"My account {acctGreeting} Signed in as {\" in sgs-page-account"
       },
@@ -5402,7 +5402,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "934",
+        "template_tpl_id": "931",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Orders {o.id}{o.date} {o.summary} {o.sta\" in sgs-page-account"
       },
@@ -5452,7 +5452,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "955",
+        "template_tpl_id": "952",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"All orders Order {od.id} Placed {od.date\" in sgs-page-account"
       },
@@ -5502,7 +5502,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1005",
+        "template_tpl_id": "1002",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Subscriptions Lens care sent on a schedu\" in sgs-page-account"
       },
@@ -5552,7 +5552,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1026",
+        "template_tpl_id": "1023",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"{s.skipNote} Undo\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -5602,7 +5602,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1044",
+        "template_tpl_id": "1041",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Cancel your {s.name} subscription? Nothi\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -5652,7 +5652,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1058",
+        "template_tpl_id": "1055",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Addresses {a.title} {a.editLabel} {a.tex\" in sgs-page-account"
       },
@@ -5702,7 +5702,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1070",
+        "template_tpl_id": "1067",
         "selector": "template element (no runtime lookup)",
         "description": "<form> \"Save address Cancel\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -5752,7 +5752,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1082",
+        "template_tpl_id": "1079",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Wishlist {wishCountLabel} Tap the heart \" in sgs-page-account"
       },
@@ -5802,7 +5802,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1098",
+        "template_tpl_id": "1095",
         "selector": "template element (no runtime lookup)",
         "description": "<div> \"Account details First name Last name Ema\" in sgs-page-account"
       },
@@ -5852,7 +5852,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1123",
+        "template_tpl_id": "1120",
         "selector": "template element (no runtime lookup)",
         "description": "<span> \"Saved.\" in sgs-page-account"
       },
@@ -6186,69 +6186,13 @@
       "notes": "width/height change through the img width/height attributes (logoW/logoH = 48×22, 40×18 when scrolled), which map to CSS width/height, so the transition applies."
     },
     {
-      "id": "TR-07",
-      "name": "Transition: EYE CARE",
-      "group": "state-transition",
-      "mechanism": "css-transition",
-      "element": {
-        "dc": "Eye Care Birmingham",
-        "template_tpl_id": "31",
-        "selector": "template element (no runtime lookup)",
-        "description": "<span> \"EYE CARE\" in sgs-header"
-      },
-      "source": {
-        "file": "Eye Care Birmingham.dc.html",
-        "function": "template",
-        "ref": null,
-        "line": null,
-        "code": "transition:font-size .35s"
-      },
-      "trigger": {
-        "type": "state",
-        "detail": "Inline value bound to wordmarkSize (renderVals); transitions when it changes.",
-        "state_keys": [
-          "scrolled"
-        ]
-      },
-      "properties": [
-        {
-          "property": "font-size",
-          "from": "{{ wordmarkSize }}",
-          "to": "state-bound: wordmarkSize",
-          "duration_ms": 350,
-          "delay_ms": 0,
-          "easing": "ease"
-        }
-      ],
-      "duration_ms": 350,
-      "delay_ms": 0,
-      "stagger": null,
-      "easing": "ease",
-      "iterations": 1,
-      "direction": "normal",
-      "fill": "none",
-      "reduced_motion": {
-        "behaviour": "final-state",
-        "detail": "@media (prefers-reduced-motion:reduce) in <helmet> sets animation-duration and transition-duration to .01ms !important (RM-01), so the end state applies at once."
-      },
-      "routes": [
-        "*"
-      ],
-      "status": "active",
-      "trace": {
-        "observed": "not-instrumented",
-        "note": "Runtime trace left out of this handoff; record is source-derived."
-      },
-      "notes": "wordmarkSize 18px → 15px when scrolled."
-    },
-    {
       "id": "TR-08",
       "name": "Transition: Bag {bagCount}",
       "group": "hover",
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "46",
+        "template_tpl_id": "43",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Bag {bagCount}\" in sgs-header"
       },
@@ -6308,7 +6252,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "78",
+        "template_tpl_id": "75",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"{b.name} {b.count}\" in sgs-mega-menu (repeated by sc-for; copies share the id)"
       },
@@ -6360,7 +6304,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "88",
+        "template_tpl_id": "85",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"{l.kicker} {l.price} {l.desc}\" in sgs-mega-menu (repeated by sc-for; copies share the id)"
       },
@@ -6412,7 +6356,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "124",
+        "template_tpl_id": "121",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Shop sunglasses\" in sgs-hero"
       },
@@ -6472,7 +6416,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "125",
+        "template_tpl_id": "122",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Add your prescription\" in sgs-hero"
       },
@@ -6540,7 +6484,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "129",
+        "template_tpl_id": "126",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"{b.name}\" in sgs-brand-marquee (repeated by sc-for; copies share the id)"
       },
@@ -6600,7 +6544,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "161",
+        "template_tpl_id": "158",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{s.tileNote} {s.name}\" in sgs-page-home (repeated by sc-for; copies share the id)"
       },
@@ -6668,7 +6612,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "163",
+        "template_tpl_id": "160",
         "selector": "template element (no runtime lookup)",
         "description": "<span> in sgs-page-home (repeated by sc-for; copies share the id)"
       },
@@ -6720,7 +6664,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "188",
+        "template_tpl_id": "185",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"See all reviews\" in sgs-google-reviews"
       },
@@ -6772,7 +6716,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "189",
+        "template_tpl_id": "186",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Write a review\" in sgs-google-reviews"
       },
@@ -6824,7 +6768,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "210",
+        "template_tpl_id": "207",
         "selector": "template element (no runtime lookup)",
         "description": "<button> in sgs-google-reviews"
       },
@@ -6876,7 +6820,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "213",
+        "template_tpl_id": "210",
         "selector": "template element (no runtime lookup)",
         "description": "<button> in sgs-google-reviews"
       },
@@ -6928,7 +6872,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "219",
+        "template_tpl_id": "216",
         "selector": "template element (no runtime lookup)",
         "description": "<img> in sgs-about-strip"
       },
@@ -6980,7 +6924,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "232",
+        "template_tpl_id": "229",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"How lenses work here\" in sgs-about-strip"
       },
@@ -7040,7 +6984,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "244",
+        "template_tpl_id": "241",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Message me on WhatsApp\" in sgs-optician"
       },
@@ -7108,7 +7052,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "246",
+        "template_tpl_id": "243",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"My qualifications\" in sgs-optician"
       },
@@ -7160,7 +7104,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "283",
+        "template_tpl_id": "280",
         "selector": "template element (no runtime lookup)",
         "description": "<svg> in sgs-shop-layout (repeated by sc-for; copies share the id)"
       },
@@ -7215,7 +7159,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "290",
+        "template_tpl_id": "287",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{i.name}\" in sgs-shop-layout (repeated by sc-for; copies share the id)"
       },
@@ -7278,7 +7222,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "294",
+        "template_tpl_id": "291",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{i.name}\" in sgs-shop-layout (repeated by sc-for; copies share the id)"
       },
@@ -7357,7 +7301,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "300",
+        "template_tpl_id": "297",
         "selector": "template element (no runtime lookup)",
         "description": "<button> in sgs-shop-layout (repeated by sc-for; copies share the id)"
       },
@@ -7409,7 +7353,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "317",
+        "template_tpl_id": "314",
         "selector": "template element (no runtime lookup)",
         "description": "<span> in sgs-shop-layout"
       },
@@ -7464,7 +7408,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "318",
+        "template_tpl_id": "315",
         "selector": "template element (no runtime lookup)",
         "description": "<span> in sgs-shop-layout"
       },
@@ -7519,7 +7463,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "346",
+        "template_tpl_id": "343",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-product-main"
       },
@@ -7583,7 +7527,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "356",
+        "template_tpl_id": "353",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{t.label}\" in sgs-product-main (repeated by sc-for; copies share the id)"
       },
@@ -7638,7 +7582,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "381",
+        "template_tpl_id": "378",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{c.name}\" in sgs-product-main (repeated by sc-for; copies share the id)"
       },
@@ -7701,7 +7645,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "391",
+        "template_tpl_id": "388",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{s.name}{s.mm}\" in sgs-product-main (repeated by sc-for; copies share the id)"
       },
@@ -7780,7 +7724,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "395",
+        "template_tpl_id": "392",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Add my prescriptionfrom +£59\" in sgs-product-main"
       },
@@ -7840,7 +7784,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "398",
+        "template_tpl_id": "395",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Add to bag as they are{cur.priceLabel}\" in sgs-product-main"
       },
@@ -7900,7 +7844,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "406",
+        "template_tpl_id": "403",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Need advice?Message me on WhatsApp — I'm\" in sgs-product-main"
       },
@@ -7960,7 +7904,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "420",
+        "template_tpl_id": "417",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{t.name}\" in sgs-product-tabs (repeated by sc-for; copies share the id)"
       },
@@ -8023,7 +7967,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "498",
+        "template_tpl_id": "495",
         "selector": "template element (no runtime lookup)",
         "description": "<span> \"+\" in sgs-product-tabs (repeated by sc-for; copies share the id)"
       },
@@ -8078,7 +8022,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "516",
+        "template_tpl_id": "513",
         "selector": "template element (no runtime lookup)",
         "description": "<span> in sgs-product-reviews (repeated by sc-for; copies share the id)"
       },
@@ -8133,7 +8077,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "535",
+        "template_tpl_id": "532",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Read the clinic's reviews\" in sgs-product-no-reviews"
       },
@@ -8185,7 +8129,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "611",
+        "template_tpl_id": "608",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Message me\" in sgs-page-about"
       },
@@ -8245,7 +8189,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "651",
+        "template_tpl_id": "648",
         "selector": "template element (no runtime lookup)",
         "description": "<span> \"+\" in sgs-page-help (repeated by sc-for; copies share the id)"
       },
@@ -8300,7 +8244,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "668",
+        "template_tpl_id": "665",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"WhatsApp 07960 5978\" in sgs-page-contact"
       },
@@ -8368,7 +8312,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "698",
+        "template_tpl_id": "695",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Send message\" in sgs-page-contact"
       },
@@ -8420,7 +8364,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "774",
+        "template_tpl_id": "771",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Post it to me{shippingLabel} Royal Mail \" in sgs-checkout-delivery"
       },
@@ -8491,7 +8435,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "779",
+        "template_tpl_id": "776",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Collect in BirminghamFree I'll fit and a\" in sgs-checkout-delivery"
       },
@@ -8562,7 +8506,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "798",
+        "template_tpl_id": "795",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{m.title}\" in sgs-checkout-prescription (repeated by sc-for; copies share the id)"
       },
@@ -8634,7 +8578,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "813",
+        "template_tpl_id": "810",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Pay now{totalLabel}\" in sgs-checkout-payment"
       },
@@ -8686,7 +8630,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1131",
+        "template_tpl_id": "1128",
         "selector": "template element (no runtime lookup)",
         "description": "<a> in sgs-footer"
       },
@@ -8746,7 +8690,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1133",
+        "template_tpl_id": "1130",
         "selector": "template element (no runtime lookup)",
         "description": "<a> in sgs-footer"
       },
@@ -8806,7 +8750,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1135",
+        "template_tpl_id": "1132",
         "selector": "template element (no runtime lookup)",
         "description": "<a> in sgs-footer"
       },
@@ -8866,7 +8810,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1161",
+        "template_tpl_id": "1158",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Ask me anything\" in sgs-whatsapp-fab"
       },
@@ -8934,7 +8878,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1231",
+        "template_tpl_id": "1228",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-bag-drawer"
       },
@@ -8989,7 +8933,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1232",
+        "template_tpl_id": "1229",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Checkout\" in sgs-bag-drawer"
       },
@@ -9041,7 +8985,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1272",
+        "template_tpl_id": "1269",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Can't find the numbers?Send me a photo o\" in sgs-size-guide"
       },
@@ -9101,7 +9045,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1288",
+        "template_tpl_id": "1285",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Close ×\" in sgs-lens-configurator"
       },
@@ -9153,7 +9097,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1291",
+        "template_tpl_id": "1288",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-lens-configurator"
       },
@@ -9208,7 +9152,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1296",
+        "template_tpl_id": "1293",
         "selector": "template element (no runtime lookup)",
         "description": "<div> in sgs-lens-configurator"
       },
@@ -9263,7 +9207,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1315",
+        "template_tpl_id": "1312",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Not sure which to pick?Happy to talk it \" in sgs-lens-configurator"
       },
@@ -9323,7 +9267,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1329",
+        "template_tpl_id": "1326",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{o.title} {o.price} {o.desc}\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -9396,7 +9340,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1341",
+        "template_tpl_id": "1338",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"?\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -9456,7 +9400,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1352",
+        "template_tpl_id": "1349",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{o.title} {o.price} {o.desc} Most people\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -9529,7 +9473,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1365",
+        "template_tpl_id": "1362",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"?\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -9589,7 +9533,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1376",
+        "template_tpl_id": "1373",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{o.title} {o.price} {o.desc}\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -9662,7 +9606,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1385",
+        "template_tpl_id": "1382",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"?\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -9722,7 +9666,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1395",
+        "template_tpl_id": "1392",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{m.title}Easiest {m.desc}\" in sgs-lens-configurator (repeated by sc-for; copies share the id)"
       },
@@ -9786,7 +9730,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1406",
+        "template_tpl_id": "1403",
         "selector": "template element (no runtime lookup)",
         "description": "<label> \"Drop a photo or screenshot here A phone \" in sgs-lens-configurator"
       },
@@ -9838,7 +9782,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1432",
+        "template_tpl_id": "1429",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Not sure which to pick?Happy to talk it \" in sgs-lens-configurator"
       },
@@ -9898,7 +9842,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1439",
+        "template_tpl_id": "1436",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Back\" in sgs-lens-configurator"
       },
@@ -9950,7 +9894,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1445",
+        "template_tpl_id": "1442",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{lensNextLabel}\" in sgs-lens-configurator"
       },
@@ -10002,7 +9946,7 @@
       "mechanism": "css-transition",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1447",
+        "template_tpl_id": "1444",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Add to bag{lensTotalLabel}\" in sgs-lens-configurator"
       },
@@ -10302,7 +10246,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "40",
+        "template_tpl_id": "37",
         "selector": "template element (no runtime lookup)",
         "description": "<button> in sgs-header"
       },
@@ -10354,7 +10298,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "854",
+        "template_tpl_id": "851",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"View my orders\" in sgs-page-order-confirmed"
       },
@@ -10414,7 +10358,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "875",
+        "template_tpl_id": "872",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Sign in\" in sgs-page-signin"
       },
@@ -10466,7 +10410,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "885",
+        "template_tpl_id": "882",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Create account\" in sgs-page-signin"
       },
@@ -10526,7 +10470,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "894",
+        "template_tpl_id": "891",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Send reset link\" in sgs-page-signin"
       },
@@ -10578,7 +10522,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "902",
+        "template_tpl_id": "899",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Back to sign in\" in sgs-page-signin"
       },
@@ -10638,7 +10582,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "917",
+        "template_tpl_id": "914",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Save new password\" in sgs-page-signin"
       },
@@ -10690,7 +10634,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "928",
+        "template_tpl_id": "925",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{t.name}{t.count}\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -10742,7 +10686,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "931",
+        "template_tpl_id": "928",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Sign out\" in sgs-page-account"
       },
@@ -10794,7 +10738,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "939",
+        "template_tpl_id": "936",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"{o.id}{o.date} {o.summary} {o.status} {o\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -10846,7 +10790,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "953",
+        "template_tpl_id": "950",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Shop sunglasses\" in sgs-page-account"
       },
@@ -10898,7 +10842,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "956",
+        "template_tpl_id": "953",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"All orders\" in sgs-page-account"
       },
@@ -10950,7 +10894,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "999",
+        "template_tpl_id": "996",
         "selector": "template element (no runtime lookup)",
         "description": "<a> \"Questions about this order?Message me wi\" in sgs-page-account"
       },
@@ -11002,7 +10946,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1038",
+        "template_tpl_id": "1035",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Skip next delivery\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11054,7 +10998,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1039",
+        "template_tpl_id": "1036",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Pause\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11106,7 +11050,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1041",
+        "template_tpl_id": "1038",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Resume\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11158,7 +11102,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1042",
+        "template_tpl_id": "1039",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Cancel subscription\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11210,7 +11154,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1048",
+        "template_tpl_id": "1045",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Yes, cancel it\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11262,7 +11206,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1049",
+        "template_tpl_id": "1046",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Keep it\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11314,7 +11258,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1078",
+        "template_tpl_id": "1075",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Save address\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11366,7 +11310,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1079",
+        "template_tpl_id": "1076",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Cancel\" in sgs-page-account (repeated by sc-for; copies share the id)"
       },
@@ -11418,7 +11362,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1096",
+        "template_tpl_id": "1093",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Shop sunglasses\" in sgs-page-account"
       },
@@ -11470,7 +11414,7 @@
     {
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "1121",
+        "template_tpl_id": "1118",
         "selector": "template element (no runtime lookup)",
         "description": "<button> \"Save changes\" in sgs-page-account"
       },
@@ -11635,7 +11579,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "reveals",
         "ref": "rootRef",
-        "line": 2615,
+        "line": 2611,
         "code": "el.setAttribute('data-rv','pending'); el.style.opacity = '0'; el.style.transform = 'translateY(26px)';"
       },
       "trigger": {
@@ -11718,7 +11662,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "show",
         "ref": "rootRef",
-        "line": 2582,
+        "line": 2578,
         "code": "const p = Math.min(1, t / dur), e = 1 - Math.pow(1 - p, 3); el.style.opacity = String(e); el.style.transform = 'translateY(' + (26 * (1 - e)).toFixed(2) + 'px)';"
       },
       "trigger": {
@@ -11799,7 +11743,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "bare",
         "ref": null,
-        "line": 2567,
+        "line": 2563,
         "code": "removeProperty('animation' | 'transition' | 'transition-delay' | 'opacity' | 'transform')"
       },
       "trigger": {
@@ -11893,7 +11837,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "reveals",
         "ref": "rootRef",
-        "line": 2594,
+        "line": 2590,
         "code": "if (!window.IntersectionObserver || this.rm){ this.showAll(); return; }"
       },
       "trigger": {
@@ -11941,7 +11885,7 @@
       "mechanism": "js-style-write",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "115",
+        "template_tpl_id": "112",
         "selector": "heroRef (ref=\"{{ heroRef }}\")",
         "description": "Hero image wrapper (inset:-9% 0; will-change:transform)"
       },
@@ -11949,7 +11893,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "parallax",
         "ref": "heroRef",
-        "line": 2623,
+        "line": 2619,
         "code": "if (this.rm) { el.style.removeProperty('transform'); return; } el.style.transform = 'translate3d(0,' + y * 0.18 + 'px,0)';"
       },
       "trigger": {
@@ -12003,7 +11947,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "go",
         "ref": null,
-        "line": 2692,
+        "line": 2688,
         "code": "window.scrollTo(0,0);"
       },
       "trigger": {
@@ -12047,7 +11991,7 @@
       "mechanism": "js-scroll",
       "element": {
         "dc": "Eye Care Birmingham",
-        "template_tpl_id": "191",
+        "template_tpl_id": "188",
         "selector": "document.querySelector('.rev-rail')",
         "description": "Google reviews horizontal rail (scroll-snap-type:x mandatory)"
       },
@@ -12055,12 +11999,12 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "renderVals (revPrev / revNext)",
         "ref": null,
-        "line": 3136,
+        "line": 3132,
         "code": "r.scrollBy({left: ±(mobile ? 286 : 712), behavior: this.rm ? 'auto' : 'smooth'})"
       },
       "trigger": {
         "type": "press",
-        "detail": "onClick on the two arrow buttons (tpl 210, 213).",
+        "detail": "onClick on the two arrow buttons (tpl 207, 210).",
         "state_keys": []
       },
       "properties": [
@@ -12105,7 +12049,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "lockScroll",
         "ref": null,
-        "line": 2627,
+        "line": 2623,
         "code": "document.documentElement.style.overflow = lock ? 'hidden' : '';"
       },
       "trigger": {
@@ -12164,7 +12108,7 @@
         "file": "Eye Care Birmingham.dc.html",
         "function": "renderVals (orders[].open)",
         "ref": null,
-        "line": 2979,
+        "line": 2975,
         "code": "window.scrollTo(0, 0);"
       },
       "trigger": {
@@ -12199,17 +12143,16 @@
     },
     "inline_transitions": {
       "by_dc": {
-        "Eye Care Birmingham": 93,
+        "Eye Care Birmingham": 92,
         "Frame Card": 4
       },
-      "total": 97,
+      "total": 96,
       "record_ids": [
         "TR-02",
         "TR-03",
         "TR-04",
         "TR-05",
         "TR-06",
-        "TR-07",
         "TR-76",
         "TR-08",
         "TR-09",
