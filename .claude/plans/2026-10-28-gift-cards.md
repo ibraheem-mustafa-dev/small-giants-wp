@@ -29,6 +29,10 @@ Each is a per-site setting whose default is Bean's answer, so any client can dif
 11. Every setting has an admin control (clients never touch code); UK English; no inline `style=""` (Spec 32); WCAG 2.1 AA.
 12. Tests: PHPUnit for ledger maths, reservation and concurrency, code entropy and storage, preflight exemption, feed and schema output; a negative control for each refusal.
 
+## Status (2026-10-28)
+
+Steps 1 and 2 are done: built and merged to `main` (`466457e97`, `82764a5f4`), not deployed. Next: step 3, deploy to mamas-test and the live purchase test.
+
 ## Steps
 
 1. Build on a worktree branch (one Sonnet subagent): requirements 1 to 12, Spec 27 gift-card FRs with Status lines, `plugins/sgs-blocks/CLAUDE.md` if its conventions call for it. Done when the PHPUnit suite, `audit-inline-styling.js --check`, phpcs on the new files and `check-no-client-names.py --check` pass.
