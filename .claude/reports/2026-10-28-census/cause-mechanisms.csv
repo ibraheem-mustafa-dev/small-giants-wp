@@ -1,0 +1,116 @@
+class,block,property,state,tier,reason,owner_fr,indus-foods,mamas-munches-redesign,eye-care-ward-end,total,example
+F-setting,sgs/button,transform,default,all,default-state,FR-48-81 States (a block's own interaction look no setting holds for this element),65,66,91,222,"indus-foods about cr-ref-about-48: {""375"":""none"",""768"":""none"",""1440"":""none""} → null"
+F-setting,sgs/button,place-items,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),39,85,96,220,indus-foods about cr-ref-about-116: normal → null
+F-setting,sgs/button,display,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),38,83,93,214,indus-foods about cr-ref-about-116: block → null
+F-setting,sgs/decorative-image,transform,default,all,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),150,0,0,150,"indus-foods about cr-ref-about-108: {""375"":""1.0665"",""768"":""1.07946"",""1440"":""1.07189""} → null"
+F-setting,sgs/form,border-width,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),17,99,34,150,indus-foods form-careers cr-ref-form-careers-9: 1px → null
+F-setting,sgs/form,padding,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),35,46,57,138,indus-foods form-careers cr-ref-form-careers-9: 14px → null
+F-setting,sgs/label,gap,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),136,0,2,138,indus-foods about cr-ref-about-27: 12px → null
+F-setting,sgs/text,display,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),17,52,37,106,indus-foods delivery cr-ref-delivery-64: inline → null
+F-setting,sgs/heading,text-wrap-style,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),100,3,0,103,indus-foods about cr-ref-about-4: balance → null
+F-setting,sgs/label,place-items,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),98,0,1,99,indus-foods about cr-ref-about-3: center → null
+F-setting,sgs/container,cursor,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),46,26,19,91,indus-foods careers cr-ref-careers-82: pointer → null
+F-setting,sgs/container,overflow,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),77,2,2,81,indus-foods about cr-ref-about-9: clip → null
+F-behaviour,sgs/media,motion-record,default,flat,trigger-no-layer,"FR-48-80 Behaviour recognisers (no layer, effect or published state of SGS plays this motion, lib/motion-layers.mjs::classify, lib/motion-loops.mjs)",70,0,0,70,indus-foods brands cr-ref-brands-19: A-38 → null
+F-behaviour,sgs/container,motion-record,default,flat,trigger-no-layer,"FR-48-80 Behaviour recognisers (no layer, effect or published state of SGS plays this motion, lib/motion-layers.mjs::classify, lib/motion-loops.mjs)",48,3,0,51,indus-foods about cr-ref-about-0: A-12 → null
+F-behaviour,sgs/form,motion-record,default,flat,no-motion-support,"FR-48-47 Motion (the block declares no motion target to write the record to, lib/fill-motion.mjs)",46,4,0,50,indus-foods form-careers cr-ref-form-careers-4: TR-084 → null
+F-behaviour,sgs/icon,motion-record,default,flat,trigger-no-layer,"FR-48-80 Behaviour recognisers (no layer, effect or published state of SGS plays this motion, lib/motion-layers.mjs::classify, lib/motion-loops.mjs)",5,0,0,5,indus-foods careers cr-ref-careers-88: TR-071 → null
+F-behaviour,sgs/button,motion-record,default,flat,trigger-no-layer,"FR-48-80 Behaviour recognisers (no layer, effect or published state of SGS plays this motion, lib/motion-layers.mjs::classify, lib/motion-loops.mjs)",0,4,0,4,mamas-munches-redesign cart cr-ref-cart-119: A-03 → null
+F-behaviour,sgs/icon-list,motion-record,default,flat,effect-not-offered,"FR-48-77 Effect recognition (the block does not offer the effect, lib/motion-effects.mjs)",3,0,0,3,indus-foods home cr-ref-home-96: A-30 → null
+F-behaviour,sgs/multi-button,motion-record,default,flat,effect-not-offered,"FR-48-77 Effect recognition (the block does not offer the effect, lib/motion-effects.mjs)",0,0,1,1,eye-care-ward-end home cr-ref-home-9: K-09 → null
+F-behaviour,sgs/nav-drawer,motion-record,default,flat,trigger-no-layer,"FR-48-80 Behaviour recognisers (no layer, effect or published state of SGS plays this motion, lib/motion-layers.mjs::classify, lib/motion-loops.mjs)",0,1,0,1,mamas-munches-redesign drawer-menu cr-ref-drawer-menu-0: A-05 → null
+W-walker,sgs/label,background-color,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,55,12,16,83,"indus-foods about cr-ref-about-3: rgba(255, 255, 255, 0.5) → null"
+W-walker,sgs/media,font-family,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,70,0,0,70,"indus-foods brands cr-ref-brands-19: system-ui, -apple-system, sans-serif → null"
+W-walker,sgs/media,font-size,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,70,0,0,70,indus-foods brands cr-ref-brands-19: 13px → null
+W-walker,sgs/media,line-height,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,70,0,0,70,indus-foods brands cr-ref-brands-19: 16.9px → null
+W-walker,sgs/hero,padding,default,all,unpaired-part,FR-48-3 Stage-0 calibration,50,16,2,68,indus-foods about cr-ref-about-1: 44px → 0px
+W-walker,sgs/text,background-color,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,0,41,21,62,"mamas-munches-redesign cart cr-ref-cart-17: rgb(238, 128, 136) → null"
+W-walker,sgs/icon,border-color,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,52,0,0,52,"indus-foods delivery cr-ref-delivery-69: rgba(30, 42, 60, 0.2) → null"
+W-walker,sgs/hero,padding,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,0,8,26,34,mamas-munches-redesign home cr-ref-home-1: 0px → null
+W-walker,sgs/icon,color,default,flat,unpaired-part,FR-48-3 Stage-0 calibration,11,4,16,31,"indus-foods apply cr-ref-apply-14: rgb(216, 202, 80) → null"
+W-walker,sgs/hero,padding,default,all,unpaired-part,FR-48-3 Stage-0 calibration,22,8,0,30,"indus-foods about cr-ref-about-1: {""375"":""20px"",""768"":""32px"",""1440"":""40px""} → null"
+W-walker,sgs/hero,padding,default,1440,unpaired-part,FR-48-3 Stage-0 calibration,28,0,0,28,indus-foods careers cr-ref-careers-1: 40px → 60px
+W-walker,sgs/container,walker:(pseudo layer),default,flat,unmapped-element,FR-48-21 Stage 5 gap list,14,0,0,14,"indus-foods green-leaf cr-ref-green-leaf-40 ::after: content """" → null"
+W-route,sgs/button,border-style,default,flat,shape,FR-48-2 Accepted value forms,120,21,135,276,indus-foods about cr-ref-about-116: none → null
+W-route,sgs/container,border-style,default,flat,shape,FR-48-2 Accepted value forms,153,30,25,208,indus-foods about cr-ref-about-12: solid → null
+W-route,sgs/container,motion-record,default,flat,behaviour-other-block,"FR-48-80 Behaviour recognisers (the recognised behaviour's settings belong to another block than the element's, lib/fill-behaviour.mjs::applySettings)",206,0,0,206,indus-foods about cr-ref-about-31: J-11 → null
+W-route,sgs/container,motion-record,default,flat,script-motion,FR-48-80 Behaviour recognisers (a script-built motion the recognisers have not yet turned into a setting: the route's own debt),1,0,168,169,indus-foods drawer-site-menu cr-ref-drawer-site-menu-10: J-31 → null
+W-route,sgs/button,text-align,default,all,shape,FR-48-2 Accepted value forms,63,18,53,134,indus-foods about cr-ref-about-7: start → center
+W-route,sgs/button,walker:svg,default,flat,content-media-icon,"FR-48-82 Content, media and icons",87,2,6,95,indus-foods about cr-ref-about-7: iconSource → null
+W-route,sgs/button,text-align,default,flat,shape,FR-48-2 Accepted value forms,44,31,16,91,indus-foods about cr-ref-about-48: start → null
+W-route,sgs/button,transition-property,default,all,state-transition,FR-48-81 States,31,19,36,86,"indus-foods about cr-ref-about-115: {""375"":""transform, background, box-shadow"",""768"":""transform, background, box-shadow"",""1440"":""transform, background, box-shadow""} → null"
+W-route,sgs/media,height,default,flat,dimension,FR-48-43 Unstated values,70,12,1,83,indus-foods brands cr-ref-brands-19: 100% → null
+W-route,sgs/button,walker:settings.custom.focus.offset,default,flat,conflict,FR-48-21 Stage 5 gap list,3,3,66,72,"indus-foods certifications cr-ref-certifications-93: ""1px"" → null"
+W-route,sgs/icon,height,default,flat,dimension,FR-48-43 Unstated values,38,12,17,67,indus-foods apply cr-ref-apply-14: 18px → null
+W-route,sgs/form,height,default,flat,dimension,FR-48-43 Unstated values,20,38,1,59,indus-foods form-careers cr-ref-form-careers-11: 18px → null
+W-unchecked,sgs/form,walker:text,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),15,14,6,35,indus-foods form-careers cr-ref-form-careers-7: Please selectWarehouse & logisticsProduction & packingSales & account managementOffice & financeNot sure yet → null
+W-unchecked,sgs/form,min-height,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),2,0,28,30,indus-foods form-enquiry cr-ref-form-enquiry-19: 160px → null
+W-unchecked,sgs/button,transition-property,default,all,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),9,6,6,21,"indus-foods brands cr-ref-brands-79: {""375"":""color, gap"",""768"":""color, gap"",""1440"":""color, gap""} → null"
+W-unchecked,sgs/icon-list,walker:text,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),4,12,3,19,indus-foods careers cr-ref-careers-128: 0121 771 4330 → null
+W-unchecked,sgs/form,transition-property,default,all,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),14,0,0,14,"indus-foods form-careers cr-ref-form-careers-4 .sgs-form-field__input: {""375"":""border-color, box-shadow, background"",""768"":""border-color, box-shadow, background"",""1440"":""border-color, box-shadow, background""} → null"
+W-unchecked,sgs/quote,max-height,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),0,0,13,13,eye-care-ward-end home cr-ref-home-303: 186px → null
+W-unchecked,sgs/button,gap,default,all,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),12,0,0,12,"indus-foods brands cr-ref-brands-79: {""375"":""12px"",""768"":""12px"",""1440"":""12px""} → null"
+W-unchecked,sgs/media,max-width,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),0,9,0,9,mamas-munches-redesign cart cr-ref-cart-39: 100% → null
+W-unchecked,sgs/icon,transition-timing-function,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),8,0,0,8,"indus-foods drawer-site-menu cr-ref-drawer-site-menu-8: cubic-bezier(0.34, 1.56, 0.64, 1), ease, ease, ease, ease → null"
+W-unchecked,sgs/button,walker:text,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),0,3,3,6,mamas-munches-redesign home cr-ref-home-8: Build your box→ → null
+W-unchecked,sgs/button,transition-property,default,375,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),0,5,0,5,"mamas-munches-redesign home cr-ref-home-92: {""375"":""width, background""} → null"
+W-unchecked,sgs/container,walker:target,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),1,0,4,5,indus-foods contact cr-ref-contact-31: _blank → null
+I-unrouted,sgs/container,width,default,375+768,no-fill-row,,322,26,0,348,indus-foods about cr-ref-about-10: 704px → 768px
+I-unrouted,sgs/container,width,default,all,no-fill-row,,117,68,38,223,indus-foods about cr-ref-about-26: 580.875px → 660.875px
+I-unrouted,sgs/container,gap,default,all,no-fill-row,,155,40,6,201,indus-foods about cr-ref-about-9 .sgs-container > .sgs-container: 28px → 24px
+I-unrouted,sgs/form,border-color,default,all,state-look,"FR-48-81 States (no per-element setting holds this state look, lib/fill-state.mjs)",184,0,0,184,"indus-foods form-careers cr-ref-form-careers-4: {""375"":""rgb(10, 126, 168)"",""768"":""rgb(10, 126, 168)"",""1440"":""rgb(10, 126, 168)""} → null"
+I-unrouted,sgs/container,width,default,768+1440,no-fill-row,,177,0,0,177,indus-foods about cr-ref-about-42: 296px → 216px
+I-unrouted,sgs/container,width,default,1440,no-fill-row,,141,0,0,141,indus-foods careers cr-ref-careers-82: 671.609px → 590.984px
+I-unrouted,sgs/container,gap,default,all,fill-wrote,,85,12,6,103,indus-foods brands cr-ref-brands-17: 12px → 0px
+I-unrouted,sgs/container,width,default,1440,no-fill-row,,34,56,0,90,indus-foods home cr-ref-home-17: 1080px → 1000px
+I-unrouted,sgs/container,text-shadow,default,all,no-fill-row,,70,5,8,83,indus-foods blog cr-ref-blog-0 div:nth-of-type(1) > .sgs-breadcrumbs > .sgs-breadcrumbs__list > .sgs-breadcrumbs__item: undefined → none
+I-unrouted,sgs/form,width,default,flat,dimension,FR-48-43 Unstated values,49,30,3,82,indus-foods form-careers cr-ref-form-careers-4: 100% → null
+I-unrouted,sgs/container,width,default,768+1440,no-fill-row,,0,17,39,56,mamas-munches-redesign contact cr-ref-contact-7: 401.328px → 386.656px
+I-unrouted,sgs/container,content,default,all,no-fill-row,,55,0,0,55,"indus-foods about cr-ref-about-41 ::before: none → """""
+I-mistag,sgs/container,background-image,default,all,ambiguous,FR-48-3 Stage-0 calibration,28,2,0,30,"indus-foods careers cr-ref-careers-82: {""375"":""none"",""768"":""none"",""1440"":""none""} → null"
+I-mistag,sgs/container,background-image,default,flat,ambiguous,FR-48-3 Stage-0 calibration,0,4,0,4,"mamas-munches-redesign cart cr-ref-cart-111: url(""http://127.0.0.1:49282/assets/photo-pair-love.jpg"") → null"
+I-mistag,sgs/container,background-image,default,all,ambiguous,FR-48-3 Stage-0 calibration,2,0,0,2,"indus-foods single cr-ref-single-29: linear-gradient(rgb(243, 234, 176) 0%, rgb(234, 221, 126) 100%) → none"
+I-mistag,sgs/hero,background-image,default,all,ambiguous,FR-48-3 Stage-0 calibration,1,0,0,1,"indus-foods single cr-ref-single-1: linear-gradient(135deg, rgb(235, 221, 120) 0%, rgb(227, 211, 95) 50%, rgb(216, 202, 80) 100%) → linear-gradient(135deg, rgb(7, 94, 128) 0px, rgb(10, 126, 168) 100%)"
+I-mistag,sgs/hero,background-image,default,flat,ambiguous,FR-48-3 Stage-0 calibration,0,0,1,1,eye-care-ward-end template-page-my-account cr-ref-template-page-my-account-1: none → null
+I-mistag,sgs/site-footer,background-image,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),1,0,0,1,indus-foods footer cr-ref-footer-0 .sgs-container__inner: none → null
+I-calibration,sgs/button,width,default,all,no-fill-row,,67,16,44,127,indus-foods about cr-ref-about-7: 180.578px → 171.578px
+I-calibration,sgs/button,place-content,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),63,4,2,69,indus-foods about cr-ref-about-7: normal → null
+I-calibration,sgs/label,width,default,all,no-fill-row,,35,11,8,54,indus-foods about cr-ref-about-3: 226.094px → 1272px
+I-calibration,sgs/button,width,default,flat,dimension,FR-48-43 Unstated values,0,23,20,43,mamas-munches-redesign cart cr-ref-cart-35: 48px → null
+I-calibration,sgs/button,width,default,all,dimension,FR-48-43 Unstated values,0,11,25,36,mamas-munches-redesign drawer-menu cr-ref-drawer-menu-3: 48px → 26.7031px
+I-calibration,sgs/hero,place-content,default,flat,shape,FR-48-2 Accepted value forms,24,5,3,32,indus-foods about cr-ref-about-1: normal → null
+I-calibration,sgs/button,place-content,default,all,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),12,6,11,29,indus-foods brands cr-ref-brands-79: normal → center
+I-calibration,sgs/decorative-image,inset,default,all,no-fill-row,,26,0,0,26,indus-foods apply cr-ref-apply-2: 1100px → 932px
+I-calibration,sgs/label,gap,default,all,no-fill-row,,26,0,0,26,indus-foods about cr-ref-about-3: 10px → 0px
+I-calibration,sgs/quote,color,default,all,no-fill-row,,0,0,13,13,"eye-care-ward-end home cr-ref-home-303 p: rgb(60, 64, 67) → rgb(20, 20, 20)"
+I-calibration,sgs/icon,color,hover,768+1440,no-fill-row,,0,1,10,11,"mamas-munches-redesign footer cr-ref-footer-26: rgb(255, 255, 255) → rgb(58, 42, 34)"
+I-calibration,sgs/label,width,default,375,no-fill-row,,0,11,0,11,mamas-munches-redesign help cr-ref-help-12: 239px → 264.5px
+render-wins,sgs/media,motion-record,default,flat,render-shows-none,"FR-48-36 The confirm record (the render shows no motion the code records, so the render wins, lib/fill-motion-element.mjs)",70,0,0,70,indus-foods brands cr-ref-brands-19: A-37 → null
+render-wins,sgs/button,motion-record,default,flat,never-runs,"FR-48-36 The confirm record (the draft's code holds a record its render never runs; the render is the target, lib/motion-layers.mjs::classify)",17,0,0,17,indus-foods apply cr-ref-apply-4: PS-004 → null
+render-wins,sgs/decorative-image,motion-record,default,flat,render-shows-none,"FR-48-36 The confirm record (the render shows no motion the code records, so the render wins, lib/fill-motion-element.mjs)",4,0,0,4,indus-foods drawer-site-menu cr-ref-drawer-site-menu-1: A-21 → null
+render-wins,sgs/container,motion-record,default,flat,never-runs,"FR-48-36 The confirm record (the draft's code holds a record its render never runs; the render is the target, lib/motion-layers.mjs::classify)",0,0,2,2,eye-care-ward-end home cr-ref-home-291: J-20 → null
+render-wins,sgs/site-header,motion-record,default,flat,render-shows-none,"FR-48-36 The confirm record (the render shows no motion the code records, so the render wins, lib/fill-motion-element.mjs)",0,0,1,1,eye-care-ward-end header cr-ref-header-1 .sgs-container__inner: K-01 → null
+held,sgs/container,motion-record,default,flat,reduced-motion,"Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)",1004,0,293,1297,indus-foods about cr-ref-about-0: RM-01 → null
+held,sgs/text,motion-record,default,flat,reduced-motion,"Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)",421,0,233,654,indus-foods about cr-ref-about-5: RM-01 → null
+held,sgs/container,line-height,default,flat,held-inherited,FR-48-21 Stage 5 gap list,0,361,6,367,mamas-munches-redesign cart cr-ref-cart-1: normal → null
+held,sgs/heading,motion-record,default,flat,reduced-motion,"Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)",239,0,41,280,indus-foods about cr-ref-about-4: RM-01 → null
+held,sgs/button,motion-record,default,flat,reduced-motion,"Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)",138,0,89,227,indus-foods about cr-ref-about-7: RM-01 → null
+held,sgs/button,place-content,default,flat,held-inert,FR-48-21 Stage 5 gap list,39,85,96,220,indus-foods about cr-ref-about-116: normal → null
+held,sgs/text,text-wrap-style,default,flat,held-covered,FR-48-21 Stage 5 gap list,179,1,31,211,indus-foods about cr-ref-about-5: pretty → null
+held,sgs/label,motion-record,default,flat,reduced-motion,"Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)",132,0,48,180,indus-foods about cr-ref-about-3: RM-01 → null
+held,sgs/container,transition-timing-function,default,flat,held-covered,FR-48-21 Stage 5 gap list,84,38,0,122,"indus-foods about cr-ref-about-41: cubic-bezier(0.16, 0.84, 0.32, 1), ease, ease → null"
+held,sgs/container,z-index,default,flat,no-setting,FR-48-21 Stage 5 gap list (framework setting gap),118,2,2,122,indus-foods about cr-ref-about-0: 1 → null
+held,sgs/form,motion-record,default,flat,reduced-motion,"Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)",56,0,38,94,indus-foods form-careers cr-ref-form-careers-0: RM-01 → null
+held,sgs/media,motion-record,default,flat,reduced-motion,"Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)",70,0,17,87,indus-foods brands cr-ref-brands-19: RM-01 → null
+unassessed,sgs/container,padding,default,all,fill-wrote,,1071,285,228,1584,indus-foods about cr-ref-about-9: 64px → 0px
+unassessed,(surface),transition,default,all,no-fill-row,,686,227,246,1159,"indus-foods about gen-about-1: none → background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out"
+unassessed,(surface),auto:moved,default,all,no-fill-row,,683,45,271,999,"indus-foods about (auto): 101,0 → 41,0"
+unassessed,(surface),presence:element,default,all,no-fill-row,,127,362,369,858,indus-foods apply gen-apply-4: present → missing
+unassessed,sgs/container,box:h,default,all,no-fill-row,,546,140,102,788,indus-foods about cr-ref-about-0: 5969 → 2902
+unassessed,(surface),auto:moved,default,375+768,no-fill-row,,544,5,31,580,"indus-foods about (auto): -250,329 → -183,149"
+unassessed,(surface),auto:moved,default,1440,no-fill-row,,444,21,91,556,"indus-foods about (auto): 705,208 → -202,49"
+unassessed,sgs/container,padding,default,all,no-fill-row,,430,46,30,506,indus-foods about cr-ref-about-12: 0px → 40px
+unassessed,(surface),auto:moved,default,768,no-fill-row,,406,21,50,477,"indus-foods about (auto): 43,0 → 38,0"
+unassessed,(surface),auto:moved,default,375,no-fill-row,,225,49,179,453,"indus-foods about (auto): 118,0 → -35,37"
+unassessed,sgs/text,walker:tag,default,all,no-fill-row,,126,97,109,332,indus-foods about cr-ref-about-44: <span> (inline text) → <p> (block)
+unassessed,sgs/container,box:w,default,375+768,no-fill-row,,293,25,0,318,indus-foods about cr-ref-about-10: 704 → 768

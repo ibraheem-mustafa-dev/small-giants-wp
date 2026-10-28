@@ -1,0 +1,18 @@
+class,meaning,owner,indus-foods,mamas-munches-redesign,eye-care-ward-end,total
+F-setting,no setting reaches a property the block paints,owning framework spec,3032,1819,1545,6396
+F-hardcode,a setting holds the draft value and a named framework rule still wins,owning framework spec,0,0,0,0
+F-block,no block or composition can hold the element,Spec 02,0,0,0,0
+F-vocabulary,"the token or preset vocabulary lacks the value kind (a slug, shadow role, fluid size)",Spec 32,0,0,0,0
+F-behaviour,"an SGS feature lacks the behaviour (a seen-but-unsupported row, FR-48-34)",owning feature spec,172,12,1,185
+W-walker,"a measuring artefact (mispair, unmeasured side, consequence of another row)",Spec 48 §3.6,516,211,164,891
+W-route,"a setting exists that the route did not find, calibrate or write",Spec 48,1277,502,858,2637
+W-unchecked,"a no-setting row that does not record every check as run, or comes from a run that records none: not a framework gap until they have",Spec 48,83,71,84,238
+I-stale,the DB or a cache is older than the code,"sgs-update-v2.py, calibration",0,0,0,0
+I-unrouted,a fitting setting has a NULL css_property,sgs-update-v2.py,1638,439,373,2450
+I-mistag,a setting carries the wrong role,sgs-update-v2.py,32,6,1,39
+I-calibration,"dead, noMarker, untested or absent calibration",calibration (Spec 48 §3.2),423,207,386,1016
+draft-defect,FR-48-34's closed list of defects in the draft itself,"Claude Design, or the client's draft edit",0,0,0,0
+render-wins,"the draft's code and render disagree and the rendered value is the target (FR-48-36); reported, never a gap",the surface report; Claude Design when the code is the error,91,0,3,94
+CLIENT,a recorded deliberate difference or a client decision,the client's ledger,0,0,0,0
+held,"a row already held and judged live: the equivalence engine found the value inert, covered, inherited or the block's default, or a reduced-motion record the motion model removes itself; not a gap",FR-48-65,3409,827,1521,5757
+unassessed,"a walker row that no Fill row and no triage verdict covers, so no class has judged it yet",FR-48-65,17447,4800,6624,28871
