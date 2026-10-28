@@ -22,6 +22,9 @@ namespace {
 	function get_option( $k, $d = false ) { return $GLOBALS['t_options'][ $k ] ?? $d; }
 	function add_option( $k, $v, $deprecated = '', $autoload = true ) {
 		++$GLOBALS['t_add_calls'];
+		if ( ! empty( $GLOBALS['t_store_fails'] ) ) {
+			return false; // A database that refuses the write.
+		}
 		if ( array_key_exists( $k, $GLOBALS['t_options'] ) ) {
 			return false; // WordPress add_option() never overwrites.
 		}
@@ -53,6 +56,20 @@ namespace {
 		$r['key']             = Gift_Card_Code::default_key();
 		$r['option_after']    = $GLOBALS['t_options'][ $opt ];
 		$r['add_calls']       = $GLOBALS['t_add_calls'];
+		echo json_encode( $r );
+		exit( 0 );
+	}
+
+	if ( in_array( '--store-fails', $argv, true ) ) {
+		// The key cannot be stored: no key is handed out, so no card is issued under an unstored key.
+		$GLOBALS['t_store_fails'] = true;
+		$r['threw'] = false;
+		try {
+			$r['key'] = Gift_Card_Code::default_key();
+		} catch ( \RuntimeException $e ) {
+			$r['threw'] = true;
+		}
+		$r['stored'] = array_key_exists( $opt, $GLOBALS['t_options'] );
 		echo json_encode( $r );
 		exit( 0 );
 	}

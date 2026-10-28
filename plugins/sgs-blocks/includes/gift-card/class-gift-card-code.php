@@ -152,6 +152,10 @@ final class Gift_Card_Code {
 		$candidate = \bin2hex( \random_bytes( 32 ) );
 		\add_option( self::KEY_OPTION, $candidate, '', false );
 		$stored = \get_option( self::KEY_OPTION, '' );
-		return ( \is_string( $stored ) && '' !== $stored ) ? $stored : $candidate;
+		if ( ! \is_string( $stored ) || '' === $stored ) {
+			// A key that was never stored would strand every card issued under it, so no code is made without one.
+			throw new \RuntimeException( 'The gift card code key could not be stored.' );
+		}
+		return $stored;
 	}
 }

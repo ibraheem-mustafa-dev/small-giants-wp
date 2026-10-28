@@ -55,6 +55,13 @@ final class GiftCardCodeKeyTest extends TestCase {
 		$this->assertSame( 1, self::$r['add_calls_after_three_reads'], 'Created once; later reads do not add again.' );
 	}
 
+	public function test_a_key_that_cannot_be_stored_is_refused_never_handed_out(): void {
+		$r = self::run_harness( '--store-fails' );
+		$this->assertTrue( $r['threw'], 'default_key() must refuse when the key cannot be stored' );
+		$this->assertArrayNotHasKey( 'key', $r );
+		$this->assertFalse( $r['stored'] );
+	}
+
 	public function test_the_key_option_is_not_autoloaded(): void {
 		$this->assertFalse( self::$r['autoload'] );
 	}
