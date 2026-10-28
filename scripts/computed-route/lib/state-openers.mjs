@@ -89,6 +89,9 @@ export function stateWays( states, { own, live = null, extra = () => ( {} ) } ) 
 	return { ways, refused };
 }
 
+// Why a state has no way to open it (stateWays' `refused`): every key it dropped with its reason, and no setState call.
+export const noWayReason = ( dropped ) => `no usable state key (${ ( dropped || [] ).map( ( d ) => `${ d.key }: ${ d.why }` ).join( '; ' ) || 'the state sets none' }) and no setState call in its how_to_reach`;
+
 // Width bounds as text: `w >= 768`, `w <= 767`, `w 768-1023`.
 export const boundsText = ( b ) => ( b || [] ).map( ( x ) => `${ x.key } ${ null == x.min ? `<= ${ x.max }` : null == x.max ? `>= ${ x.min }` : `${ x.min }-${ x.max }` }` ).join( ', ' );
 

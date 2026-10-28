@@ -23,7 +23,7 @@
 // The walker config's live side opens the same surface through the control that owns it (liveOpenerSource).
 import { setDraftState, reachDraftState, logicState } from './intake-state.mjs';
 import { widthBounds, fitsWidth, waysHeldAt } from './state-reach.mjs';
-import { openStates, judgeKeys, stateWays, describeWay, boundsText } from './state-openers.mjs';
+import { openStates, judgeKeys, stateWays, describeWay, boundsText, noWayReason } from './state-openers.mjs';
 import { ROOT_HOST, isStatePage, stateRouteHash } from './state-route.mjs';
 import { walkerKey, OPENABLE } from './manifest-build.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
@@ -105,7 +105,7 @@ export function stateOpener( { entry, skeleton, record, facts, rootComponent = n
 	candidates.push( ...pool.filter( ( s ) => ! candidates.includes( s ) && widthBounds( s, own ).length && bounded.some( ( c ) => unbound( c ) === unbound( s ) ) ) );
 	const built = stateWays( candidates, { own, live: facts?.state?.[ record.dc ] ?? null, extra: ( s ) => ( { expect: ( s.sc_if_tpl_ids || [] ).map( String ) } ) } );
 	const ways = built.ways;
-	const refused = built.refused.map( ( r ) => ( { state: r.state, reason: `no usable state key (${ r.dropped.map( ( d ) => `${ d.key }: ${ d.why }` ).join( '; ' ) || 'the state sets none' }) and no setState call in its how_to_reach` } ) );
+	const refused = built.refused.map( ( r ) => ( { state: r.state, reason: noWayReason( r.dropped ) } ) );
 	const first = ways[ 0 ];
 	return first ? { ...base, ways, state: first.state, keys: first.keys ?? {}, calls: first.calls ?? [], dropped: first.dropped, expect: first.expect, refused } : { ...base, ways, refused };
 }

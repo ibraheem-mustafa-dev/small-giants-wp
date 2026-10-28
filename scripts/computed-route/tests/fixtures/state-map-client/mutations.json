@@ -1,0 +1,8 @@
+[
+ {"file": "lib/state-map-io.mjs", "find": "\tif ( problems.length ) {\n\t\tthrow", "replace": "\tif ( false ) {\n\t\tthrow", "why": "a reasons file with an entry naming no client is refused"},
+ {"file": "lib/state-map-io.mjs", "find": "'string' === typeof e.client && e.client.trim() ? null", "replace": "'string' === typeof e.client ? null", "why": "a blank client is no client"},
+ {"file": "lib/state-map-io.mjs", "find": "'string' === typeof e.client && e.client.trim() ? null", "replace": "true ? null", "why": "an entry without a client is a problem"},
+ {"file": "lib/state-map-io.mjs", "find": "( e ) => e.client === client && e.surface === surface", "replace": "( e ) => e.surface === surface", "why": "an entry for client A never refuses client B's surface"},
+ {"file": "lib/state-map-io.mjs", "find": "( e ) => e.client === client && e.surface === surface", "replace": "( e ) => e.client === client", "why": "nor another surface of client A"},
+ {"file": "lib/state-map.mjs", "find": "( x ) => x.client === client && x.surface === map.surface", "replace": "( x ) => x.surface === map.surface", "why": "the state-map check judges only the client's own entries"}
+]

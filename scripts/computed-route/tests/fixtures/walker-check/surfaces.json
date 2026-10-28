@@ -1,0 +1,6 @@
+{
+	"header": { "walker": "qa/parity/header.fill-base.mjs", "walkerFull": "qa/parity/header.fill.mjs", "states": { "top": null, "scrolled": "scrolled", "rail-moved": null } },
+	"home": { "walker": "qa/parity/home.fill-base.mjs", "states": { "default": null } },
+	"cart": { "walker": "qa/parity/cart.fill-base.mjs", "states": { "resting": null } },
+	"template-page": { "states": { "resting": null } }
+}

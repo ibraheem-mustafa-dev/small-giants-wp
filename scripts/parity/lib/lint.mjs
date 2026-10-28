@@ -58,7 +58,11 @@ export function lintConfig( cfg, handScope = null, onlyStates = null ) {
 		if ( onlyStates && ! onlyStates.includes( st.name ) ) {
 			continue;
 		}
-		if ( i > 0 && ! ( cfg.pairs || [] ).some( ( p ) => p.states?.includes( st.name ) ) ) {
+		// A state Fill generates for a mapped state (`allPairs: true`) in a ref-traced config (`refPrefix`) is looked at by
+		// the unscoped pairs: Fill pairs every block, and a pair with no `states` is walked in every state. A hand state still
+		// needs a pair of its own.
+		const everyBlock = st.allPairs && cfg.refPrefix && ( cfg.pairs || [] ).some( ( p ) => ! p.states );
+		if ( i > 0 && ! everyBlock && ! ( cfg.pairs || [] ).some( ( p ) => p.states?.includes( st.name ) ) ) {
 			problems.push( `state "${ st.name }" has no pair scoped to it (add one for the thing the state changes)` );
 		}
 	}
