@@ -8,6 +8,33 @@
 
 Each row below: what is wrong, the spec that requires it, the code at fault, the evidence, and the fix as one shared mechanism. IDs are the council's (rater prefix + number) so the evidence files can be traced. Every fix lands with a MUST FAIL test, a negative control and a mutation list (the route's standard).
 
+## Proof level of each row (read before fixing)
+
+Every row was re-checked by an independent verifier (both halves reproduced from the files, artefacts and live mirrors); "main thread" marks the rows whose evidence was also re-run directly in the audit session. **Cause proven** means the chain from the faulty code to the visible gap was traced (code, then the saved tree or post, then the live page): fix it directly. **Gap proven, cause unproven** means the gap is real but the code path at fault is not yet traced: reproduce the cause first and only then write the fix (FP and the prove-the-cause rule). Scale figures marked "rater count" were not fully re-counted.
+
+| Row | Gap | Cause | Re-checked by |
+|---|---|---|---|
+| A1 openers and modal frame | proven | proven (no writer of an opener exists; modal on no page) | verifier, main thread |
+| A2 product pages | proven | proven (nothing places `sgs/buybox` or bindings) | verifier, main thread |
+| A3 single-file draft links | proven | proven (`elementFile` negative control: real file name resolves) | verifier, main thread |
+| A4 words and lists | proven | proven for container words (`contentAttrs`), quote bodies, icon+text links, Indus brands gallery; Zookie flavours: the recorder caps labels (spec text accepted it until S7) | verifier |
+| A5 drawer menus and close | proven | proven (`boundMenu` exact-name test) | verifier, main thread |
+| A6 no-region refusal | proven | proven (`commerceRegion` returns null, no problem row) | verifier |
+| B1 forms | proven | proven for success message (no writer), conditional fields, `flowProductId`; **unproven for the Indus enquiry validation** (the reader works; where it is lost is untraced: start at `copyFor`) | verifier, main thread (success message) |
+| B2 heading levels | proven | proven (nothing writes `level`) | verifier, main thread |
+| B3 default text | proven | "Click Here": proven (no label written for wordless controls); **Mama's footer `displayType` overwrite: write path unproven** (likely a `display` read routed to a content enum) | verifier, main thread |
+| B4 product loops on pages | proven (incl. the Eye Care home regression) | proven (the commerce rule runs only on commerce-role surfaces) | verifier |
+| B5 background photos, preview URLs | proven | proven (`fill-read-collect.mjs` reads only `<img>`; `formatValue` writes `url()` as measured) | verifier, main thread (preview URLs) |
+| B6 labels | proven | proven for menu labels (`readLinkTextReport`) and `viewCartLabel` (`write: null`) | verifier |
+| B7 shop sort and chips | proven | proven (no code places `catalog-sorting`) | verifier |
+| C1 box values | proven | proven end to end (ladder rung 2, then post 92, then live 0px) | verifier, main thread |
+| C2 "equal" against the wrong reference | proven | proven for the root-slot stop, the h2 inheritance, spacing ownership, confirm-without-emit; **side gutter: which judge settles it unproven**; inner-band layout is a spec-acknowledged unbuilt read | verifier |
+| C3 header and nav | proven | proven for sticky/blur/shrink writers, links as buttons, missing hover/current writes; **nav radius stored but not rendering: unexplained** | verifier |
+| C4 template shells, order confirmation, mega children | proven | proven (`sameNode` vs `cr-ref-*`; `matchRecord` kind mismatch; `drawsChildren` drops links) | verifier, main thread (shells) |
+| C5 motion by stage | proven | proven for script reveals, silent drops, the parallax parameter, the marquee block choice, identical entrances, the float, the timeline orientation; **mobile-only loops: Eye Care's ticker is in intake but measured at desktop (the Mama's half is proven)** | verifier |
+| C6 plugin bugs | proven | proven (minus-sign regex run; multi-button fallback read); fx-magnet override proven on live buttons, its counts are rater counts | verifier, main thread (regex) |
+| D1 to D7 measurement | proven | proven except the padding/gap split counts (rater count) | verifier |
+
 ## A. Working pieces in the right place (the clone does not work)
 
 **A1. Draft buttons that open something open nothing (modals, choice flows, form prefill).** ICA-1, ICA-6, ICA-2, ICA-10. Spec 48 §recognised structures ("Not built: a modal-opened flow's trigger is not proposed on the page that opens it"), Spec 02 `sgs/modal` (opened by its trigger or any link to its anchor, `data-sgs-modal-open`), Spec 48 FR-48-55 scope (every surface the draft shows, modals included). Code: no writer of a modal opener anywhere (`grep sgs-modal-open scripts/computed-route/lib` finds only the checker `lib/site-check-parts.mjs`); the page map knows only `opensFlow` (`lib/intake-pagemap-flow-openers.mjs`). Evidence: Eye Care's size-guide modal post 118 is published and on no page; "Which size am I?" and "Add my prescription" are plain buttons/text; Indus careers "Apply for this role" ×3 are dead buttons (draft `toForm({role, team})`). Fix: generalise the page map's opener to `opens: [{kind, slug}]` (modal, flow, form target), a skeleton rule beside `skeleton-rules.mjs::blockPartOpener` turning a control whose handler writes the target's open state into an `sgs/button` linking `#<anchor>` (with `?param` for a form prefill and `valueFromParam` on the fields), and the `sgs/modal` frame placed once on the page or template that holds the trigger, its backdrop and panel written as the frame's scrim and dialog settings (the draft's dialog body only inside the post). Site-check: `missingFlowRows` covers `sgs_modal` rows, and a walk whose live element is absent is a failed walk, never "ok" (`site-run.mjs`). Covers every client.
