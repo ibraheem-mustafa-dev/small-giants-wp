@@ -74,6 +74,7 @@ The wrapper block that handles the entire form lifecycle.
 | `formId` | string | Unique form identifier (auto-generated, used for submission storage). Form identity, the `sgs_form` CPT and the login requirement are specified in Spec 42; this row is the submission-storage key only. |
 | `formName` | string | Human-readable form name (for admin reference) |
 | `submitLabel` | string | Submit button text (default: "Submit") |
+| `nextLabel` / `prevLabel` | string | A multi-step form's Next and Previous button text (defaults "Next" and "Previous"; an empty or blank value shows the default); edited beside `submitLabel` in the Submit Button panel, and written by the cloning route from the draft's own Next and Back buttons (Spec 48 FR-48-57) |
 | `submitStyle` | string | Button style: primary, success, accent |
 | Element typography: `label*`, `field*`, `tileIcon*`, `tileLabel*`, `consent*`, `reviewTerm*`, `reviewDetail*`, `reviewHeading*`, `helpText*`, `errorText*`, `fileStatus*`, `stepLabel*`, `submit*`, `navButton*` | the full 15-attr typography family per prefix (`FontSize` / `LineHeight` / `LetterSpacing` are `{desktop,tablet,mobile}` tier objects with a `*Unit` sibling) | One Typography panel (Styles tab) switches between All text and these elements. Each prefix paints its element through `sgs_typography_css_rule` on `.{uid} <element>`: `.sgs-form-field__label`, `.sgs-form-field__input`, `.sgs-form-tile__icon`, `.sgs-form-tile__label`, `.sgs-form-field__consent-text`, `.sgs-form-review__term` and `__detail` (built by `view.js`), `.sgs-form-review__heading`, `.sgs-form-field__help` with `__file-hint`, `.sgs-form-field__error` with `__error-message`, `.sgs-form-file__preview` with `__progress`, `.sgs-form__progress-step-label`, `.sgs-form__button--submit`, and `.sgs-form__button--prev` / `--next`. Unset keeps the stylesheet's `:where()` defaults (buttons 600 weight, small preset size, 1.5 line-height) |
 | `submitPadding` / `submitMinHeight` | object (box) / number | Submit button padding and minimum height (px); unset keeps 0.75rem 2rem and 44px |
@@ -92,6 +93,11 @@ The wrapper block that handles the entire form lifecycle.
 | `paymentEnabled` | boolean | **Not built.** Collect payment on submission |
 | `paymentAmount` | string | **Not built.** Fixed amount or field reference (e.g., "{field:estimated_spend}") |
 | `paymentDescription` | string | **Not built.** Stripe payment description |
+
+### Submit button and layout
+
+- **The form's own submit button.** A form whose blocks include an `sgs/button` with `isSubmit` (at any depth) leaves out its built-in submit button, and leaves out the actions row too when nothing else is in it; a multi-step form keeps its Previous and Next (`plugins/sgs-blocks/includes/helpers-form-own-submit.php::sgs_form_has_own_submit`, read by the form's `render.php`; editor mirror `plugins/sgs-blocks/src/blocks/form/form-own-submit.js::hasOwnSubmit`). Test: `scripts/computed-route/tests/form-own-submit.test.mjs` (drives the real `render.php` through `plugins/sgs-blocks/tests/php/run-form-own-submit-standalone.php`; 15 of 15 mutations killed).
+- **Layout.** From a 560px-wide form (a container query, not the viewport) `.sgs-form__inner` and `.sgs-form-step` are a six-track grid. Every child spans the whole row by default (a zero-specificity `:where()` rule), so a heading, text, a container of fields or a button never shrinks to one track; a field's half or third width and a block's own column setting win (`plugins/sgs-blocks/src/blocks/form/style.css`).
 
 ### Multi-Step Behaviour
 

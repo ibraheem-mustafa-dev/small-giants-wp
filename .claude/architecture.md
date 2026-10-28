@@ -26,7 +26,7 @@ SGS is an AI website-builder built by Small Giants Studio: a WordPress block the
 | Frontend JS | Vanilla ES modules + WordPress Interactivity API | No jQuery anywhere. `viewScriptModule` for interactive blocks |
 | Motion | Four-tier doctrine (V/G/H/W), see §8 | All npm-bundled, conditionally loaded, zero CDN |
 | Data layer | `sgs-framework.db` (SQLite) | Source of truth for block schema, composition, slots, roles — see §5 |
-| Hosting | Hostinger, three sites: the `sandybrown` canary (`sandybrown-nightingale-600381.hostingersite.com`), `indus-test` (Indus Foods, `lavender-dinosaur-183533.hostingersite.com`) and `eye-care-test` (Eye Care Birmingham, `darkcyan-grouse-898606.hostingersite.com`) | Deploy targets are `TARGETS` in `plugins/sgs-blocks/scripts/build-deploy.py`. One test site per client because the active header, footer, drawer and snapshot pointers are single global options |
+| Hosting | Hostinger: the `sandybrown` canary (`sandybrown-nightingale-600381.hostingersite.com`) and one clone site per client, `indus-test` (Indus Foods, `lavender-dinosaur-183533.hostingersite.com`), `eye-care-clone-test` (Eye Care Birmingham, `mintcream-lyrebird-224487.hostingersite.com`) and `mamas-test` (Mama's Munches redesign, `lightsalmon-tarsier-683012.hostingersite.com`); `eye-care-test` (darkcyan, `darkcyan-grouse-898606.hostingersite.com`) is Eye Care's hand-built read-only reference, never written by the clone | Deploy targets are `TARGETS` in `plugins/sgs-blocks/scripts/deploy_common.py`. One test site per client because the active header, footer, drawer and snapshot pointers are single global options; a test site exists only to receive its clone, which owns every site-wide setting it builds there (Bean 2026-10-27) |
 
 ## 3. Directory structure
 
@@ -59,6 +59,7 @@ A design draft reaches a WordPress page by the computed route (Spec 48): script-
 - **Coverage:** `capabilities.mjs` lists every framework capability and everything a draft can hold (`data/capabilities.json`, generated); `data/clone-coverage.json` records how each is recognised, written and checked, Bean's exclusion, or the gap's wave; `capabilities.mjs --gate` fails on any capability with no entry and `--gaps` prints the gaps by wave (Spec 48 §10). Intake (`intake.mjs`) raises a seen-but-unsupported review row for each uncovered capability a draft uses.
 - **Data:** layout trees in `sites/<client>/build/*.tree.json`; surfaces in `sites/<client>/build/surfaces.json`.
 - **Build and measure:** trees are built through `scripts/wp-build-page.js`; the parity walker `scripts/parity/draft-live-walk.mjs` compares draft and live.
+- **A whole client clone:** `intake.mjs` reads the draft into the page map and the draft catalogue (`sites/<client>/build/catalogue.json`); `site-build.mjs` makes the posts, menus, layout pointers, site options, catalogue products and product flow links on the client's local mirror; `site-run.mjs` takes every surface through skeleton, Fill, build and the parity walk; `site-check.mjs` checks the clone works (links, menus, drawer, modals and choice flows, forms, WooCommerce pages); `tools/cause-table.mjs` turns the cross-client census into the cause table's CSVs; `scripts/local-wp/push-to-remote.sh` copies the finished mirror onto the client's test site.
 - **Accepted differences:** the divergence ledger `sites/<client>/build/qa/divergences.json`, linted against the client's fix register.
 
 ## 5. The data layer — `sgs-framework.db`
@@ -116,7 +117,7 @@ Shared frontend behaviour lives in `src/shared/<name>/store.js` registering one 
 | Blocks plugin → WooCommerce cart lines | One server-built line summary feeds the bag drawer, cart, checkout, emails and order screens. No spec governs it; the code and docblocks in `plugins/sgs-blocks/includes/cart-line-summary/` are the reference, and the Store API `extensions` stdClass trap is in auto memory |
 | Blocks plugin → Customiser | Floating UI (Back to Top, Reading Progress) settings stored as `theme_mod`, output via `wp_footer` |
 | Per-client deployment | `sites/<client>/theme-snapshot.json` → `push-theme-snapshot.py` → `wp_global_styles` (§7) |
-| Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` is the ONE path (never hand-rolled tar/scp); `--target indus-test` and `--target eye-care-test` deploy to those test sites. It deploys from an isolated `git worktree add HEAD` |
+| Deploy | `plugins/sgs-blocks/scripts/build-deploy.py --target sandybrown` is the ONE path (never hand-rolled tar/scp); `--target indus-test`, `--target eye-care-clone-test` and `--target mamas-test` deploy to the clone sites (each named explicitly). It deploys from an isolated `git worktree add HEAD` |
 
 ## 10. Architectural principles
 
@@ -154,7 +155,7 @@ Real, current items only. `.claude/LEDGER.md` carries the live status of each.
 
 | Service | Purpose |
 |---|---|
-| Hostinger | Web hosting for the canary and the Indus and Eye Care test sites (`ssh hd` alias) |
+| Hostinger | Web hosting for the canary, the three client clone sites and Eye Care's read-only reference site (`ssh hd` alias) |
 | FluentSMTP | Per-site SMTP for `wp_mail()`, with email logs (`provision-site-mail.py`) |
 | N8N | Optional automation events (`sgs_n8n_webhook_url`); never the email path |
 | Playwright | Visual/live-DOM verification, MCP + CLI |
