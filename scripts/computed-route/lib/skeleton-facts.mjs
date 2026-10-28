@@ -125,6 +125,15 @@ export function decisionsProblems( facts ) {
 		} catch ( e ) {
 			problems.push( `rules.commerceRegion.money does not compile: ${ e.message }` );
 		}
+		const entry = r.commerceRegion.checkoutEntry;
+		if ( entry ) {
+			try {
+				new RegExp( entry.autocomplete );
+			} catch ( e ) {
+				problems.push( `rules.commerceRegion.checkoutEntry.autocomplete does not compile: ${ e.message }` );
+			}
+			( ! Number.isInteger( entry.minFields ) || entry.minFields < 2 || ! Array.isArray( entry.types ) ) && problems.push( 'rules.commerceRegion.checkoutEntry needs minFields (an integer of at least 2) and types (a list of input types)' );
+		}
 	}
 	( r.coreExceptions || [] ).forEach( ( x, i ) => ( ! x.block?.startsWith( 'core/' ) || ! String( x.reason || '' ).trim() ) && problems.push( `rules.coreExceptions[${ i }] must name a core block and give its reason` ) );
 	( r.surfaceRoot?.entries || [] ).forEach( ( x, i ) => specs0.push( [ `rules.surfaceRoot[${ i }]`, { patterns: [ x.namePattern ], flags: 'i' } ] ) );

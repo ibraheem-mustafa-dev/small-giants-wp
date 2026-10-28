@@ -150,6 +150,12 @@
 		"commerceRegion": {
 			"reason": "the draft's commerce region on a WooCommerce page is WooCommerce's working piece, placed as an ordinary block that draws the region itself (Bean, 2026-10-26: these are SGS pages with the WooCommerce piece in them); the region is found by structure (lib/skeleton-commerce-region.mjs), never by words, and everything around it stays the draft's own blocks",
 			"money": "(£|\\$|€|¥|₹)\\s?\\d|\\d[\\d.,]*\\s?(€|zł|kr)(?![a-z])",
+			"checkoutEntry": {
+				"reason": "a checkout draft that shows no card fields or no order lines loop (wallet buttons, an empty basket) is still found from the fields the visitor types into: enough shown entry fields, one of them an email or phone field, a name, address or card autocomplete token, or two numeric fields",
+				"minFields": 3,
+				"types": [ "email", "tel" ],
+				"autocomplete": "^(email|tel|name|given-name|family-name|street-address|address-line[123]|address-level[12]|postal-code|country|cc-.+)$"
+			},
 			"roles": {
 				"cart": { "block": "core/post-content", "reason": "the cart page's content is WooCommerce's Cart block (site build keeps it, lib/site-build-plan.mjs::wooContentRole), which draws the order lines, the totals and the checkout button" },
 				"checkout": { "block": "core/post-content", "reason": "the checkout page's content is WooCommerce's Checkout block (kept by site build), which draws the payment form and the order summary" },
