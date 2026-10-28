@@ -109,8 +109,8 @@
 	},
 	{
 		"file": "lib/intake-pagemap-surfaces.mjs",
-		"find": "&& pickLists( node ).length >= 2 &&",
-		"replace": "&& pickLists( node ).length >= 3 &&",
+		"find": "pickLists( node ).filter( ( l ) => ! isFilter( l ) ).length >= 2",
+		"replace": "pickLists( node ).filter( ( l ) => ! isFilter( l ) ).length >= 3",
 		"why": "two pick lists are not a choice flow"
 	},
 	{
@@ -121,7 +121,7 @@
 	},
 	{
 		"file": "lib/intake-pagemap-surfaces.mjs",
-		"find": "const kind = 'modal' === r.kind && isChoiceFlow( r.node ) ? 'choice-flow' : r.kind;",
+		"find": "const kind = 'modal' === r.kind && isChoiceFlow( r.node, isFilter ) ? 'choice-flow' : r.kind;",
 		"replace": "const kind = r.kind;",
 		"why": "an overlay choice flow stays a modal"
 	},
@@ -163,7 +163,7 @@
 	},
 	{
 		"file": "lib/intake-pagemap-surfaces.mjs",
-		"find": "const flows = tree.nodes.filter( ( t ) => 'section' === t.name && isChoiceFlow( t ) &&",
+		"find": "const flows = tree.nodes.filter( ( t ) => 'section' === t.name && isChoiceFlow( t, isFilter ) &&",
 		"replace": "const flows = tree.nodes.filter( ( t ) => false &&",
 		"why": "page sections are never choice flows"
 	}

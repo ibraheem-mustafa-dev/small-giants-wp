@@ -2,7 +2,7 @@
  { "file": "lib/skeleton-rules.mjs", "find": "chips && ( inFormElement( e ) || ( 'form' === surface.kind && ! ( R.optionSetFilter && narrowsList( chips[ 0 ] ) ) ) ) ? chips : null", "replace": "chips", "why": "every chip group is a tiles field" },
  { "file": "lib/skeleton-rules.mjs", "find": "'form' === view.elements[ k ]?.template.realTag", "replace": "!! view.elements[ k ]", "why": "any ancestor is a form" },
  { "file": "lib/skeleton-rules.mjs", "find": "const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );", "replace": "const filter = R.optionSetFilter;", "why": "every chip group narrows a list" },
- { "file": "lib/skeleton-rules.mjs", "find": "x.template.membership.scFor.some( ( f ) => f.list.replace( /\\s+/g, '' ) === `{{${ name }}}` )", "replace": "true", "why": "the narrowed list need not be iterated by an sc-for" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "return narrowed.some( ( name ) => shown.has( `{{${ name }}}` ) );", "replace": "return narrowed.length > 0;", "why": "the narrowed list need not be iterated by an sc-for" },
  { "file": "lib/skeleton-narrowing.mjs", "find": "filter( ( k ) => k !== listKey && ", "replace": "filter( ( k ) => ", "why": "the chips' own list can be the narrowed one" },
  { "file": "lib/skeleton-narrowing.mjs", "find": "[ ...filteredBy( d, d.values.get( k ) ) ].some( ( s ) => written.has( s ) )", "replace": "true", "why": "any list is narrowed whatever key it reads" },
  { "file": "lib/skeleton-narrowing.mjs", "find": "if ( hash && crypto.createHash( 'sha256' ).update( bytes ).digest( 'hex' ) !== hash ) {", "replace": "if ( false ) {", "why": "a draft that is not the record's is read" },
@@ -15,5 +15,8 @@
  { "file": "lib/skeleton-rules.mjs", "find": "'form' === surface.kind && ! ( R.optionSetFilter && narrowsList( chips[ 0 ] ) )", "replace": "'form' === surface.kind", "why": "a filtering group on a form surface stays the filter" },
  { "file": "lib/skeleton-rules.mjs", "find": "( 'form' === surface.kind && ! ( R.optionSetFilter && narrowsList", "replace": "( true && ! ( R.optionSetFilter && narrowsList", "why": "a chip group on a page with no form stays the option picker" },
  { "file": "lib/skeleton-rules.mjs", "find": "const chips = R.optionSetForm ? chipGroup( e ) : null;", "replace": "const chips = chipGroup( e );", "why": "the rule entry switches the clause on" },
- { "file": "lib/skeleton-rules.mjs", "find": "chips && ( inFormElement( e ) ||", "replace": "chips && ( false ||", "why": "a chip group inside a form element is not the form's tiles field" }
+ { "file": "lib/skeleton-rules.mjs", "find": "chips && ( inFormElement( e ) ||", "replace": "chips && ( false ||", "why": "a chip group inside a form element is not the form's tiles field" },
+ { "file": "lib/skeleton-rules.mjs", "find": "return narrowsRenderedList( lists, Object.values( view.elements )", "replace": "return lists.length > 0 || narrowsRenderedList( lists, Object.values( view.elements )", "why": "the skeleton stage stops sharing the rule: a narrowed list nothing renders is a filter" },
+ { "file": "lib/skeleton-rules.mjs", "find": "return narrowsRenderedList( lists, Object.values( view.elements )", "replace": "return false && narrowsRenderedList( lists, Object.values( view.elements )", "why": "a group narrowing a rendered list is the option picker" },
+ { "file": "lib/skeleton-narrowing.mjs", "find": "return narrowed.some( ( name ) => shown.has( `{{${ name }}}` ) );", "replace": "return false;", "why": "the shared rule never recognises a filter" }
 ]

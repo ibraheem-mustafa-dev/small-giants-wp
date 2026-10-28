@@ -13,7 +13,7 @@ import fs from 'fs';
 import path from 'path';
 import { LAYOUT_TYPES, SHOP_TYPES, boundMenu, hasPost, isAccountRow, orderRows, pageTreeFor, parentRow, rowKey, treeFor, treeHash, wpType } from './site-build-map.mjs';
 import { commonChain, copyFile, copySource, copyTree, pageTemplateOf, readShell, rowsOf, servedTemplates, splitShell } from './template-copies.mjs';
-import { desiredMenus, menuLocation } from './site-build-menus.mjs';
+import { addressOf, desiredMenus, menuLocation } from './site-build-menus.mjs';
 import { readSurfaces } from './site-build-labels.mjs';
 import { comingSoonAction, COMING_SOON_OPTION } from './site-build-store-visible.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
@@ -69,7 +69,7 @@ function wooRoles( rows ) {
 	];
 }
 
-export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {} } ) {
+export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks } ) {
 	const problems = [];
 	const notes = [];
 	const actions = [];
@@ -136,7 +136,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			ids[ key ] ??= null;
 		}
 	}
-	const wanted = desiredMenus( rows, linkText, readSurfaces( repo, client ) );
+	const wanted = desiredMenus( rows, linkText, readSurfaces( repo, client ), menuLinks );
 	problems.push( ...wanted.problems );
 	notes.push( ...wanted.notes );
 	if ( problems.length ) {
@@ -289,12 +289,12 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		for ( const it of list ) {
 			const parentId = it.parentKey ? matched[ it.parentKey ] || { ref: `item:${ name }:${ it.parentKey }` } : 0;
 			const objectId = 'post' === it.kind ? ids[ it.rowKey ] : null;
-			const same = ( e ) => ( 'post' === it.kind ? objectId && e.objectId === objectId && e.object === it.postType : 'custom' === e.type && e.title === it.title );
+			const same = ( e ) => ( 'post' === it.kind ? objectId && e.objectId === objectId && e.object === it.postType : 'link' === it.kind ? 'custom' === e.type && addressOf( e.url ) === addressOf( it.url ) : 'custom' === e.type && e.title === it.title );
 			const exact = existing.findIndex( ( e ) => same( e ) && e.parent === ( 'number' === typeof parentId ? parentId : -1 ) );
 			const at = exact >= 0 ? exact : existing.findIndex( same );
 			const where = `menu "${ name }" item "${ it.label }"`;
 			if ( at < 0 ) {
-				actions.push( { phase: 'menus', type: 'item-add', menu: menuRef, key: `item:${ name }:${ it.key }`, kind: it.kind, object: 'post' === it.kind ? idOf( it.rowKey ) : null, title: it.title, position: it.order, parent: parentId, say: `${ where }: add at position ${ it.order }${ it.parentKey ? ` under "${ list.find( ( x ) => x.key === it.parentKey ).label }"` : '' }` } );
+				actions.push( { phase: 'menus', type: 'item-add', menu: menuRef, key: `item:${ name }:${ it.key }`, kind: it.kind, object: 'post' === it.kind ? idOf( it.rowKey ) : null, title: it.title, ...( 'link' === it.kind ? { url: it.url } : {} ), position: it.order, parent: parentId, say: `${ where }: add${ 'link' === it.kind ? ` a link to ${ it.url }` : '' } at position ${ it.order }${ it.parentKey ? ` under "${ list.find( ( x ) => x.key === it.parentKey ).label }"` : '' }` } );
 				continue;
 			}
 			const e = existing.splice( at, 1 )[ 0 ];
@@ -304,9 +304,10 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 				notes.push( `${ where }: item ${ e.id } carries the custom title "${ e.title }"; clear it in Appearance > Menus to show the post's own title` );
 			}
 			const moved = 'number' !== typeof parentId || e.parent !== parentId;
-			if ( e.order !== it.order || moved || ( titleOff && it.title ) ) {
-				const what = [ e.order !== it.order ? `position ${ e.order } -> ${ it.order }` : '', moved ? `parent ${ e.parent } -> ${ shown( parentId ) }` : '', titleOff && it.title ? `title "${ e.title }" -> "${ it.title }"` : '' ].filter( Boolean ).join( '; ' );
-				actions.push( { phase: 'menus', type: 'item-update', id: e.id, title: titleOff && it.title ? it.title : null, position: it.order, parent: parentId, say: `${ where }: item ${ e.id }: ${ what }` } );
+			const urlOff = 'link' === it.kind && e.url !== it.url;
+			if ( e.order !== it.order || moved || ( titleOff && it.title ) || urlOff ) {
+				const what = [ e.order !== it.order ? `position ${ e.order } -> ${ it.order }` : '', moved ? `parent ${ e.parent } -> ${ shown( parentId ) }` : '', titleOff && it.title ? `title "${ e.title }" -> "${ it.title }"` : '', urlOff ? `link ${ e.url } -> ${ it.url }` : '' ].filter( Boolean ).join( '; ' );
+				actions.push( { phase: 'menus', type: 'item-update', id: e.id, title: titleOff && it.title ? it.title : null, ...( urlOff ? { url: it.url } : {} ), position: it.order, parent: parentId, say: `${ where }: item ${ e.id }: ${ what }` } );
 			}
 		}
 		existing.forEach( ( e ) => notes.push( `menu "${ name }" item ${ e.id } "${ e.title || `${ e.object } ${ e.objectId }` }" is not one any page-map row asks for; it is left in place` ) );

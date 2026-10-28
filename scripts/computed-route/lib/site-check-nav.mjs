@@ -5,6 +5,8 @@
 // `data-sgs-mega-trigger` with `aria-controls` naming its panel (includes/nav-menu-markup.php), the burger is a header
 // button whose `aria-controls` names the drawer, a <dialog> (sgs/nav-drawer).
 
+import { LINK_TYPES } from './site-build-menu-links.mjs';
+
 const SETTLE_MS = 600;
 export const MARK = 'data-site-check';
 
@@ -44,6 +46,16 @@ export function pathKey( href, base ) {
 	}
 }
 
+// The normalised address of a link with its query kept: origin + path without its trailing slash + query; hash dropped.
+export function addressKey( href, base ) {
+	try {
+		const u = new URL( href, base );
+		return `${ u.origin }${ u.pathname.replace( /\/+$/, '' ) }${ u.search }`;
+	} catch {
+		return null;
+	}
+}
+
 // In-page: every link of the header: [{ text, href (as written), abs, inMenu (inside a menu bar), disclosure,
 // selector }]. A link carrying aria-expanded / aria-controls or the mega marker is a disclosure trigger. The header is
 // the page's `.sgs-site-header`, else its first <header>.
@@ -71,12 +83,33 @@ export function readDraftLinksInPage() {
 
 const DRAFT_HREF = /\.dc\.html\b/i;
 
+// The page-map rows the draft puts in the header menu, as menuItems takes them: { key, title, postType, id, url|null, text? }.
+// `loaded` are the swept pages ({ row, permalink, finalUrl, example }), `menuLinks` lib/site-build-menu-links.mjs::menuLinksFor's
+// answer. A product or category row's header item is the draft's link to one product: it carries that link's text and the
+// resolved address (with its query), and is matched by them, never by the row's title; any other row is matched by the
+// address of its page.
+export function headerRowsOf( { rows, loaded, menuLinks } ) {
+	return rows.filter( ( r ) => ( r.menus || [] ).some( ( m ) => 'header' === m.menu ) ).map( ( r ) => {
+		const key = `${ r.postType }:${ r.slug }`;
+		const base = { key, title: r.title, postType: r.postType, id: r.id ?? null };
+		if ( LINK_TYPES.includes( r.postType ) ) {
+			const link = ( menuLinks.links[ key ] || [] ).find( ( l ) => 'header' === l.menu );
+			const wait = menuLinks.pending.find( ( p ) => p.rowKey === key && 'header' === p.menu );
+			return { ...base, url: link?.url || null, text: link?.text || wait?.text || null };
+		}
+		const hit = loaded.find( ( p ) => p.row === r );
+		const at = hit?.permalink || hit?.finalUrl;
+		return { ...base, url: at && ! hit.example ? at : null };
+	} );
+}
+
 // The menu check's items, from the header's links and the resolved pages:
 //   pages: [{ key, permalink, finalUrl }] (page-map pages: the row's own permalink, and the address it loaded at,
 //   which a redirect can change: WooCommerce sends an empty basket's checkout to the cart); examples: [{ key,
 //   permalink, finalUrl }] (a product or category row's example: any link under the same parent path reaches that row);
-//   headerRows: [{ key, title, url|null }] (page-map rows the draft puts in the header menu, each with its postType and
-//   id); draftLinks: [{ href, text, pages: [key] }] (every checked page's links to a draft file); megaTriggers: [{ text,
+//   headerRows: [{ key, title, url|null, text? }] (page-map rows the draft puts in the header menu, each with its postType and
+//   id; a product or category row carries the draft's own link `text` and the resolved `url` with its query, and is matched by
+//   them, never by its title); draftLinks: [{ href, text, pages: [key] }] (every checked page's links to a draft file); megaTriggers: [{ text,
 //   panelId, hasPanel }] (the header's visible mega triggers, markMegaInPage, the mega check's own detection). A link
 //   passes when its address is a page-map row's permalink (the address it loaded at only when the permalink is not
 //   known); a draft-file link, `#`, an empty href or any other address on the site fails, as does an off-site link in the
@@ -123,17 +156,20 @@ export function menuItems( { header, links, pages, examples = [], headerRows, dr
 		}
 		return { status: 'fail', ...ev, error: `${ raw } is not a page-map page` };
 	} );
-	const linkKeys = new Set( links.map( ( l ) => pathKey( l.abs || l.href || '', base ) ) );
+	const linkKeys = new Set( links.flatMap( ( l ) => [ pathKey( l.abs || l.href || '', base ), addressKey( l.abs || l.href || '', base ) ] ) );
 	const texts = links.map( ( l ) => l.text.toLowerCase() );
 	for ( const r of headerRows ) {
 		if ( 'sgs_mega_menu' === r.postType ) {
 			items.push( megaRowItem( r, megaTriggers, url ) );
 			continue;
 		}
-		const byUrl = r.url && linkKeys.has( pathKey( r.url, base ) );
-		const byText = r.title && texts.includes( String( r.title ).toLowerCase() );
+		// An address with a query is matched with its query (a product row's link `?sub=1` is not the product's plain page);
+		// the text a link shows is the row's `text` (the draft's own link text) when it has one, else its title.
+		const wanted = r.text || r.title;
+		const byUrl = r.url && linkKeys.has( new URL( r.url, base ).search ? addressKey( r.url, base ) : pathKey( r.url, base ) );
+		const byText = wanted && texts.includes( String( wanted ).toLowerCase() );
 		if ( ! byUrl && ! byText ) {
-			items.push( { status: 'fail', subject: `page-map header item ${ r.key }`, url, error: `the page map puts ${ r.key } ("${ r.title }") in the header menu; no header link reaches it${ r.url ? ` (${ r.url })` : '' }` } );
+			items.push( { status: 'fail', subject: `page-map header item ${ r.key }`, url, error: `the page map puts ${ r.key } ("${ wanted }") in the header menu; no header link reaches it${ r.url ? ` (${ r.url })` : '' }` } );
 		}
 	}
 	for ( const d of draftLinks ) {

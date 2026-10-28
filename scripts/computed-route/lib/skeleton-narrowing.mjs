@@ -150,11 +150,35 @@ export function draftLogicOf( { folder, record, component } ) {
 // The renderVals keys (other than `listKey`) whose lists the chips looped from `listKey` narrow, for a component of a fact
 // record. `folder` is the draft folder, `record` the fact record (its `sources.files` hashes name the draft files).
 export function narrowedLists( { folder, record, component, listKey } ) {
-	const d = draftLogicOf( { folder, record, component } );
+	return narrowedKeys( draftLogicOf( { folder, record, component } ), listKey );
+}
+
+// The renderVals keys (other than `listKey`) whose lists the chips looped from `listKey` narrow, in a draft logic read by
+// `draftLogicOf` or `logicOfDraft`.
+function narrowedKeys( d, listKey ) {
 	const value = d?.values.get( listKey );
 	if ( ! value ) {
 		return [];
 	}
 	const written = writes( d, value );
 	return [ ...d.values.keys() ].filter( ( k ) => k !== listKey && [ ...filteredBy( d, d.values.get( k ) ) ].some( ( s ) => written.has( s ) ) );
+}
+
+const logics = new WeakMap();
+
+// `narrowedLists` for a draft loaded by lib/intake-ast.mjs::loadDraft (no fact record), its logic read once per draft object.
+export function narrowedListsOfDraft( draft, listKey ) {
+	if ( ! logics.has( draft ) ) {
+		logics.set( draft, build( draft ) );
+	}
+	return narrowedKeys( logics.get( draft ), listKey );
+}
+
+// The standing filter rule, decided in this one place (the skeleton stage and the page map's choice-flow detection both ask
+// it): a group of choice chips is a filter when the lists it narrows (`narrowed`, what `narrowedLists` or
+// `narrowedListsOfDraft` answers) include a list the same component renders, that is, one an `sc-for` of the component
+// iterates. `rendered` holds the `list` attribute of every `sc-for` of the component.
+export function narrowsRenderedList( narrowed, rendered ) {
+	const shown = new Set( rendered.map( ( l ) => String( l ).replace( /\s+/g, '' ) ) );
+	return narrowed.some( ( name ) => shown.has( `{{${ name }}}` ) );
 }

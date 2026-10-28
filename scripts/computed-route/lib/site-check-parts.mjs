@@ -38,7 +38,7 @@ export function readPartsInPage( mark ) {
 	} );
 	const flows = [ ...document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ) ].map( ( f, i ) => {
 		f.setAttribute( mark, `flow-${ i }` );
-		return { i, flowId: f.dataset.flowId || '', label: f.getAttribute( 'aria-label' ) || '', broken: f.classList.contains( 'sgs-choice-flow--broken-reference' ), steps: f.querySelectorAll( '.sgs-form-step' ).length };
+		return { i, flowId: f.dataset.flowId || '', flowSlug: f.dataset.flowSlug || '', label: f.getAttribute( 'aria-label' ) || '', broken: f.classList.contains( 'sgs-choice-flow--broken-reference' ), steps: f.querySelectorAll( '.sgs-form-step' ).length };
 	} );
 	const forms = [ ...document.querySelectorAll( '.sgs-form' ) ].filter( ( w ) => w.querySelector( 'form.sgs-form__inner' ) ).map( ( w, i ) => {
 		w.setAttribute( mark, `form-${ i }` );
@@ -46,6 +46,14 @@ export function readPartsInPage( mark ) {
 		return { i, formId: c.formId || '', successMessage: c.successMessage || '', successRedirect: c.successRedirect || '', store: 'false' !== w.getAttribute( 'data-store-submissions' ), fields: w.querySelectorAll( 'input:not([type=hidden]),select,textarea' ).length };
 	} );
 	return { modals, flows, forms };
+}
+
+// The page-map choice-flow rows (sgs_choice_flow) no rendered flow shows. `flows` are readPartsInPage's flows from every
+// checked page. A flow that names its saved flow (data-flow-slug, choice-flow/render.php) is that row by slug; a flow that
+// names none (an older render) is that row by its aria-label, case ignored. A flow naming another row's slug is never
+// matched by label.
+export function missingFlowRows( rows, flows ) {
+	return rows.filter( ( r ) => 'sgs_choice_flow' === r.postType ).filter( ( r ) => ! flows.some( ( f ) => ( f.flowSlug ? f.flowSlug === r.slug : String( f.label || '' ).toLowerCase() === String( r.title ).toLowerCase() ) ) );
 }
 
 // One modal on the loaded page (marked by readPartsInPage): opens from its trigger, closes by its close button or

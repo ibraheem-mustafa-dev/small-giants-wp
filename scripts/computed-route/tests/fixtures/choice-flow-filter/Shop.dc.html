@@ -1,0 +1,40 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<header><nav><a href="#">Shop</a><a href="#">Help</a></nav></header>
+<main>
+<section aria-label="Find a gift">
+  <h1>Find a gift</h1>
+  <div><sc-for list="{{ occasions }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.name }}</button></sc-for></div>
+  <div><sc-for list="{{ budgets }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.name }}</button></sc-for></div>
+</section>
+<section aria-label="Results">
+  <sc-for list="{{ results }}" as="p"><p>{{ p.name }}</p></sc-for>
+</section>
+<section aria-label="Build your box">
+  <h2>Build your box</h2>
+  <div><sc-for list="{{ bases }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.name }}</button></sc-for></div>
+  <div><sc-for list="{{ toppings }}" as="o"><button onClick="{{ o.pick }}" aria-pressed="{{ o.on }}">{{ o.name }}</button></sc-for></div>
+  <p>{{ summary }}</p>
+</section>
+</main>
+<footer><nav><a href="#">Home</a></nav></footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { occ: 'born', budget: 'any', base: 'a', top: 'x' };
+  renderVals() {
+    const S = this.state;
+    const results = [ { name: 'Box', occ: 'born', from: 10 } ].filter(p => p.occ === S.occ && (S.budget === 'any' || p.from < 20));
+    return {
+      occasions: [ { id: 'born', name: 'New baby' } ].map(o => ({ ...o, on: S.occ === o.id, pick: () => this.setState({ occ: o.id }) })),
+      budgets: [ { id: 'any', name: 'Any' } ].map(o => ({ ...o, on: S.budget === o.id, pick: () => this.setState({ budget: o.id }) })),
+      results,
+      bases: [ { id: 'a', name: 'Cookies' } ].map(o => ({ ...o, on: S.base === o.id, pick: () => this.setState({ base: o.id }) })),
+      toppings: [ { id: 'x', name: 'Chips' } ].map(o => ({ ...o, on: S.top === o.id, pick: () => this.setState({ top: o.id }) })),
+      summary: 'Your box: ' + S.base + ' with ' + S.top
+    };
+  }
+}
+</script>
+</body></html>
