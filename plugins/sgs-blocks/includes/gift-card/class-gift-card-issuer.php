@@ -43,6 +43,29 @@ final class Gift_Card_Issuer {
 		);
 	}
 
+	/** Order meta: set once the cards this order bought were created (the idempotency guard). */
+	const META_ISSUED = '_sgs_gift_card_issued';
+
+	/**
+	 * Issue the cards an order bought, once, and only for a paid order whose gift-card payment settled.
+	 *
+	 * Called from `woocommerce_payment_complete` and from the staff "issue for order" action. The order
+	 * meta guard makes a repeated event or a second click a no-op, and the unique (order item, unit) key
+	 * in the cards table backs it up.
+	 *
+	 * @param \WC_Order $order The order.
+	 * @return bool True when this call issued the cards.
+	 */
+	public static function issue_for_paid_order( $order ): bool {
+		if ( $order->get_meta( self::META_ISSUED ) || ! $order->is_paid() || $order->get_meta( Gift_Card_Order::META_SHORTFALL ) ) {
+			return false;
+		}
+		self::issue_for_order( $order );
+		$order->update_meta_data( self::META_ISSUED, \time() );
+		$order->save_meta_data();
+		return true;
+	}
+
 	/**
 	 * Create the cards a paid order bought and deliver those due today.
 	 *

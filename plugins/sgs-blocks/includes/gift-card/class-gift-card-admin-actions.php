@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 final class Gift_Card_Admin_Actions {
 
 	/** Actions handled (suffix after `sgs_gift_card_`). */
-	const ACTIONS = array( 'issue', 'adjust', 'status', 'expiry', 'reissue', 'refund', 'export' );
+	const ACTIONS = array( 'issue', 'adjust', 'status', 'expiry', 'reissue', 'refund', 'export', 'issue_order' );
 
 	/**
 	 * Wire the handlers.
@@ -69,6 +69,21 @@ final class Gift_Card_Admin_Actions {
 		$result = Gift_Card_Issuer::issue_manual( $data, \get_current_user_id() );
 		self::keep_code( $result['code'] );
 		self::back( $result['card_id'], 'issued' );
+	}
+
+	/**
+	 * Issue the cards a paid order bought, for payments WooCommerce did not confirm itself
+	 * (a bank transfer or cash on delivery that staff have checked).
+	 *
+	 * @return void
+	 */
+	public static function handle_issue_order(): void {
+		self::guard( 'issue_order', 0 );
+		$order = \wc_get_order( \absint( self::post( 'order_id' ) ) );
+		if ( ! $order ) {
+			self::back( 0, 'bad_input' );
+		}
+		self::back( 0, Gift_Card_Issuer::issue_for_paid_order( $order ) ? 'issued' : 'refused' );
 	}
 
 	/**

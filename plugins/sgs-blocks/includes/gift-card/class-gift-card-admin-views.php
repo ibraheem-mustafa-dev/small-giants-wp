@@ -112,6 +112,7 @@ final class Gift_Card_Admin_Views {
 
 		self::export_form( $search, $status );
 		self::issue_form();
+		self::issue_order_form();
 	}
 
 	/**
@@ -240,6 +241,22 @@ final class Gift_Card_Admin_Views {
 		\wp_nonce_field( Gift_Card_Admin_Actions::nonce_action( 'export', 0 ) );
 		\submit_button( \__( 'Export CSV', 'sgs-blocks' ), 'secondary', '', false );
 		echo '</form>';
+	}
+
+	/**
+	 * Issue the cards of a paid order that WooCommerce did not confirm as paid by a gateway.
+	 *
+	 * @return void
+	 */
+	private static function issue_order_form(): void {
+		echo '<h3>' . \esc_html__( 'Issue the cards on a paid order', 'sgs-blocks' ) . '</h3>';
+		echo '<p class="description">' . \esc_html__( 'Cards are issued automatically when a payment is confirmed. For a bank transfer or cash on delivery, set the order to Processing once the money has arrived, then enter its number here. Does nothing twice.', 'sgs-blocks' ) . '</p>';
+		self::action_form(
+			'issue_order',
+			0,
+			\__( 'Issue cards', 'sgs-blocks' ),
+			'<input type="number" min="1" name="order_id" required placeholder="' . \esc_attr__( 'Order number', 'sgs-blocks' ) . '" aria-label="' . \esc_attr__( 'Order number', 'sgs-blocks' ) . '" />'
+		);
 	}
 
 	/**

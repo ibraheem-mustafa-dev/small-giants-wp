@@ -71,6 +71,10 @@ trait Gift_Card_Ledger_Operations {
 				if ( self::STATUS_REFUNDED === $card['status'] ) {
 					throw new Gift_Card_Exception( Gift_Card_Exception::DISABLED );
 				}
+				if ( self::STATUS_DISABLED === $status ) {
+					// Disabling must not leave money held for orders that may still be paid.
+					$card = $this->release_all_open( $card, $actor, self::REASON_DISABLED, $now );
+				}
 				$this->store->update( $card_id, array( 'status' => $status ) );
 				$card['status'] = $status;
 				$this->post( $card, self::TYPE_STATUS, 0, 0, 0, 0, $actor, $status . ': ' . $reason, $now );
@@ -202,6 +206,8 @@ trait Gift_Card_Ledger_Operations {
 				if ( (int) $card['reissue_count'] >= 1 || self::STATUS_ACTIVE !== $card['status'] || null === $card['code_hash'] || (int) $card['balance_pence'] <= 0 ) {
 					throw new Gift_Card_Exception( Gift_Card_Exception::REISSUE_REFUSED );
 				}
+				// Replacing the code disables the old one, so any order still holding value on it is released.
+				$card = $this->release_all_open( $card, $actor, self::REASON_REPLACED, $now );
 				$this->store->update(
 					$card_id,
 					array(
@@ -213,5 +219,28 @@ trait Gift_Card_Ledger_Operations {
 				$this->post( $card, self::TYPE_REISSUE, 0, 0, 0, 0, $actor, 'lost code replaced; old code disabled', $now );
 			}
 		);
+	}
+
+	/**
+	 * Release every open reservation on a card (inside the caller's locked transaction).
+	 *
+	 * @param array<string,mixed> $card   Locked card row.
+	 * @param int                 $actor  User id (0 for system).
+	 * @param string              $reason Ledger note.
+	 * @param int                 $now    Unix time.
+	 * @return array<string,mixed> The card with its new totals.
+	 */
+	private function release_all_open( array $card, int $actor, string $reason, int $now ): array {
+		$open_by_order = array();
+		foreach ( $this->store->ledger_for_card( (int) $card['id'] ) as $row ) {
+			$order_id                   = (int) $row['order_id'];
+			$open_by_order[ $order_id ] = ( $open_by_order[ $order_id ] ?? 0 ) + (int) $row['reserved_delta_pence'];
+		}
+		foreach ( $open_by_order as $order_id => $open ) {
+			if ( $open > 0 ) {
+				$card = $this->post( $card, self::TYPE_RELEASE, $open, 0, -$open, $order_id, $actor, $reason, $now );
+			}
+		}
+		return $card;
 	}
 }

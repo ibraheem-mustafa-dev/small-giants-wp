@@ -39,6 +39,10 @@ final class Gift_Card_Ledger {
 	const TYPE_REFUND  = 'refund';
 	const TYPE_CODE    = 'code';
 
+	/** Release reasons that mean the card's value was revoked, so the order must not settle against it. */
+	const REASON_DISABLED = 'card disabled';
+	const REASON_REPLACED = 'code replaced';
+
 	const STATUS_ACTIVE   = 'active';
 	const STATUS_DISABLED = 'disabled';
 	const STATUS_REFUNDED = 'refunded';
@@ -214,19 +218,31 @@ final class Gift_Card_Ledger {
 	 *
 	 * With partial use switched off the unused remainder is forfeited in the same step.
 	 *
+	 * Fail closed: the status is re-checked under the row lock. A card that is no longer active
+	 * (disabled, refunded) is NOT settled; its open reservation is released (committed) and the call
+	 * throws DISABLED, so the caller can leave the order unpaid instead of settling it with value
+	 * the card no longer has. A card that has merely EXPIRED since the reservation was made at order
+	 * creation is still honoured: the customer committed while it was valid.
+	 *
 	 * @param int $card_id  Card id.
 	 * @param int $order_id Order id.
 	 * @param int $now      Unix time (0 = now).
 	 * @return int Pence consumed (0 when there was no open reservation).
+	 * @throws Gift_Card_Exception DISABLED when the card is no longer active; the reservation has been released.
 	 */
 	public function consume( int $card_id, int $order_id, int $now = 0 ): int {
-		$now = $this->ts( $now );
-		return (int) $this->store->transaction(
+		$now    = $this->ts( $now );
+		$result = (int) $this->store->transaction(
 			function () use ( $card_id, $order_id, $now ): int {
 				$card = $this->locked( $card_id );
 				$open = self::open_reserved( $this->store->ledger_for_order( $card_id, $order_id ) );
 				if ( $open <= 0 ) {
 					return 0;
+				}
+				if ( self::STATUS_ACTIVE !== $card['status'] ) {
+					// Commit the release first; the refusal is thrown after the transaction ends.
+					$this->post( $card, self::TYPE_RELEASE, $open, 0, -$open, $order_id, 0, self::REASON_DISABLED, $now );
+					return -1;
 				}
 				$card = $this->post( $card, self::TYPE_CONSUME, $open, -$open, -$open, $order_id, 0, '', $now );
 				if ( ! $this->settings->partial_use() && (int) $card['balance_pence'] > 0 ) {
@@ -236,6 +252,10 @@ final class Gift_Card_Ledger {
 				return $open;
 			}
 		);
+		if ( -1 === $result ) {
+			throw new Gift_Card_Exception( Gift_Card_Exception::DISABLED, 'The card was disabled before the order was paid.' );
+		}
+		return $result;
 	}
 
 	/**
@@ -317,6 +337,23 @@ final class Gift_Card_Ledger {
 			$sum += (int) $row['reserved_delta_pence'];
 		}
 		return $sum;
+	}
+
+	/**
+	 * Whether an order's reservation was released because the card was disabled or its code replaced.
+	 *
+	 * Such an order must not re-hold and settle against the card when it is later paid.
+	 *
+	 * @param array<int,array<string,mixed>> $rows Ledger rows for one card and order.
+	 * @return bool
+	 */
+	public static function was_revoked( array $rows ): bool {
+		foreach ( $rows as $row ) {
+			if ( self::TYPE_RELEASE === $row['type'] && \in_array( $row['reason'], array( self::REASON_DISABLED, self::REASON_REPLACED ), true ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
