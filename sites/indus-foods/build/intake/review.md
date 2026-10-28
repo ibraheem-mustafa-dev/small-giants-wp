@@ -98,13 +98,13 @@ Accept all: [ ]
 | `palette:--surface-section-gold` | --surface-section-gold #D8CA50 | role:section,accent | 0.95: the most used ground after the page, raised and primary grounds (365 elements); the name --surface-section-gold agrees | role:section |
 | `palette:--surface-topbar` | --surface-topbar #0A7EA8 | role:primary,link | 0.95: the most used strong ground (8 buttons); the name --brand-blue agrees | role:primary |
 | `palette:--surface-warm` | --surface-warm #FAFAF8 | no slug (one-off) | unused: no element in the draft uses this value | one-off |
-| `palette:--surface-white` | --surface-white #FFFFFF | role:surface,primary-text,text-inverse | 0.95: the page ground: the body background on 23 page(s); the name --surface-white agrees | role:surface |
+| `palette:--surface-white` | --surface-white #FFFFFF | role:surface,primary-text,text-inverse | 0.95: the page ground: the body background on 23 page(s); the name --surface-white agrees | role:surface,primary-text,text-inverse |
 | `palette:--text-body` | --text-body #4A5563 | role:text | 0.98: the draft declares --text-body: var(--grey-body); usage agrees | role:text |
 | `palette:--text-heading` | --text-heading #2C3E50 | role:heading,footer-bg,accent-text,section-text | 0.98: the draft declares --text-heading: var(--slate); usage agrees | role:heading,accent-text,section-text |
 | `palette:--text-link` | --text-link #0A7EA8 | role:link,primary | 0.98: the draft declares --text-link: var(--brand-blue); usage agrees | role:link |
 | `palette:--text-link-hover` | --text-link-hover #075E80 | role:link-hover,primary-dark | 0.95: the draft declares --text-link-hover: var(--brand-blue-hover) | role:link-hover |
 | `palette:--text-muted` | --text-muted #68727C | role:text-muted | 0.95: the draft declares --text-muted: var(--grey-muted) (the slug's own name) | role:text-muted |
-| `palette:--tint-on-blue` | --tint-on-blue #E3EFF4 | role:custom-tint-on-blue | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | role:primary-text |
+| `palette:--tint-on-blue` | --tint-on-blue #E3EFF4 | role:custom-tint-on-blue | 0.3: no rendered fact or name gives it a slug; stays a custom colour (FR-33-2) | role:custom-tint-on-blue |
 | `palette:--whatsapp-green` | --whatsapp-green #25D366 | role:whatsapp | 0.95: the ground of the links that open WhatsApp (23 elements); the name --whatsapp-green agrees | role:whatsapp |
 
 ## Site Info (site-info)

@@ -139113,9 +139113,9 @@
    "rowId": "palette:--surface-white",
    "rowType": "palette-role",
    "contentHash": "31110b1aae430925b1b3381f1acc5903297b92e0d4126152880a591199e2257b",
-   "mark": "role:surface",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "mark": "role:surface,primary-text,text-inverse",
+   "markedOn": "2026-10-28",
+   "carriedFrom": null
   },
   {
    "rowId": "palette:--surface-warm",
@@ -139137,9 +139137,9 @@
    "rowId": "palette:--tint-on-blue",
    "rowType": "palette-role",
    "contentHash": "8a63a2f22bc3feb0ec2deb6a99aa5a48ca1ac8ec73033433e4820ba3a4ad8a20",
-   "mark": "role:primary-text",
-   "markedOn": "2026-10-27",
-   "carriedFrom": "2026-10-27T15:06:37.428Z"
+   "mark": "role:custom-tint-on-blue",
+   "markedOn": "2026-10-28",
+   "carriedFrom": null
   },
   {
    "rowId": "palette:--social-linkedin",

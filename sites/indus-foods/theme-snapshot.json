@@ -13,7 +13,7 @@
         {
           "slug": "primary-text",
           "name": "Text on Primary",
-          "color": "#E3EFF4",
+          "color": "#FFFFFF",
           "_source": "confirmed"
         },
         {
@@ -102,8 +102,9 @@
         },
         {
           "slug": "text-inverse",
-          "color": "#F1F5F9",
-          "name": "Text on Dark"
+          "color": "#FFFFFF",
+          "name": "Text on Dark",
+          "_source": "confirmed"
         },
         {
           "slug": "border",
@@ -161,6 +162,12 @@
           "slug": "custom-ink",
           "color": "#1E2A3C",
           "name": "Ink",
+          "_source": "confirmed"
+        },
+        {
+          "slug": "custom-tint-on-blue",
+          "color": "#E3EFF4",
+          "name": "Tint On Blue",
           "_source": "confirmed"
         }
       ],
@@ -541,8 +548,8 @@
       "buttonPresets": {
         "primary": {
           "background": "var(--wp--preset--color--primary)",
-          "text": "#ffffff",
-          "border": "#ffffff",
+          "text": "var(--wp--preset--color--primary-text)",
+          "border": "var(--wp--preset--color--primary-text)",
           "border-width": "0px",
           "border-radius": "999px",
           "padding": "12px 18px 12px 18px",
