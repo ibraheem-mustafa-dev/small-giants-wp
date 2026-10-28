@@ -47,3 +47,5 @@ The signal between parallel sessions working the cloning tool plan (`.claude/pla
 - 2026-10-28 S hostinger-start indus-foods (push)
 - 2026-10-28 S hostinger-end indus-foods (push, exit 0)
 - 2026-10-28 S site-run-end indus-foods (47 surfaces, 0 failed; status sites/indus-foods/build/qa/site-run/2026-10-28T06-08-38/status.json; pushed to indus-test)
+- 2026-10-28 S hostinger-start eye-care-ward-end (push)
+- 2026-10-28 S hostinger-end eye-care-ward-end (push, exit 0)

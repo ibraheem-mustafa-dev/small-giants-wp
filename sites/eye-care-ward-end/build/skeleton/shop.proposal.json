@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-28T06:35:40.911Z",
-	"inventory": "2026-10-28T06:35:40.347Z",
-	"source": "http://127.0.0.1:57904/#@state/page=shop",
+	"generated": "2026-10-28T10:34:14.751Z",
+	"inventory": "2026-10-28T10:34:12.868Z",
+	"source": "http://127.0.0.1:62337/#@state/page=shop",
 	"surface": "page-shop",
 	"siteName": "Eye Care Birmingham",
 	"surfaceParts": [
@@ -127,7 +127,16 @@
 		"notes": [
 			"the rail's group Root/315#0 \"Polarised only\" filters nothing the catalogue holds, so it is not placed"
 		],
-		"attributeIds": {}
+		"attributeIds": {
+			"gender": 12,
+			"size-filter": 10,
+			"colour": 5,
+			"style": 4,
+			"material": 6,
+			"frame-type": 7,
+			"hinge": 8,
+			"nose-pads": 9
+		}
 	},
 	"counts": {
 		"inventoryElements": 733,
@@ -148,16 +157,7 @@
 		}
 	},
 	"widthAlternatives": [],
-	"problems": [
-		"Root/271#0: the filter for facet gender carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)",
-		"Root/271#0: the filter for facet size-filter carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)",
-		"Root/271#0: the filter for facet colour carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)",
-		"Root/271#0: the filter for facet style carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)",
-		"Root/271#0: the filter for facet material carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)",
-		"Root/271#0: the filter for facet frame-type carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)",
-		"Root/271#0: the filter for facet hinge carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)",
-		"Root/271#0: the filter for facet nose-pads carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it)"
-	],
+	"problems": [],
 	"rows": [
 		{
 			"order": 0,

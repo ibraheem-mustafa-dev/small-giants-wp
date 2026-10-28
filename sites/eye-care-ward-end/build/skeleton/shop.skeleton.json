@@ -257,7 +257,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 12
 										},
 										"innerBlocks": [
 											{
@@ -300,7 +301,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 10
 										},
 										"innerBlocks": [
 											{
@@ -343,7 +345,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 5
 										},
 										"innerBlocks": [
 											{
@@ -468,7 +471,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 4
 										},
 										"innerBlocks": [
 											{
@@ -511,7 +515,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 6
 										},
 										"innerBlocks": [
 											{
@@ -554,7 +559,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 7
 										},
 										"innerBlocks": [
 											{
@@ -597,7 +603,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 8
 										},
 										"innerBlocks": [
 											{
@@ -640,7 +647,8 @@
 											"queryType": "or",
 											"showCounts": true,
 											"sortOrder": "menu_order-asc",
-											"displayStyle": "woocommerce/product-filter-chips"
+											"displayStyle": "woocommerce/product-filter-chips",
+											"attributeId": 9
 										},
 										"innerBlocks": [
 											{

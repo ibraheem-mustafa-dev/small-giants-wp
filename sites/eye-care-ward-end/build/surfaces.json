@@ -264,8 +264,6 @@
     "target": {
       "postId": 8
     },
-    "walker": "qa/parity/checkout.fill-base.mjs",
-    "walkerFull": "qa/parity/checkout.fill.mjs",
     "draftDir": "sites/eye-care-ward-end/handoff",
     "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
@@ -298,8 +296,6 @@
     "target": {
       "postId": 7
     },
-    "walker": "qa/parity/cart.fill-base.mjs",
-    "walkerFull": "qa/parity/cart.fill.mjs",
     "draftDir": "sites/eye-care-ward-end/handoff",
     "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {

@@ -1,0 +1,29 @@
+{
+  "shop": {
+    "inventory": {
+      "ok": true,
+      "seconds": 100,
+      "detail": "733 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 2,
+      "detail": "49 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 84,
+      "detail": "fill shop: 163 settings written, 82 UNMAPPED, 0 handover, 0 fluid, 33 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\shop\\2026-10-28T10-34-14\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 49,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//archive-product\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 669,
+      "detail": "report written (exit 1: shop: 1114 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\shop\\report.md, contact sheet)"
+    }
+  }
+}
