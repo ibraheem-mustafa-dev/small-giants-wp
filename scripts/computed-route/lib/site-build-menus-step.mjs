@@ -12,8 +12,8 @@ const isRef = ( v ) => Boolean( v && 'object' === typeof v && v.ref );
 
 // The menu items a mega item took over: in each menu the site build made, an item opening a post that is now the
 // section page of a mega row the same menu holds, and that no row of the map asks the menu for itself.
-export function supersededItems( rows, state, linkText = {}, surfaces = {} ) {
-	const wanted = desiredMenus( rows, linkText, surfaces );
+export function supersededItems( rows, state, linkText = {}, surfaces = {}, menuLinks ) {
+	const wanted = desiredMenus( rows, linkText, surfaces, menuLinks );
 	const byKey = new Map( rows.map( ( r ) => [ rowKey( r ), r ] ) );
 	const out = [];
 	for ( const [ name, list ] of Object.entries( wanted.menus ) ) {

@@ -41,8 +41,10 @@ export const elementFile = ( e ) => ( e?.template ? `${ e.template }.dc.html` : 
 // { route: slug } the page map's matching and `proposed` the proposed rows it names slugs from. A route the confirmed map
 // holds is its row; a route the proposal folded into another row (routeSlug names that row's slug) is the confirmed row of
 // the same route, else of the same slug. `goRoutes` maps `<file>\0<handler>` to the routes the handler reaches.
-// `catalogue` is the client's draft catalogue (null: none), whose products a product link resolves to.
-export function linkContext( { rows = [], routing = null, routeSlug = {}, proposed = [], catalogue = null } ) {
+// `catalogue` is the client's draft catalogue (null: none), whose products a product link resolves to. `menuItems` are the
+// menus the draft code holds (lib/intake-pagemap.mjs::proposePageMap's `menuItems`: the draft's own link text and hrefs behind
+// each menu entry a row carries).
+export function linkContext( { rows = [], routing = null, routeSlug = {}, proposed = [], catalogue = null, menuItems = [] } ) {
 	const routeRow = new Map( rows.filter( ( r ) => r.route ).map( ( r ) => [ r.route, r ] ) );
 	for ( const [ route, slug ] of Object.entries( routeSlug || {} ) ) {
 		if ( routeRow.has( route ) ) {
@@ -61,7 +63,7 @@ export function linkContext( { rows = [], routing = null, routeSlug = {}, propos
 			goRoutes.set( k, new Set( [ ...( goRoutes.get( k ) || [] ), l.route ?? null ] ) );
 		}
 	}
-	return { adapter: routing?.adapter ?? null, rows, routeRow, goRoutes, catalogue };
+	return { adapter: routing?.adapter ?? null, rows, routeRow, goRoutes, catalogue, menuItems };
 }
 
 // A catalogue product link: { address, query (the query left to drop) } or null when the catalogue has no such product.
@@ -184,8 +186,8 @@ export function draftLinksFor( { repo, client, routing = null, proposedRows = nu
 	const intake = readJson( path.join( build, 'intake', 'intake.json' ) );
 	const map = readJson( path.join( build, 'page-map.json' ) ) || proposedRows || intake?.pageMap || null;
 	const folder = path.join( repo, 'sites', client, 'handoff' );
-	const proposal = Array.isArray( map ) && fs.existsSync( folder ) ? proposePageMap( { folder } ) : { rows: [], routeSlug: {} };
-	const ctx = Array.isArray( map ) ? linkContext( { rows: map, routing: routing || intake?.routing || null, routeSlug: proposal.routeSlug, proposed: proposal.rows, catalogue: loadCatalogue( repo, client ) } ) : null;
+	const proposal = Array.isArray( map ) && fs.existsSync( folder ) ? proposePageMap( { folder } ) : { rows: [], routeSlug: {}, menuItems: [] };
+	const ctx = Array.isArray( map ) ? linkContext( { rows: map, routing: routing || intake?.routing || null, routeSlug: proposal.routeSlug, proposed: proposal.rows, catalogue: loadCatalogue( repo, client ), menuItems: proposal.menuItems } ) : null;
 	! given && memo.set( key, ctx );
 	return ctx;
 }

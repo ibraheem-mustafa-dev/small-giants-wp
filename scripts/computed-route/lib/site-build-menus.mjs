@@ -5,22 +5,35 @@
 //     on the same slot is that panel's Section page (Spec 36 FR-36-5, returned in `sections`) and adds no item of its
 //     own;
 //   - a parent label that names no item of the menu is a custom item linking "#" (a disclosure, never a link:
-//     SGS_Nav_Menu_Source::is_destination_url), placed after the positioned top-level items in first-mention order.
+//     SGS_Nav_Menu_Source::is_destination_url), placed after the positioned top-level items in first-mention order;
+//   - a `product` row's entry (a row that makes no post) is a custom link item with the draft's own link text, to the
+//     product's permalink plus the draft href's own query (lib/site-build-menu-links.mjs::menuLinksFor, `menuLinks`); an
+//     entry whose product is not built on the site yet makes no item and is reported with the reason.
 // Items come out in display order (each parent, then its children by position); `order` is the item's menu_order.
 import { megaPanelLabel } from './page-map-names.mjs';
 import { hasPost, menuSurfaceKind, rowKey, wpType } from './site-build-map.mjs';
 
 const labelOf = ( row ) => ( 'sgs_mega_menu' === row.postType ? megaPanelLabel( row.title ) : row.title );
 
-export function desiredMenus( rows, linkText = {}, surfaces = {} ) {
+export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { links: {}, pending: [] } ) {
 	const problems = [];
 	const notes = [];
 	const menus = {};
 	// Mega row key -> its section page's row key, from every menu that pairs them.
 	const sections = {};
-	// A row that makes no post (a `product` or `product_cat` row, FR-48-55 part 1) has nothing for a menu item to open.
-	rows.filter( ( r ) => ! hasPost( r ) && ( r.menus || [] ).length ).forEach( ( r ) => notes.push( `${ rowKey( r ) }: a ${ r.postType } row makes no post, so its ${ r.menus.map( ( m ) => m.menu ).join( ', ' ) } menu entr${ 1 === r.menus.length ? 'y adds' : 'ies add' } no item; link the menu item to a product or category in Appearance > Menus` ) );
-	const entries = rows.filter( hasPost ).flatMap( ( row ) => ( row.menus || [] ).map( ( m ) => ( { row, menu: m.menu, position: m.position, parentItem: m.parentItem || null } ) ) );
+	// A row that makes no post (a `product` or `product_cat` row, FR-48-55 part 1) has no post for a menu item to open: its
+	// entries are custom links where the product's address is known (`menuLinks`), else a note giving the reason.
+	for ( const r of rows.filter( ( x ) => ! hasPost( x ) && ( x.menus || [] ).length ) ) {
+		const waiting = menuLinks.pending.filter( ( p ) => p.rowKey === rowKey( r ) );
+		if ( ! waiting.length && ! ( menuLinks.links[ rowKey( r ) ] || [] ).length ) {
+			notes.push( `${ rowKey( r ) }: a ${ r.postType } row makes no post, so its ${ r.menus.map( ( m ) => m.menu ).join( ', ' ) } menu entr${ 1 === r.menus.length ? 'y adds' : 'ies add' } no item; link the menu item to a product or category in Appearance > Menus` );
+		}
+		waiting.forEach( ( p ) => notes.push( `${ p.rowKey }: the ${ p.menu } menu entry${ p.text ? ` "${ p.text }"` : '' } adds no item yet: ${ p.why }` ) );
+	}
+	const entries = [
+		...rows.filter( hasPost ).flatMap( ( row ) => ( row.menus || [] ).map( ( m ) => ( { row, menu: m.menu, position: m.position, parentItem: m.parentItem || null } ) ) ),
+		...rows.filter( ( r ) => ! hasPost( r ) ).flatMap( ( row ) => ( menuLinks.links[ rowKey( row ) ] || [] ).map( ( l ) => ( { row, menu: l.menu, position: l.position, parentItem: l.parentItem, link: l } ) ) ),
+	];
 	const names = [ ...new Set( entries.map( ( e ) => e.menu ) ) ];
 	for ( const name of names ) {
 		// The draft's link text for the surface this menu feeds; a header menu a drawer also binds (no drawer menu) falls back to the drawer's.
@@ -55,7 +68,16 @@ export function desiredMenus( rows, linkText = {}, surfaces = {} ) {
 			const text = texts[ ( others[ 0 ] || megas[ 0 ] ).row.route ] || null;
 			chosen.push( Object.assign( megas[ 0 ] || others[ 0 ], { text } ) );
 		}
-		const item = ( e ) => ( {
+		const item = ( e ) => ( e.link ? {
+			key: `link:${ rowKey( e.row ) }@${ e.parentItem || '' }`,
+			kind: 'link',
+			rowKey: rowKey( e.row ),
+			label: e.link.text,
+			title: e.link.text,
+			url: e.link.url,
+			position: e.position,
+			parentItem: e.parentItem,
+		} : {
 			key: `post:${ rowKey( e.row ) }@${ e.parentItem || '' }`,
 			kind: 'post',
 			rowKey: rowKey( e.row ),
@@ -92,3 +114,13 @@ export function menuLocation( name, registered ) {
 	}
 	return 'header' === name ? [ 'primary', 'main' ].find( ( l ) => registered.includes( l ) ) || null : null;
 }
+
+// A URL's path and query with the origin dropped, for comparing an item's stored address with the wanted one across hosts.
+export const addressOf = ( url ) => {
+	try {
+		const u = new URL( url, 'http://site.invalid' );
+		return `${ u.pathname.replace( /\/+$/, '' ) }${ u.search }`;
+	} catch {
+		return String( url );
+	}
+};

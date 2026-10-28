@@ -25,6 +25,9 @@
 // --menus runs only the menus and their mega-menu bindings (lib/site-build-menus-step.mjs): the menu, item and theme-location steps, each
 // mega panel's section page, and the removal of an item a mega item took over, on a site that is already built; it
 // reads the page map and never writes it (it makes no post), and records the site's menu ids in menu-map.json.
+// A `product` row's menu entry becomes a custom link item (the draft's link text, the product's recorded permalink and the
+// draft href's own query) once --catalogue has built the products on the site (lib/site-build-menu-links.mjs); until then it
+// is a note naming that step, so the order is --catalogue --apply, then the whole build or --menus.
 // Exit 0 done, 1 failure or a stopped run, 2 usage.
 import fs from 'fs';
 import path from 'path';
@@ -41,6 +44,7 @@ import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
+import { menuLinksOf } from './lib/site-build-menu-links.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -104,9 +108,10 @@ if ( args.includes( '--menus' ) ) {
 		const planFor = () => {
 			const link = readLinkTextReport( { repo, client } );
 			const state = readState( runPhp, rows );
-			const plan = planBuild( { rows, state, repo, client, linkText: link.text } );
+			const menuLinks = menuLinksOf( { repo, client, site, rows } );
+			const plan = planBuild( { rows, state, repo, client, linkText: link.text, menuLinks } );
 			plan.notes.push( ...link.conflicts );
-			return { plan, superseded: supersededItems( rows, state, link.text, readSurfaces( repo, client ) ), state };
+			return { plan, superseded: supersededItems( rows, state, link.text, readSurfaces( repo, client ), menuLinks ), state };
 		};
 		const code = runMenus( { planFor, apply, wp: wpCommand( target, site, repo ), applyPhase } );
 		if ( 0 === code && apply ) {
@@ -152,7 +157,7 @@ try {
 	let rows = original;
 	const plan = () => {
 		const link = readLinkTextReport( { repo, client } );
-		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: link.text } );
+		const p = planBuild( { rows, state: readState( runPhp, rows ), repo, client, linkText: link.text, menuLinks: menuLinksOf( { repo, client, site, rows } ) } );
 		p.notes.push( ...link.conflicts );
 		if ( p.problems.length ) {
 			p.problems.forEach( ( m ) => console.error( `STOP ${ m }` ) );
