@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T19:34:48.747Z",
-  "source": "http://127.0.0.1:53330/",
+  "generated": "2026-10-28T06:42:46.052Z",
+  "source": "http://127.0.0.1:57904/",
   "root": "header",
   "beside": [
     {
@@ -2037,7 +2037,7 @@
       "snippet": "<div style=\"display: {{ tickerDisplay }};width: {{ tickerW }};animation: {{ tickerAnim }};max-width:1440px;margin:0 auto;justify-content: {{ tickerJustify }};flex-wrap: {{ tickerWrap }};gap: {{ tickerGap }};padding: {{ tickerPad }}\" style-hover=\"animation-play-state:paused\" data-dc-tpl=\"8\"> <sc-for list=\"{{ ticker }}\" as=\"t\" hint-placeholder-count=\"4\" data-dc-tpl=\"9\"> <span style=\"padding: {{ tick",
       "box": {
         "375": {
-          "x": -144.4,
+          "x": -137.2,
           "y": 11,
           "w": 1440,
           "h": 18.8
@@ -2099,7 +2099,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": -144.4,
+          "x": -137.2,
           "y": 11,
           "w": 325.7,
           "h": 18.8
@@ -2162,7 +2162,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": -124.4,
+          "x": -117.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2222,7 +2222,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": -121.9,
+          "x": -114.7,
           "y": 14.1,
           "w": 10,
           "h": 12.5
@@ -2283,7 +2283,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 181.3,
+          "x": 188.5,
           "y": 11,
           "w": 370.7,
           "h": 18.8
@@ -2346,7 +2346,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 201.3,
+          "x": 208.5,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2406,13 +2406,13 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 201.9,
+          "x": 209.1,
           "y": 17.3,
           "w": 12.5,
           "h": 7.8
         },
         "768": {
-          "x": 413.9,
+          "x": 414,
           "y": 17.3,
           "w": 12.5,
           "h": 7.8
@@ -2467,7 +2467,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 552,
+          "x": 559.2,
           "y": 11,
           "w": 325.6,
           "h": 18.8
@@ -2525,7 +2525,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 572,
+          "x": 579.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2580,7 +2580,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 573.2,
+          "x": 580.4,
           "y": 16.6,
           "w": 12.5,
           "h": 6.9
@@ -2636,7 +2636,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 877.6,
+          "x": 884.8,
           "y": 11,
           "w": 319.1,
           "h": 18.8
@@ -2694,7 +2694,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 897.6,
+          "x": 904.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2749,7 +2749,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 899.5,
+          "x": 906.6,
           "y": 14.8,
           "w": 11.3,
           "h": 11.3
@@ -2805,7 +2805,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 1196.6,
+          "x": 1203.8,
           "y": 11,
           "w": 325.7,
           "h": 18.8
@@ -2858,7 +2858,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 1216.6,
+          "x": 1223.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -2908,7 +2908,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 1219.1,
+          "x": 1226.3,
           "y": 14.1,
           "w": 10,
           "h": 12.5
@@ -2960,7 +2960,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 1522.3,
+          "x": 1529.5,
           "y": 11,
           "w": 370.7,
           "h": 18.8
@@ -3013,7 +3013,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 1542.3,
+          "x": 1549.5,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -3063,7 +3063,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 1543,
+          "x": 1550.2,
           "y": 17.3,
           "w": 12.5,
           "h": 7.8
@@ -3115,7 +3115,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 1893,
+          "x": 1900.2,
           "y": 11,
           "w": 325.6,
           "h": 18.8
@@ -3168,7 +3168,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 1913,
+          "x": 1920.2,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -3218,7 +3218,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 1914.3,
+          "x": 1921.5,
           "y": 16.6,
           "w": 12.5,
           "h": 6.9
@@ -3270,7 +3270,7 @@
       "snippet": "<span style=\"padding: {{ tickerItemPad }};white-space:nowrap;display:flex;gap:9px;align-items:center\" data-dc-tpl=\"10\"> <svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg> {{ t.text }} </span>",
       "box": {
         "375": {
-          "x": 2218.6,
+          "x": 2225.8,
           "y": 11,
           "w": 319.1,
           "h": 18.8
@@ -3323,7 +3323,7 @@
       "snippet": "<svg width=\"15\" height=\"15\" sc-camel-view-box=\"0 0 24 24\" fill=\"none\" stroke=\"var(--acc,#9C8B78)\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" data-dc-tpl=\"11\"><path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path></svg>",
       "box": {
         "375": {
-          "x": 2238.6,
+          "x": 2245.8,
           "y": 12.9,
           "w": 15,
           "h": 15
@@ -3373,7 +3373,7 @@
       "snippet": "<path d=\"{{ t.icon }}\" data-dc-tpl=\"12\"></path>",
       "box": {
         "375": {
-          "x": 2240.5,
+          "x": 2247.7,
           "y": 14.8,
           "w": 11.3,
           "h": 11.3

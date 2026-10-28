@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-27T16:43:10.110Z",
+	"generated": "2026-10-28T06:51:13.524Z",
 	"inventory": "2026-10-27T14:09:29.924Z",
 	"source": "http://127.0.0.1:58385/Indus%20Foods%20Website%20v2.dc.html#/apply",
 	"surface": "trade-account-application",
@@ -92,18 +92,19 @@
 		"inventoryElements": 105,
 		"parts": 13,
 		"rows": 92,
-		"skeletonNodes": 68,
-		"expandedNodes": 68,
-		"low": 15,
-		"removed": 23,
-		"unresolved": 1,
+		"skeletonNodes": 79,
+		"expandedNodes": 79,
+		"low": 2,
+		"removed": 46,
+		"unresolved": 0,
 		"byRule": {
 			"formHost": 1,
 			"alignWrapper": 2,
-			"label": 2,
+			"formSteps": 19,
 			"dotMarker": 1,
-			"optionSet": 13,
-			"formControl": 11,
+			"formControl": 14,
+			"optionSetForm": 13,
+			"label": 1,
 			"solitaryIcon": 6,
 			"cardHeading": 1,
 			"siteInfoLink": 2
@@ -141,7 +142,11 @@
 			"snippet": "<div style=\"display:grid;grid-template-columns:{{ L.cols }};gap:{{ L.gap }};align-items:start;\" data-dc-tpl=\"6\"> <div style=\"min-width:0;background:#FFFFFF;border-radius:30px;border:1px solid rgba(44,62,80,.1);box-shadow:0 40px 80px -50px rgba(44,62,80,.55);overflow:clip;\" data-dc-tpl=\"7\"> <div style=\"padding:{{ L.pad }};padding-bottom:0;\" data-dc-tpl=\"8\"> <div style=\"display:flex;align-items:cent",
 			"attributes": {
 				"layout": "grid"
-			}
+			},
+			"slotNotes": [
+				"Premises: the draft shows \"Delivery address\" only while another field has a value; sgs/heading holds no condition, so it always shows",
+				"Ordering: the draft shows \"Credit account details\" only while another field has a value; sgs/heading holds no condition, so it always shows"
+			]
 		},
 		{
 			"order": 1,
@@ -235,14 +240,14 @@
 			"tag": "span",
 			"depth": 4,
 			"words": "Step 1 of 5",
-			"block": "sgs/label",
-			"action": null,
-			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's step count: the form block draws its own progress (its step list numbers each step)",
 			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "label",
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/label",
@@ -258,7 +263,8 @@
 			"snippet": "<span style=\"font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#0A7EA8;\" data-dc-tpl=\"10\">Step {{ stepNum }} of {{ stepTotal }}<sc-if value=\"{{ L.noLabels }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"11\"> · {{ cur.label }}</sc-if></span>",
 			"attributes": {
 				"text": "Step 1 of 5"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 5,
@@ -321,20 +327,21 @@
 			"depth": 3,
 			"words": "",
 			"block": null,
-			"action": "unresolved",
-			"reason": "no block fits this element: decide it with skeleton.mjs decide",
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: a wordless element beside the draft's step list or step count (its progress line): the form block draws its own progress bar",
 			"source": null,
 			"confidence": 0,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [],
 			"parts": [
 				"Root>TradeApplication@466#0/15#0"
 			],
 			"screenshots": {},
 			"snippet": "<div style=\"position:relative;height:6px;border-radius:6px;background:#EEF2F5;margin-top:14px;overflow:hidden;\" data-dc-tpl=\"14\"> <span style=\"position:absolute;left:0;top:0;bottom:0;width:{{ progress }};border-radius:6px;background:linear-gradient(90deg,#D8CA50,#2EADE2);transition:width .6s cubic-bezier(.2,.8,.2,1);\" data-dc-tpl=\"15\"></span> </div>",
-			"attributes": {}
+			"attributes": {},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 8,
@@ -342,14 +349,14 @@
 			"tag": "div",
 			"depth": 3,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -368,7 +375,8 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "grid"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 9,
@@ -376,14 +384,14 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -402,7 +410,8 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 10,
@@ -410,14 +419,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "1",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -433,7 +442,8 @@
 			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
 			"attributes": {
 				"text": "1"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 11,
@@ -441,14 +451,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Business",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -464,7 +474,8 @@
 			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
 			"attributes": {
 				"text": "Business"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 12,
@@ -472,14 +483,14 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -498,7 +509,8 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 13,
@@ -506,14 +518,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "2",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -529,7 +541,8 @@
 			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
 			"attributes": {
 				"text": "2"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 14,
@@ -537,14 +550,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Premises",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -560,7 +573,8 @@
 			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
 			"attributes": {
 				"text": "Premises"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 15,
@@ -568,14 +582,14 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -594,7 +608,8 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 16,
@@ -602,14 +617,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "3",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -625,7 +640,8 @@
 			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
 			"attributes": {
 				"text": "3"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 17,
@@ -633,14 +649,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Contact",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -656,7 +672,8 @@
 			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
 			"attributes": {
 				"text": "Contact"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 18,
@@ -664,14 +681,14 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -690,7 +707,8 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 19,
@@ -698,14 +716,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "4",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -721,7 +739,8 @@
 			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
 			"attributes": {
 				"text": "4"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 20,
@@ -729,14 +748,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Ordering",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -752,7 +771,8 @@
 			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
 			"attributes": {
 				"text": "Ordering"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 21,
@@ -760,14 +780,14 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/container",
@@ -786,7 +806,8 @@
 			"attributes": {
 				"tagName": "div",
 				"layout": "flex"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 22,
@@ -794,14 +815,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "5",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -817,7 +838,8 @@
 			"snippet": "<span style=\"flex-shrink:0;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;background:{{ st.bg }};color:{{ st.fg }};border:2px solid {{ st.ring }};transition:background .3s,color .3s,border-color .3s,transform .4s cubic-bezier(.34,1.56,.64,1);transform:scale({{ st.scale }});\" data-dc-",
 			"attributes": {
 				"text": "5"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 23,
@@ -825,14 +847,14 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "Review",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's list of the form's steps: the form block draws its own step list and progress bar from its steps' labels",
 			"source": null,
 			"confidence": 0.25,
 			"low": true,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/text",
@@ -848,7 +870,8 @@
 			"snippet": "<span style=\"font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;\" data-dc-tpl=\"21\">{{ st.label }}</span>",
 			"attributes": {
 				"text": "Review"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 24,
@@ -1008,33 +1031,19 @@
 			"tag": "label",
 			"depth": 5,
 			"words": "What kind of business are you?",
-			"block": "sgs/container",
-			"action": null,
-			"reason": null,
-			"source": null,
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/container",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
-						"no row block fits: a generic wrapper",
-						"block_capabilities: sgs/container lists \"flex\" (draft display)"
-					]
-				}
-			],
+			"rule": "formControl",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
-			"attributes": {
-				"tagName": "div",
-				"layout": "flex"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 30,
@@ -1042,30 +1051,19 @@
 			"tag": "span",
 			"depth": 6,
 			"words": "*",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "remove",
+			"reason": "inside a removed element (Root>TradeApplication@466#0/33#0)",
 			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"confidence": 1,
+			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span>",
-			"attributes": {
-				"text": "*"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 31,
@@ -1073,28 +1071,31 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/option-picker",
+			"block": "sgs/form-field-tiles",
 			"action": null,
-			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
-			"source": "rule optionSet",
+			"reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)",
+			"source": "rule optionSetForm",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"candidates": [
 				{
-					"block": "sgs/option-picker",
+					"block": "sgs/form-field-tiles",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+						"rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px;\" data-dc-tpl=\"47\"> <sc-for list=\"{{ f.chips }}\" as=\"c\" hint-placeholder-count=\"5\" data-dc-tpl=\"48\"> <button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};fon",
-			"attributes": {}
+			"attributes": {
+				"label": "What kind of business are you?",
+				"required": true
+			}
 		},
 		{
 			"order": 32,
@@ -1104,12 +1105,12 @@
 			"words": "Restaurant or takeaway",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#0",
 			"candidates": [],
 			"parts": [],
@@ -1125,12 +1126,12 @@
 			"words": "Caterer or events",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#0",
 			"candidates": [],
 			"parts": [],
@@ -1146,12 +1147,12 @@
 			"words": "Retailer or convenience",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#0",
 			"candidates": [],
 			"parts": [],
@@ -1167,12 +1168,12 @@
 			"words": "Wholesaler or cash & carry",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#0",
 			"candidates": [],
 			"parts": [],
@@ -1188,12 +1189,12 @@
 			"words": "Food manufacturer",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#0",
 			"candidates": [],
 			"parts": [],
@@ -1209,12 +1210,12 @@
 			"words": "Other",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#0",
 			"candidates": [],
 			"parts": [],
@@ -1304,7 +1305,7 @@
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -1316,7 +1317,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -1324,7 +1325,8 @@
 			"screenshots": {},
 			"snippet": "<input id=\"{{ f.id }}\" type=\"{{ f.type }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" placeholder=\"{{ f.ph }}\" autocomplete=\"{{ f.ac }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,background .2s;\" st",
 			"attributes": {
-				"label": "Trading name"
+				"label": "Trading name",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -1394,7 +1396,7 @@
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -1406,7 +1408,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -1504,7 +1506,7 @@
 			"words": "",
 			"block": "sgs/form-field-select",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -1516,7 +1518,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -1531,7 +1533,8 @@
 			"screenshots": {},
 			"snippet": "<sc-raw-select id=\"{{ f.id }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;cursor:pointer;\" style-focus=\"border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)\" data-dc-tpl=\"41\"> <sc-for list=\"{{",
 			"attributes": {
-				"label": "Business structure"
+				"label": "Business structure",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -1601,7 +1604,7 @@
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -1613,7 +1616,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -1732,7 +1735,7 @@
 			"words": "",
 			"block": "sgs/form-field-select",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -1744,7 +1747,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -1759,7 +1762,8 @@
 			"screenshots": {},
 			"snippet": "<sc-raw-select id=\"{{ f.id }}\" value=\"{{ f.value }}\" sc-camel-on-change=\"{{ f.onChange }}\" style=\"height:56px;padding:0 18px;border-radius:14px;border:1.5px solid {{ f.border }};background:{{ f.bg }};font-size:17px;color:#2C3E50;outline:none;width:100%;cursor:pointer;\" style-focus=\"border-color:#0A7EA8;background:#FFFFFF;box-shadow:0 0 0 4px rgba(46,173,226,.18)\" data-dc-tpl=\"41\"> <sc-for list=\"{{",
 			"attributes": {
-				"label": "Time trading"
+				"label": "Time trading",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -1807,30 +1811,19 @@
 			"tag": "label",
 			"depth": 5,
 			"words": "Food hygiene rating",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a label"
-					]
-				}
-			],
+			"rule": "formControl",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<label for=\"{{ f.id }}\" style=\"font-weight:700;font-size:16px;color:#2C3E50;display:flex;gap:6px;align-items:baseline;\" data-dc-tpl=\"33\">{{ f.label }}<sc-if value=\"{{ f.req }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"34\"><span style=\"color:#C8412B;\" data-dc-tpl=\"35\">*</span></sc-if><sc-if value=\"{{ f.opt }}\" hint-placeholder-val=\"{{ false }}\" data-dc-tpl=\"36\"><span style=\"font-weight:500;f",
-			"attributes": {
-				"text": "Food hygiene rating"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 59,
@@ -1838,28 +1831,31 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/option-picker",
+			"block": "sgs/form-field-tiles",
 			"action": null,
-			"reason": "a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it",
-			"source": "rule optionSet",
+			"reason": "a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)",
+			"source": "rule optionSetForm",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"candidates": [
 				{
-					"block": "sgs/option-picker",
+					"block": "sgs/form-field-tiles",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule optionSet: a group of pressable chips (sizes, flavours, any option set) is the exclusive single-select option picker, which draws its own options: the chips and their label and tick spans are absorbed into it"
+						"rule optionSetForm: a group of pressable chips inside a form is a choice the form submits: the tiles field, which takes its options from the chips' text (Bean, 2026-10-21)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div style=\"display:flex;flex-wrap:wrap;gap:10px;\" data-dc-tpl=\"47\"> <sc-for list=\"{{ f.chips }}\" as=\"c\" hint-placeholder-count=\"5\" data-dc-tpl=\"48\"> <button type=\"button\" sc-camel-on-click=\"{{ c.onClick }}\" aria-pressed=\"{{ c.on }}\" style=\"display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;border:1.5px solid {{ c.ring }};background:{{ c.bg }};color:{{ c.fg }};fon",
-			"attributes": {}
+			"attributes": {
+				"label": "Food hygiene rating",
+				"helpText": "From your local authority (Food Standards Agency scheme)."
+			}
 		},
 		{
 			"order": 60,
@@ -1869,12 +1865,12 @@
 			"words": "5",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#1",
 			"candidates": [],
 			"parts": [],
@@ -1890,12 +1886,12 @@
 			"words": "4",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#1",
 			"candidates": [],
 			"parts": [],
@@ -1911,12 +1907,12 @@
 			"words": "3",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#1",
 			"candidates": [],
 			"parts": [],
@@ -1932,12 +1928,12 @@
 			"words": "Awaiting inspection",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#1",
 			"candidates": [],
 			"parts": [],
@@ -1953,12 +1949,12 @@
 			"words": "Not applicable",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/option-picker: rule optionSet",
+			"reason": "drawn by sgs/form-field-tiles: rule optionSetForm",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "optionSet",
+			"rule": "optionSetForm",
 			"into": "Root>TradeApplication@466#0/47#1",
 			"candidates": [],
 			"parts": [],
@@ -1972,30 +1968,19 @@
 			"tag": "span",
 			"depth": 5,
 			"words": "From your local authority (Food Standards Agency scheme).",
-			"block": "sgs/text",
-			"action": null,
-			"reason": null,
-			"source": null,
-			"confidence": 0.25,
-			"low": true,
+			"block": null,
+			"action": "remove",
+			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
+			"source": "rule formControl",
+			"confidence": 1,
+			"low": false,
 			"stale": null,
-			"rule": null,
-			"candidates": [
-				{
-					"block": "sgs/text",
-					"score": 0.25,
-					"share": 1,
-					"evidence": [
-						"html_tag_to_core_block: p -> sgs/text: the generic block for words in a span"
-					]
-				}
-			],
+			"rule": "formControl",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<span style=\"font-size:15px;color:#5E6873;\" data-dc-tpl=\"64\">{{ f.hint }}</span>",
-			"attributes": {
-				"text": "From your local authority (Food Standards Agency scheme)."
-			}
+			"attributes": {}
 		},
 		{
 			"order": 66,
@@ -2068,14 +2053,14 @@
 			"tag": "button",
 			"depth": 4,
 			"words": "Continue",
-			"block": "sgs/button",
-			"action": null,
-			"reason": null,
+			"block": null,
+			"action": "absorbed",
+			"reason": "drawn by sgs/form: the draft's Next button: the form block draws its own Next button between steps",
 			"source": null,
 			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": null,
+			"rule": "formSteps",
 			"candidates": [
 				{
 					"block": "sgs/button",
@@ -2092,7 +2077,8 @@
 			"snippet": "<button type=\"button\" sc-camel-on-click=\"{{ next }}\" style=\"flex:{{ L.nextFlex }};justify-content:center;display:inline-flex;align-items:center;gap:10px;background:{{ nextBg }};color:{{ nextFg }};border:2px solid {{ nextBg }};border-radius:999px;padding:15px 28px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(10,126,168,.7);transition:transform .25s cubic-bezier(.2",
 			"attributes": {
 				"label": "Continue"
-			}
+			},
+			"into": "Root>TradeApplication@466#0/6#0"
 		},
 		{
 			"order": 69,

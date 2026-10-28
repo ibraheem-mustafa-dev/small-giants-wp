@@ -15,6 +15,9 @@
       "minHeight": {
         "desktop": "0px"
       },
+      "contentWidth": {
+        "desktop": "full"
+      },
       "textColourHover": "custom-ink"
     },
     "innerBlocks": [

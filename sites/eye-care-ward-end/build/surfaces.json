@@ -304,7 +304,8 @@
     "draftIndex": "Eye Care Birmingham.dc.html",
     "states": {
       "resting": null
-    }
+    },
+    "noDraft": "no draft page: WooCommerce's own cart page keeps its block"
   },
   "form-submit-contact": {
     "tree": "trees/sgs_form/form-submit-contact.json",

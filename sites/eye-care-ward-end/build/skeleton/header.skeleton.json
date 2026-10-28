@@ -228,7 +228,9 @@
 				"innerBlocks": [
 					{
 						"name": "sgs/nav-bar-menu",
-						"attributes": {},
+						"attributes": {
+							"ref": 30
+						},
 						"draftRef": {
 							"tpl": "Root/15#0"
 						},

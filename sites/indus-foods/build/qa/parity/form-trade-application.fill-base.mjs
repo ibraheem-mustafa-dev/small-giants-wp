@@ -9,8 +9,199 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"TradeApplication\"][data-dc-tpl=\"466\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-form-trade-application-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] .sc-host[data-sc-name=\"TradeApplication\"][data-dc-tpl=\"466\"] [data-dc-tpl=\"6\"]:not(.sc-host .sc-host .sc-host *)","live":".cr-ref-form-trade-application-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:58069/#/apply" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:57270/#/apply" },
 	live: { url: "http://localhost:8083/apply/" },
-	states: [ { name: "in-progress", fullPage: true } ],
+	states: [
+		{ name: "in-progress", fullPage: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"set","patch":{"done":false},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "TradeApplication", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"in-progress\" on TradeApplication", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+		{ name: "draft-restored", fullPage: true, from: 'rest', allPairs: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"set","patch":{"saved":true},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "TradeApplication", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"draft-restored\" on TradeApplication", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+		{ name: "checklist-open", fullPage: true, from: 'rest', allPairs: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"set","patch":{"ckOpen":true},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "TradeApplication", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"checklist-open\" on TradeApplication", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+	],
+	unwalked: [{"state":"validation-errors","reason":"\"validation errors\": no usable state key (errs: a placeholder or description, not a value) and no setState call in its how_to_reach"},{"state":"stepper-labels","reason":"\"stepper labels (≥ 768)\": no usable state key (L.labels: a render value or selector, not a state key name) and no setState call in its how_to_reach"},{"state":"side-help-desktop-compact","reason":"\"side help: desktop / compact\": no usable state key (L.desk: a render value or selector, not a state key name) and no setState call in its how_to_reach"}],
 	pairs: [],
 };

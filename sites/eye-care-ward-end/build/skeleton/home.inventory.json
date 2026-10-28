@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T19:29:52.355Z",
-  "source": "http://127.0.0.1:53330/",
+  "generated": "2026-10-28T06:35:32.174Z",
+  "source": "http://127.0.0.1:57904/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -1465,7 +1465,7 @@
         "1440": {
           "x": 52,
           "y": 412.7,
-          "w": 475.2,
+          "w": 584.5,
           "h": 190.1
         }
       },
@@ -1821,19 +1821,19 @@
       "snippet": "<div style=\"display:flex;width:max-content;animation:marquee 64s linear infinite;padding:26px 0\" style-hover=\"animation-play-state:paused\" data-dc-tpl=\"127\"> <sc-for list=\"{{ marquee }}\" as=\"b\" hint-placeholder-count=\"14\" data-dc-tpl=\"128\"> <a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;paddi",
       "box": {
         "375": {
-          "x": -281.3,
+          "x": -268.8,
           "y": 843.8,
           "w": 6018.8,
           "h": 96
         },
         "768": {
-          "x": -276.6,
+          "x": -271.2,
           "y": 861.8,
           "w": 6018.8,
           "h": 96
         },
         "1440": {
-          "x": -267.2,
+          "x": -264.9,
           "y": 861.8,
           "w": 6018.8,
           "h": 96
@@ -1891,19 +1891,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": -281.3,
+          "x": -268.8,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": -276.6,
+          "x": -271.2,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": -267.2,
+          "x": -264.9,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -1960,19 +1960,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": -107.3,
+          "x": -94.8,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": -102.6,
+          "x": -97.2,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": -93.2,
+          "x": -90.9,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2029,19 +2029,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 66.7,
+          "x": 79.2,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 71.4,
+          "x": 76.8,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 80.8,
+          "x": 83.1,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2098,19 +2098,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 240.7,
+          "x": 253.2,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 245.4,
+          "x": 250.8,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 254.8,
+          "x": 257.1,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2167,19 +2167,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 414.7,
+          "x": 427.2,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 419.4,
+          "x": 424.8,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 428.8,
+          "x": 431.1,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2236,19 +2236,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 588.7,
+          "x": 601.2,
           "y": 869.8,
           "w": 185,
           "h": 44
         },
         "768": {
-          "x": 593.4,
+          "x": 598.8,
           "y": 887.8,
           "w": 185,
           "h": 44
         },
         "1440": {
-          "x": 602.8,
+          "x": 605.1,
           "y": 887.8,
           "w": 185,
           "h": 44
@@ -2305,19 +2305,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 773.7,
+          "x": 786.2,
           "y": 869.8,
           "w": 251.1,
           "h": 44
         },
         "768": {
-          "x": 778.4,
+          "x": 783.8,
           "y": 887.8,
           "w": 251.1,
           "h": 44
         },
         "1440": {
-          "x": 787.8,
+          "x": 790.1,
           "y": 887.8,
           "w": 251.1,
           "h": 44
@@ -2374,19 +2374,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 1024.8,
+          "x": 1037.3,
           "y": 869.8,
           "w": 210.3,
           "h": 44
         },
         "768": {
-          "x": 1029.5,
+          "x": 1035,
           "y": 887.8,
           "w": 210.3,
           "h": 44
         },
         "1440": {
-          "x": 1038.9,
+          "x": 1041.2,
           "y": 887.8,
           "w": 210.3,
           "h": 44
@@ -2443,19 +2443,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 1235.1,
+          "x": 1247.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 1239.8,
+          "x": 1245.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 1249.2,
+          "x": 1251.6,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2512,19 +2512,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 1409.1,
+          "x": 1421.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 1413.8,
+          "x": 1419.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 1423.2,
+          "x": 1425.6,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2581,19 +2581,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 1583.1,
+          "x": 1595.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 1587.8,
+          "x": 1593.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 1597.2,
+          "x": 1599.6,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2650,19 +2650,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 1757.1,
+          "x": 1769.6,
           "y": 869.8,
           "w": 238,
           "h": 44
         },
         "768": {
-          "x": 1761.8,
+          "x": 1767.3,
           "y": 887.8,
           "w": 238,
           "h": 44
         },
         "1440": {
-          "x": 1771.2,
+          "x": 1773.6,
           "y": 887.8,
           "w": 238,
           "h": 44
@@ -2719,19 +2719,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 1995.1,
+          "x": 2007.6,
           "y": 869.8,
           "w": 211,
           "h": 44
         },
         "768": {
-          "x": 1999.8,
+          "x": 2005.3,
           "y": 887.8,
           "w": 211,
           "h": 44
         },
         "1440": {
-          "x": 2009.2,
+          "x": 2011.6,
           "y": 887.8,
           "w": 211,
           "h": 44
@@ -2788,19 +2788,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 2206.1,
+          "x": 2218.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 2210.8,
+          "x": 2216.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 2220.2,
+          "x": 2222.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2857,19 +2857,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 2380.1,
+          "x": 2392.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 2384.8,
+          "x": 2390.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 2394.2,
+          "x": 2396.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2926,19 +2926,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 2554.1,
+          "x": 2566.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 2558.8,
+          "x": 2564.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 2568.2,
+          "x": 2570.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -2995,19 +2995,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 2728.1,
+          "x": 2740.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 2732.8,
+          "x": 2738.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 2742.2,
+          "x": 2744.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3064,19 +3064,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 2902.1,
+          "x": 2914.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 2906.8,
+          "x": 2912.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 2916.2,
+          "x": 2918.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3133,19 +3133,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 3076.1,
+          "x": 3088.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 3080.8,
+          "x": 3086.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 3090.2,
+          "x": 3092.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3202,19 +3202,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 3250.1,
+          "x": 3262.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 3254.8,
+          "x": 3260.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 3264.2,
+          "x": 3266.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3271,19 +3271,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 3424.1,
+          "x": 3436.6,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 3428.8,
+          "x": 3434.3,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 3438.2,
+          "x": 3440.5,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3340,19 +3340,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 3598.1,
+          "x": 3610.6,
           "y": 869.8,
           "w": 185,
           "h": 44
         },
         "768": {
-          "x": 3602.8,
+          "x": 3608.3,
           "y": 887.8,
           "w": 185,
           "h": 44
         },
         "1440": {
-          "x": 3612.2,
+          "x": 3614.5,
           "y": 887.8,
           "w": 185,
           "h": 44
@@ -3409,19 +3409,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 3783.1,
+          "x": 3795.6,
           "y": 869.8,
           "w": 251.1,
           "h": 44
         },
         "768": {
-          "x": 3787.8,
+          "x": 3793.3,
           "y": 887.8,
           "w": 251.1,
           "h": 44
         },
         "1440": {
-          "x": 3797.2,
+          "x": 3799.5,
           "y": 887.8,
           "w": 251.1,
           "h": 44
@@ -3478,19 +3478,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 4034.2,
+          "x": 4046.7,
           "y": 869.8,
           "w": 210.3,
           "h": 44
         },
         "768": {
-          "x": 4038.9,
+          "x": 4044.4,
           "y": 887.8,
           "w": 210.3,
           "h": 44
         },
         "1440": {
-          "x": 4048.3,
+          "x": 4050.7,
           "y": 887.8,
           "w": 210.3,
           "h": 44
@@ -3547,19 +3547,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 4244.5,
+          "x": 4257.1,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 4249.2,
+          "x": 4254.7,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 4258.6,
+          "x": 4261,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3616,19 +3616,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 4418.5,
+          "x": 4431.1,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 4423.2,
+          "x": 4428.7,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 4432.6,
+          "x": 4435,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3685,19 +3685,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 4592.5,
+          "x": 4605.1,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 4597.2,
+          "x": 4602.7,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 4606.6,
+          "x": 4609,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3754,19 +3754,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 4766.5,
+          "x": 4779.1,
           "y": 869.8,
           "w": 238,
           "h": 44
         },
         "768": {
-          "x": 4771.2,
+          "x": 4776.7,
           "y": 887.8,
           "w": 238,
           "h": 44
         },
         "1440": {
-          "x": 4780.6,
+          "x": 4783,
           "y": 887.8,
           "w": 238,
           "h": 44
@@ -3823,19 +3823,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 5004.5,
+          "x": 5017.1,
           "y": 869.8,
           "w": 211,
           "h": 44
         },
         "768": {
-          "x": 5009.2,
+          "x": 5014.7,
           "y": 887.8,
           "w": 211,
           "h": 44
         },
         "1440": {
-          "x": 5018.6,
+          "x": 5021,
           "y": 887.8,
           "w": 211,
           "h": 44
@@ -3892,19 +3892,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 5215.5,
+          "x": 5228,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 5220.2,
+          "x": 5225.7,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 5229.6,
+          "x": 5232,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -3961,19 +3961,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 5389.5,
+          "x": 5402,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 5394.2,
+          "x": 5399.7,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 5403.6,
+          "x": 5406,
           "y": 887.8,
           "w": 174,
           "h": 44
@@ -4030,19 +4030,19 @@
       "snippet": "<a href=\"#\" sc-camel-on-click=\"{{ b.go }}\" title=\"{{ b.name }}\" style=\"display:flex;align-items:center;justify-content:center;min-width:174px;height:44px;padding:0 26px;border-right:1px solid #EFEAE2;font-family:'Playfair Display',serif;font-weight:500;font-size:15px;letter-spacing:.26em;text-transform:uppercase;white-space:nowrap;color:#3A352F;opacity:.75;transition:opacity .25s,color .25s\" style",
       "box": {
         "375": {
-          "x": 5563.5,
+          "x": 5576,
           "y": 869.8,
           "w": 174,
           "h": 44
         },
         "768": {
-          "x": 5568.2,
+          "x": 5573.7,
           "y": 887.8,
           "w": 174,
           "h": 44
         },
         "1440": {
-          "x": 5577.6,
+          "x": 5580,
           "y": 887.8,
           "w": 174,
           "h": 44

@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T16:09:29.323Z",
-  "source": "http://127.0.0.1:58069/#/brand-shan",
+  "generated": "2026-10-28T06:26:38.283Z",
+  "source": "http://127.0.0.1:57270/#/brand-shan",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -463,22 +463,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
       "box": {
         "375": {
-          "x": 17.9,
-          "y": 678.8,
-          "w": 511.8,
-          "h": 511.8
+          "x": 19.3,
+          "y": 676.1,
+          "w": 500,
+          "h": 500
         },
         "768": {
-          "x": 409,
-          "y": 849.3,
-          "w": 504.8,
-          "h": 504.8
+          "x": 409.2,
+          "y": 865.6,
+          "w": 485.7,
+          "h": 485.7
         },
         "1440": {
-          "x": 1091.7,
-          "y": 413.1,
-          "w": 505.1,
-          "h": 505.1
+          "x": 1100.3,
+          "y": 449.4,
+          "w": 465.8,
+          "h": 465.8
         }
       },
       "visible": {
@@ -5891,22 +5891,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
       "box": {
         "375": {
-          "x": 101.8,
-          "y": 2497.9,
-          "w": 343.1,
-          "h": 343.1
+          "x": 104.7,
+          "y": 2496.2,
+          "w": 343.7,
+          "h": 343.7
         },
         "768": {
-          "x": 479.4,
-          "y": 2086.8,
-          "w": 359.8,
-          "h": 359.8
+          "x": 462.6,
+          "y": 2072.2,
+          "w": 360.7,
+          "h": 360.7
         },
         "1440": {
-          "x": 1089.2,
-          "y": 1873.3,
-          "w": 364.7,
-          "h": 364.7
+          "x": 1064.6,
+          "y": 1845.3,
+          "w": 367.7,
+          "h": 367.7
         }
       },
       "visible": {
@@ -5959,22 +5959,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
       "box": {
         "375": {
-          "x": 154.7,
-          "y": 2563.3,
-          "w": 158.1,
-          "h": 158.1
+          "x": 160.9,
+          "y": 2574.3,
+          "w": 164.6,
+          "h": 164.6
         },
         "768": {
-          "x": 551,
-          "y": 2154.8,
-          "w": 158.6,
-          "h": 158.6
+          "x": 535.5,
+          "y": 2154.9,
+          "w": 162,
+          "h": 162
         },
         "1440": {
-          "x": 1156.3,
-          "y": 1935.4,
-          "w": 160.2,
-          "h": 160.2
+          "x": 1135.8,
+          "y": 1940.5,
+          "w": 162.8,
+          "h": 162.8
         }
       },
       "visible": {

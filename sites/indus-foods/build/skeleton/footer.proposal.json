@@ -1,7 +1,7 @@
 {
-	"generated": "2026-10-27T16:39:10.514Z",
-	"inventory": "2026-10-27T16:39:10.106Z",
-	"source": "http://127.0.0.1:58069/",
+	"generated": "2026-10-28T06:47:40.134Z",
+	"inventory": "2026-10-28T06:47:39.828Z",
+	"source": "http://127.0.0.1:57270/",
 	"surface": "footer",
 	"siteName": null,
 	"surfaceParts": [],
@@ -31,19 +31,19 @@
 		"inventoryElements": 96,
 		"parts": 13,
 		"rows": 83,
-		"skeletonNodes": 46,
-		"expandedNodes": 50,
+		"skeletonNodes": 44,
+		"expandedNodes": 48,
 		"low": 0,
-		"removed": 32,
+		"removed": 34,
 		"unresolved": 0,
 		"byRule": {
 			"widthWrapper": 2,
 			"footerSlots": 3,
 			"wholeCardLink": 2,
 			"solitaryIcon": 3,
-			"label": 3,
-			"openStatus": 3,
+			"label": 5,
 			"hoursRows": 12,
+			"openStatus": 1,
 			"homeLink": 1,
 			"logoElement": 1,
 			"drawsChildren": 10,
@@ -699,22 +699,22 @@
 			"key": "Root/673#0",
 			"tag": "span",
 			"depth": 5,
-			"words": "Open now",
-			"block": "sgs/business-info",
+			"words": "Closed",
+			"block": "sgs/label",
 			"action": null,
-			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
-			"source": "rule openStatus",
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"source": "rule label",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "openStatus",
+			"rule": "label",
 			"candidates": [
 				{
-					"block": "sgs/business-info",
+					"block": "sgs/label",
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule openStatus: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours"
+						"rule label: a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number"
 					]
 				}
 			],
@@ -724,9 +724,7 @@
 				"1440": "shots/Root_673_0@1440.png"
 			},
 			"snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 12px;border-radius:999px;background:{{ hoursNow.bg }};color:{{ hoursNow.fg }};white-space:nowrap;\" data-dc-tpl=\"673\"><span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>{{ hoursNow.label }}</s",
-			"attributes": {
-				"displayType": "open-status"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 19,
@@ -736,12 +734,12 @@
 			"words": "",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule openStatus",
+			"reason": "drawn by sgs/label: block_composition: sgs/label is a leaf (no inner blocks)",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "openStatus",
+			"rule": "label",
 			"into": "Root/673#0",
 			"candidates": [],
 			"parts": [],
@@ -876,34 +874,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/business-info",
-			"action": null,
+			"block": null,
+			"action": "absorbed",
 			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": "rule hoursRows",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"candidates": [
-				{
-					"block": "sgs/business-info",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
-					]
-				}
-			],
+			"into": "Root/677#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_677_1@375.png",
 				"1440": "shots/Root_677_1@1440.png"
 			},
 			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
-			"attributes": {
-				"displayType": "hours",
-				"hoursLayout": "rows"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 25,
@@ -913,13 +900,13 @@
 			"words": "Friday",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"into": "Root/677#1",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -936,13 +923,13 @@
 			"words": "9:30am – 12pm, 2:30 – 5pm",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"into": "Root/677#1",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -958,34 +945,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/business-info",
-			"action": null,
+			"block": null,
+			"action": "absorbed",
 			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": "rule hoursRows",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"candidates": [
-				{
-					"block": "sgs/business-info",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
-					]
-				}
-			],
+			"into": "Root/677#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_677_2@375.png",
 				"1440": "shots/Root_677_2@1440.png"
 			},
 			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
-			"attributes": {
-				"displayType": "hours",
-				"hoursLayout": "rows"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 28,
@@ -995,13 +971,13 @@
 			"words": "Saturday",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"into": "Root/677#2",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1018,13 +994,13 @@
 			"words": "10am – 3pm",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"into": "Root/677#2",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1040,34 +1016,23 @@
 			"tag": "div",
 			"depth": 5,
 			"words": "",
-			"block": "sgs/business-info",
-			"action": null,
+			"block": null,
+			"action": "absorbed",
 			"reason": "a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": "rule hoursRows",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"candidates": [
-				{
-					"block": "sgs/business-info",
-					"score": 1,
-					"share": 1,
-					"evidence": [
-						"rule hoursRows: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it"
-					]
-				}
-			],
+			"into": "Root/677#0",
+			"candidates": [],
 			"parts": [],
 			"screenshots": {
 				"375": "shots/Root_677_3@375.png",
 				"1440": "shots/Root_677_3@1440.png"
 			},
 			"snippet": "<div style=\"display:flex;justify-content:space-between;gap:14px;font-size:16px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);color:{{ hr.color }};font-weight:{{ hr.weight }};\" data-dc-tpl=\"677\"><span data-dc-tpl=\"678\">{{ hr.d }}</span><span style=\"text-align:right;\" data-dc-tpl=\"679\">{{ hr.t }}</span></div>",
-			"attributes": {
-				"displayType": "hours",
-				"hoursLayout": "rows"
-			}
+			"attributes": {}
 		},
 		{
 			"order": 31,
@@ -1077,13 +1042,13 @@
 			"words": "Sunday",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"into": "Root/677#3",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1100,13 +1065,13 @@
 			"words": "Closed",
 			"block": null,
 			"action": "absorbed",
-			"reason": "drawn by sgs/business-info: rule hoursRows",
+			"reason": "drawn by the element before it: a day and its opening times laid out as a row is sgs/business-info's hours display (rows layout); the day and time columns are drawn by it",
 			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "hoursRows",
-			"into": "Root/677#3",
+			"into": "Root/677#0",
 			"candidates": [],
 			"parts": [],
 			"screenshots": {
@@ -1121,23 +1086,33 @@
 			"key": "Root/680#0",
 			"tag": "span",
 			"depth": 4,
-			"words": "Closes at 5pm today",
-			"block": null,
-			"action": "absorbed",
+			"words": "Opens at 9:30am",
+			"block": "sgs/business-info",
+			"action": null,
 			"reason": "a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours",
 			"source": "rule openStatus",
 			"confidence": 1,
 			"low": false,
 			"stale": null,
 			"rule": "openStatus",
-			"into": "Root/673#0",
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/business-info",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"rule openStatus: a live open or closed line is sgs/business-info's open-status display, computed in the visitor's browser from the Site Info hours"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {
 				"1440": "shots/Root_680_0@1440.png"
 			},
 			"snippet": "<span style=\"font-size:15px;color:#C9D4DE;\" data-dc-tpl=\"680\">{{ hoursNow.sub }}</span>",
-			"attributes": {}
+			"attributes": {
+				"displayType": "open-status"
+			}
 		},
 		{
 			"order": 34,

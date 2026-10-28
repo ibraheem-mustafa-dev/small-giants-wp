@@ -293,7 +293,7 @@
     "fingerprint": {
       "tag": "span",
       "cls": "",
-      "styleHash": "917d85ef",
+      "styleHash": "89f864fd",
       "parentTags": [
         "footer",
         "div",
@@ -301,7 +301,7 @@
         "div",
         "div"
       ],
-      "textHash": "80c90947",
+      "textHash": "a23d92d7",
       "line": 955
     },
     "draft": "0fe5aee1c396a997"
@@ -342,60 +342,23 @@
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-footer-20": {
-    "tpl": "Root/677#1",
+    "tpl": "Root/680#0",
     "fingerprint": {
-      "tag": "div",
+      "tag": "span",
       "cls": "",
-      "styleHash": "eb8ff691",
+      "styleHash": "2ab719e9",
       "parentTags": [
         "footer",
         "div",
         "div",
-        "div",
         "div"
       ],
-      "textHash": "1505",
-      "line": 959
+      "textHash": "2210ee1b",
+      "line": 962
     },
     "draft": "0fe5aee1c396a997"
   },
   "cr-ref-footer-21": {
-    "tpl": "Root/677#2",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "eb8ff691",
-      "parentTags": [
-        "footer",
-        "div",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 959
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-footer-22": {
-    "tpl": "Root/677#3",
-    "fingerprint": {
-      "tag": "div",
-      "cls": "",
-      "styleHash": "eb8ff691",
-      "parentTags": [
-        "footer",
-        "div",
-        "div",
-        "div",
-        "div"
-      ],
-      "textHash": "1505",
-      "line": 959
-    },
-    "draft": "0fe5aee1c396a997"
-  },
-  "cr-ref-footer-23": {
     "tpl": "Root/681#0",
     "fingerprint": {
       "tag": "div",
@@ -410,7 +373,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-24": {
+  "cr-ref-footer-22": {
     "tpl": "Root/682#0",
     "fingerprint": {
       "tag": "div",
@@ -426,7 +389,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-25": {
+  "cr-ref-footer-23": {
     "tpl": "Root/684#0",
     "fingerprint": {
       "tag": "indus-logo",
@@ -444,7 +407,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-26": {
+  "cr-ref-footer-24": {
     "tpl": "Root/685#0",
     "fingerprint": {
       "tag": "p",
@@ -461,7 +424,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-32": {
+  "cr-ref-footer-30": {
     "tpl": "Root/702#0",
     "fingerprint": {
       "tag": "div",
@@ -477,7 +440,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-33": {
+  "cr-ref-footer-31": {
     "tpl": "Root/703#0",
     "fingerprint": {
       "tag": "div",
@@ -494,7 +457,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-34": {
+  "cr-ref-footer-32": {
     "tpl": "Root/706#0",
     "fingerprint": {
       "tag": "a",
@@ -512,7 +475,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-35": {
+  "cr-ref-footer-33": {
     "tpl": "Root/708#0",
     "fingerprint": {
       "tag": "a",
@@ -529,7 +492,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-36": {
+  "cr-ref-footer-34": {
     "tpl": "Root/709#0",
     "fingerprint": {
       "tag": "div",
@@ -545,7 +508,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-37": {
+  "cr-ref-footer-35": {
     "tpl": "Root/710#0",
     "fingerprint": {
       "tag": "div",
@@ -562,7 +525,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-38": {
+  "cr-ref-footer-36": {
     "tpl": "Root/711#0",
     "fingerprint": {
       "tag": "div",
@@ -579,7 +542,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-39": {
+  "cr-ref-footer-37": {
     "tpl": "Root/712#0",
     "fingerprint": {
       "tag": "iframe",
@@ -597,7 +560,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-40": {
+  "cr-ref-footer-38": {
     "tpl": "Root/713#0",
     "fingerprint": {
       "tag": "div",
@@ -615,7 +578,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-41": {
+  "cr-ref-footer-39": {
     "tpl": "Root/714#0",
     "fingerprint": {
       "tag": "div",
@@ -634,7 +597,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-42": {
+  "cr-ref-footer-40": {
     "tpl": "Root/717#0",
     "fingerprint": {
       "tag": "a",
@@ -653,7 +616,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-43": {
+  "cr-ref-footer-41": {
     "tpl": "Root/718#0",
     "fingerprint": {
       "tag": "div",
@@ -670,7 +633,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-44": {
+  "cr-ref-footer-42": {
     "tpl": "Root/720#0",
     "fingerprint": {
       "tag": "div",
@@ -686,7 +649,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-45": {
+  "cr-ref-footer-43": {
     "tpl": "Root/721#0",
     "fingerprint": {
       "tag": "span",
@@ -703,7 +666,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-46": {
+  "cr-ref-footer-44": {
     "tpl": "Root/723#0",
     "fingerprint": {
       "tag": "a",
@@ -720,7 +683,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-47": {
+  "cr-ref-footer-45": {
     "tpl": "Root/726#0",
     "fingerprint": {
       "tag": "button",
@@ -736,7 +699,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-48": {
+  "cr-ref-footer-46": {
     "tpl": "Root/727#0",
     "fingerprint": {
       "tag": "span",
@@ -753,7 +716,7 @@
     },
     "draft": "0fe5aee1c396a997"
   },
-  "cr-ref-footer-49": {
+  "cr-ref-footer-47": {
     "tpl": "Root/728#0",
     "fingerprint": {
       "tag": "a",

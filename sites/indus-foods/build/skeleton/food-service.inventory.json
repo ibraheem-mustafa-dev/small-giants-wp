@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T16:01:21.009Z",
-  "source": "http://127.0.0.1:58069/#/food-service",
+  "generated": "2026-10-28T06:17:56.727Z",
+  "source": "http://127.0.0.1:57270/#/food-service",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -647,22 +647,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
       "box": {
         "375": {
-          "x": 27.7,
-          "y": 719.7,
-          "w": 480.3,
-          "h": 480.3
+          "x": 16.3,
+          "y": 721.1,
+          "w": 508.2,
+          "h": 508.2
         },
         "768": {
-          "x": 420.4,
-          "y": 867.7,
-          "w": 480.5,
-          "h": 480.5
+          "x": 423.5,
+          "y": 863.5,
+          "w": 486.4,
+          "h": 486.4
         },
         "1440": {
-          "x": 1095.6,
-          "y": 476.1,
-          "w": 471.1,
-          "h": 471.1
+          "x": 1084.8,
+          "y": 440.1,
+          "w": 512.3,
+          "h": 512.3
         }
       },
       "visible": {
@@ -9117,22 +9117,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-50px;bottom:-50px;width:170px;height:170px;border-radius:50%;border:1.5px solid rgba(255,255,255,.28);pointer-events:none;\" data-dc-tpl=\"370\"></span>",
       "box": {
         "375": {
-          "x": 240.4,
-          "y": 4264.9,
-          "w": 181.2,
-          "h": 181.2
+          "x": 235.8,
+          "y": 4257.8,
+          "w": 177.2,
+          "h": 177.2
         },
         "768": {
-          "x": 129.2,
-          "y": 3570.3,
-          "w": 178,
-          "h": 178
+          "x": 127.4,
+          "y": 3575.8,
+          "w": 178.8,
+          "h": 178.8
         },
         "1440": {
-          "x": 379.7,
-          "y": 3301.6,
-          "w": 175.2,
-          "h": 175.2
+          "x": 366.1,
+          "y": 3284.2,
+          "w": 186.9,
+          "h": 186.9
         }
       },
       "visible": {
@@ -9921,22 +9921,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-50px;bottom:-50px;width:170px;height:170px;border-radius:50%;border:1.5px solid rgba(255,255,255,.28);pointer-events:none;\" data-dc-tpl=\"370\"></span>",
       "box": {
         "375": {
-          "x": 246,
-          "y": 4652.4,
-          "w": 177.3,
-          "h": 177.3
+          "x": 237.8,
+          "y": 4665.1,
+          "w": 173.1,
+          "h": 173.1
         },
         "768": {
-          "x": 361.5,
-          "y": 3582.6,
-          "w": 177.5,
-          "h": 177.5
+          "x": 379.3,
+          "y": 3569.3,
+          "w": 179.8,
+          "h": 179.8
         },
         "1440": {
-          "x": 791.4,
-          "y": 3287.8,
-          "w": 179.7,
-          "h": 179.7
+          "x": 785.3,
+          "y": 3303.9,
+          "w": 189.5,
+          "h": 189.5
         }
       },
       "visible": {
@@ -10725,22 +10725,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-50px;bottom:-50px;width:170px;height:170px;border-radius:50%;border:1.5px solid rgba(255,255,255,.28);pointer-events:none;\" data-dc-tpl=\"370\"></span>",
       "box": {
         "375": {
-          "x": 228.9,
-          "y": 5062.6,
-          "w": 183.9,
-          "h": 183.9
+          "x": 237.8,
+          "y": 5050.9,
+          "w": 184.2,
+          "h": 184.2
         },
         "768": {
-          "x": 617.3,
-          "y": 3564.6,
-          "w": 182.6,
-          "h": 182.6
+          "x": 612.5,
+          "y": 3581.9,
+          "w": 182.3,
+          "h": 182.3
         },
         "1440": {
-          "x": 1203.3,
-          "y": 3291.5,
-          "w": 179,
-          "h": 179
+          "x": 1199.2,
+          "y": 3273.2,
+          "w": 189.5,
+          "h": 189.5
         }
       },
       "visible": {
@@ -11493,22 +11493,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
       "box": {
         "375": {
-          "x": 105.3,
-          "y": 5178.7,
-          "w": 366.4,
-          "h": 366.4
+          "x": 94.8,
+          "y": 5156.8,
+          "w": 368.5,
+          "h": 368.5
         },
         "768": {
-          "x": 471.3,
-          "y": 3709.9,
-          "w": 356.7,
-          "h": 356.7
+          "x": 452.5,
+          "y": 3720,
+          "w": 379,
+          "h": 379
         },
         "1440": {
-          "x": 1088.4,
-          "y": 3481.1,
-          "w": 343,
-          "h": 343
+          "x": 1076.2,
+          "y": 3479.9,
+          "w": 360.6,
+          "h": 360.6
         }
       },
       "visible": {
@@ -11561,22 +11561,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
       "box": {
         "375": {
-          "x": 170,
-          "y": 5253.2,
-          "w": 159.2,
-          "h": 159.2
+          "x": 160.8,
+          "y": 5249.9,
+          "w": 154,
+          "h": 154
         },
         "768": {
-          "x": 541.8,
-          "y": 3797.2,
-          "w": 160.2,
-          "h": 160.2
+          "x": 528.8,
+          "y": 3795.5,
+          "w": 160.6,
+          "h": 160.6
         },
         "1440": {
-          "x": 1141.6,
-          "y": 3547.6,
-          "w": 157.9,
-          "h": 157.9
+          "x": 1129.6,
+          "y": 3558.7,
+          "w": 163.8,
+          "h": 163.8
         }
       },
       "visible": {

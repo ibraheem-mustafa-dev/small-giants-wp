@@ -78,7 +78,7 @@
 						"name": "sgs/form-field-text",
 						"attributes": {
 							"label": "Name",
-							"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/560#0"
@@ -105,8 +105,8 @@
 					{
 						"name": "sgs/form-field-text",
 						"attributes": {
-							"label": "Name",
-							"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+							"label": "Business name",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/560#1"
@@ -133,8 +133,8 @@
 					{
 						"name": "sgs/form-field-email",
 						"attributes": {
-							"label": "Name",
-							"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+							"label": "Email",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/560#2"
@@ -161,8 +161,7 @@
 					{
 						"name": "sgs/form-field-phone",
 						"attributes": {
-							"label": "Name",
-							"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+							"label": "Phone"
 						},
 						"draftRef": {
 							"tpl": "Root/560#3"
@@ -189,8 +188,8 @@
 					{
 						"name": "sgs/form-field-select",
 						"attributes": {
-							"label": "Name",
-							"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+							"label": "Sector",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/562#0"
@@ -217,8 +216,8 @@
 					{
 						"name": "sgs/form-field-select",
 						"attributes": {
-							"label": "Name",
-							"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+							"label": "Format",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/562#1"
@@ -245,8 +244,7 @@
 					{
 						"name": "sgs/form-field-textarea",
 						"attributes": {
-							"label": "Name",
-							"helpText": "Business name Email Phone Sector Format Postal address (printed copies)"
+							"label": "Postal address (printed copies)"
 						},
 						"draftRef": {
 							"tpl": "Root/566#0"
@@ -275,9 +273,8 @@
 			{
 				"name": "sgs/form-field-consent",
 				"attributes": {
-					"label": "Name",
-					"required": true,
-					"helpText": "Where should we send it? We’ll send the latest edition to you. Business name Email Phone Sector Format Postal address (printed copies) I agree to Indus Foods contacting me about this enquiry. Request catalogue"
+					"label": "I agree to Indus Foods contacting me about this enquiry.",
+					"required": true
 				},
 				"draftRef": {
 					"tpl": "Root/570#0"

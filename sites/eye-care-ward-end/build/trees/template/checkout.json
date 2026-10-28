@@ -428,7 +428,7 @@
                         "name": "sgs/form-field-checkbox",
                         "attributes": {
                           "label": "Create an account",
-                          "helpText": "Optional. Follow this order and keep your addresses and saved frames for next time. Already have an account? Sign in",
+                          "helpText": "Optional. Follow this order and keep your addresses and saved frames for next time.",
                           "className": "cr-ref-template-checkout-18"
                         },
                         "innerBlocks": []
@@ -1101,10 +1101,10 @@
                         },
                         "devices": {
                           "mobile": {
-                            "duration": 451
+                            "duration": 450
                           },
                           "tablet": {
-                            "duration": 449
+                            "duration": 450
                           }
                         }
                       }

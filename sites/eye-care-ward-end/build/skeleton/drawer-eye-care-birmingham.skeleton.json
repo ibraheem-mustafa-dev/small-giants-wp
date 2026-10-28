@@ -80,7 +80,9 @@
 			},
 			{
 				"name": "sgs/nav-drawer-menu",
-				"attributes": {},
+				"attributes": {
+					"ref": 30
+				},
 				"draftRef": {
 					"tpl": "Root/1169#0"
 				},
@@ -98,7 +100,9 @@
 			},
 			{
 				"name": "sgs/nav-drawer-menu",
-				"attributes": {},
+				"attributes": {
+					"ref": 30
+				},
 				"draftRef": {
 					"tpl": "Root/1175#0"
 				},

@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-27T16:05:17.752Z",
+	"generated": "2026-10-28T06:41:08.415Z",
 	"inventory": "2026-10-27T13:42:01.001Z",
 	"source": "http://127.0.0.1:57127/Eye%20Care%20Birmingham.dc.html#@state/page=contact",
 	"surface": "contact-form",
@@ -37,14 +37,14 @@
 		"inventoryElements": 17,
 		"parts": 6,
 		"rows": 11,
-		"skeletonNodes": 8,
-		"expandedNodes": 8,
+		"skeletonNodes": 11,
+		"expandedNodes": 11,
 		"low": 0,
-		"removed": 3,
+		"removed": 0,
 		"unresolved": 0,
 		"byRule": {
 			"formHost": 1,
-			"formControl": 7
+			"formControl": 5
 		}
 	},
 	"widthAlternatives": [],
@@ -117,19 +117,31 @@
 			"tag": "p",
 			"depth": 1,
 			"words": "I answer these myself, usually the same day.",
-			"block": null,
-			"action": "remove",
-			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
-			"source": "rule formControl",
-			"confidence": 1,
+			"block": "sgs/text",
+			"action": null,
+			"reason": null,
+			"source": null,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
-			"rule": "formControl",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/text",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: p -> sgs/text (\"Paragraph text\")",
+						"block_composition: sgs/text is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<p style=\"margin:0 0 22px;font-size:15px;color:#5E584F\" data-dc-tpl=\"684\">I answer these myself, usually the same day.</p>",
-			"attributes": {}
+			"attributes": {
+				"text": "I answer these myself, usually the same day."
+			}
 		},
 		{
 			"order": 3,
@@ -173,7 +185,7 @@
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -185,7 +197,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -209,7 +221,7 @@
 			"words": "",
 			"block": "sgs/form-field-email",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -221,7 +233,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -245,7 +257,7 @@
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -257,7 +269,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -279,7 +291,7 @@
 			"words": "",
 			"block": "sgs/form-field-select",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -291,7 +303,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -320,7 +332,7 @@
 			"words": "",
 			"block": "sgs/form-field-textarea",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -332,17 +344,14 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<textarea placeholder=\"Your message\" rows=\"5\" style=\"margin-top:10px;width:100%;border:1px solid #E6E1DA;background:#fff;padding:14px;font-size:15px;resize:vertical\" data-dc-tpl=\"696\"></textarea>",
-			"attributes": {
-				"label": "Or send me a message",
-				"helpText": "I answer these myself, usually the same day. Send message"
-			},
+			"attributes": {},
 			"slots": {
 				".sgs-form-field__input": {
 					"tpl": "Root/696#0"
@@ -355,19 +364,33 @@
 			"tag": "div",
 			"depth": 1,
 			"words": "",
-			"block": null,
-			"action": "remove",
-			"reason": "the field's label, required marker, hint or character count: the field block's own label, required and help text settings draw it (Bean, 2026-10-19)",
-			"source": "rule formControl",
+			"block": "sgs/container",
+			"action": null,
+			"reason": null,
+			"source": null,
 			"confidence": 1,
 			"low": false,
 			"stale": null,
-			"rule": "formControl",
-			"candidates": [],
+			"rule": null,
+			"candidates": [
+				{
+					"block": "sgs/container",
+					"score": 1,
+					"share": 1,
+					"evidence": [
+						"block_composition: sgs/container is a wrapper-shell; element has 1 block children",
+						"no row block fits: a generic wrapper",
+						"block_capabilities: sgs/container lists \"flex\" (draft display)"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<div style=\"display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:14px\" data-dc-tpl=\"697\"> <button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 28px;min-height:52px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"698\">Send message</button> <sc-if value=\"{{ contactSent }}\" ",
-			"attributes": {}
+			"attributes": {
+				"tagName": "div",
+				"layout": "flex"
+			}
 		},
 		{
 			"order": 10,
@@ -375,19 +398,31 @@
 			"tag": "button",
 			"depth": 2,
 			"words": "Send message",
-			"block": null,
-			"action": "remove",
-			"reason": "inside a removed element (Root/697#0)",
+			"block": "sgs/button",
+			"action": null,
+			"reason": null,
 			"source": null,
-			"confidence": 1,
+			"confidence": 0.75,
 			"low": false,
 			"stale": null,
 			"rule": null,
-			"candidates": [],
+			"candidates": [
+				{
+					"block": "sgs/button",
+					"score": 0.75,
+					"share": 1,
+					"evidence": [
+						"html_tag_to_core_block: button -> sgs/button (\"Bare button — walker auto-wraps in sgs/multi-button\")",
+						"block_composition: sgs/button is a leaf; the element holds words and no block children"
+					]
+				}
+			],
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<button type=\"submit\" style=\"background:#141414;color:#FAF8F5;border:0;padding:0 28px;min-height:52px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s\" style-hover=\"background:#2a2a2a\" data-dc-tpl=\"698\">Send message</button>",
-			"attributes": {}
+			"attributes": {
+				"label": "Send message"
+			}
 		}
 	]
 }

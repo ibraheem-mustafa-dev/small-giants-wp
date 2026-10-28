@@ -9,11 +9,161 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"53\"]:not(.sc-host .sc-host *)","live":".cr-ref-mega-menu-brands-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"53\"]:not(.sc-host .sc-host *)","live":".cr-ref-mega-menu-brands-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:50785/", open: async ( h ) => {
-		await h.page.evaluate( function setStateInPage( { component, keys } ) { for ( const host of document.querySelectorAll( '.sc-host' ) ) { const name = host.dataset.scName; if ( name !== component ) { continue; } const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) ); let f = key ? host[ key ] : null; while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) { f = f.return; } f && f.stateNode.logic.setState( keys ); } }, {"component":"Root","keys":{"mega":"sun"}} );
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:57904/", open: async ( h ) => {
+		const ways = [{"op":"set","patch":{"mega":"brands"},"bounds":[]},{"op":"reach","patch":{"calls":[{"ident":"L","args":"{mega:\"brands\"}"}],"keep":[]},"bounds":[]}];
+		const at = {"375":0,"768":0,"1024":0,"1440":0,"1920":0};
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = ways[ at[ width ] ] || ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "Root", op: way.op, patch: way.patch } );
+		}
 		await h.page.waitForTimeout( 900 );
 	} },
-	live: { url: "http://localhost:8081/" },
-	states: [ { name: "sunglasses", fullPage: true } ],
+	live: { url: "http://localhost:8081/", open: async ( h ) => {
+		const ways = [{"op":"set","patch":{"mega":"brands"},"bounds":[]},{"op":"reach","patch":{"calls":[{"ident":"L","args":"{mega:\"brands\"}"}],"keep":[]},"bounds":[]}];
+		const at = {"375":0,"768":0,"1024":0,"1440":0,"1920":0};
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = ways[ at[ width ] ] || ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const r = await h.page.evaluate( function openOwner( root ) {
+	const el = document.querySelector( root );
+	if ( ! el ) {
+		return { clicked: false, id: null, why: `no ${ root } on the page` };
+	}
+	for ( let a = el; a && a !== document.documentElement; a = a.parentElement ) {
+		const controls = a.id ? [ ...document.querySelectorAll( '[aria-controls]' ) ].filter( ( b ) => ! a.contains( b ) && b.getAttribute( 'aria-controls' ).split( /\s+/ ).includes( a.id ) ) : [];
+		if ( ! controls.length ) {
+			continue;
+		}
+		if ( a.open || controls.some( ( b ) => 'true' === b.getAttribute( 'aria-expanded' ) ) ) {
+			return { clicked: false, id: a.id, why: `#${ a.id } is open already` };
+		}
+		( controls.find( ( b ) => b.getClientRects().length ) || controls[ 0 ] ).click();
+		return { clicked: true, id: a.id, why: null };
+	}
+	return { clicked: false, id: null, why: `nothing on the page controls ${ root } or an element around it` };
+}, ".cr-ref-mega-menu-brands-0" );
+			r.why && console.log( `live open at ${ width }px: ${ r.why }` );
+			await h.page.waitForTimeout( 900 );
+		}
+	} },
+	states: [
+		{ name: "brands", fullPage: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"set","patch":{"mega":"brands"},"bounds":[]},{"op":"reach","patch":{"calls":[{"ident":"L","args":"{mega:\"brands\"}"}],"keep":[]},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [375,768,1440,1920].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "Root", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"brands\" on Root", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+	],
 	pairs: [],
 };

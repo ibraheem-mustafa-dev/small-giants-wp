@@ -9,6 +9,9 @@
         "minHeight": {
           "desktop": "0px"
         },
+        "contentWidth": {
+          "desktop": "full"
+        },
         "textColourHover": "custom-ink"
       }
     }
@@ -23,6 +26,9 @@
           "textColour": "custom-ink",
           "minHeight": {
             "desktop": "0px"
+          },
+          "contentWidth": {
+            "desktop": "full"
           },
           "textColourHover": "custom-ink"
         }

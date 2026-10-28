@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-27T16:23:46.774Z",
+	"generated": "2026-10-28T06:35:35.850Z",
 	"inventory": "2026-10-27T14:01:19.633Z",
 	"source": "http://127.0.0.1:61503/Indus%20Foods%20Website%20v2.dc.html#/careers",
 	"surface": "inline-form-careers",
@@ -189,7 +189,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -249,7 +249,7 @@
 			"words": "",
 			"block": "sgs/form-field-text",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -261,7 +261,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -270,7 +270,7 @@
 			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
 			"attributes": {
 				"label": "Full name",
-				"helpText": "Email Phone Team Role CV About you"
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -286,7 +286,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -346,7 +346,7 @@
 			"words": "",
 			"block": "sgs/form-field-email",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -358,7 +358,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -366,8 +366,8 @@
 			"screenshots": {},
 			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
 			"attributes": {
-				"label": "Full name",
-				"helpText": "Email Phone Team Role CV About you"
+				"label": "Email",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -383,7 +383,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -423,7 +423,7 @@
 			"words": "",
 			"block": "sgs/form-field-phone",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -435,7 +435,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -443,8 +443,7 @@
 			"screenshots": {},
 			"snippet": "<input type=\"{{ fd.type }}\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"56",
 			"attributes": {
-				"label": "Full name",
-				"helpText": "Email Phone Team Role CV About you"
+				"label": "Phone"
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -460,7 +459,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -520,7 +519,7 @@
 			"words": "",
 			"block": "sgs/form-field-select",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -532,7 +531,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -547,8 +546,8 @@
 			"screenshots": {},
 			"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
 			"attributes": {
-				"label": "Full name",
-				"helpText": "Email Phone Team Role CV About you"
+				"label": "Team",
+				"required": true
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -564,7 +563,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -604,7 +603,7 @@
 			"words": "",
 			"block": "sgs/form-field-select",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -616,7 +615,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -630,8 +629,7 @@
 			"screenshots": {},
 			"snippet": "<sc-raw-select name=\"{{ fd.name }}\" required=\"{{ fd.req }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14)\" data-dc-tpl=\"562\"> <sc-for list=\"{{ fd.options }}\" as=\"o\" hint-plac",
 			"attributes": {
-				"label": "Full name",
-				"helpText": "Email Phone Team Role CV About you"
+				"label": "Role"
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -647,7 +645,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -687,7 +685,7 @@
 			"words": "",
 			"block": "sgs/form-field-file",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -699,7 +697,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -707,8 +705,7 @@
 			"screenshots": {},
 			"snippet": "<input type=\"file\" style=\"width:100%;font-size:14px;padding:14px;border:1.5px dashed rgba(10,126,168,.4);border-radius:10px;background:#F4F9FB;color:#1E2A3C;\" data-dc-tpl=\"568\">",
 			"attributes": {
-				"label": "Full name",
-				"helpText": "Email Phone Team Role CV About you"
+				"label": "CV"
 			}
 		},
 		{
@@ -719,7 +716,7 @@
 			"words": "",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -759,7 +756,7 @@
 			"words": "",
 			"block": "sgs/form-field-textarea",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -771,7 +768,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -779,8 +776,7 @@
 			"screenshots": {},
 			"snippet": "<textarea rows=\"5\" required=\"{{ fd.req }}\" placeholder=\"{{ fd.ph }}\" style=\"width:100%;font-size:15px;padding:13px 14px;border:1px solid rgba(30,42,60,.2);border-radius:10px;background:#FBFCFD;color:#1E2A3C;outline:none;resize:vertical;transition:border-color .2s,box-shadow .2s;\" style-focus=\"border-color:#0A7EA8;box-shadow:0 0 0 4px rgba(10,126,168,.14);background:#FFFFFF\" data-dc-tpl=\"566\"></tex",
 			"attributes": {
-				"label": "Full name",
-				"helpText": "Email Phone Team Role CV About you"
+				"label": "About you"
 			},
 			"slots": {
 				".sgs-form-field__input": {
@@ -796,7 +792,7 @@
 			"words": "I agree to Indus Foods contacting me about this enquiry.",
 			"block": null,
 			"action": "unwrap",
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -816,7 +812,7 @@
 			"words": "",
 			"block": "sgs/form-field-consent",
 			"action": null,
-			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)",
+			"reason": "a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)",
 			"source": "rule formControl",
 			"confidence": 1,
 			"low": false,
@@ -828,7 +824,7 @@
 					"score": 1,
 					"share": 1,
 					"evidence": [
-						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19)"
+						"rule formControl: a form control is the SGS field block for its rendered type (a required checkbox with no other checkbox in its group is the consent field; a type with no field of its own is a text field; submit, reset and image inputs are buttons); its label, required marker and hint become that block's label, required and help text; a <label> wrapped round it goes (Bean, 2026-10-19); two or more radios or ticks of one group in a form are one radio or checkbox field holding their options, its label, marker and hint read as one field's (FR-48-57)"
 					]
 				}
 			],
@@ -836,9 +832,8 @@
 			"screenshots": {},
 			"snippet": "<input type=\"checkbox\" required=\"{{ true }}\" style=\"width:18px;height:18px;margin:1px 0 0;accent-color:#0A7EA8;flex-shrink:0;\" data-dc-tpl=\"570\">",
 			"attributes": {
-				"label": "Full name",
-				"required": true,
-				"helpText": "Register your interest Tell us about yourself and we’ll be in touch when a suitable role opens. Email Phone Team Role CV About you I agree to Indus Foods contacting me about this enquiry. Send application"
+				"label": "I agree to Indus Foods contacting me about this enquiry.",
+				"required": true
 			}
 		},
 		{

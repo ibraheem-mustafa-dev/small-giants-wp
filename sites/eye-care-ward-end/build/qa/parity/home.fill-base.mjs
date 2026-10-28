@@ -9,8 +9,73 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"113\"]:not(.sc-host .sc-host *)","live":".cr-ref-home-0"} },
 	linkRoot: {"draft":".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"113\"]:not(.sc-host .sc-host *)","live":".cr-ref-home-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:53330/#@state/page=home" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:57904/#@state/page=home" },
 	live: { url: "http://localhost:8081/" },
-	states: [ { name: "default", fullPage: true } ],
+	states: [
+		{ name: "default", fullPage: true, draft: async ( h ) => {
+		
+		const ways = [{"op":"set","patch":{"page":"home"},"bounds":[]},{"op":"reach","patch":{"calls":[{"ident":"L","args":"{page:'home'}"}],"keep":[]},"bounds":[]}];
+		const width = h.page.viewportSize?.()?.width ?? null;
+		const fits = ( bounds, width ) => null == width || ( bounds || [] ).every( ( b ) => ( null == b.min || width >= b.min ) && ( null == b.max || width <= b.max ) );
+		const way = [].includes( width ) ? null : ways.find( ( w ) => fits( w.bounds, width ) );
+		if ( way ) {
+			const reached = await h.page.evaluate( function logicState( { comp, op, patch, slot } ) {
+	const slots = ( window.__sgsStateSnaps ||= {} );
+	const snap = slot ? ( slots[ slot ] ||= new Map() ) : ( window.__sgsStateSnap ||= new Map() );
+	const values = [];
+	let count = 0;
+	for ( const host of document.querySelectorAll( '.sc-host' ) ) {
+		const name = host.dataset.scName;
+		if ( comp && name !== comp ) {
+			continue;
+		}
+		const key = Object.keys( host ).find( ( k ) => k.startsWith( '__reactFiber$' ) );
+		let f = key ? host[ key ] : null;
+		while ( f && ! ( f.stateNode && f.stateNode.logic && f.stateNode.__name === name ) ) {
+			f = f.return;
+		}
+		if ( ! f ) {
+			continue;
+		}
+		const logic = f.stateNode.logic;
+		if ( 'set' === op ) {
+			logic.setState( patch );
+			count++;
+		} else if ( 'reach' === op ) {
+			const keep = patch.keep || [];
+			const was = Object.fromEntries( keep.map( ( k ) => [ k, logic.state[ k ] ] ) );
+			try {
+				patch.calls.forEach( ( c ) => new Function( c.ident, `${ c.ident }.setState(${ c.args });` )( logic ) );
+				keep.length && logic.setState( was );
+				count++;
+			} catch {
+				// A call the draft's logic refuses leaves this instance unreached; the caller names the opener.
+			}
+		} else if ( 'get' === op ) {
+			values.push( logic.state[ patch ] );
+		} else if ( 'snapshot' === op ) {
+			snap.set( logic, { ...logic.state } );
+			count++;
+		} else if ( 'diff' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			count += Object.keys( logic.state ).some( ( k ) => logic.state[ k ] !== was[ k ] ) ? 1 : 0;
+		} else if ( 'restore' === op && snap.has( logic ) ) {
+			const was = snap.get( logic );
+			const back = {};
+			Object.keys( logic.state ).filter( ( k ) => logic.state[ k ] !== was[ k ] ).forEach( ( k ) => ( back[ k ] = was[ k ] ) );
+			if ( Object.keys( back ).length ) {
+				logic.setState( back );
+				count++;
+			}
+		}
+	}
+	return 'get' === op ? values : count;
+}, { comp: "Root", op: way.op, patch: way.patch } );
+			h.log.push( { type: 'click', target: "state \"default\" on Root", hit: reached > 0 } );
+		}
+		await h.page.waitForTimeout( 900 );
+	}, live: async () => {} },
+	],
+	unwalked: [{"state":"reviews-rail-scrolled","reason":"\"reviews rail scrolled\": no usable state key (the state sets none) and no setState call in its how_to_reach"}],
 	pairs: [],
 };

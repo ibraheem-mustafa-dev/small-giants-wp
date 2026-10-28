@@ -23,9 +23,79 @@
 				},
 				"innerBlocks": [
 					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Tell us about your business"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/23#0"
+						},
+						"draftFingerprint": {
+							"tag": "h2",
+							"cls": "",
+							"styleHash": "45221537",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "34ca6ce8",
+							"line": 34
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "The basics we need to set up your account and check your details."
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/24#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "82204bd8",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "f1167631",
+							"line": 35
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {
+							"label": "What kind of business are you?",
+							"required": true
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/47#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "706c044c",
+							"parentTags": [
+								"div",
+								"div",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 59
+						},
+						"innerBlocks": []
+					},
+					{
 						"name": "sgs/form-field-text",
 						"attributes": {
-							"label": "Trading name"
+							"label": "Trading name",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root>TradeApplication@466#0/39#0"
@@ -83,7 +153,8 @@
 					{
 						"name": "sgs/form-field-select",
 						"attributes": {
-							"label": "Business structure"
+							"label": "Business structure",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root>TradeApplication@466#0/41#0"
@@ -108,6 +179,14 @@
 								"tpl": "Root>TradeApplication@466#0/41#0"
 							}
 						}
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Companies House number",
+							"fieldName": "companyNo"
+						},
+						"innerBlocks": []
 					},
 					{
 						"name": "sgs/form-field-text",
@@ -142,7 +221,8 @@
 					{
 						"name": "sgs/form-field-select",
 						"attributes": {
-							"label": "Time trading"
+							"label": "Time trading",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root>TradeApplication@466#0/41#1"
@@ -167,6 +247,31 @@
 								"tpl": "Root>TradeApplication@466#0/41#1"
 							}
 						}
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {
+							"label": "Food hygiene rating",
+							"helpText": "From your local authority (Food Standards Agency scheme)."
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/47#1"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "706c044c",
+							"parentTags": [
+								"div",
+								"div",
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 59
+						},
+						"innerBlocks": []
 					}
 				]
 			},
@@ -175,21 +280,410 @@
 				"attributes": {
 					"label": "Premises"
 				},
-				"innerBlocks": []
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Where are you based?"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/23#0"
+						},
+						"draftFingerprint": {
+							"tag": "h2",
+							"cls": "",
+							"styleHash": "45221537",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "34ca6ce8",
+							"line": 34
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "We deliver across the UK and Europe. Tell us where and how to reach you."
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/24#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "82204bd8",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "f1167631",
+							"line": 35
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Business address",
+							"required": true,
+							"fieldName": "addr1"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Town or city",
+							"required": true,
+							"fieldName": "city"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Postcode",
+							"required": true,
+							"fieldName": "postcode"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-checkbox",
+						"attributes": {
+							"options": [
+								{
+									"value": "Deliver to this address",
+									"label": "Deliver to this address"
+								}
+							],
+							"fieldName": "sameDelivery"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Delivery address"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Delivery address",
+							"fieldName": "delAddr"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Delivery postcode",
+							"fieldName": "delPostcode"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {
+							"label": "Preferred delivery window",
+							"fieldName": "delWindow"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-textarea",
+						"attributes": {
+							"label": "Access notes for drivers",
+							"fieldName": "access"
+						},
+						"innerBlocks": []
+					}
+				]
 			},
 			{
 				"name": "sgs/form-step",
 				"attributes": {
 					"label": "Contact"
 				},
-				"innerBlocks": []
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Who should we speak to?"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/23#0"
+						},
+						"draftFingerprint": {
+							"tag": "h2",
+							"cls": "",
+							"styleHash": "45221537",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "34ca6ce8",
+							"line": 34
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Your main contact and the person responsible for the business."
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/24#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "82204bd8",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "f1167631",
+							"line": 35
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "First name",
+							"required": true,
+							"fieldName": "firstName"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Last name",
+							"required": true,
+							"fieldName": "lastName"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"label": "Your role",
+							"required": true,
+							"fieldName": "role"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-email",
+						"attributes": {
+							"label": "Email",
+							"required": true,
+							"fieldName": "email"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-phone",
+						"attributes": {
+							"label": "Phone",
+							"required": true,
+							"fieldName": "phone"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {
+							"label": "Best way to reach you",
+							"fieldName": "contactPref"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Owner or director"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Full name",
+							"required": true,
+							"fieldName": "ownerName"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Home postcode",
+							"helpText": "Only needed for credit accounts.",
+							"fieldName": "ownerPostcode"
+						},
+						"innerBlocks": []
+					}
+				]
 			},
 			{
 				"name": "sgs/form-step",
 				"attributes": {
 					"label": "Ordering"
 				},
-				"innerBlocks": []
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "How will you order?"
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/23#0"
+						},
+						"draftFingerprint": {
+							"tag": "h2",
+							"cls": "",
+							"styleHash": "45221537",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "34ca6ce8",
+							"line": 34
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "This helps us set up the right pricing, ranges and payment terms."
+						},
+						"draftRef": {
+							"tpl": "Root>TradeApplication@466#0/24#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "82204bd8",
+							"parentTags": [
+								"div",
+								"div",
+								"div"
+							],
+							"textHash": "f1167631",
+							"line": 35
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {
+							"label": "Ranges you’re interested in",
+							"required": true,
+							"fieldName": "cats"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {
+							"label": "Brands you stock or use",
+							"fieldName": "brands"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"label": "Estimated weekly spend",
+							"required": true,
+							"fieldName": "spend"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"label": "How often will you order?",
+							"required": true,
+							"fieldName": "freq"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-tiles",
+						"attributes": {
+							"label": "How would you like to pay?",
+							"required": true,
+							"fieldName": "payment"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Credit account details"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-select",
+						"attributes": {
+							"label": "Credit limit requested",
+							"fieldName": "creditLimit"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Trade reference 1",
+							"fieldName": "ref1"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"label": "Trade reference 2",
+							"fieldName": "ref2"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-checkbox",
+						"attributes": {
+							"options": [
+								{
+									"value": "I agree to Indus Foods carrying out a credit check on the business and its directors.",
+									"label": "I agree to Indus Foods carrying out a credit check on the business and its directors."
+								}
+							],
+							"fieldName": "creditOk"
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/form-field-file",
+						"attributes": {
+							"label": "Supporting document",
+							"helpText": "Optional: VAT certificate, food business registration or a recent utility bill speeds up approval.",
+							"fieldName": "docs"
+						},
+						"innerBlocks": []
+					}
+				]
 			},
 			{
 				"name": "sgs/form-review",
@@ -238,29 +732,6 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/label",
-								"attributes": {
-									"text": "Step 1 of 5"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/10#0"
-								},
-								"draftFingerprint": {
-									"tag": "span",
-									"cls": "",
-									"styleHash": "8cb0fea6",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "3f731f7a",
-									"line": 17
-								},
-								"innerBlocks": []
-							},
-							{
 								"name": "sgs/container",
 								"attributes": {
 									"tagName": "div",
@@ -283,656 +754,6 @@
 									"line": 18
 								},
 								"innerBlocks": []
-							}
-						]
-					},
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div",
-							"layout": "grid"
-						},
-						"draftRef": {
-							"tpl": "Root>TradeApplication@466#0/16#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "2ca0dd5a",
-							"parentTags": [
-								"div",
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 23
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/18#0"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "",
-									"styleHash": "993d9dd8",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 25
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "1"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/19#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "67009aa0",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "2b594",
-											"line": 26
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Business"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/21#0"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "69cd336e",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "f3ba863",
-											"line": 27
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/18#1"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "",
-									"styleHash": "8cebc2d6",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 25
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "2"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/19#1"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "c60b201",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "2b597",
-											"line": 26
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Premises"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/21#1"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "69cd336e",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "9c069443",
-											"line": 27
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/18#2"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "",
-									"styleHash": "8cebc2d6",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 25
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "3"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/19#2"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "c60b201",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "2b596",
-											"line": 26
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Contact"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/21#2"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "69cd336e",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "d9d08625",
-											"line": 27
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/18#3"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "",
-									"styleHash": "8cebc2d6",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 25
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "4"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/19#3"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "c60b201",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "2b591",
-											"line": 26
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Ordering"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/21#3"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "69cd336e",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "bee6d74b",
-											"line": 27
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "flex"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/18#4"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "",
-									"styleHash": "8cebc2d6",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 25
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "5"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/19#4"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "c60b201",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "2b590",
-											"line": 26
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Review"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/21#4"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "69cd336e",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"button"
-											],
-											"textHash": "c44df61f",
-											"line": 27
-										},
-										"innerBlocks": []
-									}
-								]
-							}
-						]
-					},
-					{
-						"name": "sgs/heading",
-						"attributes": {
-							"content": "Tell us about your business"
-						},
-						"draftRef": {
-							"tpl": "Root>TradeApplication@466#0/23#0"
-						},
-						"draftFingerprint": {
-							"tag": "h2",
-							"cls": "",
-							"styleHash": "45221537",
-							"parentTags": [
-								"div",
-								"div",
-								"div"
-							],
-							"textHash": "34ca6ce8",
-							"line": 34
-						},
-						"innerBlocks": []
-					},
-					{
-						"name": "sgs/text",
-						"attributes": {
-							"text": "The basics we need to set up your account and check your details."
-						},
-						"draftRef": {
-							"tpl": "Root>TradeApplication@466#0/24#0"
-						},
-						"draftFingerprint": {
-							"tag": "p",
-							"cls": "",
-							"styleHash": "82204bd8",
-							"parentTags": [
-								"div",
-								"div",
-								"div"
-							],
-							"textHash": "f1167631",
-							"line": 35
-						},
-						"innerBlocks": []
-					},
-					{
-						"name": "sgs/container",
-						"attributes": {
-							"tagName": "div",
-							"layout": "grid"
-						},
-						"draftRef": {
-							"tpl": "Root>TradeApplication@466#0/26#0"
-						},
-						"draftFingerprint": {
-							"tag": "div",
-							"cls": "",
-							"styleHash": "9dafbd8b",
-							"parentTags": [
-								"div",
-								"div",
-								"div"
-							],
-							"textHash": "1505",
-							"line": 38
-						},
-						"innerBlocks": [
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/28#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2227f0de",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 40
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/33#0"
-										},
-										"draftFingerprint": {
-											"tag": "label",
-											"cls": "",
-											"styleHash": "454eda67",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "adb12ee2",
-											"line": 45
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/text",
-												"attributes": {
-													"text": "*"
-												},
-												"draftRef": {
-													"tpl": "Root>TradeApplication@466#0/35#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "8a19ef39",
-													"parentTags": [
-														"div",
-														"div",
-														"div",
-														"div",
-														"div",
-														"label"
-													],
-													"textHash": "2b58f",
-													"line": 45
-												},
-												"innerBlocks": []
-											}
-										]
-									},
-									{
-										"name": "sgs/option-picker",
-										"attributes": {},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/47#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "706c044c",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 59
-										},
-										"innerBlocks": []
-									}
-								]
-							},
-							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/28#6"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2227f0de",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "1505",
-									"line": 40
-								},
-								"innerBlocks": [
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "Food hygiene rating"
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/33#6"
-										},
-										"draftFingerprint": {
-											"tag": "label",
-											"cls": "",
-											"styleHash": "454eda67",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "59097ef1",
-											"line": 45
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/option-picker",
-										"attributes": {},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/47#1"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "706c044c",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 59
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/text",
-										"attributes": {
-											"text": "From your local authority (Food Standards Agency scheme)."
-										},
-										"draftRef": {
-											"tpl": "Root>TradeApplication@466#0/64#1"
-										},
-										"draftFingerprint": {
-											"tag": "span",
-											"cls": "",
-											"styleHash": "d2c9c594",
-											"parentTags": [
-												"div",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1ae2f3f9",
-											"line": 78
-										},
-										"innerBlocks": []
-									}
-								]
 							}
 						]
 					},
@@ -978,29 +799,6 @@
 									],
 									"textHash": "525a9804",
 									"line": 107
-								},
-								"innerBlocks": []
-							},
-							{
-								"name": "sgs/button",
-								"attributes": {
-									"label": "Continue"
-								},
-								"draftRef": {
-									"tpl": "Root>TradeApplication@466#0/85#0"
-								},
-								"draftFingerprint": {
-									"tag": "button",
-									"cls": "scp1p",
-									"styleHash": "da7fd760",
-									"parentTags": [
-										"div",
-										"div",
-										"div",
-										"div"
-									],
-									"textHash": "13e59f84",
-									"line": 108
 								},
 								"innerBlocks": []
 							}

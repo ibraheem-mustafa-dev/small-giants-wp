@@ -9,8 +9,11 @@ export default {
 	// The surface's own element on each side: the automatic text and moved-run collection and the links run inside it.
 	auto: { root: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"653\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"728\"]:not(.sc-host .sc-host *)))","live":".cr-ref-footer-0"}, exclude: {"draft":[".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"201\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"106\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"39\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"38\"]:not(.sc-host .sc-host *)",".sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"9\"]:not(.sc-host .sc-host *)"]} },
 	linkRoot: {"draft":":has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"653\"]:not(.sc-host .sc-host *))):has(> :is(.sc-host[data-sc-name=\"Root\"] [data-dc-tpl=\"728\"]:not(.sc-host .sc-host *)))","live":".cr-ref-footer-0"},
-	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:58069/" },
+	draft: { url: process.env.SGS_DRAFT_URL || "http://127.0.0.1:57270/" },
 	live: { url: "http://localhost:8083/" },
-	states: [ { name: "open-now", fullPage: true } ],
+	states: [
+		{ name: "open-now", fullPage: true },
+	],
+	unwalked: [{"state":"closed","reason":"\"closed\": no usable state key (hoursNow.label: a render value or selector, not a state key name) and no setState call in its how_to_reach"},{"state":"today-row-highlighted","reason":"\"today row highlighted\": no usable state key (the state sets none) and no setState call in its how_to_reach"}],
 	pairs: [],
 };

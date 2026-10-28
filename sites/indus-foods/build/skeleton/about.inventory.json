@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T15:53:59.832Z",
-  "source": "http://127.0.0.1:58069/#/about",
+  "generated": "2026-10-28T06:09:36.216Z",
+  "source": "http://127.0.0.1:57270/#/about",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -15087,22 +15087,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
       "box": {
         "375": {
-          "x": 106.2,
-          "y": 3697.9,
-          "w": 356.8,
-          "h": 356.8
+          "x": 81.1,
+          "y": 3675.5,
+          "w": 364.6,
+          "h": 364.6
         },
         "768": {
-          "x": 489.7,
-          "y": 2843.1,
-          "w": 362.4,
-          "h": 362.4
+          "x": 474.7,
+          "y": 2836.2,
+          "w": 368.4,
+          "h": 368.4
         },
         "1440": {
-          "x": 1064.6,
-          "y": 5558.7,
-          "w": 376,
-          "h": 376
+          "x": 1066.8,
+          "y": 5556.7,
+          "w": 379.1,
+          "h": 379.1
         }
       },
       "visible": {
@@ -15155,22 +15155,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
       "box": {
         "375": {
-          "x": 161.3,
-          "y": 3778.5,
-          "w": 158.2,
-          "h": 158.2
+          "x": 157.1,
+          "y": 3759.2,
+          "w": 165.9,
+          "h": 165.9
         },
         "768": {
-          "x": 550.1,
-          "y": 2899.6,
-          "w": 164.5,
-          "h": 164.5
+          "x": 544,
+          "y": 2913.6,
+          "w": 166.7,
+          "h": 166.7
         },
         "1440": {
-          "x": 1146,
-          "y": 5643.3,
-          "w": 157.5,
-          "h": 157.5
+          "x": 1143.4,
+          "y": 5642.3,
+          "w": 157.2,
+          "h": 157.2
         }
       },
       "visible": {

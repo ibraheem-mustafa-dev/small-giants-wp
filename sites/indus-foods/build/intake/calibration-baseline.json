@@ -1,7 +1,7 @@
 {
   "client": "indus-foods",
   "site": "local-indus",
-  "takenOn": "2026-10-12T04:04:51.887Z",
+  "takenOn": "2026-10-28T06:03:00.655Z",
   "playwright": "1.58.2",
   "browser": "145.0.7632.6",
   "blockSet": [
@@ -25,120 +25,120 @@
   ],
   "blocks": {
     "sgs/container": {
-      "deployHash": "f229f84b143e98ac452473630fbef8f5",
-      "dead": 9,
-      "noMarker": 3,
+      "deployHash": "71dfffc8d3fae004ba72ed4e66fece21",
+      "dead": 8,
+      "noMarker": 4,
       "oneWidth": 9,
       "untestedStates": 0
     },
     "sgs/heading": {
-      "deployHash": "c915167f969434aec4cf19c7c305e2c8",
-      "dead": 3,
+      "deployHash": "340b22660416735405a97bf26b98dbd0",
+      "dead": 4,
       "noMarker": 1,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/text": {
-      "deployHash": "a6b467bc58f963470d805e7eb9739b5b",
-      "dead": 6,
+      "deployHash": "8daba5b3622b612b2161208ed80cb167",
+      "dead": 5,
       "noMarker": 1,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/button": {
-      "deployHash": "9c77312ff7cacd7e6c928ab200b21553",
-      "dead": 3,
+      "deployHash": "96ae2e6460e392469d5e457a1db0fcc7",
+      "dead": 2,
       "noMarker": 1,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/media": {
-      "deployHash": "72e9260ac5b2c6883269c4dfb741972f",
-      "dead": 0,
+      "deployHash": "60b0bd8ab4e95c0f72530824e5dc0b79",
+      "dead": 2,
       "noMarker": 1,
       "oneWidth": 0,
-      "untestedStates": 0
+      "untestedStates": 1
     },
     "sgs/icon-list": {
-      "deployHash": "88cfe7a121fd8ef90dbd45d44fb885e7",
+      "deployHash": "37dec157d2baf673c34413ea1d3fe4c6",
       "dead": 10,
       "noMarker": 2,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/accordion": {
-      "deployHash": "d2efb9a5d4629e53ebab384fa92dd63f",
-      "dead": 9,
+      "deployHash": "451fc217f43a4f9744cc2f80db6074ae",
+      "dead": 6,
       "noMarker": 1,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/choice-flow-result": {
-      "deployHash": "49b8cc2201d79480c4f03260e18a4971",
+      "deployHash": "6490da20f31b63438104a2a89af4f239",
       "dead": 0,
       "noMarker": 0,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/form": {
-      "deployHash": "1e6df684052417c2b314d3a941e6af0a",
-      "dead": 166,
-      "noMarker": 2,
+      "deployHash": "be2b5d88d08579e3d4473f1645fb36df",
+      "dead": 36,
+      "noMarker": 1,
       "oneWidth": 0,
-      "untestedStates": 0
+      "untestedStates": 12
     },
     "sgs/form-step": {
-      "deployHash": "215a5d25055f527b93e1181f8bc916b4",
+      "deployHash": "ef4382d9f498328080b55e7d53330e8c",
       "dead": 0,
       "noMarker": 0,
       "oneWidth": 0,
       "untestedStates": 0
     },
     "sgs/mega-panel": {
-      "deployHash": "c73df13ade6ed34adada2149312cd977",
-      "dead": 28,
-      "noMarker": 0,
-      "oneWidth": 0,
-      "untestedStates": 0
-    },
-    "sgs/nav-bar-menu": {
-      "deployHash": "ac512be79bfbd93cc03a9fa5d2e91dd3",
-      "dead": 20,
-      "noMarker": 6,
-      "oneWidth": 7,
-      "untestedStates": 6
-    },
-    "sgs/nav-drawer": {
-      "deployHash": "b09edb75607f65c70c79e8cf5128f180",
-      "dead": 11,
-      "noMarker": 11,
-      "oneWidth": 0,
-      "untestedStates": 9
-    },
-    "sgs/nav-drawer-menu": {
-      "deployHash": "6d6b60a02054ef3c65845b38fa74364e",
-      "dead": 31,
-      "noMarker": 4,
-      "oneWidth": 0,
-      "untestedStates": 25
-    },
-    "sgs/site-footer": {
-      "deployHash": "69a169f3987db21afb6ce989a3818dcd",
-      "dead": 9,
-      "noMarker": 2,
-      "oneWidth": 0,
-      "untestedStates": 0
-    },
-    "sgs/site-header": {
-      "deployHash": "8432b9c60a559f5420be211efcd5806c",
+      "deployHash": "24f66ded95ef0ea1cbbf31695387937a",
       "dead": 3,
       "noMarker": 2,
       "oneWidth": 0,
       "untestedStates": 0
     },
+    "sgs/nav-bar-menu": {
+      "deployHash": "99aef5c24a18b9d5db8a4ebc61dc833b",
+      "dead": 8,
+      "noMarker": 2,
+      "oneWidth": 9,
+      "untestedStates": 6
+    },
+    "sgs/nav-drawer": {
+      "deployHash": "a8f4d53407125c8db504aa2692491c59",
+      "dead": 6,
+      "noMarker": 5,
+      "oneWidth": 0,
+      "untestedStates": 11
+    },
+    "sgs/nav-drawer-menu": {
+      "deployHash": "a42282cdea2755f8a98c7c51fef580ec",
+      "dead": 36,
+      "noMarker": 4,
+      "oneWidth": 0,
+      "untestedStates": 45
+    },
+    "sgs/site-footer": {
+      "deployHash": "21583481058148b67295e8c4120cd5f9",
+      "dead": 4,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 2
+    },
+    "sgs/site-header": {
+      "deployHash": "2978f7649ec8c6a8913574593ce81c36",
+      "dead": 2,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 2
+    },
     "sgs/wishlist-panel": {
-      "deployHash": "bc61dccc39a774efb068bd3ee219d08f",
-      "dead": 16,
+      "deployHash": "7c267d94241955a15834b4f07d80f637",
+      "dead": 0,
       "noMarker": 0,
       "oneWidth": 2,
       "untestedStates": 0

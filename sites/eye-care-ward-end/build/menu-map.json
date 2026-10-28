@@ -6,6 +6,13 @@
 				"drawer-2": 31,
 				"header": 30
 			}
+		},
+		"eye-care-clone-test": {
+			"menus": {
+				"drawer-1": 29,
+				"drawer-2": 31,
+				"header": 30
+			}
 		}
 	}
 }

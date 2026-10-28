@@ -1,0 +1,155 @@
+{
+  "client": "eye-care-ward-end",
+  "site": "local-eye-care",
+  "takenOn": "2026-10-28T05:53:20.595Z",
+  "playwright": "1.58.2",
+  "browser": "145.0.7632.6",
+  "blockSet": [
+    "sgs/container",
+    "sgs/heading",
+    "sgs/text",
+    "sgs/button",
+    "sgs/media",
+    "sgs/icon-list",
+    "sgs/accordion",
+    "sgs/choice-flow-result",
+    "sgs/form",
+    "sgs/form-step",
+    "sgs/mega-panel",
+    "sgs/modal",
+    "sgs/nav-bar-menu",
+    "sgs/nav-drawer",
+    "sgs/nav-drawer-menu",
+    "sgs/site-footer",
+    "sgs/site-header",
+    "sgs/wishlist-panel"
+  ],
+  "blocks": {
+    "sgs/container": {
+      "deployHash": "71dfffc8d3fae004ba72ed4e66fece21",
+      "dead": 8,
+      "noMarker": 4,
+      "oneWidth": 9,
+      "untestedStates": 0
+    },
+    "sgs/heading": {
+      "deployHash": "340b22660416735405a97bf26b98dbd0",
+      "dead": 4,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/text": {
+      "deployHash": "8daba5b3622b612b2161208ed80cb167",
+      "dead": 5,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/button": {
+      "deployHash": "96ae2e6460e392469d5e457a1db0fcc7",
+      "dead": 2,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/media": {
+      "deployHash": "60b0bd8ab4e95c0f72530824e5dc0b79",
+      "dead": 2,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 1
+    },
+    "sgs/icon-list": {
+      "deployHash": "37dec157d2baf673c34413ea1d3fe4c6",
+      "dead": 10,
+      "noMarker": 2,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/accordion": {
+      "deployHash": "451fc217f43a4f9744cc2f80db6074ae",
+      "dead": 6,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/choice-flow-result": {
+      "deployHash": "6490da20f31b63438104a2a89af4f239",
+      "dead": 0,
+      "noMarker": 0,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/form": {
+      "deployHash": "be2b5d88d08579e3d4473f1645fb36df",
+      "dead": 36,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 12
+    },
+    "sgs/form-step": {
+      "deployHash": "ef4382d9f498328080b55e7d53330e8c",
+      "dead": 0,
+      "noMarker": 0,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/mega-panel": {
+      "deployHash": "24f66ded95ef0ea1cbbf31695387937a",
+      "dead": 3,
+      "noMarker": 2,
+      "oneWidth": 0,
+      "untestedStates": 0
+    },
+    "sgs/modal": {
+      "deployHash": "0f90979a97a9ba56b6ffe313089f93fd",
+      "dead": 0,
+      "noMarker": 0,
+      "oneWidth": 0,
+      "untestedStates": 4
+    },
+    "sgs/nav-bar-menu": {
+      "deployHash": "99aef5c24a18b9d5db8a4ebc61dc833b",
+      "dead": 8,
+      "noMarker": 2,
+      "oneWidth": 9,
+      "untestedStates": 6
+    },
+    "sgs/nav-drawer": {
+      "deployHash": "a8f4d53407125c8db504aa2692491c59",
+      "dead": 6,
+      "noMarker": 5,
+      "oneWidth": 0,
+      "untestedStates": 11
+    },
+    "sgs/nav-drawer-menu": {
+      "deployHash": "a42282cdea2755f8a98c7c51fef580ec",
+      "dead": 36,
+      "noMarker": 4,
+      "oneWidth": 0,
+      "untestedStates": 45
+    },
+    "sgs/site-footer": {
+      "deployHash": "21583481058148b67295e8c4120cd5f9",
+      "dead": 4,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 2
+    },
+    "sgs/site-header": {
+      "deployHash": "2978f7649ec8c6a8913574593ce81c36",
+      "dead": 2,
+      "noMarker": 1,
+      "oneWidth": 0,
+      "untestedStates": 2
+    },
+    "sgs/wishlist-panel": {
+      "deployHash": "7c267d94241955a15834b4f07d80f637",
+      "dead": 0,
+      "noMarker": 0,
+      "oneWidth": 2,
+      "untestedStates": 0
+    }
+  }
+}

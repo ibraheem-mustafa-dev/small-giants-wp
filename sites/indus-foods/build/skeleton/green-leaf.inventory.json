@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T16:09:37.810Z",
-  "source": "http://127.0.0.1:58069/#/brand-green-leaf",
+  "generated": "2026-10-28T06:26:56.478Z",
+  "source": "http://127.0.0.1:57270/#/brand-green-leaf",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -463,22 +463,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-120px;bottom:-160px;width:460px;height:460px;border-radius:50%;border:2px solid rgba(255,255,255,.22);pointer-events:none;\" data-dc-tpl=\"319\"></span>",
       "box": {
         "375": {
-          "x": 18.9,
-          "y": 655.6,
-          "w": 495.1,
-          "h": 495.1
+          "x": 21.5,
+          "y": 640.4,
+          "w": 492.4,
+          "h": 492.4
         },
         "768": {
-          "x": 420.1,
-          "y": 848.4,
-          "w": 491.3,
-          "h": 491.3
+          "x": 413.2,
+          "y": 866.5,
+          "w": 483.6,
+          "h": 483.6
         },
         "1440": {
-          "x": 1105.2,
-          "y": 430.3,
-          "w": 483.9,
-          "h": 483.9
+          "x": 1094.6,
+          "y": 431.5,
+          "w": 480.6,
+          "h": 480.6
         }
       },
       "visible": {
@@ -5891,22 +5891,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216,202,80,.55);pointer-events:none;\" data-dc-tpl=\"516\"></span>",
       "box": {
         "375": {
-          "x": 92,
-          "y": 2438.5,
-          "w": 358.2,
-          "h": 358.2
+          "x": 81.7,
+          "y": 2411.2,
+          "w": 363.2,
+          "h": 363.2
         },
         "768": {
-          "x": 492.2,
-          "y": 2043.2,
-          "w": 353.6,
-          "h": 353.6
+          "x": 481.4,
+          "y": 2038.9,
+          "w": 345,
+          "h": 345
         },
         "1440": {
-          "x": 1076.4,
-          "y": 1871.8,
-          "w": 373,
-          "h": 373
+          "x": 1088,
+          "y": 1851.8,
+          "w": 369.3,
+          "h": 369.3
         }
       },
       "visible": {
@@ -5959,22 +5959,22 @@
       "snippet": "<span data-ring=\"\" aria-hidden=\"true\" style=\"position:absolute;right:40px;top:-40px;width:150px;height:150px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);pointer-events:none;\" data-dc-tpl=\"517\"></span>",
       "box": {
         "375": {
-          "x": 146.4,
-          "y": 2494.8,
-          "w": 166.8,
-          "h": 166.8
+          "x": 150.7,
+          "y": 2506.2,
+          "w": 166.7,
+          "h": 166.7
         },
         "768": {
-          "x": 557.1,
-          "y": 2113.8,
-          "w": 159.4,
-          "h": 159.4
+          "x": 530.9,
+          "y": 2106.3,
+          "w": 160,
+          "h": 160
         },
         "1440": {
-          "x": 1157.3,
-          "y": 1928.2,
-          "w": 163.6,
-          "h": 163.6
+          "x": 1146.2,
+          "y": 1938.2,
+          "w": 152.3,
+          "h": 152.3
         }
       },
       "visible": {

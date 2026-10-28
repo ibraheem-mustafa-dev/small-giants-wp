@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T15:54:08.564Z",
-  "source": "http://127.0.0.1:58069/",
+  "generated": "2026-10-28T06:09:52.292Z",
+  "source": "http://127.0.0.1:57270/",
   "root": "main",
   "keyFormat": "importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)",
   "checks": {
@@ -335,17 +335,17 @@
       {
         "tag": "span",
         "cls": "sc-interp",
-        "text": "Since starting with Indus Foods back in the early 2000s, the"
+        "text": "Their delivery is always on time and the product range is un"
       },
       {
         "tag": "span",
         "cls": "sc-interp",
-        "text": "Restaurant owner"
+        "text": "Store manager"
       },
       {
         "tag": "span",
         "cls": "sc-interp",
-        "text": "Foodservice customer"
+        "text": "Retail customer"
       },
       {
         "tag": "svg",
@@ -1489,19 +1489,19 @@
       "box": {
         "375": {
           "x": 20,
-          "y": 640.9,
+          "y": 642,
           "w": 335,
           "h": 223.3
         },
         "768": {
           "x": 32,
-          "y": 495.4,
+          "y": 497.2,
           "w": 704,
           "h": 469.3
         },
         "1440": {
           "x": 731,
-          "y": 219.3,
+          "y": 224.9,
           "w": 549,
           "h": 366
         }
@@ -1550,19 +1550,19 @@
       "box": {
         "375": {
           "x": 20,
-          "y": 633.9,
+          "y": 635,
           "w": 335,
           "h": 223.3
         },
         "768": {
           "x": 32,
-          "y": 488.4,
+          "y": 490.2,
           "w": 704,
           "h": 469.3
         },
         "1440": {
           "x": 731,
-          "y": 211.3,
+          "y": 216.9,
           "w": 549,
           "h": 366
         }
@@ -1609,19 +1609,19 @@
       "box": {
         "375": {
           "x": 25,
-          "y": 638.9,
+          "y": 640,
           "w": 325,
           "h": 213.3
         },
         "768": {
           "x": 37,
-          "y": 493.4,
+          "y": 495.2,
           "w": 694,
           "h": 459.3
         },
         "1440": {
           "x": 736,
-          "y": 216.3,
+          "y": 221.9,
           "w": 539,
           "h": 356
         }
@@ -1913,19 +1913,19 @@
       "snippet": "<div ref=\"{{ setMarqueeEl }}\" style=\"display:flex;gap:14px;width:max-content;padding:10px 0 16px;\" data-dc-tpl=\"222\"> <sc-for list=\"{{ brandTiles }}\" as=\"l\" hint-placeholder-count=\"8\" data-dc-tpl=\"223\"> <a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0",
       "box": {
         "375": {
-          "x": -254.2,
+          "x": -266.2,
           "y": 1029.1,
           "w": 2506,
           "h": 138
         },
         "768": {
-          "x": -258,
+          "x": -276,
           "y": 1171.3,
           "w": 2986,
           "h": 162
         },
         "1440": {
-          "x": -243,
+          "x": -298.5,
           "y": 821,
           "w": 3266,
           "h": 176
@@ -1983,19 +1983,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": -254.2,
+          "x": -266.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -258,
+          "x": -276,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -243,
+          "x": -298.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2048,19 +2048,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": -254.2,
+          "x": -266.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -258,
+          "x": -276,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -243,
+          "x": -298.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2118,19 +2118,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": -128.2,
+          "x": -140.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -108,
+          "x": -126,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -79,
+          "x": -134.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2183,19 +2183,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": -128.2,
+          "x": -140.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": -108,
+          "x": -126,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": -79,
+          "x": -134.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2253,19 +2253,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": -2.2,
+          "x": -14.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 42,
+          "x": 24,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 85,
+          "x": 29.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2318,19 +2318,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": -2.2,
+          "x": -14.2,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 42,
+          "x": 24,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 85,
+          "x": 29.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2388,19 +2388,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 123.8,
+          "x": 111.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 192,
+          "x": 174,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 249,
+          "x": 193.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2453,19 +2453,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 123.8,
+          "x": 111.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 192,
+          "x": 174,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 249,
+          "x": 193.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2523,19 +2523,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 249.8,
+          "x": 237.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 342,
+          "x": 324,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 413,
+          "x": 357.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2588,19 +2588,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 249.8,
+          "x": 237.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 342,
+          "x": 324,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 413,
+          "x": 357.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2658,19 +2658,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 375.8,
+          "x": 363.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 492,
+          "x": 474,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 577,
+          "x": 521.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2723,19 +2723,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 375.8,
+          "x": 363.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 492,
+          "x": 474,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 577,
+          "x": 521.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2793,19 +2793,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 501.8,
+          "x": 489.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 642,
+          "x": 624,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 741,
+          "x": 685.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2858,19 +2858,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 501.8,
+          "x": 489.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 642,
+          "x": 624,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 741,
+          "x": 685.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2928,19 +2928,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 627.8,
+          "x": 615.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 792,
+          "x": 774,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 905,
+          "x": 849.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -2993,19 +2993,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 627.8,
+          "x": 615.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 792,
+          "x": 774,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 905,
+          "x": 849.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3063,19 +3063,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 753.8,
+          "x": 741.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 942,
+          "x": 924,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1069,
+          "x": 1013.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3128,19 +3128,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 753.8,
+          "x": 741.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 942,
+          "x": 924,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1069,
+          "x": 1013.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3198,19 +3198,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 879.8,
+          "x": 867.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1092,
+          "x": 1074,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1233,
+          "x": 1177.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3263,19 +3263,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 879.8,
+          "x": 867.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1092,
+          "x": 1074,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1233,
+          "x": 1177.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3333,19 +3333,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1005.8,
+          "x": 993.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1242,
+          "x": 1224,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1397,
+          "x": 1341.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3398,19 +3398,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1005.8,
+          "x": 993.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1242,
+          "x": 1224,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1397,
+          "x": 1341.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3468,19 +3468,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1131.8,
+          "x": 1119.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1392,
+          "x": 1374,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1561,
+          "x": 1505.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3533,19 +3533,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1131.8,
+          "x": 1119.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1392,
+          "x": 1374,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1561,
+          "x": 1505.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3603,19 +3603,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1257.8,
+          "x": 1245.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1542,
+          "x": 1524,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1725,
+          "x": 1669.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3668,19 +3668,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1257.8,
+          "x": 1245.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1542,
+          "x": 1524,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1725,
+          "x": 1669.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3738,19 +3738,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1383.8,
+          "x": 1371.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1692,
+          "x": 1674,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1889,
+          "x": 1833.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3803,19 +3803,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1383.8,
+          "x": 1371.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1692,
+          "x": 1674,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 1889,
+          "x": 1833.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3873,19 +3873,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1509.8,
+          "x": 1497.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1842,
+          "x": 1824,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2053,
+          "x": 1997.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -3938,19 +3938,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1509.8,
+          "x": 1497.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1842,
+          "x": 1824,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2053,
+          "x": 1997.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4008,19 +4008,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1635.8,
+          "x": 1623.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1992,
+          "x": 1974,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2217,
+          "x": 2161.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4073,19 +4073,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1635.8,
+          "x": 1623.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 1992,
+          "x": 1974,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2217,
+          "x": 2161.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4143,19 +4143,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1761.8,
+          "x": 1749.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2142,
+          "x": 2124,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2381,
+          "x": 2325.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4208,19 +4208,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1761.8,
+          "x": 1749.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2142,
+          "x": 2124,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2381,
+          "x": 2325.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4278,19 +4278,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 1887.8,
+          "x": 1875.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2292,
+          "x": 2274,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2545,
+          "x": 2489.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4343,19 +4343,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 1887.8,
+          "x": 1875.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2292,
+          "x": 2274,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2545,
+          "x": 2489.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4413,19 +4413,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 2013.8,
+          "x": 2001.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2442,
+          "x": 2424,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2709,
+          "x": 2653.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4478,19 +4478,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 2013.8,
+          "x": 2001.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2442,
+          "x": 2424,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2709,
+          "x": 2653.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4548,19 +4548,19 @@
       "snippet": "<a href=\"{{ l.href }}\" aria-label=\"{{ l.name }}\" style=\"flex:0 0 auto;display:block;width:{{ R.logoTile }};height:{{ R.logoTile }};background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 6px 14px -8px rgba(0,0,0,.35);transition:transform .2s ease,box-shadow .25s ease;\" style-hover=\"transform:scale(1.05) translateY(-2px);box-shadow:0 16px 36px rgba(0,0,0,.25)\" data-dc-tpl=\"224\"> <image-s",
       "box": {
         "375": {
-          "x": 2139.8,
+          "x": 2127.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2592,
+          "x": 2574,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2873,
+          "x": 2817.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -4613,19 +4613,19 @@
       "snippet": "<image-slot id=\"{{ l.id }}\" shape=\"rect\" fit=\"contain\" placeholder=\"{{ l.name }}\" data-dc-tpl=\"225\"></image-slot>",
       "box": {
         "375": {
-          "x": 2139.8,
+          "x": 2127.8,
           "y": 1039.1,
           "w": 112,
           "h": 112
         },
         "768": {
-          "x": 2592,
+          "x": 2574,
           "y": 1181.3,
           "w": 136,
           "h": 136
         },
         "1440": {
-          "x": 2873,
+          "x": 2817.5,
           "y": 831,
           "w": 150,
           "h": 150
@@ -10322,7 +10322,7 @@
         "style": "position: relative; overflow: hidden; background: rgb(10, 126, 168); padding: 108px 40px;"
       },
       "words": "",
-      "allText": "Our Partners Love Us! “ Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with",
+      "allText": "Our Partners Love Us! “ Their delivery is always on time and the product range is unmatched. We switched from our previo",
       "srcLine": 367,
       "membership": [
         {
@@ -10383,7 +10383,7 @@
         "style": "position: relative; z-index: 1; max-width: 1040px; margin: 0px auto;"
       },
       "words": "",
-      "allText": "Our Partners Love Us! “ Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with",
+      "allText": "Our Partners Love Us! “ Their delivery is always on time and the product range is unmatched. We switched from our previo",
       "srcLine": 369,
       "membership": [
         {
@@ -10566,7 +10566,7 @@
         "style": "display: grid; grid-template-columns: minmax(0px, 1.5fr) minmax(0px, 1fr); gap: 72px; align-items: center; margin-top: 48px;"
       },
       "words": "",
-      "allText": "“ Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. W",
+      "allText": "“ Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ag",
       "srcLine": 371,
       "membership": [
         {
@@ -10627,7 +10627,7 @@
         "style": "min-width: 0px;"
       },
       "words": "",
-      "allText": "“ Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. W",
+      "allText": "“ Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ag",
       "srcLine": 372,
       "membership": [
         {
@@ -10688,7 +10688,7 @@
         "style": "display: flex; align-items: center; gap: 14px;"
       },
       "words": "",
-      "allText": "“ Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. W",
+      "allText": "“ Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ag",
       "srcLine": 373,
       "membership": [
         {
@@ -10872,7 +10872,7 @@
         "style": "flex: 1 1 0%; min-width: 0px; background: rgb(216, 202, 80); color: rgb(44, 62, 80); border-radius: 16px; padding: 32px 36px; text-align: center; box-shadow: rgba(0, 0, 0, 0.55) 0px 26px 44px -26px;"
       },
       "words": "",
-      "allText": "“ Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. W",
+      "allText": "“ Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ag",
       "srcLine": 375,
       "membership": [
         {
@@ -10898,7 +10898,7 @@
           "h": 233.2
         },
         "1440": {
-          "x": 256,
+          "x": 262.3,
           "y": 3113.9,
           "w": 468.8,
           "h": 268.4
@@ -10959,7 +10959,7 @@
           "h": 26
         },
         "1440": {
-          "x": 292,
+          "x": 298.3,
           "y": 3145.9,
           "w": 396.8,
           "h": 26
@@ -10993,8 +10993,8 @@
       "attrs": {
         "style": "font-size: clamp(16px, 1.5vw, 18px); line-height: 1.6; margin: 12px 0px 0px; text-wrap: pretty;"
       },
-      "words": "Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. We highly recommend.",
-      "allText": "Since starting with Indus Foods back in the early 2000s, they have consistently supplied us with the best of the UK. We ",
+      "words": "Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ago and have not looked back.",
+      "allText": "Their delivery is always on time and the product range is unmatched. We switched from our previous supplier 3 years ago ",
       "srcLine": 377,
       "membership": [
         {
@@ -11020,7 +11020,7 @@
           "h": 51.2
         },
         "1440": {
-          "x": 292,
+          "x": 298.3,
           "y": 3183.9,
           "w": 396.8,
           "h": 86.4
@@ -11055,7 +11055,7 @@
         "style": "display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 22px;"
       },
       "words": "",
-      "allText": "Restaurant ownerFoodservice customer",
+      "allText": "Store managerRetail customer",
       "srcLine": 378,
       "membership": [
         {
@@ -11081,7 +11081,7 @@
           "h": 58
         },
         "1440": {
-          "x": 292,
+          "x": 298.3,
           "y": 3292.3,
           "w": 396.8,
           "h": 58
@@ -11142,7 +11142,7 @@
           "h": 58
         },
         "1440": {
-          "x": 387.5,
+          "x": 405.7,
           "y": 3292.3,
           "w": 58,
           "h": 58
@@ -11201,7 +11201,7 @@
           "h": 54
         },
         "1440": {
-          "x": 389.5,
+          "x": 407.7,
           "y": 3294.3,
           "w": 54,
           "h": 54
@@ -11235,7 +11235,7 @@
         "style": "text-align: left; min-width: 0px;"
       },
       "words": "",
-      "allText": "Restaurant ownerFoodservice customer",
+      "allText": "Store managerRetail customer",
       "srcLine": 380,
       "membership": [
         {
@@ -11261,9 +11261,9 @@
           "h": 47.3
         },
         "1440": {
-          "x": 459.5,
+          "x": 477.7,
           "y": 3297.7,
-          "w": 133.7,
+          "w": 110,
           "h": 47.3
         }
       },
@@ -11295,8 +11295,8 @@
       "attrs": {
         "style": "display: block; font-weight: 700; font-size: 17px; color: rgb(10, 110, 147);"
       },
-      "words": "Restaurant owner",
-      "allText": "Restaurant owner",
+      "words": "Store manager",
+      "allText": "Store manager",
       "srcLine": 380,
       "membership": [
         {
@@ -11322,9 +11322,9 @@
           "h": 26.3
         },
         "1440": {
-          "x": 459.5,
+          "x": 477.7,
           "y": 3297.7,
-          "w": 133.7,
+          "w": 110,
           "h": 26.3
         }
       },
@@ -11356,8 +11356,8 @@
       "attrs": {
         "style": "display: block; font-size: 13.5px; font-weight: 600; color: rgb(44, 62, 80);"
       },
-      "words": "Foodservice customer",
-      "allText": "Foodservice customer",
+      "words": "Retail customer",
+      "allText": "Retail customer",
       "srcLine": 380,
       "membership": [
         {
@@ -11383,9 +11383,9 @@
           "h": 20.9
         },
         "1440": {
-          "x": 459.5,
+          "x": 477.7,
           "y": 3324,
-          "w": 133.7,
+          "w": 110,
           "h": 20.9
         }
       },
@@ -11540,7 +11540,7 @@
       "tpl": 286,
       "attrs": {
         "aria-label": "Show testimonial",
-        "style": "width: 28px; height: 8px; padding: 0px; border-radius: 999px; border: 0px; background: rgb(216, 202, 80); cursor: pointer; transition: width 0.3s, background 0.3s;"
+        "style": "width: 8px; height: 8px; padding: 0px; border-radius: 999px; border: 0px; background: rgba(255, 255, 255, 0.5); cursor: pointer; transition: width 0.3s, background 0.3s;"
       },
       "words": "",
       "allText": "",
@@ -11577,7 +11577,7 @@
         "1440": {
           "x": 452.4,
           "y": 3404.3,
-          "w": 28,
+          "w": 13.2,
           "h": 8
         }
       },
@@ -11608,7 +11608,7 @@
       "tpl": 286,
       "attrs": {
         "aria-label": "Show testimonial",
-        "style": "width: 8px; height: 8px; padding: 0px; border-radius: 999px; border: 0px; background: rgba(255, 255, 255, 0.5); cursor: pointer; transition: width 0.3s, background 0.3s;"
+        "style": "width: 28px; height: 8px; padding: 0px; border-radius: 999px; border: 0px; background: rgb(216, 202, 80); cursor: pointer; transition: width 0.3s, background 0.3s;"
       },
       "words": "",
       "allText": "",
@@ -11643,9 +11643,9 @@
           "h": 8
         },
         "1440": {
-          "x": 488.4,
+          "x": 473.6,
           "y": 3404.3,
-          "w": 8,
+          "w": 22.8,
           "h": 8
         }
       },
@@ -11829,19 +11829,19 @@
       "box": {
         "375": {
           "x": 20,
-          "y": 5731.4,
+          "y": 5731.9,
           "w": 335,
           "h": 170
         },
         "768": {
           "x": 32,
-          "y": 4476.3,
+          "y": 4477.3,
           "w": 704,
           "h": 200
         },
         "1440": {
           "x": 852.8,
-          "y": 3101.2,
+          "y": 3104.5,
           "w": 387.2,
           "h": 300
         }
@@ -11891,19 +11891,19 @@
       "box": {
         "375": {
           "x": 102.5,
-          "y": 5731.4,
+          "y": 5731.9,
           "w": 170,
           "h": 170
         },
         "768": {
           "x": 284,
-          "y": 4476.3,
+          "y": 4477.3,
           "w": 200,
           "h": 200
         },
         "1440": {
           "x": 896.4,
-          "y": 3101.2,
+          "y": 3104.5,
           "w": 300,
           "h": 300
         }
@@ -11950,19 +11950,19 @@
       "box": {
         "375": {
           "x": 108.5,
-          "y": 5737.4,
+          "y": 5737.9,
           "w": 158,
           "h": 158
         },
         "768": {
           "x": 290,
-          "y": 4482.3,
+          "y": 4483.3,
           "w": 188,
           "h": 188
         },
         "1440": {
           "x": 902.4,
-          "y": 3107.2,
+          "y": 3110.5,
           "w": 288,
           "h": 288
         }

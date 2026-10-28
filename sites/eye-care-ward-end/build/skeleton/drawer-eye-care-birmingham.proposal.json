@@ -1,5 +1,5 @@
 {
-	"generated": "2026-10-27T16:09:08.926Z",
+	"generated": "2026-10-28T06:45:50.912Z",
 	"inventory": "2026-10-27T13:39:52.862Z",
 	"source": "http://127.0.0.1:63054/Eye%20Care%20Birmingham.dc.html",
 	"surface": "mobile-menu",
@@ -192,7 +192,12 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<nav style=\"display:flex;flex-direction:column;margin-top:32px;font-family:'Playfair Display',serif;font-weight:500;font-size:34px\" data-dc-tpl=\"1169\"> <a href=\"#\" sc-camel-on-click=\"{{ goSun }}\" style=\"padding:14px 0;border-bottom:1px solid #E6E1DA;animation:rise .5s both;animation-delay:.05s\" data-dc-tpl=\"1170\">Sunglasses</a> <a href=\"#\" sc-camel-on-click=\"{{ goBrands }}\" style=\"padding:14px 0;b",
-			"attributes": {}
+			"attributes": {
+				"ref": 30
+			},
+			"carried": {
+				"ref": "menu-map.json: the drawer menu"
+			}
 		},
 		{
 			"order": 5,
@@ -326,7 +331,12 @@
 			"parts": [],
 			"screenshots": {},
 			"snippet": "<nav style=\"display:flex;flex-direction:column;gap:14px;margin-top:28px;font-size:15px;letter-spacing:.04em;animation:rise .5s both;animation-delay:.3s\" data-dc-tpl=\"1175\"> <a href=\"#\" sc-camel-on-click=\"{{ goAbout }}\" data-dc-tpl=\"1176\">About Eye Care</a> <a href=\"#\" sc-camel-on-click=\"{{ goHelp }}\" data-dc-tpl=\"1177\">Delivery, returns &amp; FAQs</a> <button sc-camel-on-click=\"{{ openSizeGuide }}",
-			"attributes": {}
+			"attributes": {
+				"ref": 30
+			},
+			"carried": {
+				"ref": "menu-map.json: the drawer menu"
+			}
 		},
 		{
 			"order": 11,

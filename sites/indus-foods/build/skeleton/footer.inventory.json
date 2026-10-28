@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-27T16:39:10.106Z",
-  "source": "http://127.0.0.1:58069/",
+  "generated": "2026-10-28T06:47:39.828Z",
+  "source": "http://127.0.0.1:57270/",
   "root": "footer",
   "beside": [
     {
@@ -85,7 +85,7 @@
       {
         "tag": "span",
         "cls": "sc-interp",
-        "text": "Open now"
+        "text": "Closed"
       },
       {
         "tag": "span",
@@ -130,7 +130,7 @@
       {
         "tag": "span",
         "cls": "sc-interp",
-        "text": "Closes at 5pm today"
+        "text": "Opens at 9:30am"
       },
       {
         "tag": "svg",
@@ -1462,7 +1462,7 @@
         "style": "position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 26px; border-radius: 22px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); color: rgb(255, 255, 255); transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s, border-color 0.3s, box-shadow 0.3s; flex-direction: column; grid-column: auto;"
       },
       "words": "",
-      "allText": "Opening hours Open now Monday – Thursday9:30am – 5pm Friday9:30am – 12pm, 2:30 – 5pm Saturday10am – 3pm SundayClosed Clo",
+      "allText": "Opening hours Closed Monday – Thursday9:30am – 5pm Friday9:30am – 12pm, 2:30 – 5pm Saturday10am – 3pm SundayClosed Opens",
       "srcLine": 952,
       "membership": [],
       "srcTag": "div",
@@ -1517,7 +1517,7 @@
         "style": "display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;"
       },
       "words": "",
-      "allText": "Opening hours Open now",
+      "allText": "Opening hours Closed",
       "srcLine": 953,
       "membership": [],
       "srcTag": "div",
@@ -1623,10 +1623,10 @@
       "template": "Root",
       "tpl": 673,
       "attrs": {
-        "style": "display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; padding: 5px 12px; border-radius: 999px; background: rgba(120, 200, 120, 0.16); color: rgb(184, 240, 184); white-space: nowrap;"
+        "style": "display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; padding: 5px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); color: rgb(255, 255, 255); white-space: nowrap;"
       },
-      "words": "Open now",
-      "allText": "Open now",
+      "words": "Closed",
+      "allText": "Closed",
       "srcLine": 955,
       "membership": [],
       "srcTag": "span",
@@ -1634,21 +1634,21 @@
       "snippet": "<span style=\"display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;padding:5px 12px;border-radius:999px;background:{{ hoursNow.bg }};color:{{ hoursNow.fg }};white-space:nowrap;\" data-dc-tpl=\"673\"><span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>{{ hoursNow.label }}</s",
       "box": {
         "375": {
-          "x": 225.8,
+          "x": 246.7,
           "y": 7684.5,
-          "w": 102.2,
+          "w": 81.3,
           "h": 31.7
         },
         "768": {
-          "x": 606.8,
+          "x": 627.7,
           "y": 6045.8,
-          "w": 102.2,
+          "w": 81.3,
           "h": 31.7
         },
         "1440": {
-          "x": 1170.8,
+          "x": 1191.6,
           "y": 4556.8,
-          "w": 102.2,
+          "w": 81.3,
           "h": 31.7
         }
       },
@@ -1678,7 +1678,7 @@
       "template": "Root",
       "tpl": 674,
       "attrs": {
-        "style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(110, 224, 122); color: rgb(110, 224, 122);"
+        "style": "width: 8px; height: 8px; border-radius: 50%; background: rgb(232, 161, 58); color: rgb(232, 161, 58);"
       },
       "words": "",
       "allText": "",
@@ -1689,19 +1689,19 @@
       "snippet": "<span ref=\"{{ setPulseEl }}\" style=\"width:8px;height:8px;border-radius:50%;background:{{ hoursNow.dot }};color:{{ hoursNow.dot }};\" data-dc-tpl=\"674\"></span>",
       "box": {
         "375": {
-          "x": 237.8,
+          "x": 258.7,
           "y": 7696.3,
           "w": 8,
           "h": 8
         },
         "768": {
-          "x": 618.8,
+          "x": 639.7,
           "y": 6057.6,
           "w": 8,
           "h": 8
         },
         "1440": {
-          "x": 1182.8,
+          "x": 1203.6,
           "y": 4568.7,
           "w": 8,
           "h": 8
@@ -2521,8 +2521,8 @@
       "attrs": {
         "style": "font-size: 15px; color: rgb(201, 212, 222);"
       },
-      "words": "Closes at 5pm today",
-      "allText": "Closes at 5pm today",
+      "words": "Opens at 9:30am",
+      "allText": "Opens at 9:30am",
       "srcLine": 962,
       "membership": [],
       "srcTag": "span",
@@ -2532,19 +2532,19 @@
         "375": {
           "x": 47,
           "y": 7903.3,
-          "w": 126,
+          "w": 104.8,
           "h": 23.3
         },
         "768": {
           "x": 59,
           "y": 6264.6,
-          "w": 126,
+          "w": 104.8,
           "h": 23.3
         },
         "1440": {
           "x": 915.2,
           "y": 4775.7,
-          "w": 126,
+          "w": 104.8,
           "h": 23.3
         }
       },

@@ -177,7 +177,8 @@
 						"name": "sgs/container",
 						"attributes": {
 							"tagName": "aside",
-							"layout": "stack"
+							"anchor": "sgs-shop-filters",
+							"className": "sgs-shop-filters"
 						},
 						"draftRef": {
 							"tpl": "Root/271#0"
@@ -195,2159 +196,456 @@
 						},
 						"innerBlocks": [
 							{
-								"name": "sgs/container",
-								"attributes": {
-									"tagName": "div",
-									"layout": "stack"
-								},
-								"draftRef": {
-									"tpl": "Root/276#0"
-								},
-								"draftFingerprint": {
-									"tag": "div",
-									"cls": "",
-									"styleHash": "2741ddd9",
-									"parentTags": [
-										"main",
-										"div",
-										"aside"
-									],
-									"textHash": "1505",
-									"line": 945
-								},
+								"name": "woocommerce/product-filters",
+								"attributes": {},
 								"innerBlocks": [
 									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#0"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
+										"name": "woocommerce/product-filter-active",
+										"attributes": {},
 										"innerBlocks": [
 											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#0"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Gender"
-														},
-														"draftRef": {
-															"tpl": "Root/280#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "98d85eba",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/281#0"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root/283#0"
-															}
-														}
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/286#0"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "8830042a",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 956
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/multi-button",
-														"attributes": {
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/288#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "dbc018c2",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 958
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "All"
-																},
-																"draftRef": {
-																	"tpl": "Root/290#0"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "",
-																	"styleHash": "5c79b3ae",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "b87b364",
-																	"line": 960
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Women"
-																},
-																"draftRef": {
-																	"tpl": "Root/290#1"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "",
-																	"styleHash": "bf730d84",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "d8630fb",
-																	"line": 960
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Men"
-																},
-																"draftRef": {
-																	"tpl": "Root/290#2"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "",
-																	"styleHash": "bf730d84",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "b87c443",
-																	"line": 960
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#1"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#1"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Size"
-														},
-														"draftRef": {
-															"tpl": "Root/280#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "7c8a2900",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/281#1"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root/283#1"
-															}
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#2"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#2"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Colour"
-														},
-														"draftRef": {
-															"tpl": "Root/280#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "a1c185ad",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/281#2"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root/283#2"
-															}
-														}
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/286#1"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "8830042a",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 956
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/multi-button",
-														"attributes": {
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/298#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "706d0c0e",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 975
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#0"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "d702e8f3",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#1"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "dc53c1e4",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#2"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "be38f7e1",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#3"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "53205062",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#4"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "e3c3d148",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#5"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "f22c6742",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#6"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "ee6e99e7",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#7"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "ba9ac1a1",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#8"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "39758a1f",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#9"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "1ae9c327",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#10"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "c9220854",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {},
-																"draftRef": {
-																	"tpl": "Root/300#11"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scpi",
-																	"styleHash": "2172314e",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "1505",
-																	"line": 977
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#3"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#3"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Price"
-														},
-														"draftRef": {
-															"tpl": "Root/280#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "dd328c8",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/281#3"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "up to £340"
-																},
-																"draftRef": {
-																	"tpl": "Root/282#3"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "f185ac83",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"button",
-																		"span"
-																	],
-																	"textHash": "9310c0af",
-																	"line": 951
-																},
-																"innerBlocks": []
-															}
-														],
-														"draftSlots": {
-															".sgs-container__svg-bg > svg": {
-																"tpl": "Root/283#3"
-															}
-														}
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/286#2"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "8830042a",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 956
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/form-field-text",
-														"attributes": {
-															"label": "£59",
-															"helpText": "£339"
-														},
-														"draftRef": {
-															"tpl": "Root/302#0"
-														},
-														"draftFingerprint": {
-															"tag": "input",
-															"cls": "",
-															"styleHash": "ce47e72d",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 982
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-form-field__input": {
-																"tpl": "Root/302#0"
-															}
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#4"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#4"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Brand"
-														},
-														"draftRef": {
-															"tpl": "Root/280#4"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "c9eeb7e",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/281#4"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "40"
-																},
-																"draftRef": {
-																	"tpl": "Root/282#4"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "f185ac83",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"button",
-																		"span"
-																	],
-																	"textHash": "596781",
-																	"line": 951
-																},
-																"innerBlocks": []
-															}
-														],
-														"draftSlots": {
-															".sgs-container__svg-bg > svg": {
-																"tpl": "Root/283#4"
-															}
-														}
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/286#3"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "8830042a",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 956
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/form-field-text",
-														"attributes": {
-															"label": "48",
-															"helpText": "Ray-Ban Gucci 44 Oakley 17 Prada 12 Versace 11 Dolce & Gabbana 9 Balenciaga 7 Michael Kors 18 Polaroid 12 Police 10 Carrera 9 Ferrari Scuderia 6 Emporio Armani 22 Coach 18 Ralph Lauren 16 Diesel 14 Adidas Originals 4 Barbour 3 Calvin Klein 6 Chloé 5 David Beckham 4 DKNY 3 Dsquared2 4 Farah 2 Fila 3 Giorgio Armani 5 Hugo Boss 6 Lipsy 2 Marc Jacobs 4 MaxMara 3 Montblanc 3 Mulberry 3 Nike 4 O'Neill 3 Radley 3 Superdry 5 Swarovski 3 Tiffany 3 Tommy Hilfiger 5 Vogue 6"
-														},
-														"draftRef": {
-															"tpl": "Root/307#0"
-														},
-														"draftFingerprint": {
-															"tag": "input",
-															"cls": "",
-															"styleHash": "e91657d5",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 986
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-form-field__input": {
-																"tpl": "Root/307#0"
-															}
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#5"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#5"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Style"
-														},
-														"draftRef": {
-															"tpl": "Root/280#5"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "dc153f2",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/container",
-														"attributes": {
-															"tagName": "div",
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/281#5"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/text",
-																"attributes": {
-																	"text": "12"
-																},
-																"draftRef": {
-																	"tpl": "Root/282#5"
-																},
-																"draftFingerprint": {
-																	"tag": "span",
-																	"cls": "",
-																	"styleHash": "f185ac83",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"button",
-																		"span"
-																	],
-																	"textHash": "596826",
-																	"line": 951
-																},
-																"innerBlocks": []
-															}
-														],
-														"draftSlots": {
-															".sgs-container__svg-bg > svg": {
-																"tpl": "Root/283#5"
-															}
-														}
-													}
-												]
-											},
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div"
-												},
-												"draftRef": {
-													"tpl": "Root/286#4"
-												},
-												"draftFingerprint": {
-													"tag": "div",
-													"cls": "",
-													"styleHash": "8830042a",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 956
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/multi-button",
-														"attributes": {
-															"layout": "flex"
-														},
-														"draftRef": {
-															"tpl": "Root/292#0"
-														},
-														"draftFingerprint": {
-															"tag": "div",
-															"cls": "",
-															"styleHash": "2a2f14b5",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"div"
-															],
-															"textHash": "1505",
-															"line": 965
-														},
-														"innerBlocks": [
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Pilot"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#0"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "ddd662b",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Wayfarer"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#1"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "b422eee8",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Square"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#2"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "c61daaa4",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Rectangle"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#3"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "19a84cc4",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Round"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#4"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "dba2507",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Oval"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#5"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "7c83b631",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Cat-eye"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#6"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "df536dc7",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Butterfly"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#7"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "e9e5b4d6",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Browline"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#8"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "b46db7c3",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Geometric"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#9"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "7162ad0c",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Shield"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#10"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "c7d4d93a",
-																	"line": 967
-																},
-																"innerBlocks": []
-															},
-															{
-																"name": "sgs/button",
-																"attributes": {
-																	"label": "Oversized"
-																},
-																"draftRef": {
-																	"tpl": "Root/294#11"
-																},
-																"draftFingerprint": {
-																	"tag": "button",
-																	"cls": "scph",
-																	"styleHash": "1ea55b31",
-																	"parentTags": [
-																		"main",
-																		"div",
-																		"aside",
-																		"div",
-																		"div",
-																		"div",
-																		"div"
-																	],
-																	"textHash": "927b5fea",
-																	"line": 967
-																},
-																"innerBlocks": []
-															}
-														]
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#6"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#6"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Material"
-														},
-														"draftRef": {
-															"tpl": "Root/280#6"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "326770ee",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/281#6"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root/283#6"
-															}
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#7"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#7"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Frame type"
-														},
-														"draftRef": {
-															"tpl": "Root/280#7"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "29b1e820",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/281#7"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root/283#7"
-															}
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#8"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#8"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Hinge"
-														},
-														"draftRef": {
-															"tpl": "Root/280#8"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "d4416a8",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/281#8"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root/283#8"
-															}
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div"
-										},
-										"draftRef": {
-											"tpl": "Root/278#9"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "35fd23a7",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 947
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/container",
-												"attributes": {
-													"tagName": "div",
-													"layout": "flex"
-												},
-												"draftRef": {
-													"tpl": "Root/279#9"
-												},
-												"draftFingerprint": {
-													"tag": "button",
-													"cls": "",
-													"styleHash": "932b83cc",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"div"
-													],
-													"textHash": "1505",
-													"line": 948
-												},
-												"innerBlocks": [
-													{
-														"name": "sgs/label",
-														"attributes": {
-															"text": "Nose pads"
-														},
-														"draftRef": {
-															"tpl": "Root/280#9"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "37576053",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "64f694b4",
-															"line": 949
-														},
-														"innerBlocks": []
-													},
-													{
-														"name": "sgs/icon",
-														"attributes": {},
-														"draftRef": {
-															"tpl": "Root/281#9"
-														},
-														"draftFingerprint": {
-															"tag": "span",
-															"cls": "",
-															"styleHash": "f4aede7b",
-															"parentTags": [
-																"main",
-																"div",
-																"aside",
-																"div",
-																"div",
-																"button"
-															],
-															"textHash": "1505",
-															"line": 950
-														},
-														"innerBlocks": [],
-														"draftSlots": {
-															".sgs-icon__shape > .sgs-icon__glyph > svg": {
-																"tpl": "Root/283#9"
-															}
-														}
-													}
-												]
-											}
-										]
-									},
-									{
-										"name": "sgs/container",
-										"attributes": {
-											"tagName": "div",
-											"layout": "flex"
-										},
-										"draftRef": {
-											"tpl": "Root/315#0"
-										},
-										"draftFingerprint": {
-											"tag": "label",
-											"cls": "",
-											"styleHash": "7a1d9069",
-											"parentTags": [
-												"main",
-												"div",
-												"aside",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 1004
-										},
-										"innerBlocks": [
-											{
-												"name": "sgs/label",
-												"attributes": {
-													"text": "Polarised only"
-												},
-												"draftRef": {
-													"tpl": "Root/316#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "37576053",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"label"
-													],
-													"textHash": "afe7efaa",
-													"line": 1005
-												},
+												"name": "woocommerce/product-filter-removable-chips",
+												"attributes": {},
 												"innerBlocks": []
 											},
 											{
-												"name": "sgs/container",
+												"name": "woocommerce/product-filter-clear-button",
+												"attributes": {},
+												"innerBlocks": [
+													{
+														"name": "sgs/button",
+														"attributes": {
+															"label": "Clear all",
+															"className": "wp-block-button__link"
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Gender",
+											"className": "sgs-shop-filters__group-heading sgs-filter-open"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "98d85eba",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Size",
+											"className": "sgs-shop-filters__group-heading"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#1"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "7c8a2900",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Colour",
+											"className": "sgs-shop-filters__group-heading sgs-filter-open sgs-filter-swatches"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#2"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "a1c185ad",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Price",
+											"className": "sgs-shop-filters__group-heading sgs-filter-open"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#3"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "dd328c8",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-price",
+										"attributes": {},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-price-slider",
 												"attributes": {
-													"tagName": "div"
+													"showInputFields": false
 												},
-												"draftRef": {
-													"tpl": "Root/317#0"
-												},
-												"draftFingerprint": {
-													"tag": "span",
-													"cls": "",
-													"styleHash": "2efc9c24",
-													"parentTags": [
-														"main",
-														"div",
-														"aside",
-														"div",
-														"label"
-													],
-													"textHash": "1505",
-													"line": 1006
-												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Brand",
+											"className": "sgs-shop-filters__group-heading sgs-filter-open"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#4"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "c9eeb7e",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-taxonomy",
+										"attributes": {
+											"taxonomy": "product_brand",
+											"displayStyle": "woocommerce/product-filter-checkbox-list",
+											"showCounts": true
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-checkbox-list",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Style",
+											"className": "sgs-shop-filters__group-heading sgs-filter-open"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#5"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "dc153f2",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Material",
+											"className": "sgs-shop-filters__group-heading"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#6"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "326770ee",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Frame type",
+											"className": "sgs-shop-filters__group-heading"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#7"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "29b1e820",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Hinge",
+											"className": "sgs-shop-filters__group-heading"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#8"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "d4416a8",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/heading",
+										"attributes": {
+											"level": "h3",
+											"content": "Nose pads",
+											"className": "sgs-shop-filters__group-heading"
+										},
+										"innerBlocks": [],
+										"draftRef": {
+											"tpl": "Root/280#9"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "37576053",
+											"parentTags": [
+												"main",
+												"div",
+												"aside",
+												"div",
+												"div",
+												"button"
+											],
+											"textHash": "64f694b4",
+											"line": 949
+										}
+									},
+									{
+										"name": "woocommerce/product-filter-attribute",
+										"attributes": {
+											"queryType": "or",
+											"showCounts": true,
+											"sortOrder": "menu_order-asc",
+											"displayStyle": "woocommerce/product-filter-chips"
+										},
+										"innerBlocks": [
+											{
+												"name": "woocommerce/product-filter-chips",
+												"attributes": {},
 												"innerBlocks": []
 											}
 										]

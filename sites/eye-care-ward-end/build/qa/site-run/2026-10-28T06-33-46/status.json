@@ -1,0 +1,645 @@
+{
+  "product": {
+    "inventory": {
+      "ok": true,
+      "seconds": 72,
+      "detail": "336 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 3,
+      "detail": "241 nodes, 66 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 263,
+      "detail": "fill product: 1755 settings written, 595 UNMAPPED, 12 handover, 0 fluid, 626 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\product\\2026-10-28T06-35-04\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 58,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//single-product\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1035,
+      "detail": "report written (exit 1: product: 1855 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\product\\report.md, contact)"
+    }
+  },
+  "home": {
+    "inventory": {
+      "ok": true,
+      "seconds": 103,
+      "detail": "545 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 2,
+      "detail": "485 nodes, 129 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 616,
+      "detail": "fill home: 3975 settings written, 1916 UNMAPPED, 43 handover, 0 fluid, 480 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\home\\2026-10-28T06-35-34\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 73,
+      "detail": "{\"ok\":true,\"id\":104,\"link\":\"http://localhost:8081/\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-104-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 5440,
+      "detail": "report written (exit 1: home: 14232 open, 372 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\home\\report.md, contact sh)"
+    }
+  },
+  "shop": {
+    "inventory": {
+      "ok": true,
+      "seconds": 111,
+      "detail": "733 elements"
+    },
+    "propose": {
+      "ok": false,
+      "seconds": 1,
+      "detail": "Root/271#0: the filter for facet gender carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it); Root/271#0: the filter for facet size-filter carries no attributeId: catalogue.json records no attributes for local-eye-care or eye-care-clone-test (run site-build.mjs --catalogue --apply on it); Root/271#0: the filter for facet colour carries no attributeId: catalogue.json records no attributes for local-ey"
+    }
+  },
+  "prescription-lenses": {
+    "inventory": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "48 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "48 nodes, 18 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 76,
+      "detail": "fill prescription-lenses: 195 settings written, 84 UNMAPPED, 0 handover, 0 fluid, 114 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\prescription-lenses\\2026-10-28T06-36-08\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 22,
+      "detail": "{\"ok\":true,\"id\":107,\"link\":\"http://localhost:8081/prescription-lenses/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 199,
+      "detail": "report written (exit 1: prescription-lenses: 414 open, 68 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\prescription-l)"
+    }
+  },
+  "about": {
+    "inventory": {
+      "ok": true,
+      "seconds": 24,
+      "detail": "26 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "18 nodes, 4 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 63,
+      "detail": "fill about: 110 settings written, 30 UNMAPPED, 0 handover, 0 fluid, 21 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\about\\2026-10-28T06-37-49\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 22,
+      "detail": "{\"ok\":true,\"id\":109,\"link\":\"http://localhost:8081/about/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 151,
+      "detail": "report written (exit 1: about: 519 open, 20 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\about\\report.md, contact she)"
+    }
+  },
+  "help": {
+    "inventory": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "59 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "59 nodes, 20 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 78,
+      "detail": "fill help: 349 settings written, 135 UNMAPPED, 2 handover, 0 fluid, 33 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\help\\2026-10-28T06-39-19\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 53,
+      "detail": "{\"ok\":true,\"id\":111,\"link\":\"http://localhost:8081/help/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 320,
+      "detail": "report written (exit 1: help: 563 open, 54 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\help\\report.md, contact sheet)"
+    }
+  },
+  "contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 28,
+      "detail": "74 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "23 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 68,
+      "detail": "fill contact: 175 settings written, 64 UNMAPPED, 1 handover, 0 fluid, 41 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\contact\\2026-10-28T06-39-56\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 53,
+      "detail": "{\"ok\":true,\"id\":113,\"link\":\"http://localhost:8081/contact/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 226,
+      "detail": "report written (exit 1: contact: 786 open, 30 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\contact\\report.md, contact)"
+    }
+  },
+  "checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 30,
+      "detail": "73 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "67 nodes, 19 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own checkout page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own checkout page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: WooCommerce's own checkout page keeps WooCommerce's content (its layout is the template-<slug> surface)"
+    }
+  },
+  "cart": {
+    "skipped": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "no draft page: WooCommerce's own cart page keeps its block"
+    }
+  },
+  "form-submit-contact": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "17 elements (intake's inventory, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "11 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 366,
+      "detail": "fill form-submit-contact: 39 settings written, 80 UNMAPPED, 0 handover, 0 fluid, 52 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\form-submit-contact\\2026-10-28T06-41-08\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 32,
+      "detail": "{\"ok\":true,\"id\":116,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 199,
+      "detail": "report written (exit 1: form-submit-contact: 200 open, 5 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\form-submit-con)"
+    }
+  },
+  "my-account": {
+    "inventory": {
+      "ok": true,
+      "seconds": 23,
+      "detail": "27 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "6 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 53,
+      "detail": "fill my-account: 24 settings written, 11 UNMAPPED, 0 handover, 0 fluid, 6 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\my-account\\2026-10-28T06-41-27\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 28,
+      "detail": "{\"ok\":true,\"id\":9,\"link\":\"http://localhost:8081/my-account/\",\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 102,
+      "detail": "report written (exit 1: my-account: 158 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\my-account\\report.md, co)"
+    }
+  },
+  "header": {
+    "inventory": {
+      "ok": true,
+      "seconds": 25,
+      "detail": "60 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "23 nodes, 10 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 115,
+      "detail": "fill header: 238 settings written, 184 UNMAPPED, 5 handover, 0 fluid, 86 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\header\\2026-10-28T06-42-46\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 45,
+      "detail": "{\"ok\":true,\"id\":137,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}; active header: 137 (already)"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 1143,
+      "detail": "report written (exit 1: header: 2091 open, 84 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\header\\report.md, contact )"
+    }
+  },
+  "footer": {
+    "inventory": {
+      "ok": true,
+      "seconds": 25,
+      "detail": "40 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "23 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 97,
+      "detail": "fill footer: 142 settings written, 81 UNMAPPED, 13 handover, 0 fluid, 83 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\footer\\2026-10-28T06-45-06\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 30,
+      "detail": "{\"ok\":true,\"id\":139,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}; active footer: 139 (already)"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 406,
+      "detail": "report written (exit 1: footer: 832 open, 36 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\footer\\report.md, contact s)"
+    }
+  },
+  "drawer-eye-care-birmingham": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "30 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "13 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 98,
+      "detail": "fill drawer-eye-care-birmingham: 114 settings written, 59 UNMAPPED, 2 handover, 0 fluid, 1 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\drawer-eye-care-birmingham\\2026-10-28T06-45-50\\fill-report.md (state \"open\" open at 375, 768, 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 28,
+      "detail": "{\"ok\":true,\"id\":141,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}; active drawer: 141 (already)"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 385,
+      "detail": "report written (exit 1: drawer-eye-care-birmingham: 757 open, 42 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\drawer-)"
+    }
+  },
+  "modal-size-guide": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "42 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "36 nodes, 16 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 100,
+      "detail": "fill modal-size-guide: 214 settings written, 57 UNMAPPED, 0 handover, 0 fluid, 5 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\modal-size-guide\\2026-10-28T06-46-43\\fill-report.md (state \"open\" open at 375, 768, 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 33,
+      "detail": "{\"ok\":true,\"id\":118,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 346,
+      "detail": "report written (exit 1: live open at 1440px: no .cr-ref-modal-size-guide-0 on the page | live open at 768px: no .cr-ref-modal-size-guide-0 on the page | live open at 375px: no .cr-ref-modal-size-guide-0 on the page |)"
+    }
+  },
+  "flow-choice-flow-add-prescription-lenses": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "103 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "22 nodes, 0 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 158,
+      "detail": "fill flow-choice-flow-add-prescription-lenses: 12 settings written, 94 UNMAPPED, 9 handover, 0 fluid, 16 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\flow-choice-flow-add-prescription-lenses\\2026-10-28T06-47-14\\fill-report.md (state \"open, side-by-side\" open at 375, 768, 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 35,
+      "detail": "{\"ok\":true,\"id\":120,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":false,\"changedOnReload\":false}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 378,
+      "detail": "report written (exit 1: live open at 768px: no .cr-ref-flow-choice-flow-add-prescription-lenses-0 on the page | live open at 375px: no .cr-ref-flow-choice-flow-add-prescription-lenses-0 on the page | live open at 375)"
+    }
+  },
+  "mega-menu-sunglasses": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "33 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "2 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 82,
+      "detail": "fill mega-menu-sunglasses: 13 settings written, 25 UNMAPPED, 0 handover, 0 fluid, 2 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\mega-menu-sunglasses\\2026-10-28T06-47-28\\fill-report.md (state \"Sunglasses\" open at 375, 768, 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 44,
+      "detail": "{\"ok\":true,\"id\":123,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-123-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 185,
+      "detail": "report written (exit 1: mega-menu-sunglasses: 336 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\mega-menu-sung)"
+    }
+  },
+  "mega-menu-brands": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "33 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "2 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 83,
+      "detail": "fill mega-menu-brands: 8 settings written, 23 UNMAPPED, 0 handover, 0 fluid, 4 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\mega-menu-brands\\2026-10-28T06-48-24\\fill-report.md (state \"Brands\" open at 375, 768, 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 32,
+      "detail": "{\"ok\":true,\"id\":125,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-125-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 216,
+      "detail": "report written (exit 1: mega-menu-brands: 332 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\mega-menu-brands\\r)"
+    }
+  },
+  "mega-menu-lenses": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "33 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "2 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 87,
+      "detail": "fill mega-menu-lenses: 9 settings written, 25 UNMAPPED, 0 handover, 0 fluid, 7 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\mega-menu-lenses\\2026-10-28T06-48-50\\fill-report.md (state \"Lenses\" open at 375, 768, 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 36,
+      "detail": "{\"ok\":true,\"id\":127,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-127-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 168,
+      "detail": "report written (exit 1: mega-menu-lenses: 292 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\mega-menu-lenses\\r)"
+    }
+  },
+  "mega-menu-help": {
+    "inventory": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "33 elements (intake's inventory with the state open, in the served key space)"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "2 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 80,
+      "detail": "fill mega-menu-help: 9 settings written, 25 UNMAPPED, 0 handover, 0 fluid, 7 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\mega-menu-help\\2026-10-28T06-49-47\\fill-report.md (state \"Help\" open at 375, 768, 1024, 1440, 1920px)"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 35,
+      "detail": "{\"ok\":true,\"id\":129,\"link\":null,\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"diffFile\":\"C:\\\\Users\\\\Bean\\\\AppData\\\\Local\\\\Temp\\\\wp-build-page-129-diff.json\"}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 166,
+      "detail": "report written (exit 1: mega-menu-help: 280 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\mega-menu-help\\repor)"
+    }
+  },
+  "template-checkout": {
+    "inventory": {
+      "ok": true,
+      "seconds": 32,
+      "detail": "73 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 1,
+      "detail": "67 nodes, 19 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 170,
+      "detail": "fill template-checkout: 340 settings written, 483 UNMAPPED, 1 handover, 0 fluid, 98 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\template-checkout\\2026-10-28T06-50-25\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 62,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//checkout\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 194,
+      "detail": "report written (exit 1: template-checkout: 366 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\template-checkout)"
+    }
+  },
+  "template-order-confirmation": {
+    "inventory": {
+      "ok": true,
+      "seconds": 21,
+      "detail": "6 elements"
+    },
+    "propose": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "6 nodes, 1 low"
+    },
+    "fill": {
+      "ok": true,
+      "seconds": 55,
+      "detail": "fill template-order-confirmation: 35 settings written, 13 UNMAPPED, 0 handover, 0 fluid, 9 breakpoint steps. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\fill\\template-order-confirmation\\2026-10-28T06-50-38\\fill-report.md"
+    },
+    "build": {
+      "ok": true,
+      "seconds": 59,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//order-confirmation\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 137,
+      "detail": "report written (exit 1: template-order-confirmation: 292 open, 0 accepted, 0 shots unreviewed, 0 live console errors. Report: C:\\Users\\Bean\\Projects\\small-giants-wp\\sites\\eye-care-ward-end\\build\\qa\\parity\\out\\templat)"
+    }
+  },
+  "template-front-page": {
+    "build": {
+      "ok": true,
+      "seconds": 27,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//front-page\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (home)"
+    }
+  },
+  "template-page": {
+    "build": {
+      "ok": true,
+      "seconds": 51,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//page\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: walked with its pages (prescription-lenses, about, help, contact, my-account)"
+    }
+  },
+  "template-search": {
+    "build": {
+      "ok": true,
+      "seconds": 74,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//search\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-404": {
+    "build": {
+      "ok": true,
+      "seconds": 66,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//404\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-product-search-results": {
+    "build": {
+      "ok": true,
+      "seconds": 61,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//product-search-results\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-taxonomy-product_attribute": {
+    "build": {
+      "ok": true,
+      "seconds": 58,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//taxonomy-product_attribute\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  },
+  "template-cart": {
+    "build": {
+      "ok": true,
+      "seconds": 58,
+      "detail": "{\"ok\":true,\"id\":\"sgs-theme//cart\",\"source\":\"custom\",\"invalid\":[],\"normalisedOnFirstLoad\":true,\"changedOnReload\":false,\"retried\":[],\"code\":6}"
+    },
+    "walk": {
+      "ok": true,
+      "seconds": 0,
+      "detail": "skipped: no draft surface plays it"
+    }
+  }
+}

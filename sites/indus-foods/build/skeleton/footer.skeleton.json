@@ -403,17 +403,15 @@
 										"innerBlocks": []
 									},
 									{
-										"name": "sgs/business-info",
-										"attributes": {
-											"displayType": "open-status"
-										},
+										"name": "sgs/label",
+										"attributes": {},
 										"draftRef": {
 											"tpl": "Root/673#0"
 										},
 										"draftFingerprint": {
 											"tag": "span",
 											"cls": "",
-											"styleHash": "917d85ef",
+											"styleHash": "89f864fd",
 											"parentTags": [
 												"footer",
 												"div",
@@ -421,7 +419,7 @@
 												"div",
 												"div"
 											],
-											"textHash": "80c90947",
+											"textHash": "a23d92d7",
 											"line": 955
 										},
 										"innerBlocks": []
@@ -475,83 +473,31 @@
 											"line": 959
 										},
 										"innerBlocks": []
-									},
-									{
-										"name": "sgs/business-info",
-										"attributes": {
-											"displayType": "hours",
-											"hoursLayout": "rows"
-										},
-										"draftRef": {
-											"tpl": "Root/677#1"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "eb8ff691",
-											"parentTags": [
-												"footer",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 959
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/business-info",
-										"attributes": {
-											"displayType": "hours",
-											"hoursLayout": "rows"
-										},
-										"draftRef": {
-											"tpl": "Root/677#2"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "eb8ff691",
-											"parentTags": [
-												"footer",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 959
-										},
-										"innerBlocks": []
-									},
-									{
-										"name": "sgs/business-info",
-										"attributes": {
-											"displayType": "hours",
-											"hoursLayout": "rows"
-										},
-										"draftRef": {
-											"tpl": "Root/677#3"
-										},
-										"draftFingerprint": {
-											"tag": "div",
-											"cls": "",
-											"styleHash": "eb8ff691",
-											"parentTags": [
-												"footer",
-												"div",
-												"div",
-												"div",
-												"div"
-											],
-											"textHash": "1505",
-											"line": 959
-										},
-										"innerBlocks": []
 									}
 								]
+							},
+							{
+								"name": "sgs/business-info",
+								"attributes": {
+									"displayType": "open-status"
+								},
+								"draftRef": {
+									"tpl": "Root/680#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "2ab719e9",
+									"parentTags": [
+										"footer",
+										"div",
+										"div",
+										"div"
+									],
+									"textHash": "2210ee1b",
+									"line": 962
+								},
+								"innerBlocks": []
 							}
 						]
 					}

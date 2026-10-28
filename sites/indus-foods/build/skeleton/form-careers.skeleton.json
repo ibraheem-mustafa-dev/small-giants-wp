@@ -78,7 +78,7 @@
 						"name": "sgs/form-field-text",
 						"attributes": {
 							"label": "Full name",
-							"helpText": "Email Phone Team Role CV About you"
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/560#0"
@@ -105,8 +105,8 @@
 					{
 						"name": "sgs/form-field-email",
 						"attributes": {
-							"label": "Full name",
-							"helpText": "Email Phone Team Role CV About you"
+							"label": "Email",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/560#1"
@@ -133,8 +133,7 @@
 					{
 						"name": "sgs/form-field-phone",
 						"attributes": {
-							"label": "Full name",
-							"helpText": "Email Phone Team Role CV About you"
+							"label": "Phone"
 						},
 						"draftRef": {
 							"tpl": "Root/560#2"
@@ -161,8 +160,8 @@
 					{
 						"name": "sgs/form-field-select",
 						"attributes": {
-							"label": "Full name",
-							"helpText": "Email Phone Team Role CV About you"
+							"label": "Team",
+							"required": true
 						},
 						"draftRef": {
 							"tpl": "Root/562#0"
@@ -189,8 +188,7 @@
 					{
 						"name": "sgs/form-field-select",
 						"attributes": {
-							"label": "Full name",
-							"helpText": "Email Phone Team Role CV About you"
+							"label": "Role"
 						},
 						"draftRef": {
 							"tpl": "Root/562#1"
@@ -217,8 +215,7 @@
 					{
 						"name": "sgs/form-field-file",
 						"attributes": {
-							"label": "Full name",
-							"helpText": "Email Phone Team Role CV About you"
+							"label": "CV"
 						},
 						"draftRef": {
 							"tpl": "Root/568#0"
@@ -240,8 +237,7 @@
 					{
 						"name": "sgs/form-field-textarea",
 						"attributes": {
-							"label": "Full name",
-							"helpText": "Email Phone Team Role CV About you"
+							"label": "About you"
 						},
 						"draftRef": {
 							"tpl": "Root/566#0"
@@ -270,9 +266,8 @@
 			{
 				"name": "sgs/form-field-consent",
 				"attributes": {
-					"label": "Full name",
-					"required": true,
-					"helpText": "Register your interest Tell us about yourself and we’ll be in touch when a suitable role opens. Email Phone Team Role CV About you I agree to Indus Foods contacting me about this enquiry. Send application"
+					"label": "I agree to Indus Foods contacting me about this enquiry.",
+					"required": true
 				},
 				"draftRef": {
 					"tpl": "Root/570#0"
