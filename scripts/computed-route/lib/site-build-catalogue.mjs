@@ -32,7 +32,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { catalogueFile, loadCatalogue, productAddress } from './catalogue-read.mjs';
 import { catalogueProblems } from './intake-catalogue-run.mjs';
-import { PHOTO_TO_COME, catalogueApplyPhp, catalogueStatePhp } from './site-build-catalogue-php.mjs';
+import { PHOTO_TO_COME, catalogueApplyPhp, catalogueStatePhp, productBaseFlushPhp } from './site-build-catalogue-php.mjs';
 import { stockFileName, stockKey } from './media-stock.mjs';
 import { facetLack, facetSay, planFacets, tallyFacets, writtenFacets } from './site-build-catalogue-facets.mjs';
 import { runToggle } from './site-build-catalogue-toggle.mjs';
@@ -216,6 +216,26 @@ export function recordSite( repo, client, site, state, catalogue ) {
 	return Object.keys( made ).length;
 }
 
+// Flushes the rewrite rules in a request of its own after the new product base was saved, then proves the base took: the
+// stored rules hold the base, a product's address carries it and, when the site can call itself, answers 200. Returns ''
+// when proven, else the reason it is not.
+export function verifyProductBase( runPhp, base, draftIds ) {
+	const r = parseJson( runPhp( productBaseFlushPhp( base, draftIds ) ), 'the product base flush' );
+	if ( ! r.permalink ) {
+		return `no published catalogue product to prove /${ base } with`;
+	}
+	if ( ! r.rules ) {
+		return `after the flush the stored rewrite rules hold no /${ base }/ rule`;
+	}
+	if ( ! new URL( r.permalink ).pathname.startsWith( `/${ base }/` ) ) {
+		return `a product is at ${ r.permalink }, not under /${ base }/`;
+	}
+	if ( null !== r.http && 200 !== r.http ) {
+		return `${ r.permalink } answers ${ r.http }, not 200`;
+	}
+	return '';
+}
+
 // Runs the step: prints the plan, and with `apply` writes it, reads back and records the ids. Returns the exit code.
 export function runCatalogue( { repo, client, site, runPhp, apply, log = console.log, error = console.error } ) {
 	const catalogue = loadCatalogue( repo, client );
@@ -251,6 +271,10 @@ export function runCatalogue( { repo, client, site, runPhp, apply, log = console
 	const steps = plan.actions.filter( ( a ) => 'create' === a.action || 'complete' === a.action );
 	const done = parseJson( runPhp( catalogueApplyPhp( steps, images, uploadsFor( repo, images, state ), plan.productBase ? plan.productBase.to : null, catalogue ) ), 'the catalogue write' );
 	done.done.forEach( ( d ) => log( `  done: ${ d }` ) );
+	if ( plan.productBase ) {
+		const why = verifyProductBase( runPhp, plan.productBase.to, products( catalogue ).map( ( p ) => p.draftId ) );
+		why ? done.issues.push( `product base: ${ why }` ) : log( `  done: product base /${ plan.productBase.to } flushed; a product answers` );
+	}
 	done.issues.forEach( ( d ) => error( `  issue: ${ d }` ) );
 	const after = readCatalogueState( runPhp, catalogue, images );
 	const again = planCatalogue( catalogue, after );

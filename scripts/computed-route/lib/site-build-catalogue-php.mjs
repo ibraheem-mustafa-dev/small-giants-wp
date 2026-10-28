@@ -114,8 +114,9 @@ if ( $base ) {
 	$perm = (array) get_option( 'woocommerce_permalinks', array() );
 	if ( trim( (string) ( $perm['product_base'] ?? '' ), '/' ) !== $base ) {
 		$perm['product_base'] = '/' . $base;
+		// Saved only: the product post type registered at init with the old base, so a flush in this request would
+		// rebuild the old rules. The step flushes in a fresh request (productBaseFlushPhp) and verifies a product's address.
 		update_option( 'woocommerce_permalinks', $perm );
-		flush_rewrite_rules( false );
 		$done[] = 'product base /' . $base;
 	}
 }
@@ -296,4 +297,30 @@ foreach ( $steps as $s ) {
 	$done[] = $p['draftId'] . ': product ' . $id;
 }
 echo wp_json_encode( array( 'done' => $done, 'issues' => $issues ) );`;
+}
+
+// The flush and its proof, run in a request of its own after the write saved `woocommerce_permalinks` (the product post
+// type then registers with the new base). `draftIds` are the catalogue's draft ids; the first published product found by
+// `_sgs_draft_product` is the probe. Prints { base, rules (stored rewrite rules starting with the base), permalink, http
+// (the status of a GET to it, null when the site cannot call itself), error }.
+export function productBaseFlushPhp( base, draftIds ) {
+	return `$base = json_decode( base64_decode( '${ b64( base ) }' ), true );
+$draft_ids = json_decode( base64_decode( '${ b64( draftIds ) }' ), true );
+flush_rewrite_rules( false );
+$rules = 0;
+foreach ( array_keys( (array) get_option( 'rewrite_rules', array() ) ) as $re ) {
+	if ( 0 === strpos( (string) $re, $base . '/' ) ) { $rules++; }
+}
+$permalink = '';
+foreach ( $draft_ids as $draft_id ) {
+	$ids = get_posts( array( 'post_type' => 'product', 'post_status' => 'publish', 'numberposts' => 1, 'fields' => 'ids', 'meta_key' => '_sgs_draft_product', 'meta_value' => $draft_id, 'suppress_filters' => true ) );
+	if ( $ids ) { $permalink = (string) get_permalink( (int) $ids[0] ); break; }
+}
+$http = null;
+$error = '';
+if ( '' !== $permalink ) {
+	$reply = wp_remote_get( $permalink, array( 'timeout' => 30, 'sslverify' => false, 'redirection' => 5 ) );
+	if ( is_wp_error( $reply ) ) { $error = $reply->get_error_message(); } else { $http = (int) wp_remote_retrieve_response_code( $reply ); }
+}
+echo wp_json_encode( array( 'base' => $base, 'rules' => $rules, 'permalink' => $permalink, 'http' => $http, 'error' => $error ) );`;
 }
