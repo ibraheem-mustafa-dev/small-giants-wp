@@ -1,28 +1,19 @@
-// How a surfaces.json state is opened, shared by intake's skeleton openers (lib/intake-skeletons.mjs::openers) and Fill's
-// state opener (lib/fill-open.mjs::stateOpener): whether its state_keys are plain values (the plain-keys opener first) or
-// descriptions (the reach opener, run from lib/intake-reach-calls.mjs::reachCalls, first), and the width bounds its
-// comparison values set.
-
-// A state_keys value that describes the state rather than giving a value to set: a JS literal ("{open:true}", "[]"), a
-// comparison (">= 768"), a range ("768–1023") or an angle-bracket hole.
-const NOT_A_VALUE = /^\s*(?:[[{].*[\]}]|[<>]=?\s*-?\d.*|-?\d+(?:\.\d+)?\s*[–-]\s*-?\d.*|<.*>)\s*$/;
-
-// Whether every state_keys value of a state is a plain value: such a state tries its plain keys before its setState
-// calls; a state with a described value tries the calls first.
-export const plainState = ( st ) => Object.values( st?.state_keys || {} ).every( ( v ) => ! ( 'string' === typeof v && NOT_A_VALUE.test( v ) ) );
+// The width helpers of a state-driven surface's opener (lib/state-openers.mjs, used by intake's lib/intake-openers.mjs::
+// openers and Fill's lib/fill-open.mjs::stateOpener): the width bounds a state's comparison values set, whether a width lies
+// inside them, and the state keys each component writes from the viewport width.
 
 // The width bounds a state's comparison values set: [{ key, min, max }] in whole pixels (null: unbounded on that side).
 // A comparison value in state_keys is a breakpoint (`{"w": ">= 768"}`, `"< 1060"`, `"768–1023"`): the state holds at the
 // widths inside it, and the key is the viewport's, never a value of the state (lib/manifest-build.mjs::setsRealKey reads
 // it the same way). `widthKeys` (a Set, widthStateKeys' entry for the state's component) keeps only the keys the draft
 // writes from the width, so a range over another key (an accordion row `{"acc": "0–3"}`, a count `"> 0"`) is no bound;
-// without it every comparison counts.
+// without it (a component the breakpoints name no width key for) no key is a bound.
 const COMPARE = /^\s*([<>]=?)\s*(-?\d+(?:\.\d+)?)\s*(?:px)?\s*$/;
 const RANGE = /^\s*(-?\d+(?:\.\d+)?)\s*(?:px)?\s*[–-]\s*(-?\d+(?:\.\d+)?)\s*(?:px)?\s*$/;
-export function widthBounds( st, widthKeys = null ) {
+export function widthBounds( st, widthKeys ) {
 	const out = [];
 	for ( const [ key, v ] of Object.entries( st?.state_keys || {} ) ) {
-		if ( widthKeys && ! widthKeys.has( key ) ) {
+		if ( ! widthKeys?.has( key ) ) {
 			continue;
 		}
 		const c = 'string' === typeof v ? v.match( COMPARE ) : null;

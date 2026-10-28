@@ -17,6 +17,7 @@
 import { isFn, isThisMember, keyName, resolveName, fnBinding, callsOf } from './intake-ast.mjs';
 import { isMoney } from './shop-parts-logic.mjs';
 import { UNREAD, arraysOf, follow, valueOf } from './catalogue-source.mjs';
+import { initialStateObject } from './intake-state-objects.mjs';
 
 const ADD = new Set( [ 'add', 'push', 'unshift' ] );
 const HEX = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
@@ -149,8 +150,8 @@ export function lineKeys( ctx, line ) {
 
 // The first value of a state key (the component's `state = { … }`), or UNREAD.
 function initialOf( ctx, src, key ) {
-	const decl = src.idx.all.find( ( n ) => 'ClassProperty' === n.type && 'state' === keyName( n ) && 'ObjectExpression' === n.value?.type );
-	const v = decl ? valueOf( ctx, src, decl.value ) : UNREAD;
+	const decl = initialStateObject( src.idx );
+	const v = decl ? valueOf( ctx, src, decl ) : UNREAD;
 	return v && UNREAD !== v && key in v ? v[ key ] : UNREAD;
 }
 

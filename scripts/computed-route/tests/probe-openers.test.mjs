@@ -25,14 +25,18 @@ test( 'MUST FAIL openerVerdict gives the reason a state is not a concrete opener
 	assert.match( verdict( 'pinned', { 'R.pin': true } ), /not a state key name: R\.pin/ );
 	assert.match( verdict( 'selected', { cat: '<category>' } ), /placeholder or description value for cat/ );
 	assert.match( verdict( 'errors', { errs: '{a, b}' } ), /placeholder or description value for errs/ );
-	assert.match( verdict( 'item open', { faqOpen: { '<page>-<bi>': true } } ), /placeholder inside the value of faqOpen/ );
-	assert.match( verdict( 'topic', { topic: [ '<label>' ] } ), /placeholder inside the value of topic/ );
+	assert.match( verdict( 'item open', { faqOpen: { '<page>-<bi>': true } } ), /placeholder or description value for faqOpen/ );
+	assert.match( verdict( 'topic', { topic: [ '<label>' ] } ), /placeholder or description value for topic/ );
 	assert.equal( verdict( 'closed', { active: null } ), 'closed/default state is not an opener' );
 } );
 
 test( 'MUST FAIL a concrete state is offered', () => {
 	assert.equal( verdict( 'open', { active: 1 } ), 'concrete (offered)' );
 	assert.equal( verdict( 'open', { mobileOpen: true } ), 'concrete (offered)' );
+	// A width key's comparison is the viewport's bound, never a description; without the width keys it is one.
+	const st = { name: 'open', state_keys: { mobileOpen: true, w: '>= 768' } };
+	assert.equal( openerVerdict( surface( [ st ] ), st, null, new Map( [ [ 'Comp', new Set( [ 'w' ] ) ] ] ) ), 'concrete (offered)' );
+	assert.match( openerVerdict( surface( [ st ] ), st, null ), /placeholder or description value for w/ );
 } );
 
 test( 'MUST FAIL outcomeOf: no instance, a key the instance did not hold, a placeholder, then the sc-if count', () => {

@@ -59,7 +59,9 @@ const bodyOf = ( n ) => ( isFnNode( n ) ? n.body.start : isFnNode( n?.value ) ? 
 // The functions a name can denote in one program: 'member' — a class method or function field of that name, or
 // `this.<name> = <function>`; 'local' — `const <name> = <function>` or `function <name>`; 'key' — an object property
 // or method of that name holding a function (a loop item's handler). `this.y` and `this.y.bind(…)` resolve to y.
-function fnsNamed( m, name, how ) {
+// `m` is any { nodes } holding a program's every node (a buildModel entry, or lib/intake-ast.mjs::parseLogic's `all`, as
+// lib/intake-pagemap-flow-openers.mjs passes it).
+export function fnsNamed( m, name, how ) {
 	const keyOf = ( k ) => ( 'Identifier' === k?.type ? k.name : 'StringLiteral' === k?.type ? k.value : 'PrivateName' === k?.type ? `#${ k.id.name }` : null );
 	const thisName = ( v ) => ( 'MemberExpression' === v?.type && 'ThisExpression' === v.object.type && ! v.computed ? keyOf( v.property ) : null );
 	const deref = ( v, depth = 0 ) => {

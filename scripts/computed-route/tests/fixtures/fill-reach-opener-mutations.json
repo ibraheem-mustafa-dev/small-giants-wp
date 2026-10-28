@@ -1,98 +1,19 @@
 [
- {
-  "file": "lib/fill-open.mjs",
-  "find": "const own = plainState( s ) ? [ ...set, ...reach ] : [ ...reach, ...set ];",
-  "replace": "const own = [ ...set, ...reach ];",
-  "why": "a described state tries its plain keys before its setState call"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "const reach = calls.length ? [ { via: 'reach', ...common, calls } ] : [];",
-  "replace": "const reach = [];",
-  "why": "Fill has no reach opener (the gap as found)"
- },
- {
-  "file": "lib/state-reach.mjs",
-  "find": "min: '>=' === c[ 1 ] ? Math.ceil( n ) :",
-  "replace": "min: '>=' === c[ 1 ] ? null :",
-  "why": "a >= bound is read as unbounded"
- },
- {
-  "file": "lib/state-reach.mjs",
-  "find": "'<' === c[ 1 ] ? Math.ceil( n ) - 1 : null",
-  "replace": "'<' === c[ 1 ] ? Math.ceil( n ) : null",
-  "why": "a < bound includes its own threshold"
- },
- {
-  "file": "lib/state-reach.mjs",
-  "find": "( null == b.min || width >= b.min )",
-  "replace": "( null == b.min || width > b.min )",
-  "why": "a width equal to the lower bound is outside it"
- },
- {
-  "file": "lib/state-reach.mjs",
-  "find": "( ways || [] ).filter( ( w ) => fitsWidth( w.bounds, width ) );",
-  "replace": "( ways || [] ).filter( () => true );",
-  "why": "every state is offered at every width"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "calls: way.calls, keep: way.bounds.map( ( b ) => b.key ) }",
-  "replace": "calls: way.calls, keep: [] }",
-  "why": "the call's width key is left in place of the viewport's"
- },
- {
-  "file": "lib/intake-state.mjs",
-  "find": "keep.length && logic.setState( was );",
-  "replace": "keep.length;",
-  "why": "the in-page reach op never puts the kept keys back"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "const way = ways[ at[ width ] ] || ways.find(",
-  "replace": "const way = ways[ 0 ] || ways.find(",
-  "why": "the walker opens the first way at every width"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "patch: 'reach' === w.via ? { calls: w.calls, keep: w.bounds.map( ( b ) => b.key ) } : w.keys",
-  "replace": "patch: 'reach' === w.via ? { calls: w.calls, keep: [] } : w.keys",
-  "why": "the walker leaves the call's width key in place"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "x.state === v.state && x.via === v.via",
-  "replace": "x.via === v.via",
-  "why": "openedAt names the first way of the same kind, not the one that opened"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": ": widthBounds( { state_keys: { [ name ]: value } } ).length ? 'a width bound the viewport holds, not a value'\n\t\t\t\t\t\t\t",
-  "replace": "",
-  "why": "a range value is set as a string"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "if ( ! ways.length ) {\n\t\tconst held",
-  "replace": "if ( false ) {\n\t\tconst held",
-  "why": "a width no state holds is not refused with its bounds"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "? await reachDraftState( page, { component: opener.component,",
-  "replace": "? await setDraftState( page, { component: opener.component, keys: {},",
-  "why": "the reach way sets nothing"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "candidates.push( ...pool.filter( ( s ) => ! candidates.includes( s ) && widthBounds( s ).length && bounded.some( ( c ) => unbound( c ) === unbound( s ) ) ) );",
-  "replace": "",
-  "why": "the named state's other breakpoint is never offered"
- },
- {
-  "file": "lib/fill-open.mjs",
-  "find": "bounded.some( ( c ) => unbound( c ) === unbound( s ) )",
-  "replace": "bounded.length",
-  "why": "any bounded state joins a bounded candidate"
- }
+ {"file":"lib/state-openers.mjs","find":"const mine = plainState( st ) ? [ ...set, ...reach ] : [ ...reach, ...set ];","replace":"const mine = [ ...set, ...reach ];","why":"a described state tries its plain keys before its setState call"},
+ {"file":"lib/state-openers.mjs","find":"const reach = calls.length ? [ { via: 'reach', ...common, calls } ] : [];","replace":"const reach = [];","why":"Fill has no reach opener (the gap as found)"},
+ {"file":"lib/state-reach.mjs","find":"min: '>=' === c[ 1 ] ? Math.ceil( n ) :","replace":"min: '>=' === c[ 1 ] ? null :","why":"a >= bound is read as unbounded"},
+ {"file":"lib/state-reach.mjs","find":"'<' === c[ 1 ] ? Math.ceil( n ) - 1 : null","replace":"'<' === c[ 1 ] ? Math.ceil( n ) : null","why":"a < bound includes its own threshold"},
+ {"file":"lib/state-reach.mjs","find":"( null == b.min || width >= b.min )","replace":"( null == b.min || width > b.min )","why":"a width equal to the lower bound is outside it"},
+ {"file":"lib/state-reach.mjs","find":"( ways || [] ).filter( ( w ) => fitsWidth( w.bounds, width ) );","replace":"( ways || [] ).filter( () => true );","why":"every state is offered at every width"},
+ {"file":"lib/fill-open.mjs","find":"calls: way.calls, keep: way.bounds.map( ( b ) => b.key ) }","replace":"calls: way.calls, keep: [] }","why":"the call's width key is left in place of the viewport's"},
+ {"file":"lib/intake-state.mjs","find":"keep.length && logic.setState( was );","replace":"keep.length;","why":"the in-page reach op never puts the kept keys back"},
+ {"file":"lib/fill-open.mjs","find":"const way = ways[ at[ width ] ] || ways.find(","replace":"const way = ways[ 0 ] || ways.find(","why":"the walker opens the first way at every width"},
+ {"file":"lib/fill-open.mjs","find":"patch: 'reach' === w.via ? { calls: w.calls, keep: w.bounds.map( ( b ) => b.key ) } : w.keys","replace":"patch: 'reach' === w.via ? { calls: w.calls, keep: [] } : w.keys","why":"the walker leaves the call's width key in place"},
+ {"file":"lib/fill-open.mjs","find":"x.state === v.state && x.via === v.via","replace":"x.via === v.via","why":"openedAt names the first way of the same kind, not the one that opened"},
+ {"file":"lib/state-openers.mjs","find":": held.has( name ) ? 'a width bound the viewport holds, not a value'","replace":": false ? 'a width bound the viewport holds, not a value'","why":"a width bound is reported as a description, not as the viewport's bound"},
+ {"file":"lib/fill-open.mjs","find":"if ( ! ways.length ) {\n\t\tconst held","replace":"if ( false ) {\n\t\tconst held","why":"a width no state holds is not refused with its bounds"},
+ {"file":"lib/fill-open.mjs","find":"? await reachDraftState( page, { component: opener.component,","replace":"? await setDraftState( page, { component: opener.component, keys: {},","why":"the reach way sets nothing"},
+ {"file":"lib/fill-open.mjs","find":"candidates.push( ...pool.filter( ( s ) => ! candidates.includes( s ) && widthBounds( s, own ).length && bounded.some( ( c ) => unbound( c ) === unbound( s ) ) ) );","replace":"","why":"the named state's other breakpoint is never offered"},
+ {"file":"lib/fill-open.mjs","find":"bounded.some( ( c ) => unbound( c ) === unbound( s ) )","replace":"bounded.length","why":"any bounded state joins a bounded candidate"},
+ {"file":"lib/fill-open.mjs","find":"const own = widthKeys?.get( record.dc ) ?? new Set();","replace":"const own = new Set();","why":"Fill knows no width key, so a width-bound state is offered at every width"}
 ]
