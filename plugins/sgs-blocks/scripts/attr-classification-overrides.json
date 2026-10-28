@@ -7599,6 +7599,14 @@
 				"role": "behaviour"
 			},
 			"_reason": "2026-10-28 (content coverage check): No reader: hero/render.php never reads label, and its emit_shape is child (the content lives in a child block), so it is a leftover slot name."
+		},
+		{
+			"slug": "sgs/wishlist-link",
+			"attr": "wishlistUrl",
+			"fields": {
+				"role": "link-href"
+			},
+			"_reason": "2026-10-28 (content coverage check): the link's address; wishlist-link/render.php prints it as the anchor's href (esc_url), so calibration must read it with a URL marker, which only a link-href role gets (lib/calibrate-content.mjs LINK_ROLES)."
 		}
 	]
 }

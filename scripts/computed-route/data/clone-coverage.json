@@ -2521,6 +2521,14 @@
 			"reason": "a number drawn as stars, a score or a counter: no writer reads a rating or count from the draft",
 			"owner": "Track S"
 		},
+		"content-setting:sgs/google-reviews.showReviewLink": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"owner": "Track S",
+			"reason": "shown only when live review data carries a Google review link (google-reviews/render-interior.php prints the link only with a review URL); calibration's fixture reviews carry none, so the draft's link has no measured element to write"
+		},
 		"content-setting:sgs/hero.backgroundImage": {
 			"recognise": null,
 			"write": null,
@@ -3000,6 +3008,14 @@
 			"wave": "content, media and icons",
 			"reason": "a product card's live-data fallback text (productName, trialTag, featuredTag, priceLarge, priceNote, ctaText, brandName): printed from WooCommerce data when the setting is empty",
 			"owner": "Track S"
+		},
+		"content-setting:sgs/product-search.placeholder": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "content, media and icons",
+			"owner": "Track S",
+			"reason": "form and search control copy outside the form writer's attribute list (date limits, placeholders of non-field blocks, the file button, the saved-progress label)"
 		},
 		"content-setting:sgs/responsive-logo.logoIdMobile": {
 			"recognise": null,
