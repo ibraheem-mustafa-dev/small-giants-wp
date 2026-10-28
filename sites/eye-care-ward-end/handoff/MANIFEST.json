@@ -9,8 +9,8 @@
   "files": [
     {
       "path": "Eye Care Birmingham.dc.html",
-      "bytes": 287072,
-      "sha256": "d9bc2c1bbf8adbb5757e09a83bb1c3cf52b09b6589757b4c82fbfb032474da09"
+      "bytes": 287232,
+      "sha256": "547057ef6711a8b933e89bedaefd2e0c1d597606560f95dea39d8bc044e4867d"
     },
     {
       "path": "Frame Card.dc.html",
@@ -29,13 +29,18 @@
     },
     {
       "path": "animations.json",
-      "bytes": 368811,
-      "sha256": "35cc795051fdd4b46aee2cde28baf1f3f6eae8f831c73c14231c2756b072cbe2"
+      "bytes": 370821,
+      "sha256": "4d482eaddd75a737f7892b582c127792869a95addf11632ff77af05c2a5e7616"
     },
     {
       "path": "assets/ec-logo.png",
       "bytes": 52924,
       "sha256": "a8533911367a930ee85e83bd163e4c1e195ad9cfea9d9189757f32415fade27f"
+    },
+    {
+      "path": "assets/eye-care-wordmark.png",
+      "bytes": 8833,
+      "sha256": "7a991f041e5022c103366e28f88b7b6ba013c5c99929bbdc180cd99982bb6012"
     },
     {
       "path": "assets/google-g.svg",
@@ -104,8 +109,8 @@
     },
     {
       "path": "surfaces.json",
-      "bytes": 77546,
-      "sha256": "933d139f6f4036d3b5cee8c123c10d86934c1e7bb0387b806297d530bcb3c388"
+      "bytes": 77567,
+      "sha256": "cafeb0dd42a0e3ebef175d71f3f599973c122d17ae33fd2c58eb684fadc99386"
     },
     {
       "path": "tokens/colors.css",

@@ -127,7 +127,8 @@
           "how_to_reach": "Scroll window past 40px; L.setState({scrolled:true})",
           "animation_ids": [
             "TR-02",
-            "TR-06"
+            "TR-06",
+            "TR-07"
           ]
         },
         {
@@ -138,7 +139,7 @@
           "how_to_reach": "L.setState({w:1400})",
           "sc_if_tpl_ids": [
             "22",
-            "31"
+            "32"
           ]
         },
         {
@@ -165,7 +166,7 @@
           },
           "how_to_reach": "Sign in on /my-account; L.setState({user:{first:\"Aisha\",last:\"Khan\",email:\"aisha.khan@example.com\",mobile:\"\"}})",
           "sc_if_tpl_ids": [
-            "41"
+            "42"
           ]
         }
       ],
@@ -181,7 +182,7 @@
       "parent": "S-03",
       "kind": "menu",
       "name": "Mega menu",
-      "template_tpl_id": "50",
+      "template_tpl_id": "51",
       "route": "*",
       "opened_by": "Hover or keyboard focus on Sunglasses / Brands / Lenses / Help after 150ms (instant when switching panels); click on touch devices (hover: none); click on Brands toggles; footer \"All brands\" toggles Brands",
       "closed_by": "Escape; pointerdown outside the header; pointer leaving the header; mouseenter on About, phone or \"Glasses\"; picking an item; go()",
@@ -203,8 +204,8 @@
           },
           "how_to_reach": "Hover Sunglasses; L.setState({mega:\"sun\"})",
           "sc_if_tpl_ids": [
-            "49",
-            "52"
+            "50",
+            "53"
           ],
           "animation_ids": [
             "TR-03",
@@ -218,8 +219,8 @@
           },
           "how_to_reach": "Hover or click Brands; L.setState({mega:\"brands\"})",
           "sc_if_tpl_ids": [
-            "49",
-            "70"
+            "50",
+            "71"
           ],
           "animation_ids": [
             "TR-04",
@@ -235,8 +236,8 @@
           },
           "how_to_reach": "Hover Lenses; L.setState({mega:\"lenses\"})",
           "sc_if_tpl_ids": [
-            "49",
-            "82"
+            "50",
+            "83"
           ],
           "animation_ids": [
             "TR-05",
@@ -251,8 +252,8 @@
           },
           "how_to_reach": "Hover Help; L.setState({mega:\"help\"})",
           "sc_if_tpl_ids": [
-            "49",
-            "89"
+            "50",
+            "90"
           ],
           "animation_ids": [
             "CA-03"
@@ -320,7 +321,7 @@
       "parent": "S-01",
       "kind": "footer",
       "name": "Footer",
-      "template_tpl_id": "1121",
+      "template_tpl_id": "1122",
       "route": "*",
       "opened_by": "Always rendered",
       "closed_by": "Never",
@@ -388,7 +389,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Home",
-      "template_tpl_id": "110",
+      "template_tpl_id": "111",
       "route": "home",
       "page_key": "home",
       "opened_by": "go('home') from nav, links or buttons",
@@ -406,7 +407,7 @@
           },
           "how_to_reach": "L.setState({page:'home'})",
           "sc_if_tpl_ids": [
-            "109"
+            "110"
           ],
           "animation_ids": [
             "CA-04",
@@ -439,7 +440,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Shop",
-      "template_tpl_id": "245",
+      "template_tpl_id": "246",
       "route": "shop",
       "page_key": "shop",
       "opened_by": "go('shop') from nav, links or buttons",
@@ -457,7 +458,7 @@
           },
           "how_to_reach": "L.setState({page:'shop'})",
           "sc_if_tpl_ids": [
-            "244"
+            "245"
           ],
           "animation_ids": [
             "CA-10"
@@ -476,7 +477,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Product",
-      "template_tpl_id": "332",
+      "template_tpl_id": "333",
       "route": "product",
       "page_key": "product",
       "opened_by": "go('product') from nav, links or buttons",
@@ -494,7 +495,7 @@
           },
           "how_to_reach": "L.setState({page:'product'}) with curId set, e.g. L.setState({page:'product', curId:5})",
           "sc_if_tpl_ids": [
-            "331"
+            "332"
           ],
           "animation_ids": [
             "CA-15"
@@ -513,7 +514,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Lenses",
-      "template_tpl_id": "549",
+      "template_tpl_id": "550",
       "route": "lenses",
       "page_key": "lenses",
       "opened_by": "go('lenses') from nav, links or buttons",
@@ -531,7 +532,7 @@
           },
           "how_to_reach": "L.setState({page:'lenses'})",
           "sc_if_tpl_ids": [
-            "548"
+            "549"
           ],
           "animation_ids": [
             "CA-20",
@@ -552,7 +553,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "About",
-      "template_tpl_id": "598",
+      "template_tpl_id": "599",
       "route": "about",
       "page_key": "about",
       "opened_by": "go('about') from nav, links or buttons",
@@ -570,7 +571,7 @@
           },
           "how_to_reach": "L.setState({page:'about'})",
           "sc_if_tpl_ids": [
-            "597"
+            "598"
           ],
           "animation_ids": [
             "CA-23",
@@ -596,7 +597,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Help",
-      "template_tpl_id": "625",
+      "template_tpl_id": "626",
       "route": "help",
       "page_key": "help",
       "opened_by": "go('help') from nav, links or buttons",
@@ -614,7 +615,7 @@
           },
           "how_to_reach": "L.setState({page:'help'})",
           "sc_if_tpl_ids": [
-            "624"
+            "625"
           ]
         }
       ],
@@ -630,7 +631,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Contact",
-      "template_tpl_id": "659",
+      "template_tpl_id": "660",
       "route": "contact",
       "page_key": "contact",
       "opened_by": "go('contact') from nav, links or buttons",
@@ -648,7 +649,7 @@
           },
           "how_to_reach": "L.setState({page:'contact'})",
           "sc_if_tpl_ids": [
-            "658"
+            "659"
           ]
         }
       ],
@@ -664,7 +665,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Checkout",
-      "template_tpl_id": "736",
+      "template_tpl_id": "737",
       "route": "checkout",
       "page_key": "checkout",
       "opened_by": "go('checkout') from nav, links or buttons",
@@ -682,7 +683,7 @@
           },
           "how_to_reach": "L.setState({page:'checkout'})",
           "sc_if_tpl_ids": [
-            "735"
+            "736"
           ],
           "animation_ids": [
             "CA-33",
@@ -706,7 +707,7 @@
       "parent": "S-01",
       "kind": "page",
       "name": "Order confirmed",
-      "template_tpl_id": "842",
+      "template_tpl_id": "843",
       "route": "done",
       "page_key": "done",
       "opened_by": "go('done') from nav, links or buttons",
@@ -724,7 +725,7 @@
           },
           "how_to_reach": "L.setState({page:'done'})",
           "sc_if_tpl_ids": [
-            "841"
+            "842"
           ],
           "animation_ids": [
             "CA-41",
@@ -740,8 +741,8 @@
           },
           "how_to_reach": "Place an order while signed in, or with Create an account ticked; L.setState({page:\"done\", lastOrder:{created:true, signedIn:false}})",
           "sc_if_tpl_ids": [
-            "846",
-            "850"
+            "847",
+            "851"
           ],
           "animation_ids": [
             "CA-71",
@@ -763,7 +764,7 @@
       "parent": "S-09",
       "kind": "drawer",
       "name": "Shop filter rail / drawer",
-      "template_tpl_id": "268",
+      "template_tpl_id": "269",
       "route": "shop",
       "opened_by": "Always visible as a sticky rail at >= 1060px; below that the Filter button (toggleFilters)",
       "closed_by": "× or \"Show N frames\" (toggleFilters); go()",
@@ -780,7 +781,7 @@
           },
           "how_to_reach": "L.setState({page:'shop', w:1400})",
           "sc_if_tpl_ids": [
-            "267"
+            "268"
           ]
         },
         {
@@ -791,7 +792,7 @@
           },
           "how_to_reach": "L.setState({page:'shop', w:900, filtersOpen:false})",
           "sc_if_tpl_ids": [
-            "252"
+            "253"
           ]
         },
         {
@@ -802,9 +803,9 @@
           },
           "how_to_reach": "Tap Filter; L.setState({page:'shop', w:900, filtersOpen:true})",
           "sc_if_tpl_ids": [
-            "267",
-            "269",
-            "316"
+            "268",
+            "270",
+            "317"
           ],
           "animation_ids": [
             "CA-12"
@@ -824,7 +825,7 @@
       "parent": "S-09",
       "kind": "accordion",
       "name": "Filter groups (10)",
-      "template_tpl_id": "282",
+      "template_tpl_id": "283",
       "route": "shop",
       "opened_by": "Click a group heading",
       "closed_by": "Click it again",
@@ -836,7 +837,7 @@
           },
           "how_to_reach": "L.setState({fgOpen:{...L.state.fgOpen, size:1}})",
           "sc_if_tpl_ids": [
-            "282"
+            "283"
           ],
           "animation_ids": [
             "TR-24",
@@ -864,7 +865,7 @@
       "parent": "S-09",
       "kind": "panel",
       "name": "Active filter chips",
-      "template_tpl_id": "260",
+      "template_tpl_id": "261",
       "route": "shop",
       "opened_by": "Any filter set",
       "closed_by": "Remove each chip or Clear all",
@@ -876,7 +877,7 @@
           },
           "how_to_reach": "L.setState({f:{...L.state.f, pol:true}})",
           "sc_if_tpl_ids": [
-            "260"
+            "261"
           ],
           "animation_ids": [
             "CA-11"
@@ -895,7 +896,7 @@
       "parent": "S-09",
       "kind": "result",
       "name": "No results",
-      "template_tpl_id": "325",
+      "template_tpl_id": "326",
       "route": "shop",
       "opened_by": "Filters that match nothing",
       "closed_by": "Clear filters",
@@ -907,7 +908,7 @@
           },
           "how_to_reach": "L.setState({page:'shop', f:{...L.state.f, price:60, brands:['Gucci']}})",
           "sc_if_tpl_ids": [
-            "325"
+            "326"
           ]
         }
       ],
@@ -923,7 +924,7 @@
       "parent": "S-10",
       "kind": "panel",
       "name": "Product tabs",
-      "template_tpl_id": "413",
+      "template_tpl_id": "414",
       "route": "product",
       "opened_by": "Click Description / Details / Sizing",
       "closed_by": "Another tab",
@@ -935,7 +936,7 @@
           },
           "how_to_reach": "L.setState({pdpTab:'desc'})",
           "sc_if_tpl_ids": [
-            "418"
+            "419"
           ],
           "animation_ids": [
             "TR-37",
@@ -949,7 +950,7 @@
           },
           "how_to_reach": "L.setState({pdpTab:'details'})",
           "sc_if_tpl_ids": [
-            "426"
+            "427"
           ],
           "animation_ids": [
             "TR-37",
@@ -963,7 +964,7 @@
           },
           "how_to_reach": "L.setState({pdpTab:'sizing'})",
           "sc_if_tpl_ids": [
-            "432"
+            "433"
           ],
           "animation_ids": [
             "TR-37",
@@ -983,7 +984,7 @@
       "parent": "S-10",
       "kind": "accordion",
       "name": "Product questions accordion (4)",
-      "template_tpl_id": "491",
+      "template_tpl_id": "492",
       "route": "product",
       "opened_by": "Click a question",
       "closed_by": "Click it again (each item independent)",
@@ -995,7 +996,7 @@
           },
           "how_to_reach": "L.setState({acc:{0:true}})",
           "sc_if_tpl_ids": [
-            "496"
+            "497"
           ],
           "animation_ids": [
             "TR-38",
@@ -1481,7 +1482,7 @@
       "parent": "S-14",
       "kind": "form",
       "name": "Contact form",
-      "template_tpl_id": "679",
+      "template_tpl_id": "680",
       "route": "contact",
       "opened_by": "Contact page",
       "closed_by": "n/a",
@@ -1500,7 +1501,7 @@
           },
           "how_to_reach": "Submit with name and email filled (native required validation); L.setState({contactSent:true})",
           "sc_if_tpl_ids": [
-            "696"
+            "697"
           ],
           "animation_ids": [
             "TR-44",
@@ -1521,7 +1522,7 @@
       "parent": "S-15",
       "kind": "form-step",
       "name": "Checkout delivery method",
-      "template_tpl_id": "767",
+      "template_tpl_id": "768",
       "route": "checkout",
       "opened_by": "Checkout page",
       "closed_by": "n/a",
@@ -1533,7 +1534,7 @@
           },
           "how_to_reach": "L.setState({page:'checkout', co:{...L.state.co, method:'delivery'}})",
           "sc_if_tpl_ids": [
-            "781"
+            "782"
           ],
           "animation_ids": [
             "TR-45",
@@ -1564,7 +1565,7 @@
       "parent": "S-15",
       "kind": "form-step",
       "name": "Checkout prescription",
-      "template_tpl_id": "789",
+      "template_tpl_id": "790",
       "route": "checkout",
       "opened_by": "Bag contains an item with lenses",
       "closed_by": "n/a",
@@ -1577,8 +1578,8 @@
           },
           "how_to_reach": "L.setState({page:'checkout', bag:[{pid:5,size:'M',lens:{use:'distance',thick:'std',finish:'tint',rxMode:'later'}}], co:{...L.state.co, rxMode:'upload'}})",
           "sc_if_tpl_ids": [
-            "788",
-            "796"
+            "789",
+            "797"
           ],
           "animation_ids": [
             "CA-37",
@@ -1594,7 +1595,7 @@
           },
           "how_to_reach": "L.setState({page:'checkout', bag:[{pid:5,size:'M',lens:{use:'distance',thick:'std',finish:'tint',rxMode:'later'}}], co:{...L.state.co, rxMode:'type'}})",
           "sc_if_tpl_ids": [
-            "788"
+            "789"
           ],
           "animation_ids": [
             "CA-37",
@@ -1609,8 +1610,8 @@
           },
           "how_to_reach": "L.setState({page:'checkout', bag:[{pid:5,size:'M',lens:{use:'distance',thick:'std',finish:'tint',rxMode:'later'}}], co:{...L.state.co, rxMode:'later'}})",
           "sc_if_tpl_ids": [
-            "788",
-            "801"
+            "789",
+            "802"
           ],
           "animation_ids": [
             "CA-37",
@@ -1711,7 +1712,7 @@
       "parent": "S-13",
       "kind": "accordion",
       "name": "FAQ accordion (8)",
-      "template_tpl_id": "644",
+      "template_tpl_id": "645",
       "route": "help",
       "opened_by": "Click a question",
       "closed_by": "Click it again, or open another (one at a time)",
@@ -1723,7 +1724,7 @@
           },
           "how_to_reach": "L.setState({faqOpen:2})",
           "sc_if_tpl_ids": [
-            "649"
+            "650"
           ],
           "animation_ids": [
             "TR-42",
@@ -1774,7 +1775,7 @@
       "id": "S-41",
       "kind": "page",
       "name": "Sign in / register",
-      "template_tpl_id": "853",
+      "template_tpl_id": "854",
       "route": "signin",
       "page_key": "signin",
       "parent": "S-01",
@@ -1799,7 +1800,7 @@
           },
           "how_to_reach": "L.setState({page:'signin', auth:{view:'signin', email:'', note:null, mismatch:false, returnTo:null}})",
           "sc_if_tpl_ids": [
-            "852"
+            "853"
           ],
           "animation_ids": [
             "CA-73",
@@ -1824,7 +1825,7 @@
       "id": "S-42",
       "kind": "page",
       "name": "My account",
-      "template_tpl_id": "916",
+      "template_tpl_id": "917",
       "route": "account",
       "page_key": "account",
       "parent": "S-01",
@@ -1849,7 +1850,7 @@
           },
           "how_to_reach": "Sign in, or L.setState({page:'account', user:{first:'Aisha',last:'Khan',email:'aisha.khan@example.com',mobile:''}})",
           "sc_if_tpl_ids": [
-            "915"
+            "916"
           ],
           "animation_ids": [
             "CA-80",
@@ -1889,7 +1890,7 @@
       "id": "S-43",
       "kind": "form",
       "name": "Sign-in and register forms",
-      "template_tpl_id": "854",
+      "template_tpl_id": "855",
       "route": "signin",
       "parent": "S-41",
       "opened_by": "Default view of the sign-in page",
@@ -1913,7 +1914,7 @@
           },
           "how_to_reach": "L.setState({page:'signin', auth:{view:'signin', note:null}})",
           "sc_if_tpl_ids": [
-            "854"
+            "855"
           ],
           "animation_ids": [
             "CA-73",
@@ -1930,8 +1931,8 @@
           },
           "how_to_reach": "After a password reset, or from checkout's Sign in link; L.setState({page:'signin', auth:{view:'signin', note:'Password changed. Sign in with your new one.'}})",
           "sc_if_tpl_ids": [
-            "854",
-            "859"
+            "855",
+            "860"
           ],
           "animation_ids": [
             "CA-73",
@@ -1949,7 +1950,7 @@
       "id": "S-44",
       "kind": "form-step",
       "name": "Forgotten-password flow",
-      "template_tpl_id": "883",
+      "template_tpl_id": "884",
       "route": "signin",
       "parent": "S-41",
       "opened_by": "\"Forgotten your password?\" on the sign-in form",
@@ -1972,7 +1973,7 @@
           },
           "how_to_reach": "L.setState({page:'signin', auth:{view:'forgot'}})",
           "sc_if_tpl_ids": [
-            "883"
+            "884"
           ],
           "animation_ids": [
             "CA-76",
@@ -1987,7 +1988,7 @@
           },
           "how_to_reach": "Submit the email; L.setState({page:'signin', auth:{view:'sent', email:'aisha.khan@example.com'}})",
           "sc_if_tpl_ids": [
-            "893"
+            "894"
           ],
           "animation_ids": [
             "CA-77",
@@ -2001,7 +2002,7 @@
           },
           "how_to_reach": "Prototype link 'open the reset link'; L.setState({page:'signin', auth:{view:'reset', mismatch:false}})",
           "sc_if_tpl_ids": [
-            "902"
+            "903"
           ],
           "animation_ids": [
             "CA-78",
@@ -2017,8 +2018,8 @@
           },
           "how_to_reach": "Enter two different passwords; L.setState({page:'signin', auth:{view:'reset', mismatch:true}})",
           "sc_if_tpl_ids": [
-            "902",
-            "912"
+            "903",
+            "913"
           ],
           "animation_ids": [
             "CA-78",
@@ -2034,7 +2035,7 @@
       "id": "S-45",
       "kind": "panel",
       "name": "Account navigation (tabs)",
-      "template_tpl_id": "923",
+      "template_tpl_id": "924",
       "route": "account",
       "parent": "S-42",
       "opened_by": "Always shown on My account",
@@ -2058,7 +2059,7 @@
           },
           "how_to_reach": "L.setState({page:'account', acct:{tab:'orders', orderId:null}})",
           "sc_if_tpl_ids": [
-            "930"
+            "931"
           ],
           "animation_ids": [
             "CA-81",
@@ -2073,7 +2074,7 @@
           },
           "how_to_reach": "L.setState({acct:{tab:'subs'}})",
           "sc_if_tpl_ids": [
-            "1001"
+            "1002"
           ],
           "animation_ids": [
             "CA-83",
@@ -2094,7 +2095,7 @@
           },
           "how_to_reach": "L.setState({acct:{tab:'addr', editAddr:null}})",
           "sc_if_tpl_ids": [
-            "1054"
+            "1055"
           ],
           "animation_ids": [
             "CA-86",
@@ -2110,7 +2111,7 @@
           },
           "how_to_reach": "L.setState({acct:{tab:'wish'}})",
           "sc_if_tpl_ids": [
-            "1078"
+            "1079"
           ],
           "animation_ids": [
             "CA-88",
@@ -2124,7 +2125,7 @@
           },
           "how_to_reach": "L.setState({acct:{tab:'details', saved:false}})",
           "sc_if_tpl_ids": [
-            "1094"
+            "1095"
           ],
           "animation_ids": [
             "CA-89",
@@ -2140,7 +2141,7 @@
       "id": "S-46",
       "kind": "panel",
       "name": "Orders list",
-      "template_tpl_id": "930",
+      "template_tpl_id": "931",
       "route": "account",
       "parent": "S-45",
       "opened_by": "Orders tab",
@@ -2163,7 +2164,7 @@
           },
           "how_to_reach": "Sign in (demo data)",
           "sc_if_tpl_ids": [
-            "933"
+            "934"
           ],
           "animation_ids": [
             "TR-85"
@@ -2177,7 +2178,7 @@
           },
           "how_to_reach": "Register a new account; L.setState({user:{first:'Sam', email:'sam@example.com', isNew:true}, placed:[], acct:{tab:'orders'}})",
           "sc_if_tpl_ids": [
-            "946"
+            "947"
           ],
           "animation_ids": [
             "TR-86"
@@ -2191,7 +2192,7 @@
       "id": "S-47",
       "kind": "panel",
       "name": "Order detail",
-      "template_tpl_id": "951",
+      "template_tpl_id": "952",
       "route": "account",
       "parent": "S-45",
       "opened_by": "Clicking an order row",
@@ -2214,7 +2215,7 @@
           },
           "how_to_reach": "L.setState({page:'account', acct:{tab:'orders', orderId:'EC-10471'}})",
           "sc_if_tpl_ids": [
-            "951"
+            "952"
           ],
           "animation_ids": [
             "CA-82",
@@ -2230,7 +2231,7 @@
       "id": "S-48",
       "kind": "panel",
       "name": "Subscriptions",
-      "template_tpl_id": "1001",
+      "template_tpl_id": "1002",
       "route": "account",
       "parent": "S-45",
       "opened_by": "Subscriptions tab",
@@ -2253,10 +2254,10 @@
           },
           "how_to_reach": "Sign in (demo data)",
           "sc_if_tpl_ids": [
-            "1005",
-            "1025",
-            "1032",
-            "1034"
+            "1006",
+            "1026",
+            "1033",
+            "1035"
           ],
           "animation_ids": [
             "CA-84",
@@ -2276,7 +2277,7 @@
           },
           "how_to_reach": "Skip next delivery (moves the date on by the frequency); Undo reverses one skip",
           "sc_if_tpl_ids": [
-            "1022"
+            "1023"
           ],
           "animation_ids": [
             "CA-84"
@@ -2289,7 +2290,7 @@
           },
           "how_to_reach": "Pick from How often",
           "sc_if_tpl_ids": [
-            "1025"
+            "1026"
           ]
         },
         {
@@ -2299,7 +2300,7 @@
           },
           "how_to_reach": "Pause; Resume returns to active",
           "sc_if_tpl_ids": [
-            "1037"
+            "1038"
           ],
           "animation_ids": [
             "TR-91"
@@ -2312,7 +2313,7 @@
           },
           "how_to_reach": "Cancel subscription; L.setState({subConfirm:'SUB-2031'})",
           "sc_if_tpl_ids": [
-            "1040"
+            "1041"
           ],
           "animation_ids": [
             "CA-85",
@@ -2327,7 +2328,7 @@
           },
           "how_to_reach": "Yes, cancel it; Start it again returns to active",
           "sc_if_tpl_ids": [
-            "1047"
+            "1048"
           ]
         },
         {
@@ -2337,7 +2338,7 @@
           },
           "how_to_reach": "Register a new account",
           "sc_if_tpl_ids": [
-            "1050"
+            "1051"
           ]
         }
       ],
@@ -2348,7 +2349,7 @@
       "id": "S-49",
       "kind": "form",
       "name": "Addresses",
-      "template_tpl_id": "1054",
+      "template_tpl_id": "1055",
       "route": "account",
       "parent": "S-45",
       "opened_by": "Addresses tab",
@@ -2371,8 +2372,8 @@
           },
           "how_to_reach": "L.setState({acct:{tab:'addr', editAddr:null}})",
           "sc_if_tpl_ids": [
-            "1062",
-            "1064"
+            "1063",
+            "1065"
           ]
         },
         {
@@ -2382,7 +2383,7 @@
           },
           "how_to_reach": "Edit / Add; L.setState({acct:{tab:'addr', editAddr:'delivery'}})",
           "sc_if_tpl_ids": [
-            "1066"
+            "1067"
           ],
           "animation_ids": [
             "CA-87",
@@ -2398,7 +2399,7 @@
       "id": "S-50",
       "kind": "panel",
       "name": "Wishlist",
-      "template_tpl_id": "1078",
+      "template_tpl_id": "1079",
       "route": "account",
       "parent": "S-45",
       "opened_by": "Wishlist tab",
@@ -2421,7 +2422,7 @@
           },
           "how_to_reach": "Heart a frame; L.setState({favs:[5,2]})",
           "sc_if_tpl_ids": [
-            "1083"
+            "1084"
           ]
         },
         {
@@ -2431,7 +2432,7 @@
           },
           "how_to_reach": "L.setState({favs:[]})",
           "sc_if_tpl_ids": [
-            "1089"
+            "1090"
           ],
           "animation_ids": [
             "TR-97"
@@ -2445,7 +2446,7 @@
       "id": "S-51",
       "kind": "form",
       "name": "Account details",
-      "template_tpl_id": "1094",
+      "template_tpl_id": "1095",
       "route": "account",
       "parent": "S-45",
       "opened_by": "Account details tab",
@@ -2468,7 +2469,7 @@
           },
           "how_to_reach": "L.setState({acct:{tab:'details', saved:false}})",
           "sc_if_tpl_ids": [
-            "1094"
+            "1095"
           ],
           "animation_ids": [
             "CA-89",
@@ -2483,7 +2484,7 @@
           },
           "how_to_reach": "Save changes",
           "sc_if_tpl_ids": [
-            "1119"
+            "1120"
           ],
           "animation_ids": [
             "CA-90"
@@ -2497,7 +2498,7 @@
       "id": "S-52",
       "kind": "form-step",
       "name": "Checkout account option",
-      "template_tpl_id": "755",
+      "template_tpl_id": "756",
       "route": "checkout",
       "parent": "S-15",
       "opened_by": "Contact step of checkout",
@@ -2521,7 +2522,7 @@
           },
           "how_to_reach": "L.setState({page:'checkout', user:null, co:{method:'delivery', rxMode:'upload', account:false, email:''}})",
           "sc_if_tpl_ids": [
-            "755"
+            "756"
           ],
           "animation_ids": [
             "CA-70"
@@ -2535,8 +2536,8 @@
           },
           "how_to_reach": "Tick Create an account (a password field appears)",
           "sc_if_tpl_ids": [
-            "755",
-            "761"
+            "756",
+            "762"
           ],
           "animation_ids": [
             "CA-70"
@@ -2549,7 +2550,7 @@
           },
           "how_to_reach": "Sign in first; email, mobile and delivery address prefill",
           "sc_if_tpl_ids": [
-            "765"
+            "766"
           ]
         }
       ],

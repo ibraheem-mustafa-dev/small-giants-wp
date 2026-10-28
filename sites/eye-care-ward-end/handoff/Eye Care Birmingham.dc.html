@@ -582,6 +582,7 @@ nav[aria-label="Account"]::-webkit-scrollbar{display:none}
     </nav>
     <a href="#" onClick="{{ goHome }}" aria-label="Eye Care Birmingham home" style="display:flex;align-items:center;gap:12px;color:#141414">
       <img src="assets/ec-logo.png" alt="Eye Care Birmingham" width="{{ logoW }}" height="{{ logoH }}" style="display:block;object-fit:contain;transition:width .35s,height .35s">
+      <img src="assets/eye-care-wordmark.png" alt="" aria-hidden="true" width="{{ wordmarkW }}" height="{{ wordmarkH }}" style="display:block;object-fit:contain;transition:width .35s,height .35s">
     </a>
     <div style="display:flex;justify-content:flex-end;gap:6px;align-items:center;font-size:13.5px;letter-spacing:.06em;text-transform:uppercase">
       <sc-if value="{{ navFull }}" hint-placeholder-val="{{ true }}">
@@ -2003,8 +2004,7 @@ nav[aria-label="Account"]::-webkit-scrollbar{display:none}
 <footer class="sgs-footer" style="border-top:1px solid #E6E1DA;background:#FAF8F5;margin-top:40px">
   <div style="max-width:1440px;margin:0 auto;padding: {{ secPad }};display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:36px;font-size:14px">
     <div>
-      <div style="font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em;font-size:18px">EYE CARE</div>
-      <div style="font-size:9.5px;letter-spacing:.32em;color:#77716A;margin-top:4px">BIRMINGHAM</div>
+      <img src="assets/eye-care-wordmark.png" alt="Eye Care Birmingham" width="111" height="32" style="display:block;object-fit:contain">
       <p style="margin:18px 0 0;color:#5E584F;max-width:32ch;text-wrap:pretty">Designer eyewear from an independent optician in Birmingham.</p>
       <div style="display:flex;gap:10px;margin-top:20px">
         <a href="{{ igHref }}" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram" style="width:40px;height:40px;border:1px solid #E6E1DA;background:#fff;display:flex;align-items:center;justify-content:center;transition:border-color .25s,box-shadow .25s" style-hover="border-color:#C13584;box-shadow:0 0 0 1px #C13584">
@@ -2042,7 +2042,7 @@ nav[aria-label="Account"]::-webkit-scrollbar{display:none}
 <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
   <div class="sgs-mobile-menu" style="position:fixed;inset:0;z-index:60;background:#FAF8F5;animation:fade .3s both;display:flex;flex-direction:column;padding:20px 24px;overflow:auto">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <span style="font-family:'Playfair Display',serif;font-weight:500;letter-spacing:.14em">EYE CARE</span>
+      <img src="assets/eye-care-wordmark.png" alt="Eye Care Birmingham" width="97" height="28" style="display:block;object-fit:contain">
       <button onClick="{{ toggleMenu }}" aria-label="Close menu" style="background:none;border:0;font-size:28px;min-width:44px;min-height:44px">×</button>
     </div>
     <nav style="display:flex;flex-direction:column;margin-top:32px;font-family:'Playfair Display',serif;font-weight:500;font-size:34px">
@@ -3070,7 +3070,7 @@ class Component extends DCLogic {
       mobile, notMobile: !mobile, hideOnMobile: mobile ? 'none' : 'inline',
       navFull: effW >= 1060, navCompact: effW < 1060,
       phoneDisplay: effW >= 1160 ? 'flex' : 'none',
-      navPad: S.scrolled ? '10px 24px' : (mobile ? '12px 16px' : '20px 28px'), logoW: S.scrolled ? 40 : 48, logoH: S.scrolled ? 18 : 22, wordmarkSize: S.scrolled ? '15px' : '18px',
+      navPad: S.scrolled ? '10px 24px' : (mobile ? '12px 16px' : '20px 28px'), logoW: S.scrolled ? 40 : 48, logoH: S.scrolled ? 18 : 22, wordmarkW: S.scrolled ? 92 : 110, wordmarkH: S.scrolled ? 26 : 32,
       ticker: (mobile ? C.TICKER.concat(C.TICKER) : (() => {
         // fit as many claims as the row can actually hold: est. width = text + icon + gap, 32px between items, 48px side padding
         const avail = effW - 48;
