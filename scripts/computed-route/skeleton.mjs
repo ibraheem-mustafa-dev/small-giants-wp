@@ -29,7 +29,7 @@ import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { loopingKeys, carouselKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
-import { calKeysFor, calSettingsFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
+import { calKeysFor, calSettingsFor, calPaintFor, statesOfRecord, thresholdsOf } from './lib/skeleton-context.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
 import { carriedIds } from './lib/skeleton-carried.mjs';
 import { formLinksFor } from './lib/skeleton-form-link.mjs';
@@ -139,7 +139,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const commerce = commerceOf( readSurface( repo, client, surface ), rows, catalogue, loadShopParts( path.join( repo, 'sites', client, 'build' ) ) );
 	// A loop of products, brands or reviews on any page is a working block (lib/skeleton-loop-blocks.mjs): the page map names the product page, the catalogue the brands.
 	const loops = { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels: served ? servedMotion( ctx.carousels, ctx.rootComponent ) : ctx.carousels };
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, loops, built: ctx.built, carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent: served ? ctx.rootComponent : null } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( readSurface( repo, client, surface ).site ), calSettings: calSettingsFor( readSurface( repo, client, surface ).site ), calPaint: calPaintFor( readSurface( repo, client, surface ).site ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };

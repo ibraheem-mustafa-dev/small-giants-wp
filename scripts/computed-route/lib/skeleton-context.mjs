@@ -24,6 +24,9 @@ export const calKeysFor = ( site ) => ( slug ) => Object.keys( loadCalibration( 
 // The calibration's settings (each with the slot it was measured on) for a block on a site.
 export const calSettingsFor = ( site ) => ( slug ) => loadCalibration( CACHE, slug, site )?.settings || {};
 
+// The calibration's default paint for a block on a site: each rendered element path to its computed style per width.
+export const calPaintFor = ( site ) => ( slug ) => loadCalibration( CACHE, slug, site )?.elements || {};
+
 const readJson = ( file, fallback ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : fallback );
 
 // The states of the handoff record with surface id `id`: each carries the sc-if templates it shows.
@@ -49,7 +52,7 @@ export function proposalContext( { repo, client, slug, id, breakpoints, site = s
 	const rows = readJson( path.join( build, 'page-map.json' ), null ) ?? pageMap ?? [];
 	const catalogue = loadCatalogue( repo, client );
 	return {
-		calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ),
+		calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), calPaint: calPaintFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ),
 		formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client, routing, proposedRows: pageMap?.length ? pageMap : null } ),
 		carried: carriedIds( { repo, client, site, rootComponent } ), scriptOf: ( component ) => componentScript( path.join( repo, 'sites', client, 'handoff' ), component ),
 		// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region, and a loop of products, brands or reviews is a working block.
