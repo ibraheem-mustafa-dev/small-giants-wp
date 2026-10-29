@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/site-build-flow-product.mjs",
+		"find": ".filter( ( id ) => products.has( id ) )",
+		"replace": ".filter( () => true )",
+		"why": "an id the catalogue lacks is a sold product"
+	},
+	{
+		"file": "lib/site-build-flow-product.mjs",
+		"find": "if ( 1 !== sold.length ) {",
+		"replace": "if ( 0 === sold.length ) {",
+		"why": "two catalogue products pick the first"
+	},
+	{
+		"file": "lib/site-build-flow-product.mjs",
+		"find": "} else if ( have.current !== productId ) {",
+		"replace": "} else {",
+		"why": "a flow already on its product is rewritten"
+	},
+	{
+		"file": "lib/site-build-flow-product.mjs",
+		"find": "} else if ( ! productId ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a product the site lacks is set as null"
+	},
+	{
+		"file": "lib/site-build-flow-product.mjs",
+		"find": "const SKU = /^[\\w.-]+$/;",
+		"replace": "const SKU = /.*/;",
+		"why": "a SKU is not filtered before the PHP"
+	},
+	{
+		"file": "lib/site-build-flow-product.mjs",
+		"find": "if ( done.wrong.length || again.actions.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a write that does not read back passes"
+	},
+	{
+		"file": "lib/site-build-flow-product.mjs",
+		"find": "if ( ! apply ) {",
+		"replace": "if ( false ) {",
+		"why": "a dry run writes"
+	}
+]

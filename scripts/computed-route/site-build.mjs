@@ -3,6 +3,7 @@
 //   node site-build.mjs <client> --site <secrets name, e.g. indus-test> [--apply] [--templates-only] [--only <row key,...>] [--repo <root>]
 //   node site-build.mjs <client> --promote-options <Fill run folder or its site-options.json> [--repo <root>]
 //   node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <site> --flow-products [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --store-visible [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]
@@ -15,7 +16,9 @@
 // Fill run (lib/site-build-options.mjs). --flow-links runs only the product flow links (lib/site-build-flow-links.mjs):
 // each published product covered by a page-map product row with `opensFlow` gets that flow's slug as `_sgs_choice_flow`
 // (a dry run without --apply), reading the page map and writing nothing else, the map included; a whole build (neither
-// --templates-only nor --only) runs the same step after its four phases. --catalogue runs only the draft catalogue
+// --templates-only nor --only) runs the same step after its four phases. --flow-products runs only the flow products
+// (lib/site-build-flow-product.mjs): each choice flow's `flowProductId` set to the catalogue product its basket call adds (a
+// dry run without --apply); a whole build runs it after the flow links. --catalogue runs only the draft catalogue
 // (lib/site-build-catalogue.mjs, FR-48-92): every product of sites/<client>/build/catalogue.json planned by SKU (create,
 // complete, exists, or left when it is a fixture), made or completed with --apply, read back, and its product id and
 // permalink recorded in catalogue.json's `sites.<site>`; the page map is neither read nor written. --store-visible runs
@@ -41,6 +44,7 @@ import { promoteSiteOptions, withSiteOptions } from './lib/site-build-options.mj
 import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
+import { runFlowProducts } from './lib/site-build-flow-product.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
@@ -96,6 +100,14 @@ if ( args.includes( '--store-visible' ) ) {
 if ( args.includes( '--flow-links' ) ) {
 	try {
 		process.exit( runFlowLinks( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
+if ( args.includes( '--flow-products' ) ) {
+	try {
+		process.exit( runFlowProducts( { repo, client, rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -204,6 +216,10 @@ try {
 	// The product flow links last, once the posts phase has made the flow posts they name.
 	if ( ! templatesOnly && ! onlyRows && 0 !== runFlowLinks( { rows, runPhp, apply: true } ) ) {
 		throw new Error( 'the product flow links did not complete' );
+	}
+	// Each flow's product (`flowProductId`) last of all, once the catalogue step has made the products it sells.
+	if ( ! templatesOnly && ! onlyRows && 0 !== runFlowProducts( { repo, client, rows, runPhp, apply: true } ) ) {
+		throw new Error( 'the flow products did not complete' );
 	}
 } catch ( e ) {
 	console.error( `FAILED: ${ e.message }` );

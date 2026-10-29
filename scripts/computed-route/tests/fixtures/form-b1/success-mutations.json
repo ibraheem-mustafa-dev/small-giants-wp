@@ -1,0 +1,92 @@
+[
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "/sent|submitted|success|done|thanks|complete/i",
+		"replace": "/sent|submitted|success|done|thanks|complete|sending/i",
+		"why": "a sending flag counts as a result key"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "[ 'button', 'a', 'input'",
+		"replace": "[ 'a', 'input'",
+		"why": "the reset button is part of the message"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "Number( a.template.n ) - Number( b.template.n )",
+		"replace": "Number( b.template.n ) - Number( a.template.n )",
+		"why": "the sent state reads in reverse order"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "[ 'string', 'number' ].includes( v[ 0 ].t )",
+		"replace": "[ 'string', 'number', 'array' ].includes( v[ 0 ].t )",
+		"why": "a blank with no single value is written as text"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "( /[.!?…:]$/.test( p ) ? p : `${ p }.` )",
+		"replace": "p",
+		"why": "a heading gets no full stop"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "( facts.surfaces[ s.parent ]?.roots || [] ).some( ( r ) => chain.includes( r ) )",
+		"replace": "true",
+		"why": "any result surface of the component is this form's"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "return draftDir || path.join( repo, entry?.draftDir || path.join( 'sites', client, 'handoff' ) );",
+		"replace": "return draftDir || null;",
+		"why": "a URL-served run has no draft folder"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "entry?.draftDir || path.join( 'sites', client, 'handoff' )",
+		"replace": "path.join( 'sites', client, 'handoff' )",
+		"why": "the surface's own draftDir is ignored"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": "worded && notes.push(",
+		"replace": "notes.push(",
+		"why": "an icon-only blank is named as a lost blank"
+	},
+	{
+		"file": "lib/fill-form-success.mjs",
+		"find": ".filter( ( p ) => /[\\p{L}\\p{N}]/u.test( p ) );",
+		"replace": ".filter( Boolean );",
+		"why": "a decorative glyph is part of the message"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "put( 'required', true, 'required' );",
+		"replace": "true;",
+		"why": "a field the script refuses when empty is not made required"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "set( copy.required ) && attrDef( db, block, 'required' ) && put(",
+		"replace": "set( copy.required ) && put(",
+		"why": "a block with no required setting gets a gap row"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "if ( 'sgs/form' === rec.name && attrDef( db, rec.name, 'successMessage' ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the sent state is never written"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "scriptOf: ( c ) => componentScript( draftFolder, c )",
+		"replace": "scriptOf: () => null",
+		"why": "the form's own script is never read"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "sources: formSources( draftFolder,",
+		"replace": "sources: formSources( o.draftDir,",
+		"why": "a URL-served run reads no form sources"
+	}
+]

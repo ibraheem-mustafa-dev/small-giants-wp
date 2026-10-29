@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-form-conditions.mjs",
+		"find": "op: '===' === m[ 3 ] ? 'equals' : 'not_equals'",
+		"replace": "op: 'equals'",
+		"why": "a not-equal test reads as equal"
+	},
+	{
+		"file": "lib/fill-form-conditions.mjs",
+		"find": "if ( ! new RegExp( `setState\\\\(\\\\s*\\\\{\\\\s*${ key }\\\\s*:\\\\s*${ m[ 1 ] }\\\\b` ).test( body ) ) {",
+		"replace": "if ( false ) {",
+		"why": "any mapped pair list is the choice's"
+	},
+	{
+		"file": "lib/fill-form-conditions.mjs",
+		"find": "if ( t && label ) {",
+		"replace": "if ( t ) {",
+		"why": "a test on a key no choice sets still gives a condition"
+	},
+	{
+		"file": "lib/fill-form-conditions.mjs",
+		"find": "out[ m[ 1 ] ] ??= {",
+		"replace": "out[ m[ 1 ] ] = {",
+		"why": "the last test of a property wins"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "c.chips.some( ( k ) => k.label === shown.label )",
+		"replace": "c.chips.some( ( k ) => k.label !== shown.label )",
+		"why": "the wrong choice field is the owner"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "owner.node.attributes?.fieldName || shown.key;",
+		"replace": "'field';",
+		"why": "the choice field is not named by the draft's state key"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "condition = { field: fieldName, op: shown.op, value: shown.label };",
+		"replace": "condition = { field: fieldName, op: 'equals', value: shown.label };",
+		"why": "the operator is dropped"
+	},
+	{
+		"file": "lib/fill-form.mjs",
+		"find": "condition = { field: fieldName, op: shown.op, value: shown.label };",
+		"replace": "condition = { field: fieldName, op: shown.op, value: shown.value };",
+		"why": "the condition waits on the choice id, not the tile's label"
+	}
+]

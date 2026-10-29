@@ -47,6 +47,7 @@ import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
 import { formWrites, formSources } from './lib/fill-form.mjs';
+import { draftFolderOf } from './lib/fill-form-success.mjs';
 import { listContentWrites, logicReader, applyChildren } from './lib/fill-list-content.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
@@ -202,8 +203,9 @@ export async function fillSurface( o ) {
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
+		const draftFolder = draftFolderOf( { draftDir: o.draftDir, entry, repo, client: o.client } );
 		const result = fillTree( {
-			tree, nodes, reads, db, calFor, origin: reads.origin,
+			tree, nodes, reads, db, calFor, origin: reads.origin, draftFolder,
 			// FR-48-30: the confirmed page map (a draft's #/route link is written as that page's permalink); null before intake.
 			pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null,
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
@@ -269,8 +271,8 @@ export async function fillSurface( o ) {
 		// FR-48-57: each form field's settings from the draft's control and logic (lib/fill-form.mjs).
 		// The draft's logic, read from the draft folder (--draft-dir, else the surface's `draftDir`, else the client's handoff folder),
 		// also when the draft is served by URL: the form's button words and the list items read it.
-		const idxFor = logicReader( o.draftDir || path.join( repo, entry.draftDir || path.join( 'sites', o.client, 'handoff' ) ) );
-		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( o.draftDir, facts, intakeParts.rootComponent ), idxFor } );
+		const idxFor = logicReader( draftFolder );
+		const forms = formWrites( { nodes, flat, refOf, reads, facts, flags: intakeParts.flags, db, component: intakeParts.rootComponent, sources: formSources( draftFolder, facts, intakeParts.rootComponent ), idxFor, draftFolder } );
 		result.writes.push( ...forms.writes );
 		result.unmapped.push( ...forms.unmapped );
 		result.settled.push( ...forms.settled );
