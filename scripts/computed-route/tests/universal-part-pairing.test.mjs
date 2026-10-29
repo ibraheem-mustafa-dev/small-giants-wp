@@ -252,6 +252,11 @@ test( 'MUST FAIL (a product card\'s content part): the saving badge is the eleme
 	assert.ok( ! Object.entries( r.slots ).some( ( [ k, f ] ) => 'Root>Frame Card@139#0/15#0' === f.tpl && /__(title|attribute-tag|saving)/.test( k ) ) );
 	// A loop deep in one branch (the card's colour swatches) is no copy of a part standing at the card's top.
 	assert.ok( ! /\/31#/.test( r.slots[ 'div:nth-of-type(1)' ]?.tpl ?? '' ), 'the image box is no swatch' );
+	// The card's image box and body are not the section that wraps the card: their parts pair deeper, so neither is guessed.
+	for ( const part of [ 'div:nth-of-type(1)', '.sgs-product-card__body' ] ) {
+		assert.ok( ! ( part in r.slots ), `${ part } is not the wrapping section` );
+		assert.match( r.unpaired.find( ( u ) => part === u.slot ).reason, /only wraps it/ );
+	}
 } );
 
 test( 'wrappers only the draft draws around a loop or around the parts pass through', () => {

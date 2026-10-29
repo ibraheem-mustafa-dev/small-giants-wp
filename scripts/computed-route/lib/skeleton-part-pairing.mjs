@@ -244,6 +244,8 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 	// Whether a part under P has been paired with an element other than x, or is itself the svg or picture x is.
 	// The boxes that took the element above through the pass rule, each kept only while a part below it reaches an element.
 	const collapsed = new Set();
+	// Whether a part under P was paired with one of x's own children.
+	const holdsChild = ( P, x ) => [ ...at.entries() ].some( ( [ q, y ] ) => q.startsWith( `${ P } > ` ) && ! y.virtual && y.parentKey === x.key );
 	const reached = ( P, x ) => [ ...at.entries() ].some( ( [ q, y ] ) => q.startsWith( `${ P } > ` ) && ! y.virtual && ( y !== x || ( !! selfOf( x ) && B.self( q ) === selfOf( x ) ) ) );
 
 	const align = ( P, x ) => {
@@ -443,8 +445,16 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 			at.delete( c );
 			if ( reached( c, x ) ) {
 				// Two nested boxes the draft draws as one element (a logo tile and the link inside it): the one holding settings
-				// reads it, so a settings-holding box under a part holding none (a bare block root included) takes that element.
-				B.targets.includes( c ) && ( '' === P ? B.boxRoot : ! B.targets.includes( P ) ) && suits( c, x ) ? ( at.set( c, x ), collapsed.add( c ) ) : why.set( c, 'a box the draft does not draw: its parts pair inside the element above' );
+				// reads it, so a settings-holding box under a part holding none (a bare block root included) takes that element, when
+				// x is the box: a part below it reached one of x's own children. A part reached deeper (a product card's badge inside
+				// the card a section wraps) says x is only around the box, not the box.
+				const takes = B.targets.includes( c ) && ( '' === P ? B.boxRoot : ! B.targets.includes( P ) ) && suits( c, x );
+				if ( takes && holdsChild( c, x ) ) {
+					at.set( c, x );
+					collapsed.add( c );
+				} else {
+					why.set( c, takes ? 'its parts pair deeper than the element above, which only wraps it: its own element is not told apart' : 'a box the draft does not draw: its parts pair inside the element above' );
+				}
 				continue;
 			}
 			at.clear();
