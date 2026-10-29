@@ -27,6 +27,13 @@ import { openDb } from './db.mjs';
 import { collapseFlags, collapseMissing, paletteUsage, slimCensus } from './intake-run-collapse.mjs';
 import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
 
+// The inventory stage's animation records kept on the run context, where the proposals stage reads them (the looping keys a
+// skeleton needs, lib/skeleton-rerun.mjs::refreshIntakeSkeletons). Returns the stage's own result unchanged.
+export function keepAnimations( ctx, out ) {
+	ctx.animations = out?.inventory?.animations ?? null;
+	return out;
+}
+
 const gap = ( construct, draftId, error ) => ( { construct, draftId: String( draftId ?? '' ), error: String( error ?? '' ) } );
 
 // The framework facts (block.json files and the framework DB, read-only) always come from the code repository; only
@@ -126,7 +133,7 @@ export const STAGES = [
 			note: `${ c.rows.length } constructs, ${ c.pass ? 'pass' : `FAIL (${ c.problems.length } problems)` }, ${ unreached } unreached`,
 		};
 	} ],
-	[ 'breakpoints', ( job ) => {
+	[ 'breakpoints', ( job, ctx ) => {
 		const per = readBreakpoints( { folder: job.folder } );
 		ctx.breakpoints = per.map( ( { gaps, ...b } ) => ( void gaps, b ) );
 		return { breakpoints: ctx.breakpoints, gaps: per.flatMap( ( b ) => b.gaps ), note: per.map( ( b ) => `${ b.draft }: ${ b.basis ?? 'no basis' } ${ b.thresholds.map( ( t ) => t.value ).join( '/' ) }` ).join( '; ' ) };
@@ -200,7 +207,7 @@ export const STAGES = [
 	// dead-code verdict of the draft defects marking its record, and Claude Design's copies diffed (lib/intake-inventory.mjs).
 	[ 'inventory', async ( job, ctx ) => {
 		const { inventoryStage } = await import( './intake-inventory.mjs' );
-		return inventoryStage( job, ctx );
+		return keepAnimations( ctx, await inventoryStage( job, ctx ) );
 	} ],
 	// The browser half of the skeleton step: every surface root opened (a state-opened one through its opener), read at each
 	// width and its inventory saved to sites/<client>/build/intake/inventories. Nothing is proposed here: the proposals read the

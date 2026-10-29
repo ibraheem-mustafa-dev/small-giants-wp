@@ -1,0 +1,6 @@
+[
+	{"file": "lib/intake-run-stages.mjs", "find": "[ 'breakpoints', ( job, ctx ) => {", "replace": "[ 'breakpoints', ( job, ctx = {} ) => { ctx = {};", "why": "the breakpoints stage leaves its breakpoints on the run context"},
+	{"file": "lib/intake-run-stages.mjs", "find": "ctx.animations = out?.inventory?.animations ?? null;", "replace": "ctx.animations = ctx.animations ?? out?.inventory?.animations ?? null;", "why": "a run's own animation records replace any earlier value"},
+	{"file": "lib/intake-run-stages.mjs", "find": "ctx.animations = out?.inventory?.animations ?? null;\n\treturn out;", "replace": "return out;", "why": "the inventory stage keeps its animation records on the context"},
+	{"file": "lib/intake-run-stages.mjs", "find": "return keepAnimations( ctx, await inventoryStage( job, ctx ) );", "replace": "return inventoryStage( job, ctx );", "why": "the inventory stage hands its result through keepAnimations"}
+]
