@@ -175,7 +175,8 @@
 						"css:color": "featureColour",
 						"css:background-image": "featureColourGradient",
 						"css:-webkit-text-stroke-width": "featureTextStrokeWidth",
-						"css:-webkit-text-stroke-color": "featureTextStrokeColour"
+						"css:-webkit-text-stroke-color": "featureTextStrokeColour",
+						"input:separators": "featureSeparators"
 					},
 					"states": {
 						"hover": {

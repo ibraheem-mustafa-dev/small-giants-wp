@@ -59,14 +59,14 @@ final class Gift_Card_Form_View {
 				<legend class="sgs-gift-card-form__legend"><?php \esc_html_e( 'Choose an amount', 'sgs-blocks' ); ?></legend>
 				<?php foreach ( $config['amounts'] as $i => $pence ) : ?>
 					<span class="sgs-gift-card-form__amount">
-						<input class="sgs-gift-card-form__radio" type="radio" id="sgs-gc-amount-<?php echo (int) $pence; ?>" name="<?php echo \esc_attr( Gift_Card_Purchase_Fields::F_AMOUNT ); ?>" value="<?php echo (int) $pence; ?>" <?php \checked( (string) $pence === $chosen || ( '' === $chosen && 0 === $i ) ); ?> required />
-						<label class="sgs-gift-card-form__amount-label" for="sgs-gc-amount-<?php echo (int) $pence; ?>"><?php echo \esc_html( Gift_Card_Money::format( $pence ) ); ?></label>
+						<input class="sgs-gift-card-form__radio sgs-focus-source" type="radio" id="sgs-gc-amount-<?php echo (int) $pence; ?>" name="<?php echo \esc_attr( Gift_Card_Purchase_Fields::F_AMOUNT ); ?>" value="<?php echo (int) $pence; ?>" <?php \checked( (string) $pence === $chosen || ( '' === $chosen && 0 === $i ) ); ?> required />
+						<label class="sgs-gift-card-form__amount-label sgs-focus-proxy" for="sgs-gc-amount-<?php echo (int) $pence; ?>"><?php echo \esc_html( Gift_Card_Money::format( $pence ) ); ?></label>
 					</span>
 				<?php endforeach; ?>
 				<?php if ( $config['custom_enabled'] ) : ?>
 					<span class="sgs-gift-card-form__amount">
-						<input class="sgs-gift-card-form__radio" type="radio" id="sgs-gc-amount-custom" name="<?php echo \esc_attr( Gift_Card_Purchase_Fields::F_AMOUNT ); ?>" value="custom" <?php \checked( 'custom' === $chosen ); ?> />
-						<label class="sgs-gift-card-form__amount-label" for="sgs-gc-amount-custom"><?php \esc_html_e( 'Other amount', 'sgs-blocks' ); ?></label>
+						<input class="sgs-gift-card-form__radio sgs-focus-source" type="radio" id="sgs-gc-amount-custom" name="<?php echo \esc_attr( Gift_Card_Purchase_Fields::F_AMOUNT ); ?>" value="custom" <?php \checked( 'custom' === $chosen ); ?> />
+						<label class="sgs-gift-card-form__amount-label sgs-focus-proxy" for="sgs-gc-amount-custom"><?php \esc_html_e( 'Other amount', 'sgs-blocks' ); ?></label>
 					</span>
 					<p class="sgs-gift-card-form__field">
 						<label class="sgs-gift-card-form__label" for="sgs-gc-custom">

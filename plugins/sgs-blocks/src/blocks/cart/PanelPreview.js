@@ -12,6 +12,7 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { Button } from '@wordpress/components';
+import { separatorsLineCss, tierLengthPreview } from '../../utils';
 import { panelElementStyles, panelRootStyle, scrimPreviewStyle } from './panel-preview-style';
 
 /** The lucide "x" glyph, as the live close button and the remove control draw it. */
@@ -91,18 +92,34 @@ function SampleItem( { attrs, s } ) {
  * @param {string} props.displayMode  `flyout` or `drawer`.
  * @param {string} props.tier         The previewed device tier.
  * @param {Array}  props.palette      Theme colour palette.
+ * @param {string} props.clientId     The block's editor client ID, scoping the separator lines.
  * @return {Element} The static panel.
  */
-export default function PanelPreview( { attributes, displayMode, tier, palette } ) {
+export default function PanelPreview( { attributes, displayMode, tier, palette, clientId } ) {
 	const [ view, setView ] = useState( 'items' );
 	const s = panelElementStyles( attributes, tier, palette );
 	const isDrawer = 'drawer' === displayMode;
 	const showEmpty = 'empty' === view;
 	const note = ( attributes.panelInstalmentsNote || '' ).trim();
 	const taxNote = attributes.panelTaxNote ?? __( 'Shipping and taxes calculated at checkout.', 'sgs-blocks' );
+	const scope = `sgs-ed-sep-${ clientId }`;
+
+	// The line between item rows: the canvas mirrors the item-drawn rules the front end
+	// emits (includes/helpers-cart-panel-css.php) for the previewed device, in the space
+	// `panelBodyGap` sets (16px when unset).
+	const separatorsCss = separatorsLineCss(
+		attributes.separators,
+		{
+			item: `.${ scope } .sgs-cart__panel-items > .sgs-cart__item`,
+			direction: 'column',
+			gap: tierLengthPreview( attributes.panelBodyGap, tier ) || '16px',
+		},
+		tier
+	);
 
 	return (
-		<div className={ `sgs-cart__panel-preview${ isDrawer ? ' sgs-cart__panel-preview--drawer' : '' }` }>
+		<div className={ `sgs-cart__panel-preview ${ scope }${ isDrawer ? ' sgs-cart__panel-preview--drawer' : '' }` }>
+			{ ! showEmpty && separatorsCss && <style>{ separatorsCss }</style> }
 			{ isDrawer && (
 				<div className="sgs-cart__panel-preview-scrim" style={ scrimPreviewStyle( attributes, tier, palette ) } aria-hidden="true" />
 			) }
@@ -151,6 +168,7 @@ export default function PanelPreview( { attributes, displayMode, tier, palette }
 								</div>
 							</div>
 							<div className="sgs-cart__panel-items" style={ s.items }>
+								<SampleItem attrs={ attributes } s={ s } />
 								<SampleItem attrs={ attributes } s={ s } />
 							</div>
 							<div className="sgs-cart__panel-footer" style={ s.footer }>

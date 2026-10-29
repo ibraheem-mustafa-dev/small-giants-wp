@@ -361,7 +361,8 @@
 						"css:font-size": "itemOrnamentSize",
 						"css:display": "itemOrnament",
 						"css:gap": "itemOrnamentGap",
-						"anim:duration": "itemOrnamentFrameDuration"
+						"anim:duration": "itemOrnamentFrameDuration",
+						"input:frame-sequence": "itemOrnamentFrames"
 					},
 					"states": {
 						"hover": {
