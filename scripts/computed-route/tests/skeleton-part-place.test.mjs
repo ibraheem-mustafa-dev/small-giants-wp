@@ -8,7 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -29,7 +29,7 @@ const el = ( id, parent, tag, words, x = {} ) => {
 };
 const inv = ( elements ) => ( { checks: {}, source: 'fixture', root: 'header', generated: 'fixture', elements } );
 const DRAWER = { elements: {}, surfaces: { 'S-09': { id: 'S-09', kind: 'drawer', name: 'Mobile menu', parent: null } } };
-const run = ( elements ) => proposeSkeleton( { inventory: inv( elements ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, factRecord: DRAWER, openers: { 'S-09': 'Burger button (toggleMobile) on tablet and mobile' } } );
+const run = ( elements ) => proposeFixture( { inventory: inv( elements ), facts, surface: 'header', surfaceKind: 'header', surfaceName: 'Header', db, factRecord: DRAWER, openers: { 'S-09': 'Burger button (toggleMobile) on tablet and mobile' } } );
 
 // A header row (40, its inner box 41): a logo link, a compact-only wrapper (56) holding a tablet-only button (58) and the burger (59), the
 // desktop navigation (45) and a desktop-only button (54). `navAt` is the navigation's widths, `order` the row's children.

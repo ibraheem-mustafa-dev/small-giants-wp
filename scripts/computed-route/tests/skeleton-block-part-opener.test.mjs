@@ -14,10 +14,10 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { handlerOpens, opensOn } from '../lib/skeleton-handler-opens.mjs';
 import { blockPartSurfaces } from '../lib/skeleton-surface-role.mjs';
 import { narrowedLists } from '../lib/skeleton-narrowing.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -91,7 +91,7 @@ function run( o = {} ) {
 	] );
 	const factRecord = { schema: '1', client: 'fixture-client', elements, surfaces: o.surfaces ?? SURFACES(), sources: { files: { 'Root.dc.html': draft.hash } } };
 	const inventory = { checks: {}, source: 'fixture', root: 'header', generated: 'fixture', elements: list.map( ( [ n, p, tag, words, x ] ) => el( n, p, tag, words, x ) ) };
-	return proposeSkeleton( { inventory, facts: facts( draft.repo, o.edit ), surface: 'header', surfaceKind: o.kind ?? 'header', surfaceName: 'Header', db, factRecord, openers: o.openers ?? { 'S-05': 'Menu button (toggleMenu)', 'S-24': 'Bag button' }, pageMap: o.pageMap ?? [ CART() ] } );
+	return proposeFixture( { inventory, facts: facts( draft.repo, o.edit ), surface: 'header', surfaceKind: o.kind ?? 'header', surfaceName: 'Header', db, factRecord, openers: o.openers ?? { 'S-05': 'Menu button (toggleMenu)', 'S-24': 'Bag button' }, pageMap: o.pageMap ?? [ CART() ] } );
 }
 const all = ( l ) => l.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
 const nodeOf = ( r, k ) => all( r.skeleton ).find( ( n ) => n.draftRef?.tpl === k );

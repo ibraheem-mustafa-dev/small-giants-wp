@@ -1,0 +1,6 @@
+[
+	{ "file": "lint.mjs", "find": "const copied = SNIPPET_CARRIERS.has( file ) ? code.replace(", "replace": "const copied = false ? code.replace(", "why": "a review carrier copying the snippet is refused" },
+	{ "file": "lint.mjs", "find": "...( STYLE_ATTR_READ.test( code ) ?", "replace": "...( false ?", "why": "a raw style read passes" },
+	{ "file": "lint.mjs", "find": "if ( ! SKELETON_MODULE.test( file ) ) {", "replace": "if ( false ) {", "why": "every module is held to the skeleton rule" },
+	{ "file": "lint.mjs", "find": "const code = src.replace( /\\/\\*[\\s\\S]*?\\*\\//g, '' ).replace( /(^|[^:'\"`])\\/\\/.*$/gm, '$1' );", "replace": "const code = src;", "why": "a comment naming the snippet is refused" }
+]

@@ -13,11 +13,11 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { handlerWrites, opensOnWrites } from '../lib/skeleton-handler-opens.mjs';
 import { modalFrame, modalTargets } from '../lib/skeleton-opener.mjs';
 import { carriedIds } from '../lib/skeleton-carried.mjs';
 import { writeIdsSite } from '../lib/site-build-map.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -66,7 +66,7 @@ function run( o = {} ) {
 	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
 	f.decisions = structuredClone( f.decisions );
 	o.edit && o.edit( f.decisions.rules );
-	return proposeSkeleton( { inventory, facts: { ...f, repo: draft.repo }, surface: 'product', surfaceKind: 'surfaceKind' in o ? o.surfaceKind : 'page', surfaceName: o.surfaceName ?? 'Product', db, factRecord, openers: {}, pageMap: o.pageMap ?? [ ROW() ], carried: o.carried ?? null } );
+	return proposeFixture( { inventory, facts: { ...f, repo: draft.repo }, surface: 'product', surfaceKind: 'surfaceKind' in o ? o.surfaceKind : 'page', surfaceName: o.surfaceName ?? 'Product', db, factRecord, openers: {}, pageMap: o.pageMap ?? [ ROW() ], carried: o.carried ?? null } );
 }
 const all = ( l ) => l.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
 const nodeOf = ( r, k ) => all( r.skeleton ).find( ( n ) => n.draftRef?.tpl === k );

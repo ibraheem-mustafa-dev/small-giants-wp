@@ -1,6 +1,6 @@
 [
-	{ "file": "lib/skeleton-write-content.mjs", "find": "const leading = ! open || '' !== snippet.slice( open[ 0 ].length ).split( '<' )[ 0 ].trim();", "replace": "const leading = true;", "why": "a container's closing words are placed before its children" },
-	{ "file": "lib/skeleton-write-content.mjs", "find": "const leading = ! open || '' !== snippet.slice( open[ 0 ].length ).split( '<' )[ 0 ].trim();", "replace": "const leading = false;", "why": "a container's opening words are placed after its children" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "const leading = m.read.textLeads( e );", "replace": "const leading = true;", "why": "a container's closing words are placed before its children" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "const leading = m.read.textLeads( e );", "replace": "const leading = false;", "why": "a container's opening words are placed after its children" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "if ( ! words || ! textAttr || ( skeletonSettings( facts, block ).text && 'blockquote' !== e.tag ) ) {", "replace": "if ( true ) {", "why": "a container's own words are never carried" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "if ( ! words || ! textAttr || ( skeletonSettings( facts, block ).text && 'blockquote' !== e.tag ) ) {", "replace": "if ( ! words || ! textAttr ) {", "why": "a block that reads words into its own setting also gets a duplicate text child" },
 	{ "file": "lib/skeleton-write-content.mjs", "find": "textAttr && t && ! quoteBody && (", "replace": "textAttr && t && (", "why": "a blockquote body is written to the attribution" },

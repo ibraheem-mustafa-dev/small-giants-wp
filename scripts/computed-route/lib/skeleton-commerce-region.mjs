@@ -64,15 +64,13 @@ export function commerceOf( entry, rows = [], catalogue = null, shopParts = null
 	};
 }
 
-// An attribute as the draft's code writes it: the element's own opening tag (the inventory's `attrs` keeps a few only). The
-// draft runtime writes a camel-cased DOM property as `sc-camel-<kebab>` (`autoComplete` is `sc-camel-auto-complete`).
-const CAMEL = { autocomplete: 'auto-complete', inputmode: 'input-mode' };
-const tagAttr = ( e, name ) => new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ];
-const attr = ( e, name ) => String( e.attrs?.[ name ] ?? tagAttr( e, name ) ?? ( CAMEL[ name ] ? tagAttr( e, `sc-camel-${ CAMEL[ name ] }` ) : undefined ) ?? '' );
+// An attribute as the draft's code writes it, read through the one element-facts reader (`read`, lib/element-facts.mjs: the
+// rendered value, else the fact record's template attribute, a camel-cased DOM property such as `autoComplete` included).
+const attr = ( read, e, name ) => String( read.attr( e, name ) ?? '' );
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
 // The loop an element is an item of: its innermost sc-for, keyed by component (a tpl id is numbered per component).
 const loopOf = ( e ) => ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).map( ( x ) => templateKey( { dc: e.template, tpl: x.tpl } ) ).at( -1 ) ?? null;
-const isEntry = ( e ) => [ 'input', 'select', 'textarea' ].includes( e.tag ) && ! [ 'checkbox', 'radio', 'hidden', 'submit', 'button', 'reset', 'image', 'file', 'range', 'color' ].includes( attr( e, 'type' ).toLowerCase() );
+const isEntry = ( read, e ) => [ 'input', 'select', 'textarea' ].includes( e.tag ) && ! [ 'checkbox', 'radio', 'hidden', 'submit', 'button', 'reset', 'image', 'file', 'range', 'color' ].includes( attr( read, e, 'type' ).toLowerCase() );
 
 // Whether an href leads to the route `route` (a page file, `#/<route>`, `#<route>` or a path ending in it).
 export function leadsTo( href, route ) {
@@ -117,10 +115,10 @@ export function commerceRegion( { m, commerce, rule, toolbarRule = null } ) {
 	// An element's text with everything below it (an imported card's own elements carry no loop membership).
 	const text = ( e ) => String( e.allText ?? m.words( e ) );
 	const moneyLoops = [ ...loops.entries() ].filter( ( [ , list ] ) => list.some( ( e ) => money.test( text( e ) ) ) );
-	const payment = els.filter( ( e ) => isEntry( e ) && /^cc-/i.test( attr( e, 'autocomplete' ) ) );
-	const numeric = els.filter( ( e ) => isEntry( e ) && 'numeric' === attr( e, 'inputmode' ).toLowerCase() );
+	const payment = els.filter( ( e ) => isEntry( m.read, e ) && /^cc-/i.test( attr( m.read, e, 'autocomplete' ) ) );
+	const numeric = els.filter( ( e ) => isEntry( m.read, e ) && 'numeric' === attr( m.read, e, 'inputmode' ).toLowerCase() );
 	const paymentFields = payment.length ? payment : numeric.length >= 2 ? numeric : [];
-	const passwords = els.filter( ( e ) => 'input' === e.tag && 'password' === attr( e, 'type' ).toLowerCase() );
+	const passwords = els.filter( ( e ) => 'input' === e.tag && 'password' === attr( m.read, e, 'type' ).toLowerCase() );
 	const checkoutLinks = els.filter( ( e ) => leadsTo( e.attrs?.href, commerce.checkout ) );
 	// A region inside an overlay (an element fixed at every width it shows, the header's basket drawer) is that panel's,
 	// never the page's.
@@ -135,8 +133,8 @@ export function commerceRegion( { m, commerce, rule, toolbarRule = null } ) {
 			return null;
 		}
 		const tokens = new RegExp( spec.autocomplete, 'i' );
-		const fields = els.filter( ( e ) => isEntry( e ) && 'password' !== attr( e, 'type' ).toLowerCase() && ! overlay( e ) );
-		const identity = fields.some( ( e ) => spec.types.includes( attr( e, 'type' ).toLowerCase() ) || tokens.test( attr( e, 'autocomplete' ) ) ) || numeric.length >= 2;
+		const fields = els.filter( ( e ) => isEntry( m.read, e ) && 'password' !== attr( m.read, e, 'type' ).toLowerCase() && ! overlay( e ) );
+		const identity = fields.some( ( e ) => spec.types.includes( attr( m.read, e, 'type' ).toLowerCase() ) || tokens.test( attr( m.read, e, 'autocomplete' ) ) ) || numeric.length >= 2;
 		let region = fields.length >= spec.minFields && identity ? common( fields ) : null;
 		if ( ! region ) {
 			return null;

@@ -8,9 +8,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { commerceOf, commerceRegion, leadsTo } from '../lib/skeleton-commerce-region.mjs';
+import { proposeFixture, fixtureModel } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -27,7 +26,7 @@ const el = ( key, parentKey, tag, words = '', x = {} ) => {
 };
 const FIXED = { 375: 'fixed', 768: 'fixed', 1440: 'fixed' };
 const inv = ( elements ) => ( { generated: 'test', source: 'test', root: 'div', keyFormat: 'tpl', checks: { duplicateKeys: 0 }, elements } );
-const run = ( elements, commerce ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce, db } );
+const run = ( elements, commerce ) => proposeFixture( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce, db } );
 const find = ( tree, name ) => {
 	for ( const n of tree ) {
 		if ( n.name === name ) {
@@ -148,7 +147,7 @@ test( 'MUST FAIL: an account page read signed out makes its sign-in prompt, the 
 } );
 
 test( 'no account region without a sign-in page to link to, without a condition, or with two signed-out views', () => {
-	const m = ( els ) => inventoryModel( inv( els ) );
+	const m = ( els ) => fixtureModel( inv( els ) );
 	const of = ( els, commerce ) => commerceRegion( { m: m( els ), commerce, rule: RULE() } );
 	assert.equal( of( SIGNED_OUT, { role: 'account', checkout: null } ), null, 'a row whose forms all sit on its own page names no sign-in page' );
 	const registerOnly = SIGNED_OUT.filter( ( e ) => ! [ 'Root/23#0', 'Root/30#0' ].includes( e.key ) );
@@ -192,7 +191,7 @@ test( 'MUST FAIL: the shop\'s product grid is WooCommerce\'s product collection 
 } );
 
 test( 'no region without the structure: a page surface, a cart with only the drawer\'s lines, words alone, or two candidates', () => {
-	const m = ( els ) => inventoryModel( inv( els ) );
+	const m = ( els ) => fixtureModel( inv( els ) );
 	assert.equal( commerceRegion( { m: m( CART ), commerce: null, rule: RULE() } ), null, 'an ordinary page has no commerce role' );
 	assert.equal( commerceRegion( { m: m( [ CART[ 0 ], ...DRAWER ] ), commerce: { role: 'cart', checkout: 'Checkout.dc.html' }, rule: RULE() } ), null, 'the drawer\'s lines are the drawer\'s' );
 	const words = [ el( 'Root/1#0', null, 'div', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', 'Your basket: checkout now' ), el( 'Root/3#0', 'Root/1#0', 'a', 'Checkout', { attrs: { href: 'Checkout.dc.html' }, keep: true } ) ];

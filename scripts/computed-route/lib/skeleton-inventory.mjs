@@ -13,6 +13,9 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The attributes kept per element: what a block needs to know (link, name, label, image source) and the style attribute
 // (the fingerprint Fill's origin map keeps).
 const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
+// The computed values recorded per width (`resolved`): the inherited text properties, and the sizes, corner radii and padding
+// a rule compares against a number, whatever expression the draft wrote them with.
+export const RESOLVED = [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'line-height', 'width', 'height', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];
 
 // In-page (self-contained: its source is sent to the page). Whether a sibling is, or holds at any depth, the root of another
 // surface. `strips.exclude` is [ [ component, tpl ] ]: a tpl number is unique only within its component, so an element is a
@@ -40,7 +43,7 @@ export function holdsOtherRoot( s, strips, srcDoc ) {
 // is or holds one at any depth holds another surface's root): the root's siblings are then read too, as `beside`, and the
 // elements of those in the chain of strips next to the root are inventoried under `strip` roots (rules.headerSlots decides
 // which are rows: lib/skeleton-header-slots.mjs::besideStrips). Returns { records, beside } or { error }.
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ] ) {
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, resolvedNames ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	const lineOf = new Function( `return (${ lineSrc });` )();
@@ -115,13 +118,26 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ]
 			}
 		}
 		let own = '';
+		let lead = null;
 		for ( const c of e.childNodes ) {
 			if ( 3 === c.nodeType ) {
 				own += `${ c.nodeValue } `;
+				null === lead && c.nodeValue.trim() && ( lead = true );
 			} else if ( 1 === c.nodeType && ! c.hasAttribute( 'data-dc-tpl' ) ) {
 				own += `${ c.textContent } `;
+				null === lead && c.textContent.trim() && ( lead = true );
+			} else if ( 1 === c.nodeType && null === lead && 'BR' !== c.tagName ) {
+				lead = false;
 			}
 		}
+		// The element's whole text with each line break as <br>, recorded only when it holds one.
+		let breaks = null;
+		if ( e.querySelector( 'br' ) ) {
+			const walk = ( n ) => ( 3 === n.nodeType ? n.nodeValue : 'BR' === n.tagName ? '<br>' : [ ...n.childNodes ].map( walk ).join( '' ) );
+			breaks = ws( walk( e ) ).replace( /\s*<br>\s*/g, '<br>' );
+		}
+		const cs = getComputedStyle( e );
+		const resolved = Object.fromEntries( resolvedNames.map( ( n ) => [ n, cs.getPropertyValue( n ) ] ) );
 		const attrs = {};
 		for ( const a of attrNames ) {
 			const v = e.getAttribute( a );
@@ -169,7 +185,7 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc ]
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, 120 ),
-			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
+			srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, ...( null !== breaks ? { textBreaks: breaks } : {} ), ...( own.trim() ? { textLeads: false !== lead } : {} ), resolved, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	scrollTo( scrollWas[ 0 ], scrollWas[ 1 ] );
@@ -227,7 +243,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ] );
+		const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), RESOLVED ] );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
 		}
@@ -293,7 +309,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString() ] );
+			const res = await page.evaluate( collect, [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), RESOLVED ] );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
 			}
@@ -357,7 +373,7 @@ export function withWidthOnly( runs ) {
 			}
 			const prev = recs.slice( 0, i ).reverse().find( ( x ) => have.has( x.key ) );
 			const at = prev ? out.findIndex( ( x ) => x.key === prev.key ) + 1 : 0;
-			out.splice( at, 0, { ...r, box: null, visible: false, position: null } );
+			out.splice( at, 0, { ...r, box: null, visible: false, position: null, resolved: null } );
 			have.add( r.key );
 		} );
 	}
@@ -370,7 +386,7 @@ function summarise( { runs, shots, skipped, url, root } ) {
 	const at = ( w, key ) => runs[ w ].records.find( ( x ) => x.key === key );
 	const elements = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
-		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
+		return { ...rest, box: { 375: at( 375, r.key )?.box ?? null, 768: at( 768, r.key )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, r.key )?.visible ?? false, 768: at( 768, r.key )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, r.key )?.position ?? null, 768: at( 768, r.key )?.position ?? null, 1440: r.position ?? null }, resolved: { 375: at( 375, r.key )?.resolved ?? null, 768: at( 768, r.key )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, r.key )?.layoutChanged ?? null, screenshots: shots[ r.key ] || {} };
 	} );
 	const tagOk = ( r ) => !! r.srcTag && r.srcTag.replace( /^sc-raw-/, '' ).toLowerCase() === r.tag;
 	const checks = {

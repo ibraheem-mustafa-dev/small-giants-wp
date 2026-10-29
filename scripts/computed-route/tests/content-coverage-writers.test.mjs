@@ -14,6 +14,7 @@ import { parseLogic } from '../lib/intake-ast.mjs';
 import { iconDecisions, ICON_SETTINGS, iconSettings, LUCIDE_FILE, BRAND_FILE } from '../lib/fill-icon.mjs';
 import { makeContent, skeletonSettings } from '../lib/skeleton-write-content.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
+import { elementFacts } from '../lib/element-facts.mjs';
 
 const attr = ( block_slug, attr_name, attr_type, more = {} ) => ( { block_slug, attr_name, attr_type, ...more } );
 const blocks = ( ...slugs ) => slugs.map( ( slug ) => ( { slug, title: slug, category: 'sgs', type: 'dynamic' } ) );
@@ -107,7 +108,7 @@ const SK = {
 test( 'every setting skeletonSettings claims is written by contentAttrs or carriedAttrs', () => {
 	const db = openDb( fixtureDb( SK ) );
 	const facts = loadFacts( { db, client: '' } );
-	const m = { words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [], els: [], byKey: {} };
+	const m = { read: elementFacts(), words: ( e ) => e.words ?? '', textWithBreaks: ( e ) => e.words ?? '', blockKids: () => [], els: [], byKey: {} };
 	const carried = { logo: () => ( { id: 5, asset: 'logo.png' } ), menu: () => 9 };
 	const { contentAttrs, carriedAttrs } = makeContent( { m, facts, view: 1440, carried, surfaceKind: 'header', siteLink: ( href ) => ( { kind: 'url', value: href } ) } );
 	const e = { key: 'k', tag: 'nav', words: 'Hello', display: 'flex', flexDirection: 'column', attrs: { href: '/x', target: '_blank' } };

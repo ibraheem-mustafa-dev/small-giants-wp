@@ -21,9 +21,10 @@ import { leadsTo } from './skeleton-commerce-region.mjs';
 
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
 const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
-const tagAttr = ( e, name ) => new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ];
-const hrefOf = ( e ) => String( e.attrs?.href ?? tagAttr( e, 'href' ) ?? '' ).trim();
-const scriptLink = ( e ) => 'a' === e.tag && [ '', '#' ].includes( hrefOf( e ) ) && /\ssc-camel-on-click=/.test( e.snippet || '' );
+// An element's link as the draft writes it, and whether it is a link that leads nowhere and runs a click handler instead,
+// read through the one element-facts reader (`read`, lib/element-facts.mjs).
+const hrefOf = ( read, e ) => String( read.attr( e, 'href' ) ?? '' ).trim();
+const scriptLink = ( read, e ) => 'a' === e.tag && [ '', '#' ].includes( hrefOf( read, e ) ) && !! read.handler( e );
 const pagePath = ( href ) => ( href.startsWith( '#' ) ? href : href.split( /[?#]/ )[ 0 ] );
 const COMMERCE_PAGES = new Set( [ 'shop', 'cart', 'checkout', 'account' ] );
 
@@ -62,8 +63,8 @@ export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), 
 		const inside = ( item ) => els.filter( ( e ) => e !== item && under( e, item ) );
 		const everyItem = ( test ) => items.every( ( it ) => test( it, [ it, ...inside( it ) ] ) );
 		// Products: a currency amount and a link to a product page in every item.
-		const toProduct = ( e ) => 'a' === e.tag && productRoutes.some( ( r ) => leadsTo( pagePath( hrefOf( e ) ), r ) );
-		if ( everyItem( ( it, all ) => money.test( all.map( text ).join( ' ' ) ) && all.some( ( e ) => toProduct( e ) || ( productRoutes.length && scriptLink( e ) ) ) ) ) {
+		const toProduct = ( e ) => 'a' === e.tag && productRoutes.some( ( r ) => leadsTo( pagePath( hrefOf( m.read, e ) ), r ) );
+		if ( everyItem( ( it, all ) => money.test( all.map( text ).join( ' ' ) ) && all.some( ( e ) => toProduct( e ) || ( productRoutes.length && scriptLink( m.read, e ) ) ) ) ) {
 			const attributes = JSON.parse( JSON.stringify( shop.attributes || {} ) );
 			attributes.query = { ...( attributes.query || {} ), inherit: false, perPage: items.length };
 			const top = items[ 0 ].box?.[ 1440 ]?.y;
@@ -83,8 +84,8 @@ export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), 
 		const rated = new RegExp( rule.reviews.rating, 'i' );
 		const quote = ( all ) => all.some( ( e ) => squash( m.words( e ) ).length >= rule.reviews.quoteLength );
 		const quoted = items.filter( ( it ) => quote( [ it, ...inside( it ) ] ) ).length;
-		if ( everyItem( ( it, all ) => rated.test( all.map( ( e ) => `${ text( e ) } ${ tagAttr( e, 'aria-label' ) ?? '' }` ).join( ' ' ) ) ) && quoted * 2 >= items.length ) {
-			const hrefs = items.flatMap( ( it ) => [ it, ...inside( it ) ] ).map( hrefOf ).filter( Boolean );
+		if ( everyItem( ( it, all ) => rated.test( all.map( ( e ) => `${ text( e ) } ${ m.read.attr( e, 'aria-label' ) ?? '' }` ).join( ' ' ) ) ) && quoted * 2 >= items.length ) {
+			const hrefs = items.flatMap( ( it ) => [ it, ...inside( it ) ] ).map( ( x ) => hrefOf( m.read, x ) ).filter( Boolean );
 			const hit = Object.entries( rule.reviews.providers ).find( ( [ , p ] ) => hrefs.some( ( h ) => new RegExp( p.host, 'i' ).test( h ) ) );
 			// A loop of review cards that is a scroll track the draft's script drives (a timer, pointer drag or arrow controls:
 			// lib/skeleton-rerun.mjs::carouselKeys) is the testimonial slider, each card a testimonial of it.
