@@ -122,6 +122,28 @@
 				"reason": "a WooCommerce page's template copy prints the page's own content, WooCommerce's working block, where the draft's commerce region is (rules.commerceRegion)"
 			}
 		],
+		"shopToolbar": {
+			"block": "sgs/container",
+			"attributes": { "tagName": "div", "className": "sgs-shop-toolbar" },
+			"count": "woocommerce/product-results-count",
+			"sort": "woocommerce/catalog-sorting",
+			"sortOptions": {
+				"menu_order": "^(featured|default|menu_order|recommended|relevance)$|default sort",
+				"popularity": "popular|best.?sell",
+				"rating": "rating|rated",
+				"date": "newest|latest|recent|^date$",
+				"price": "price.?asc|low.{0,6}high|^low$|cheapest|lowest",
+				"price-desc": "price.?desc|high.{0,6}low|^high$|dearest|highest"
+			},
+			"missingReason": "WooCommerce's sorting block has a fixed set of orders; a draft order it cannot express needs a framework build or a Bean decision (FR-48-61)",
+			"reason": "the draft's sort control and result count are WooCommerce's catalog-sorting and product-results-count in a toolbar row at the top of the product collection, as the theme's archive-product copy composes them (the count reads its query from the collection around it); found by the shop parts record's stamps, never by words (FR-48-61, FR-48-87)"
+		},
+		"categoryChips": {
+			"block": "woocommerce/product-filters",
+			"inner": [ { "name": "woocommerce/product-filter-taxonomy", "attributes": { "taxonomy": "product_cat", "displayStyle": "woocommerce/product-filter-chips" }, "innerBlocks": [ { "name": "woocommerce/product-filter-chips", "attributes": {}, "innerBlocks": [] } ] } ],
+			"minMatches": 2,
+			"reason": "a group of pressable chips on the shop whose labels are the catalogue's product categories is WooCommerce's product category filter in its chips look, which narrows the listing for real (FR-48-61, FR-48-87); found by the catalogue's categories (FR-48-92), never by a heading"
+		},
 		"filterRail": {
 			"reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words",
 			"block": "sgs/container",

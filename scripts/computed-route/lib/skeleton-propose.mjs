@@ -200,7 +200,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
 		// commerce region's WooCommerce piece, which draws the region from WooCommerce; the product card inside the shop's
 		// collection is read at the draft's first card, whose look it takes.
-		if ( 'formLink' === r.rule || 'commerceRegion' === r.rule ) {
+		if ( 'formLink' === r.rule || 'commerceRegion' === r.rule || 'categoryChips' === r.rule ) {
 			delete node.draftRef;
 			delete node.draftFingerprint;
 		}
@@ -212,6 +212,11 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			const read = ( { reads, ...n } ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item && false !== reads ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ) } : n );
 			const mark = ( n ) => read( { ...n, innerBlocks: n.innerBlocks.map( mark ) } );
 			node.innerBlocks = r.inner.map( copy ).map( mark );
+		}
+		// The category chips are WooCommerce's category filter (rules.categoryChips): its blocks are the rule's, read from nothing.
+		if ( 'categoryChips' === r.rule && r.inner ) {
+			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
+			node.innerBlocks = r.inner.map( copy );
 		}
 		// The filter rail's groups (lib/skeleton-filter-rail.mjs): a heading reads the draft's group label (`draftKey`), and a
 		// facet's filter names the site's attribute id for its slug, a carried id (lib/skeleton-carried.mjs).
@@ -369,12 +374,16 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	} );
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
 	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ) ];
+	// A draft sort option WooCommerce's sorting cannot express is a missing feature on its own row (lib/intake-missing.mjs).
+	for ( const x of cls.commerceRegion?.toolbar?.missing || [] ) {
+		rowOf[ x.key ] && ( rowOf[ x.key ].missingFeature = { line: x.line, why: x.why } );
+	}
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
 		...( role ? { surfaceRole: { role: role.role, row: role.row.slug, ...( role.part ? { part: role.part.label } : {} ) } } : {} ),
 		...( flowNode ? { choiceFlow: { steps: cls.choiceFlow.steps.length, questions: cls.choiceFlow.steps.filter( ( s ) => s.question ).length, results: cls.choiceFlow.steps.filter( ( s ) => s.result ).length, notes: cls.choiceFlow.notes } } : {} ),
-		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block } } : {} ),
+		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block, ...( cls.commerceRegion.toolbar ? { toolbar: { sort: cls.commerceRegion.toolbar.sort, count: cls.commerceRegion.toolbar.count, absorbed: cls.commerceRegion.toolbar.absorb, missing: cls.commerceRegion.toolbar.missing } } : {} ) } } : {} ),
 		...( cls.filterRail ? { filterRail: cls.filterRail.note ? { note: cls.filterRail.note } : { key: cls.filterRail.key, groups: cls.filterRail.groups, notes: cls.filterRail.notes, attributeIds: ctx.railIds || {} } } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
 		widthAlternatives, problems, rows,

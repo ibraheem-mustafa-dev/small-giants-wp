@@ -16,6 +16,8 @@
 //     to that page: the account block draws the sign-in form there for a visitor, and the account itself once signed in;
 //   - shop: the element whose children are the items of the product loop (an `sc-for` of a mounted card that shows a
 //     currency amount); WooCommerce's product collection draws the products, each in the site's own product card;
+//     the shop's sort control and result count become WooCommerce's sorting and count in a toolbar row at the top of that
+//     collection (lib/skeleton-shop-toolbar.mjs);
 //   - product: the single-product template's hero, lib/skeleton-product-region.mjs (the buy box composite and the bound title).
 // Only shown elements count, so a closed panel (the header's basket drawer) never holds evidence; two candidates for one
 // role leave the surface as it is, with a note naming them. Pure: the inventory model in, the region out.
@@ -23,6 +25,7 @@
 import { templateKey } from './fact-key.mjs';
 import { isAccountRow } from './site-build-map.mjs';
 import { productRegion } from './skeleton-product-region.mjs';
+import { shopToolbar } from './skeleton-shop-toolbar.mjs';
 import { shopPartStamps } from './skeleton-shop-locators.mjs';
 
 // The commerce role of a surface, by the template it builds (surfaces.json `target.template`) or, for the account page
@@ -81,7 +84,7 @@ export function leadsTo( href, route ) {
 // A page link without its query string and fragment (`SignIn.dc.html?mode=register` is the SignIn page); a hash link as it is.
 const pagePath = ( href ) => ( null == href ? href : String( href ).trim().startsWith( '#' ) ? href : String( href ).split( /[?#]/ )[ 0 ] );
 
-export function commerceRegion( { m, commerce, rule } ) {
+export function commerceRegion( { m, commerce, rule, toolbarRule = null } ) {
 	if ( ! commerce?.role || ! rule ) {
 		return null;
 	}
@@ -201,5 +204,8 @@ export function commerceRegion( { m, commerce, rule } ) {
 		const row = m.blockKids( region ).filter( ( k ) => null != top && k.box?.[ 1440 ]?.y === top ).length;
 		row > 0 && ( attributes.displayLayout.columns = row );
 	}
-	return { key: region.key, role: commerce.role, block: spec.block, attributes, inner: spec.inner || null, item: item || null, reason: `${ spec.reason } (${ evidence.join( '; ' ) })` };
+	// The shop's sort control and result count: a toolbar row at the top of the collection (lib/skeleton-shop-toolbar.mjs).
+	const toolbar = 'shop' === commerce.role ? shopToolbar( { m, commerce, region, rule: toolbarRule } ) : null;
+	const inner = toolbar && spec.inner ? [ toolbar.node, ...spec.inner ] : spec.inner || null;
+	return { key: region.key, role: commerce.role, block: spec.block, attributes, inner, item: item || null, ...( toolbar ? { toolbar } : {} ), reason: `${ spec.reason } (${ evidence.join( '; ' ) })` };
 }
