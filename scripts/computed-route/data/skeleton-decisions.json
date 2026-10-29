@@ -383,6 +383,10 @@
 			"block": "sgs/button",
 			"reason": "a button or link whose click handler writes the state a draft modal surface opens on (a state key one of its surfaces.json states holds at true, or at the literal the handler writes, lib/skeleton-handler-opens.mjs::opensOnWrites) opens that modal on the clone, and the page map holds the modal as an sgs_modal row: the control is a button linking #<anchor> of the sgs/modal frame the page carries (lib/skeleton-opener.mjs), which opens its modal post on any link to its anchor; the draft's control is never a dead button"
 		},
+		"formPrefillOpener": {
+			"block": "sgs/button",
+			"reason": "a button or link whose click handler scrolls to a form and sets its fields (a class method that looks a form element up and scrolls to it, called with the field values; lib/skeleton-form-prefill.mjs) opens that form on the clone, with the fields prefilled: the control is a button linking ?<field>=<value> (the query before the hash) and #<the form's anchor>, each loop copy's values read from the element printing them in that copy, and the form's fields read the query through valueFromParam; the draft's control is never a dead button"
+		},
 		"modalFrame": {
 			"block": "sgs/modal",
 			"names": { "scrim": "backdrop", "dialog": "dialog", "close": "close" },

@@ -23,6 +23,7 @@ import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { closesOn, handlerCloses, handlerOpens, handlerWrites, opensOn, opensOnWrites } from './skeleton-handler-opens.mjs';
 import { modalTargets } from './skeleton-opener.mjs';
 import { modalFrameParts } from './skeleton-modal-frame.mjs';
+import { formOpenerOf, prefillHref } from './skeleton-form-prefill.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -433,7 +434,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
 		// A draft <form> element is the form block; its fields sit inside it. The root of a form surface is the saved form's root
 		// block whatever its tag (a wizard drawn in a <div>): the saved form's root must be the form block, which the linked embed renders.
-		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) ? v( 'formHost', { block: R.formHost.block, attributes: formAnchor ? { anchor: formAnchor } : {} } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.
@@ -644,6 +645,40 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const closeKeys = ( e ) => ( facts.repo && facts.client
 		? handlerCloses( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler: handlerOf( e ) } )
 		: new Set() );
+	// The anchor a saved form is reached by (lib/skeleton-form-prefill.mjs): the slug a page's linked form block references it by
+	// (lib/skeleton-form-link.mjs), set on the form block that roots the form's own post, so a link `…#<slug>` on any page lands on it.
+	const formAnchor = 'form' === surface.kind && scope?.id ? ( surface.formLinks || [] ).find( ( l ) => l.recordId === scope.id )?.slug ?? null : null;
+	// The form a page shows, by the slug of the saved form its linked block references: the first element the form-link rule turns
+	// into the linked form block.
+	let formSlug;
+	const pageForm = () => {
+		if ( undefined === formSlug ) {
+			const hit = scope ? m.els.map( ( x ) => hooks.formLinkOf( x ) ).find( ( x ) => x?.block ) : null;
+			formSlug = Object.values( hit?.attributes || {} ).find( ( x ) => 'string' === typeof x ) ?? null;
+		}
+		return formSlug;
+	};
+	// The form opener a button or link runs, as the link it becomes: the page's form with the control's fields in the query. A field is
+	// the same on every copy (a literal), or the words of the element that prints the item path in the control's own loop copy.
+	const opensForm = ( e ) => {
+		const handler = handlerOf( e );
+		if ( ! R.formPrefillOpener || ! handler || ! [ 'a', 'button' ].includes( e.tag ) || ! facts.repo || ! facts.client ) {
+			return null;
+		}
+		const open = formOpenerOf( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e )?.template.component, handler } );
+		const anchor = open ? pageForm() : null;
+		if ( ! anchor ) {
+			return null;
+		}
+		const loop = ( e.membership || [] ).filter( ( x ) => 'sc-for' === x.kind ).at( -1 );
+		const copy = /#(\d+)$/.exec( e.key )?.[ 1 ];
+		const valueOf = ( rest ) => {
+			const field = loop && undefined !== copy ? `${ loop.as }.${ rest }` : null;
+			const from = field ? m.els.find( ( x ) => x.key.endsWith( `#${ copy }` ) && ( x.membership || [] ).some( ( y ) => 'sc-for' === y.kind && y.tpl === loop.tpl ) && ( view.entry( x )?.template.holes || [] ).some( ( h ) => 'text' === h.where && field === h.path ) ) : null;
+			return from ? m.words( from ) : null;
+		};
+		return { href: prefillHref( { fields: open.fields, anchor, valueOf } ), form: anchor };
+	};
 	// The frame parts of a modal surface (lib/skeleton-modal-frame.mjs): its dialog, backdrop and close become the `sgs/modal`
 	// frame's own settings (rules.modalFrame), and the root and the dialog panel unwrap into the post's inner content. Found once.
 	let frameParts;
@@ -757,6 +792,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const hit = opensModal( e );
 			const [ link, label ] = hit ? [ facts.firstAttrByRole( R.modalOpener.block, 'link-href' ), facts.firstAttrByRole( R.modalOpener.block, 'text-content' ) ] : [];
 			return hit && link ? v( 'modalOpener', { block: R.modalOpener.block, absorb: true, opens: hit, attributes: { ...( label && text ? { [ label ]: text } : {} ), [ link ]: `#${ hit.anchor }` }, reason: `${ R.modalOpener.reason }; it opens ${ hit.surface.id } (${ hit.surface.name }), the ${ hit.row.slug } row` } ) : null;
+		},
+		// A button or link whose click handler scrolls to a form and sets its fields opens that form on the clone (lib/skeleton-form-prefill.mjs):
+		// a button linking the page's form with each field in the query, which the form's fields read through `valueFromParam`.
+		( { e, text } ) => {
+			const hit = opensForm( e );
+			const [ link, label ] = hit ? [ facts.firstAttrByRole( R.formPrefillOpener.block, 'link-href' ), facts.firstAttrByRole( R.formPrefillOpener.block, 'text-content' ) ] : [];
+			return hit && link ? v( 'formPrefillOpener', { block: R.formPrefillOpener.block, absorb: true, attributes: { [ link ]: hit.href, ...( label && text ? { [ label ]: text } : {} ) }, reason: `${ R.formPrefillOpener.reason }; it opens the ${ hit.form } form` } ) : null;
 		},
 		// The draft's own close control of a drawer surface is the drawer block's close (FR-36-6: close is the drawer's own chrome):
 		// the block draws its close above its body, so the control is absorbed into the surface root and its look is read into
