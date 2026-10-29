@@ -187,7 +187,7 @@ test( 'the root of a page is not made a form block because it holds fields', () 
 
 test( 'a form surface takes the steps of its own draft component, never another form\'s schema', () => {
 	const own = propose( { inventory: wizard(), surface: 'form-enquiry', surfaceKind: 'form', surfaceName: 'Enquiry', factRecord: withSchema( 'Site' ) } );
-	assert.deepEqual( own.skeleton[ 0 ].innerBlocks.filter( ( n ) => /^sgs\/form-(step|review)$/.test( n.name ) ).map( ( n ) => n.attributes.label ?? 'review' ), [ 'Business', 'Contact', 'review' ] );
+	assert.deepEqual( own.skeleton[ 0 ].innerBlocks.filter( ( n ) => /^sgs\/form-(step|review)$/.test( n.name ) ).map( ( n ) => n.attributes.label ), [ 'Business', 'Contact', 'Review' ] );
 	const other = propose( { inventory: wizard(), surface: 'form-enquiry', surfaceKind: 'form', surfaceName: 'Enquiry', factRecord: withSchema( 'SomeoneElse' ) } );
 	assert.equal( other.skeleton[ 0 ].innerBlocks.some( ( n ) => /^sgs\/form-(step|review)$/.test( n.name ) ), false );
 } );
