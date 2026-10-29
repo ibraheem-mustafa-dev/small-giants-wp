@@ -171,7 +171,7 @@ export function pinnedTimelineOf( r ) {
 	if ( move && /translate3d|translateX/i.test( words( move.to, move.formula ) ) && new RegExp( `${ MINUS }\\s*p\\b` ).test( words( move.formula ) ) ) {
 		const carousel = /native horizontal scroller|scroll-snap/i.test( words( r.trigger?.detail ) );
 		return {
-			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, ...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
+			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal' }, ...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
 			accepted: 'the draft switches to its touch-only strip at 1024px; SGS pins from 768px and swipes below (Ruling 9)',
 			notes: [ 'the track moves sideways with the scroll while pinned' ],
 		};
@@ -188,4 +188,39 @@ export function pinnedTimelineOf( r ) {
 		return { blocks: { 'sgs/timeline': [ { attr: 'dateActiveColour', value: colourHex( colour.to ), colour: true }, ...( stroke && colourHex( stroke.to ) ? [ { attr: 'dateActiveTextStrokeColour', value: colourHex( stroke.to ), colour: true } ] : [] ) ] }, notes: [ 'the entry nearest the centre takes the active year colour' ] };
 	}
 	return null;
+}
+
+// A scroll track the draft's script drives, which the testimonial slider is: a timer that steps the track sideways
+// (`setInterval every 6000ms via step`, a `scrollTo( { left: ... } )`) is the slider's autoplay and its interval; pointer
+// dragging that suspends scroll snapping and moves `scrollLeft` is its drag to scroll; prev and next controls that step
+// the same function are its arrows. The track's other script writes (the drag handlers, the arrows' steps) are the slider's
+// own. Returns a behaviour ({ kind: 'settings' | 'covered', ... }) or null. `ctx.records` is the whole inventory.
+const STEPS = /scrollTo\(\s*\{\s*left/;
+const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && STEPS.test( words( r.source?.code ) );
+const everyMs = ( r ) => number( /setInterval\s+every\s+(\d*\.?\d+)\s*ms/i.exec( words( r.trigger?.detail ) )?.[ 1 ] );
+export function carouselOf( r, ctx = {} ) {
+	const all = ( ctx.records || [] ).filter( ( x ) => x.element?.dc === r.element?.dc && 'active' === ( x.status ?? 'active' ) );
+	const timer = all.find( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) && everyMs( x ) );
+	if ( ! timer ) {
+		return null;
+	}
+	const fn = timer.source?.function;
+	const drags = all.filter( ( x ) => /drag/i.test( x.source?.function ?? '' ) && 'js-style-write' === x.mechanism && props( x ).some( ( q ) => 'scroll-snap-type' === nameOf( q ) ) );
+	const moves = all.filter( ( x ) => /drag/i.test( x.source?.function ?? '' ) && 'js-scroll' === x.mechanism );
+	const steps = all.filter( ( x ) => x.source?.function === fn && isStep( x ) && 'interval' !== triggerOf( x ) );
+	const owns = new Set( [ ...all.filter( ( x ) => isStep( x ) && 'interval' === triggerOf( x ) && x.source?.function === fn ), ...drags, ...moves, ...steps ].map( ( x ) => x.id ) );
+	const dragging = drags.length > 0 && moves.length > 0;
+	const arrows = steps.length > 0;
+	if ( timer.id !== r.id ) {
+		return owns.has( r.id ) ? { kind: 'covered', by: 'testimonial-slider', reason: `a write of the scroll track ${ timer.id } drives (its timer, its pointer drag or its arrows): the testimonial slider's own autoplay, drag to scroll and arrows` } : null;
+	}
+	return {
+		kind: 'settings',
+		blocks: { 'sgs/testimonial-slider': [
+			{ attr: 'autoplay', value: true }, { attr: 'autoplaySpeed', value: everyMs( r ) },
+			...( dragging ? [ { attr: 'dragToScroll', value: true } ] : [] ), ...( arrows ? [ { attr: 'showArrows', value: true } ] : [] ),
+		] },
+		accepted: "the hover, touch and focus holds that pause the timer and the slider's own arrow and dot styling are the slider's own",
+		notes: [ `a scroll track stepped by a ${ everyMs( r ) }ms timer${ dragging ? ', dragged by the pointer' : '' }${ arrows ? ' and stepped by arrow controls' : '' } is the testimonial slider's autoplay${ dragging ? ', drag to scroll' : '' }${ arrows ? ' and arrows' : '' }`, "the slider's dots are not read from an active record, so showDots is left to the slider's own setting" ],
+	};
 }
