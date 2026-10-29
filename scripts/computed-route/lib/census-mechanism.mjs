@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { familyOf, physicalOf, isCssProperty } from './css-families.mjs';
 import { classify, loadRules } from './fill-census.mjs';
 import { mapResolverGap } from './gap-classes.mjs';
+import { boxDuplicates, walkerArtefacts } from './census-unassessed.mjs';
 
 const VOCAB = JSON.parse( fs.readFileSync( path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'census-mechanisms.json' ), 'utf8' ) );
 const FILL_STATE = VOCAB.fillStatePatterns.map( ( p ) => new RegExp( p, 'i' ) );
@@ -194,6 +195,20 @@ function fillClassOf( rule, fill ) {
 	return { fillClass: rule?.frClass ?? null, fillCandidate: !! rule?.candidate };
 }
 
+// The `ref → parent ref` map of a Fill run's tree.
+export function refParents( tree ) {
+	const out = new Map();
+	const walk = ( nodes, parent ) => {
+		for ( const n of Array.isArray( nodes ) ? nodes : [] ) {
+			const ref = String( n.attributes?.className ?? '' ).match( /cr-ref-[\w-]+/ )?.[ 0 ] ?? null;
+			ref && parent && out.set( ref, parent );
+			walk( n.innerBlocks, ref ?? parent );
+		}
+	};
+	walk( tree, null );
+	return out;
+}
+
 const keyOf = ( node, slot, property, state ) => [ node, slot || '', property, state ].join( SEP );
 
 // Joins one surface's walker items to its Fill rows and returns the census rows (one per walker item or unjoined Fill row),
@@ -243,7 +258,13 @@ export function surfaceRows( { client, surface, report, run, lookup, rules = loa
 			draft: f.value, live: null, confirm: confirmBy.get( keyOf( f.node, f.slot, f.property, f.state ) ) ?? null
 		} );
 	}
-	return { rows: rows.map( ( r ) => ( { ...r, block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : rowBlockFamily( r.slug, lookup ) } ) ), walk };
+	// A walker row with no Fill row is unassessed only after its measuring artefacts are moved out (lib/census-unassessed.mjs): a
+	// box width or height that repeats a width or height row is dropped, a box row and a motion technique difference are W-walker.
+	const repeats = boxDuplicates( rows );
+	const kept = rows.filter( ( r ) => ! repeats.has( r ) );
+	const parents = refParents( run?.tree );
+	const artefacts = walkerArtefacts( kept, ( ref ) => parents.get( ref ) ?? null );
+	return { rows: kept.map( ( r ) => ( { ...r, ...( artefacts.has( r ) ? { walkerArtefact: artefacts.get( r ).reason, walkerBy: artefacts.get( r ).by } : {} ), block: r.surfaceLevel ? VOCAB.surfaceBlockFamily : rowBlockFamily( r.slug, lookup ) } ) ), walk, dropped: repeats.size };
 }
 
 // An element row's block family: the DB's parent-chain root, `unregistered:<slug>` for a slug the framework DB does not hold

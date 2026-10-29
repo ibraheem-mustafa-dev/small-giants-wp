@@ -20,7 +20,7 @@
 		"render-wins": { "meaning": "the draft's code and render disagree and the rendered value is the target (FR-48-36); reported, never a gap", "owner": "the surface report; Claude Design when the code is the error" },
 		"CLIENT": { "meaning": "a recorded deliberate difference or a client decision", "owner": "the client's ledger" },
 		"held": { "meaning": "a row already held and judged live: the equivalence engine found the value inert, covered, inherited or the block's default, or a reduced-motion record the motion model removes itself; not a gap", "owner": "FR-48-65" },
-		"unassessed": { "meaning": "a walker row that no Fill row and no triage verdict covers, so no class has judged it yet", "owner": "FR-48-65" }
+		"unassessed": { "meaning": "a walker row with no Fill row, left after the measuring artefacts are moved out to W-walker (a box row, a motion technique difference, a repeat of a width or height row): the walker read a difference on a node and property Fill never judged, so there is no verdict on it; never a framework gap, and it stays on the surface report until a Fill row assesses it", "owner": "FR-48-65" }
 	},
 	"unmapped": [
 		{ "class": "reduced-motion", "pattern": "^a reduced-motion rule: the motion model removes motion", "owner": "Spec 38A §12 (the motion model removes motion under prefers-reduced-motion itself; an accepted model difference, no class of FR-48-65 names one, so it is held)", "frClass": "held" },
