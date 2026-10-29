@@ -320,7 +320,18 @@
 		},
 		"orientation": {
 			"type": "string",
-			"default": "vertical"
+			"default": "vertical",
+			"sgs": {
+				"meaning": {
+					"what": "Lays the timeline entries out down the page (vertical) or across it (horizontal); a horizontal timeline is the one the pinned horizontal scroll effect moves sideways.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "vertical or horizontal"
+						}
+					}
+				}
+			}
 		},
 		"headingLevel": {
 			"type": "string",

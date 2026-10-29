@@ -112,9 +112,7 @@
 					"label": "Content band",
 					"layer": "CONTENT",
 					"order": 7,
-					"clusters": [
-						"layout"
-					],
+					"clusters": [ "layout" ],
 					"prefix": "contentBand",
 					"attrMap": {
 						"css:max-width": "contentWidth",
@@ -211,7 +209,18 @@
 		},
 		"showArrows": {
 			"type": "boolean",
-			"default": true
+			"default": true,
+			"sgs": {
+				"meaning": {
+					"what": "Shows the previous and next arrow buttons beside the slides.",
+					"trigger": "always, from page load",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"slidesVisible": {
 			"type": "number",
@@ -308,7 +317,18 @@
 		},
 		"dragToScroll": {
 			"type": "boolean",
-			"default": false
+			"default": false,
+			"sgs": {
+				"meaning": {
+					"what": "Lets visitors drag the slider track sideways with a pointer to move between slides.",
+					"trigger": "a pointer drag on the slider track",
+					"parameters": {
+						"value": {
+							"unit": "boolean"
+						}
+					}
+				}
+			}
 		},
 		"borderWidth": {
 			"type": "object",
