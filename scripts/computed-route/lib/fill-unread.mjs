@@ -32,12 +32,14 @@ export function structureRowsFor( db, block ) {
 }
 
 // One node's unjudged settings. cal: the block's calibration; attributes: the skeleton node's own attributes; slots:
-// the element paths a finder read on this node ('' is the draftRef element); written: the settings Fill wrote on it.
+// the element paths a finder read on this node ('' is the draftRef element); written: the settings Fill wrote on it; band: the
+// slot of the block's content band (lib/fill-band.mjs::bandSetting), which the draftRef element is too: a block built on the
+// shared container wrapper draws one draft element as its root and its band, so reading the root reads the band's layout.
 // Returns [ { kind, slot, settings: [ attr ], reason } ].
-export function unreadOf( { db, block, cal, attributes = {}, slots = [], written = new Set() } ) {
+export function unreadOf( { db, block, cal, attributes = {}, slots = [], written = new Set(), band = null } ) {
 	const out = [];
 	const decided = ( a ) => Object.prototype.hasOwnProperty.call( attributes, a ) || written.has( a );
-	const read = new Set( slots.map( LOOSE ) );
+	const read = new Set( [ ...slots, ...( band && slots.includes( '' ) ? [ band ] : [] ) ].map( LOOSE ) );
 	const reached = ( paths ) => paths.some( ( p ) => read.has( LOOSE( p ) ) );
 
 	const byElement = new Map();

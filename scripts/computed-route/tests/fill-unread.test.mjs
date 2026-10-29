@@ -70,3 +70,64 @@ test( 'unreadOf: the content settings come from the database roles, never a list
 	const out = unreadOf( { db, block: 'sgs/business-info', cal: { ...CAL, presence: { ...CAL.presence, addressLink: { shows: [], hides: [] } } }, attributes: {}, slots: [ '' ], written: new Set() } );
 	assert.ok( ! out.some( ( u ) => u.settings.includes( 'addressLink' ) && /no presence reading/.test( u.reason ) ) );
 } );
+
+// A block built on the shared container wrapper draws one draft element as its root and its content band
+// (`.sgs-container__inner`): reading the root reads the band's layout settings, so they are not "never read".
+const BAND = '.sgs-container__inner';
+const ITEM = `${ BAND } > p:nth-of-type(1)`;
+// The root and the band measure the same default layout paint (as the real container calibration does), so they are one box.
+const layoutTiers = () => Object.fromEntries( THREE.map( ( w ) => [ w, { ...PAINT, 'grid-auto-rows': 'auto', 'justify-items': 'normal', 'align-content': 'normal' } ] ) );
+const CONTAINER_CAL = {
+	block: 'sgs/container',
+	elements: { '': layoutTiers(), [ BAND ]: layoutTiers(), [ ITEM ]: tiers() },
+	settings: { contentWidth: setting( BAND, 'max-width' ), gridAutoRows: setting( BAND, 'grid-auto-rows' ), justifyItems: setting( BAND, 'justify-items' ), gridItemPadding: setting( ITEM, 'padding' ), minHeight: setting( '', 'min-height' ) },
+	presence: {}, text: {}, discovered: {},
+};
+const listedOf = ( args ) => unreadOf( { db, block: 'sgs/container', cal: CONTAINER_CAL, attributes: {}, written: new Set(), ...args } ).flatMap( ( u ) => u.settings );
+
+test( 'MUST FAIL: the band the draft root is also read as is not listed unread; the children\'s settings still are', () => {
+	assert.ok( listedOf( { slots: [ '' ] } ).includes( 'gridAutoRows' ), 'without the band slot the layout settings are listed (the old accounting)' );
+	const listed = listedOf( { slots: [ '' ], band: BAND } );
+	for ( const attr of [ 'gridAutoRows', 'justifyItems', 'contentWidth' ] ) {
+		assert.ok( ! listed.includes( attr ), `${ attr } is judged with the root` );
+	}
+	assert.ok( listed.includes( 'gridItemPadding' ), 'a setting of the band\'s children is another element, still unread' );
+} );
+
+test( 'negative control: a node whose root no finder read keeps its band settings listed, and a block with no band lists as before', () => {
+	assert.ok( listedOf( { slots: [ ITEM ], band: BAND } ).includes( 'gridAutoRows' ), 'the band is the root\'s only when the root was read' );
+	assert.ok( listedOf( { slots: [], band: BAND } ).includes( 'gridAutoRows' ) );
+	assert.ok( listedOf( { slots: [ '' ], band: null } ).includes( 'gridAutoRows' ), 'no band setting, no shared element' );
+} );
+
+// The draft's grid rows, item alignment and content alignment are read on the one draft element and written to the band's
+// settings (lib/fill-prop.mjs::CARRIED, tried by lib/fill-resolve-state.mjs::alternateSlots).
+function fillContainer( styles, bandPaint = {} ) {
+	const skeleton = [ { name: 'sgs/container', draftRef: 'section', attributes: {} } ];
+	const tree = cleanTree( skeleton );
+	addRefs( tree, 'fx' );
+	const nodes = skeletonNodes( skeleton );
+	const ids = nodes.flatMap( ( n ) => n.targets.map( ( t ) => t.id ) );
+	const r = reads( ids );
+	for ( const w of FIVE ) {
+		Object.values( r.widths[ w ] ).forEach( ( s ) => Object.assign( s.styles, styles ) );
+	}
+	// The properties the code declares beyond Fill's own list are read as declared values too (FR-48-8).
+	r.declared = Object.fromEntries( THREE.map( ( w ) => [ w, Object.fromEntries( ids.map( ( id ) => [ id, { ...styles } ] ) ) ] ) );
+	const cal = { ...CONTAINER_CAL, elements: { ...CONTAINER_CAL.elements, [ BAND ]: Object.fromEntries( THREE.map( ( w ) => [ w, { ...CONTAINER_CAL.elements[ BAND ][ w ], ...bandPaint } ] ) ) }, settings: { ...CONTAINER_CAL.settings, alignContent: setting( BAND, 'align-content' ), flexWrap: setting( BAND, 'flex-wrap' ) } };
+	return fillTree( { tree, nodes, reads: r, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: () => cal, ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
+}
+
+test( 'MUST FAIL: a draft root\'s grid-auto-rows, justify-items and align-content are written to the band\'s settings', () => {
+	const out = fillContainer( { 'grid-auto-rows': '120px', 'justify-items': 'center', 'align-content': 'space-between' } );
+	assert.deepEqual( out.writes.map( ( w ) => `${ w.attr }@${ w.slot }` ).sort(), [ `alignContent@${ BAND }`, `gridAutoRows@${ BAND }`, `justifyItems@${ BAND }` ] );
+	assert.deepEqual( out.unmapped.filter( ( u ) => /grid-auto-rows|justify-items|align-content/.test( u.property ) ), [] );
+	assert.ok( ! settingsOf( out ).includes( 'flexWrap' ), 'a band setting the draft element states nothing for is judged with the root, not listed unread' );
+	assert.ok( settingsOf( out ).includes( 'gridItemPadding' ), 'the children of the band are another element' );
+} );
+
+test( 'negative control: a band whose default layout differs from that of the root is another box, so the root value is never written to it', () => {
+	const out = fillContainer( { 'grid-auto-rows': '120px' }, { 'grid-auto-rows': '50px' } );
+	assert.deepEqual( out.writes.map( ( w ) => w.attr ), [] );
+	assert.ok( out.unmapped.some( ( u ) => 'grid-auto-rows' === u.property && /^unpaired-part/.test( u.reason ) ) );
+} );

@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-unread.mjs",
+		"find": "band && slots.includes( '' ) ? [ band ] : []",
+		"replace": "band ? [ band ] : []",
+		"why": "the band is the root's when the root was never read"
+	},
+	{
+		"file": "lib/fill-unread.mjs",
+		"find": "band && slots.includes( '' ) ? [ band ] : []",
+		"replace": "[]",
+		"why": "the band the root is also read as is listed unread"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "band: bandSetting( st.db, rec.name, cal )?.slot ?? null",
+		"replace": "band: null",
+		"why": "Fill never tells the unread list the band slot"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "'grid-auto-rows', ",
+		"replace": "",
+		"why": "a draft root's grid rows are tried at the root only"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "'justify-items', ",
+		"replace": "",
+		"why": "a draft root's item alignment is tried at the root only"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "'align-content', ",
+		"replace": "",
+		"why": "a draft root's content alignment is tried at the root only"
+	}
+]

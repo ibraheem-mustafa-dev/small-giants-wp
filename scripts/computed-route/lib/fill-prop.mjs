@@ -143,7 +143,7 @@ export const TIER_WIDTHS = [ 1440, 768, 375 ];
 export { INHERITED };
 // Read from the element that paints the text and from the element that lays out the children (walker rows put them at
 // textPath and layoutPath), so a setting on an inner element can hold them.
-export const CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'justify-content', 'align-items' ];
+export const CARRIED = [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'gap', 'row-gap', 'column-gap', 'flex-wrap', 'flex-direction', 'grid-template-columns', 'grid-auto-rows', 'justify-items', 'align-content', 'justify-content', 'align-items' ];
 // The shared comparison rule (lib/css-equivalence/tolerance.mjs), exported here for the modules that read it from Fill.
 export { PX_TOL };
 
