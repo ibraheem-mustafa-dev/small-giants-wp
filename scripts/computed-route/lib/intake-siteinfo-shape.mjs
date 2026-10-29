@@ -102,6 +102,16 @@ export function socialKey( href ) {
 	return brand?.siteInfoKey ?? null;
 }
 
+// The slug of the registry social brand an address opens (its own host, WhatsApp's wa.me, or the brand's own scheme such
+// as `whatsapp:`), or null: the channel a colour painted on that link belongs to.
+export function channelOfAddress( href ) {
+	const address = String( href ?? '' ).trim();
+	const scheme = /^([a-z][a-z0-9+.-]*):/i.exec( address )?.[ 1 ].toLowerCase();
+	const byScheme = scheme && ! /^https?$/.test( scheme ) ? socialBrands().find( ( b ) => b.slug === scheme ) : null;
+	const key = byScheme ? byScheme.siteInfoKey : socialKey( address );
+	return socialBrands().find( ( b ) => b.siteInfoKey === key )?.slug ?? null;
+}
+
 // The social brand an accessible label names ("LinkedIn", "Follow us on Instagram"), or null.
 export function brandByLabel( label ) {
 	const text = String( label || '' ).toLowerCase();

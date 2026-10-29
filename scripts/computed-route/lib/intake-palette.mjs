@@ -13,7 +13,7 @@ import { fileURLToPath } from 'url';
 import { colourHex } from './tokens.mjs';
 import { usageRoles, isBorder, SATURATED_C } from './intake-palette-usage.mjs';
 import { declarations, declaredRoles } from './intake-palette-declared.mjs';
-import { paletteBrands, brandOfToken } from './brand-registry.mjs';
+import { paletteBrands, brandOfToken, brandBySlug } from './brand-registry.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const THEME_JSON = path.resolve( HERE, '../../../theme/sgs-theme/theme.json' );
@@ -361,6 +361,14 @@ export function proposePalette( { tokens = [], usage = [], slugs = loadPaletteSl
 		const list = roles.get( g ) || [];
 		const row = { rowId: `palette:${ t.name }`, token: t.name, hex: t.hex, resolved: t.resolved, chain: t.chain, used: g.summary.total > 0,
 			uses: g.summary.uses, sharedWith: g.members.filter( ( m ) => m !== t.name ), ...( g.hexes.size > 1 ? { value: painted( g ) } : {} ) };
+		// A colour every rendered use of which is on one registry brand's own control (a link that opens that brand's channel)
+		// is that brand's paint whatever the token is called: no slot and no custom token. A colour also used elsewhere keeps
+		// its normal role.
+		const spread = uses.filter( ( u ) => g.hexes.has( u.hex ) );
+		const channelBrand = spread.length > 0 && spread.every( ( u ) => u.channel && u.channel === spread[ 0 ].channel ) ? brandBySlug( spread[ 0 ].channel ) : null;
+		if ( channelBrand ) {
+			return { ...row, role: null, roles: [], brand: channelBrand.slug, confidence: 0.9, why: `brand colour: ${ channelBrand.label } (every use is on its own control), painted by the brand's own setting, so no palette slot`, by: 'brand' };
+		}
 		// A token named for a registry brand is that brand's colour, which the brand-aware blocks paint themselves
 		// (plugins/sgs-blocks/includes/data/brand-registry.json): no palette slot and no custom token (Bean, 2026-10-27),
 		// whether or not the draft paints it and whatever colour a rendered fact would give it.

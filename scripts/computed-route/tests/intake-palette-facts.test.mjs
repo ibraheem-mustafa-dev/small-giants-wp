@@ -132,3 +132,27 @@ test( 'paletteUsage records characters, WhatsApp links, bands and line length', 
 	assert.equal( find( '#FFFFFF', 'background-color' ).band, true );
 	assert.equal( find( '#E6E1DA', 'border-top-color' ).length, 1400 );
 } );
+
+test( 'MUST FAIL: a token of any name whose every use is on a brand\'s own control gets no slot and a row naming the brand', () => {
+	const rows = run().rows;
+	const green = rows.find( ( r ) => '--t7' === r.token );
+	assert.deepEqual( [ green.role, green.roles, green.brand, green.by ], [ null, [], 'whatsapp', 'brand' ], green.why );
+	const blue = [ ...TOKENS, { name: '--neutral-blue', type: 'colour', hex: '#1877F2' } ];
+	const usage = [ ...USAGE, use( '#1877F2', 'background-color', 'a', 4, { channel: 'facebook' } ), use( '#FFFFFF', 'color', 'a', 4, { channel: 'facebook', text: true, chars: 40 } ) ];
+	const row = proposePalette( { tokens: blue, usage, slugs: SLUGS } ).rows.find( ( r ) => '--neutral-blue' === r.token );
+	assert.deepEqual( [ row.role, row.brand ], [ null, 'facebook' ], 'the registry decides which brands count, not a WhatsApp-only test' );
+} );
+
+test( 'negative control: a colour also used off the brand\'s control, or on two brands\' controls, keeps its normal role', () => {
+	const also = USAGE.concat( [ use( '#25D366', 'background-color', 'div', 3 ) ] );
+	const row = run( also ).rows.find( ( r ) => '--t7' === r.token );
+	assert.equal( row.brand, undefined, 'used on a plain div as well' );
+	const two = USAGE.concat( [ use( '#25D366', 'background-color', 'a', 3, { channel: 'facebook' } ) ] );
+	assert.equal( run( two ).rows.find( ( r ) => '--t7' === r.token ).brand, undefined, 'two different brands share the value' );
+} );
+
+test( 'MUST FAIL: a brand\'s ground, even the most used one, does not take the section slot from the colour that should hold it', () => {
+	const loud = USAGE.map( ( u ) => ( u.channel ? { ...u, count: 99 } : u ) );
+	const slot = holder( run( loud ), 'section' );
+	assert.ok( slot.length > 0 && ! slot.includes( '#25D366' ), JSON.stringify( slot ) );
+} );

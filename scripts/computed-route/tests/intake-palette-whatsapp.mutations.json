@@ -1,32 +1,38 @@
 [
 	{
-		"file": "lib/intake-palette.mjs",
-		"find": "const brand = list.length || wanted.has( g ) ? null : brandOfToken( t.name, brands );",
-		"replace": "const brand = null;",
-		"why": "a token named for a registry brand, WhatsApp included, gets no slot"
-	},
-	{
-		"file": "lib/intake-palette.mjs",
-		"find": "const brand = list.length || wanted.has( g ) ? null : brandOfToken( t.name, brands );",
-		"replace": "const brand = brandOfToken( t.name, brands );",
-		"why": "a brand-named token whose value a rendered fact gives a slot keeps that slot"
+		"file": "lib/intake-palette-usage.mjs",
+		"find": "const channel = new Set( [ ...tally( ( u ) => !! u.channel && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );",
+		"replace": "const channel = new Set( [ ...tally( ( u ) => false && isBackground( u.property ) ).keys() ].filter( ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C ) );",
+		"why": "the ground of a brand's own links is known as that brand's colour"
 	},
 	{
 		"file": "lib/intake-palette-usage.mjs",
-		"find": "'whatsapp' === u.channel && isBackground( u.property ) ), ( g ) => opaque( g.hex ) && chroma( g.hex ) > SATURATED_C )?.[ 0 ] ?? null;",
-		"replace": "'whatsapp' === u.channel && isBackground( u.property ) ), ( g ) => false )?.[ 0 ] ?? null;",
-		"why": "the ground of WhatsApp links is known as that brand's colour"
-	},
-	{
-		"file": "lib/intake-palette-usage.mjs",
-		"find": "strong( g ) && g !== channel && ok( g )",
+		"find": "strong( g ) && ! channel.has( g ) && ok( g )",
 		"replace": "strong( g ) && ok( g )",
-		"why": "the WhatsApp ground is never the primary or accent"
+		"why": "a brand's ground is never the primary or accent"
 	},
 	{
 		"file": "lib/intake-palette-usage.mjs",
-		"find": "[ surface, alt, primary, channel ].includes( g )",
-		"replace": "[ surface, alt, primary ].includes( g )",
-		"why": "the WhatsApp ground is never the section ground"
+		"find": "&& ! channel.has( g ) )",
+		"replace": ")",
+		"why": "a brand's ground is never the section ground"
+	},
+	{
+		"file": "lib/intake-palette.mjs",
+		"find": "spread.every( ( u ) => u.channel && u.channel === spread[ 0 ].channel )",
+		"replace": "spread.some( ( u ) => u.channel )",
+		"why": "a colour also used off the brand's control keeps its normal role"
+	},
+	{
+		"file": "lib/intake-palette.mjs",
+		"find": "spread.every( ( u ) => u.channel && u.channel === spread[ 0 ].channel )",
+		"replace": "spread.every( ( u ) => u.channel )",
+		"why": "a value on two brands' controls is no one brand's colour"
+	},
+	{
+		"file": "lib/intake-palette.mjs",
+		"find": "? brandBySlug( spread[ 0 ].channel ) : null;",
+		"replace": "? null : null;",
+		"why": "a colour whose every use is on a brand's control gets that brand's row"
 	}
 ]

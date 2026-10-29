@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/intake-siteinfo-shape.mjs",
+		"find": "const key = byScheme ? byScheme.siteInfoKey : socialKey( address );",
+		"replace": "const key = byScheme ? byScheme.siteInfoKey : null;",
+		"why": "an http address is matched to the registry brand that owns its host"
+	},
+	{
+		"file": "lib/intake-siteinfo-shape.mjs",
+		"find": "socialBrands().find( ( b ) => b.slug === scheme )",
+		"replace": "null",
+		"why": "a brand's own scheme opens its channel"
+	}
+]

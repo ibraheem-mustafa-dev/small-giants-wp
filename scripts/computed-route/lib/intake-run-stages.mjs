@@ -15,6 +15,7 @@ import { proposePalette, loadPaletteSlugs } from './intake-palette.mjs';
 import { readSurface } from './intake-reading.mjs';
 import { readGrounds, groundUsage, statusUsage } from './intake-palette-grounds.mjs';
 import { mapPool, poolSize } from './intake-pool.mjs';
+import { channelOfAddress } from './intake-siteinfo-shape.mjs';
 import { proposeSiteInfo } from './intake-siteinfo.mjs';
 import { proposeFlags } from './intake-flags.mjs';
 import { surfaceRoots, proposeSkeletons } from './intake-skeletons.mjs';
@@ -167,7 +168,7 @@ export const STAGES = [
 				blocked.push( ...read.blocked );
 				Object.entries( read.probed?.grounds ?? {} ).forEach( ( [ p, g ] ) => grounds.set( `${ v.key }\u0000${ p }`, g ) );
 				Object.entries( read.probed?.texts ?? {} ).forEach( ( [ p, n ] ) => texts.set( `${ v.key }\u0000${ p }`, n ) );
-				Object.entries( read.probed?.channels ?? {} ).forEach( ( [ p, c ] ) => channels.set( `${ v.key }\u0000${ p }`, c ) );
+				Object.entries( read.probed?.channels ?? {} ).forEach( ( [ p, href ] ) => channelOfAddress( href ) && channels.set( `${ v.key }\u0000${ p }`, channelOfAddress( href ) ) );
 				probeRows.push( ...groundUsage( read.probed, v.key ) );
 			} else {
 				gaps.push( gap( 'palette-usage', `${ v.file }${ v.hash ? `#${ v.hash }` : '' }`, `the 1440 rest reading failed: ${ error.message.split( '\n' )[ 0 ] }` ) );
