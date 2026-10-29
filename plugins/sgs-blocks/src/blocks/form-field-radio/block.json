@@ -30,8 +30,8 @@
                     "_note": "Renders as <legend class=\"sgs-form-field__label\"> (not a plain <label> — this block groups multiple radio buttons under one <fieldset>). No per-instance colour/font-size/weight attribute exists; the legend is styled entirely by shared framework CSS shared with the other five form-field siblings. clusters: [] is a genuine gap, not hidden."
                 },
                 "option": {
-                    "label": "Radio option",
-                    "order": 2,
+                    "label": "Each option (circle and label)",
+                    "order": 0.5,
                     "clusters": [],
                     "_note": "Each entry in `options` renders as a repeated <label class=\"sgs-form-field__option\"><input type=\"radio\"><span> row — the repeater replaces the single 'input' element the text/email/textarea/select siblings have, since radio is inherently multi-node. No per-instance style attribute exists for the option row; styling is shared framework CSS. clusters: [] is a genuine gap."
                 },

@@ -83,8 +83,8 @@
 					}
 				},
 				"item": {
-					"label": "Store link",
-					"order": 3,
+					"label": "Each store link",
+					"order": 0.5,
 					"clusters": [
 						"text"
 					],
