@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/intake-run-stages.mjs",
+		"find": "'missing features': [ 'census', 'proposals' ],",
+		"replace": "'missing features': [ 'census', 'skeletons' ],",
+		"why": "the missing-features list reads rows before they are proposed"
+	},
+	{
+		"file": "lib/intake-run-stages.mjs",
+		"find": "ctx.breakpoints = per.map(",
+		"replace": "const kept = per.map(",
+		"why": "the breakpoints stage leaves the context empty"
+	},
+	{
+		"file": "lib/intake-inventory.mjs",
+		"find": "ctx.animations = inv.animations;",
+		"replace": "",
+		"why": "the inventory stage leaves the animations out of the context"
+	},
+	{
+		"file": "lib/intake-run-stages.mjs",
+		"find": "ctx.skeletonRows = Object.values( res.intake.skeletons )",
+		"replace": "const rows = Object.values( res.intake.skeletons )",
+		"why": "the missing-features list gets no proposed rows"
+	},
+	{
+		"file": "lib/intake-run-stages.mjs",
+		"find": "ctx.skeletonReads = Object.fromEntries(",
+		"replace": "const reads = Object.fromEntries(",
+		"why": "the skeletons stage hands the proposals nothing"
+	}
+]

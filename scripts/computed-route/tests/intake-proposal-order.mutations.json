@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "failed.push( { slug: s.slug, error } );",
+		"replace": "",
+		"why": "a failed proposal is not listed"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "proposalGap: error }, fingerprints",
+		"replace": "gap: error }, fingerprints",
+		"why": "a proposal failure is recorded as a read failure"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "routing: intake.routing?.adapter ? intake.routing : null }",
+		"replace": "routing: null }",
+		"why": "the run's routing never reaches the draft-link context"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "carousels: carouselKeys( intake.inventory?.animations ), breakpoints",
+		"replace": "carousels: new Set(), breakpoints",
+		"why": "the stepped tracks never reach the loop reader"
+	},
+	{
+		"file": "lib/skeleton-rerun.mjs",
+		"find": "loadFacts( { db, client, repo, codeRepo, siteName",
+		"replace": "loadFacts( { db, client, repo, siteName",
+		"why": "the framework facts are read from the client repo"
+	},
+	{
+		"file": "lib/intake-run-stages.mjs",
+		"find": "proposals: [ 'routing', 'breakpoints', 'page map', 'inventory', 'skeletons', 'facts' ],",
+		"replace": "proposals: [ 'routing', 'breakpoints', 'page map', 'inventory', 'skeletons' ],",
+		"why": "the proposals no longer wait for the rewritten fact record"
+	},
+	{
+		"file": "lib/skeleton-context.mjs",
+		"find": "loops: { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels },",
+		"replace": "loops: { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels: new Set() },",
+		"why": "the loops carry no carousels"
+	},
+	{
+		"file": "lib/skeleton-context.mjs",
+		"find": "draftLinksFor( { repo, client, routing, proposedRows: pageMap?.length ? pageMap : null } )",
+		"replace": "draftLinksFor( { repo, client, proposedRows: pageMap?.length ? pageMap : null } )",
+		"why": "the draft-link context ignores the run's routing"
+	},
+	{
+		"file": "lib/skeleton-context.mjs",
+		"find": "?? pageMap ?? [];",
+		"replace": "?? [];",
+		"why": "the loops' rows ignore the proposed page map"
+	},
+	{
+		"file": "lib/skeleton-context.mjs",
+		"find": "carried: carriedIds( { repo, client, site, rootComponent } ),",
+		"replace": "",
+		"why": "no carried ids"
+	},
+	{
+		"file": "lib/skeleton-context.mjs",
+		"find": "commerce: commerceOf( manifestEntryOf( { repo, client, slug } ), rows, catalogue, loadShopParts( build ) ),",
+		"replace": "",
+		"why": "no commerce region"
+	}
+]

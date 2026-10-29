@@ -16,8 +16,9 @@ export const specHit = ( spec, text ) => ( rxList( spec ).find( ( r ) => r.test(
 
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 
-// The facts object. o: { db, client, repo, siteName, decisionsFile }. Queries are made on demand and cached.
-export function loadFacts( { db, client, repo = REPO, siteName = null, decisionsFile = DECISIONS_FILE } ) {
+// The facts object. o: { db, client, repo (the client's data: its sites/<client> folder), codeRepo? (the framework's block.json
+// files; `repo` by default), siteName, decisionsFile }. Queries are made on demand and cached.
+export function loadFacts( { db, client, repo = REPO, codeRepo = repo, siteName = null, decisionsFile = DECISIONS_FILE } ) {
 	const q = ( sql, ...a ) => db.prepare( sql ).all( ...a ).map( ( r ) => ( { ...r } ) );
 	const decisions = readJson( decisionsFile );
 	const mapFile = path.join( repo, 'sites', client, 'site-info-placeholder-map.json' );
@@ -41,7 +42,7 @@ export function loadFacts( { db, client, repo = REPO, siteName = null, decisions
 	const listSlug = tagMap.ul?.core_block_slug || null;
 	let listItem = null;
 	if ( listSlug ) {
-		const file = path.join( repo, 'plugins/sgs-blocks/src/blocks', listSlug.replace( /^sgs\//, '' ), 'block.json' );
+		const file = path.join( codeRepo, 'plugins/sgs-blocks/src/blocks', listSlug.replace( /^sgs\//, '' ), 'block.json' );
 		const props = fs.existsSync( file ) ? readJson( file ).attributes?.items?.items?.properties || {} : {};
 		const kinds = /([a-z]+(?:\s*\|\s*[a-z]+)+)/.exec( props.siteInfoSource?.description || '' )?.[ 1 ].split( /\s*\|\s*/ ) || [];
 		listItem = { text: props.text ? 'text' : null, url: Object.keys( props ).find( ( k ) => 'url-href' === props[ k ].role ) || null, siteInfoSource: props.siteInfoSource ? 'siteInfoSource' : null, siteInfoLink: props.siteInfoLink ? 'siteInfoLink' : null, kinds };

@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/intake-skeletons.mjs",
+		"find": "if ( readOnly ) {",
+		"replace": "if ( false ) {",
+		"why": "the read-only run proposes"
+	},
+	{
+		"file": "lib/intake-skeletons.mjs",
+		"find": "if ( readOnly && ! inventoriesDir ) {",
+		"replace": "if ( false ) {",
+		"why": "a read-only run with nowhere to save reads for nothing"
+	},
+	{
+		"file": "lib/intake-run.mjs",
+		"find": "skeletons: p.proposals?.skeletons ?? p.skeletons?.skeletons ?? {},",
+		"replace": "skeletons: p.skeletons?.skeletons ?? {},",
+		"why": "the record keeps the rows-less reads"
+	}
+]

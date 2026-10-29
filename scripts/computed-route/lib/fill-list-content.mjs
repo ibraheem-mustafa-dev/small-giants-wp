@@ -260,6 +260,7 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 			continue;
 		}
 		const list = listItems( { inventory, facts, rootKey: root.finder.tpl, rootComponent, idx: idxFor( parseTemplateKey( templateKeyOf( root.finder.tpl, rootComponent ) )?.dc ) } );
+		list?.others?.length && out.unmapped.push( { node: ref, block: rec.name, slot: '', property: target.attr ?? '(items)', value: String( list.others.length ), reason: `the draft element draws ${ list.others.length + 1 } lists and ${ rec.name } holds one (${ list.source }); not written: ${ list.others.map( ( o ) => `sc-for ${ o.tpl } over ${ String( o.list ?? o.as ).replace( /^\{\{\s*|\s*\}\}$/g, '' ) }` ).join( '; ' ) }; a block that holds each list is a decision for the review` } );
 		if ( ! list || ! list.items.length ) {
 			// A host whose children the skeleton built from the draft's own elements holds its items already.
 			if ( 'attr' === target.kind || list?.reason ) {

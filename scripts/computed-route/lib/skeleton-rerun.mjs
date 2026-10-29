@@ -1,8 +1,10 @@
-// The skeleton step again, offline (Spec 48 FR-48-6): every surface proposed afresh from the inventories the last intake
-// run saved (sites/<client>/build/intake/inventories/<surface>.json, written by lib/intake-skeletons.mjs::proposeSkeletons'
+// The proposal step, offline (Spec 48 FR-48-6): every surface proposed from the inventories an intake run saved
+// (sites/<client>/build/intake/inventories/<surface>.json, written by lib/intake-skeletons.mjs::proposeSkeletons'
 // `inventoriesDir`), with today's rules, standing decisions and framework database. No browser opens, so a rule change
-// is measured against a whole client in seconds. Surface ids, kinds and names come from intake.json's `skeletons` (the
-// roots the run read) and built posts from the client's built-surfaces.json, as in the intake run.
+// is measured against a whole client in seconds. This is the one proposal path: the intake run's `proposals` stage (after the
+// facts stage has rewritten facts.json, which the proposals read) and `--rerun-skeletons` both call it. Surface ids, kinds
+// and names come from intake.json's `skeletons` (the roots the run read) and built posts from the client's
+// built-surfaces.json.
 import fs from 'fs';
 import path from 'path';
 import { proposeSkeleton } from './skeleton-propose.mjs';
@@ -50,17 +52,22 @@ const savedPageMap = ( repo, client ) => {
 
 // o: { client, db, repo?, skeletons (intake.json's `skeletons`: { <slug>: { id, kind, name } }), motion? (loopingKeys), picks? ({ surface: { key:
 // decision } }), useBuilt? (false proposes even a surface the client built, to measure the rules on it), breakpoints? (intake.json's
-// `breakpoints`; the saved file's by default), pageMap? (intake.json's `pageMap`; the saved file's by default), propose? (the proposer; proposeSkeleton by default) }. Each surface is proposed with the context `skeleton.mjs propose` passes
-// (lib/skeleton-context.mjs::proposalContext): its handoff states, the thresholds, and the calibration keys and settings.
-// Returns { surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton } }, missing: [slug], absorbed: { <slug>: { into (the header surface's slug), root (the strip's root key) } } }; throws when
-// the decisions data is not sound (lib/skeleton-facts.mjs::decisionsProblems), as the intake run refuses it.
-export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), pageMap = savedPageMap( repo, client ), propose = proposeSkeleton } ) {
-	const dir = path.join( repo, 'sites', client, 'build', 'intake', 'inventories' );
+// `breakpoints`; the saved file's by default), pageMap? (intake.json's `pageMap`; the saved file's by default), routing? (intake.json's
+// `routing`, the draft-link context's; the saved file's by default), carousels? (carouselKeys of the motion inventory), inventoriesDir?
+// (the saved inventories; the client's by default), codeRepo? (where the framework's block.json files are read; `repo` by default), propose? (the proposer; proposeSkeleton by default) }. Each surface is proposed with the
+// context `skeleton.mjs propose` passes (lib/skeleton-context.mjs::proposalContext): its handoff states, the thresholds, the calibration
+// keys and settings, the carried ids, the commerce region and the loops (rows, brands, carousels).
+// Returns { surfaces: { <slug>: { kind, name, built, rows, counts, problems, skeleton, entry, fingerprints } }, missing: [slug], failed: [{ slug, error }], absorbed: { <slug>: { into (the header surface's slug), root (the strip's root key) } } }; throws when
+// the decisions data is not sound (lib/skeleton-facts.mjs::decisionsProblems), as the intake run refuses it. A surface whose
+// proposal throws (its fact record stale, say) keeps an entry with its inventory summary, no rows and `proposalGap`, and is listed
+// in `failed`: its saved inventory is intact, so the next run proposes it again.
+export function rerunSkeletons( { client, db, repo = REPO, codeRepo = repo, skeletons, motion = new Set(), carousels = new Set(), picks = {}, useBuilt = true, breakpoints = savedBreakpoints( repo, client ), pageMap = savedPageMap( repo, client ), routing = null, inventoriesDir = null, propose = proposeSkeleton } ) {
+	const dir = inventoriesDir || path.join( repo, 'sites', client, 'build', 'intake', 'inventories' );
 	const builtFile = path.join( repo, 'sites', client, 'build', 'skeleton', 'built-surfaces.json' );
 	const built = useBuilt && fs.existsSync( builtFile ) ? JSON.parse( fs.readFileSync( builtFile, 'utf8' ) ).surfaces || {} : {};
 	const decisionsFile = path.join( skeletonDir( repo, client ), 'decisions.json' );
 	const clientDecisions = fs.existsSync( decisionsFile ) ? readDecisions( decisionsFile ) : {};
-	const facts = loadFacts( { db, client, repo, siteName: clientDecisions.siteName || null } );
+	const facts = loadFacts( { db, client, repo, codeRepo, siteName: clientDecisions.siteName || null } );
 	const bad = decisionsProblems( facts );
 	if ( bad.length ) {
 		throw new Error( `the decisions data is not sound: ${ bad.join( '; ' ) }` );
@@ -71,6 +78,7 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 	const surfaces = Object.entries( skeletons ).filter( ( [ , x ] ) => read( x ) ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name } ) );
 	const out = {};
 	const missing = [];
+	const failed = [];
 	const handoffRoot = path.join( repo, 'sites', client, 'handoff' );
 	const unchecked = [];
 	// The export is hashed once per run, not once per surface.
@@ -92,15 +100,23 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 			continue;
 		}
 		const b = built[ s.id ] || built[ s.slug ] || null;
-		const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints } );
-		const r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id } );
+		let r;
+		try {
+			const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints, routing, pageMap, carousels, rootComponent: inventory.checks?.rootName || null } );
+			r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id } );
+		} catch ( e ) {
+			const error = e.message.split( '\n' )[ 0 ];
+			failed.push( { slug: s.slug, error } );
+			out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: [], counts: null, problems: [], skeleton: [], entry: { ...entryOf( s.slug, skeletons[ s.slug ], { proposal: { counts: null, rows: [] }, problems: [] }, inventory ), proposalGap: error }, fingerprints: fingerprintsOf( inventory ) };
+			continue;
+		}
 		r.proposal.stripRoots?.forEach( ( k ) => absorbedKeys.set( k, s.slug ) );
 		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ), fingerprints: fingerprintsOf( inventory ) };
 	}
 	Object.entries( skeletons ).filter( ( [ , x ] ) => ! read( x ) ).forEach( ( [ slug ] ) => missing.push( slug ) );
 	const ordered = Object.fromEntries( Object.keys( skeletons ).filter( ( k ) => out[ k ] ).map( ( k ) => [ k, out[ k ] ] ) );
 	unchecked.length && console.warn( `freshness: ${ unchecked.length } saved inventor${ 1 === unchecked.length ? 'y has' : 'ies have' } no sources (written before the route recorded them); currency is not checked` );
-	return { surfaces: ordered, missing, absorbed };
+	return { surfaces: ordered, missing, failed, absorbed };
 }
 
 // One surface's entry in the shape the intake run writes (lib/intake-skeletons.mjs::proposeSkeletons), keeping the root
@@ -111,10 +127,11 @@ const entryOf = ( slug, was, r, inventory ) => ( {
 } );
 
 // intake.json with its `skeletons` proposed again offline and collapsed as the intake run collapses them. A surface
-// whose inventory was not saved keeps its old entry and is listed in `missing`. Returns { intake, missing, before, after }.
-export function refreshIntakeSkeletons( { intake, client, db, repo = REPO } ) {
-	const run = rerunSkeletons( { client, db, repo, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), breakpoints: intake.breakpoints || [], pageMap: intake.pageMap || [] } );
+// whose inventory was not saved keeps its old entry and is listed in `missing`; one whose proposal threw is listed in `failed`.
+// `intake` carries the run's own routing, page map, breakpoints and motion inventory. Returns { intake, missing, failed, before, after, withinSurfaces }.
+export function refreshIntakeSkeletons( { intake, client, db, repo = REPO, codeRepo = repo, inventoriesDir = null, propose } ) {
+	const run = rerunSkeletons( { client, db, repo, codeRepo, inventoriesDir, propose, skeletons: intake.skeletons, motion: loopingKeys( intake.inventory?.animations ), carousels: carouselKeys( intake.inventory?.animations ), breakpoints: intake.breakpoints || [], pageMap: intake.pageMap || [], routing: intake.routing?.adapter ? intake.routing : null } );
 	const entries = Object.keys( intake.skeletons ).filter( ( slug ) => ! run.absorbed[ slug ] ).map( ( slug ) => run.surfaces[ slug ]?.entry || { surface: slug, ...intake.skeletons[ slug ] } );
 	const c = collapseSkeletons( entries );
-	return { intake: { ...intake, skeletons: c.skeletons }, missing: run.missing, before: c.before, after: c.after };
+	return { intake: { ...intake, skeletons: c.skeletons }, missing: run.missing, failed: run.failed, before: c.before, after: c.after, withinSurfaces: c.withinSurfaces };
 }

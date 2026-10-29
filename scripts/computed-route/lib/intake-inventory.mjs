@@ -205,7 +205,8 @@ export function readInventory( row, ctx ) {
 
 // The intake stage (lib/intake-run-stages.mjs, after the draft defects): the census widened to every page, timer and
 // frame writers sampled on the entry page at each width, the inventory built and validated, and Claude Design's copies
-// diffed. Leaves the widened census's sources in ctx.widenedSources (the fact record reads them). Returns the stage parts { inventory: { animations, surfaces, diff, occurrences, propVariants, samples }, gaps,
+// diffed. Leaves the widened census's sources in ctx.widenedSources (the fact record reads them) and the animations inventory in
+// ctx.animations (the proposals read its looping templates and carousels). Returns the stage parts { inventory: { animations, surfaces, diff, occurrences, propVariants, samples }, gaps,
 // blocked, note }.
 export async function inventoryStage( job, ctx ) {
 	const census = await inventoryCensus( { folder: job.folder, entry: job.entry, routing: ctx.routing, census: ctx.censusFull, harPath: job.harPath } );
@@ -216,6 +217,7 @@ export async function inventoryStage( job, ctx ) {
 	gaps.push( ...sampled.gaps );
 	const inv = withSamples( base, sampled.samples );
 	gaps.push( ...inv.gaps, ...inv.problems.map( ( p ) => ( { construct: 'inventory', draftId: job.entry, error: p } ) ) );
+	ctx.animations = inv.animations;
 	const diff = diffInventory( inv, readTheirs( job.folder ) );
 	const kinds = {};
 	inv.animations.records.forEach( ( r ) => ( kinds[ r.id.split( '-' )[ 0 ] ] = ( kinds[ r.id.split( '-' )[ 0 ] ] || 0 ) + 1 ) );

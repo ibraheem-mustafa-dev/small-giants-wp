@@ -20,8 +20,6 @@ import { withUnappliedMarks, writeProposedPageMap, writeConfirmedPageMap } from 
 import { carryIds, lostIds } from './intake-pagemap-regen.mjs';
 import { mergeBlocked } from './intake-run-collapse.mjs';
 import { reviewDecisions, recordReviewDecisions, decisionsFile, dbKnownBlock } from './intake-run-finalise.mjs';
-import { refreshIntakeSkeletons } from './skeleton-rerun.mjs';
-import { openDb } from './db.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { writeCatalogue } from './intake-catalogue-run.mjs';
 
@@ -160,7 +158,7 @@ export function buildRecord( { client, takenOn, manifest, result, sources = null
 		draftDefects: p[ 'draft defects' ]?.draftDefects ?? [],
 		notDefects: p[ 'draft defects' ]?.notDefects ?? [],
 		missingFeatures: p[ 'missing features' ]?.missingFeatures ?? [],
-		skeletons: p.skeletons?.skeletons ?? {},
+		skeletons: p.proposals?.skeletons ?? p.skeletons?.skeletons ?? {},
 		notices: { prose: p.notices?.prose ?? [], blockedHosts: mergeBlocked( result.blocked ?? Object.values( p ).flatMap( ( x ) => x?.blocked ?? [] ) ) },
 		gaps,
 		review: [],
@@ -217,20 +215,7 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	stop();
 	fs.rmSync( work, { recursive: true, force: true } );
 	const built = buildRecord( { client: o.client, takenOn: new Date().toISOString(), manifest, result, sources: hashed } );
-	const { attempts } = built;
-	let { record } = built;
-	// The skeleton rows proposed once more from the inventories this run saved, now the motion inventory is known (a
-	// marquee is recognised by its recorded loop): the rows `--rerun-skeletons` gives, so both paths agree.
-	const fw = openDb();
-	try {
-		record = refreshIntakeSkeletons( { intake: record, client: o.client, db: fw, repo: o.repo } ).intake;
-	} catch ( e ) {
-		const error = `the motion-aware skeleton pass failed (${ e.message.split( '\n' )[ 0 ] }); the run's own skeleton rows are kept, so motion-dependent rules (a marquee) did not apply`;
-		say( error );
-		record = { ...record, gaps: [ ...( record.gaps || [] ), { construct: 'skeleton-refresh', draftId: o.client, error, stage: 'skeletons' } ] };
-	} finally {
-		fw.close();
-	}
+	const { attempts, record } = built;
 	let previous = null;
 	if ( fs.existsSync( at.intake ) ) {
 		try {
@@ -275,8 +260,8 @@ export async function runIntake( o, { log = ( l ) => process.stderr.write( `${ l
 	mapKept && say( `${ path.relative( o.repo, at.pageMap ) } is confirmed, so this run leaves it as it is (the new proposal is in intake.json; --apply-review replaces it)` );
 	const counts = sectionCounts( record );
 	const p = result.parts;
-	const sk = p.skeletons?.collapse?.skeletons ?? [ 0, 0 ];
-	say( `collapsed: skeleton rows ${ sk[ 0 ] } -> ${ p.skeletons?.collapse?.skeletonsWithinSurfaces ?? 0 } within surfaces -> ${ sk[ 1 ] } across surfaces, flag rows ${ ( p.flags?.collapse?.flags ?? [ 0, 0 ] ).join( ' -> ' ) }, missing-feature rows ${ ( p[ 'missing features' ]?.collapse?.missing ?? [ 0, 0 ] ).join( ' -> ' ) }` );
+	const sk = p.proposals?.collapse?.skeletons ?? [ 0, 0 ];
+	say( `collapsed: skeleton rows ${ sk[ 0 ] } -> ${ p.proposals?.collapse?.skeletonsWithinSurfaces ?? 0 } within surfaces -> ${ sk[ 1 ] } across surfaces, flag rows ${ ( p.flags?.collapse?.flags ?? [ 0, 0 ] ).join( ' -> ' ) }, missing-feature rows ${ ( p[ 'missing features' ]?.collapse?.missing ?? [ 0, 0 ] ).join( ' -> ' ) }` );
 	say( `review rows: ${ Object.entries( counts ).map( ( [ t, n ] ) => `${ t } ${ n }` ).join( ', ' ) }; carried marks ${ carried.review.filter( ( r ) => r.mark ).length }, changed ${ carried.changed.length }` );
 	say( `${ o.client }: wrote ${ path.relative( o.repo, at.intake ) }, review.md (${ Object.values( counts ).reduce( ( a, b ) => a + b, 0 ) } rows) and ${ path.relative( o.repo, at.pageMap ) } in ${ secs( Date.now() - t0 ) }; census ${ p.census?.census?.pass ? 'pass' : 'FAIL' }; ${ record.gaps.length } gap rows; ${ record.notices.blockedHosts.length } blocked requests; proxy attempts ${ attempts }` );
 	return 0;

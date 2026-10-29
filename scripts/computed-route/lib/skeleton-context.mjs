@@ -10,6 +10,10 @@ import { loadCalibration } from './cache.mjs';
 import { formLinksFor } from './skeleton-form-link.mjs';
 import { detectReferences } from './references.mjs';
 import { draftLinksFor } from './draft-link.mjs';
+import { carriedIds } from './skeleton-carried.mjs';
+import { commerceOf, filtersOf } from './skeleton-commerce-region.mjs';
+import { loadCatalogue } from './catalogue-read.mjs';
+import { loadShopParts } from './fill-shop-parts.mjs';
 
 const CACHE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'cache' );
 
@@ -27,15 +31,28 @@ export const statesOfRecord = ( { repo, client, id } ) => ( readJson( path.join(
 // The distinct width thresholds the draft's code uses, from intake.json's `breakpoints`.
 export const thresholdsOf = ( breakpoints ) => [ ...new Set( ( breakpoints || [] ).flatMap( ( b ) => ( b.thresholds || [] ).map( ( t ) => Number( t.value ) ) ) ) ];
 
+// The manifest entry (sites/<client>/build/surfaces.json) naming intake skeleton `slug`, or null when the client has none.
+export const manifestEntryOf = ( { repo, client, slug } ) => Object.values( readJson( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), {} ) ).find( ( s ) => s && s.intakeSurface === slug ) || null;
+
 // The site that sites/<client>/build/surfaces.json records for the manifest entry naming intake skeleton `slug`, or null
 // when the client has no such entry.
-export function siteOf( { repo, client, slug } ) {
-	const surfaces = readJson( path.join( repo, 'sites', client, 'build', 'surfaces.json' ), {} );
-	return Object.values( surfaces ).find( ( s ) => s && s.intakeSurface === slug )?.site || null;
-}
+export const siteOf = ( o ) => manifestEntryOf( o )?.site || null;
 
-// Everything proposeSkeleton takes beyond the inventory and the decisions, for one intake skeleton.
-export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ) } ) {
+// Everything proposeSkeleton takes beyond the inventory and the decisions, for one intake skeleton. `routing` and `pageMap`
+// are the run's own (intake.json's `routing` and `pageMap`), which the draft-link context and the commerce region read
+// before a confirmed page map exists; `carousels` is lib/skeleton-rerun.mjs::carouselKeys of the motion inventory (the loops
+// that are working carousels); `rootComponent` is the surface's entry component, which the carried logo is read under.
+export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ), routing = null, pageMap = null, carousels = new Set(), rootComponent = null } ) {
 	const refs = detectReferences();
-	return { calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
+	const build = path.join( repo, 'sites', client, 'build' );
+	const rows = readJson( path.join( build, 'page-map.json' ), null ) ?? pageMap ?? [];
+	const catalogue = loadCatalogue( repo, client );
+	return {
+		calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ),
+		formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client, routing, proposedRows: pageMap?.length ? pageMap : null } ),
+		carried: carriedIds( { repo, client, site, rootComponent } ),
+		// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region, and a loop of products, brands or reviews is a working block.
+		commerce: commerceOf( manifestEntryOf( { repo, client, slug } ), rows, catalogue, loadShopParts( build ) ),
+		loops: { rows, brands: catalogue ? filtersOf( catalogue ).brands : [], carousels },
+	};
 }
