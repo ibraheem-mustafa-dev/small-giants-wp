@@ -190,7 +190,6 @@ final class ContainerWrapperCssLengthTest extends TestCase {
 			'clamp is stripped'  => array( 'clamp(1rem, 2vw, 3rem)' ),
 			'declaration text'   => array( '12px;color:red' ),
 			'empty'              => array( '' ),
-			'negative'           => array( '-4px' ),
 			'unitless fit'       => array( 'fit-content(320)' ),
 		);
 	}
@@ -204,6 +203,70 @@ final class ContainerWrapperCssLengthTest extends TestCase {
 			preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $raw ),
 			sgs_css_length_or_sizing_keyword( $raw )
 		);
+	}
+
+	/**
+	 * A leading minus sign is part of the length (a negative margin); every other character outside
+	 * [A-Za-z0-9.%] is still stripped.
+	 *
+	 * @return array<string, array{0: string, 1: string}>
+	 */
+	public static function negative_length_provider(): array {
+		return array(
+			'negative px'                  => array( '-20px', '-20px' ),
+			'negative rem decimal'         => array( '-1.5rem', '-1.5rem' ),
+			'negative leading dot'         => array( '-.5em', '-.5em' ),
+			'negative percent'             => array( '-10%', '-10%' ),
+			'negative unitless zero'       => array( '-0', '-0' ),
+			'negative with whitespace'     => array( '  -4px ', '-4px' ),
+			'injection after the minus'    => array( '-20px;}body{display:none}', '-20pxbodydisplaynone' ),
+			'mid-string minus'             => array( '20-px', '20px' ),
+			'double leading minus'         => array( '--x', '-x' ),
+			'lone minus'                   => array( '-', '' ),
+			'minus then non-length chars'  => array( '-;', '' ),
+			'trailing minus'               => array( '20px-', '20px' ),
+			'minus after a space'          => array( '- 20px', '-20px' ),
+		);
+	}
+
+	/**
+	 * @param string $raw      Raw value.
+	 * @param string $expected Sanitised value.
+	 */
+	#[DataProvider( 'negative_length_provider' )]
+	public function test_leading_minus_is_kept_and_everything_else_is_stripped( string $raw, string $expected ): void {
+		$this->assertSame( $expected, sgs_css_length_or_sizing_keyword( $raw ) );
+		$this->assertSame( $expected, sgs_css_length_sanitise( $raw ) );
+	}
+
+	public function test_wrapper_negative_margin_keeps_its_sign(): void {
+		$html = SGS_Container_Wrapper::render(
+			array(
+				'margin' => array(
+					'desktop' => array( 'top' => '-20px' ),
+					'mobile'  => array( 'top' => '-1.5rem' ),
+				),
+			),
+			null,
+			'<p>x</p>',
+			'section'
+		);
+
+		$this->assertStringContainsString( 'margin-top:-20px', $html );
+		$this->assertStringContainsString( 'margin-top:-1.5rem !important', $html, 'the sanitised responsive rule keeps the sign' );
+		$this->assertStringNotContainsString( 'margin-top:1.5rem', $html, 'no positive twin of the negative margin' );
+	}
+
+	public function test_wrapper_negative_length_cannot_break_out(): void {
+		$html = SGS_Container_Wrapper::render(
+			array( 'maxWidth' => array( 'desktop' => '-20px;}body{display:none}' ) ),
+			null,
+			'<p>x</p>',
+			'section'
+		);
+
+		$this->assertStringNotContainsString( '}body{', $html );
+		$this->assertStringNotContainsString( 'display:none', $html );
 	}
 
 	/**

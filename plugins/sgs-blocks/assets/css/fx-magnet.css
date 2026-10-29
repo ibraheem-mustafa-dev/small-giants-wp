@@ -39,7 +39,8 @@
 	translate: var(--sgs-mag-x, 0px) var(--sgs-mag-y, 0px);
 }
 
-[data-sgs-fx~="magnet"]:where(a, span, em, strong, label, code) {
+/* Zero specificity throughout: only an otherwise-unstyled inline host is promoted; any block's own `display` (for example `.sgs-button`'s inline-flex) wins. */
+:where([data-sgs-fx~="magnet"]):where(a, span, em, strong, label, code) {
 	display: inline-block;
 }
 

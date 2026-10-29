@@ -76,10 +76,13 @@ if ( '' !== $gap_mob_raw ) {
 	$gap_mob_css = '8px';
 }
 
+// An unset device tier inherits from the tier above: mobile reads tablet, tablet reads desktop.
+// Direction, cross-axis alignment and gap keep their own mobile defaults below (the block's
+// stacked mobile look).
 $justify_content_obj    = sgs_responsive_normalise_object( $attributes['justifyContent'] ?? null );
 $justify_content        = esc_attr( $justify_content_obj['desktop'] ?? 'flex-start' );
 $justify_content_tablet = esc_attr( $justify_content_obj['tablet'] ?? $justify_content );
-$justify_content_mobile = esc_attr( $justify_content_obj['mobile'] ?? $justify_content );
+$justify_content_mobile = esc_attr( $justify_content_obj['mobile'] ?? $justify_content_tablet );
 
 // Default `nowrap` = the CSS initial value (D228: a hardcoded non-initial default
 // that overrides the draft's faithfully-ABSENT flex-wrap is a cheat to remove). A
@@ -89,7 +92,7 @@ $justify_content_mobile = esc_attr( $justify_content_obj['mobile'] ?? $justify_c
 $wrap_obj    = sgs_responsive_normalise_object( $attributes['flexWrap'] ?? null );
 $wrap        = esc_attr( $wrap_obj['desktop'] ?? 'nowrap' );
 $wrap_tablet = esc_attr( $wrap_obj['tablet'] ?? $wrap );
-$wrap_mobile = esc_attr( $wrap_obj['mobile'] ?? 'nowrap' );
+$wrap_mobile = esc_attr( $wrap_obj['mobile'] ?? $wrap_tablet );
 
 $align_items_obj = sgs_responsive_normalise_object( $attributes['alignItems'] ?? null );
 $align_items     = esc_attr( $align_items_obj['desktop'] ?? 'center' );

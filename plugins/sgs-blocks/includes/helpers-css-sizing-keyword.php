@@ -3,7 +3,7 @@
  * CSS sizing-keyword allowance for the shared container wrapper's length sanitiser.
  *
  * SGS_Container_Wrapper's `$sgs_css_length` closure strips every character
- * except [A-Za-z0-9.%] so a length can never break out of its declaration. That
+ * except [A-Za-z0-9.%] (and one leading minus) so a length can never break out of its declaration. That
  * also removes the hyphen and the parentheses, so the CSS intrinsic sizing
  * keywords stopped working: `max-content` became `maxcontent` (invalid CSS, the
  * browser drops the declaration) and `fit-content(320px)` became
@@ -70,10 +70,14 @@ if ( ! function_exists( 'sgs_css_length_or_sizing_keyword' ) ) {
 	/**
 	 * Sanitise a CSS length, letting the intrinsic sizing keywords through intact.
 	 *
-	 * A sizing keyword is returned in canonical form; every other value gets the
-	 * wrapper's long-standing strip (digits, letters, dot, percent only), so the
-	 * result for a non-keyword is byte-identical to what the wrapper produced
-	 * before this helper existed.
+	 * A sizing keyword is returned in canonical form. Every other value is stripped
+	 * to digits, letters, dot and percent, with one exception: a single leading
+	 * minus sign (after surrounding whitespace) is kept, so a negative length such
+	 * as `-20px`, `-1.5rem` or `-.5em` keeps its sign. A minus anywhere else
+	 * (`20-px`, `20px-`) is removed, a second leading minus is removed (`--x`
+	 * becomes `-x`), and a value with nothing left after the minus (`-`, `-;`)
+	 * returns ''. The minus cannot end a declaration or a rule, so the breakout
+	 * guarantee is unchanged.
 	 *
 	 * @param mixed $value Raw attribute value.
 	 * @return string Safe CSS length fragment (may be '').
@@ -84,6 +88,10 @@ if ( ! function_exists( 'sgs_css_length_or_sizing_keyword' ) ) {
 			return $keyword;
 		}
 
-		return (string) preg_replace( '/[^A-Za-z0-9.%]/', '', (string) $value );
+		$raw      = trim( (string) $value );
+		$negative = '' !== $raw && '-' === $raw[0];
+		$stripped = (string) preg_replace( '/[^A-Za-z0-9.%]/', '', $raw );
+
+		return ( $negative && '' !== $stripped ) ? '-' . $stripped : $stripped;
 	}
 }
