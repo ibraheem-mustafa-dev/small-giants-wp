@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { openDb } from '../lib/db.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
-import { pairParts, pairSkeletonParts, partTree } from '../lib/skeleton-part-pairing.mjs';
+import { pairParts, pairSkeletonParts, partTree, spreads } from '../lib/skeleton-part-pairing.mjs';
 import { listMarkerDecisions } from '../lib/fill-list-marker.mjs';
 import { formElement } from '../lib/skeleton-form-element.mjs';
 import { sharedElementProblems } from '../lib/skeleton-one-node.mjs';
@@ -87,6 +87,65 @@ test( 'a slot an earlier pass gave stands, and another node\'s element is never 
 	assert.equal( node.draftSlots[ ITEM( 3 ) ]?.tpl, 'Root/706#2' );
 	assert.ok( ! ( `${ ITEM( 2 ) } > .sgs-icon-list__icon` in node.draftSlots ) );
 	assert.ok( out.unpaired.some( ( u ) => `${ ITEM( 2 ) } > .sgs-icon-list__icon` === u.slot ) );
+} );
+
+// A wrapper level one side lacks (QC of RC1): the block's boxes the draft does not draw, and a draft box holding several parts.
+const TRACK = '.sgs-brand-strip__track > .sgs-brand-strip__set';
+const TILE = ( k ) => `${ TRACK } > .sgs-brand-strip__tile:nth-of-type(${ k })`;
+test( 'MUST FAIL (boxes only the block draws): the logo strip\'s tiles are the draft\'s copies, each tile\'s item its link and the picture inside it, through the track and set the draft does not draw', () => {
+	const r = run( 'sgs/brand-strip', F.elements.strip, 'Root/222#0' );
+	for ( const k of [ 1, 2 ] ) {
+		assert.equal( r.slots[ `${ TILE( k ) } > .sgs-brand-strip__item` ]?.tpl, `Root/224#${ k - 1 }` );
+		assert.equal( r.slots[ `${ TILE( k ) } > .sgs-brand-strip__item > .sgs-media` ]?.tpl, `Root/225#${ k - 1 }` );
+	}
+	assert.match( r.unpaired.find( ( u ) => '.sgs-brand-strip__track' === u.slot ).reason, /box the draft does not draw/ );
+	// Negative controls: the tile's name, which the draft does not draw, and the text items another render draws, stay unpaired.
+	assert.match( r.unpaired.find( ( u ) => `${ TILE( 1 ) } > .sgs-brand-strip__name` === u.slot ).reason, /no element of its own/ );
+	assert.match( r.unpaired.find( ( u ) => /__item:nth-of-type\(1\) > \.sgs-brand-strip__brand-text$/.test( u.slot ) ).reason, /another render/ );
+} );
+
+const ENTRY = ( k ) => `.sgs-timeline__list > .sgs-timeline__entry:nth-of-type(${ k })`;
+test( 'MUST FAIL (copies beside a non-repeated sibling): the timeline\'s entries pair with the draft\'s loop beside the progress line, the content with the span holding title and text', () => {
+	const r = run( 'sgs/timeline', F.elements.timeline, 'Root/258#0' );
+	for ( const k of [ 1, 2 ] ) {
+		assert.equal( r.slots[ ENTRY( k ) ]?.tpl, `Root/260#${ k - 1 }` );
+		assert.equal( r.slots[ `${ ENTRY( k ) } > .sgs-timeline__date` ]?.tpl, `Root/261#${ k - 1 }` );
+		assert.equal( r.slots[ `${ ENTRY( k ) } > .sgs-timeline__content > .sgs-timeline__title` ]?.tpl, `Root/263#${ k - 1 }` );
+	}
+	// Negative controls: the description's link and the progress fill the draft does not draw stay unpaired.
+	assert.ok( r.unpaired.some( ( u ) => u.slot === `${ ENTRY( 1 ) } > .sgs-timeline__content > .sgs-timeline__description > p > a` ) );
+	assert.ok( r.unpaired.some( ( u ) => /__progress-fill$/.test( u.slot ) ) );
+} );
+
+const STEP = ( k ) => `.sgs-process-steps__step:nth-of-type(${ k })`;
+test( 'MUST FAIL (a draft box only the draft draws): a step\'s number, title and description pair with the number and the two elements inside the span the draft wraps them in', () => {
+	const r = run( 'sgs/process-steps', F.elements.steps, 'Root/298#0' );
+	assert.deepEqual( [ 'number', 'title', 'description' ].map( ( p ) => r.slots[ `${ STEP( 1 ) } > .sgs-process-steps__${ p }` ]?.tpl ), [ 'Root/301#0', 'Root/303#0', 'Root/304#0' ] );
+	// Negative control: with the description gone from the draft the numbers no longer meet, and nothing is guessed.
+	const short = run( 'sgs/process-steps', F.elements.steps.filter( ( e ) => ! e.key.startsWith( 'Root/304#' ) ), 'Root/298#0' );
+	assert.ok( ! ( `${ STEP( 1 ) } > .sgs-process-steps__description` in short.slots ) );
+	assert.ok( ! ( `${ STEP( 1 ) } > .sgs-process-steps__title` in short.slots ) );
+} );
+
+test( 'MUST FAIL (the glyph box only the block draws): an icon drawn as a button holding its svg gives the shape the button and the glyph\'s svg the svg', () => {
+	const key = 'Root>Frame Card@139#0/10#0';
+	const r = run( 'sgs/icon', F.elements.svgIcon, key );
+	assert.equal( r.slots[ '.sgs-icon__shape' ]?.tpl, key );
+	assert.equal( r.slots[ '.sgs-icon__shape > .sgs-icon__glyph > svg' ]?.tpl, 'Root>Frame Card@139#0/11#0' );
+	assert.ok( ! ( '.sgs-icon__shape > .sgs-icon__glyph' in r.slots ), 'the svg is never the glyph box' );
+	// A draft that draws the icon as the bare svg: the svg part is that svg, never the path inside it.
+	const bare = run( 'sgs/icon', F.elements.svgIcon.filter( ( e ) => 'button' !== e.tag ).map( ( e ) => ( 'svg' === e.tag ? { ...e, parentKey: null } : e ) ), 'Root>Frame Card@139#0/11#0' );
+	assert.equal( bare.slots[ '.sgs-icon__shape > .sgs-icon__glyph > svg' ]?.tpl, 'Root>Frame Card@139#0/11#0' );
+} );
+
+test( 'a draft box is read as its children only for content parts and only when one reading fits', () => {
+	const y = ( k, kids = [] ) => ( { k, kids } );
+	const below = ( e ) => e.kids;
+	const a = y( 'a' ), b = y( 'b', [ y( 'b1' ), y( 'b2' ) ] ), c = y( 'c', [ y( 'c1' ), y( 'c2' ) ] );
+	assert.deepEqual( spreads( [ a, b ], [ 1, 2, 3 ], below ).map( ( e ) => e.k ), [ 'a', 'b1', 'b2' ] );
+	assert.equal( spreads( [ b, c ], [ 1, 2, 3 ], below ), null, 'two readings fit: no evidence' );
+	assert.equal( spreads( [ a, b ], [ 1, 2, 3 ], below, ( p ) => 2 === p ), null, 'a part holding parts never takes a child of a spread box' );
+	assert.deepEqual( spreads( [ a, b ], [ 1, 2 ], below, () => true ), [ a, b ], 'equal numbers need no reading' );
 } );
 
 const LUCIDE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';

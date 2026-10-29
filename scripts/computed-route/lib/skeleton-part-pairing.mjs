@@ -166,11 +166,17 @@ function draftSide( { m, own, isMedia, items } ) {
 	return { kids, kinds, below, loop, depth };
 }
 
-// The draft children `kids` read in order with some read as their own children instead, giving exactly `n` elements: the
-// one such reading, or null when none or several do. Only a child holding two or more is read as its children.
-function spreads( kids, n, below ) {
+// The draft children `kids` read in order against the parts `parts`, with some children read as their own children
+// instead, giving exactly one element per part: the one such reading, or null when none or several do. Only a child holding
+// two or more is read as its children, and only for parts that hold no parts of their own (`hasParts`): contents, never a
+// box of parts.
+export function spreads( kids, parts, below, hasParts = () => false ) {
+	const n = parts.length;
 	if ( kids.length === n ) {
 		return kids;
+	}
+	if ( parts.some( hasParts ) ) {
+		return null;
 	}
 	const open = kids.map( ( y, i ) => ( below( y ).length > 1 ? i : -1 ) ).filter( ( i ) => i >= 0 );
 	const found = [];
@@ -211,9 +217,18 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 	// What a draft element is itself: 'svg', 'media' (a picture element) or null. A draft svg or picture is only ever a part that
 	// is itself an svg or a picture: a box around one is drawn by the draft's parent, or not at all.
 	const selfOf = ( y ) => ( y.virtual ? null : 'svg' === y.tag ? 'svg' : isMedia( y ) ? 'media' : null );
-	const suits = ( c, y ) => ! selfOf( y ) || selfOf( y ) === B.self( c );
-	// Whether a part under P has been paired with an element other than x.
-	const reached = ( P, x ) => [ ...at.entries() ].some( ( [ q, y ] ) => q.startsWith( `${ P } > ` ) && y !== x && ! y.virtual );
+	// Inside a draft svg stand only parts inside the block's svg.
+	const inSvg = ( y ) => {
+		for ( let p = m.byKey[ y.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
+			if ( 'svg' === p.tag ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	const suits = ( c, y ) => ( ! selfOf( y ) || selfOf( y ) === B.self( c ) ) && ( y.virtual || ! inSvg( y ) || stepsOf( c ).slice( 0, -1 ).some( ( s ) => 'svg' === BARE.exec( s )?.[ 1 ] ) );
+	// Whether a part under P has been paired with an element other than x, or is itself the svg or picture x is.
+	const reached = ( P, x ) => [ ...at.entries() ].some( ( [ q, y ] ) => q.startsWith( `${ P } > ` ) && ! y.virtual && ( y !== x || ( !! selfOf( x ) && B.self( q ) === selfOf( x ) ) ) );
 
 	const align = ( P, x ) => {
 		const next = [];
@@ -255,8 +270,7 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 			}
 		}
 		// loop: a part whose children are all copies of one repeated part (the list around its items) is the element holding the
-		// draft's copies; with no copies and no sibling, the draft draws the part and its one copy as x. Copies standing
-		// straight in x are reached through the pass rule below.
+		// draft's copies. Copies standing straight in x, or a draft drawing one copy at a time, are reached through the pass rule.
 		for ( const c of [ ...pending ] ) {
 			const sub = B.kids( c );
 			if ( ! sub.length || ! sub.every( ( k ) => NTH.test( lastOf( k ) ) && LOOSE( k ) === LOOSE( sub[ 0 ] ) ) ) {
@@ -266,8 +280,6 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 			const box = loop ? m.byKey[ loop[ 0 ].parentKey ] : null;
 			if ( loop && box && box !== x && ownEl( box ) && free( box ) && loop.every( ( e ) => e.parentKey === box.key ) ) {
 				pair( c, box );
-			} else if ( ! loop && 1 === pending.length ) {
-				pair( c, x );
 			} else {
 				continue;
 			}
@@ -325,9 +337,8 @@ export function pairParts( { db, block, cal, paint = [], m, el, items = null, ow
 		// holding several parts' contents and no part of its own (a span around a title and its text) is read as its children
 		// when that, and only that, makes the numbers equal, and every part left is a leaf (the contents, never a box of parts).
 		const left = B.anyPaint ? pending.filter( B.painted ) : [];
-		const spread = left.length ? spreads( rest(), left.length, ( y ) => D.kids( y ).filter( ownEl ) ) : null;
-		const leaves = spread && ( spread.length === rest().length || left.every( ( c ) => ! count( c ) ) );
-		if ( leaves && spread.every( ( y, i ) => suits( left[ i ], y ) ) ) {
+		const spread = left.length ? spreads( rest(), left, ( y ) => D.kids( y ).filter( ownEl ), count ) : null;
+		if ( spread && spread.every( ( y, i ) => suits( left[ i ], y ) ) ) {
 			left.forEach( ( c, i ) => pair( c, spread[ i ] ) );
 			pending = pending.filter( ( c ) => ! left.includes( c ) );
 		} else if ( 1 === pending.length && 1 === rest().length && suits( pending[ 0 ], rest()[ 0 ] ) && [ ...B.kinds( pending[ 0 ] ) ].every( ( k ) => D.kinds( rest()[ 0 ] ).has( k ) ) ) {
