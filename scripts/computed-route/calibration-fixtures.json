@@ -2832,7 +2832,21 @@
         "showBackground": true,
         "linkUrl": "/"
       }
-    ]
+    ],
+    "preconditions": {
+      "labelColourHover": {
+        "showLabel": true,
+        "labelText": "Label"
+      },
+      "labelColourHoverGradient": {
+        "showLabel": true,
+        "labelText": "Label"
+      },
+      "labelTextStrokeColourHover": {
+        "showLabel": true,
+        "labelText": "Label"
+      }
+    }
   },
   "sgs/image-sequence": {
     "attributes": {

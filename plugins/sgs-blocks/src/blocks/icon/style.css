@@ -78,7 +78,7 @@
 	block-size: var(--sgs-icon-shape-h, var(--sgs-icon-shape-w, var(--sgs-si-shape-h, var(--sgs-si-shape-w, var(--sgs-icon-size-used)))));
 	color: var(--sgs-icon-colour, var(--sgs-si-colour, var(--sgs-icon-brand-glyph, var(--wp--preset--color--primary))));
 	border-color: var(--sgs-icon-border-colour, var(--sgs-si-border-colour, var(--sgs-icon-brand-border, var(--wp--preset--color--primary))));
-	transform: rotate(var(--sgs-icon-rotate, 0deg));
+	rotate: var(--sgs-icon-rotate, 0deg);
 	transition:
 		color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--ease, ease),
 		background-color var(--wp--custom--duration--fast, 150ms) var(--wp--custom--easing--ease, ease),
