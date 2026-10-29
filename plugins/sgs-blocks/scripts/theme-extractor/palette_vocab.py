@@ -6,7 +6,40 @@
 """
 from __future__ import annotations
 
+import json
 import re
+from functools import lru_cache
+from pathlib import Path
+
+# --------------------------------------------------------------------------- brand colours
+
+BRAND_REGISTRY = Path(__file__).resolve().parents[2] / "includes" / "data" / "brand-registry.json"
+
+
+@lru_cache(maxsize=1)
+def brands_with_colour() -> tuple:
+    """The brand registry's entries that carry a colour (FP-1: read from ``includes/data/brand-registry.json``, never listed here).
+
+    A brand's colour is painted by the block that shows the brand, so it takes no palette slot and no custom colour
+    (Spec 48 FR-48-31)."""
+    data = json.loads(BRAND_REGISTRY.read_text(encoding="utf-8"))
+    return tuple(b for b in data.get("brands", []) if re.fullmatch(r"#[0-9a-fA-F]{6}", str(b.get("colour", ""))))
+
+
+def brand_colours() -> frozenset:
+    """Lower-case hex of every registry brand's colour."""
+    return frozenset(b["colour"].lower() for b in brands_with_colour())
+
+
+def brand_row_pattern() -> str:
+    """A pattern matching a README row that names a registry brand: its slug, its label's words and its aliases, each at
+    least three letters, as whole words."""
+    names = set()
+    for b in brands_with_colour():
+        names.update(w for w in re.split(r"[^a-z0-9]+", str(b.get("label", "")).lower()) if len(w) >= 3)
+        names.update(str(n).lower() for n in [b.get("slug", ""), *b.get("aliases", [])] if len(str(n)) >= 3)
+    return r"\b(?:" + "|".join(sorted(re.escape(n) for n in names)) + r")\b"
+
 
 # --------------------------------------------------------------------------- README row roles
 
@@ -16,11 +49,11 @@ SKIP_TABLE = (
     (r"\bfaint\b|\bplaceholder\b|\bdisabled\b", "placeholder-tier role: no palette slot"),
     (r"\bgoogle\b|\bwidget\b|\bthird[- ]party\b", "third-party widget colour: stays literal"),
     (r"\bordered in\b|\bout of stock\b|\bout-of-stock\b|\bbackorder", "status colour with no base slug"),
+    (brand_row_pattern(), "brand colour: the brand's own block paints it, so it has no palette slot"),
 )
 # (pattern, slugs, property families the role legitimately covers)
 ALL_FAMILIES = ("text", "background", "border", "fill")
 ROLE_TABLE = (
-    (r"\bwhats\s?app\b", ("whatsapp",), ALL_FAMILIES),
     (r"\baccent ink\b|\bink accent\b", ("accent-text",), ("text", "fill")),
     (r"\b(?:ink|text) on dark\b", ("text-inverse", "primary-text"), ("text", "fill")),
     (r"\bfooter (?:background|bg|surface)\b", ("footer-bg",), ("background", "fill")),
@@ -100,7 +133,7 @@ PROPOSAL_MIN_FAMILY_SHARE = 0.9
 PROPOSAL_CONFIDENCE = 0.5
 # Slugs that carry a hue with its own meaning: their colours are never proposed for a neutral role.
 NON_NEUTRAL_SLUGS = frozenset({"accent", "accent-light", "accent-text", "success", "success-light", "error",
-                               "error-light", "info", "info-light", "whatsapp"})
+                               "error-light", "info", "info-light"})
 # Reasons in SKIP_TABLE-style skips that keep a README colour out of every slot, proposals included.
 PROPOSAL_EXCLUDING_SKIPS = tuple(reason for _pattern, reason in SKIP_TABLE)
 

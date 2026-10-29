@@ -232,10 +232,25 @@ def test_without_a_measured_button_the_readme_phrase_mapping_still_gives_primary
     assert _pal(snap)["primary"]["color"] == "#1A1A1A"
 
 
+def test_a_readme_row_naming_a_registry_brand_gets_no_palette_slot():
+    """WhatsApp's colour (and every other registry brand's) is painted by its own block: no slot, and the trace says why."""
+    snap, trace = _apply(_colour_declared([("WhatsApp", "#25D366", "WhatsApp call-to-action ground"), ("Ink", "#1A1A1A", "Primary text, buttons")]),
+                         {"#25D366": {"background": 8}, "#1A1A1A": {"color": 5}})
+    assert "#25D366" not in {e["color"].upper() for e in _pal(snap).values()}
+    assert "whatsapp" not in _pal(snap)
+    assert any(t["kind"] == "skip" and t["what"] == "WhatsApp" and "brand colour" in t["reason"] for t in trace)
+
+
+def test_a_readme_row_naming_no_brand_is_not_skipped_as_one():
+    """Negative control: a row whose words are not a registry brand's names keeps its role."""
+    snap, trace = _apply(_colour_declared([("Ink", "#1A1A1A", "Primary text, buttons")]), {"#1A1A1A": {"color": 5}})
+    assert _pal(snap)["primary"]["color"] == "#1A1A1A"
+    assert not any("brand colour" in t.get("reason", "") for t in trace)
+
+
 def test_a_brand_status_button_is_never_the_measured_primary():
     facts = {"buttons": [_button("rgb(37, 211, 102)", "rgb(11, 43, 23)", count=9)]}
     snap = _base_snap()
-    snap["settings"]["color"]["palette"].append({"slug": "whatsapp", "color": "#25D366", "name": "WhatsApp"})
     out, _ = _apply(_colour_declared([("Ink", "#1A1A1A", "Primary text, buttons")]),
                     {"#1A1A1A": {"color": 5}}, facts=facts, snap=snap)
     assert _pal(out)["primary"]["color"] == "#1A1A1A"

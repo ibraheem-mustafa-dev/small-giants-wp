@@ -11,6 +11,7 @@ from __future__ import annotations
 import re
 
 from colour import parse_colour
+from palette_vocab import brand_colours
 
 # Map a draft button-variant class → the theme preset slot.
 _VARIANT_SLOT = [
@@ -163,16 +164,18 @@ def _is_visible_border(rest: dict) -> bool:
 
 
 # DATA. A button-shaped control taller than this is a card/tile link, not a button. Palette slugs whose
-# colour marks a brand or status control (WhatsApp, success/error/info messaging) never become a
-# general-purpose button variant.
+# colour marks a status control (success/error/info messaging), and every registry brand's colour (WhatsApp, Facebook
+# and the rest), never become a general-purpose button variant.
 MAX_BUTTON_HEIGHT = 96
-NON_VARIANT_SLUGS = ("whatsapp", "success", "error", "info")
+NON_VARIANT_SLUGS = ("success", "error", "info")
 
 
 def _palette_hints(palette: list | None) -> tuple[str | None, set]:
     """(palette ``primary`` hex, hexes of the brand/status slugs) from the palette built so far."""
     by_slug = {e.get("slug"): _HEXME(e.get("color", "")) for e in (palette or [])}
     exclude = {by_slug[s] for s in NON_VARIANT_SLUGS if by_slug.get(s, "") and by_slug[s].startswith("#")}
+    if palette is not None:
+        exclude |= brand_colours()
     primary = by_slug.get("primary")
     return (primary if primary and primary.startswith("#") else None), exclude
 
