@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Opticians</title></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "shop", "label": "Shop", "kind": "content page", "wp": { "slug": "shop", "parent": null, "type": "page" } },
+  { "id": "about", "label": "About", "kind": "content page", "wp": { "slug": "about", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header><div><a href="#" onClick="{{ toHome }}" aria-label="Opticians home">Opticians</a></div></header>
+<sc-if value="{{ drawerOpen }}">
+<div style="position:fixed;top:0;bottom:0;left:0;width:320px">
+  <nav style="font-size:13px;text-transform:uppercase;letter-spacing:.06em"><a href="#" onClick="{{ toShop }}">Shop</a></nav>
+  <div style="font-size:13px;text-transform:uppercase;letter-spacing:.06em"><a href="#" onClick="{{ toAbout }}">About us</a></div>
+</div>
+</sc-if>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isShop }}"><main><h1>Shop</h1></main></sc-if>
+<sc-if value="{{ isAbout }}"><main><h1>About</h1></main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', drawerOpen: false };
+  go(p) { this.setState({ page: p, drawerOpen: false }); }
+  renderVals() {
+    const S = this.state;
+    return {
+      drawerOpen: S.drawerOpen, isHome: S.page === 'home', isShop: S.page === 'shop', isAbout: S.page === 'about',
+      toHome: () => this.go('home'), toShop: () => this.go('shop'), toAbout: () => this.go('about'),
+    };
+  }
+}
+</script>
+</body></html>

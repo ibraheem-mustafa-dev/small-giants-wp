@@ -413,6 +413,10 @@
 			},
 			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
 		},
+		"navigationLink": {
+			"properties": [ "font-size", "text-transform", "letter-spacing" ],
+			"reason": "a text link in a header, outside its navigation element, set in the navigation links' own type (the same size, case and tracking) is one of the navigation's items: the menu block draws it from the header menu, never a button"
+		},
 		"solitaryIcon": {
 			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
 			"block": "sgs/icon"

@@ -1,0 +1,71 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Opticians</title></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "lenses", "label": "Prescription lenses", "kind": "content page", "wp": { "slug": "prescription-lenses", "parent": null, "type": "page" } },
+  { "id": "about", "label": "About", "kind": "content page", "wp": { "slug": "about", "parent": null, "type": "page" } },
+  { "id": "help", "label": "Help", "kind": "content page", "wp": { "slug": "help", "parent": null, "type": "page" } },
+  { "id": "contact", "label": "Contact", "kind": "content page", "wp": { "slug": "contact", "parent": null, "type": "page" } },
+  { "id": "stores", "label": "Stores", "kind": "content page", "wp": { "slug": "stores", "parent": null, "type": "page" } },
+  { "id": "offers", "label": "Offers", "kind": "content page", "wp": { "slug": "offers", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header onMouseLeave="{{ closeMega }}">
+  <div>
+    <nav style="font-size:13px;text-transform:uppercase;letter-spacing:.06em">
+      <a href="#" onClick="{{ toggleFrames }}" onMouseEnter="{{ openFrames }}" onFocus="{{ openFrames }}">Frames</a>
+      <a href="#" onClick="{{ toggleBrands }}" onMouseEnter="{{ openBrands }}" onFocus="{{ openBrands }}">Brands</a>
+      <a href="#" onClick="{{ toLenses }}" onMouseEnter="{{ openLenses }}" onFocus="{{ openLenses }}">Lenses</a>
+      <span onMouseEnter="{{ closeMega }}">Contacts <span>SOON</span></span>
+    </nav>
+    <a href="#" onClick="{{ toHome }}" aria-label="Opticians home">Opticians</a>
+    <div style="font-size:13px;text-transform:uppercase;letter-spacing:.06em">
+      <a href="#" onClick="{{ toAbout }}" onMouseEnter="{{ closeMega }}">About us</a>
+      <a href="#">Soon</a>
+      <a href="#" onClick="{{ toLenses }}">Lens types</a>
+      <a href="#" onClick="{{ toHelp }}" onMouseEnter="{{ openHelp }}" onFocus="{{ openHelp }}">Help</a>
+      <a href="#" onClick="{{ toContact }}" style="font-size:11px">Reach us</a>
+      <a href="#" onClick="{{ toStores }}"><svg width="12" height="12"></svg>Stores</a>
+      <sc-for list="{{ offers }}" as="o"><a href="#" onClick="{{ toOffers }}">Offers</a></sc-for>
+    </div>
+  </div>
+  <sc-if value="{{ megaAny }}">
+  <div class="sgs-mega-menu" style="position:absolute;left:0;right:0;top:100%">
+    <sc-if value="{{ megaFrames }}"><div><a href="#" onClick="{{ toHome }}">All frames</a></div></sc-if>
+    <sc-if value="{{ megaBrands }}"><div><a href="#" onClick="{{ toHome }}">All brands</a></div></sc-if>
+    <sc-if value="{{ megaLenses }}"><div><a href="#" onClick="{{ toLenses }}">Lens types</a></div></sc-if>
+    <sc-if value="{{ megaHelp }}"><div><a href="#" onClick="{{ toHelp }}">Delivery and returns</a></div></sc-if>
+  </div>
+  </sc-if>
+</header>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isLenses }}"><main><h1>Prescription lenses</h1></main></sc-if>
+<sc-if value="{{ isAbout }}"><main><h1>About</h1></main></sc-if>
+<sc-if value="{{ isHelp }}"><main><h1>Help</h1></main></sc-if>
+<sc-if value="{{ isContact }}"><main><h1>Contact</h1></main></sc-if>
+<sc-if value="{{ isStores }}"><main><h1>Stores</h1></main></sc-if>
+<sc-if value="{{ isOffers }}"><main><h1>Offers</h1></main></sc-if>
+<footer><nav><a href="#" onClick="{{ toAbout }}">About</a><a href="#" onClick="{{ toHelp }}">Help</a></nav></footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', mega: null };
+  go(p) { this.setState({ page: p, mega: null }); }
+  renderVals() {
+    const S = this.state;
+    return {
+      isHome: S.page === 'home', isLenses: S.page === 'lenses', isAbout: S.page === 'about', isContact: S.page === 'contact', isStores: S.page === 'stores', isOffers: S.page === 'offers', isHelp: S.page === 'help',
+      megaAny: !!S.mega, megaFrames: S.mega === 'frames', megaBrands: S.mega === 'brands', megaLenses: S.mega === 'lenses', megaHelp: S.mega === 'help',
+      openFrames: () => this.setState({ mega: 'frames' }), openBrands: () => this.setState({ mega: 'brands' }),
+      openLenses: () => this.setState({ mega: 'lenses' }), openHelp: () => this.setState({ mega: 'help' }),
+      toggleFrames: (e) => { e.preventDefault(); this.setState({ mega: S.mega === 'frames' ? null : 'frames' }); },
+      toggleBrands: (e) => { e.preventDefault(); this.setState({ mega: S.mega === 'brands' ? null : 'brands' }); },
+      closeMega: () => this.setState({ mega: null }),
+      toHome: () => this.go('home'), toLenses: () => this.go('lenses'), toAbout: () => this.go('about'), toContact: () => this.go('contact'), toStores: () => this.go('stores'), toOffers: () => this.go('offers'), offers: [ 1 ], toHelp: () => this.go('help'),
+    };
+  }
+}
+</script>
+</body></html>

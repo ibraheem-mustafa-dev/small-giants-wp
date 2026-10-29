@@ -8,6 +8,7 @@ import { attrOf, readBinding, classMethod, isFn, propName, subtree, keyName, dec
 import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, returnsOf } from './intake-ast-eval.mjs';
 import { megaPanelTitle } from './page-map-names.mjs';
 import { megaSlots } from './intake-pagemap-mega-slots.mjs';
+import { looseNavAnchors } from './intake-pagemap-loose-links.mjs';
 import { logicOf, moneyBinding } from './shop-parts-logic.mjs';
 import { narrowedListsOfDraft, narrowsRenderedList } from './skeleton-narrowing.mjs';
 
@@ -446,7 +447,16 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 			const navs = descendants( r.node ).filter( ( x ) => 'nav' === x.name && ! ancestors( x ).some( ( u ) => 'nav' === u.name ) );
 			const scopes = navs.length ? navs : [ r.node ];
 			scopes.forEach( ( s, i ) => {
-				const items = numbered( readItems( d, tree, s, new Map(), roots, 'nav' === s.name || ( 'drawer' === r.kind && isNav( s ) && ! showsOrderLines( d.text, L, s ) ) ? 'nav' : 'region' ) );
+				const read = readItems( d, tree, s, new Map(), roots, 'nav' === s.name || ( 'drawer' === r.kind && isNav( s ) && ! showsOrderLines( d.text, L, s ) ) ? 'nav' : 'region' );
+				// A header link outside the <nav> set in the nav links' own look is an item of the first nav's menu, after its items.
+				const loose = 'header' === r.kind && 'nav' === s.name && 0 === i ? looseNavAnchors( { header: r.node, nav: s, attrOf, ancestors, descendants } ) : [];
+				for ( const a of loose ) {
+					const targets = targetsOf( d, a, new Map(), roots ).filter( ( t ) => ! [ '', '#' ].includes( t ) );
+					if ( targets.length && ! read.some( ( it ) => it.targets.some( ( t ) => targets.includes( t ) ) ) ) {
+						read.push( anchored( { label: attrOf( a, 'aria-label' ) || innerText( tree.text, a ), targets, children: [] }, a ) );
+					}
+				}
+				const items = numbered( read );
 				const many = scopes.length > 1 || named( r.kind ).length > 1;
 				const name = many ? `${ r.kind }-${ kebab( attrOf( s, 'aria-label' ) || '' ) || i + 1 }` : r.kind;
 				if ( items.length ) {

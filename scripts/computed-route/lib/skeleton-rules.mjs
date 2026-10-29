@@ -12,6 +12,7 @@ import { narrowedLists, narrowsRenderedList } from './skeleton-narrowing.mjs';
 import { specHit } from './skeleton-facts.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
+import { sameNavLook } from './nav-link-look.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
 import { loopBlocks } from './skeleton-loop-blocks.mjs';
@@ -212,6 +213,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return verdicts.get( tk ) ? card : null;
 	};
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
+	// The navigation element of the surface (the first <nav> that is no part of another block), or null.
+	const navigationOf = () => ( R.navigation?.bySurface?.[ surface.kind ] ? m.els.find( ( n ) => 'nav' === n.tag && ! m.isPart( n ) ) ?? null : null );
+	// Whether a link is set in the type of the navigation's own links (lib/nav-link-look.mjs), compared with the first link of
+	// the navigation.
+	const looksLikeNavLink = ( e, nav ) => {
+		const model = desc( nav ).find( ( k ) => 'a' === k.tag && m.words( k ) );
+		return sameNavLook( e, model, declared, ( x ) => m.byKey[ x.parentKey ], R.navigationLink.properties );
+	};
 	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
 	// by its rendered input type; null for anything else.
 	const controlBlock = ( e ) => {
@@ -527,6 +536,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return lk ? v( 'siteInfoLink', { block: R.siteInfoLink?.block, attributes: { label: text, linkSource: lk.source, ...( wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } ) : null;
 		},
 		( { e } ) => ( 'nav' === e.tag && R.navigation?.bySurface?.[ surface.kind ] ? v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true } ) : null ),
+		// A text link in a header outside its navigation element, in the navigation links' own type, joins the navigation.
+		( { e, kidsB } ) => {
+			const nav = 'a' === e.tag && 'header' === surface.kind && R.navigationLink && ! kidsB.length && ! hasSvg( e ) && m.words( e ) && ! ( e.membership || [] ).some( ( x ) => 'sc-for' === x.kind ) ? navigationOf() : null;
+			return nav && ( realHref( e ) || handlerOf( e ) ) && looksLikeNavLink( e, nav ) ? v( 'navigationLink', { action: 'absorbed', into: nav.key } ) : null;
+		},
 		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),
 		// The call to action that ends a card link is the card's button, holding the card's link.
 		( { e } ) => {
