@@ -142,7 +142,7 @@
         },
         {
           "key": "chip",
-          "label": "Chip",
+          "label": "Chips",
           "slug": "chip",
           "packSize": false,
           "variesBy": null,
@@ -181,7 +181,7 @@
         },
         {
           "key": "flav",
-          "label": "Flav",
+          "label": "Flavours",
           "slug": "flav",
           "packSize": false,
           "variesBy": null,

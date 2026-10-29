@@ -15,7 +15,7 @@ import { reviewRows, markProblem } from '../lib/intake-review.mjs';
 const SHARED_ROWS = [ { route: 'Shop.dc.html', slug: 'shop', postType: 'shop', collection: 'live' }, { route: 'Item.dc.html', slug: 'product', postType: 'product', collection: 'live', template: 'single-product' } ];
 const SINGLE_ROWS = [ { route: 'shop', slug: 'shop', postType: 'shop', collection: 'live' }, { route: 'product', slug: 'product', postType: 'product', collection: 'live' } ];
 
-const read = ( name, rows, edit ) => readCatalogue( { repo: repoWith( name, edit ), client: 'demo', rows } );
+const read = ( name, rows, edit, facts = undefined ) => readCatalogue( { repo: repoWith( name, edit ), client: 'demo', rows, facts } );
 const byId = ( cat, id ) => cat.products.find( ( p ) => p.draftId === id );
 
 test( 'shared script: the looked-up, priced list is the catalogue; a list with no price and a list nothing looks up are not', () => {
@@ -181,4 +181,29 @@ test( 'variesBy: a pack size is size, a size or colour axis is named by its own 
 	assert.deepEqual( [ variesByOf( 'Frame colour', 'curCol', false ), variesByOf( 'Shade', 'colorPick', false ), variesByOf( 'Finish', 'material', false ), variesByOf( 'Amount', 'amount', false ), variesByOf( 'Amount', 'amount', true ), variesByOf( 'Sizes', 'x', false ), variesByOf( 'Message', 'page', false ) ], [ 'color', 'color', 'material', null, 'size', 'size', null ] );
 	assert.deepEqual( catalogueProblems( shared ), [] );
 	assert.ok( catalogueProblems( { ...shared, products: [ { ...byId( shared, 'jar' ), attributes: [ { ...byId( shared, 'jar' ).attributes[ 0 ], variesBy: 'flavour' } ] } ] } ).length > 0 );
+} );
+
+// A fact record holding the headings the draft shows for the option loops: the product page's grain list (an earlier text
+// and a later one beside it) and the flow's toppings list (its heading under a bound line, carrying its step number), and
+// another component's grain list with its own heading.
+const el = ( component, n, tag, parent, words = '', list = null ) => [ `${ component }/${ n }`, { template: { key: `${ component }/${ n }`, component, n: String( n ), realTag: tag, parent: parent ? `${ component }/${ parent }` : null, words, holes: list ? [ { id: 'attr:list#0', where: 'attr:list', expr: list, path: list, whole: true } ] : [] } } ];
+const HEADINGS = { elements: Object.fromEntries( [
+	el( 'Other', 1, 'main', null ), el( 'Other', 2, 'p', 1, 'Another grain list' ), el( 'Other', 3, 'sc-for', 1, '', 'grains' ),
+	el( 'Item', 1, 'main', null ), el( 'Item', 2, 'p', 1, 'Made by hand' ), el( 'Item', 3, 'p', 1, 'Choose a grain' ), el( 'Item', 4, 'div', 1 ), el( 'Item', 5, 'sc-for', 4, '', 'grains' ), el( 'Item', 6, 'p', 1, 'Ships tomorrow' ),
+	el( 'Builder', 1, 'main', null ), el( 'Builder', 2, 'div', 1, '{{ step }}' ), el( 'Builder', 3, 'span', 2, '2 · Toppings' ), el( 'Builder', 4, 'span', 2, 'Pick any' ), el( 'Builder', 5, 'div', 1 ), el( 'Builder', 6, 'sc-for', 5, '', 'tops' ),
+] ) };
+
+test( 'MUST FAIL: an attribute is named by the heading the draft shows for its options (the product page, then the flow, less its step number), its slug kept short', () => {
+	const jar = byId( read( 'shared', FLOW_ROWS, withFlow, HEADINGS ).catalogue, 'jar' );
+	assert.deepEqual( jar.attributes.map( ( a ) => [ a.key, a.label, a.slug ] ), [ [ 'pack', 'Pack size', 'pack-size' ], [ 'grain', 'Choose a grain', 'grain' ], [ 'tops', 'Toppings', 'top' ] ] );
+	// Negative control: a choice whose code holds a label keeps it; with no fact record the key names it, and a note says so.
+	const coded = byId( read( 'shared', FLOW_ROWS, ( to ) => {
+		withFlow( to );
+		const f = path.join( to, 'Item.dc.html' );
+		fs.writeFileSync( f, fs.readFileSync( f, 'utf8' ).replace( 'const S = this.state,', "const groups = [ { key: 'grain', label: 'Grain size' }, { key: 'tops', label: 'Extras' } ];\n    const S = this.state," ) );
+	}, HEADINGS ).catalogue, 'jar' );
+	assert.deepEqual( coded.attributes.map( ( a ) => a.label ), [ 'Pack size', 'Grain size', 'Extras' ] );
+	const bare = read( 'shared', FLOW_ROWS, withFlow, null );
+	assert.deepEqual( byId( bare.catalogue, 'jar' ).attributes.map( ( a ) => a.label ), [ 'Pack size', 'Grain', 'Top' ] );
+	assert.ok( bare.notes.some( ( n ) => /choice "tops": neither the code nor the draft's template names it, so its attribute is named "Top" from its key/.test( n ) ) );
 } );
