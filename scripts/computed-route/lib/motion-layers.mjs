@@ -105,10 +105,26 @@ export function matchByPose( candidates, measured ) {
 	if ( ! ranked.length ) {
 		return null;
 	}
+	let record = ranked[ 0 ].r;
 	if ( ranked.length > 1 && ranked[ 1 ].d - ranked[ 0 ].d < 0.01 ) {
-		return { ambiguous: ranked.filter( ( x ) => x.d - ranked[ 0 ].d < 0.01 ).map( ( x ) => x.r.id ) };
+		const tied = ranked.filter( ( x ) => x.d - ranked[ 0 ].d < 0.01 ).map( ( x ) => x.r );
+		// Candidates that play the same animation are one entrance the code reaches by several callers (a reveal started from
+		// the observer, the mount and a state change): one of them is the match, preferring the one a scroll starts.
+		if ( ! tied.every( ( r ) => sameEntrance( r, tied[ 0 ] ) ) ) {
+			return { ambiguous: tied.map( ( r ) => r.id ) };
+		}
+		record = tied.find( ( r ) => 'scroll' === TRIGGER[ r.trigger?.type ] ) ?? tied[ 0 ];
 	}
-	return { record: ranked[ 0 ].r };
+	// Every candidate that plays the match's animation, whatever starts it, is the same entrance.
+	const same = candidates.filter( ( r ) => sameEntrance( r, record ) ).map( ( r ) => r.id );
+	return same.length > 1 ? { record, identical: same } : { record };
+}
+
+// Whether two entrance records play the same animation: the same properties, from and to, keyframes, duration, delay,
+// curve, direction and fill. Their ids, names, triggers and elements do not matter.
+function sameEntrance( a, b ) {
+	const shape = ( r ) => JSON.stringify( [ ( r.properties || [] ).map( ( p ) => [ p.property, p.from ?? null, p.to ?? null, p.keyframes ?? null ] ), r.duration_ms ?? null, r.delay_ms ?? null, r.easing ?? null, r.direction ?? null, r.fill ?? null, r.stagger ?? null ] );
+	return shape( a ) === shape( b );
 }
 
 // The offset and step of a delay the code computes per item: `(rv.i || 0) * 80` is { offset 0, step 80 },

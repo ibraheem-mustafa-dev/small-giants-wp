@@ -9,6 +9,7 @@
 import { templateKey } from './fact-key.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
+import { hostOf } from './motion-behaviours.mjs';
 
 const scriptFile = ( r ) => ( /\.m?js$/i.test( String( r.source?.file ?? '' ) ) ? String( r.source.file ) : null );
 const tplIds = ( r ) => [ r.element?.template_tpl_id, r.element?.nearest_tpl_id ].flat().filter( ( v ) => null !== v && undefined !== v );
@@ -56,20 +57,33 @@ export function makeHomeOf( { records, nodes, keyOf, idx } ) {
 		const f = scriptFile( r );
 		f && ! fileHome.has( f ) && homeOf( r ) && fileHome.set( f, homeOf( r ) );
 	}
-	return Object.assign( ( r ) => homeOf( r ) ?? ( scriptFile( r ) ? fileHome.get( scriptFile( r ) ) ?? null : null ), { direct: homeOf } );
+	// The first home each draft component has on this surface. A script-driven record that names no element at all (no template
+	// element, none near it, no `[data-*]` hook to find it by) cannot be placed by any surface, so a surface that shows its
+	// component answers for it; a record that names an element which is not on this surface is another surface's.
+	const compHome = new Map();
+	for ( const [ key, h ] of homes ) {
+		const dc = key.slice( 0, key.lastIndexOf( '/' ) );
+		compHome.has( dc ) || compHome.set( dc, h );
+	}
+	return Object.assign( ( r ) => homeOf( r ) ?? ( scriptFile( r ) ? fileHome.get( scriptFile( r ) ) ?? null : null ), { direct: homeOf, byComponent: ( r ) => ( 'active' === ( r.status ?? 'active' ) && SCRIPT_DRIVEN.test( r.mechanism ?? '' ) && 0 === tplIds( r ).length && ! hostOf( r ) && ! scriptFile( r ) && r.element?.dc ? compHome.get( r.element.dc ) ?? null : null ) } );
 }
+
+// The mechanisms a draft's script runs (a style, text or scroll write, a Web Animation, a code-built CSS animation): their
+// record has no template element when the code reaches the element by a name the inventory could not follow.
+const SCRIPT_DRIVEN = /^(?:js-|waapi|css-animation)/;
 
 // The UNMAPPED rows for the on-surface records nothing accounted for (see makeHomeOf); refOf( node ): the node's ref.
 export function silentRows( { records, accounted, refOf, homeOf } ) {
 	return ( records || [] ).filter( ( r ) => ! accounted.has( r.id ) ).flatMap( ( r ) => {
-		const home = homeOf( r );
+		const home = homeOf( r ) ?? homeOf.byComponent?.( r );
 		if ( ! home ) {
 			return [];
 		}
 		const own = scriptFile( r ) && ! homeOf.direct( r ) ? ` (written by the script ${ scriptFile( r ) } of an element on this surface)` : '';
+		const where = homeOf( r ) ? `belongs to this surface${ own }` : `acts on an element the inventory could not place on a template element (its code reaches ${ r.element?.selector ? `\`${ r.element.selector }\`` : 'it by a name the inventory could not follow' }) in the component ${ r.element.dc } this surface shows`;
 		return [ {
 			node: refOf( home.n ), block: home.n.name, slot: home.slot, property: 'motion', value: r.id,
-			reason: `${ r.id } (${ r.mechanism }, ${ r.trigger?.type ?? 'no trigger' }) belongs to this surface${ own }, but no effect, setting or handover holds it: nothing recognised it, and a run that cannot place a record names it here`,
+			reason: `${ r.id } (${ r.mechanism }, ${ r.trigger?.type ?? 'no trigger' }) ${ where }, but no effect, setting or handover holds it: nothing recognised it, and a run that cannot place a record names it here`,
 		} ];
 	} );
 }

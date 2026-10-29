@@ -14,4 +14,18 @@ export const number = ( s ) => ( null == s ? null : Number( s ) );
 export const round = ( n ) => Math.round( n * 1000 ) / 1000;
 export const durationOf = ( r ) => ( 'number' === typeof r.duration_ms ? r.duration_ms : null );
 export const easingOf = ( r ) => ( 'string' === typeof r.easing && r.easing ? r.easing : null );
-export const compact = ( o ) => Object.fromEntries( Object.entries( o ).filter( ( [ , v ] ) => null !== v && undefined !== v ) );
+// The name of the scroll position a scroll-driven transform of record `r` is written from, or null: `scrollY` when the
+// formula reads it, else (a scroll handler that passes the position in as a parameter: `parallax( y )`) the identifier a
+// number multiplies inside a translate, in a record whose trigger detail names the scroll.
+export function scrollValueName( q, r ) {
+	const f = words( q.formula );
+	if ( /scrollY/i.test( f ) ) {
+		return 'scrollY';
+	}
+	// Only a translate counts: a transform that also rotates, scales or skews is a different motion, whose factors are not a travel.
+	if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {
+		return null;
+	}
+	return new RegExp( `(?:^|[^\\w$.])((?!px\\b|em\\b|deg\\b|innerHeight\\b|innerWidth\\b|Math\\b)[A-Za-z_$][\\w$]*)\\s*${ TIMES }\\s*${ MINUS }?\\d*\\.?\\d+`, 'i' ).exec( f )?.[ 1 ] ?? null;
+}
+export const compact =( o ) => Object.fromEntries( Object.entries( o ).filter( ( [ , v ] ) => null !== v && undefined !== v ) );

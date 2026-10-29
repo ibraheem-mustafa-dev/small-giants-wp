@@ -10,7 +10,8 @@
 //   - reviews: a loop whose items each show a rating (a run of star glyphs, or a label stating a score out of five) and, in at
 //     least half of them, a quote (a text of the item's own, long enough to be one: a rating can stand alone) is the reviews block of the provider its links lead to (rules.loopReviews:
 //     a host pattern per provider); a loop with no provider link is left as the draft's own blocks, with a note, since the
-//     code names no source for the reviews.
+//     code names no source for the reviews, unless the loop's holder is a scroll track the draft's script drives (a timer,
+//     pointer drag or arrow controls: the `carousels` keys), which is the testimonial slider with a testimonial per card.
 // Only shown elements count; a loop inside an overlay (a drawer or modal fixed at every width) belongs to that panel, and a
 // WooCommerce page's own commerce role (shop, cart, checkout, account) is placed by lib/skeleton-commerce-region.mjs.
 // Pure: the inventory model, the page map rows, the catalogue's brands and the rules in, the regions out.
@@ -29,7 +30,7 @@ const COMMERCE_PAGES = new Set( [ 'shop', 'cart', 'checkout', 'account' ] );
 // o: { m, rows (the page map), brands (the catalogue's brand names), commerce, rule (rules.loopBlocks: { products, brands,
 // reviews }), money (rules.commerceRegion.money), shop (rules.commerceRegion.roles.shop) }. Returns [ { key, kind, block, attributes, inner, item,
 // handover, reason } ] for the holders it places, and `notes` for a loop it recognises but cannot place.
-export function loopBlocks( { m, rows = [], brands = [], commerce = null, rule, money: moneySource, shop } ) {
+export function loopBlocks( { m, rows = [], brands = [], carousels = new Set(), commerce = null, rule, money: moneySource, shop } ) {
 	const out = { regions: [], notes: [] };
 	if ( ! rule || ! moneySource || COMMERCE_PAGES.has( commerce?.role ) ) {
 		return out;
@@ -85,6 +86,12 @@ export function loopBlocks( { m, rows = [], brands = [], commerce = null, rule, 
 		if ( everyItem( ( it, all ) => rated.test( all.map( ( e ) => `${ text( e ) } ${ tagAttr( e, 'aria-label' ) ?? '' }` ).join( ' ' ) ) ) && quoted * 2 >= items.length ) {
 			const hrefs = items.flatMap( ( it ) => [ it, ...inside( it ) ] ).map( hrefOf ).filter( Boolean );
 			const hit = Object.entries( rule.reviews.providers ).find( ( [ , p ] ) => hrefs.some( ( h ) => new RegExp( p.host, 'i' ).test( h ) ) );
+			// A loop of review cards that is a scroll track the draft's script drives (a timer, pointer drag or arrow controls:
+			// lib/skeleton-rerun.mjs::carouselKeys) is the testimonial slider, each card a testimonial of it.
+			if ( ! hit && rule.carousel && carousels.has( templateKey( { dc: holder.template, tpl: holder.tpl } ) ) ) {
+				out.regions.push( { key: holder.key, kind: 'carousel', block: rule.carousel.block, attributes: { ...( rule.carousel.attributes || {} ) }, inner: null, item: null, absorb: false, cards: items.map( ( it ) => it.key ), cardBlock: rule.carousel.cardBlock, handover: null, reason: `${ rule.carousel.reason } (a loop of ${ items.length } review cards in a scroll track the draft's script steps)` } );
+				continue;
+			}
 			if ( ! hit ) {
 				out.notes.push( `${ holder.key }: a loop of ${ items.length } reviews (a rating and a quote in each) links to no review provider, so the code names no source and the draft's own blocks stay` );
 				continue;

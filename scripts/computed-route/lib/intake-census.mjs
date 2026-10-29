@@ -54,6 +54,7 @@ export function mergeSightings( rows, sightings ) {
 		const hit = byId.get( s.id );
 		if ( hit ) {
 			hit.source = 'static' === hit.source ? 'both' : hit.source;
+			s.widths && ( hit.widths = s.widths );
 		} else {
 			const row = { ...s, source: 'runtime', unreached: null };
 			out.push( row );
@@ -75,12 +76,17 @@ export function markUnreached( rows, { kinds } ) {
 // `traceGap` naming why (R-48-3).
 export function applyRuntime( rows, runtime ) {
 	const once = new Map();
+	const widthsOf = new Map();
 	for ( const s of runtime.sightings ) {
 		const key = s.id || `${ s.kind }@${ s.draftId }`;
 		if ( ! once.has( key ) ) {
 			once.set( key, { ...( s.id ? { id: s.id } : {} ), kind: s.kind, draftId: s.draftId, component: s.component, detail: s.detail } );
 		}
+		Number.isFinite( s.width ) && widthsOf.set( key, new Set( [ ...( widthsOf.get( key ) || [] ), s.width ] ) );
 	}
+	// The widths a construct was sighted executing at, ascending: a code-built animation that runs below a breakpoint only
+	// is sighted at those widths only.
+	widthsOf.forEach( ( set, key ) => Object.assign( once.get( key ), { widths: [ ...set ].sort( ( a, b ) => a - b ) } ) );
 	const gapOf = new Map( runtime.traceGaps.map( ( g ) => [ g.id, g.error ] ) );
 	return markUnreached( mergeSightings( rows, [ ...once.values() ] ), { kinds: runtime.kinds } )
 		.map( ( r ) => ( gapOf.has( r.id ) && r.unreached ? { ...r, unreached: null, traceGap: gapOf.get( r.id ) } : r ) );

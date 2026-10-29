@@ -1,0 +1,14 @@
+[
+	{
+		"file": "skeleton.mjs",
+		"find": "carousels: carouselKeys( intake.inventory?.animations ), states, thresholds };",
+		"replace": "carousels: new Set(), states, thresholds };",
+		"why": "the CLI never reads the stepped tracks"
+	},
+	{
+		"file": "skeleton.mjs",
+		"find": "carousels: served ? servedMotion( ctx.carousels, ctx.rootComponent ) : ctx.carousels };",
+		"replace": "carousels: ctx.carousels };",
+		"why": "a served inventory's tracks are left in the wrong key space"
+	}
+]

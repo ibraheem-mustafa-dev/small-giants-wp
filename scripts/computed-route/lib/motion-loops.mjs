@@ -138,6 +138,16 @@ const delayNotes = ( loop ) => ( ! loop.delay ? [] : [ loop.delay < 0 ? `the dra
 // A translate end as px (0 for a zero), or null for a percentage the element's size would have to resolve.
 const pxEnd = ( v ) => ( zero( v ?? 0 ) ? 0 : 'number' === typeof v ? v : null );
 
+// A float written as three keyframes that leave and return to the same pose at the half (`0%, 100% { y: 0 } 50% { y: -10px }`,
+// run forwards) is the two-keyframe float run to and fro at half the cycle: the same motion with the leg as its period.
+// Any other three-keyframe loop is returned as it was.
+function symmetricFloat( loop ) {
+	const [ a, b, c ] = loop.frames;
+	const same = 3 === loop.frames.length && 'normal' === loop.direction && Math.abs( ( loop.offsets?.[ 1 ] ?? 0.5 ) - 0.5 ) <= 0.01
+		&& [ ...new Set( [ ...Object.keys( a ), ...Object.keys( c ) ] ) ].every( ( k ) => JSON.stringify( a[ k ] ?? null ) === JSON.stringify( c[ k ] ?? null ) );
+	return same ? { ...loop, frames: [ a, b ], offsets: [ 0, 1 ], direction: 'alternate', duration: loop.duration / 2, fromThreeKeyframes: true } : loop;
+}
+
 // Each builder: a loop (and its moving channels) as the effect's values, { values, notes }, or null when the effect
 // cannot draw that loop's motion.
 export const LOOP_BUILDERS = {
@@ -155,7 +165,8 @@ export const LOOP_BUILDERS = {
 		const direction = 'translateX' === k ? ( sign < 0 ? 'left' : 'right' ) : ( sign < 0 ? 'up' : 'down' );
 		return { values: { speed: round( Math.abs( dist ) / ( loop.duration / 1000 ), 1 ), direction }, notes: [ `marquee speed ${ round( Math.abs( dist ), 1 ) }px over ${ round( loop.duration, 0 ) }ms`, ...delayNotes( loop ) ] };
 	},
-	'ambient-float'( loop, moving ) {
+	'ambient-float'( given, moving ) {
+		const loop = symmetricFloat( given );
 		if ( ! moving.every( ( k ) => /^translate[XY]$/.test( k ) ) || 2 !== loop.frames.length || ! /^(normal|alternate)$/.test( loop.direction ) ) {
 			return null;
 		}
@@ -169,7 +180,7 @@ export const LOOP_BUILDERS = {
 		if ( both ) {
 			values.travelY = to.translateY;
 		}
-		const notes = [];
+		const notes = loop.fromThreeKeyframes && ! /^(?:linear|ease-in-out)$/.test( String( loop.easing ?? '' ).trim() ) ? [ `the draft eases each leg of its three keyframes with ${ loop.easing }; the float runs the return leg as the mirror of the first` ] : [];
 		const cycle = ( 'alternate' === loop.direction ? 2 : 1 ) * loop.duration;
 		if ( loop.delay < 0 ) {
 			values.phase = Math.round( -loop.delay % cycle );
@@ -261,9 +272,9 @@ export function chooseEffect( loop, narrow, { mdb } ) {
 // A draft's endless animation record as an effect (chooseEffect), its values from the code or, where the code
 // computes them, from the animation measured at each width (`measuredByWidth`: { 375, 768, 1440: { loops, box } }
 // from lib/fill-entrance.mjs::sampleMotion).
-export function loopEffect( record, measuredByWidth, { mdb } ) {
+export function loopEffect( record, measuredByWidth, { mdb, base = 1440 } ) {
 	const at = ( w ) => resolvedLoop( record, measuredByWidth?.[ w ] || null );
-	const wide = at( 1440 );
+	const wide = at( base );
 	if ( wide.unmapped ) {
 		return wide;
 	}
@@ -276,7 +287,8 @@ export function loopEffect( record, measuredByWidth, { mdb } ) {
 		const e = chooseEffect( drift, null, { mdb } );
 		return e.unmapped ? e : { ...e, notes: [ `the draft randomises this loop per element; the values sampled on this element are stored (${ Object.entries( e.values ).map( ( [ k, v ] ) => `${ k } ${ v }` ).join( ', ' ) })`, ...( lost.length ? [ `the draft's moving ${ lost.join( ', ' ) } is not held by ${ e.effect } (a Spec 38 gap)` ] : [] ), ...e.notes ] };
 	}
-	return chooseEffect( wide.loop, { tablet: at( 768 ).loop || null, mobile: at( 375 ).loop || null }, { mdb } );
+	// Only the widths narrower than the one the loop is judged at can override it.
+	return chooseEffect( wide.loop, { tablet: 1440 === base ? at( 768 ).loop || null : null, mobile: base > 375 ? at( 375 ).loop || null : null }, { mdb } );
 }
 
 // The render check of a loop the code states in full: the endless animation measured on the element at each width

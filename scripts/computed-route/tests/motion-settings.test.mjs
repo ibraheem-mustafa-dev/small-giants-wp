@@ -119,7 +119,7 @@ test( 'MUST FAIL: the pinned timeline\'s track, proximity focus, active year and
 	const { attrs, out } = run( [ [ 'sgs/timeline', '10' ] ], [ TRACK, FOCUS, YEAR, COUNT ] );
 	assert.deepEqual( reasons( out ), [] );
 	assert.deepEqual( attrs(), {
-		scrollEffect: 'pinned-horizontal', mobileLayout: 'carousel',
+		scrollEffect: 'pinned-horizontal', orientation: 'horizontal', mobileLayout: 'carousel',
 		panelProximityFocus: true, panelEdgeOpacity: 0.55, panelFocusOpacity: 1, panelEdgeScale: 0.94, panelFocusScale: 1,
 		dateActiveColour: 'accent', dateActiveTextStrokeColour: 'accent',
 		panelCounter: true, panelCounterFormat: 'padded-index-of-total',

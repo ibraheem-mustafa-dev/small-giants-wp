@@ -24,9 +24,10 @@
 // (lib/motion-effect-element.mjs: the sheen band's width, the ripple circle's size and colour).
 
 import { poseOf } from './motion-channels.mjs';
-import { props, nameOf, words, blob, triggerOf, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
-import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
-import { effectElementStyle, colourOf, largerSideFactor } from './motion-effect-element.mjs';
+import { props, nameOf, words, blob, triggerOf, scrollValueName, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
+import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf, carouselOf } from './motion-behaviour-settings.mjs';
+import { hiddenStartOf } from './motion-reveal.mjs';
+import { effectElementStyle, effectElementOwner, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 import { templateKey } from './fact-key.mjs';
 import { fromPointer, tiltOf, tiltGlareHostOf, tiltResetOf } from './motion-tilt.mjs';
 
@@ -185,12 +186,12 @@ function scrollOf( r ) {
 		const pin = /data-pin\b|\[data-pin\]/i.test( blob( r ) );
 		return { effect: 'scroll-progress', panel: 'effects', trigger: 'scroll', values: { source: pin ? 'pin' : 'page', output: axis } };
 	}
-	const move = list.find( ( q ) => /^(?:translate|transform)$/.test( nameOf( q ) ) && /scrollY/i.test( words( q.formula ) ) );
+	const move = list.find( ( q ) => /^(?:translate|transform)$/.test( nameOf( q ) ) && scrollValueName( q, r ) );
 	if ( ! move ) {
 		return null;
 	}
 	const f = words( move.formula );
-	const k = new RegExp( `scrollY\\s*${ TIMES }\\s*(${ MINUS }?\\d*\\.?\\d+)`, 'i' ).exec( f );
+	const k = new RegExp( `${ scrollValueName( move, r ).replace( /\$/g, '\\$' ) }\\s*${ TIMES }\\s*(${ MINUS }?\\d*\\.?\\d+)`, 'i' ).exec( f );
 	const view = /innerHeight\s*\/\s*2/i.test( f );
 	const ratio = k ? number( k[ 1 ].replace( '−', '-' ) ) : view ? number( new RegExp( `${ TIMES }\\s*${ NUMBER }\\s*px`, 'i' ).exec( f )?.[ 1 ] ) : null;
 	if ( null === ratio ) {
@@ -307,6 +308,19 @@ export function recogniseBehaviour( record, ctx = {} ) {
 			return done( r, { kind: 'settings', ...e } );
 		}
 	}
+	// The track a timer steps sideways (the testimonial slider's autoplay, drag and arrows) and the writes that only hide an element until its reveal.
+	const carousel = carouselOf( r, ctx );
+	if ( carousel ) {
+		return done( r, carousel );
+	}
+	const hides = hiddenStartOf( r, ctx.records );
+	if ( hides ) {
+		return done( r, { kind: 'covered', by: 'entrance', reason: `the script hides the element until its scroll reveal ${ hides } plays it in: the entrance's from-pose` } );
+	}
+	const owner = effectElementOwner( r, ctx.records );
+	if ( owner ) {
+		return done( r, { kind: 'covered', by: 'effect element', reason: `the declarations the script gives the element it creates for ${ owner }'s effect: the effect reads them` } );
+	}
 	const exit = closeOf( r );
 	if ( exit ) {
 		return done( r, { kind: 'close', ...exit } );
@@ -370,7 +384,7 @@ export function effectRows( records, ctx = {} ) {
 		if ( ! b || [ 'native', 'covered' ].includes( b.kind ) ) {
 			continue;
 		}
-		const attrs = 'settings' === b.kind ? Object.entries( b.blocks || {} ).map( ( [ block, s ] ) => `${ block } ${ s.map( ( x ) => x.attr ).join( ', ' ) }` ).join( ' or ' ) : '';
+		const attrs = 'settings' === b.kind ? Object.entries( b.blocks || {} ).map( ( [ block, s ] ) => `${ block } ${ s.filter( ( x ) => ! x.companion ).map( ( x ) => x.attr ).join( ', ' ) }` ).join( ' or ' ) : '';
 		const what = 'effect' === b.kind ? [ ...b.effects.map( ( e ) => e.effect ), ...( b.hoverState ? [ 'follow-pointer' ] : [] ) ].join(  ' + ' ) || 'hover state'
 			: 'control' === b.kind ? `${ b.effect } hover rate of ${ b.of }` : 'site' === b.kind ? b.option : 'settings' === b.kind ? `settings: ${ attrs }` : 'close' === b.kind ? 'close' : 'no SGS effect';
 		const says = 'unmapped' === b.kind ? `not expressed by any SGS effect: ${ b.reason }`

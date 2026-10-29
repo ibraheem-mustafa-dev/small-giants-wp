@@ -1,0 +1,284 @@
+[
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "if ( /scrollY/i.test( f ) ) {\n\t\treturn 'scrollY';\n\t}",
+		"replace": "",
+		"why": "scrollY is no longer the scroll value"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {",
+		"replace": "if ( ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {",
+		"why": "a non-scroll trigger can carry a parallax"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "|innerHeight\\\\b|innerWidth\\\\b|Math\\\\b)",
+		"replace": "|Math\\\\b)",
+		"why": "the viewport height is read as the scroll value"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "(?:^|[^\\\\w$.])",
+		"replace": "",
+		"why": "a property name is read as the scroll value"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "const carousel = carouselOf( r, ctx );\n\tif ( carousel ) {\n\t\treturn done( r, carousel );\n\t}",
+		"replace": "",
+		"why": "the carousel is not recognised"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "const hides = hiddenStartOf( r, ctx.records );\n\tif ( hides ) {",
+		"replace": "const hides = null;\n\tif ( hides ) {",
+		"why": "the hiding writes are not held by the reveal"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "${ scrollValueName( move, r ).replace( /\\$/g, '\\\\$' ) }",
+		"replace": "${ scrollValueName( move, r ) }",
+		"why": "a name with a dollar sign is mis-read"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "{ attr: 'orientation', value: 'horizontal', companion: true }, ",
+		"replace": "",
+		"why": "the pinned timeline is written without its orientation"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "if ( ! timer ) {\n\t\treturn null;\n\t}",
+		"replace": "",
+		"why": "a carousel needs no timer"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "x.element?.dc === r.element?.dc && 'active' === ( x.status ?? 'active' ) );\n\tconst timer",
+		"replace": "'active' === ( x.status ?? 'active' ) );\n\tconst timer",
+		"why": "another component's track is joined"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const dragging = drags.length > 0 && moves.length > 0;",
+		"replace": "const dragging = drags.length > 0 || moves.length > 0;",
+		"why": "either half of the drag is enough"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const dragging = drags.length > 0 && moves.length > 0;",
+		"replace": "const dragging = false;",
+		"why": "drag to scroll is never written"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const arrows = steps.length > 0;",
+		"replace": "const arrows = false;",
+		"why": "arrows are never written"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const arrows = steps.length > 0;",
+		"replace": "const arrows = true;",
+		"why": "arrows are always written"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "return owns.has( r.id ) ? {",
+		"replace": "return true ? {",
+		"why": "any record is held by the carousel"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "{ attr: 'autoplaySpeed', value: everyMs( r ) },",
+		"replace": "{ attr: 'autoplaySpeed', value: 5000 },",
+		"why": "the interval is not read"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const steps = all.filter( ( x ) => x.source?.function === fn && isStep( x ) && 'interval' !== triggerOf( x ) );",
+		"replace": "const steps = all.filter( ( x ) => isStep( x ) && 'interval' !== triggerOf( x ) );",
+		"why": "any step is an arrow"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "/drag/i.test( x.source?.function ?? '' ) && 'js-style-write' === x.mechanism",
+		"replace": "'js-style-write' === x.mechanism",
+		"why": "any snap write is a drag"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const isStep = ( r ) => 'js-scroll' === r.mechanism && 'active' === ( r.status ?? 'active' ) && STEPS.test( words( r.source?.code ) );",
+		"replace": "const isStep = ( r ) => 'active' === ( r.status ?? 'active' ) && STEPS.test( words( r.source?.code ) );",
+		"why": "a non-scroll write is a step"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "if ( 'js-style-write' !== r.mechanism || 1 !== list.length || ! ( r.duration_ms > 0 ) || ! Object.hasOwn( EASING_CSS, r.easing ?? '' ) ) {",
+		"replace": "if ( 'js-style-write' !== r.mechanism || 1 !== list.length || ! Object.hasOwn( EASING_CSS, r.easing ?? '' ) ) {",
+		"why": "a write with no duration is a tween"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "if ( 'js-style-write' !== r.mechanism || 1 !== list.length || ! ( r.duration_ms > 0 ) || ! Object.hasOwn( EASING_CSS, r.easing ?? '' ) ) {",
+		"replace": "if ( 'js-style-write' !== r.mechanism || 1 !== list.length || ! ( r.duration_ms > 0 ) ) {",
+		"why": "an unnamed curve is merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const m = 'active' === ( r.status ?? 'active' ) ? memberOf( r ) : null;",
+		"replace": "const m = memberOf( r );",
+		"why": "an inactive write is merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "delay_ms: Number.isFinite( step ) ? `i * ${ step }` : first.delay_ms,",
+		"replace": "delay_ms: first.delay_ms,",
+		"why": "the stagger step is not carried"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "easing: EASING_CSS[ first.easing ],",
+		"replace": "easing: first.easing,",
+		"why": "the curve is not made a CSS curve"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "{ property: 'opacity', from: 0, to: 1 }, ...( rise ?",
+		"replace": "{ property: 'opacity', from: 1, to: 0 }, ...( rise ?",
+		"why": "the opacity runs backwards"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "mergedFrom: members.map( ( x ) => x.r.id ),",
+		"replace": "mergedFrom: [ first.id ],",
+		"why": "the merged members are not named"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "if ( 'js-style-write' !== r.mechanism || ! list.length || null == r.element?.template_tpl_id ) {",
+		"replace": "if ( 'js-style-write' !== r.mechanism || ! list.length ) {",
+		"why": "a write with no template element is a hide"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const reveals = ( records || [] ).filter( ( x ) => x.reveal && x.element?.dc === r.element.dc );",
+		"replace": "const reveals = ( records || [] ).filter( ( x ) => x.reveal );",
+		"why": "another component's reveal holds the hide"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "if ( 'opacity' === nameOf( p ) && /^0(?:\\.0+)?$/.test( to ) ) {",
+		"replace": "if ( 'opacity' === nameOf( p ) ) {",
+		"why": "any opacity write is a hide"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "if ( poses.some( ( x ) => ! x ) ) {\n\t\treturn null;\n\t}",
+		"replace": "",
+		"why": "any other write is a hide"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "x.reveal.axis === q.axis && x.reveal.px === q.px",
+		"replace": "x.reveal.axis === q.axis",
+		"why": "a different rise distance is a hide"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "OPACITY.test( compactFormula( p ) )",
+		"replace": "true",
+		"why": "any opacity formula is the eased value"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const rise = 'transform' === nameOf( p ) ? RISE.exec( compactFormula( p ) ) : null;\n\treturn rise ?",
+		"replace": "const rise = RISE.exec( compactFormula( p ) );\n\treturn rise ?",
+		"why": "a non-transform property is a rise"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "x.element?.dc === r.element?.dc && 'active' === ( x.status ?? 'active' ) );\n\tconst timer",
+		"replace": "x.element?.dc === r.element?.dc );\n\tconst timer",
+		"why": "a handler the draft never runs counts as evidence"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const lead = opacities.find( ( x ) => 'scroll-into-view' === x.r.trigger?.type ) ?? opacities[ 0 ];",
+		"replace": "const lead = opacities[ 0 ];",
+		"why": "the scroll-started record does not lead"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const key = [ r.element?.dc, r.source?.function, r.duration_ms, r.easing, JSON.stringify( r.stagger ?? null ) ].join( '|' );",
+		"replace": "const key = [ r.element?.dc ].join( '|' );",
+		"why": "unrelated tweens are merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "if ( ! opacities.length ) {\n\t\t\tcontinue;\n\t\t}",
+		"replace": "",
+		"why": "a rise with no opacity is merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "from: `translate${ rise.axis }(${ rise.px }px)`, to: 'none'",
+		"replace": "from: 'none', to: `translate${ rise.axis }(${ rise.px }px)`",
+		"why": "the rise runs backwards"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "members.filter( ( x ) => x.r !== first ).forEach( ( x ) => drop.add( x.r ) );",
+		"replace": "",
+		"why": "the merged members stay as separate records"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "members.filter( ( x ) => x.r !== first ).forEach( ( x ) => drop.add( x.r ) );",
+		"replace": "members.slice( 1 ).forEach( ( x ) => drop.add( x.r ) );",
+		"why": "a lead that sits later is dropped with the rest"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "reveal: rise ? { axis: rise.axis, px: rise.px } : { axis: null, px: 0 },",
+		"replace": "reveal: { axis: null, px: 0 },",
+		"why": "the rise is not remembered for the hiding writes"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "const rise = ( rises.find( ( x ) => x.r.trigger?.type === lead.r.trigger?.type ) ?? rises[ 0 ] )?.m;",
+		"replace": "const rise = null;",
+		"why": "the rise is never merged"
+	},
+	{
+		"file": "lib/motion-reveal.mjs",
+		"find": "( rises.find( ( x ) => x.r.trigger?.type === lead.r.trigger?.type ) ?? rises[ 0 ] )?.m",
+		"replace": "rises[ 0 ]?.m",
+		"why": "the rise of the leading caller is not preferred"
+	},
+	{
+		"file": "lib/motion-record-text.mjs",
+		"find": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) || /rotate|scale|skew|matrix|perspective/i.test( f ) ) {",
+		"replace": "if ( ! /scroll/i.test( words( r.trigger?.detail ) ) || ! /translate/i.test( f ) ) {",
+		"why": "a rotating transform is read as a travel"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "s.filter( ( x ) => ! x.companion ).map( ( x ) => x.attr ).join( ', ' )",
+		"replace": "s.map( ( x ) => x.attr ).join( ', ' )",
+		"why": "a companion setting is a row of the review"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "const owner = effectElementOwner( r, ctx.records );\n\tif ( owner ) {",
+		"replace": "const owner = null;\n\tif ( owner ) {",
+		"why": "the style writes of an effect element are left unaccounted"
+	},
+	{
+		"file": "lib/motion-effect-element.mjs",
+		"find": "'waapi' === r.mechanism && x.id === styleRecordOf( r, records )?.id )?.id ?? null;",
+		"replace": "x.id === styleRecordOf( r, records )?.id )?.id ?? null;",
+		"why": "a non-animation record owns the style writes"
+	}
+]

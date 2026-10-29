@@ -1,0 +1,260 @@
+[
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "return { duration_ms: progress.duration, easing: easingName( easing_expr, progress.name ), easing_expr, stagger: delay.stagger, delay_ms: delay.delay_ms };",
+		"replace": "return { duration_ms: progress.duration, easing: null, easing_expr, stagger: delay.stagger, delay_ms: delay.delay_ms };",
+		"why": "the curve name is dropped"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "return { duration_ms: progress.duration, easing: easingName( easing_expr, progress.name ), easing_expr, stagger: delay.stagger, delay_ms: delay.delay_ms };",
+		"replace": "return { duration_ms: progress.duration, easing: easingName( easing_expr, progress.name ), easing_expr, stagger: null, delay_ms: delay.delay_ms };",
+		"why": "the stagger is dropped"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "! isFn( d.init ) && names",
+		"replace": "names",
+		"why": "a step function that mentions the progress is read as the eased value"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "if ( ! [ ...names( node ) ].some( ( n ) => reads.has( n ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a write that does not read the progress is tweened"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "const eased = derived.find( ( d ) => ! /delay/i.test( d.id.name ) );",
+		"replace": "const eased = null;",
+		"why": "the eased value is never read"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "if ( 'P' === e ) {\n\t\treturn 'linear';\n\t}",
+		"replace": "",
+		"why": "a linear curve is not named"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "return `easeOut${ POWER[ out[ 1 ] ] }`;",
+		"replace": "return `easeIn${ POWER[ out[ 1 ] ] }`;",
+		"why": "ease-out reads as ease-in"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "return `easeIn${ POWER[ inn[ 1 ] ] }`;",
+		"replace": "return `easeOut${ POWER[ inn[ 1 ] ] }`;",
+		"why": "ease-in reads as ease-out"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "if ( 'P*P' === e ) {\n\t\treturn 'easeInQuad';\n\t}",
+		"replace": "",
+		"why": "p*p is not named"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "return 'P*(2-P)' === e || '1-(1-P)*(1-P)' === e ? 'easeOutQuad' : null;",
+		"replace": "return null;",
+		"why": "the quadratic ease-out spellings are not named"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "const POWER = { 2: 'Quad', 3: 'Cubic', 4: 'Quart', 5: 'Quint' };",
+		"replace": "const POWER = { 2: 'Quad', 3: 'Cubic', 4: 'Quart' };",
+		"why": "the quintic power is not named"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "if ( 'number' === typeof lit ) {\n\t\treturn { delay_ms: lit, stagger: null };\n\t}",
+		"replace": "",
+		"why": "a literal delay is not read"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "cap_ms: Number( cap ) * Number( step )",
+		"replace": "cap_ms: Number( cap )",
+		"why": "the cap is the count, not the ms"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "/^\\d/.test( capped[ 1 ] ) ? [ capped[ 2 ], capped[ 3 ], capped[ 1 ] ] : [ capped[ 1 ], capped[ 2 ], capped[ 3 ] ]",
+		"replace": "[ capped[ 1 ], capped[ 2 ], capped[ 3 ] ]",
+		"why": "step-first order of a capped delay is mis-read"
+	},
+	{
+		"file": "lib/intake-inventory-tween.mjs",
+		"find": "/^\\d/.test( plain[ 1 ] ) ? [ plain[ 2 ], plain[ 1 ] ] : [ plain[ 1 ], plain[ 2 ] ]",
+		"replace": "[ plain[ 1 ], plain[ 2 ] ]",
+		"why": "step-first order of a plain delay is mis-read"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "duration_ms: tween ? tween.duration_ms : smoothing",
+		"replace": "duration_ms: smoothing",
+		"why": "the tween duration is not recorded"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "stagger: tween?.stagger ?? null,",
+		"replace": "stagger: null,",
+		"why": "the tween stagger is not recorded"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "easing: tween ? tween.easing ?? tween.easing_expr : smoothing",
+		"replace": "easing: smoothing",
+		"why": "the tween curve is not recorded"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "delay_ms: tween?.delay_ms ?? ( 'number' === typeof trg.delay ? trg.delay : 0 )",
+		"replace": "delay_ms: 'number' === typeof trg.delay ? trg.delay : 0",
+		"why": "a literal tween delay is not recorded"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "if ( built.length && ! values.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a hole of only `none` stays active"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "const bp = v.widths && v.widths.length && v.widths.length < WIDTHS.length ? v.widths.map( ( w ) => WIDTH_NAMES[ w ] ) : null;",
+		"replace": "const bp = null;",
+		"why": "the hole's widths are not recorded"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "const bp = v.widths && v.widths.length && v.widths.length < WIDTHS.length ? v.widths.map( ( w ) => WIDTH_NAMES[ w ] ) : null;",
+		"replace": "const bp = v.widths && v.widths.length ? v.widths.map( ( w ) => WIDTH_NAMES[ w ] ) : null;",
+		"why": "a string every width gets is given breakpoints"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "seen.length && seen.length < WIDTHS.length && ( k.breakpoints",
+		"replace": "seen.length && ( k.breakpoints",
+		"why": "a loop sighted at every width is given breakpoints"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "seen.length && seen.length < WIDTHS.length && ( k.breakpoints = seen.map( ( w ) => WIDTH_NAMES[ w ] ) );",
+		"replace": "",
+		"why": "a code-built loop's sighted widths are not recorded"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "const rec = 0 === i ? holder : animationRecord( add, r, holder.element, holder.source, { tpl: metaOf.get( holder ).tpl } );",
+		"replace": "const rec = holder;",
+		"why": "a second string of a hole overwrites the first"
+	},
+	{
+		"file": "lib/intake-inventory-anim.mjs",
+		"find": "metaOf.get( rec ).names = [ v.a.name ];",
+		"replace": "",
+		"why": "the keyframes are not joined to the hole's animation"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "if ( WIDTHISH.test( n.name ) ) {\n\t\t\treturn w;\n\t\t}",
+		"replace": "",
+		"why": "a bare width variable is not read"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "return undefined === v ? undefined : ! v;",
+		"replace": "return undefined === v ? undefined : v;",
+		"why": "a negation is ignored"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "return false === a || false === b ? false : undefined === a || undefined === b ? undefined : Boolean( a && b );",
+		"replace": "return Boolean( a || b );",
+		"why": "&& reads as ||"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "return true === a || true === b ? true : undefined === a || undefined === b ? undefined : Boolean( a || b );",
+		"replace": "return Boolean( a && b );",
+		"why": "|| reads as &&"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "'<': a < b, '<=': a <= b,",
+		"replace": "'<': a <= b, '<=': a <= b,",
+		"why": "< reads as <="
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "'>': a > b, '>=': a >= b,",
+		"replace": "'>': a >= b, '>=': a >= b,",
+		"why": "> reads as >="
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "'<=': a <= b, '>'",
+		"replace": "'<=': a < b, '>'",
+		"why": "<= reads as <"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "'>=': a >= b, '==='",
+		"replace": "'>=': a > b, '==='",
+		"why": ">= reads as >"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "const undecided = lit.conds.some( ( c ) => WIDTHS.some( ( w ) => undefined === valueAt( p, c.test, w ) ) );",
+		"replace": "const undecided = false;",
+		"why": "an undecidable condition is decided"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "return undefined === v ? false : Boolean( v ) === c.on;",
+		"replace": "return undefined === v ? false : Boolean( v ) !== c.on;",
+		"why": "the branch taken is inverted"
+	},
+	{
+		"file": "lib/intake-inventory-holes.mjs",
+		"find": "[ ...literals( n.consequent, [ ...conds, { test: n.test, on: true } ] ), ...literals( n.alternate, [ ...conds, { test: n.test, on: false } ] ) ]",
+		"replace": "[ ...literals( n.consequent, [ ...conds, { test: n.test, on: true } ] ) ]",
+		"why": "the else branch is dropped"
+	},
+	{
+		"file": "lib/intake-inventory-target.mjs",
+		"find": "if ( 'CallExpression' === member?.value?.type && /^(createRef|useRef)$/.test( made ?? '' ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a createRef field is not a bound ref"
+	},
+	{
+		"file": "lib/intake-inventory-target.mjs",
+		"find": "if ( base.tpl.length && /^ref /.test( base.selector ) ) {\n\t\t\treturn base;\n\t\t}",
+		"replace": "",
+		"why": ".current is the nearest element, not the element"
+	},
+	{
+		"file": "lib/intake-inventory-target.mjs",
+		"find": "if ( 'LogicalExpression' === expr.type && /^(\\|\\||\\?\\?)$/.test( expr.operator ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a || b target is not resolved"
+	},
+	{
+		"file": "lib/intake-census.mjs",
+		"find": "s.widths && ( hit.widths = s.widths );",
+		"replace": "",
+		"why": "an existing row loses its sighted widths"
+	},
+	{
+		"file": "lib/intake-census.mjs",
+		"find": "widthsOf.forEach( ( set, key ) => Object.assign( once.get( key ), { widths: [ ...set ].sort( ( a, b ) => a - b ) } ) );",
+		"replace": "",
+		"why": "sighted widths are not collected"
+	},
+	{
+		"file": "lib/intake-census.mjs",
+		"find": "[ ...set ].sort( ( a, b ) => a - b )",
+		"replace": "[ ...set ]",
+		"why": "sighted widths are unsorted"
+	}
+]
