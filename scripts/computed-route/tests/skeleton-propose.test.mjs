@@ -10,9 +10,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { skeletonProblems, finderKind, expandSiteInfoRows, parseTplKey } from '../lib/fill-skeleton.mjs';
 import { lintSkeleton } from '../lint.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const CLIENT = 'eye-care-ward-end';
@@ -22,7 +22,7 @@ const committed = JSON.parse( fs.readFileSync( path.join( DIR, 'footer.tree.json
 const db = openDb();
 const SITE = 'Eye Care Birmingham';
 const facts = ( siteName = SITE ) => loadFacts( { db, client: CLIENT, repo: REPO, siteName } );
-const run = ( inv = inventory, o = {} ) => proposeSkeleton( { inventory: inv, facts: o.facts || facts(), surface: 'footer', db, ...o } );
+const run = ( inv = inventory, o = {} ) => proposeFixture( { inventory: inv, facts: o.facts || facts(), surface: 'footer', db, ...o } );
 const real = run();
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byHref = ( r, re ) => row( r, ( x ) => re.test( inventory.elements.find( ( e ) => e.key === x.key )?.attrs?.href || '' ) );
@@ -192,7 +192,7 @@ test( 'MUST FAIL: the skeleton agrees with Bean\'s recorded choices on at least 
 
 test( 'MUST FAIL (2026-10-10 header: sgs/hero and sgs/site-header both list "header" and tied, so list order chose hero): a root block whose accepted children fit the root\'s own children wins the tie', () => {
 	const header = JSON.parse( fs.readFileSync( path.join( DIR, 'skeleton', 'header.inventory.json' ), 'utf8' ) );
-	const r = proposeSkeleton( { inventory: header, facts: facts(), surface: 'header', db } );
+	const r = proposeFixture( { inventory: header, facts: facts(), surface: 'header', db } );
 	const root = r.proposal.rows.find( ( x ) => 0 === header.elements.find( ( e ) => e.key === x.key )?.depth );
 	assert.equal( root.candidates[ 0 ].block, 'sgs/site-header' );
 	assert.ok( root.candidates[ 0 ].score > root.candidates.find( ( c ) => 'sgs/hero' === c.block ).score );

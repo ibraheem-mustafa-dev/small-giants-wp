@@ -22,7 +22,8 @@
 
 const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
-const attr = ( e, name ) => String( e.attrs?.[ name ] ?? new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ] ?? '' );
+// An attribute as the draft writes it, through the one element-facts reader (`read`, lib/element-facts.mjs).
+const attr = ( read, e, name ) => String( read.attr( e, name ) ?? '' );
 
 // The facets the rail places: those the catalogue step writes as filter attributes, not a variation axis and not an
 // on-off switch.
@@ -92,7 +93,7 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	}
 	// A group is open when it shows anything beside the child holding its label.
 	const open = ( x ) => m.els.some( ( c ) => c.parentKey === x.group.key && shown( c ) && ! ( c === x.label || under( x.label, c ) ) );
-	const checkboxes = ( x ) => m.els.some( ( c ) => shown( c ) && under( c, x.group ) && 'input' === c.tag && 'checkbox' === attr( c, 'type' ).toLowerCase() );
+	const checkboxes = ( x ) => m.els.some( ( c ) => shown( c ) && under( c, x.group ) && 'input' === c.tag && 'checkbox' === attr( m.read, c, 'type' ).toLowerCase() );
 	const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
 	const heading = ( x, swatches ) => ( {
 		name: rule.heading.block,

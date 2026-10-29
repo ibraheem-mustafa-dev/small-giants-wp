@@ -11,7 +11,7 @@ const UNSET = new Set( [ '', 'initial', 'unset', 'inherit', 'auto', 'none' ] );
 const grows = ( v ) => /^[\d.]+$/.test( String( v ?? '' ).trim() ) && Number( v ) > 0;
 
 // o: { m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), scope (surfaceContext, or null), R (the
-// decisions `rules`), facts, surface: { kind }, declared (lib/skeleton-rules.mjs::declared) }.
+// decisions `rules`), facts, surface: { kind }, declared (the record's declarations through lib/element-facts.mjs) }.
 export function makePanelRules( { m, view, scope, R, facts, surface = {}, declared } ) {
 	const root = m.root;
 	// The layout a panel lays its children out in: its declared display (the rendered display when the record holds no entry).

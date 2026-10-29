@@ -11,7 +11,8 @@
 const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
 const INTERACTIVE = new Set( [ 'a', 'button', 'input', 'select', 'textarea' ] );
-const optionValue = ( e ) => new RegExp( '^<option[^>]*\\svalue="([^"]*)"', 'i' ).exec( e.snippet || '' )?.[ 1 ] ?? '';
+// An option's value as the draft writes it, through the one element-facts reader (`read`, lib/element-facts.mjs).
+const optionValue = ( read, e ) => read.attr( e, 'value' ) ?? '';
 
 export function shopToolbar( { m, commerce, region, rule } ) {
 	const stamps = commerce?.toolbar;
@@ -51,7 +52,7 @@ export function shopToolbar( { m, commerce, region, rule } ) {
 	const absorb = [ ...taken ].filter( ( e ) => ! taken.has( m.byKey[ e.parentKey ] ) ).map( ( e ) => e.key );
 	const order = [ count && { e: count, name: rule.count }, sort && { e: sort, name: rule.sort } ].filter( Boolean ).sort( ( a, b ) => m.els.indexOf( a.e ) - m.els.indexOf( b.e ) );
 	const orders = Object.entries( rule.sortOptions || {} ).map( ( [ name, source ] ) => ( { name, rx: new RegExp( source, 'i' ) } ) );
-	const missing = sort ? m.els.filter( ( e ) => 'option' === e.tag && e.parentKey === sort.key ).map( ( o ) => ( { o, value: optionValue( o ), label: squash( m.words( o ) ) } ) )
+	const missing = sort ? m.els.filter( ( e ) => 'option' === e.tag && e.parentKey === sort.key ).map( ( o ) => ( { o, value: optionValue( m.read, o ), label: squash( m.words( o ) ) } ) )
 		.filter( ( x ) => ! orders.some( ( s ) => s.rx.test( x.value ) || s.rx.test( x.label ) ) )
 		.map( ( x ) => ( { key: x.o.key, line: `sort option "${ x.label }" (value ${ x.value }): ${ rule.sort } offers ${ orders.map( ( s ) => s.name ).join( ', ' ) } only`, why: rule.missingReason } ) ) : [];
 	return {

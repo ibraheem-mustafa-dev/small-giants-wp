@@ -13,7 +13,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'url';
 import { openDb, DB_PATH } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-recognise-' ) );
@@ -36,7 +36,7 @@ const place = ( x, y, w, h ) => { const b = { x, y, w, h }; return { 375: b, 768
 const every = ( v ) => ( { 375: v, 768: v, 1440: v } );
 const el = ( key, parentKey, tag, words = '', x = {} ) => ( { key, parentKey, depth: x.depth ?? 1, tag, template: 'Root', tpl: num( key ), attrs: x.attrs || {}, words, allText: words, membership: [], srcTag: tag, srcOwnText: words, snippet: `<${ tag } data-dc-tpl="${ num( key ) }">${ words }</${ tag }>`, box: x.box || place( 0, 100, 400, 100 ), visible: x.visible || every( true ), display: x.display || 'block', flexDirection: 'row', screenshots: {}, ...( x.position ? { position: x.position } : {} ), ...( x.strip ? { strip: x.strip } : {} ) } );
 const inv = ( root, elements, beside = [] ) => ( { generated: 'fixture', source: 'fixture', root: 'x', checks: { rootKey: root }, elements, ...( beside.length ? { beside } : {} ) } );
-const run = ( inventory, kind ) => proposeSkeleton( { inventory, facts: facts(), surface: kind, surfaceKind: kind, surfaceName: kind, db } );
+const run = ( inventory, kind ) => proposeFixture( { inventory, facts: facts(), surface: kind, surfaceKind: kind, surfaceName: kind, db } );
 const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 const find = ( r, name ) => flat( r.skeleton ).filter( ( n ) => n.name === name );
 const FIXED = every( 'fixed' );

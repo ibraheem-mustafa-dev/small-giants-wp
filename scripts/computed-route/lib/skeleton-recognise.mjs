@@ -11,7 +11,6 @@
 // (with the corner, offset and hidden-label width the draft shows); sticky is the sticky setting with its edge; in flow
 // is the block's static or inline value, so the same block in flow stays where the draft puts it; in flow an element with
 // no words (a brand icon in a row of icons) is never recognised.
-import { declared as declaredStyle } from './skeleton-rules.mjs';
 
 const words = ( s ) => String( s ?? '' ).replace( /([a-z])([A-Z])/g, '$1 $2' ).toLowerCase().split( /[^a-z0-9]+/ ).filter( ( w ) => w.length >= 3 );
 const stem = ( w ) => ( w.length > 4 && w.endsWith( 's' ) ? w.slice( 0, -1 ) : w );
@@ -35,6 +34,8 @@ export const hostKindOf = ( href, hosts = {} ) => hosts[ hostOf( href ) ] || nul
 
 // o: { m (the inventory model), facts }. Returns { recognise( e ) }: a verdict { block, attributes, evidence } or null.
 export function makeRecogniser( { m, facts } ) {
+	// The declared style of an element: the record's declarations through the one reader (lib/element-facts.mjs).
+	const declaredStyle = ( e ) => m.read.declared( e );
 	const D = facts.decisions.rules?.recognise;
 	const hosts = facts.decisions.rules?.linkSourceForKind?.hosts || {};
 	let index = null;

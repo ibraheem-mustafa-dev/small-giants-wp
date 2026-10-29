@@ -14,6 +14,7 @@ import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { skeletonProblems } from '../lib/fill-skeleton.mjs';
 import { handoverProblems } from '../lib/fill-handover.mjs';
 import { needsFinaliser } from '../lib/intake-run-finalise.mjs';
+import { fixtureRecord, fixtureResolved } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -46,9 +47,12 @@ function inventory( root ) {
 		return el.allText;
 	};
 	walk( root, null, 0 );
-	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
+	return fixtureResolved( { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements } );
 }
-const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db, factRecord: o.factRecord } );
+const run = ( root, o = {} ) => {
+	const inv = inventory( root );
+	return proposeSkeleton( { inventory: inv, facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db, factRecord: fixtureRecord( inv, o.factRecord ) } );
+};
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byWords = ( r, w ) => row( r, ( x ) => x.words === w );
 const byTag = ( r, t ) => row( r, ( x ) => x.tag === t );
@@ -372,7 +376,7 @@ test( 'cardAction: every copy of one template element takes one verdict, a butto
 		last.tpl = first.tpl;
 		last.key = `Root/${ first.tpl }#1`;
 		inv.elements.filter( ( x ) => x.parentKey === was ).forEach( ( x ) => ( x.parentKey = last.key ) );
-		return proposeSkeleton( { inventory: inv, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', built: null, motion: new Set(), db } );
+		return proposeSkeleton( { inventory: inv, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', built: null, motion: new Set(), db, factRecord: fixtureRecord( inv ) } );
 	};
 	const kind = ( r ) => [ 'Explore Alpha', 'Explore Beta' ].map( ( w ) => byWords( r, w ).rule );
 	assert.deepEqual( kind( copies( true ) ), [ 'cardAction', 'cardAction' ], 'both copies end their card in an action' );
@@ -409,7 +413,7 @@ test( 'a client decision on an element a block absorbs is flagged stale, never s
 	const nav = E( 'header', {}, [ E( 'nav', { display: 'flex' }, [ E( 'button', { words: 'About' } ), E( 'button', { words: 'Sectors' } ) ] ) ] );
 	const tree = inventory( nav );
 	const key = tree.elements.find( ( x ) => 'About' === x.words ).key;
-	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ key ]: { block: 'sgs/button', signature: 'button|About' } } } }, db } );
+	const r = proposeSkeleton( { inventory: tree, factRecord: fixtureRecord( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ key ]: { block: 'sgs/button', signature: 'button|About' } } } }, db } );
 	const about = byWords( r, 'About' );
 	assert.equal( about.action, 'absorbed' );
 	assert.match( about.stale || '', /client decision .* no longer applies/ );
@@ -420,7 +424,7 @@ test( 'a client decision with attributes on a rule-eligible element puts them on
 	const tree = inventory( nav );
 	const navEl = tree.elements.find( ( x ) => 'nav' === x.tag );
 	const decision = { block: 'sgs/nav-bar-menu', attributes: { ref: 5 }, signature: `nav|${ navEl.words }` };
-	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ navEl.key ]: decision } } }, db } );
+	const r = proposeSkeleton( { inventory: tree, factRecord: fixtureRecord( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'header', clientDecisions: { surfaces: { fixture: { [ navEl.key ]: decision } } }, db } );
 	assert.equal( byTag( r, 'nav' ).source, 'client decision' );
 	const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 	assert.equal( flat( r.skeleton ).find( ( n ) => 'sgs/nav-bar-menu' === n.name )?.attributes?.ref, 5, 'the node carries the decision attributes' );
@@ -437,7 +441,7 @@ const SETTINGS = { itemColour: { slot: '.bar > .item:nth-of-type(3) > .link', st
 const STATES = [ { name: 'desktop nav (≥ 1024)', how_to_reach: 'state.w ≥ 1024', sc_if_tpl_ids: [ '44', '49', '51' ] }, { name: 'current section', how_to_reach: 'route', sc_if_tpl_ids: [ '51' ] }, { name: 'tablet (≥ 768)', how_to_reach: 'state.w ≥ 768', sc_if_tpl_ids: [ '57' ] }, { name: 'compact (< 1024)', how_to_reach: 'state.w < 1024', sc_if_tpl_ids: [ '55' ] } ];
 const navRun = ( o = {} ) => {
 	const tree = inventory( navTree() );
-	const r = proposeSkeleton( { inventory: tree, facts: facts(), surface: 'fixture', surfaceKind: 'header', calSettings: () => SETTINGS, states: STATES, thresholds: [ 768, 1024 ], db, ...o } );
+	const r = proposeSkeleton( { inventory: tree, factRecord: fixtureRecord( tree ), facts: facts(), surface: 'fixture', surfaceKind: 'header', calSettings: () => SETTINGS, states: STATES, thresholds: [ 768, 1024 ], db, ...o } );
 	const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [] ) ] );
 	return { r, node: flat( r.skeleton ).find( ( n ) => 'sgs/nav-bar-menu' === n.name ), tree };
 };

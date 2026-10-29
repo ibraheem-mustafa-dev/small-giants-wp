@@ -30,6 +30,7 @@ import { modalFrame, modalTargets } from './skeleton-opener.mjs';
 import { modalFrameNode } from './skeleton-modal-frame.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
+import { elementFacts } from './element-facts.mjs';
 
 export const COVERAGE_WRITES = [
 	'construct:dc-import',
@@ -109,19 +110,20 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
 export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, filters = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, loops = null, scriptOf = () => null } ) {
-	const m = inventoryModel( inventory );
+	// The fact record's reading of the template (lib/skeleton-record.mjs), and the surface it places this proposal in: its
+	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`). Every
+	// skeleton rule reads an element's facts through the one reader over this view (lib/element-facts.mjs), `m.read`.
+	const factRecord = undefined === given ? recordFor( facts ) : given;
+	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
+	const m = inventoryModel( inventory, elementFacts( view ) );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
 	const rowOf = {};
-	// The fact record's reading of the template (lib/skeleton-record.mjs), and the surface it places this proposal in: its
-	// parent, kind and opener from `surfaces.json`, and the records whose parent is this surface (`surfaceParts`).
-	const factRecord = undefined === given ? recordFor( facts ) : given;
-	const view = recordView( factRecord, { openers: openers ?? ( factRecord ? openersFor( facts ) : {} ), rootComponent } );
 	const scope = factRecord ? surfaceContext( view, { kind: surfaceKind, name: surfaceName, id: surfaceId } ) : null;
 	m.els.forEach( ( e ) => view.checkParent( e, m.byKey[ e.parentKey ] ) );
 	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
-	const siteLink = siteLinkResolver( draftLinks, rootComponent );
+	const siteLink = siteLinkResolver( draftLinks, rootComponent, m.read );
 	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
 	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, filters, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, loops, formLinks }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );

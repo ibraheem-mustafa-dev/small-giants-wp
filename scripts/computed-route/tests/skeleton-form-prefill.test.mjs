@@ -13,9 +13,9 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { formOpenerOf, prefillParams, prefillHref } from '../lib/skeleton-form-prefill.mjs';
 import { formWrites } from '../lib/fill-form.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -146,7 +146,7 @@ function run( o = {} ) {
 	const f = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Planted' } );
 	f.decisions = structuredClone( f.decisions );
 	o.edit && o.edit( f.decisions.rules );
-	return proposeSkeleton( { inventory: inventory(), facts: { ...f, repo: d.repo }, surface: 'careers', surfaceKind: 'page', surfaceName: 'Careers', db, rootComponent: 'Site', factRecord, formLinks: o.links ?? LINKS, refs: REFS, openers: {} } );
+	return proposeFixture( { inventory: inventory(), facts: { ...f, repo: d.repo }, surface: 'careers', surfaceKind: 'page', surfaceName: 'Careers', db, rootComponent: 'Site', factRecord, formLinks: o.links ?? LINKS, refs: REFS, openers: {} } );
 }
 const buttonOf = ( r, n, copy ) => nodes( r.skeleton ).find( ( x ) => x.draftRef?.tpl === `Root/${ n }#${ copy }` );
 
@@ -178,7 +178,7 @@ test( 'NEGATIVE: a handler that scrolls elsewhere, a page with no linked form, a
 	inv.elements.find( ( x ) => x.key === 'Root/23#1' ).words = '';
 	const d = draft();
 	const f = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Planted' } );
-	const partial = proposeSkeleton( { inventory: inv, facts: { ...f, repo: d.repo }, surface: 'careers', surfaceKind: 'page', surfaceName: 'Careers', db, rootComponent: 'Site', factRecord: { ...RECORD(), sources: d.record.sources }, formLinks: LINKS, refs: REFS, openers: {} } );
+	const partial = proposeFixture( { inventory: inv, facts: { ...f, repo: d.repo }, surface: 'careers', surfaceKind: 'page', surfaceName: 'Careers', db, rootComponent: 'Site', factRecord: { ...RECORD(), sources: d.record.sources }, formLinks: LINKS, refs: REFS, openers: {} } );
 	assert.equal( buttonOf( partial, 24, 1 ).attributes.url, '?role=Driver#careers', 'a field the copy shows no value for is left out' );
 	assert.equal( buttonOf( partial, 24, 0 ).attributes.url, '?role=Warehouse%20Operative&team=Warehouse%20%26%20logistics#careers' );
 } );
@@ -188,7 +188,7 @@ test( 'MUST FAIL: the saved form\'s root carries the anchor its page links to, f
 	const d = draft();
 	const f = loadFacts( { db, client: 'eye-care-ward-end', repo: REPO, siteName: 'Planted' } );
 	const record = { ...RECORD(), sources: d.record.sources };
-	const of = ( links ) => proposeSkeleton( { inventory: formInventory, facts: { ...f, repo: d.repo }, surface: 'apply', surfaceKind: 'form', surfaceName: 'Apply', db, rootComponent: 'Site', factRecord: record, formLinks: links, refs: REFS, openers: {}, surfaceId: 'S-2' } );
+	const of = ( links ) => proposeFixture( { inventory: formInventory, facts: { ...f, repo: d.repo }, surface: 'apply', surfaceKind: 'form', surfaceName: 'Apply', db, rootComponent: 'Site', factRecord: record, formLinks: links, refs: REFS, openers: {}, surfaceId: 'S-2' } );
 	const root = of( LINKS ).skeleton[ 0 ];
 	assert.equal( root.name, 'sgs/form' );
 	assert.equal( root.attributes.anchor, 'careers' );

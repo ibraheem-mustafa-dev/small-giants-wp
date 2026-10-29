@@ -4,7 +4,7 @@
 // for the element's block (a logo block's `logoId`, a menu block's `ref`).
 // The factory takes the writer's shared context (`ctx`).
 import { LOGO_HANDOVER } from './skeleton-write-units.mjs';
-import { elementHandler, handlerOf, linkWrite } from './draft-link.mjs';
+import { linkWrite } from './draft-link.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -65,26 +65,26 @@ export function makeContent( ctx ) {
 		return opts.includes( want ) ? { layout: want } : {};
 	};
 
-	// The link setting of one element: its href, or for a button with no href its click handler (`<button
-	// sc-camel-on-click="{{ goShop }}">`, FR-48-30), as a site address (lib/draft-link.mjs: a draft route is never written as
+	// The link setting of one element: its href, or for a button with no href its click handler (the fact record's `onClick`
+	// binding, read through m.read, lib/element-facts.mjs; FR-48-30), as a site address (lib/draft-link.mjs: a draft route is never written as
 	// it stands). Writes into `a` and `handover`. A handler the routing read recorded as a control (an opener, a toggle) is
 	// no link and says nothing.
 	function linkSettings( block, e, top, linkAttr, a, handover ) {
 		const href = e.attrs?.href;
-		const handler = elementHandler( e );
-		const byHandler = ! href && null !== handler;
+		const handler = m.read.handler( e );
+		const byHandler = ! href && !! handler;
 		if ( ! href && ! byHandler ) {
 			return;
 		}
 		const r = siteLink( href || '', e );
 		if ( 'none' === r.kind ) {
-			const onClick = handlerOf( handler );
+			const onClick = handler;
 			const subject = byHandler ? 'draft button' : 'draft link is "#"';
 			const how = onClick ? `${ byHandler ? ' navigates' : ' and navigates' } by script ${ onClick }` : '';
 			const items = r.routes ? ` to one of ${ r.routes.map( ( x ) => `"${ x }"` ).join( ', ' ) } by the item it is clicked on` : '';
 			( ! byHandler || r.navigates ) && handover.push( { owner: 'behaviour', kind: 'link', detail: `${ subject }${ how }${ items }: destination not in the draft, url left empty` } );
 		} else if ( ! top.linkSource ) {
-			const out = linkWrite( r, href || handlerOf( handler ) );
+			const out = linkWrite( r, href || handler );
 			null !== out.value && ( a[ linkAttr ] = out.value );
 			out.handover && handover.push( out.handover );
 		}
@@ -106,9 +106,7 @@ export function makeContent( ctx ) {
 		if ( ! words || ! textAttr || ( skeletonSettings( facts, block ).text && 'blockquote' !== e.tag ) ) {
 			return null;
 		}
-		const snippet = e.snippet || '';
-		const open = /^<[^>]*>/.exec( snippet );
-		const leading = ! open || '' !== snippet.slice( open[ 0 ].length ).split( '<' )[ 0 ].trim();
+		const leading = m.read.textLeads( e );
 		return { node: { name: textBlock, attributes: { [ textAttr ]: words }, innerBlocks: [] }, leading };
 	}
 

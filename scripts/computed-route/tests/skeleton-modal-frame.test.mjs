@@ -12,11 +12,11 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { closesOn } from '../lib/skeleton-handler-opens.mjs';
 import { liftModalFrame } from '../lib/fill-modal-frame.mjs';
 import { cleanTree } from '../lib/fill-skeleton.mjs';
 import { framedTreeFile, framesIn, mergeModalFrames } from '../lib/site-build-modal-frame.mjs';
+import { proposeFixture } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -70,7 +70,7 @@ function run( o = {} ) {
 	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
 	f.decisions = structuredClone( f.decisions );
 	o.edit && o.edit( f.decisions.rules );
-	return proposeSkeleton( { inventory, facts: { ...f, repo: draft.repo }, surface: 'size-guide', surfaceKind: o.kind ?? 'modal', surfaceName: 'Size guide', db, factRecord, openers: {}, pageMap: o.pageMap ?? [ ROW ], surfaceId: 'S-25', calSettings: ( b ) => ( 'sgs/modal' === b ? CAL : {} ) } );
+	return proposeFixture( { inventory, facts: { ...f, repo: draft.repo }, surface: 'size-guide', surfaceKind: o.kind ?? 'modal', surfaceName: 'Size guide', db, factRecord, openers: {}, pageMap: o.pageMap ?? [ ROW ], surfaceId: 'S-25', calSettings: ( b ) => ( 'sgs/modal' === b ? CAL : {} ) } );
 }
 const all = ( l ) => l.flatMap( ( n ) => [ n, ...all( n.innerBlocks || [] ) ] );
 const frameOf = ( r ) => r.skeleton.find( ( n ) => true === n.modalFrame );

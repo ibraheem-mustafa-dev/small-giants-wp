@@ -9,10 +9,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { inventoryModel } from '../lib/skeleton-model.mjs';
 import { loopBlocks } from '../lib/skeleton-loop-blocks.mjs';
 import { filtersOf } from '../lib/skeleton-commerce-region.mjs';
+import { proposeFixture, fixtureModel } from './fixtures/fixture-facts.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -29,7 +28,7 @@ const el = ( key, parentKey, tag, words = '', x = {} ) => {
 const inv = ( elements ) => ( { generated: 'test', source: 'test', root: 'div', keyFormat: 'tpl', checks: { duplicateKeys: 0 }, elements } );
 const ROWS = [ { slug: 'product', route: 'Product.dc.html', template: 'single-product' } ];
 const LOOPS = { rows: ROWS, brands: [ 'Acme', 'Bolt', 'Crest' ] };
-const run = ( elements, o = {} ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce: o.commerce ?? null, loops: o.loops ?? LOOPS, db } );
+const run = ( elements, o = {} ) => proposeFixture( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce: o.commerce ?? null, loops: o.loops ?? LOOPS, db } );
 const find = ( tree, name ) => {
 	for ( const n of tree ) {
 		if ( n.name === name ) {
@@ -138,12 +137,12 @@ test( 'negative control: items without a price or a product link, a drawer, a co
 } );
 
 test( 'a loop recognised but with no source named is a note, and the model reads one holder with two or more items only', () => {
-	const model = inventoryModel( inv( [ ...ROOT, ...reviews( { href: 'https://example.org/x' } ) ] ) );
+	const model = fixtureModel( inv( [ ...ROOT, ...reviews( { href: 'https://example.org/x' } ) ] ) );
 	const args = { m: model, rows: ROWS, brands: LOOPS.brands, commerce: null, rule: RULES().loopBlocks, money: RULES().commerceRegion.money, shop: RULES().commerceRegion.roles.shop };
 	const got = loopBlocks( args );
 	assert.equal( got.regions.length, 0 );
 	assert.match( got.notes[ 0 ], /3 reviews.*links to no review provider/ );
-	const one = inventoryModel( inv( [ ...ROOT, ...brands( [ 'Acme' ] ) ] ) );
+	const one = fixtureModel( inv( [ ...ROOT, ...brands( [ 'Acme' ] ) ] ) );
 	assert.equal( loopBlocks( { ...args, m: one } ).regions.length, 0, 'one item is no loop of brands' );
 	assert.deepEqual( filtersOf( { products: [ { draftId: 'a', brand: 'Acme', categories: [] }, { draftId: 'b', brand: 'Bolt', categories: [] } ], dropped: [ 'b' ], facets: [] } ).brands, [ 'Acme' ] );
 } );
