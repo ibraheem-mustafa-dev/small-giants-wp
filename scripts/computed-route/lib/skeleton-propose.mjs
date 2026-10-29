@@ -204,7 +204,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// commerce region's WooCommerce piece, which draws the region from WooCommerce; the product card inside the shop's
 		// collection is read at the draft's first card, whose look it takes.
 		const loopProducts = 'loopBlocks' === r.rule && 'products' === r.kind;
-		if ( 'formLink' === r.rule || 'commerceRegion' === r.rule || 'categoryChips' === r.rule || loopProducts ) {
+		const drawsItself = 'formLink' === r.rule || 'commerceRegion' === r.rule || 'categoryChips' === r.rule || loopProducts;
+		if ( drawsItself ) {
 			delete node.draftRef;
 			delete node.draftFingerprint;
 		}
@@ -266,7 +267,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			Object.keys( cs.slots ).length && ( node.draftSlots = { ...node.draftSlots, ...cs.slots }, row.slots = { ...row.slots, ...cs.slots } );
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
-			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound }, drawn, r.rule || 'drawsChildren', node, parentBlock );
+			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound, drawsItself }, drawn, r.rule || 'drawsChildren', node, parentBlock );
 			return [ node, ...takeVariants( node ) ];
 		}
 		if ( ! m.blockKids( e ).length && m.widthKids( e ).length && 'leaf' === composition[ block ]?.composition_role ) {
