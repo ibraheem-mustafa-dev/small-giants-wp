@@ -317,6 +317,26 @@
 						"type": "string",
 						"default": "",
 						"description": "Accessible name of the link (aria-label). Empty falls back to the image's alt text."
+					},
+					"id": {
+						"type": "integer",
+						"default": 0,
+						"description": "The item's attachment ID in the Media Library. 0 is no attachment: the item then shows the picture at url, or no picture."
+					},
+					"url": {
+						"type": "string",
+						"default": "",
+						"description": "The item's picture address. Empty is an item with no picture yet (its link, label and caption still show)."
+					},
+					"alt": {
+						"type": "string",
+						"default": "",
+						"description": "The picture's description for screen readers. Blank when the item is decorative."
+					},
+					"caption": {
+						"type": "string",
+						"default": "",
+						"description": "Text shown under or over the picture when the gallery shows captions."
 					}
 				}
 			}

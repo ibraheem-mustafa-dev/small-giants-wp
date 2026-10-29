@@ -695,6 +695,14 @@
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
 			"reason": "a header disclosure panel's root that lays its own grid out and carries its own padding or paint is the container that holds the cards, not the panel shell (Bean approved the sectors panel's gradient card grid as sgs/container, 2026-10-21)"
 		},
+		"megaPanelGrid": {
+			"id": "megaPanelGrid",
+			"hostSetting": "groupGap",
+			"taughtBy": { "client": "eye-care-ward-end", "key": "Eye Care Birmingham/54#0", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
+			"scope": "the same panel as megaGroup, when its root declares no grid or flex layout and the grid or flex element that lays its columns out sits inside centring width wrappers (a lone child with a max-width and no words); the root itself laying out the columns is the megaGroup / megaAside case",
+			"clients": [ "eye-care-ward-end" ],
+			"reason": "the grid inside a header disclosure panel's width wrapper is the panel's own layout: the sgs/mega-panel block draws the columns and takes the grid's gap, so the grid goes and its columns are the panel's mega groups (a heading and its run of links) and mega aside (the feature card)"
+		},
 		"drawerIconRun": {
 			"id": "drawerIconRun",
 			"block": "sgs/social-icons",

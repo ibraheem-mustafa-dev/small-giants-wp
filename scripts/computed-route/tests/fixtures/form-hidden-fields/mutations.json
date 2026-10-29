@@ -1,0 +1,98 @@
+[
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "&& ! rendered.has( t.key ) &&",
+  "replace": "&&",
+  "why": "a control the render shows is built again"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "&& ! t.membership?.scFor?.length",
+  "replace": "",
+  "why": "a loop item is built as a hidden field"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "if ( ! shown || ! choices.has( shown.label ) ) {",
+  "replace": "if ( false ) {",
+  "why": "a control behind a condition no choice of the form tests is built, and would show for ever"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "includes( type ) || 'hidden' === type ? null :",
+  "replace": "includes( type ) ? null :",
+  "why": "a hidden input becomes a visible field"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "found.filter( ( f ) => f.t < n )",
+  "replace": "found.filter( ( f ) => f.t > n )",
+  "why": "a built field is placed after the wrong neighbour"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "tplNumber( x.hiddenControl );",
+  "replace": "NaN;",
+  "why": "a built field is not counted when the next one is placed"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "if ( ! F || ! factRecord || formSchemaOf( factRecord ) ) {",
+  "replace": "if ( ! F || ! factRecord ) {",
+  "why": "a schema form builds its unrendered fields twice"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "some( ( m ) => ! outer.has( m.key ) && m.key !== formKey )",
+  "replace": "some( () => true )",
+  "why": "a control with no condition of its own beyond the form is hidden"
+ },
+ {
+  "file": "lib/skeleton-hidden-fields.mjs",
+  "find": "has( block, 'label' ) && ( attributes.label = label )",
+  "replace": "void label",
+  "why": "the field loses its label"
+ },
+ {
+  "file": "lib/fill-form.mjs",
+  "find": "hiddenControlOf( facts, rec.node?.hiddenControl ) : null;",
+  "replace": "null : null;",
+  "why": "Fill reads no recorded control for a node with no draft element"
+ },
+ {
+  "file": "lib/fill-form.mjs",
+  "find": "const formKey = hidden ? rec.node?.hiddenControl : formKeyOf( target, component );",
+  "replace": "const formKey = formKeyOf( target, component );",
+  "why": "a hidden field carries no condition"
+ },
+ {
+  "file": "lib/fill-form.mjs",
+  "find": "hit = built || ( hidden ? null :",
+  "replace": "hit = built || ( false ? null :",
+  "why": "a hidden control is read as a rendered one"
+ },
+ {
+  "file": "lib/fill-form.mjs",
+  "find": "set( a[ k ] ) && ( el[ k ] = String( a[ k ] ) );",
+  "replace": "void k;",
+  "why": "the recorded settings of the control are not read"
+ },
+ {
+  "file": "lib/fill-form.mjs",
+  "find": "filter( ( [ , v ] ) => ! /\\{\\{/.test( String( v ) ) )",
+  "replace": "filter( () => true )",
+  "why": "a bound attribute is taken as a fact"
+ },
+ {
+  "file": "lib/fill-skeleton.mjs",
+  "find": "'draftFingerprint', 'hiddenControl', 'handover'",
+  "replace": "'draftFingerprint', 'handover'",
+  "why": "the hidden-control key reaches the tree Fill writes"
+ },
+ {
+  "file": "lib/fill-skeleton.mjs",
+  "find": "/^sgs\\/form-field-/.test( node.name ) && undefined === node.draftRef",
+  "replace": "true",
+  "why": "a hidden control is accepted on any block or beside a draftRef"
+ }
+]

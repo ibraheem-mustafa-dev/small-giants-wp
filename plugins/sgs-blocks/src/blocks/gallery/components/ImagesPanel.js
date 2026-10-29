@@ -18,6 +18,7 @@ export default function ImagesPanel( {
 	toggleItemDecorative,
 	updateItemCrop,
 	updateItemLink,
+	updateItemText,
 } ) {
 	const { imageSize } = attributes;
 
@@ -53,6 +54,7 @@ export default function ImagesPanel( {
 									onToggleDecorative={ toggleItemDecorative }
 									onUpdateCrop={ updateItemCrop }
 									onUpdateLink={ updateItemLink }
+									onUpdateText={ updateItemText }
 								/>
 							) ) }
 						</div>

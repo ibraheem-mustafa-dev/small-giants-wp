@@ -224,6 +224,22 @@ export function schemaControl( db, block, f ) {
 	return el;
 }
 
+// The control a recorded form control stands for when the render never showed it (a skeleton field node's `hiddenControl`, lib/
+// skeleton-hidden-fields.mjs), in the shape of the draft read's `snap.form`: its tag, type and the literal attributes the
+// template gives it (a bound attribute is not a fact), or null when the record holds no such control.
+export function hiddenControlOf( facts, key ) {
+	const t = facts?.elements?.[ key ]?.template;
+	if ( ! t ) {
+		return null;
+	}
+	const a = Object.fromEntries( Object.entries( t.attrs || {} ).filter( ( [ , v ] ) => ! /\{\{/.test( String( v ) ) ) );
+	const el = { tag: t.realTag, type: String( a.type || ( 'input' === t.realTag ? 'text' : t.realTag ) ).toLowerCase() };
+	for ( const k of [ 'name', 'id', 'placeholder', 'autocomplete', 'inputmode', 'rows', 'min', 'max', 'step', 'maxlength', 'accept', 'value' ] ) {
+		set( a[ k ] ) && ( el[ k ] = String( a[ k ] ) );
+	}
+	return el;
+}
+
 // A single node's write: the attribute onto the tree node and a content write record for the report.
 function apply( out, node, ref, rec, w ) {
 	if ( same( w.value, node.attributes?.[ w.attr ] ) ) {
@@ -293,15 +309,18 @@ export function formWrites( { nodes, flat, refOf, reads, facts, flags = [], db, 
 		}
 		// A field the page never rendered (a later step's, built from the schema by lib/skeleton-form-steps.mjs) is the schema
 		// field its `fieldName` names, and the control it stands for is read from that field (schemaControl).
-		const built = isFormFieldBlock( rec.name ) && ! el ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
-		const control = el || ( built ? schemaControl( db, rec.name, built.field ) : null );
+		// A field the render never showed (a control in a closed `sc-if`, lib/skeleton-hidden-fields.mjs) is the recorded control its
+		// `hiddenControl` names; its look is the form block's own field settings, read from the form's rendered fields.
+		const hidden = isFormFieldBlock( rec.name ) && ! el ? hiddenControlOf( facts, rec.node?.hiddenControl ) : null;
+		const built = isFormFieldBlock( rec.name ) && ! el && ! hidden ? schemaFieldByName( schema, node.attributes?.fieldName ) : null;
+		const control = el || hidden || ( built ? schemaControl( db, rec.name, built.field ) : null );
 		if ( isFormFieldBlock( rec.name ) && control ) {
-			const hit = built || ( el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
+			const hit = built || ( hidden ? null : el.chips ? schemaChipsOf( schema, el.chips ) : schemaFieldOf( schema, el ) );
 			const copy = copyFor( copies[ componentOf( target, Object.keys( copies ) ) || schema?.component ], [ control.name, control.id, hit?.field?.name ], hit?.field || null );
 			// A field the draft shows only while a choice has a value (a state-keyed `sc-if`, lib/fill-form-conditions.mjs) waits on that
 			// choice field, which is named by the draft's own state key.
 			let condition = hit ? conditions[ hit.field.name ] || null : null;
-			const formKey = formKeyOf( target, component );
+			const formKey = hidden ? rec.node?.hiddenControl : formKeyOf( target, component );
 			const shown = condition || ! formKey ? null : stateCondition( facts?.elements?.[ formKey ]?.template?.membership?.scIf, componentScript( draftFolder, formKey.split( '/' )[ 0 ] ) );
 			const owner = shown && choices.find( ( c ) => c.rec !== rec && c.chips.some( ( k ) => k.label === shown.label ) );
 			if ( owner && attrDef( db, owner.rec.name, 'fieldName' ) ) {
