@@ -61,12 +61,6 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] )",
-		"replace": "...[]",
-		"why": "the touch strip is not the carousel"
-	},
-	{
-		"file": "lib/motion-behaviour-settings.mjs",
 		"find": "[ 'panelEdgeOpacity', o?.edge ]",
 		"replace": "[ 'panelEdgeOpacity', o?.focus ]",
 		"why": "the edge opacity is the focus one"
@@ -202,5 +196,11 @@
 		"find": "\t\tif ( null != p.to || 'string' !== typeof p.formula ) {",
 		"replace": "\t\tif ( 'string' !== typeof p.formula ) {",
 		"why": "a stated to and from would be overwritten by the formula's literals"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "if ( hit ) {\n\t\t\treturn hit.right.value;\n\t\t}",
+		"replace": "if ( hit ) {\n\t\t\treturn 0;\n\t\t}",
+		"why": "the scroll gap is not the code's"
 	}
 ]

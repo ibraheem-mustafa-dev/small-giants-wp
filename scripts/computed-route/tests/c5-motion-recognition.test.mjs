@@ -42,7 +42,7 @@ test( 'negative control (C5 recognition 4): the same formula on a trigger that i
 // ---- the pinned timeline carries its orientation (item 10) ----
 test( 'MUST FAIL (C5 recognition 10): the pinned horizontal timeline is written with the horizontal orientation it depends on, which the review does not list', async () => {
 	const PIN = 'window scroll (rAF-throttled) -> move(). p = clamp((stickyTop - stage.top) / (stage.offsetHeight - sticky.offsetHeight), 0, 1)';
-	const track = J( 'S-5', { trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-x]' }, properties: [ { property: 'transform', formula: 'dist = max(0, track.scrollWidth - innerWidth); translate3d(−p × dist px, 0, 0)' } ] } );
+	const track = J( 'S-5', { trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-x]' }, properties: [ { property: 'transform', formula: "'translate3d(' + (-p * dist).toFixed(1) + 'px,0,0)'" } ] } );
 	const template = { elements: { 'Site/9': { style: { static: [ [ 'position', 'sticky' ] ] }, parentChain: [] }, 'Site/10': { style: { static: [] }, realParent: 'Site/9', parentChain: [ 'Site/9' ] } } };
 	const b = recogniseBehaviour( track, { template } );
 	const { effectRows } = await import( '../lib/motion-behaviours.mjs' );

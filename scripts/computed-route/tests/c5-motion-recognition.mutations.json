@@ -43,8 +43,8 @@
 	},
 	{
 		"file": "lib/motion-behaviour-settings.mjs",
-		"find": "{ attr: 'orientation', value: 'horizontal', companion: true }, ",
-		"replace": "",
+		"find": "{ attr: 'orientation', value: 'horizontal', companion: true } ] },",
+		"replace": "] },",
 		"why": "the pinned timeline is written without its orientation"
 	},
 	{

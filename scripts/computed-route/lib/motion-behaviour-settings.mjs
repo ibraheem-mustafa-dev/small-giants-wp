@@ -8,7 +8,7 @@
 import { colourHex } from './tokens.mjs';
 import { shadowParts } from './motion-shadow.mjs';
 import { templateKey, templateKeyOf } from './fact-key.mjs';
-import { props, nameOf, words, triggerOf, MINUS, TIMES, NUMBER, number, durationOf } from './motion-record-text.mjs';
+import { props, nameOf, words, triggerOf, NUMBER, number, durationOf, codeTree, nodesOf, callsOf, expressionOf, negativeExpr, stringPieces } from './motion-record-text.mjs';
 
 const px = ( n ) => `${ n }px`;
 
@@ -149,15 +149,29 @@ export function dotPulseOf( r, ctx = {} ) {
 	return { blocks: { 'sgs/business-info': [ { attr: 'openStatusDotPulse', value: true }, ...( durationOf( r ) ? [ { attr: 'openStatusDotPulseDuration', value: durationOf( r ) } ] : [] ) ] }, notes: [ 'the dot pulses an endless expanding ring' ] };
 }
 
-// A script that scrolls a page element (not the window) to an offset when a state changes: the container scrolled to the
-// row it just opened. Its gap is the distance the code keeps above the row's offset.
+// Whether a record's code calls `scrollTo` with an options object holding `top`, read from its syntax tree.
+export const scrollsToTop = ( r ) => callsOf( codeTree( r.source?.code ), 'scrollTo' ).some( ( c ) => 'ObjectExpression' === c.arguments[ 0 ]?.type && c.arguments[ 0 ].properties.some( ( q ) => 'top' === ( q.key?.name ?? q.key?.value ) ) );
+
+// The gap a scroll target keeps above an element's offset: the number in `<element>.offsetTop - <n>`, read from the syntax
+// tree of the property's target value or formula, or null.
+function offsetGap( p ) {
+	for ( const text of [ p.to, p.formula ] ) {
+		const hit = nodesOf( codeTree( text ), ( n ) => 'BinaryExpression' === n.type && '-' === n.operator && 'MemberExpression' === n.left.type && 'offsetTop' === n.left.property?.name && 'NumericLiteral' === n.right.type )[ 0 ];
+		if ( hit ) {
+			return hit.right.value;
+		}
+	}
+	return null;
+}
+
+// A script that scrolls a page element (a template element, not the window) to an offset when a state changes: the
+// container scrolled to the row it just opened. Its gap is the distance the code keeps above the row's offset.
 export function accordionScrollOf( r ) {
 	const p = props( r ).find( ( q ) => /^(?:scrolltop|scroll-position)$/.test( nameOf( q ) ) );
-	const own = null != r.element?.template_tpl_id && ! /^(?:window|document(?:\.\w+)*)$/.test( String( r.element?.selector ?? '' ).trim() );
-	if ( 'js-scroll' !== r.mechanism || ! p || 'state' !== triggerOf( r ) || ! own || ! /scrollTo\s*\(\s*\{\s*top/.test( words( r.source?.code ) ) ) {
+	if ( 'js-scroll' !== r.mechanism || ! p || 'state' !== triggerOf( r ) || null == r.element?.template_tpl_id || ! scrollsToTop( r ) ) {
 		return null;
 	}
-	const gap = number( new RegExp( `offsetTop\\s*${ MINUS }\\s*${ NUMBER }` ).exec( words( p.to ) )?.[ 1 ] );
+	const gap = offsetGap( p );
 	return {
 		blocks: {
 			'sgs/nav-drawer-menu': [ { attr: 'accordionScrollIntoView', value: true } ],
@@ -185,13 +199,23 @@ export function autoplayOf( r ) {
 	};
 }
 
-// A write that moves its element sideways: a translate3d whose second and third arguments are 0, or a translateX, whose
-// first argument is negative (the track travels left as the scroll advances).
+// A write that moves its element sideways: the value it writes is a translate3d whose second and third arguments are 0, or
+// a translateX, and whose first argument is negative (the track travels left as the scroll advances). The value is read
+// from the formula's syntax tree (its string pieces, each computed piece judged by its expression), else from the stated
+// end value.
 export function movesSideways( q ) {
-	const f = words( q?.formula, q?.to );
-	const three = /translate3d\(([\s\S]*?),\s*['"+\s]*0(?:px)?\s*,\s*0(?:px)?\s*\)/i.exec( f );
-	const x = three ? three[ 1 ] : /translateX\(([\s\S]*?)\)\s*['"]?\s*$/i.exec( f )?.[ 1 ];
-	return null != x && new RegExp( MINUS ).test( x );
+	const expr = expressionOf( codeTree( q?.formula ) );
+	const pieces = expr ? stringPieces( expr ) : 'string' === typeof q?.to ? [ q.to ] : [];
+	const exprs = pieces.filter( ( x ) => 'string' !== typeof x );
+	const value = pieces.map( ( x ) => ( 'string' === typeof x ? x : `\u0001${ exprs.indexOf( x ) }\u0001` ) ).join( '' );
+	const fn = /^\s*(translate3d|translateX)\(([^()]*)\)\s*$/i.exec( value );
+	const args = fn ? fn[ 2 ].split( ',' ).map( ( a ) => a.trim() ) : [];
+	const flat = 'translate3d' === fn?.[ 1 ].toLowerCase() ? 3 === args.length && args.slice( 1 ).every( ( a ) => /^0(?:px)?$/.test( a ) ) : 1 === args.length;
+	if ( ! fn || ! flat ) {
+		return false;
+	}
+	const computed = /\u0001(\d+)\u0001/.exec( args[ 0 ] );
+	return computed ? negativeExpr( exprs[ Number( computed[ 1 ] ) ] ) : /^-\s*\S/.test( args[ 0 ] );
 }
 
 // The section a scroll write holds in place: the nearest ancestor of its element positioned `sticky` (the stage that stays
@@ -225,14 +249,15 @@ export function pinnedSectionOf( r, ctx = {} ) {
 }
 
 // The edge and focus values of a proximity write `1 - <distance> * <depth>` (the distance from the centre runs 0 to 1):
-// { edge, focus } from a stated from and to, else from the formula, else null.
+// { edge, focus } from a stated from and to, else from the formula's syntax tree, else null.
 function proximityEnds( q ) {
 	const stated = ( v ) => null !== v && undefined !== v && '' !== v && Number.isFinite( Number( v ) );
 	if ( stated( q.from ) && stated( q.to ) ) {
 		return { edge: Number( q.from ), focus: Number( q.to ) };
 	}
-	const m = new RegExp( `\\b1\\s*${ MINUS }\\s*(?:[A-Za-z_$][\\w$]*\\s*${ TIMES }\\s*${ NUMBER }|${ NUMBER }\\s*${ TIMES }?\\s*[A-Za-z_$][\\w$]*)` ).exec( words( q.formula ) );
-	const depth = number( m?.[ 1 ] ?? m?.[ 2 ] );
+	const product = ( n ) => 'BinaryExpression' === n?.type && '*' === n.operator ? [ n.left, n.right ].find( ( x ) => 'NumericLiteral' === x.type ) ?? null : null;
+	const hit = nodesOf( codeTree( q.formula ), ( n ) => 'BinaryExpression' === n.type && '-' === n.operator && 'NumericLiteral' === n.left.type && 1 === n.left.value && product( n.right ) )[ 0 ];
+	const depth = hit ? product( hit.right ).value : null;
 	return null === depth ? null : { edge: Math.round( ( 1 - depth ) * 1000 ) / 1000, focus: 1 };
 }
 
@@ -246,14 +271,13 @@ export function pinnedTimelineOf( r, ctx = {} ) {
 	const get = ( ...names ) => list.find( ( q ) => names.includes( nameOf( q ) ) );
 	const text = get( 'textcontent' );
 	if ( 'js-text-write' === r.mechanism && text ) {
-		const padded = /padStart|\bNN\b|\b0\d\b/.test( words( r.source?.code, text.from, text.to, text.formula ) );
+		const padded = [ r.source?.code, text.formula ].map( codeTree ).some( ( t ) => callsOf( t, 'padStart' ).length > 0 );
 		return { blocks: { 'sgs/timeline': [ { attr: 'panelCounter', value: true }, { attr: 'panelCounterFormat', value: padded ? 'padded-index-of-total' : 'index-of-total' } ] }, notes: [ 'the counter reads the pin\'s progress' ] };
 	}
 	const move = get( 'transform', 'translate' );
 	if ( move && movesSideways( move ) ) {
-		const carousel = /native horizontal scroller|scroll-snap/i.test( words( r.trigger?.detail ) );
 		return {
-			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true }, ...( carousel ? [ { attr: 'mobileLayout', value: 'carousel' } ] : [] ) ] },
+			blocks: { 'sgs/timeline': [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true } ] },
 			accepted: 'the draft switches to its touch-only strip at 1024px; SGS pins from 768px and swipes below (Ruling 9)',
 			notes: [ 'the track moves sideways with the scroll while pinned' ],
 		};

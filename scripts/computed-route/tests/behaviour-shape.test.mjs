@@ -79,6 +79,8 @@ test( 'negative control: with no sticky stage, or a track that moves down rather
 	}
 	const forward = RECORDS.map( ( r ) => ( 'J-05' === r.id ? { ...r, properties: [ { property: 'transform', from: null, to: null, formula: "'translate3d(' + (p * dist).toFixed(1) + 'px,0,0)'" } ] } : r ) );
 	assert.equal( settingsOf( recogniseBehaviour( byId( 'J-05', forward ), ctx( forward ) ) ), null, 'a track that moves right is not the pinned track' );
+	const slanted = RECORDS.map( ( r ) => ( 'J-05' === r.id ? { ...r, properties: [ { property: 'transform', from: null, to: null, formula: "'translate3d(-12px,' + (-p * dist).toFixed(1) + 'px,0)'" } ] } : r ) );
+	assert.equal( settingsOf( recogniseBehaviour( byId( 'J-05', slanted ), ctx( slanted ) ) ), null, 'a track moved up by the scroll from a fixed sideways offset is not the pinned track' );
 	const track = byId( 'J-05' );
 	const trackKey = `${ track.element.dc }/${ track.element.template_tpl_id }`;
 	const selfStuck = { elements: { ...unstuck.elements, [ trackKey ]: { ...unstuck.elements[ trackKey ], style: { static: [ [ 'position', 'sticky' ] ], holes: [] } } } };
@@ -109,6 +111,31 @@ test( 'MUST FAIL: the real drawer close (A-24) is an exit by its shape (it leave
 	assert.equal( recogniseBehaviour( enters, ctx( RENAMED ) )?.kind ?? null, null, 'moving to rest is not an exit' );
 	assert.equal( recogniseBehaviour( { ...byId( 'A-24' ), properties: [ { property: 'transform', from: 'none', to: 'translateX(0)' } ] }, ctx() )?.kind ?? null, null, 'staying at rest is not an exit' );
 	assert.equal( recogniseBehaviour( { ...byId( 'A-24' ), properties: [ { property: 'transform', from: 'translateX(50%)', to: 'translateX(100%)' } ] }, ctx() )?.kind ?? null, null, 'a move between two poses away from rest does not leave the rest' );
+} );
+
+// The code is read through its syntax tree, never matched as text (R-47-4).
+test( 'MUST FAIL: the accordion scroll is a scrollTo call with a top offset and the counter is padded by a padStart call, each read from the code\'s syntax tree', () => {
+	const scroll = byId( 'J-31' );
+	const want = { 'sgs/nav-drawer-menu': [ { attr: 'accordionScrollIntoView', value: true } ], 'sgs/accordion': [ { attr: 'scrollToOpened', value: true } ] };
+	assert.deepEqual( settingsOf( recogniseBehaviour( { ...scroll, source: { ...scroll.source, code: 'box.scrollTo({ behavior: \'smooth\', top: y })' } }, ctx() ) ), want, 'the top option in any place' );
+	const gap = { ...scroll, properties: [ { property: 'scrollTop', from: null, to: 'row.offsetTop - 6' } ] };
+	assert.deepEqual( settingsOf( recogniseBehaviour( gap, ctx() ) )[ 'sgs/accordion' ], [ { attr: 'scrollToOpened', value: true }, { attr: 'scrollToOpenedGap', value: '6px' } ], 'the gap is the number subtracted from the offset' );
+	const count = byId( 'J-11' );
+	const format = ( code ) => settingsOf( recogniseBehaviour( { ...count, source: { ...count.source, code }, properties: [ { property: 'textContent', from: null, to: null, formula: null } ] }, ctx() ) )[ 'sgs/timeline' ][ 1 ].value;
+	assert.equal( format( "n.textContent = `${ String(i + 1).padStart(2, '0') } / ${ total }`" ), 'padded-index-of-total', 'a padStart inside a template literal pads' );
+} );
+
+test( 'negative control: a scrollTo with only a left offset, words that only spell the calls in a string, and an unpadded counter', () => {
+	const scroll = byId( 'J-31' );
+	assert.equal( recogniseBehaviour( { ...scroll, source: { ...scroll.source, code: 'sc.scrollTo({ left: x })' } }, ctx() ), null, 'a scroll sideways is not a row brought into view' );
+	assert.equal( recogniseBehaviour( { ...scroll, source: { ...scroll.source, code: "log('sc.scrollTo({ top })')" } }, ctx() ), null, 'a string that spells the call is not the call' );
+	const count = byId( 'J-11' );
+	const format = ( code ) => settingsOf( recogniseBehaviour( { ...count, source: { ...count.source, code }, properties: [ { property: 'textContent', from: null, to: null, formula: null } ] }, ctx() ) )[ 'sgs/timeline' ][ 1 ].value;
+	assert.equal( format( "cnt.textContent = (best + 1) + ' / ' + cards.length" ), 'index-of-total' );
+	assert.equal( format( "cnt.textContent = 'padStart 01 / NN'" ), 'index-of-total', 'a string holding the words is not a pad' );
+	const track = byId( 'J-05' );
+	const twice = { ...track, properties: [ { property: 'transform', from: null, to: null, formula: "'translate3d(' + (-p * -dist) + 'px,0,0)'" } ] };
+	assert.equal( settingsOf( recogniseBehaviour( twice, ctx( RECORDS.map( ( r ) => ( r.id === track.id ? twice : r ) ) ) ) ), null, 'two negative factors move the track right' );
 } );
 
 // A track a timer steps sideways, a writer that suspends its snapping and moves its offset (the drag), whatever the writer is called.
