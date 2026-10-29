@@ -726,3 +726,22 @@ test( 'dotMarker never takes a control and needs text beside it; cardHeading rea
 	const card = ( y ) => E( 'div', { y }, [ E( 'div', { words: `Wholesale ${ y }`, style: 'font-weight:bold;font-size:1.25rem' } ), E( 'div', { words: 'Pallet volumes for cash and carries.', style: 'font-size:1rem' } ) ] );
 	assert.equal( byWords( run( section( [ E( 'div', { display: 'grid' }, [ card( 0 ), card( 1 ) ] ) ] ) ), 'Wholesale 0' ).rule, 'cardHeading' );
 } );
+
+test( 'MUST FAIL: two links drawn as buttons (padding and a ground) stacked by their wrapping row are a button group, never a list', () => {
+	const pill = ( w, y, style ) => E( 'a', { attrs: { href: `/${ w }` }, y, words: w, style } );
+	const ground = 'display:inline-flex;background:rgb(0, 0, 0);color:rgb(216, 202, 80);padding:15px 26px;border-radius:999px';
+	const edged = 'display:inline-flex;background:transparent;border:2px solid rgb(0, 0, 0);padding:15px 26px';
+	for ( const style of [ ground, edged ] ) {
+		const r = run( section( [ E( 'div', { display: 'flex', style: 'display:flex;flex-wrap:wrap;gap:14px' }, [ pill( 'Apply', 0, style ), pill( 'Catalogue', 60, style ) ] ) ] ) );
+		assert.equal( byTag( r, 'div' ).block, 'sgs/multi-button', style );
+		assert.deepEqual( r.proposal.rows.filter( ( x ) => 'a' === x.tag ).map( ( x ) => x.block ), [ 'sgs/button', 'sgs/button' ] );
+	}
+} );
+
+test( 'NEGATIVE: stacked links with no ground, no padding, a clear background or a zero border are still a list', () => {
+	const link = ( w, y, style ) => E( 'a', { attrs: { href: `/${ w }` }, y, words: w, style } );
+	for ( const style of [ 'color:rgb(0, 0, 0)', 'background:rgb(0, 0, 0)', 'padding:4px 0px;background:rgba(0, 0, 0, 0)', 'padding:4px 8px;border:0px solid rgb(0, 0, 0)', 'padding:0px;background:rgb(0, 0, 0)', 'padding:4px;background:none', 'padding:4px;background-color:transparent' ] ) {
+		const r = run( section( [ E( 'div', {}, [ link( 'Trade', 0, style ), link( 'Brands', 30, style ) ] ) ] ) );
+		assert.deepEqual( settled( byTag( r, 'div' ) ), { block: null, action: 'unwrap', rule: 'listWrapper' }, style );
+	}
+} );

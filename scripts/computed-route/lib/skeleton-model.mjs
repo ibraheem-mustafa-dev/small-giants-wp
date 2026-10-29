@@ -61,10 +61,20 @@ export function inventoryModel( inventory ) {
 		return ! i || ( a && b && b.y >= a.y + a.h - 1 );
 	} );
 	const isTextLink = ( e ) => 'a' === e.tag && !! words( e ) && ! blockKids( e ).length;
+	// Whether a link is drawn as a button: its own style gives it padding and a ground (a background that is not
+	// transparent, or a border of some width that is drawn), never a plain text link.
+	const buttonStyled = ( e ) => {
+		const st = Object.fromEntries( String( e.attrs?.style || '' ).split( ';' ).map( ( p ) => [ p.slice( 0, p.indexOf( ':' ) ).trim().toLowerCase(), p.slice( p.indexOf( ':' ) + 1 ).trim().toLowerCase() ] ).filter( ( [ k ] ) => k ) );
+		const clear = ( v ) => ! v || /^(none|transparent|initial|inherit|unset)$/.test( v ) || /^rgba\([^)]*,\s*0\s*\)$/.test( v );
+		const ground = ! clear( st[ 'background-color' ] ) || ( !! st.background && ! clear( st.background ) );
+		const edge = /\b(solid|dashed|dotted|double)\b/.test( st.border || '' ) && ! /^0(px)?\b/.test( st.border || '' );
+		const padded = [ 'padding', 'padding-left', 'padding-right', 'padding-inline' ].some( ( k ) => st[ k ] && ! /^0(px)?$/.test( st[ k ] ) );
+		return 'a' === e.tag && padded && ( ground || edge );
+	};
 	const isIconLink = ( e ) => 'a' === e.tag && ! words( e ) && kids( e ).some( ( k ) => 'svg' === k.tag );
 	// The slot of an element in the draft's own naming: the copy of its tag among its parent's block children.
 	const childIndex = ( e ) => blockKids( byKey[ e.parentKey ] || { key: null } ).indexOf( e );
 	// The fingerprint Fill's origin map keeps (lib/identity.mjs::fingerprintOf): tag, class, a hash of the style attribute (only a hash, never a value), the ancestor tags, a hash of the element's own words and its template line.
 	const fingerprint = ( e ) => fingerprintOf( e, byKey );
-	return { els, byKey, kids, isPart, blockKids, widthKids, widthOnly, shownAt, words, textWithBreaks, placeholders, box, stacked, isTextLink, isIconLink, childIndex, fingerprint, root: els.find( ( e ) => 0 === e.depth ) || els[ 0 ], tplFinder: ( e ) => ( parseTplKey( e.key ) ? { tpl: e.key } : null ) };
+	return { els, byKey, kids, isPart, blockKids, widthKids, widthOnly, shownAt, words, textWithBreaks, placeholders, box, stacked, isTextLink, buttonStyled, isIconLink, childIndex, fingerprint, root: els.find( ( e ) => 0 === e.depth ) || els[ 0 ], tplFinder: ( e ) => ( parseTplKey( e.key ) ? { tpl: e.key } : null ) };
 }
