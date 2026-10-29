@@ -1,0 +1,140 @@
+[
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "|| ! statusDotOf( r, ctx ) ) {",
+		"replace": ") {",
+		"why": "any endless ring is the dot pulse"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "return !! t && !! parent && isRound( t.element ) &&",
+		"replace": "return !! t && !! parent &&",
+		"why": "a square element is a status dot"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "&& ! String( t.element.words ?? '' ).trim() &&",
+		"replace": "&&",
+		"why": "an element with its own words is a status dot"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "holesOf( t.element, /^style:(?:background|background-color|color)$/ ).length > 0 &&",
+		"replace": "",
+		"why": "a dot whose paint the script never sets is a status dot"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "return pct ? Number( pct[ 1 ] ) >= 50 :",
+		"replace": "return pct ? true :",
+		"why": "any percentage radius is round"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "! [ 'infinite', Infinity ].includes( r.iterations ) || ! statusDotOf",
+		"replace": "false || ! statusDotOf",
+		"why": "a ring that ends is the pulse"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "0 !== from.spread || to.spread <= 0",
+		"replace": "to.spread <= 0",
+		"why": "a ring that does not grow from nothing is the pulse"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "return null != x && new RegExp( MINUS ).test( x );",
+		"replace": "return null != x;",
+		"why": "a track moving right is the pinned track"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const three = /translate3d\\(([\\s\\S]*?),\\s*['\"+\\s]*0(?:px)?\\s*,\\s*0(?:px)?\\s*\\)/i.exec( f );",
+		"replace": "const three = /translate3d\\(([\\s\\S]*?)\\)/i.exec( f );",
+		"why": "a track moving down is the pinned track"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "find( ( k ) => 'sticky' === String( staticStyle( ctx.template.elements[ k ], 'position' ) ?? '' ).trim() ) ?? null;",
+		"replace": "find( ( k ) => true ) ?? null;",
+		"why": "any ancestor holds the section in place"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "return chainOf( r, ctx ).slice( 1 ).find(",
+		"replace": "return chainOf( r, ctx ).slice( 0 ).find(",
+		"why": "the element itself, not an ancestor, is the stage"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const held = writer ? [ ...new Set( ( ctx.records || [] ).filter( ( x ) => x !== r && writerOf( x ) === writer ).map( track ).filter( Boolean ) ) ] : [];",
+		"replace": "const held = [ ...new Set( ( ctx.records || [] ).filter( ( x ) => x !== r ).map( track ).filter( Boolean ) ) ];",
+		"why": "any writer's write joins a pinned track"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "return ! chain.length || chain.includes( held[ 0 ] ) ? held[ 0 ] : null;",
+		"replace": "return held[ 0 ];",
+		"why": "an element outside the stage joins its track"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "return null === depth ? null : { edge: Math.round( ( 1 - depth ) * 1000 ) / 1000, focus: 1 };",
+		"replace": "return null === depth ? null : { edge: depth, focus: 1 };",
+		"why": "the edge value is the depth, not one minus it"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const stroke = get( '-webkit-text-stroke-color', 'webkit-text-stroke-color' );",
+		"replace": "const stroke = get( '-webkit-text-stroke-color' );",
+		"why": "the stroke write the inventory names without its dash is lost"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const move = get( 'transform', 'translate' );\n\tif ( move && movesSideways( move ) ) {",
+		"replace": "const move = get( 'transform', 'translate' );\n\tif ( move ) {",
+		"why": "any moving write in a stage is the track"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const own = null != r.element?.template_tpl_id && ! /^(?:window|document(?:\\.\\w+)*)$/.test( String( r.element?.selector ?? '' ).trim() );",
+		"replace": "const own = true;",
+		"why": "scrolling the window is scrolling a row into view"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "|| ! p || 'state' !== triggerOf( r ) || ! own ||",
+		"replace": "|| ! p || ! own ||",
+		"why": "a press scroll is the opened row"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const sameWriter = ( x, y ) => !! writerOf( x ) && writerOf( x ) === writerOf( y );",
+		"replace": "const sameWriter = () => true;",
+		"why": "a snap suspended in one writer and an offset moved in another are a drag"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "if ( ! Object.entries( pose.from ).every( ( [ k, v ] ) => restValue( k, v ) ) || Object.entries",
+		"replace": "if ( Object.entries",
+		"why": "an animation that moves to rest is an exit"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "|| Object.entries( pose.to ).every( ( [ k, v ] ) => restValue( k, v ) ) ) {",
+		"replace": ") {",
+		"why": "an animation that stays at rest is an exit"
+	},
+	{
+		"file": "lib/motion-behaviours.mjs",
+		"find": "const pin = !! pinnedSectionOf( r, ctx );",
+		"replace": "const pin = false;",
+		"why": "the stage's progress bar is the page's"
+	},
+	{
+		"file": "lib/motion-behaviour-settings.mjs",
+		"find": "const dragging = drags.length > 0;",
+		"replace": "const dragging = suspends.length > 0;",
+		"why": "a snap suspended with no offset moved in the same writer is a drag"
+	}
+]

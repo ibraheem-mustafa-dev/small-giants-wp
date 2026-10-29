@@ -41,12 +41,13 @@ test( 'negative control (C5 recognition 4): the same formula on a trigger that i
 
 // ---- the pinned timeline carries its orientation (item 10) ----
 test( 'MUST FAIL (C5 recognition 10): the pinned horizontal timeline is written with the horizontal orientation it depends on, which the review does not list', async () => {
-	const PIN = 'window scroll (rAF-throttled) -> updatePins(). p = clamp((stickyTop - pin.top) / (pin.offsetHeight - sticky.offsetHeight), 0, 1)';
-	const track = J( 'S-5', { trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-pin] -> [data-pin-x]' }, properties: [ { property: 'transform', formula: 'dist = max(0, track.scrollWidth - innerWidth); translate3d(−p × dist px, 0, 0)' } ] } );
-	const b = recogniseBehaviour( track );
+	const PIN = 'window scroll (rAF-throttled) -> move(). p = clamp((stickyTop - stage.top) / (stage.offsetHeight - sticky.offsetHeight), 0, 1)';
+	const track = J( 'S-5', { trigger: { type: 'scroll-position', detail: PIN }, element: { dc: 'Site', template_tpl_id: '10', selector: '[data-x]' }, properties: [ { property: 'transform', formula: 'dist = max(0, track.scrollWidth - innerWidth); translate3d(−p × dist px, 0, 0)' } ] } );
+	const template = { elements: { 'Site/9': { style: { static: [ [ 'position', 'sticky' ] ] }, parentChain: [] }, 'Site/10': { style: { static: [] }, realParent: 'Site/9', parentChain: [ 'Site/9' ] } } };
+	const b = recogniseBehaviour( track, { template } );
 	const { effectRows } = await import( '../lib/motion-behaviours.mjs' );
-	assert.match( effectRows( [ track ] )[ 0 ].text, /written as the block settings sgs\/timeline scrollEffect$/, 'the review row names the setting, not its companion' );
-	assert.ok( ! effectRows( [ track ] )[ 0 ].effect.includes( 'orientation' ), 'a companion setting is not a row of the review' );
+	assert.match( effectRows( [ track ], { template } )[ 0 ].text, /written as the block settings sgs\/timeline scrollEffect$/, 'the review row names the setting, not its companion' );
+	assert.ok( ! effectRows( [ track ], { template } )[ 0 ].effect.includes( 'orientation' ), 'a companion setting is not a row of the review' );
 	assert.deepEqual( b.blocks[ 'sgs/timeline' ].slice( 0, 2 ), [ { attr: 'scrollEffect', value: 'pinned-horizontal' }, { attr: 'orientation', value: 'horizontal', companion: true } ] );
 } );
 
